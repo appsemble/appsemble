@@ -8,9 +8,7 @@ import Koa from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
 import mount from 'koa-mount';
-import koaQuerystring from 'koa-qs';
 import range from 'koa-range';
-import session from 'koa-session';
 import serve from 'koa-static';
 import koasBodyParser from 'koas-body-parser';
 import koas from 'koas-core';
@@ -23,6 +21,7 @@ import koasStatusCode from 'koas-status-code';
 import koasSwaggerUI from 'koas-swagger-ui';
 import path from 'path';
 import raw from 'raw-body';
+import { URL } from 'url';
 import type { Configuration } from 'webpack';
 
 import * as operations from '../controllers';
@@ -30,7 +29,6 @@ import appMapper from '../middleware/appMapper';
 import boom from '../middleware/boom';
 import conditional from '../middleware/conditional';
 import frontend from '../middleware/frontend';
-import oauth2 from '../middleware/oauth2';
 import tinyRouter from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
 import bulmaHandler from '../routes/bulmaHandler';
@@ -54,13 +52,9 @@ export default async function createServer({
   // eslint-disable-next-line no-param-reassign
   app.keys = [argv.secret];
   app.use(loggerMiddleware());
-  app.use(session(app));
-
   app.use(boom());
   app.use(range);
   Object.assign(app.context, { argv, mailer: new Mailer(argv) });
-
-  koaQuerystring(app);
 
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
@@ -120,7 +114,6 @@ export default async function createServer({
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
         apiMiddleware,
         studioRouter,
-        oauth2(argv),
       ]),
       appRouter,
     ),

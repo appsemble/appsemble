@@ -48,32 +48,36 @@ type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
 /**
  * A Bulma styled form select element.
  */
-export default class Checkbox extends React.Component<CheckboxProps> {
-  onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const { onChange } = this.props;
-
-    onChange(event, event.target.checked);
-  };
-
-  render(): React.ReactElement {
-    const {
+export default React.forwardRef<HTMLInputElement, CheckboxProps>(
+  (
+    {
       className,
       wrapperClassName,
       error,
       help = null,
       label,
       name,
+      onChange,
       value,
       id = name,
       switch: isSwitch,
       rtl,
       ...props
-    } = this.props;
+    },
+    ref,
+  ): React.ReactElement => {
+    const handleChange = React.useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        onChange(event, event.target.checked);
+      },
+      [onChange],
+    );
 
     return (
       <FormComponent className={wrapperClassName} id={id} label={label} required>
         <input
           {...props}
+          ref={ref}
           checked={value}
           className={classNames(
             isSwitch ? 'switch' : 'is-checkradio',
@@ -82,7 +86,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
           )}
           id={id}
           name={name}
-          onChange={this.onChange}
+          onChange={handleChange}
           type="checkbox"
         />
         <label className={classNames({ 'is-danger': error })} htmlFor={id}>
@@ -90,5 +94,5 @@ export default class Checkbox extends React.Component<CheckboxProps> {
         </label>
       </FormComponent>
     );
-  }
-}
+  },
+);

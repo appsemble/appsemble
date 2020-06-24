@@ -7,8 +7,9 @@ import {
   Modal,
   Table,
   Title,
+  useConfirmation,
+  useData,
   useMessages,
-  useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import React from 'react';
@@ -43,41 +44,36 @@ export default function ResourceTable(): React.ReactElement {
   const match = useRouteMatch<RouteParams>();
   const push = useMessages();
 
-  const [resources, setResources] = React.useState<Resource[]>();
-  const [deletingResource, setDeletingResource] = React.useState<Resource>();
   const [editingResource, setEditingResource] = React.useState<Resource>();
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(false);
-  const warningDialog = useToggle();
 
   const { id: appId, mode, resourceId, resourceName } = match.params;
 
-  const promptDeleteResource = React.useCallback(
-    (resource: Resource) => {
-      setDeletingResource(resource);
-      warningDialog.enable();
-    },
-    [warningDialog],
+  const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
+    `/api/apps/${appId}/resources/${resourceName}`,
   );
 
   const closeModal = React.useCallback(() => {
     history.push(match.url.replace(`/${mode}${mode === 'edit' ? `/${resourceId}` : ''}`, ''));
   }, [history, match.url, mode, resourceId]);
 
-  const deleteResource = React.useCallback(async () => {
-    try {
-      await axios.delete(`/api/apps/${appId}/resources/${resourceName}/${deletingResource.id}`);
-      push({
-        body: intl.formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
-        color: 'primary',
-      });
-      setResources(resources.filter((resource) => resource.id !== deletingResource.id));
-      setDeletingResource(undefined);
-      warningDialog.disable();
-    } catch (e) {
-      push(intl.formatMessage(messages.deleteError));
-    }
-  }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
+  const deleteResource = useConfirmation({
+    title: <FormattedMessage {...messages.resourceWarningTitle} />,
+    body: <FormattedMessage {...messages.resourceWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancelButton} />,
+    confirmLabel: <FormattedMessage {...messages.deleteButton} />,
+    async action(deletingResource: Resource) {
+      try {
+        await axios.delete(`/api/apps/${appId}/resources/${resourceName}/${deletingResource.id}`);
+        push({
+          body: intl.formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
+          color: 'primary',
+        });
+        setResources(resources.filter((resource) => resource.id !== deletingResource.id));
+      } catch (e) {
+        push(intl.formatMessage(messages.deleteError));
+      }
+    },
+  });
 
   const onChange = React.useCallback((_event: NamedEvent, value: any) => {
     setEditingResource(value);
@@ -106,48 +102,56 @@ export default function ResourceTable(): React.ReactElement {
         push(intl.formatMessage(messages.createError));
       }
     },
-    [appId, editingResource, history, intl, match.url, mode, push, resourceName, resources],
-  );
-
-  const submitEdit = React.useCallback(
-    async (event: React.FormEvent) => {
-      event.preventDefault();
-      try {
-        await axios.put<Resource>(
-          `/api/apps/${appId}/resources/${resourceName}/${resourceId}`,
-          editingResource,
-        );
-
-        setResources(
-          resources.map((resource) =>
-            resource.id === editingResource.id ? editingResource : resource,
-          ),
-        );
-        setEditingResource(null);
-
-        history.push(match.url.replace(`/${mode}/${resourceId}`, ''));
-
-        push({
-          body: intl.formatMessage(messages.updateSuccess, { id: resourceId }),
-          color: 'primary',
-        });
-      } catch (e) {
-        push(intl.formatMessage(messages.updateError));
-      }
-    },
     [
       appId,
       editingResource,
       history,
       intl,
-      match.url,
+      match,
       mode,
       push,
-      resourceId,
       resourceName,
       resources,
+      setResources,
     ],
   );
+
+  const submitEdit = React.useCallback(async () => {
+    try {
+      await axios.put<Resource>(
+        `/api/apps/${appId}/resources/${resourceName}/${resourceId}`,
+        editingResource,
+      );
+
+      setResources(
+        resources.map((resource) =>
+          resource.id === editingResource.id ? editingResource : resource,
+        ),
+      );
+      setEditingResource(null);
+
+      history.push(match.url.replace(`/${mode}/${resourceId}`, ''));
+
+      push({
+        body: intl.formatMessage(messages.updateSuccess, { id: resourceId }),
+        color: 'primary',
+      });
+    } catch (e) {
+      push(intl.formatMessage(messages.updateError));
+    }
+  }, [
+    appId,
+    editingResource,
+    history,
+    intl,
+    match,
+    mode,
+    push,
+    resourceId,
+    resourceName,
+    resources,
+    setResources,
+  ]);
 
   const downloadCsv = React.useCallback(async () => {
     await download(
@@ -155,21 +159,6 @@ export default function ResourceTable(): React.ReactElement {
       `${resourceName}.csv`,
       'text/csv',
     );
-  }, [app, resourceName]);
-
-  React.useEffect(() => {
-    if (app.definition.resources[resourceName]?.schema) {
-      setLoading(true);
-      setError(false);
-      axios
-        .get<Resource[]>(`/api/apps/${app.id}/resources/${resourceName}`)
-        .then(({ data }) => setResources(data))
-        .catch(() => setError(true))
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-      setResources(undefined);
-    }
   }, [app, resourceName]);
 
   React.useEffect(() => {
@@ -256,7 +245,7 @@ export default function ResourceTable(): React.ReactElement {
                   color="danger"
                   icon="trash"
                   inverted
-                  onClick={() => promptDeleteResource(resource)}
+                  onClick={() => deleteResource(resource)}
                 />
               </td>
               {keys.map((key) => (
@@ -306,23 +295,6 @@ export default function ResourceTable(): React.ReactElement {
           schema={schema}
           value={editingResource}
         />
-      </Modal>
-      <Modal
-        footer={
-          <>
-            <CardFooterButton onClick={warningDialog.disable}>
-              <FormattedMessage {...messages.cancelButton} />
-            </CardFooterButton>
-            <CardFooterButton color="danger" onClick={deleteResource}>
-              <FormattedMessage {...messages.deleteButton} />
-            </CardFooterButton>
-          </>
-        }
-        isActive={warningDialog.enabled}
-        onClose={warningDialog.disable}
-        title={<FormattedMessage {...messages.resourceWarningTitle} />}
-      >
-        <FormattedMessage {...messages.resourceWarning} />
       </Modal>
     </>
   );

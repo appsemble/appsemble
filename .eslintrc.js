@@ -84,7 +84,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/*.ts', '**/*.tsx'],
+      files: ['*.ts', '*.tsx'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
       rules: {
@@ -147,7 +147,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/*.d.ts'],
+      files: ['*.d.ts'],
       rules: {
         'filenames/match-regex': 'off',
         'max-classes-per-file': 'off',
@@ -199,7 +199,6 @@ module.exports = {
         'jest/no-jest-import': 'error',
         'jest/no-test-callback': 'error',
         'jest/no-test-return-statement': 'error',
-        'jest/no-truthy-falsy': 'error',
         'jest/no-try-expect': 'error',
         'jest/prefer-to-be-null': 'error',
         'jest/prefer-to-be-undefined': 'error',

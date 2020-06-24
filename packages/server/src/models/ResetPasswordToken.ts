@@ -1,32 +1,35 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
-import User from './User';
+import { User } from '.';
 
-export default class ResetPasswordToken extends Model {
+@Table({ tableName: 'ResetPasswordToken' })
+export default class ResetPasswordToken extends Model<ResetPasswordToken> {
+  @PrimaryKey
+  @Column
   token: string;
 
+  @AllowNull(false)
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
   User: User;
 
-  static initialize(sequelize: Sequelize): void {
-    ResetPasswordToken.init(
-      {
-        token: { type: DataTypes.STRING, primaryKey: true },
-      },
-      {
-        sequelize,
-        tableName: 'ResetPasswordToken',
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
+  @CreatedAt
+  created: Date;
 
-  static associate(): void {
-    ResetPasswordToken.belongsTo(User, {
-      foreignKey: { allowNull: false },
-      onDelete: 'CASCADE',
-    });
-  }
+  @UpdatedAt
+  updated: Date;
 }

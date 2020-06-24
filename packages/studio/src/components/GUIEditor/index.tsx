@@ -1,115 +1,133 @@
-import type { App, BlockManifest } from '@appsemble/types';
-import type { editor, Range } from 'monaco-editor';
-import type { OpenAPIV3 } from 'openapi-types';
+import { Stepper } from '@appsemble/react-components';
+import type { App, BlockDefinition, BlockManifest } from '@appsemble/types';
+import { stripBlockName } from '@appsemble/utils';
+import indentString from 'indent-string';
+import yaml from 'js-yaml';
+import type { editor } from 'monaco-editor';
+import { Range } from 'monaco-editor';
 import React from 'react';
 
-import GUIEditorDelete from './components/GUIEditorDelete';
 import GUIEditorEditBlock from './components/GUIEditorEditBlock';
+import GUIEditorNavBar from './components/GUIEditorNavBar';
 import GUIEditorSelect from './components/GUIEditorSelect';
 import GUIEditorToolbox from './components/GUIEditorToolbox';
-
-export enum GuiEditorStep {
-  'YAML',
-  'SELECT',
-  'ADD',
-  'EDIT',
-  'DELETE',
-}
-
-export interface EditLocation {
-  blockName: string;
-  pageName: string;
-  parents?: [{ name: string; line: number; indent: number }];
-  editRange?: Range;
-}
+import { EditLocation, GuiEditorStep } from './types';
+import applyMonacoEdits from './utils/applyMonacoEdits';
 
 interface GUIEditorProps {
   app: App;
   editorStep: GuiEditorStep;
-  editLocation: EditLocation;
-  setAllowEdit: (allow: boolean) => void;
-  setAllowAdd: (allow: boolean) => void;
-  setEditor?: (value: editor.IStandaloneCodeEditor) => void;
-  setEditorStep: (step: GuiEditorStep) => void;
-  setEditLocation: (value: EditLocation) => void;
-  setRecipe: (value: string) => void;
-  value?: string;
-}
+  onChangeEditorStep: (step: GuiEditorStep) => void;
+  monacoEditor: editor.IStandaloneCodeEditor;
 
-export interface SelectedBlockManifest extends BlockManifest {
   /**
-   * A JSON schema to validate block parameters.
-   *
-   * Since multiple JSON schema typings exist and not all of them play nice
-   * with each other, this type is normally set to `object`. To improve typings
-   * this is an extension of the existing BlockManifest.
+   * Save decorations even when editor is disposed
    */
-  parameters: {
-    properties: OpenAPIV3.BaseSchemaObject;
-    required?: string[];
-    definitions?: OpenAPIV3.SchemaObject[];
-  };
+  decorationList: string[];
+  onChangeDecorationList: (value: string[]) => void;
 }
-
 export default function GUIEditor({
   app,
-  editLocation,
+  decorationList,
   editorStep,
-  setAllowAdd,
-  setAllowEdit,
-  setEditLocation,
-  setEditorStep,
-  setRecipe,
+  monacoEditor,
+  onChangeDecorationList,
+  onChangeEditorStep,
 }: GUIEditorProps): React.ReactElement {
-  const [selectedBlock, setSelectedBlock] = React.useState<SelectedBlockManifest>(undefined);
-  const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
-  const [appClone, setAppClone] = React.useState<App>(app);
+  const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>(undefined);
+  const [editLocation, setEditLocation] = React.useState<EditLocation>(undefined);
+  const [editedBlockValues, setEditedBlockValues] = React.useState<BlockDefinition>(undefined);
+
+  const onCancel = React.useCallback((): void => {
+    onChangeEditorStep(GuiEditorStep.SELECT);
+    setSelectedBlock(null);
+    setEditedBlockValues(undefined);
+  }, [onChangeEditorStep]);
+
+  const save = React.useCallback(
+    (editExistingBlock: boolean): void => {
+      const blockParent = editLocation.parents
+        .slice()
+        .reverse()
+        .find((x) => x.name === 'blocks:');
+      const range = editExistingBlock
+        ? editLocation.editRange
+        : new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
+      const text = indentString(
+        yaml.safeDump(
+          [
+            {
+              type: stripBlockName(selectedBlock.name),
+              version: selectedBlock.version,
+              parameters: editedBlockValues.parameters,
+              actions: editedBlockValues.actions,
+              events: editedBlockValues.events,
+            },
+          ],
+          { skipInvalid: true },
+        ),
+        blockParent.indent + 1,
+      );
+      const edits: editor.IIdentifiedSingleEditOperation[] = [
+        {
+          range,
+          text,
+          forceMoveMarkers: true,
+        },
+      ];
+      applyMonacoEdits(monacoEditor, edits);
+      onCancel();
+    },
+    [editLocation, monacoEditor, selectedBlock, editedBlockValues, onCancel],
+  );
 
   switch (editorStep) {
-    case GuiEditorStep.SELECT:
-    default:
-      return (
-        <GUIEditorSelect
-          language="yaml"
-          setAllowAdd={setAllowAdd}
-          setAllowEdit={setAllowEdit}
-          setEditLocation={setEditLocation}
-          setEditor={setMonacoEditor}
-          value={appClone.yaml}
-        />
-      );
     case GuiEditorStep.ADD:
       return (
-        <GUIEditorToolbox
-          selectedBlock={selectedBlock}
-          setEditorStep={setEditorStep}
-          setSelectedBlock={setSelectedBlock}
-        />
+        <Stepper onCancel={onCancel} onFinish={() => save(false)}>
+          <GUIEditorToolbox selectedBlock={selectedBlock} setSelectedBlock={setSelectedBlock} />
+          <GUIEditorEditBlock
+            app={app}
+            blockValue={editedBlockValues}
+            editLocation={editLocation}
+            onChangeBlockValue={setEditedBlockValues}
+            onChangeSelectedBlock={setSelectedBlock}
+            selectedBlock={selectedBlock}
+          />
+        </Stepper>
       );
-    case GuiEditorStep.DELETE:
-      return (
-        <GUIEditorDelete
-          app={appClone}
-          editLocation={editLocation}
-          monacoEditor={monacoEditor}
-          setAllowAdd={setAllowAdd}
-          setApp={setAppClone}
-          setEditorStep={setEditorStep}
-          setRecipe={setRecipe}
-        />
-      );
+
     case GuiEditorStep.EDIT:
       return (
-        <GUIEditorEditBlock
-          app={appClone}
-          editLocation={editLocation}
-          monacoEditor={monacoEditor}
-          selectedBlock={selectedBlock}
-          setApp={setAppClone}
-          setEditorStep={setEditorStep}
-          setRecipe={setRecipe}
-          setSelectedBlock={setSelectedBlock}
-        />
+        <Stepper onCancel={onCancel} onFinish={() => save(true)}>
+          <GUIEditorEditBlock
+            app={app}
+            blockValue={editedBlockValues}
+            editLocation={editLocation}
+            onChangeBlockValue={setEditedBlockValues}
+            onChangeSelectedBlock={setSelectedBlock}
+            selectedBlock={selectedBlock}
+          />
+        </Stepper>
+      );
+
+    default:
+      return (
+        <>
+          <GUIEditorNavBar
+            app={app}
+            editLocation={editLocation}
+            editorStep={editorStep}
+            monacoEditor={monacoEditor}
+            onChangeEditorStep={onChangeEditorStep}
+          />
+          <GUIEditorSelect
+            decorationList={decorationList}
+            monacoEditor={monacoEditor}
+            onChangeDecorationList={onChangeDecorationList}
+            onChangeEditLocation={setEditLocation}
+          />
+        </>
       );
   }
 }

@@ -9,17 +9,82 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
+- Block(`form`): Add support for `requirements` in string fields. Please consult the block
+  documentation for further details.
+- Block(`form`): Add support for `radio` type fields.
+- Studio: Add new `InviteMember` permission to the maintainer role within an organization. They are
+  allowed to invite members, resend invitations and delete pending invitations.
+- Studio: Add `Default` column to block documentation.
+- Server: Support optional display name upon registration.
+- Studio: Support optional display name upon registration.
+
+## [0.13.3] - 2020-06-11
+
+### Added
+
+- App: Add `onSuccess` and `onError` properties to actions. This allows for chaining actions
+  together by defining additional actions that are dispatched depending on whether the parent action
+  ran successfully or produced an error.
+- App: Add `message` action. This action can be used to display messages to the user.
+
+### Changed
+
+- App: Redirect the user to a login page inside the app when logging in instead of linking to
+  Appsemble Studio directly.
+- Block(`button-list`): Change `label` property type from `string` to `Remapper`.
+
+## [0.13.2] - 2020-06-03
+
+### Added
+
+- CLI: Extract descriptions from TSDoc.
+- CLI: Normalize the `--remote` argument.
+- Server: Add event descriptions.
+- Studio: Add event descriptions.
+
+## [0.13.1] - 2020-06-02
+
+### Added
+
+- Studio: Add support for login with GitHub.
+- Studio: Add automated documentation rendering for blocks. This can be found at `/blocks`.
+
+### Changed
+
+- Server: Rename CLI arguments to be consistent with terminology used in OAuth2.
+- Studio: Replace login button when not logged in with a dropdown. This allows access to
+  documentation and other related links without having to log in beforehand.
+
+### Fixed
+
+- Studio: Fix login with OAuth2.
+
+## [0.13.0] - 2020-05-15
+
+### Added
+
+- App: Allow to proxy requests through the Appsemble API.
+- Appsemble: Add support for running `npx appsemble`.
 - Block(`detail-viewer`): Implement remappers.
+- Block(`list`): Add `icon` property. This can be used to display icons next to the header.
 - Create: Add `mini-jsx` template based on the current stats block.
 - SDK: Add support for remappers using the `util.remap` function.
 - Server: Add support for using remappers in the notification data definition.
 
 ### Changed
 
+- App: Proxy requests through the Appsemble API by default.
 - App: The `remap` property of actions now uses the new remapper functionality.
+- Block(`list`): Replace `name` with `value`.
+- Block(`list`): Apply remapper to `value` and `label`.
 - Block(`stats`): Replace `name` with `value`.
 - Block(`stats`): Apply remapper to `value` and `label`.
 - Server: Converted user IDs to use UUID instead of auto-incremented integers.
+
+### Fixed
+
+- Studio: Fix file upload components not displaying correctly.
 
 ## [0.12.8] - 2020-04-29
 

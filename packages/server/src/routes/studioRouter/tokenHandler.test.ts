@@ -1,7 +1,9 @@
+import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
 import type Koa from 'koa';
+import { URLSearchParams } from 'url';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
 import createServer from '../../utils/createServer';
@@ -9,7 +11,6 @@ import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/te
 import testToken from '../../utils/test/testToken';
 
 let clock: InstalledClock;
-let request: AxiosTestInstance;
 let server: Koa;
 let user: User;
 let refreshToken: string;
@@ -18,7 +19,7 @@ beforeAll(createTestSchema('tokenhandler'));
 
 beforeAll(async () => {
   server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
 });
 
 beforeEach(async () => {
@@ -32,10 +33,6 @@ afterEach(truncate);
 
 afterEach(async () => {
   clock.uninstall();
-});
-
-afterAll(async () => {
-  await request.close();
 });
 
 afterAll(closeTestSchema);
@@ -151,7 +148,7 @@ describe('authorization_code', () => {
   });
 
   it('should not allow expired authorization codes', async () => {
-    await user.createOrganization({ id: 'org' });
+    await user.$create('Organization', { id: 'org' });
     const app = await App.create({
       OrganizationId: 'org',
       definition: '',
@@ -165,6 +162,7 @@ describe('authorization_code', () => {
       UserId: user.id,
       expires,
       redirectUri: 'http://foo.bar.localhost:9999/',
+      scope: 'openid',
     });
     const response = await request.post(
       '/oauth2/token',
@@ -173,7 +171,6 @@ describe('authorization_code', () => {
         code: '123',
         grant_type: 'authorization_code',
         redirect_uri: 'http://foo.bar.localhost:9999/',
-        scope: 'openid',
       }),
       { headers: { referer: 'http://foo.bar.localhost:9999/' } },
     );
@@ -189,7 +186,7 @@ describe('authorization_code', () => {
   });
 
   it('should return an access token response if the authorization code is valid', async () => {
-    await user.createOrganization({ id: 'org' });
+    await user.$create('Organization', { id: 'org' });
     const app = await App.create({
       OrganizationId: 'org',
       definition: '',
@@ -203,6 +200,7 @@ describe('authorization_code', () => {
       UserId: user.id,
       expires,
       redirectUri: 'http://foo.bar.localhost:9999/',
+      scope: 'openid',
     });
     const response = await request.post(
       '/oauth2/token',
@@ -211,7 +209,6 @@ describe('authorization_code', () => {
         code: '123',
         grant_type: 'authorization_code',
         redirect_uri: 'http://foo.bar.localhost:9999/',
-        scope: 'openid',
       }),
       { headers: { referer: 'http://foo.bar.localhost:9999/' } },
     );
@@ -282,9 +279,7 @@ describe('client_credentials', () => {
 
   it('should handle invalid client credentials', async () => {
     const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
-      headers: {
-        authorization: `Basic ${Buffer.from('invalidId:invalidSecret').toString('base64')}`,
-      },
+      headers: { authorization: basicAuth('invalidId', 'invalidSecret') },
     });
     expect(response).toMatchObject({
       status: 400,
@@ -297,9 +292,7 @@ describe('client_credentials', () => {
   it('should handle expired clients', async () => {
     clock.setSystemTime(new Date('2000-03-01T00:00:00Z'));
     const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
-      headers: {
-        authorization: `Basic ${Buffer.from('testClientId:testClientSecret').toString('base64')}`,
-      },
+      headers: { authorization: basicAuth('testClientId', 'testClientSecret') },
     });
     expect(response).toMatchObject({
       status: 400,
@@ -313,11 +306,7 @@ describe('client_credentials', () => {
     const response = await request.post(
       '/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write organizations:styles:write',
-      {
-        headers: {
-          authorization: `Basic ${Buffer.from('testClientId:testClientSecret').toString('base64')}`,
-        },
-      },
+      { headers: { authorization: basicAuth('testClientId', 'testClientSecret') } },
     );
     expect(response).toMatchObject({
       status: 400,
@@ -331,11 +320,7 @@ describe('client_credentials', () => {
     const response = await request.post(
       '/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write',
-      {
-        headers: {
-          authorization: `Basic ${Buffer.from('testClientId:testClientSecret').toString('base64')}`,
-        },
-      },
+      { headers: { authorization: basicAuth('testClientId', 'testClientSecret') } },
     );
     expect(response).toMatchObject({
       status: 200,

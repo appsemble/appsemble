@@ -1,5 +1,5 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
 
 import { App, AppMember, AppSubscription, Member, Organization, Resource, User } from '../models';
@@ -8,7 +8,6 @@ import createWaitableMock, { EnhancedMock } from '../utils/test/createWaitableMo
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request: AxiosTestInstance;
 let authorization: string;
 let organizationId: string;
 let clock: FakeTimers.InstalledClock;
@@ -68,6 +67,14 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             },
           },
         },
+        testResourceAuthorOnly: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+          query: { roles: ['$author'] },
+        },
         secured: {
           schema: { type: 'object' },
           create: {
@@ -101,7 +108,7 @@ beforeAll(createTestSchema('resources'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
   originalSendNotification = webpush.sendNotification;
 });
 
@@ -122,7 +129,6 @@ afterEach(() => {
 });
 
 afterAll(async () => {
-  await request.close();
   webpush.sendNotification = originalSendNotification;
 });
 
@@ -218,6 +224,7 @@ describe('getResourceById', () => {
     });
   });
 });
+
 describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {
     const app = await exampleApp(organizationId);
@@ -248,6 +255,43 @@ describe('queryResources', () => {
         {
           id: resourceB.id,
           foo: 'baz',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+  });
+
+  it('should be possible to query resources as author', async () => {
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    const userB = await User.create();
+    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Admin' });
+
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      UserId: user.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      UserId: userB.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'baz' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
           $created: new Date(0).toJSON(),
           $updated: new Date(0).toJSON(),
         },
@@ -983,7 +1027,7 @@ describe('getResourceSubscription', () => {
     expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found.' } });
   });
 
-  it('should 404 if user is not subscribed', async () => {
+  it('should return 200 if user is not subscribed', async () => {
     const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
@@ -996,8 +1040,8 @@ describe('getResourceSubscription', () => {
     );
 
     expect(response).toMatchObject({
-      status: 404,
-      data: { message: 'User is not subscribed to this app.' },
+      status: 200,
+      data: { id: app.id, update: false, delete: false },
     });
   });
 });

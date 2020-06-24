@@ -1,72 +1,73 @@
-import { Loader, Title } from '@appsemble/react-components';
+import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
+import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
-import axios from 'axios';
+import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
-import { GuiEditorStep, SelectedBlockManifest } from '../..';
 import GUIEditorToolboxBlock from '../GUIEditorToolboxBlock';
-import Stepper from '../Stepper';
 import styles from './index.css';
 import messages from './messages';
 
 interface GUIEditorToolboxProps {
-  setEditorStep: (step: GuiEditorStep) => void;
-  setSelectedBlock: (block: SelectedBlockManifest) => void;
-  selectedBlock: SelectedBlockManifest;
+  setSelectedBlock: (block: BlockManifest) => void;
+  selectedBlock: BlockManifest;
 }
 
 export default function GUIEditorToolbox({
   selectedBlock,
-  setEditorStep,
   setSelectedBlock,
 }: GUIEditorToolboxProps): React.ReactElement {
-  const [blocks, setBlocks] = React.useState<SelectedBlockManifest[]>(undefined);
+  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
-  React.useEffect(() => {
-    const getBlocks = async (): Promise<void> => {
-      const { data } = await axios.get('/api/blocks');
-      setBlocks(data);
-    };
-    getBlocks();
-  }, []);
+  const onChange = React.useCallback(
+    (_event: React.ChangeEvent, block: BlockManifest): void => {
+      setSelectedBlock(block);
+    },
+    [setSelectedBlock],
+  );
 
-  if (blocks === undefined) {
+  if (error) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <FormattedMessage {...messages.error} />
+        </Message>
+      </Content>
+    );
+  }
+
+  if (loading) {
     return <Loader />;
   }
 
   return (
-    <div className={styles.flexContainer}>
+    <div className={styles.root}>
       <Title>
         <FormattedMessage {...messages.title} />
       </Title>
-      <div className={styles.maxHeight}>
-        <GUIEditorToolboxBlock
-          blocks={blocks}
-          selectedBlock={selectedBlock}
-          setSelectedBlock={setSelectedBlock}
-        />
-      </div>
+      <GUIEditorToolboxBlock
+        blocks={blocks}
+        name={selectedBlock?.name}
+        onChange={onChange}
+        value={selectedBlock}
+      />
       {selectedBlock && (
-        <div className={styles.marginBottom}>
-          <Title level={4}>{stripBlockName(selectedBlock.name)}</Title>
-          {selectedBlock.description}
-          <a
-            href={`https://appsemble.dev/blocks/${stripBlockName(selectedBlock.name)}`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <FormattedMessage {...messages.moreInfo} />
-          </a>
+        <div className={classNames('container is-fluid notification', styles.marginBottom)}>
+          <article className="media">
+            <div className="media-content">
+              <Title level={4}>{stripBlockName(selectedBlock.name)}</Title>
+              {selectedBlock.description}
+            </div>
+            <div className="media-right">
+              <Link rel="noopener noreferrer" target="_blank" to={`/blocks/${selectedBlock.name}`}>
+                <FormattedMessage {...messages.moreInfo} />
+              </Link>
+            </div>
+          </article>
         </div>
       )}
-      <Stepper
-        leftOnClick={() => setEditorStep(GuiEditorStep.SELECT)}
-        rightDisabled={!selectedBlock}
-        rightOnClick={() => {
-          setEditorStep(GuiEditorStep.EDIT);
-        }}
-      />
     </div>
   );
 }

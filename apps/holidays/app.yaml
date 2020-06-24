@@ -6,16 +6,16 @@ pages:
   - name: Holidays in NL
     blocks:
       - type: data-loader
-        version: 0.12.8
+        version: 0.13.3
         actions:
           onLoad:
-            url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/NL
+            url: https://date.nager.at/Api/v2/NextPublicHolidays/NL
             type: request
         events:
           emit:
             data: holidays
       - type: table
-        version: 0.12.8
+        version: 0.13.3
         parameters:
           fields:
             - name: date
@@ -31,16 +31,16 @@ pages:
   - name: Holidays in US
     blocks:
       - type: data-loader
-        version: 0.12.8
+        version: 0.13.3
         actions:
           onLoad:
-            url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/US
+            url: https://date.nager.at/Api/v2/NextPublicHolidays/US
             type: request
         events:
           emit:
             data: holidays
       - type: table
-        version: 0.12.8
+        version: 0.13.3
         parameters:
           fields:
             - name: date
@@ -54,16 +54,16 @@ pages:
   - name: Holidays in DE
     blocks:
       - type: data-loader
-        version: 0.12.8
+        version: 0.13.3
         actions:
           onLoad:
-            url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/DE
+            url: https://date.nager.at/Api/v2/NextPublicHolidays/DE
             type: request
         events:
           emit:
             data: holidays
       - type: table
-        version: 0.12.8
+        version: 0.13.3
         parameters:
           fields:
             - name: date
@@ -79,16 +79,16 @@ pages:
   - name: Holidays in ES
     blocks:
       - type: data-loader
-        version: 0.12.8
+        version: 0.13.3
         actions:
           onLoad:
-            url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/ES
+            url: https://date.nager.at/Api/v2/NextPublicHolidays/ES
             type: request
         events:
           emit:
             data: holidays
       - type: table
-        version: 0.12.8
+        version: 0.13.3
         parameters:
           fields:
             - name: date

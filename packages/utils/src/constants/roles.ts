@@ -1,29 +1,22 @@
-import {
-  CreateApps,
-  DeleteApps,
-  EditApps,
-  EditAppSettings,
-  EditThemes,
-  ManageMembers,
-  ManageResources,
-  ManageRoles,
-  Permission,
-  PublishBlocks,
-  PushNotifications,
-  ViewApps,
-} from './permissions';
+import Permission from './Permission';
 
-const Member: Permission[] = [ViewApps];
-const AppEditor: Permission[] = [...Member, EditApps, PushNotifications, ManageResources];
-const Maintainer: Permission[] = [
-  ...AppEditor,
-  EditThemes,
-  PublishBlocks,
-  CreateApps,
-  EditAppSettings,
-  DeleteApps,
+const Member = [Permission.ViewApps];
+const AppEditor = [
+  ...Member,
+  Permission.EditApps,
+  Permission.PushNotifications,
+  Permission.ManageResources,
 ];
-const Owner: Permission[] = [...Maintainer, ManageMembers, ManageRoles];
+const Maintainer = [
+  ...AppEditor,
+  Permission.EditThemes,
+  Permission.PublishBlocks,
+  Permission.CreateApps,
+  Permission.EditAppSettings,
+  Permission.DeleteApps,
+  Permission.InviteMember,
+];
+const Owner = [...Maintainer, Permission.ManageMembers, Permission.ManageRoles];
 
 export const roles = {
   Member,

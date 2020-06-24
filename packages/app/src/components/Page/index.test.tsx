@@ -1,4 +1,9 @@
-import type { BasicPage, FlowPage, TabsPage, UserInfo } from '@appsemble/types';
+import type {
+  BasicPageDefinition,
+  FlowPageDefinition,
+  TabsPageDefinition,
+  UserInfo,
+} from '@appsemble/types';
 import { shallow } from 'enzyme';
 import React from 'react';
 
@@ -45,7 +50,7 @@ beforeEach(() => {
 });
 
 it('should render the blocks for a page', () => {
-  const page: BasicPage = {
+  const page: BasicPageDefinition = {
     name: 'Test Page',
     blocks: [
       { type: 'test', version: '0.0.0' },
@@ -60,13 +65,13 @@ it('should render the blocks for a page', () => {
       pages: [page],
     },
   });
-  const wrapper = shallow(<Page page={page} />);
+  const wrapper = shallow(<Page page={page} prefix="pages.0" />);
 
   expect(wrapper).toMatchSnapshot();
 });
 
 it('should render tabs pages', () => {
-  const page: TabsPage = {
+  const page: TabsPageDefinition = {
     name: 'Test Page',
     type: 'tabs',
     subPages: [
@@ -94,13 +99,13 @@ it('should render tabs pages', () => {
       pages: [page],
     },
   });
-  const wrapper = shallow(<Page page={page} />);
+  const wrapper = shallow(<Page page={page} prefix="pages.0" />);
 
   expect(wrapper).toMatchSnapshot();
 });
 
 it('should render flow page', () => {
-  const page: FlowPage = {
+  const page: FlowPageDefinition = {
     name: 'Test Page',
     type: 'flow',
     subPages: [
@@ -128,7 +133,7 @@ it('should render flow page', () => {
       pages: [page],
     },
   });
-  const wrapper = shallow(<Page page={page} />);
+  const wrapper = shallow(<Page page={page} prefix="pages.0" />);
 
   expect(wrapper).toMatchSnapshot();
 });

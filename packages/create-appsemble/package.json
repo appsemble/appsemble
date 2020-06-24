@@ -1,7 +1,8 @@
 {
   "name": "create-appsemble",
-  "version": "0.12.8",
+  "version": "0.13.3",
   "private": true,
+  "description": "Bootstrap an Appsemble project",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
@@ -17,13 +18,14 @@
     "templates"
   ],
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json"
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.12.8",
-    "fs-extra": "^9.0.0",
-    "inquirer": "^7.1.0",
-    "type-fest": "^0.13.1",
+    "@appsemble/node-utils": "0.13.3",
+    "fs-extra": "^9.0.1",
+    "inquirer": "^7.2.0",
+    "type-fest": "^0.15.1",
     "yargs": "^15.3.1"
   }
 }

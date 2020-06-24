@@ -1,3 +1,5 @@
+import type { OAuth2Provider } from '@appsemble/types';
+
 /**
  * A user email registration.
  */
@@ -49,7 +51,7 @@ declare global {
 
     settings: {
       enableRegistration: boolean;
-      logins: string[];
+      logins: OAuth2Provider[];
       sentryDsn: string;
     };
   }

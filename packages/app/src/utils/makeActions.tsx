@@ -1,11 +1,11 @@
+import type { MessagesContext } from '@appsemble/react-components';
 import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
   ActionType,
   AppDefinition,
-  Block,
-  Page,
-  RequestLikeActionDefinition,
+  BlockDefinition,
+  PageDefinition,
 } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import type { EventEmitter } from 'events';
@@ -17,14 +17,16 @@ import actionCreators, { ActionCreator, ActionCreators } from './actions';
 interface MakeActionsParams {
   actions: { [action: string]: ActionType };
   definition: AppDefinition;
-  context: Block | Page;
+  context: BlockDefinition | PageDefinition;
   history: RouteComponentProps['history'];
   showDialog: ShowDialogAction;
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   pushNotifications: ServiceWorkerRegistrationContextType;
   pageReady: Promise<void>;
+  prefix: string;
   ee: EventEmitter;
+  showMessage: MessagesContext;
 }
 
 interface CreateActionParams {
@@ -35,9 +37,11 @@ interface CreateActionParams {
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
   pageReady: Promise<void>;
+  prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   showDialog: ShowDialogAction;
   type: Action['type'];
+  showMessage: MessagesContext;
 }
 
 function createAction({
@@ -48,56 +52,84 @@ function createAction({
   flowActions,
   history,
   pageReady,
+  prefix,
   pushNotifications,
   showDialog,
+  showMessage,
   type,
 }: CreateActionParams): Action {
   const actionCreator: ActionCreator = actionCreators[type] || extraCreators[type];
+
   const action = actionCreator({
     definition: actionDefinition,
     app,
     history,
     showDialog,
     flowActions,
+    prefix,
     ee,
-    onSuccess:
-      (type === 'request' || type.startsWith('resource.')) &&
-      (actionDefinition as RequestLikeActionDefinition).onSuccess &&
-      (actionDefinition as RequestLikeActionDefinition).onSuccess.type &&
-      actionCreators[(actionDefinition as RequestLikeActionDefinition).onSuccess.type]({
-        definition: (actionDefinition as RequestLikeActionDefinition).onSuccess,
-        app,
-        history,
-        showDialog,
-        flowActions,
-        pushNotifications,
-        ee,
-      }),
-    onError:
-      (type === 'request' || type.startsWith('resource.')) &&
-      (actionDefinition as RequestLikeActionDefinition).onError &&
-      (actionDefinition as RequestLikeActionDefinition).onError.type &&
-      actionCreators[(actionDefinition as RequestLikeActionDefinition).onError.type]({
-        definition: (actionDefinition as RequestLikeActionDefinition).onError,
-        app,
-        history,
-        showDialog,
-        ee,
-        flowActions,
-        pushNotifications,
-      }),
     pushNotifications,
+    showMessage,
   });
+
+  const onSuccess =
+    actionDefinition?.onSuccess &&
+    createAction({
+      actionDefinition: actionDefinition.onSuccess,
+      app,
+      ee,
+      extraCreators,
+      flowActions,
+      history,
+      pageReady,
+      prefix,
+      pushNotifications,
+      showDialog,
+      type: actionDefinition.onSuccess.type,
+      showMessage,
+    });
+  const onError =
+    actionDefinition?.onError &&
+    createAction({
+      actionDefinition: actionDefinition.onError,
+      app,
+      ee,
+      extraCreators,
+      flowActions,
+      history,
+      pageReady,
+      prefix,
+      pushNotifications,
+      showDialog,
+      type: actionDefinition.onError.type,
+      showMessage,
+    });
 
   const { dispatch } = action;
   if (actionDefinition) {
     action.dispatch = async (args: any) => {
       await pageReady;
-      return dispatch(
-        Object.hasOwnProperty.call(actionDefinition, 'remap')
-          ? remap(actionDefinition.remap, args)
-          : args,
-      );
+      let result;
+
+      try {
+        result = await dispatch(
+          Object.hasOwnProperty.call(actionDefinition, 'remap')
+            ? remap(actionDefinition.remap, args)
+            : args,
+        );
+      } catch (error) {
+        if (onError) {
+          return onError.dispatch(error);
+        }
+
+        return error;
+      }
+
+      if (onSuccess) {
+        return onSuccess.dispatch(result);
+      }
+
+      return result;
     };
   }
 
@@ -113,8 +145,10 @@ export default function makeActions({
   flowActions,
   history,
   pageReady,
+  prefix,
   pushNotifications,
   showDialog,
+  showMessage,
 }: MakeActionsParams): { [key: string]: Action } {
   const actionMap = Object.entries(actions || {})
     .filter(([key]) => key !== '$any')
@@ -138,17 +172,21 @@ export default function makeActions({
         extraCreators,
         history,
         type,
+        prefix: `${prefix}.actions.${on}`,
         pushNotifications,
         flowActions,
         showDialog,
         pageReady,
+        showMessage,
       });
 
       acc[on] = action;
       return acc;
     }, {});
 
-  let anyActions: object;
+  let anyActions: {
+    [key: string]: Action;
+  };
   if (actions?.$any) {
     anyActions = Object.keys(context.actions || {})
       .filter((key) => !actionMap[key])
@@ -163,10 +201,12 @@ export default function makeActions({
           extraCreators,
           history,
           type,
+          prefix: `${prefix}.actions.${on}`,
           pushNotifications,
           flowActions,
           showDialog,
           pageReady,
+          showMessage,
         });
 
         acc[on] = action;

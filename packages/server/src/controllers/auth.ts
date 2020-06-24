@@ -4,13 +4,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import {
-  EmailAuthorization,
-  OAuthAuthorization,
-  ResetPasswordToken,
-  transactional,
-  User,
-} from '../models';
+import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models';
 import type { KoaContext } from '../types';
 import createJWTResponse from '../utils/createJWTResponse';
 
@@ -23,7 +17,7 @@ async function mayRegister({ argv }: KoaContext): Promise<void> {
 export async function registerEmail(ctx: KoaContext): Promise<void> {
   await mayRegister(ctx);
   const { argv, mailer } = ctx;
-  const { email, password } = ctx.request.body;
+  const { email, name, password } = ctx.request.body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const key = crypto.randomBytes(40).toString('hex');
@@ -31,7 +25,10 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
 
   try {
     await transactional(async (transaction) => {
-      user = await User.create({ password: hashedPassword, primaryEmail: email }, { transaction });
+      user = await User.create(
+        { name, password: hashedPassword, primaryEmail: email },
+        { transaction },
+      );
       await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
     });
   } catch (e) {
@@ -52,7 +49,7 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   // will still be logged in, but will have to request a new verification email in order to verify
   // their account.
   mailer
-    .sendEmail({ email }, 'welcome', {
+    .sendEmail({ email, name }, 'welcome', {
       url: `${ctx.origin}/verify?token=${key}`,
     })
     .catch((error) => {
@@ -60,37 +57,6 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
     });
 
   ctx.body = createJWTResponse(user.id, argv);
-}
-
-export async function registerOAuth(ctx: KoaContext): Promise<void> {
-  await mayRegister(ctx);
-  const {
-    body: { accessToken, id, provider },
-  } = ctx.request;
-  const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
-  if (!auth) {
-    throw Boom.notFound('Could not find any matching credentials.');
-  }
-
-  await auth.createUser();
-  ctx.status = 201;
-}
-
-export async function connectOAuth(ctx: KoaContext): Promise<void> {
-  const {
-    body: { accessToken, id, provider, userId },
-  } = ctx.request;
-
-  const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
-  const user = await User.findByPk(userId);
-
-  if (!auth || !user) {
-    throw Boom.notFound("User or credential doesn't exist.");
-  }
-
-  await user.addOAuthAuthorization(auth);
-
-  ctx.status = 200;
 }
 
 export async function verifyEmail(ctx: KoaContext): Promise<void> {

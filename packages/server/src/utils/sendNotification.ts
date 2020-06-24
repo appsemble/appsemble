@@ -1,4 +1,5 @@
 import { logger } from '@appsemble/node-utils';
+import { URL } from 'url';
 import webpush from 'web-push';
 
 import type { App, AppSubscription } from '../models';

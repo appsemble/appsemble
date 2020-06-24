@@ -1,7 +1,8 @@
 {
   "name": "@appsemble/preact-components",
-  "version": "0.12.8",
+  "version": "0.13.3",
   "private": true,
+  "description": "Reusable Preact components for internal use",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
@@ -13,9 +14,12 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "main": "src",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
-    "@appsemble/preact": "0.12.8",
-    "@appsemble/sdk": "0.12.8",
+    "@appsemble/preact": "0.13.3",
+    "@appsemble/sdk": "0.13.3",
     "@fortawesome/fontawesome-common-types": "^0.2.28",
     "classnames": "^2.2.6",
     "leaflet": "~1.5.1"

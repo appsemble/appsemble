@@ -1,94 +1,144 @@
-import { editor, IDisposable, KeyCode, KeyMod } from 'monaco-editor';
+import { applyRefs } from '@appsemble/react-components';
+import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import styles from './index.css';
 
+editor.setTheme('vs');
+
+type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
+
 interface MonacoEditorProps {
+  /**
+   * The current value of the editor.
+   */
   value?: string;
+
+  /**
+   * The language of the editor.
+   */
   language: string;
-  theme?: string;
-  onValueChange: (value: string) => void;
-  onSave: () => void;
-  options: editor.IEditorOptions;
+
+  /**
+   * This is called whenever the value of the editor changes.
+   *
+   * @param event The monaco change event.
+   * @param value The new value.
+   */
+  onChange?: (event: editor.IModelContentChangedEvent, value: string) => void;
+
+  /**
+   * Called when Ctrl-S is pressed.
+   */
+  onSave?: () => void;
+
+  /**
+   * Editor options to set.
+   */
+  options?: Options;
+
+  /**
+   * Save decorations even when editor is disposed
+   */
+  decorationList?: string[];
+  onChangeDecorationList?: (value: string[]) => void;
 }
 
-export default class MonacoEditor extends React.Component<MonacoEditorProps> {
-  node = React.createRef<HTMLDivElement>();
+const defaultOptions: Options = {};
 
-  observer: ResizeObserver = null;
+const emptyDecoration: editor.IModelDeltaDecoration[] = [
+  {
+    range: new Range(0, 0, 0, 0),
+    options: {},
+  },
+];
 
-  editor: editor.IStandaloneCodeEditor;
+/**
+ * Render a Monaco standalone editor instance.
+ *
+ * The forwarded ref might not trigger a rerender of the parent component. Instead of passing a ref
+ * object, it is recommended to use a state setter function.
+ */
+export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
+  (
+    {
+      language,
+      onChange,
+      decorationList,
+      onChangeDecorationList,
+      onSave,
+      options = defaultOptions,
+      value = '',
+    },
+    ref,
+  ) => {
+    const [monaco, setMonaco] = React.useState<editor.IStandaloneCodeEditor>();
 
-  subscription: IDisposable;
+    const saveRef = React.useRef(onSave);
+    saveRef.current = onSave;
 
-  static defaultProps = {
-    value: '',
-    theme: 'vs',
-    options: { insertSpaces: true, tabSize: 2, minimap: { enabled: false } },
-  };
+    const nodeRef = React.useCallback((node: HTMLDivElement) => {
+      if (!node) {
+        return () => {
+          applyRefs(null, ref);
+        };
+      }
 
-  componentDidMount(): void {
-    const { language, options, value } = this.props;
-    const model = editor.createModel(value, language);
+      const ed = editor.create(node, options);
+      // eslint-disable-next-line no-bitwise
+      ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
 
-    this.editor = editor.create(this.node.current, options);
-    this.editor.setModel(model);
+      const observer = new ResizeObserver(() => ed.layout());
+      observer.observe(node);
 
-    // eslint-disable-next-line no-bitwise
-    this.editor.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, this.onMonacoSave);
+      applyRefs(ed, setMonaco, ref);
 
-    this.subscription = model.onDidChangeContent(this.onMonacoValueChange);
+      return () => {
+        ed.dispose();
+        observer.unobserve(node);
+        applyRefs(null, ref);
+      };
+      // This is triggered by the lack of options in the dependency array. This is left out on
+      // purpose. Instead, this is handled using monaco.updateOptions() below.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    this.observer = new ResizeObserver(() => {
-      this.editor.layout();
-    });
+    React.useEffect(() => {
+      if (monaco) {
+        monaco.updateOptions(options);
 
-    this.observer.observe(this.node.current);
-  }
+        if (decorationList && onChangeDecorationList) {
+          onChangeDecorationList(
+            monaco.getModel().deltaDecorations(decorationList, emptyDecoration),
+          );
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [monaco, options]);
 
-  componentDidUpdate(prevProps: MonacoEditorProps): void {
-    const { language, options, theme, value } = this.props;
+    React.useEffect(() => {
+      if (monaco) {
+        editor.setModelLanguage(monaco.getModel(), language);
+      }
+    }, [language, monaco]);
 
-    this.editor.updateOptions(options);
-    const model = this.editor.getModel();
+    React.useEffect(() => {
+      if (monaco && monaco.getModel().getValue() !== value) {
+        monaco.getModel().setValue(value);
+      }
+    }, [monaco, value]);
 
-    if (prevProps.theme !== theme) {
-      editor.setTheme(theme);
-    }
+    React.useEffect(() => {
+      if (!monaco || !onChange) {
+        return undefined;
+      }
+      const model = monaco.getModel();
+      const subscription = model.onDidChangeContent((event) => onChange(event, model.getValue()));
 
-    if (prevProps.language !== language) {
-      editor.setModelLanguage(model, language);
-    }
+      return () => subscription.dispose();
+    }, [monaco, onChange]);
 
-    if (value !== model.getValue()) {
-      model.setValue(value);
-    }
-  }
-
-  componentWillUnmount(): void {
-    if (this.editor) {
-      this.editor.dispose();
-    }
-
-    if (this.subscription) {
-      this.subscription.dispose();
-    }
-
-    if (this.observer) {
-      this.observer.unobserve(this.node.current);
-    }
-  }
-
-  onMonacoSave = (): void => {
-    this.props.onSave();
-  };
-
-  onMonacoValueChange = (): void => {
-    this.props.onValueChange(this.editor.getModel().getValue());
-  };
-
-  render(): React.ReactElement {
-    return <div ref={this.node} className={styles.editor} />;
-  }
-}
+    return <div ref={nodeRef} className={styles.editor} />;
+  },
+);

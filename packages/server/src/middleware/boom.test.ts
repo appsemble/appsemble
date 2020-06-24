@@ -1,21 +1,16 @@
 import Boom from '@hapi/boom';
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boom from './boom';
 
 describe('boomMiddleware', () => {
   let app: Koa;
-  let request: AxiosTestInstance;
 
   beforeEach(async () => {
     app = new Koa();
     app.use(boom());
-    request = await createInstance(app);
-  });
-
-  afterEach(async () => {
-    await request.close();
+    await setTestApp(app);
   });
 
   it('should catch boom errors', async () => {

@@ -1,43 +1,48 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
 
-import App from './App';
-import User from './User';
+import { App, User } from '.';
 
-export default class OAuth2AuthorizationCode extends Model {
+@Table({ tableName: 'OAuth2AuthorizationCode', createdAt: false, updatedAt: false })
+export default class OAuth2AuthorizationCode extends Model<OAuth2AuthorizationCode> {
+  @PrimaryKey
+  @AllowNull(false)
+  @Column
   code: string;
 
+  @AllowNull(false)
+  @Column
   redirectUri: string;
 
+  @AllowNull(false)
+  @Column
+  scope: string;
+
+  @AllowNull(false)
+  @Column
   expires: Date;
 
+  @AllowNull(false)
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
-  static initialize(sequelize: Sequelize): void {
-    OAuth2AuthorizationCode.init(
-      {
-        code: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
-        redirectUri: { type: DataTypes.STRING, allowNull: false },
-        expires: { type: DataTypes.DATE, allowNull: false },
-      },
-      {
-        sequelize,
-        tableName: 'OAuth2AuthorizationCode',
-        paranoid: false,
-        createdAt: false,
-        updatedAt: false,
-      },
-    );
-  }
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
+  User: User;
 
-  static associate(): void {
-    OAuth2AuthorizationCode.belongsTo(User, {
-      foreignKey: { allowNull: false },
-      onDelete: 'CASCADE',
-    });
-    OAuth2AuthorizationCode.belongsTo(App, {
-      foreignKey: { allowNull: false },
-      onDelete: 'CASCADE',
-    });
-    App.hasMany(OAuth2AuthorizationCode);
-  }
+  @AllowNull(false)
+  @ForeignKey(() => App)
+  @Column
+  AppId: number;
+
+  @BelongsTo(() => App, { onDelete: 'CASCADE' })
+  App: App;
 }

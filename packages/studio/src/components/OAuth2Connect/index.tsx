@@ -1,89 +1,126 @@
-import { Button, Loader, Title, useQuery } from '@appsemble/react-components';
+import {
+  Button,
+  Loader,
+  Message,
+  Title,
+  useLocationString,
+  useQuery,
+} from '@appsemble/react-components';
 import type { TokenResponse, UserInfo } from '@appsemble/types';
+import { appendOAuth2State, clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Link, Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
+import { FormattedMessage, MessageDescriptor } from 'react-intl';
+import { Link, useHistory } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
+import settings from '../../utils/settings';
 import styles from './index.css';
 import messages from './messages';
 
-const providers = {
-  gitlab: {
-    title: 'GitLab',
-  },
-};
-
-interface Params {
-  provider: keyof typeof providers;
+interface ExtendedOAuth2State {
+  userinfo?: UserInfo;
 }
 
-interface Profile extends UserInfo {
-  profile: string;
-}
-
+/**
+ * This component handles the callback URL redirect of the user in the OAuth2 login flow.
+ *
+ * - If the user has logged in using a known account, they are logged in to Appsemble.
+ * - If the user is already logged in, they are prompted to link the OAuth2 account to their
+ *   Appsemble account.
+ * - If the user has logged in using an unknown account, they are prompted if they want to link the
+ *   OAuth2 account to a new or an existing Appsemble account.
+ */
 export default function OAuth2Connect(): React.ReactElement {
-  const { provider } = useParams<Params>();
   const history = useHistory();
-  const location = useLocation();
+  const redirect = useLocationString();
   const qs = useQuery();
   const { login, userInfo } = useUser();
-  const [profile, setProfile] = React.useState<Profile>(null);
+
+  const code = qs.get('code');
+  const state = qs.get('state');
+  const session = React.useMemo(() => loadOAuth2State<ExtendedOAuth2State>(), []);
+  const provider = settings.logins.find((p) => p.authorizationUrl === session?.authorizationUrl);
+
+  const [profile, setProfile] = React.useState(session?.userinfo);
   const [isLoading, setLoading] = React.useState(true);
-  const [hasError, setError] = React.useState(false);
+  const [linkError, setLinkError] = React.useState(false);
+  const [error, setError] = React.useState<MessageDescriptor>();
   const [isSubmitting, setSubmitting] = React.useState(false);
 
-  const { title } = providers[provider];
+  const finalizeLogin = React.useCallback(
+    (response: TokenResponse) => {
+      login(response);
+      clearOAuth2State();
+      history.replace(session.redirect || '/');
+    },
+    [history, login, session],
+  );
 
   React.useEffect(() => {
-    (async () => {
+    async function connect(): Promise<void> {
       try {
-        const { data } = await axios.get<TokenResponse | Profile>(
-          `/api/oauth2/connect/pending?${new URLSearchParams({
-            code: qs.get('code'),
-            provider,
-          })}`,
+        const { data } = await axios.post<TokenResponse | UserInfo>(
+          '/api/oauth2/connect/register',
+          {
+            code,
+            authorizationUrl: session.authorizationUrl,
+          },
         );
         if ('access_token' in data) {
-          login(data);
-          history.replace('/');
+          finalizeLogin(data);
           return;
         }
+        // Prevent the user from calling the oauth2 registration API twice.
+        appendOAuth2State({ userinfo: data });
         setProfile(data);
         setLoading(false);
       } catch (err) {
-        setError(true);
+        setError(messages.loginError);
         setLoading(false);
       }
-    })();
-  }, [history, login, provider, qs]);
+    }
+
+    if (!session || state !== session.state) {
+      setError(messages.invalidState);
+    } else if (!profile) {
+      connect();
+    } else {
+      // The user refreshed the page.
+      setLoading(false);
+    }
+  }, [code, finalizeLogin, profile, session, state]);
 
   const submit = React.useCallback(async () => {
     setSubmitting(true);
     try {
       const { data } = await axios.post<TokenResponse>('/api/oauth2/connect/pending', {
-        code: qs.get('code'),
-        provider,
+        code,
+        authorizationUrl: session.authorizationUrl,
       });
-      login(data);
-      history.replace('/');
+      finalizeLogin(data);
+    } catch (err) {
+      if (err?.response?.status === 409) {
+        setLinkError(true);
+      } else {
+        setError(messages.loginError);
+      }
     } finally {
       setSubmitting(false);
     }
-  }, [history, login, provider, qs]);
-
-  if (!Object.prototype.hasOwnProperty.call(providers, provider) || !qs.has('code')) {
-    return <Redirect to="/" />;
-  }
+  }, [code, finalizeLogin, session]);
 
   if (isLoading) {
     return <Loader />;
   }
 
-  if (hasError) {
-    return <Redirect to="/" />;
+  if (error) {
+    return (
+      <Message color="danger">
+        <FormattedMessage {...error} />
+      </Message>
+    );
   }
 
   return (
@@ -104,7 +141,7 @@ export default function OAuth2Connect(): React.ReactElement {
       {userInfo ? (
         <div className={styles.section}>
           <p className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}>
-            <FormattedMessage {...messages.confirmLinkText} values={{ provider: title }} />
+            <FormattedMessage {...messages.confirmLinkText} values={{ provider: provider.name }} />
           </p>
           <Button color="primary" disabled={isSubmitting} loading={isSubmitting} onClick={submit}>
             <FormattedMessage {...messages.confirmLink} />
@@ -113,12 +150,35 @@ export default function OAuth2Connect(): React.ReactElement {
       ) : (
         <>
           <div className={styles.section}>
-            <p className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}>
-              <FormattedMessage {...messages.confirmCreateText} values={{ provider: title }} />
-            </p>
-            <Button color="primary" disabled={isSubmitting} loading={isSubmitting} onClick={submit}>
-              <FormattedMessage {...messages.confirmCreate} />
-            </Button>
+            {linkError ? (
+              <p
+                className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}
+              >
+                <FormattedMessage {...messages.registrationConflict} />
+              </p>
+            ) : (
+              <>
+                <p
+                  className={classNames(
+                    { 'has-text-grey-light': isSubmitting },
+                    styles.confirmText,
+                  )}
+                >
+                  <FormattedMessage
+                    {...messages.confirmCreateText}
+                    values={{ provider: provider.name }}
+                  />
+                </p>
+                <Button
+                  color="primary"
+                  disabled={isSubmitting}
+                  loading={isSubmitting}
+                  onClick={submit}
+                >
+                  <FormattedMessage {...messages.confirmCreate} />
+                </Button>
+              </>
+            )}
           </div>
           <p className={classNames(styles.section, { 'has-text-grey-light': isSubmitting })}>
             <FormattedMessage
@@ -131,9 +191,7 @@ export default function OAuth2Connect(): React.ReactElement {
                     <Link
                       to={{
                         pathname: '/login',
-                        search: `?${new URLSearchParams({
-                          redirect: `${location.pathname}${location.search}${location.hash}`,
-                        })}`,
+                        search: `?${new URLSearchParams({ redirect })}`,
                       }}
                     >
                       {text}

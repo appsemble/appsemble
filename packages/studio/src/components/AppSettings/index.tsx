@@ -1,6 +1,5 @@
 import {
   Button,
-  CardFooterButton,
   Checkbox,
   Content,
   FileUpload,
@@ -8,13 +7,13 @@ import {
   FormButtons,
   Input,
   Message,
-  Modal,
+  useConfirmation,
   useMessages,
   useObjectURL,
 } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { FormEvent, ReactText, useState } from 'react';
+import React, { ReactText, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -27,14 +26,12 @@ export default function AppSettings(): React.ReactElement {
   const intl = useIntl();
   const [icon, setIcon] = useState<File>();
   const [inputs, setInputs] = useState(app);
-  const [deleteDialog, setDeleteDialog] = React.useState(false);
 
   const push = useMessages();
   const iconUrl = useObjectURL(icon || app.iconUrl);
   const history = useHistory();
 
-  const onSubmit = async (event: FormEvent): Promise<void> => {
-    event.preventDefault();
+  const onSubmit = async (): Promise<void> => {
     const data = new FormData();
 
     if (app.domain !== inputs.domain) {
@@ -73,26 +70,28 @@ export default function AppSettings(): React.ReactElement {
     setIcon(e.target.files[0]);
   }, []);
 
-  const onDelete = React.useCallback(async () => {
-    const { OrganizationId, id, path } = app;
+  const onDelete = useConfirmation({
+    title: <FormattedMessage {...messages.deleteWarningTitle} />,
+    body: <FormattedMessage {...messages.deleteWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.delete} />,
+    async action() {
+      const { OrganizationId, id, path } = app;
 
-    try {
-      await axios.delete(`/api/apps/${id}`);
-      push({
-        body: intl.formatMessage(messages.deleteSuccess, {
-          name: `@${OrganizationId}/${path}`,
-        }),
-        color: 'info',
-      });
-      history.push('/apps');
-    } catch (e) {
-      push(intl.formatMessage(messages.errorDelete));
-    }
-  }, [app, history, intl, push]);
-
-  const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
-
-  const onClose = React.useCallback(() => setDeleteDialog(false), []);
+      try {
+        await axios.delete(`/api/apps/${id}`);
+        push({
+          body: intl.formatMessage(messages.deleteSuccess, {
+            name: `@${OrganizationId}/${path}`,
+          }),
+          color: 'info',
+        });
+        history.push('/apps');
+      } catch (e) {
+        push(intl.formatMessage(messages.errorDelete));
+      }
+    },
+  });
 
   return (
     <>
@@ -134,8 +133,7 @@ export default function AppSettings(): React.ReactElement {
               <>
                 <FormattedMessage {...messages.pathDescription} />
                 <br />
-                {window.location.protocol}//{inputs.path}.{app.OrganizationId}.
-                {window.location.host}
+                {`${window.location.protocol}//${inputs.path}.${app.OrganizationId}.${window.location.host}`}
               </>
             }
             label={<FormattedMessage {...messages.path} />}
@@ -182,27 +180,10 @@ export default function AppSettings(): React.ReactElement {
           <p className="content">
             <FormattedMessage {...messages.deleteHelp} />
           </p>
-          <Button color="danger" icon="trash-alt" onClick={onDeleteClick}>
+          <Button color="danger" icon="trash-alt" onClick={onDelete}>
             <FormattedMessage {...messages.delete} />
           </Button>
         </Message>
-        <Modal
-          footer={
-            <>
-              <CardFooterButton onClick={onClose}>
-                <FormattedMessage {...messages.cancel} />
-              </CardFooterButton>
-              <CardFooterButton color="danger" onClick={onDelete}>
-                <FormattedMessage {...messages.delete} />
-              </CardFooterButton>
-            </>
-          }
-          isActive={deleteDialog}
-          onClose={onClose}
-          title={<FormattedMessage {...messages.deleteWarningTitle} />}
-        >
-          <FormattedMessage {...messages.deleteWarning} />
-        </Modal>
       </Content>
     </>
   );

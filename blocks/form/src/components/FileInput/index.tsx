@@ -1,4 +1,7 @@
-import { Component, h, VNode } from 'preact';
+import { FormComponent } from '@appsemble/preact-components';
+import classNames from 'classnames';
+import { h, VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import type { FileField, InputProps } from '../../../block';
 import FileEntry from '../FileEntry';
@@ -6,48 +9,60 @@ import styles from './index.css';
 
 type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
 
-export default class FileInput extends Component<FileInputProps> {
-  static defaultProps: Partial<FileInputProps> = {
-    value: [],
-  };
+export default function FileInput({
+  disabled,
+  error,
+  field,
+  onInput,
+  value,
+}: FileInputProps): VNode {
+  const handleInput = useCallback(
+    (event: Event, val: string): void => {
+      const copy = [].concat(value);
+      const index = Number((event.target as HTMLInputElement).name.split('.').pop());
+      if (val == null) {
+        copy.splice(index, 1);
+      } else {
+        copy[index] = val;
+      }
+      onInput(({ target: { name: field.name } } as any) as Event, copy);
+    },
+    [field.name, onInput, value],
+  );
 
-  onInput = (event: Event, val: string): void => {
-    const { field, onInput, value } = this.props;
-
-    const copy = [].concat(value);
-    const index = Number((event.target as HTMLInputElement).name.split('.').pop());
-    if (val == null) {
-      copy.splice(index, 1);
-    } else {
-      copy[index] = val;
-    }
-    onInput(({ target: { name: field.name } } as any) as Event, copy);
-  };
-
-  render(): VNode {
-    const { disabled, field, onInput, value } = this.props;
-
-    return field.repeated ? (
-      <div className={styles.repeatedContainer}>
-        <FileEntry
-          disabled={disabled}
-          field={field}
-          name={`${field.name}.${(value as string[]).length}`}
-          onInput={this.onInput}
-        />
-        {(value as string[]).map((val, index) => (
+  return (
+    <FormComponent iconLeft={field.icon} label={field.label} required={field.required}>
+      {field.repeated ? (
+        <div className={classNames(styles.repeatedContainer, { [styles.noLabel]: !field.label })}>
           <FileEntry
-            // eslint-disable-next-line react/no-array-index-key
-            key={index}
+            disabled={disabled}
+            error={error}
             field={field}
-            name={`${field.name}.${index}`}
-            onInput={this.onInput}
-            value={val}
+            name={`${field.name}.${(value as string[]).length}`}
+            onInput={handleInput}
+            value={value as Blob}
           />
-        ))}
-      </div>
-    ) : (
-      <FileEntry field={field} name={field.name} onInput={onInput} value={value as string} />
-    );
-  }
+          {(value as string[]).map((val, index) => (
+            <FileEntry
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
+              error={error}
+              field={field}
+              name={`${field.name}.${index}`}
+              onInput={handleInput}
+              value={val}
+            />
+          ))}
+        </div>
+      ) : (
+        <FileEntry
+          error={error}
+          field={field}
+          name={field.name}
+          onInput={onInput}
+          value={value as string}
+        />
+      )}
+    </FormComponent>
+  );
 }

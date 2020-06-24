@@ -3,14 +3,14 @@ import type { IconName } from '@fortawesome/fontawesome-common-types';
 declare module '@appsemble/sdk' {
   interface Actions {
     /**
-     * The action to dispatch when the button is clicked.
+     * Action that gets dispatched when the button is clicked.
      */
-    onClick: {};
+    onClick: { required: true };
   }
 
   interface Parameters {
     /**
-     * The icon to render on the button.
+     * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
      */
     icon: IconName;
   }

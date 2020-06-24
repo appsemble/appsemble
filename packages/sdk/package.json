@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.12.8",
+  "version": "0.13.3",
   "description": "Build your own blocks",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
@@ -18,9 +18,10 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json"
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
   },
   "dependencies": {
-    "type-fest": "^0.13.1"
+    "type-fest": "^0.15.1"
   }
 }

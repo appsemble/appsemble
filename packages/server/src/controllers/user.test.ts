@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 
 import { EmailAuthorization, Member, Organization, User } from '../models';
 import createServer from '../utils/createServer';
@@ -6,14 +6,13 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 import testToken from '../utils/test/testToken';
 
 let user: User;
-let request: AxiosTestInstance;
 let authorization: string;
 
 beforeAll(createTestSchema('user'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
 });
 
 beforeEach(async () => {
@@ -23,10 +22,6 @@ beforeEach(async () => {
     name: 'Test Organization',
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-});
-
-afterAll(async () => {
-  await request.close();
 });
 
 afterEach(truncate);
@@ -58,7 +53,7 @@ describe('getUser', () => {
 describe('getUserOrganizations', () => {
   it('should fetch all user organizations', async () => {
     const organizationB = await Organization.create({ id: 'testorganizationb' });
-    await organizationB.addUser(user.id);
+    await Member.create({ OrganizationId: organizationB.id, UserId: user.id });
 
     const response = await request.get('/api/user/organizations', {
       headers: { authorization },

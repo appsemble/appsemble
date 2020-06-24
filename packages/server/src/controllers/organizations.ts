@@ -1,4 +1,4 @@
-import { permissions, StyleValidationError, validateStyle } from '@appsemble/utils';
+import { Permission, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { Op, UniqueConstraintError } from 'sequelize';
@@ -64,7 +64,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
   try {
     const organization = await Organization.create({ id, name }, { include: [User] });
 
-    // @ts-ignore
+    // @ts-expect-error
     await organization.addUser(userId, { through: { role: 'Owner' } });
     await organization.reload();
 
@@ -157,7 +157,7 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
   }
 
   if (response) {
-    await organization.addUser(userId);
+    await organization.$add('User', userId);
   }
 
   await invite.destroy();
@@ -176,13 +176,13 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
   const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
   const invitedUser = dbEmail ? dbEmail.User : null;
 
-  if (!(await organization.hasUser(user.id))) {
+  if (!(await organization.$has('User', user.id))) {
     throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
-  await checkRole(ctx, organization.id, permissions.ManageMembers);
+  await checkRole(ctx, organization.id, Permission.InviteMember);
 
-  if (invitedUser && (await organization.hasUser(invitedUser))) {
+  if (invitedUser && (await organization.$has('User', invitedUser))) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
   }
 
@@ -222,14 +222,14 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('Organization not found.');
   }
 
-  await checkRole(ctx, organization.id, permissions.ManageMembers);
+  await checkRole(ctx, organization.id, Permission.InviteMember);
 
   const invite = await organization.OrganizationInvites.find((i) => i.email === email);
   if (!invite) {
     throw Boom.notFound('This person was not invited previously.');
   }
 
-  const user = await invite.getUser();
+  const user = await User.findByPk(invite.UserId);
 
   await mailer.sendEmail({ email, ...(user && { name: user.name }) }, 'organizationInvite', {
     organization: organization.id,
@@ -247,7 +247,7 @@ export async function removeInvite(ctx: KoaContext): Promise<void> {
     throw Boom.notFound('This invite does not exist.');
   }
 
-  await checkRole(ctx, invite.OrganizationId, permissions.ManageMembers);
+  await checkRole(ctx, invite.OrganizationId, Permission.InviteMember);
 
   await invite.destroy();
 }
@@ -265,7 +265,7 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('This member is not part of this organization.');
   }
 
-  await checkRole(ctx, organization.id, permissions.ManageMembers);
+  await checkRole(ctx, organization.id, Permission.ManageMembers);
 
   if (memberId === user.id && organization.Users.length <= 1) {
     throw Boom.notAcceptable(
@@ -273,7 +273,7 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
     );
   }
 
-  await organization.removeUser(memberId);
+  await organization.$remove('User', memberId);
 }
 
 export async function setRole(ctx: KoaContext<Params>): Promise<void> {
@@ -290,7 +290,7 @@ export async function setRole(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.badRequest('Not allowed to change your own rule.');
   }
 
-  await checkRole(ctx, organization.id, permissions.ManageRoles);
+  await checkRole(ctx, organization.id, Permission.ManageRoles);
 
   const member = organization.Users.find((m) => m.id === memberId);
   if (!member) {
@@ -332,7 +332,7 @@ export async function setOrganizationCoreStyle(ctx: KoaContext<Params>): Promise
       throw Boom.notFound('Organization not found.');
     }
 
-    await checkRole(ctx, organization.id, permissions.EditThemes);
+    await checkRole(ctx, organization.id, Permission.EditThemes);
 
     organization.coreStyle = css.length ? css.toString() : null;
     await organization.save();
@@ -371,7 +371,7 @@ export async function setOrganizationSharedStyle(ctx: KoaContext<Params>): Promi
       throw Boom.notFound('Organization not found.');
     }
 
-    await checkRole(ctx, organization.id, permissions.EditThemes);
+    await checkRole(ctx, organization.id, Permission.EditThemes);
 
     organization.sharedStyle = css.length ? css.toString() : null;
     await organization.save();
@@ -412,7 +412,7 @@ export async function setOrganizationBlockStyle(ctx: KoaContext<Params>): Promis
       throw Boom.notFound('Organization not found.');
     }
 
-    await checkRole(ctx, organization.id, permissions.EditThemes);
+    await checkRole(ctx, organization.id, Permission.EditThemes);
 
     const block = await BlockVersion.findOne({
       where: { name: blockId, OrganizationId: blockOrganizationId },

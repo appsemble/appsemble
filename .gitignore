@@ -28,4 +28,4 @@ junit.xml
 /.docz/
 
 # Lighthouse reports
-/reports/
+/.lighthouseci/

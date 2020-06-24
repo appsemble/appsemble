@@ -1,14 +1,17 @@
+/**
+ * Represents a column that should be displayed in the table.
+ */
 export interface Field {
   /**
-   * The name of the field to read the data from.
+   * The name of the property of the data to fetch from. Supports dot notation.
    */
   name: string;
 
   /**
    * An optional label used in the header of the table.
    *
-   * If this isn’t specified, no label will be shown.
-   * If no fields have a label, the table header row won’t be shown.
+   * If this isn’t specified, no label will be shown. If no fields have a label, the table header
+   * row won’t be shown.
    */
   label?: string;
 
@@ -22,12 +25,15 @@ export interface Field {
 
 declare module '@appsemble/sdk' {
   interface Parameters {
+    /**
+     * A list of fields to display based on the name from the schema.
+     */
     fields: Field[];
   }
 
   interface Actions {
     /**
-     * The default action that is triggered when clicking on a field.
+     * The default action that is triggered when clicking on a row.
      *
      * This does not trigger if the field has a different action specified.
      */

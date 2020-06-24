@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import type { BlockManifest } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import * as fileType from 'file-type';
 import isSvg from 'is-svg';
@@ -25,6 +25,7 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
   const blockVersion = await BlockVersion.findOne({
     attributes: [
       'description',
+      'longDescription',
       'version',
       'actions',
       'events',
@@ -41,12 +42,22 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('Block definition not found');
   }
 
-  const { actions, description, events, layout, parameters, resources, version } = blockVersion;
+  const {
+    actions,
+    description,
+    events,
+    layout,
+    longDescription,
+    parameters,
+    resources,
+    version,
+  } = blockVersion;
   const name = `@${organizationId}/${blockId}`;
 
   ctx.body = {
     name,
     description,
+    longDescription,
     version,
     actions,
     events,
@@ -62,7 +73,7 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
   const [blockVersions] = await getDB().query(
-    'SELECT "OrganizationId", name, description, version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+    'SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
   );
 
   ctx.body = blockVersions.map(
@@ -72,6 +83,7 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
       description,
       events,
       layout,
+      longDescription,
       name,
       parameters,
       resources,
@@ -79,6 +91,7 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
     }) => ({
       name: `@${OrganizationId}/${name}`,
       description,
+      longDescription,
       version,
       actions,
       events,
@@ -111,7 +124,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
     });
   }
 
-  await checkRole(ctx, OrganizationId, permissions.PublishBlocks);
+  await checkRole(ctx, OrganizationId, Permission.PublishBlocks);
 
   const blockVersion = await BlockVersion.findOne({
     where: { name: blockId, OrganizationId },
@@ -133,6 +146,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         description = null,
         events,
         layout = null,
+        longDescription = null,
         parameters,
         resources = null,
       } = await BlockVersion.create(
@@ -168,6 +182,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         files: files.map((file) => decodeURIComponent(file.basename)),
         name,
         description,
+        longDescription,
       };
     });
   } catch (err) {
@@ -183,7 +198,15 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
   const name = `@${organizationId}/${blockId}`;
 
   const version = await BlockVersion.findOne({
-    attributes: ['actions', 'events', 'layout', 'resources', 'parameters', 'description'],
+    attributes: [
+      'actions',
+      'events',
+      'layout',
+      'resources',
+      'parameters',
+      'description',
+      'longDescription',
+    ],
     raw: true,
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
   });
@@ -215,6 +238,7 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
     attributes: [
       'actions',
       'description',
+      'longDescription',
       'events',
       'layout',
       'version',
@@ -223,6 +247,7 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
     ],
     raw: true,
     where: { name: blockId, OrganizationId: organizationId },
+    order: [['created', 'DESC']],
   });
 
   if (blockVersions.length === 0) {

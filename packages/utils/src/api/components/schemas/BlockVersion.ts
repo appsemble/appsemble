@@ -22,6 +22,10 @@ export default {
       type: 'string',
       description: 'The description of the block.',
     },
+    longDescription: {
+      type: 'string',
+      description: 'The long description of the block.',
+    },
     icon: {
       type: 'string',
       format: 'binary',
@@ -73,12 +77,12 @@ export default {
       description: 'An object describing the names of the events the block can listen and emit to.',
       properties: {
         listen: {
-          type: 'array',
-          items: { type: 'string' },
+          type: 'object',
+          additionalProperties: { type: 'object', properties: { description: { type: 'string' } } },
         },
         emit: {
-          type: 'array',
-          items: { type: 'string' },
+          type: 'object',
+          additionalProperties: { type: 'object', properties: { description: { type: 'string' } } },
         },
       },
     },

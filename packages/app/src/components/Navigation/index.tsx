@@ -1,4 +1,4 @@
-import type { Page } from '@appsemble/types';
+import type { PageDefinition } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
@@ -23,7 +23,7 @@ export default function Navigation(): React.ReactElement {
   );
 
   const navigation = currentPage?.navigation || definition.navigation || 'left-menu';
-  const checkPagePermissions = (page: Page): boolean => {
+  const checkPagePermissions = (page: PageDefinition): boolean => {
     const roles = page.roles || definition.roles || [];
     return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
   };

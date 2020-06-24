@@ -35,7 +35,7 @@ type FooProps<C extends React.ComponentType> = Omit<
   SimpleInputProps<C>;
 
 export default function SimpleInput<C extends React.ComponentType = typeof Input>({
-  // @ts-ignore
+  // @ts-expect-error
   component: Component = Input,
   disabled,
   name,
@@ -73,7 +73,7 @@ export default function SimpleInput<C extends React.ComponentType = typeof Input
   }, [formErrors, name, setFormError]);
 
   return (
-    // @ts-ignore
+    // @ts-expect-error
     <Component
       ref={ref}
       disabled={disabled || submitting}

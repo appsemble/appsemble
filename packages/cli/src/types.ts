@@ -46,6 +46,7 @@ export interface BlockConfig
     BlockManifest,
     | 'name'
     | 'description'
+    | 'longDescription'
     | 'actions'
     | 'events'
     | 'parameters'

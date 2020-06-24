@@ -13,7 +13,7 @@ export default function OrganizationProvider({
   children,
 }: OrganizationProviderProps): React.ReactElement {
   const { initialized, userInfo } = useUser();
-  const [organizations, setOrganizations] = React.useState<Organization[]>();
+  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
 
   const value = React.useMemo(() => organizations, [organizations]);
 

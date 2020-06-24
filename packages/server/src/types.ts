@@ -1,32 +1,9 @@
 import type * as fs from 'fs';
 import type { ParameterizedContext } from 'koa';
 import type * as compose from 'koa-compose';
-import type { Session } from 'koa-session';
-import type { URL as URL_, URLSearchParams as URLSearchParams_ } from 'url';
 
 import type { User } from './models';
 import type Mailer from './utils/email/Mailer';
-
-declare global {
-  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34960
-  // eslint-disable-next-line no-redeclare
-  const URL: typeof URL_;
-  // eslint-disable-next-line no-redeclare
-  const URLSearchParams: typeof URLSearchParams_;
-}
-
-declare module 'sequelize' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Model {
-    export function associate(): void;
-  }
-}
-
-declare module 'koa' {
-  interface Request {
-    body: any;
-  }
-}
 
 export interface Argv {
   appDomainStrategy?: string;
@@ -55,10 +32,12 @@ export interface Argv {
   smtpPort?: number;
   smtpSecure?: boolean;
   smtpUser?: string;
-  oauthGitlabKey?: string;
-  oauthGitlabSecret?: string;
-  oauthGoogleKey?: string;
-  oauthGoogleSecret?: string;
+  githubClientId?: string;
+  githubClientSecret?: string;
+  gitlabClientId?: string;
+  gitlabClientSecret?: string;
+  googleClientId?: string;
+  googleClientSecret?: string;
   secret?: string;
   sentryDsn?: string;
   to?: string;
@@ -82,8 +61,6 @@ export interface AppsembleContext<P extends {} = {}> {
    * URL parameters either from Koas or tinyRouter.
    */
   params: P;
-
-  session: Session;
 
   /**
    * The user that is logged in.

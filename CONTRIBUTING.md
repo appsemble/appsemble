@@ -72,6 +72,24 @@ The hosts file can be found in the following location:
 - **MacOS**: `/private/etc/hosts`
 - Most systems: `/etc/hosts`
 
+## Releasing
+
+This section is only for Appsemble maintainers.
+
+The release process hasn’t been fully automated yet. In order to create a release, perform the
+following steps:
+
+- Make sure you’re on the latest master branch.
+- Create a new branch.
+- Run `yarn scripts release patch` or `yarn scripts release minor` respectively.
+- Update the changelog.
+- Verify and commit the results.
+- Push.
+- Create a merge request. Use the changes in the changelog as the merge request description.
+- Once merged, create a git tag. Use the changes in the changelog as the release description.
+
+CI will take care of the rest.
+
 [airbnb javascript style guide]: https://github.com/airbnb/javascript
 [css modules]: https://github.com/css-modules/css-modules
 [dev.appsemble.io]: https://dev.appsemble.io

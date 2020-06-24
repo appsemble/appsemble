@@ -1,8 +1,9 @@
-import { Loader } from '@appsemble/react-components';
-import type { Block as BlockType, Security } from '@appsemble/types';
+import { Loader, useLocationString } from '@appsemble/react-components';
+import type { BlockDefinition, Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import type { EventEmitter } from 'events';
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import type { ShowDialogAction } from '../../types';
@@ -13,16 +14,21 @@ import { useUser } from '../UserProvider';
 import styles from './index.css';
 
 interface BlockListProps {
-  blocks: BlockType[];
+  blocks: BlockDefinition[];
   data?: any;
   ee: EventEmitter;
   extraCreators?: ActionCreators;
   flowActions?: {};
+  prefix: string;
   showDialog: ShowDialogAction;
   transitions?: boolean;
 }
 
-function filterBlocks(security: Security, blocks: BlockType[], userRole: string): BlockType[] {
+function filterBlocks(
+  security: Security,
+  blocks: BlockDefinition[],
+  userRole: string,
+): BlockDefinition[] {
   return blocks.filter(
     (block) =>
       block.roles === undefined ||
@@ -37,27 +43,35 @@ export default function BlockList({
   ee,
   extraCreators,
   flowActions,
+  prefix,
   showDialog,
   transitions,
 }: BlockListProps): React.ReactElement {
   const { definition, revision } = useAppDefinition();
-  const { role } = useUser();
+  const { isLoggedIn, role } = useUser();
+  const redirect = useLocationString();
 
-  const blockStatus = React.useRef(blocks.map(() => false));
+  const blockList = React.useMemo(() => filterBlocks(definition.security, blocks, role), [
+    blocks,
+    definition,
+    role,
+  ]);
+
+  const blockStatus = React.useRef(blockList.map(() => false));
   const [pageReady, setPageReady] = React.useState<Promise<void>>();
 
   const [isLoading, setLoading] = React.useState(true);
   const resolvePageReady = React.useRef<Function>();
 
   const ready = React.useCallback(
-    (block: BlockType) => {
-      blockStatus.current[blocks.indexOf(block)] = true;
+    (block: BlockDefinition) => {
+      blockStatus.current[blockList.indexOf(block)] = true;
       if (blockStatus.current.every(Boolean)) {
         setLoading(false);
         resolvePageReady.current();
       }
     },
-    [blocks],
+    [blockList],
   );
 
   React.useEffect(() => {
@@ -66,9 +80,15 @@ export default function BlockList({
         resolvePageReady.current = resolve;
       }),
     );
-  }, [blocks]);
+  }, [blockList]);
 
-  const blockList = filterBlocks(definition.security, blocks, role);
+  if (!blockList.length) {
+    if (!isLoggedIn) {
+      return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
+    }
+
+    return <Redirect to="/" />;
+  }
 
   const list = blockList.map((block, index) => {
     const content = (
@@ -83,6 +103,7 @@ export default function BlockList({
         extraCreators={extraCreators}
         flowActions={flowActions}
         pageReady={pageReady}
+        prefix={`${prefix}.${index}`}
         ready={ready}
         showDialog={showDialog}
       />

@@ -1,19 +1,32 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  Column,
+  CreatedAt,
+  ForeignKey,
+  Model,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
-export default class AppMember extends Model {
+import { App, User } from '.';
+
+@Table({ tableName: 'AppMember' })
+export default class AppMember extends Model<AppMember> {
+  @AllowNull(false)
+  @Column
   role: string;
 
-  static initialize(sequelize: Sequelize): void {
-    AppMember.init(
-      {
-        role: { type: DataTypes.STRING, allowNull: false },
-      },
-      {
-        sequelize,
-        tableName: 'AppMember',
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
+
+  @ForeignKey(() => App)
+  @Column
+  AppId: number;
+
+  @ForeignKey(() => User)
+  @Column
+  UserId: number;
 }

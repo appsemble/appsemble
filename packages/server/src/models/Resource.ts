@@ -1,45 +1,56 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  DeletedAt,
+  ForeignKey,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
-import App from './App';
-import ResourceSubscription from './ResourceSubscription';
-import User from './User';
+import { App, ResourceSubscription, User } from '.';
 
-export default class Resource extends Model {
+@Table({ tableName: 'Resource', paranoid: true })
+export default class Resource extends Model<Resource> {
+  @PrimaryKey
+  @AutoIncrement
+  @Column
   id: number;
 
+  @Column
   type: string;
 
+  @Column(DataType.JSON)
   data: any;
 
+  @CreatedAt
   created: Date;
 
+  @UpdatedAt
   updated: Date;
 
+  @DeletedAt
+  deleted: Date;
+
+  @ForeignKey(() => App)
+  @Column
+  AppId: number;
+
+  @BelongsTo(() => App)
+  App: App;
+
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
+  @BelongsTo(() => User)
   User: User;
 
-  static initialize(sequelize: Sequelize): void {
-    Resource.init(
-      {
-        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        type: DataTypes.STRING,
-        data: DataTypes.JSON,
-      },
-      {
-        sequelize,
-        tableName: 'Resource',
-        paranoid: true,
-        createdAt: 'created',
-        updatedAt: 'updated',
-        deletedAt: 'deleted',
-      },
-    );
-  }
-
-  static associate(): void {
-    Resource.belongsTo(User);
-    Resource.belongsTo(App);
-    Resource.hasMany(ResourceSubscription, { onDelete: 'CASCADE' });
-  }
+  @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })
+  ResourceSubscriptions: ResourceSubscription[];
 }

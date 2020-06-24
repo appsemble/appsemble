@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/filter",
-  "version": "0.12.8",
+  "version": "0.13.3",
   "private": true,
   "description": "A block that can filter data and pass it to other blocks using the event API.",
   "homepage": "https://appsemble.dev",
@@ -12,13 +12,16 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
-    "@appsemble/react": "0.12.8",
-    "@appsemble/react-components": "0.12.8",
-    "@appsemble/sdk": "0.12.8",
+    "@appsemble/react": "0.13.3",
+    "@appsemble/react-components": "0.13.3",
+    "@appsemble/sdk": "0.13.3",
     "@fortawesome/fontawesome-common-types": "^0.2.28",
     "classnames": "^2.2.6",
     "react": "^16.13.1",
-    "react-intl": "^4.5.3"
+    "react-intl": "^4.6.9"
   }
 }

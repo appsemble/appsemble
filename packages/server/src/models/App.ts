@@ -1,118 +1,126 @@
 import type { AppDefinition } from '@appsemble/types';
 import {
-  DataTypes,
-  HasManyGetAssociationsMixin,
-  HasManyRemoveAssociationMixin,
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  BelongsToMany,
+  Column,
+  CreatedAt,
+  DataType,
+  Default,
+  DeletedAt,
+  ForeignKey,
+  HasMany,
   Model,
-  Sequelize,
-} from 'sequelize';
+  PrimaryKey,
+  Table,
+  Unique,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
-import AppBlockStyle from './AppBlockStyle';
-import AppMember from './AppMember';
-import AppSubscription from './AppSubscription';
-import Asset from './Asset';
-import Organization from './Organization';
-import OrganizationBlockStyle from './OrganizationBlockStyle';
-import Resource from './Resource';
-import User from './User';
+import {
+  AppBlockStyle,
+  AppMember,
+  AppRating,
+  AppSubscription,
+  Asset,
+  Organization,
+  Resource,
+  User,
+} from '.';
 
-export default class App extends Model {
+@Table({ tableName: 'App', paranoid: true })
+export default class App extends Model<App> {
+  @PrimaryKey
+  @AutoIncrement
+  @Column
   id: number;
 
+  @AllowNull(false)
+  @Column(DataType.JSON)
   definition: AppDefinition;
 
+  /**
+   * The maximum length of a domain name is 255 bytes as per
+   * https://tools.ietf.org/html/rfc1034#section-3.1. The reason the maximum length of the field
+   * is 253, is explained on https://devblogs.microsoft.com/oldnewthing/20120412-00/?p=7873.
+   */
+  @Column({ type: DataType.STRING(253) })
   domain: string;
 
+  @Column
   icon: Buffer;
 
+  @Unique('UniquePathIndex')
+  @Column
   path: string;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column
   private: boolean;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column
   template: boolean;
 
+  @Column(DataType.TEXT)
   style: string;
 
+  @Column(DataType.TEXT)
   sharedStyle: string;
 
+  @Column(DataType.TEXT)
   yaml: string;
 
+  @AllowNull(false)
+  @Column
   vapidPublicKey: string;
 
+  @AllowNull(false)
+  @Column
   vapidPrivateKey: string;
 
+  @UpdatedAt
   updated: Date;
 
+  @CreatedAt
   created: Date;
 
+  @DeletedAt
+  deleted: Date;
+
+  @AllowNull(false)
+  @ForeignKey(() => Organization)
+  @Unique('UniquePathIndex')
+  @Column
   OrganizationId: string;
 
+  @HasMany(() => AppBlockStyle)
   AppBlockStyles: AppBlockStyle[];
 
+  @BelongsTo(() => Organization)
   Organization: Organization;
 
+  @HasMany(() => AppSubscription)
   AppSubscriptions: AppSubscription[];
 
+  @HasMany(() => Asset)
   Assets: Asset[];
 
+  @BelongsToMany(() => User, () => AppMember)
   Users: User[];
 
+  @HasMany(() => Resource)
   Resources: Resource[];
 
+  @HasMany(() => AppRating)
+  AppRatings: AppRating[];
+
   ResourceCount: number;
-
-  getUsers: HasManyGetAssociationsMixin<User>;
-
-  removeUser: HasManyRemoveAssociationMixin<User, string>;
 
   RatingAverage?: number;
 
   RatingCount?: number;
-
-  static initialize(sequelize: Sequelize): void {
-    App.init(
-      {
-        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        definition: { type: DataTypes.JSON, allowNull: false },
-        /**
-         * The maximum length of a domain name is 255 bytes as per
-         * https://tools.ietf.org/html/rfc1034#section-3.1. The reason the maximum length of the field
-         * is 253, is explained on https://devblogs.microsoft.com/oldnewthing/20120412-00/?p=7873.
-         */
-        domain: { type: DataTypes.STRING(253), allowNull: true },
-        icon: { type: DataTypes.BLOB },
-        path: { type: DataTypes.STRING, unique: 'UniquePathIndex', allowNull: true },
-        private: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
-        template: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
-        style: { type: DataTypes.TEXT },
-        sharedStyle: { type: DataTypes.TEXT },
-        yaml: { type: DataTypes.TEXT },
-        vapidPublicKey: { type: DataTypes.STRING, allowNull: false },
-        vapidPrivateKey: { type: DataTypes.STRING, allowNull: false },
-        OrganizationId: {
-          type: DataTypes.STRING,
-          unique: 'UniquePathIndex',
-          allowNull: false,
-        },
-      },
-      {
-        sequelize,
-        tableName: 'App',
-        paranoid: true,
-        createdAt: 'created',
-        updatedAt: 'updated',
-        deletedAt: 'deleted',
-      },
-    );
-  }
-
-  static associate(): void {
-    App.hasMany(Resource);
-    App.belongsTo(Organization, { foreignKey: { allowNull: false } });
-    App.belongsToMany(User, { through: AppMember });
-    App.hasMany(AppSubscription);
-    App.hasMany(Asset);
-    App.hasMany(AppBlockStyle);
-    App.hasMany(OrganizationBlockStyle);
-  }
 }

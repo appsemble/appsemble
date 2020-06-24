@@ -1,11 +1,13 @@
 import {
   Content,
   FormButtons,
+  OAuth2LoginButton,
   PasswordInput,
   SimpleForm,
   SimpleFormError,
   SimpleInput,
   SimpleSubmit,
+  useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import React from 'react';
@@ -15,7 +17,6 @@ import { Link, useLocation } from 'react-router-dom';
 import useUser from '../../hooks/useUser';
 import settings from '../../utils/settings';
 import HelmetIntl from '../HelmetIntl';
-import SocialLoginButton from '../SocialLoginButton';
 import styles from './index.css';
 import messages from './messages';
 
@@ -24,11 +25,11 @@ interface LoginFormValues {
   password: string;
 }
 
-const loginMethods = new Set(settings.logins);
-
 export default function Login(): React.ReactElement {
   const location = useLocation();
   const { login } = useUser();
+  const qs = useQuery();
+
   const onPasswordLogin = React.useCallback(
     async ({ email, password }: LoginFormValues) => {
       const { data } = await axios.post('/api/login', undefined, {
@@ -86,16 +87,21 @@ export default function Login(): React.ReactElement {
         </FormButtons>
       </SimpleForm>
       <div className={styles.socialLogins}>
-        {loginMethods.has('google') && (
-          <SocialLoginButton iconClass="google" providerUri="/connect/google">
-            <FormattedMessage {...messages.login} values={{ provider: 'Google' }} />
-          </SocialLoginButton>
-        )}
-        {loginMethods.has('gitlab') && (
-          <SocialLoginButton iconClass="gitlab" providerUri="/connect/gitlab">
-            <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
-          </SocialLoginButton>
-        )}
+        {settings.logins.map((provider) => (
+          <OAuth2LoginButton
+            key={provider.authorizationUrl}
+            authorizationUrl={provider.authorizationUrl}
+            className={styles.button}
+            clientId={provider.clientId}
+            icon={provider.icon}
+            iconPrefix="fab"
+            redirect={qs.get('redirect')}
+            redirectUrl="/callback"
+            scope={provider.scope}
+          >
+            <FormattedMessage {...messages.loginWith} values={{ name: provider.name }} />
+          </OAuth2LoginButton>
+        ))}
       </div>
     </Content>
   );

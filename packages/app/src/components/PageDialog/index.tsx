@@ -6,7 +6,8 @@ import type { ShowDialogParams } from '../../types';
 import BlockList from '../BlockList';
 import styles from './index.css';
 
-interface PageDialogProps extends Omit<React.ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
+interface PageDialogProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix'> {
   dialog: ShowDialogParams;
 }
 
@@ -30,6 +31,7 @@ export default function PageDialog({
           blocks={dialog.blocks}
           data={dialog.data}
           extraCreators={dialog.actionCreators}
+          prefix={`${dialog.prefix}.blocks`}
           {...props}
         />
       )}

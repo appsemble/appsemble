@@ -36,9 +36,3 @@
     display: none;
   }
 }
-
-.menuItem {
-  align-items: center;
-  display: flex !important;
-  overflow: hidden;
-}

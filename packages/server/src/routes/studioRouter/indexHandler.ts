@@ -1,8 +1,10 @@
 import crypto from 'crypto';
+import { URL } from 'url';
 
 import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';
 import makeCSP from '../../utils/makeCSP';
+import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 
 /**
@@ -13,11 +15,32 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
   const { argv } = ctx;
   const { disableRegistration, host, sentryDsn } = argv;
   const logins = [];
-  if (argv.oauthGitlabKey) {
-    logins.push('gitlab');
+  if (argv.githubClientId) {
+    logins.push({
+      authorizationUrl: githubPreset.authorizationUrl,
+      clientId: argv.githubClientId,
+      icon: githubPreset.icon,
+      name: githubPreset.name,
+      scope: githubPreset.scope,
+    });
   }
-  if (argv.oauthGoogleKey) {
-    logins.push('google');
+  if (argv.gitlabClientId) {
+    logins.push({
+      authorizationUrl: gitlabPreset.authorizationUrl,
+      clientId: argv.gitlabClientId,
+      icon: gitlabPreset.icon,
+      name: gitlabPreset.name,
+      scope: gitlabPreset.scope,
+    });
+  }
+  if (argv.googleClientId) {
+    logins.push({
+      authorizationUrl: googlePreset.authorizationUrl,
+      clientId: argv.googleClientId,
+      icon: googlePreset.icon,
+      name: googlePreset.name,
+      scope: googlePreset.scope,
+    });
   }
   const nonce = crypto.randomBytes(16).toString('base64');
   const reportUri = sentryDsnToReportUri(sentryDsn);

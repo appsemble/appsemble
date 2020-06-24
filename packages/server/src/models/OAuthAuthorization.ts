@@ -1,46 +1,75 @@
-import { DataTypes, HasOneCreateAssociationMixin, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
-import User from './User';
+import { User } from '.';
 
-export default class OAuthAuthorization extends Model {
-  id: string;
+@Table({ tableName: 'OAuthAuthorization' })
+export default class OAuthAuthorization extends Model<OAuthAuthorization> {
+  /**
+   * The subject id of the user on the remote authorization server.
+   */
+  @PrimaryKey
+  @Column
+  sub: string;
 
-  provider: string;
+  /**
+   * The authorization URL where the user needs to approve Appsemble to access their account.
+   */
+  @PrimaryKey
+  @Column
+  authorizationUrl: string;
 
-  token: string;
+  /**
+   * The access token assigned to Appsemble linked to the subject.
+   */
+  @AllowNull(false)
+  @Column(DataType.TEXT)
+  accessToken: string;
 
+  /**
+   * The expiration date of the access token.
+   */
+  @Column
   expiresAt: Date;
 
+  /**
+   * The refresh token that may be used to refresh the access token.
+   */
+  @Column(DataType.TEXT)
   refreshToken: string;
 
+  /**
+   * A short lived authorization code that’s used during the login process.
+   */
+  @Column(DataType.TEXT)
   code: string;
 
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
+
+  /**
+   * The id of the linked Appsemble user.
+   */
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
-  User: string;
-
-  createUser: HasOneCreateAssociationMixin<User>;
-
-  static initialize(sequelize: Sequelize): void {
-    OAuthAuthorization.init(
-      {
-        id: { type: DataTypes.STRING, primaryKey: true },
-        provider: { type: DataTypes.STRING, primaryKey: true },
-        token: { type: DataTypes.TEXT, allowNull: false },
-        expiresAt: { type: DataTypes.DATE, allowNull: true },
-        refreshToken: { type: DataTypes.TEXT, allowNull: true },
-        code: { type: DataTypes.TEXT, allowNull: true },
-      },
-      {
-        sequelize,
-        tableName: 'OAuthAuthorization',
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
-
-  static associate(): void {
-    OAuthAuthorization.belongsTo(User);
-  }
+  /**
+   * The Appsemble user.
+   */
+  @BelongsTo(() => User)
+  User: User;
 }

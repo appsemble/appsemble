@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import fs from 'fs';
 import { omit } from 'lodash';
@@ -10,7 +10,6 @@ import readAsset from '../utils/readAsset';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let instance: AxiosTestInstance;
 let authorization: string;
 let user: User;
 let clientToken: string;
@@ -26,11 +25,7 @@ beforeEach(async () => {
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
   authorization = `Bearer ${clientToken}`;
-  instance = await createInstance(server);
-});
-
-afterEach(async () => {
-  await instance.close();
+  await setTestApp(server);
 });
 
 afterEach(truncate);
@@ -54,16 +49,16 @@ describe('getBlock', () => {
       { filepath: 'testblock.js' },
     );
 
-    const { data: original } = await instance.post('/api/blocks', formData, {
+    const { data: original } = await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
-    const { data: retrieved } = await instance.get('/api/blocks/@xkcd/test');
+    const { data: retrieved } = await request.get('/api/blocks/@xkcd/test');
     expect(retrieved).toStrictEqual(omit(original, ['files']));
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
-    const { data } = await instance.get('/api/blocks/@non/existent');
+    const { data } = await request.get('/api/blocks/@non/existent');
     expect(data).toStrictEqual({
       error: 'Not Found',
       message: 'Block definition not found',
@@ -84,7 +79,7 @@ describe('queryBlocks', () => {
       { filepath: 'standing.png' },
     );
 
-    const { data: apple } = await instance.post('/api/blocks', formDataA, {
+    const { data: apple } = await request.post('/api/blocks', formDataA, {
       headers: { authorization, ...formDataA.getHeaders() },
     });
 
@@ -98,11 +93,11 @@ describe('queryBlocks', () => {
       { filepath: 'standing.png' },
     );
 
-    const { data: pen } = await instance.post('/api/blocks', formDataB, {
+    const { data: pen } = await request.post('/api/blocks', formDataB, {
       headers: { authorization, ...formDataB.getHeaders() },
     });
 
-    const { data: bam } = await instance.get('/api/blocks');
+    const { data: bam } = await request.get('/api/blocks');
     expect(bam).toMatchObject([omit(apple, ['files']), omit(pen, ['files'])]);
   });
 });
@@ -123,7 +118,7 @@ describe('publishBlock', () => {
       { filepath: encodeURIComponent('build/testblock.js') },
     );
 
-    const { data, status } = await instance.post('/api/blocks', formData, {
+    const { data, status } = await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
@@ -138,6 +133,7 @@ describe('publishBlock', () => {
       parameters: null,
       version: '1.32.9',
       description: null,
+      longDescription: null,
     });
 
     expect(status).toBe(201);
@@ -158,7 +154,7 @@ describe('publishBlock', () => {
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
       { filepath: 'testblock.js' },
     );
-    const response = await instance.post('/api/blocks', formData, {
+    const response = await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
@@ -184,7 +180,7 @@ describe('publishBlock', () => {
       { filepath: 'testblock.js' },
     );
 
-    await instance.post('/api/blocks', formData, {
+    await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
@@ -206,7 +202,7 @@ describe('publishBlock', () => {
       { filepath: 'testblock.js' },
     );
 
-    const { data } = await instance.post('/api/blocks', formData2, {
+    const { data } = await request.post('/api/blocks', formData2, {
       headers: { authorization, ...formData2.getHeaders() },
     });
 
@@ -223,7 +219,7 @@ describe('publishBlock', () => {
     formData.append('name', '@xkcd/standing');
     formData.append('version', '1.32.9');
 
-    const { data, status } = await instance.post('/api/blocks', formData, {
+    const { data, status } = await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
@@ -259,11 +255,11 @@ describe('getBlockVersion', () => {
       { filepath: 'testblock.js' },
     );
 
-    const { data: created } = await instance.post('/api/blocks', formData, {
+    const { data: created } = await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
-    const { data: retrieved, status } = await instance.get(
+    const { data: retrieved, status } = await request.get(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 
@@ -272,7 +268,7 @@ describe('getBlockVersion', () => {
   });
 
   it('should respond with 404 when trying to fetch a non existing block version', async () => {
-    const { data, status } = await instance.get('/api/blocks/@xkcd/standing/versions/3.1.4');
+    const { data, status } = await request.get('/api/blocks/@xkcd/standing/versions/3.1.4');
     expect(status).toBe(404);
     expect(data).toStrictEqual({
       error: 'Not Found',
@@ -298,15 +294,16 @@ describe('getBlockVersions', () => {
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
       { filepath: 'testblock.js' },
     );
-    await instance.post('/api/blocks', formData, {
+    await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
-    const { data } = await instance.get('/api/blocks/@xkcd/standing/versions');
+    const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual([
       {
         name: '@xkcd/standing',
         description: 'Version 1.32.9!',
+        longDescription: null,
         actions: null,
         events: null,
         iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
@@ -319,12 +316,68 @@ describe('getBlockVersions', () => {
   });
 
   it('should not be possible to fetch block versions of non-existent blocks', async () => {
-    const { data } = await instance.get('/api/blocks/@xkcd/standing/versions');
+    const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual({
       statusCode: 404,
       error: 'Not Found',
       message: 'Block not found.',
     });
+  });
+
+  it('should order block versions by most recent first', async () => {
+    const formDataA = new FormData();
+    formDataA.append('name', '@xkcd/standing');
+    formDataA.append('description', 'Version 1.4.0!');
+    formDataA.append('version', '1.4.0');
+    formDataA.append(
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
+    );
+    await request.post('/api/blocks', formDataA, {
+      headers: { authorization, ...formDataA.getHeaders() },
+    });
+
+    const formDataB = new FormData();
+    formDataB.append('name', '@xkcd/standing');
+    formDataB.append('description', 'Version 1.32.9!');
+    formDataB.append('version', '1.32.9');
+    formDataB.append(
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
+    );
+    await request.post('/api/blocks', formDataB, {
+      headers: { authorization, ...formDataB.getHeaders() },
+    });
+
+    const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
+    expect(data).toStrictEqual([
+      {
+        name: '@xkcd/standing',
+        description: 'Version 1.32.9!',
+        longDescription: null,
+        actions: null,
+        events: null,
+        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+        layout: null,
+        parameters: null,
+        resources: null,
+        version: '1.32.9',
+      },
+      {
+        name: '@xkcd/standing',
+        description: 'Version 1.4.0!',
+        longDescription: null,
+        actions: null,
+        events: null,
+        iconUrl: '/api/blocks/@xkcd/standing/versions/1.4.0/icon',
+        layout: null,
+        parameters: null,
+        resources: null,
+        version: '1.4.0',
+      },
+    ]);
   });
 });
 
@@ -338,11 +391,11 @@ describe('getBlockIcon', () => {
     formData.append('files', Buffer.from(''), 'test.js');
     formData.append('icon', icon);
 
-    await instance.post('/api/blocks', formData, {
+    await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
-    const response = await instance.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
     });
     expect(response.headers['content-type']).toBe('image/png');
@@ -350,7 +403,7 @@ describe('getBlockIcon', () => {
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
-    const { data } = await instance.get('/api/blocks/@non/existent');
+    const { data } = await request.get('/api/blocks/@non/existent');
     expect(data).toStrictEqual({
       error: 'Not Found',
       message: 'Block definition not found',
@@ -365,11 +418,11 @@ describe('getBlockIcon', () => {
     formData.append('version', '1.33.8');
     formData.append('files', Buffer.from(''), 'test.js');
 
-    await instance.post('/api/blocks', formData, {
+    await request.post('/api/blocks', formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
-    const response = await instance.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
     });
     expect(response.headers['content-type']).toBe('image/svg+xml');

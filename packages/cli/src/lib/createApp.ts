@@ -3,6 +3,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
+import { URL } from 'url';
 
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
@@ -77,5 +78,5 @@ export default async function createApp({
   logger.info(`Successfully created app ${data.definition.name}! 🙌`);
   const { host, protocol } = new URL(remote);
   logger.info(`View app: ${protocol}//${data.path}.${organizationId}.${host}`);
-  logger.info(`Edit app: ${remote}/apps/${data.id}/edit`);
+  logger.info(`Edit app: ${remote}apps/${data.id}/edit`);
 }

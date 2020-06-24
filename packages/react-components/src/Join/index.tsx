@@ -9,10 +9,12 @@ interface JoinProps {
  * Join React JSX children using a separator node.
  */
 export default function Join({ children, separator }: JoinProps): React.ReactElement {
-  return React.Children.map(children, (child, index) => (
-    <>
-      {index ? separator : null}
-      {child}
-    </>
-  )) as any;
+  return React.Children.toArray(children)
+    .filter((child) => child != null && typeof child !== 'boolean')
+    .map((child, index) => (
+      <>
+        {index ? separator : null}
+        {child}
+      </>
+    )) as any;
 }

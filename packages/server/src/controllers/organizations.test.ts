@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
 import {
@@ -14,7 +14,6 @@ import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request: AxiosTestInstance;
 let authorization: string;
 let clientToken: string;
 let organization: Organization;
@@ -24,7 +23,7 @@ beforeAll(createTestSchema('organizations'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
 });
 
 beforeEach(async () => {
@@ -34,15 +33,10 @@ beforeEach(async () => {
     name: 'Test Organization',
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 });
 
 afterEach(truncate);
-
-afterAll(async () => {
-  await request.close();
-});
 
 afterAll(closeTestSchema);
 
@@ -158,7 +152,7 @@ describe('getMembers', () => {
 describe('getInvites', () => {
   it('should fetch organization invites', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'abcde',
@@ -182,8 +176,9 @@ describe('getInvites', () => {
 
 describe('inviteMember', () => {
   it('should send an invite to an organization', async () => {
+    await Member.update({ role: 'Maintainer' }, { where: { UserId: user.id } });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
     const response = await request.post(
       '/api/organizations/testorganization/invites',
       { email: 'test2@example.com' },
@@ -196,6 +191,26 @@ describe('inviteMember', () => {
         id: expect.any(String),
         name: 'John',
         primaryEmail: 'test2@example.com',
+      },
+    });
+  });
+
+  it('should not send an invite to an organization if the user does not have the right permissions', async () => {
+    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    const response = await request.post(
+      '/api/organizations/testorganization/invites',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
       },
     });
   });
@@ -213,7 +228,7 @@ describe('inviteMember', () => {
   it('should not send an invite to an organization you are not a member of', async () => {
     await Organization.create({ id: 'org' });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
     const response = await request.post(
       '/api/organizations/org/invites',
       { email: 'test2@example.com' },
@@ -228,8 +243,8 @@ describe('inviteMember', () => {
 
   it('should not send an invite to members of an organization', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    const { id } = await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
-    await organization.addUser(id);
+    const { id } = await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await organization.$add('User', id);
 
     const response = await request.post(
       '/api/organizations/testorganization/invites',
@@ -246,8 +261,9 @@ describe('inviteMember', () => {
 
 describe('resendInvitation', () => {
   it('should resend an invitation', async () => {
+    await Member.update({ role: 'Maintainer' }, { where: { UserId: user.id } });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
 
     await request.post(
       '/api/organizations/testorganization/invites',
@@ -264,9 +280,36 @@ describe('resendInvitation', () => {
     expect(response).toMatchObject({ status: 204 });
   });
 
+  it('should not resend an invitation if the user does not have the right permissions', async () => {
+    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+
+    await request.post(
+      '/api/organizations/testorganization/invites',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
+
+    const response = await request.post(
+      '/api/organizations/testorganization/invites/resend',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
   it('should not resend an invitation to a member who has not been invited', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
 
     const response = await request.post(
       '/api/organizations/testorganization/invites/resend',
@@ -304,6 +347,8 @@ describe('resendInvitation', () => {
 
 describe('removeInvite', () => {
   it('should revoke an invite', async () => {
+    await Member.update({ role: 'Maintainer' }, { where: { UserId: user.id } });
+
     await request.post(
       '/api/organizations/testorganization/invites',
       { email: 'test2@example.com' },
@@ -318,6 +363,30 @@ describe('removeInvite', () => {
     expect(response).toMatchObject({ status: 204 });
   });
 
+  it('should not revoke an invite if the user does not have the right permissions', async () => {
+    await request.post(
+      '/api/organizations/testorganization/invites',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
+
+    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+
+    const response = await request.delete('/api/organizations/testorganization/invites', {
+      headers: { authorization },
+      data: { email: 'test2@example.com' },
+    });
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
   it('should not revoke a non-existent invite', async () => {
     const response = await request.delete('/api/organizations/testorganization/invites', {
       headers: { authorization },
@@ -330,7 +399,7 @@ describe('removeInvite', () => {
   it('should not revoke an invite for an organization you are not a member of', async () => {
     await Organization.create({ id: 'org' });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'abcde',

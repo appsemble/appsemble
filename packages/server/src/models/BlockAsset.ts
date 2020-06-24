@@ -1,6 +1,16 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
 
-import Organization from './Organization';
+import { BlockVersion, Organization } from '.';
 
 /**
  * Blob assets may be stored in the database before a block version itself is actually stored.
@@ -9,33 +19,38 @@ import Organization from './Organization';
  * primary key which includes the block version reference. For this reason, a numeric id is used as
  * the primary key..
  */
-export default class BlockAsset extends Model {
+@Table({ tableName: 'BlockAsset', updatedAt: false })
+export default class BlockAsset extends Model<BlockAsset> {
+  @PrimaryKey
+  @AutoIncrement
+  @Column
   id: number;
 
+  @Column
   content: Buffer;
 
+  @Column
   filename: string;
 
+  @Column
   mime: string;
 
-  static initialize(sequelize: Sequelize): void {
-    BlockAsset.init(
-      {
-        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        filename: { type: DataTypes.STRING },
-        mime: { type: DataTypes.STRING },
-        content: { type: DataTypes.BLOB },
-      },
-      {
-        sequelize,
-        tableName: 'BlockAsset',
-        createdAt: 'created',
-        updatedAt: false,
-      },
-    );
-  }
+  @ForeignKey(() => BlockVersion)
+  @Column
+  name: string;
 
-  static associate(): void {
-    BlockAsset.belongsTo(Organization, { foreignKey: { allowNull: false } });
-  }
+  @ForeignKey(() => BlockVersion)
+  @Column
+  version: string;
+
+  @CreatedAt
+  created: Date;
+
+  @AllowNull(false)
+  @ForeignKey(() => Organization)
+  @Column
+  OrganizationId: string;
+
+  @BelongsTo(() => Organization)
+  Organization: Organization;
 }

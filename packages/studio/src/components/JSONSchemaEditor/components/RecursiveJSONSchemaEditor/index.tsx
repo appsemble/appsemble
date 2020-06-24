@@ -9,7 +9,7 @@ import JSONSchemaStringEditor from '../JSONSchemaStringEditor';
 import JSONSchemaUnknownEditor from '../JSONSchemaUnknownEditor';
 
 export default function RecursiveJSONSchemaEditor(
-  props: CommonJSONSchemaEditorProps<any, any>,
+  props: CommonJSONSchemaEditorProps<any>,
 ): React.ReactElement {
   const { schema } = props;
 

@@ -16,7 +16,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import type { Organization } from '@appsemble/types';
-import { normalize, permissions, roles } from '@appsemble/utils';
+import { normalize, Permission, roles } from '@appsemble/utils';
 import axios from 'axios';
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -308,8 +308,9 @@ export default function OrganizationsSettings(): React.ReactElement {
 
   const organization = organizations.find((o) => o.id === selectedOrganization);
   const { role } = organization?.members.find((u) => u.id === userInfo.sub) || {};
-  const canManageMembers = role && checkRole(role, permissions.ManageMembers);
-  const canManageRoles = role && checkRole(role, permissions.ManageRoles);
+  const canInviteMembers = role && checkRole(role, Permission.InviteMember);
+  const canManageMembers = role && checkRole(role, Permission.ManageMembers);
+  const canManageRoles = role && checkRole(role, Permission.ManageRoles);
 
   return (
     <>
@@ -384,7 +385,7 @@ export default function OrganizationsSettings(): React.ReactElement {
               ))}
             </Select>
 
-            {canManageMembers && (
+            {canInviteMembers && (
               <SimpleForm defaultValues={{ email: '' }} onSubmit={onInviteMember}>
                 <SimpleInput
                   iconLeft="envelope"
@@ -459,7 +460,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                       {member.id === userInfo.sub &&
                         organization.members.length > 1 &&
                         organization.members.some((m) =>
-                          checkRole(m.role, permissions.ManageRoles),
+                          checkRole(m.role, Permission.ManageRoles),
                         ) && (
                           <p className={`control ${styles.memberButton}`}>
                             <Button
@@ -487,7 +488,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                 <tr key={invite.email}>
                   <td>{invite.email}</td>
                   <td className="has-text-right">
-                    {canManageMembers ? (
+                    {canInviteMembers ? (
                       <div className={`field is-grouped ${styles.tags}`}>
                         <p className={`control ${styles.memberButton}`}>
                           <Button

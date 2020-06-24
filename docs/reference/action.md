@@ -15,6 +15,11 @@ The behavior of an action can be defined within the `actions` object in a block 
 always requires the property `type`, which is what is used to determine which action should be used
 whenever its associated trigger occurs.
 
+The `onSuccess` and `onError` properties can be used to define additional actions that should be
+called depending on whether the action that was initially dispatched ran successfully or not. This
+can be useful for triggering multiple actions in a row, such as calling the `log` action before
+proceeding with a `link` action.
+
 Below is an overview of each action that Appsemble supports. Depending on the type of action,
 additional parameters can be defined to alter its behavior. The name of the action is what should be
 used as the `type`.
@@ -53,6 +58,18 @@ to: https://example.com
 
 Outputs the result of the action into the console. This is mostly useful for debugging blocks during
 development.
+
+## `message`
+
+Displays a message to the user. This is useful in combination with action chaining to notify users
+they have performed a certain action.
+
+| Parameter   | Required | Description                                                                                                                                               |
+| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| body        | true     | The body of the message. Supports [Remappers](/guide/remappers).                                                                                          |
+| color       |          | The Bulma color to apply to the message. Supported values are: `dark`, `primary`, `link`, `success`, `info`, `warning`, and `danger`. Defaults to `info`. |
+| dismissable |          | Boolean value indicating whether the user is able to dismiss the message manually. Defaults to `false`.                                                   |
+| timeout     |          | The time in milliseconds how long the message should be visible. Defaults to 5000 milliseconds.                                                           |
 
 ## `noop`
 
@@ -98,16 +115,17 @@ request using the [form block](../blocks/form).
 If the content type of the request is `text/xml` or `application/xml`, the data will be converted to
 JSON.
 
-| Parameter  | Required | Description                                                                                                                                                                                             |
-| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| url        | true     | The URL to send the request to. Can be a relative URL (Eg. `/api/health`) for usage with the Appsemble API or an absolute URL (Eg. `https://example.com`) for usage with external sites.                |
-| method     |          | The type of request to make. Defaults to `GET` if omitted.                                                                                                                                              |
-| query      |          | An object representing the values that get added to the query string. Templating can be applied here to make Appsemble inject values based on the data it received.                                     |
-| schema     |          | The name of the schema to validate against before submitting data.                                                                                                                                      |
-| base       |          | The base element to return when used in `GET` queries. This can be used to flatten the data being returned from the API. Dot notation can be used.                                                      |
-| serialize  |          | The method used to serialize the request data. Setting this to `formdata` will send the request as a `multipart/form-data` request. By default the data is serialized as an `application/json` request. |
-| blobs      |          | An object containing a range of parameters used to upload files to the server.                                                                                                                          |
-| blobs.type |          | The method used to upload files to the server. Supports `upload` to override the default behavior.                                                                                                      |
+| Parameter  | Required | Description                                                                                                                                                                                                                                       |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| url        | true     | The URL to send the request to. Can be a relative URL (Eg. `/api/health`) for usage with the Appsemble API or an absolute URL (Eg. `https://example.com`) for usage with external sites.                                                          |
+| method     |          | The type of request to make. Defaults to `GET` if omitted.                                                                                                                                                                                        |
+| query      |          | An object representing the values that get added to the query string. Templating can be applied here to make Appsemble inject values based on the data it received.                                                                               |
+| proxy      |          | By default requests will be proxied through the Appsemble API. This allows to protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behaviour can be disabled by setting this to `false`. |
+| schema     |          | The name of the schema to validate against before submitting data.                                                                                                                                                                                |
+| base       |          | The base element to return when used in `GET` queries. This can be used to flatten the data being returned from the API. Dot notation can be used.                                                                                                |
+| serialize  |          | The method used to serialize the request data. Setting this to `formdata` will send the request as a `multipart/form-data` request. By default the data is serialized as an `application/json` request.                                           |
+| blobs      |          | An object containing a range of parameters used to upload files to the server.                                                                                                                                                                    |
+| blobs.type |          | The method used to upload files to the server. Supports `upload` to override the default behavior.                                                                                                                                                |
 
 ### Query templates
 

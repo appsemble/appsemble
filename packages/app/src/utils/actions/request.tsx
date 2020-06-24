@@ -1,63 +1,29 @@
 import type { RequestAction, RequestLikeAction, RequestLikeActionTypes } from '@appsemble/sdk';
 import type { RequestLikeActionDefinition } from '@appsemble/types';
-import { compileFilters, MapperFunction, remapData, validate } from '@appsemble/utils';
-import axios, { AxiosRequestConfig, Method } from 'axios';
+import { formatRequestAction, remapData, validate } from '@appsemble/utils';
+import axios, { Method } from 'axios';
 
 import type { MakeActionParameters } from '../../types';
+import settings from '../settings';
 import uploadBlobs from '../uploadBlobs';
 import xmlToJson from '../xmlToJson';
 
-interface Mapper {
-  [filter: string]: MapperFunction;
-}
-
 export function requestLikeAction<T extends RequestLikeActionTypes>({
-  definition: { base, blobs = {}, method = 'GET', schema, query, url, serialize },
-  onSuccess,
-  onError,
+  definition,
+  prefix,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
-  const regex = /{(.+?)}/g;
-  const urlMatch = url.match(regex);
-  const urlMappers = urlMatch
-    ?.map((match) => match.substring(1, match.length - 1))
-    .reduce<Mapper>((acc, filter) => ({ ...acc, [filter]: compileFilters(filter) }), {});
-
-  const queryMappers =
-    query &&
-    Object.entries(query).reduce<{ [k: string]: Mapper }>((acc, [queryKey, queryValue]) => {
-      const queryMatch = String(queryValue).match(regex);
-      if (queryMatch) {
-        acc[queryKey] = queryMatch
-          .map((match) => match.substring(1, match.length - 1))
-          .reduce((subAcc, filter) => ({ ...subAcc, [filter]: compileFilters(filter) }), {});
-      }
-      return acc;
-    }, {});
+  const { base, blobs = {}, method = 'GET', proxy = true, schema, url, serialize } = definition;
 
   return {
     type: 'request',
     async dispatch(data) {
       const methodUpper = method.toUpperCase() as Method;
-      const req: AxiosRequestConfig = {
-        method: methodUpper,
-        url: url.replace(regex, (_, filter) => urlMappers[filter](data)),
-        params:
-          query &&
-          Object.fromEntries(
-            Object.entries(query).map(([key, value]) => {
-              if (!queryMappers[key]) {
-                return [key, value];
-              }
-
-              return [
-                key,
-                queryMappers[key]
-                  ? value.replace(regex, (_, filter) => queryMappers[key][filter](data))
-                  : value,
-              ];
-            }),
-          ),
-      };
+      const req = proxy
+        ? {
+            method: methodUpper,
+            url: `${settings.apiUrl}/api/apps/${settings.id}/proxy/${prefix}`,
+          }
+        : formatRequestAction(definition, data);
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
         let body;
@@ -102,31 +68,21 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
         }
 
         req.data = body;
+      } else if (proxy) {
+        req.params = { data: JSON.stringify(data) };
       }
 
-      try {
-        const response = await axios(req);
-        let responseBody = response.data;
-        if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
-          responseBody = xmlToJson(responseBody, schema);
-        }
-
-        if (base) {
-          responseBody = remapData(base, responseBody);
-        }
-
-        if (onSuccess) {
-          return onSuccess.dispatch(responseBody);
-        }
-
-        return responseBody;
-      } catch (exception) {
-        if (onError) {
-          return onError.dispatch(exception);
-        }
-
-        throw exception;
+      const response = await axios(req);
+      let responseBody = response.data;
+      if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
+        responseBody = xmlToJson(responseBody, schema);
       }
+
+      if (base) {
+        responseBody = remapData(base, responseBody);
+      }
+
+      return responseBody;
     },
     method,
     url,

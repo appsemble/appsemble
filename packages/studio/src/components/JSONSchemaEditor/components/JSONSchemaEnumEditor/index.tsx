@@ -1,4 +1,5 @@
-import { Select } from '@appsemble/react-components';
+import { MarkdownContent, Select } from '@appsemble/react-components';
+import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -18,6 +19,7 @@ export default function JSONSchemaEnumEditor({
   return (
     <Select
       disabled={disabled}
+      help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}
       onChange={onChange}
@@ -27,7 +29,7 @@ export default function JSONSchemaEnumEditor({
       <option disabled hidden>
         <FormattedMessage {...messages.empty} />
       </option>
-      {schema.enum.map((option) => (
+      {(schema as OpenAPIV3.SchemaObject).enum.map((option) => (
         <option key={option} value={option}>
           {option}
         </option>

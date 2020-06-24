@@ -1,7 +1,8 @@
 {
   "name": "@appsemble/service-worker",
-  "version": "0.12.8",
+  "version": "0.13.3",
   "private": true,
+  "description": "The service worker that makes sure Appsemble apps work offline",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
@@ -11,8 +12,11 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
-    "type-fest": "^0.13.1"
+    "type-fest": "^0.15.1"
   },
   "devDependencies": {
     "service-worker-mock": "^2.0.5"

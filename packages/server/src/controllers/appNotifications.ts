@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import type { SubscriptionResponse } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 import { App, AppSubscription, ResourceSubscription } from '../models';
@@ -187,7 +187,7 @@ export async function broadcast(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('App not found');
   }
 
-  await checkRole(ctx, app.OrganizationId, permissions.PushNotifications);
+  await checkRole(ctx, app.OrganizationId, Permission.PushNotifications);
 
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);

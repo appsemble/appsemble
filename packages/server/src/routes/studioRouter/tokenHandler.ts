@@ -14,6 +14,7 @@ import {
 import type { KoaContext } from '../../types';
 import createJWTResponse from '../../utils/createJWTResponse';
 import getApp from '../../utils/getApp';
+import trimUrl from '../../utils/trimUrl';
 
 class GrantError extends Error {
   status: number;
@@ -73,13 +74,11 @@ export default async function tokenHandler(ctx: KoaContext): Promise<void> {
           client_id: clientId,
           code,
           redirect_uri: redirectUri,
-          scope: requestedScope,
-        } = checkTokenRequestParameters(query, ['client_id', 'code', 'redirect_uri', 'scope']);
+        } = checkTokenRequestParameters(query, ['client_id', 'code', 'redirect_uri']);
         if (!header.referer) {
           throw new GrantError('invalid_request');
         }
-        const referer = new URL(header.referer);
-        if (redirectUri !== `${referer.origin}${referer.pathname}`) {
+        if (redirectUri !== trimUrl(header.referer)) {
           throw new GrantError('invalid_request');
         }
         const match = clientId.match(/^app:(\d+)/);
@@ -87,7 +86,7 @@ export default async function tokenHandler(ctx: KoaContext): Promise<void> {
           throw new GrantError('invalid_client');
         }
         const authorizationCode = await OAuth2AuthorizationCode.findOne({
-          attributes: ['expires', 'UserId'],
+          attributes: ['expires', 'scope', 'UserId'],
           where: { code, AppId: match[1], redirectUri },
         });
         if (!authorizationCode) {
@@ -101,8 +100,8 @@ export default async function tokenHandler(ctx: KoaContext): Promise<void> {
         }
         aud = clientId;
         refreshToken = true;
-        scope = requestedScope;
-        sub = String(authorizationCode.UserId);
+        scope = authorizationCode.scope;
+        sub = authorizationCode.UserId;
         break;
       }
       case 'client_credentials': {

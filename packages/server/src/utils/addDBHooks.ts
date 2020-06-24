@@ -1,3 +1,5 @@
+import { URL } from 'url';
+
 import { App } from '../models';
 import type { Argv } from '../types';
 import dns from './dns';

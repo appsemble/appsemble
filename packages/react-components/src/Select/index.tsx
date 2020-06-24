@@ -4,7 +4,7 @@ import * as React from 'react';
 import FormComponent from '../FormComponent';
 
 type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
-  React.ComponentPropsWithoutRef<'select'> & {
+  Omit<React.ComponentPropsWithoutRef<'select'>, 'onChange'> & {
     /**
      * The name of the HTML element.
      */
@@ -24,43 +24,54 @@ type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
      * Wether or not the element should take as much space it can.
      */
     fullwidth?: boolean;
+
+    /**
+     * A help message to render.
+     */
+    help?: React.ReactNode;
   };
 
 /**
  * A Bulma styled form select element.
  */
-export default class Select extends React.Component<SelectProps> {
-  onChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-    const { onChange } = this.props;
-
-    onChange(event, event.target.value);
-  };
-
-  render(): React.ReactElement {
-    const {
+export default React.forwardRef<HTMLSelectElement, SelectProps>(
+  (
+    {
       fullwidth = true,
       className,
+      help,
       label,
       loading,
       name,
+      onChange,
       required,
       id = name,
       ...props
-    } = this.props;
+    },
+    ref,
+  ): React.ReactElement => {
+    const handleChange = React.useCallback(
+      (event: React.ChangeEvent<HTMLSelectElement>) => {
+        onChange(event, event.target.value);
+      },
+      [onChange],
+    );
 
     return (
       <FormComponent className={className} id={id} label={label} required={required}>
         <div className={classNames('select', { 'is-fullwidth': fullwidth, 'is-loading': loading })}>
           <select
             {...props}
+            ref={ref}
             className={classNames({ 'is-fullwidth': fullwidth })}
             id={id}
             name={name}
-            onChange={this.onChange}
+            onChange={handleChange}
             required={required}
           />
         </div>
+        {help && <div className="help">{help}</div>}
       </FormComponent>
     );
-  }
-}
+  },
+);

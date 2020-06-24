@@ -12,81 +12,71 @@ const messages = {
   noData: 'There is no data available.',
 };
 
-export default bootstrap(
-  ({
-    actions,
-    parameters: { fields = [], header, base },
-    data: blockData,
-    events,
-    ready,
-    utils,
-  }) => {
-    const [data, setData] = useState<Item[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+export default bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
+  const [data, setData] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-    useEffect(() => {
-      if (blockData != null) {
-        const newData = base != null ? blockData[base] : blockData;
+  useEffect(() => {
+    if (blockData != null) {
+      const newData = base != null ? blockData[base] : blockData;
 
-        if (Array.isArray(newData)) {
-          setData(newData);
-          setLoading(false);
-        }
-      }
-    }, [base, blockData]);
-
-    const loadData = useCallback(
-      (d: any, err: string): void => {
-        if (err) {
-          setError(true);
-        } else {
-          if (base != null) {
-            setData(d[base]);
-          } else {
-            setData(d);
-          }
-          setError(false);
-        }
+      if (Array.isArray(newData)) {
+        setData(newData);
         setLoading(false);
-      },
-      [base],
-    );
-
-    useEffect(() => {
-      events.on.data(loadData);
-      ready();
-    }, [events, loadData, ready, utils]);
-
-    if (loading) {
-      return <Loader />;
+      }
     }
+  }, [base, blockData]);
 
-    if (error) {
-      return (
-        <Message className={styles.message} color="danger">
-          <FormattedMessage id="error" />
-        </Message>
-      );
-    }
+  const loadData = useCallback(
+    (d: any, err: string): void => {
+      if (err) {
+        setError(true);
+      } else {
+        if (base != null) {
+          setData(d[base]);
+        } else {
+          setData(d);
+        }
+        setError(false);
+      }
+      setLoading(false);
+    },
+    [base],
+  );
 
-    if (!data.length) {
-      return (
-        <Message className={styles.message}>
-          <FormattedMessage id="noData" />
-        </Message>
-      );
-    }
+  useEffect(() => {
+    events.on.data(loadData);
+    ready();
+  }, [events, loadData, ready, utils]);
 
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
     return (
-      <ul className={styles.container}>
-        {data.map((item, index) => (
-          <li key={item.id ?? index}>
-            <ListItem actions={actions} fields={fields} header={header} item={item} />
-          </li>
-        ))}
-      </ul>
+      <Message className={styles.message} color="danger">
+        <FormattedMessage id="error" />
+      </Message>
     );
-  },
-  messages,
-);
+  }
+
+  if (!data.length) {
+    return (
+      <Message className={styles.message}>
+        <FormattedMessage id="noData" />
+      </Message>
+    );
+  }
+
+  return (
+    <ul className={styles.container}>
+      {data.map((item, index) => (
+        <li key={item.id ?? index}>
+          <ListItem item={item} />
+        </li>
+      ))}
+    </ul>
+  );
+}, messages);

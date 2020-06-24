@@ -1,10 +1,15 @@
-import { useMessages } from '@appsemble/react-components';
-import type { AppDefinition, BasicPage, Block, Page as PageType } from '@appsemble/types';
+import { useLocationString, useMessages } from '@appsemble/react-components';
+import type {
+  AppDefinition,
+  BasicPageDefinition,
+  BlockDefinition,
+  PageDefinition,
+} from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import type { ShowDialogParams } from '../../types';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -17,19 +22,20 @@ import { useUser } from '../UserProvider';
 import messages from './messages';
 
 interface PageProps {
-  page: PageType;
+  page: PageDefinition;
+  prefix: string;
 }
 
-export default function Page({ page }: PageProps): React.ReactElement {
+export default function Page({ page, prefix }: PageProps): React.ReactElement {
   const { definition } = useAppDefinition();
   const history = useHistory();
   const intl = useIntl();
   const push = useMessages();
-  const location = useLocation();
+  const redirect = useLocationString();
   const { isLoggedIn, logout, role } = useUser();
 
   const [dialog, setDialog] = React.useState<ShowDialogParams>();
-  const [blocks, setBlocks] = React.useState<Block[]>([]);
+  const [blocks, setBlocks] = React.useState<BlockDefinition[]>([]);
 
   const ee = React.useRef<EventEmitter>();
   if (!ee.current) {
@@ -45,7 +51,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
   }, [definition, page.theme]);
 
   const applyBulmaThemes = React.useCallback(
-    (d: AppDefinition, p: PageType) => {
+    (d: AppDefinition, p: PageDefinition) => {
       const bulmaStyle = document.getElementById('bulma-style-app') as HTMLLinkElement;
       const [bulmaUrl] = bulmaStyle.href.split('?');
       bulmaStyle.href = d.theme || p.theme ? `${bulmaUrl}?${createBulmaQueryString()}` : bulmaUrl;
@@ -54,7 +60,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
   );
 
   const checkPagePermissions = React.useCallback(
-    (p: PageType): boolean => {
+    (p: PageDefinition): boolean => {
       const roles = p.roles || definition.roles || [];
       return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
     },
@@ -64,6 +70,13 @@ export default function Page({ page }: PageProps): React.ReactElement {
   const handlePagePermissions = React.useCallback(() => {
     const permission = checkPagePermissions(page);
     if (!permission) {
+      if (!isLoggedIn) {
+        history.replace(`/Login?${new URLSearchParams({ redirect })}`);
+        return;
+      }
+
+      // User is logged in but doesn’t have the right permissions
+      // Attempt to find a default page to redirect to
       const defaultPagePermission = checkPagePermissions(
         definition.pages.find((p) => p.name === definition.defaultPage),
       );
@@ -71,10 +84,12 @@ export default function Page({ page }: PageProps): React.ReactElement {
       if (defaultPagePermission) {
         history.replace('/');
       } else {
+        // Redirect to the first page that doesn’t have parameters.
         const redirectPage = definition.pages.find(
           (p) => p.parameters === undefined && checkPagePermissions(p),
         );
 
+        // Show message that explains the app is inaccessible with the current permissions.
         if (!redirectPage) {
           push({
             body: intl.formatMessage(messages.permissionLogout),
@@ -82,13 +97,12 @@ export default function Page({ page }: PageProps): React.ReactElement {
             dismissable: true,
           });
           logout();
-          return;
+        } else {
+          history.replace(`/${normalize(redirectPage.name)}`);
         }
-
-        history.replace(`/${normalize(redirectPage.name)}`);
       }
     }
-  }, [checkPagePermissions, definition, history, intl, logout, page, push]);
+  }, [checkPagePermissions, definition, history, intl, isLoggedIn, logout, page, push, redirect]);
 
   const showDialog = React.useCallback((d: ShowDialogParams) => {
     setDialog(d);
@@ -102,7 +116,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
       ...(page.type === 'tabs' || page.type === 'flow'
         ? page.subPages.map((f) => f.blocks).flat()
         : []),
-      ...(!page.type || page.type === 'page' ? (page as BasicPage).blocks : []),
+      ...(!page.type || page.type === 'page' ? (page as BasicPageDefinition).blocks : []),
     ]);
   }, [page]);
 
@@ -123,12 +137,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
     };
   }, [applyBulmaThemes, definition, page]);
 
-  if (definition.security && !(page.roles && page.roles.length === 0)) {
-    if (!isLoggedIn) {
-      const redirect = `${location.pathname}${location.search}${location.hash}`;
-      return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
-    }
-
+  if (definition.security) {
     handlePagePermissions();
   }
 
@@ -141,15 +150,30 @@ export default function Page({ page }: PageProps): React.ReactElement {
           definition={definition}
           ee={ee.current}
           page={page}
+          prefix={prefix}
           showDialog={showDialog}
         />
       );
       break;
     case 'tabs':
-      component = <TabsPage ee={ee.current} showDialog={showDialog} subPages={page.subPages} />;
+      component = (
+        <TabsPage
+          ee={ee.current}
+          prefix={prefix}
+          showDialog={showDialog}
+          subPages={page.subPages}
+        />
+      );
       break;
     default:
-      component = <BlockList blocks={page.blocks} ee={ee.current} showDialog={showDialog} />;
+      component = (
+        <BlockList
+          blocks={page.blocks}
+          ee={ee.current}
+          prefix={`${prefix}.blocks`}
+          showDialog={showDialog}
+        />
+      );
   }
 
   return (

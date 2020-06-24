@@ -1,45 +1,46 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+} from 'sequelize-typescript';
 
-import User from './User';
+import { User } from '.';
 
-export default class OAuth2ClientCredentials extends Model {
+@Table({ tableName: 'OAuth2ClientCredentials', updatedAt: false })
+export default class OAuth2ClientCredentials extends Model<OAuth2ClientCredentials> {
+  @PrimaryKey
+  @Column
   id: string;
 
+  @AllowNull(false)
+  @Column
   description: string;
 
+  @AllowNull(false)
+  @Column
   secret: string;
 
+  @Column
   expires: Date;
 
+  @AllowNull(false)
+  @Column
   scopes: string;
 
+  @CreatedAt
   created: Date;
 
+  @AllowNull(false)
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
-  static initialize(sequelize: Sequelize): void {
-    OAuth2ClientCredentials.init(
-      {
-        id: { type: DataTypes.STRING, primaryKey: true },
-        description: { type: DataTypes.STRING, allowNull: false },
-        secret: { type: DataTypes.STRING, allowNull: false },
-        expires: { type: DataTypes.DATE },
-        scopes: { type: DataTypes.STRING, allowNull: false },
-      },
-      {
-        sequelize,
-        tableName: 'OAuth2ClientCredentials',
-        paranoid: false,
-        createdAt: 'created',
-        updatedAt: false,
-      },
-    );
-  }
-
-  static associate(): void {
-    OAuth2ClientCredentials.belongsTo(User, {
-      foreignKey: { allowNull: false },
-      onDelete: 'CASCADE',
-    });
-  }
+  @BelongsTo(() => User, { onDelete: 'CASCADE' })
+  User: User;
 }

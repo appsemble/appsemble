@@ -3,13 +3,19 @@ import {
   Calendar,
   CardFooterButton,
   Checkbox,
+  Content,
   Input,
   Join,
+  Loader,
+  Message,
   Modal,
   SimpleForm,
   SimpleInput,
   Table,
   Title,
+  useConfirmation,
+  useData,
+  useToggle,
 } from '@appsemble/react-components';
 import { scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
@@ -23,9 +29,12 @@ import messages from './messages';
 
 export default function ClientCredentials(): React.ReactElement {
   const intl = useIntl();
-  const [clients, setClients] = React.useState<OAuth2ClientCredentials[]>([]);
+  const { data: clients, error, loading, refresh, setData: setClients } = useData<
+    OAuth2ClientCredentials[]
+  >('/api/oauth2/client-credentials');
   const [newClientCredentials, setNewClientCredentials] = React.useState<string>(null);
-  const [isModalActive, setModalActive] = React.useState(false);
+  const modal = useToggle();
+
   const registerClient = React.useCallback(
     async ({ description, expires, ...values }) => {
       const scopes = Object.entries(values)
@@ -39,27 +48,38 @@ export default function ClientCredentials(): React.ReactElement {
       setNewClientCredentials(`${data.id}:${data.secret}`);
       setClients([...clients, data]);
     },
-    [clients],
+    [clients, setClients],
   );
-  const openModal = React.useCallback(() => {
-    setModalActive(true);
-  }, []);
-  const closeModal = React.useCallback(() => {
-    setModalActive(false);
-  }, []);
-  const onDelete = React.useCallback(
-    (client: OAuth2ClientCredentials) => async () => {
+
+  const onDelete = useConfirmation({
+    title: <FormattedMessage {...messages.deleteTitle} />,
+    body: <FormattedMessage {...messages.deleteBody} />,
+    cancelLabel: <FormattedMessage {...messages.deleteCancel} />,
+    confirmLabel: <FormattedMessage {...messages.deleteConfirm} />,
+    async action(client: OAuth2ClientCredentials) {
       await axios.delete(`/api/oauth2/client-credentials/${client.id}`);
       setClients(clients.filter((c) => c.id !== client.id));
     },
-    [clients],
-  );
-  React.useEffect(() => {
-    (async () => {
-      const { data } = await axios.get('/api/oauth2/client-credentials');
-      setClients(data);
-    })();
-  }, [setClients]);
+  });
+
+  if (error) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <p>
+            <FormattedMessage {...messages.loadError} />
+          </p>
+          <Button color="danger" onClick={refresh}>
+            <FormattedMessage {...messages.retry} />
+          </Button>
+        </Message>
+      </Content>
+    );
+  }
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -70,7 +90,7 @@ export default function ClientCredentials(): React.ReactElement {
       <p className="content">
         <FormattedMessage {...messages.explanation} />
       </p>
-      <Button color="primary" onClick={openModal}>
+      <Button color="primary" onClick={modal.enable}>
         <FormattedMessage {...messages.register} />
       </Button>
       <Modal
@@ -83,17 +103,23 @@ export default function ClientCredentials(): React.ReactElement {
           'apps:write': false,
         }}
         footer={
-          <>
-            <CardFooterButton onClick={closeModal}>
-              <FormattedMessage {...messages.cancel} />
+          newClientCredentials ? (
+            <CardFooterButton onClick={modal.disable}>
+              <FormattedMessage {...messages.close} />
             </CardFooterButton>
-            <CardFooterButton color="primary" type="submit">
-              <FormattedMessage {...messages.submit} />
-            </CardFooterButton>
-          </>
+          ) : (
+            <>
+              <CardFooterButton onClick={modal.disable}>
+                <FormattedMessage {...messages.cancel} />
+              </CardFooterButton>
+              <CardFooterButton color="primary" type="submit">
+                <FormattedMessage {...messages.submit} />
+              </CardFooterButton>
+            </>
+          )
         }
-        isActive={isModalActive}
-        onClose={closeModal}
+        isActive={modal.enabled}
+        onClose={modal.disable}
         onSubmit={registerClient}
         title={<FormattedMessage {...messages.register} />}
       >
@@ -200,7 +226,11 @@ export default function ClientCredentials(): React.ReactElement {
                   </Join>
                 </td>
                 <td>
-                  <Button className="is-pulled-right" color="danger" onClick={onDelete(client)}>
+                  <Button
+                    className="is-pulled-right"
+                    color="danger"
+                    onClick={() => onDelete(client)}
+                  >
                     <FormattedMessage {...messages.revoke} />
                   </Button>
                 </td>

@@ -1,5 +1,6 @@
+import { useMessages } from '@appsemble/react-components/src';
 import type { BootstrapParams } from '@appsemble/sdk';
-import type { AppDefinition, FlowPage as FlowPageType } from '@appsemble/types';
+import type { AppDefinition, FlowPageDefinition } from '@appsemble/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -10,7 +11,7 @@ import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvid
 
 interface FlowPageProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
   definition: AppDefinition;
-  page: FlowPageType;
+  page: FlowPageDefinition;
 }
 
 export default function FlowPage({
@@ -18,12 +19,14 @@ export default function FlowPage({
   definition,
   ee,
   page,
+  prefix,
   showDialog,
 }: FlowPageProps): React.ReactElement {
   const history = useHistory();
   const [currentPage, setCurrentPage] = React.useState(0);
   const [data, setData] = React.useState(inputData);
   const pushNotifications = useServiceWorkerRegistration();
+  const showMessage = useMessages();
 
   let actions: BootstrapParams['actions'];
 
@@ -95,11 +98,23 @@ export default function FlowPage({
         showDialog,
         extraCreators: {},
         flowActions,
+        prefix,
         pushNotifications,
         ee,
         pageReady: null,
+        showMessage,
       }),
-    [definition, ee, flowActions, history, page, pushNotifications, showDialog],
+    [
+      definition,
+      ee,
+      flowActions,
+      history,
+      page,
+      prefix,
+      pushNotifications,
+      showDialog,
+      showMessage,
+    ],
   );
 
   return (
@@ -111,6 +126,7 @@ export default function FlowPage({
         data={data}
         ee={ee}
         flowActions={flowActions}
+        prefix={`${prefix}.subPages`}
         showDialog={showDialog}
         transitions
       />

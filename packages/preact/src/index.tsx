@@ -60,7 +60,6 @@ export function withBlock<P extends object>(
   Component: ComponentType<Omit<BlockProps, keyof P> & P>,
 ): ComponentType<P> {
   return (props: P) => (
-    // @ts-ignore
     <Context.Consumer>{(values) => <Component {...props} {...values} />}</Context.Consumer>
   );
 }

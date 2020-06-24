@@ -1,20 +1,23 @@
 import type {
   Action,
+  BaseMessage,
   HTTPMethods,
   LogAction,
+  Message,
   RequestLikeActionTypes,
   Theme,
 } from '@appsemble/sdk/src/types';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import type { OpenAPIV3 } from 'openapi-types';
 import type { JsonObject, RequireExactlyOne } from 'type-fest';
+import type { Definition } from 'typescript-json-schema';
 
 export type { Theme };
 
 /**
  * A block that is displayed on a page.
  */
-export interface Block {
+export interface BlockDefinition {
   /**
    * The type of the block.
    *
@@ -144,7 +147,15 @@ export interface TokenResponse {
    * How long until the access token expires in seconds from now.
    */
   // eslint-disable-next-line camelcase
-  expires_in: number;
+  expires_in?: number;
+
+  /**
+   * The OpenID ID token as a JWT.
+   *
+   * This field is only present on OpenID connect providers.
+   */
+  // eslint-disable-next-line camelcase
+  id_token?: string;
 
   /**
    * A refresh token for getting a new access token.
@@ -168,6 +179,11 @@ export interface Remappers {
   'object.from': {
     [key: string]: Remapper;
   };
+
+  /**
+   * Use a static value.
+   */
+  static: any;
 
   /**
    * Get a property from an object.
@@ -289,7 +305,7 @@ interface ResourceReference {
   delete?: ResourceReferenceAction;
 }
 
-export interface Resource {
+export interface ResourceDefinition {
   /**
    * The definition for the `resource.create` action.
    */
@@ -368,6 +384,16 @@ export interface BaseActionDefinition<T extends Action['type']> {
    * function.
    */
   remap?: Remapper;
+
+  /**
+   * Another action that is dispatched when the action has been dispatched successfully.
+   */
+  onSuccess?: ActionDefinition;
+
+  /**
+   * Another action that is dispatched when the action has failed to dispatch successfully.
+   */
+  onError?: ActionDefinition;
 }
 
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
@@ -384,7 +410,7 @@ export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * Blocks to render on the dialog.
    */
-  blocks: Block[];
+  blocks: BlockDefinition[];
 
   /**
    * The title to show in the dialog.
@@ -434,6 +460,13 @@ export interface RequestLikeActionDefinition<
   method?: HTTPMethods;
 
   /**
+   * Whether or not to proxy the request through the Appsemble proxy endpoint.
+   *
+   * @default true
+   */
+  proxy?: boolean;
+
+  /**
    * A JSON schema against which to validate data before uploading.
    */
   schema?: OpenAPIV3.SchemaObject;
@@ -452,15 +485,6 @@ export interface RequestLikeActionDefinition<
    * How to serialize the request body.
    */
   serialize?: 'formdata';
-
-  /**
-   * An additional action to execute after the request has succeeded.
-   */
-  onSuccess?: ActionDefinition;
-  /**
-   * An additional action to execute after the request has resulted in an error.
-   */
-  onError?: ActionDefinition;
 }
 
 export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
@@ -522,6 +546,14 @@ export interface StaticActionDefinition extends BaseActionDefinition<'static'> {
   value: any;
 }
 
+export type MessageActionDefinition = BaseActionDefinition<'message'> &
+  BaseMessage & {
+    /**
+     * The content of the message to display.
+     */
+    body: Remapper;
+  };
+
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -543,6 +575,7 @@ export type ActionDefinition =
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionStatusActionDefinition
   | StaticActionDefinition
+  | MessageActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;
@@ -552,6 +585,18 @@ export interface ActionType {
    * Whether or not app creators are required to define this action.
    */
   required?: boolean;
+
+  /**
+   * The description of the action.
+   */
+  description?: string;
+}
+
+export interface EventType {
+  /**
+   * The description of the action.
+   */
+  description?: string;
 }
 
 export interface BlockManifest {
@@ -566,6 +611,13 @@ export interface BlockManifest {
    * The description of the block.
    */
   description?: string;
+
+  /**
+   * The long description of the block.
+   *
+   * This is displayed when rendering block documentation and supports Markdown.
+   */
+  longDescription?: string;
 
   /**
    * A [semver](https://semver.org) representation of the block version.
@@ -594,17 +646,14 @@ export interface BlockManifest {
    * The events that are supported by a block.
    */
   events?: {
-    listen?: string[];
-    emit?: string[];
+    listen?: { [key: string]: EventType };
+    emit?: { [key: string]: EventType };
   };
 
   /**
    * A JSON schema to validate block parameters.
-   *
-   * Since multiple JSON schema typings exist and not all of them play nice with each other, this
-   * type is set to `object`.
    */
-  parameters?: object;
+  parameters?: Definition;
 
   /**
    * @deprecated
@@ -615,7 +664,7 @@ export interface BlockManifest {
 /**
  * This describes what a page will look like in the app.
  */
-export interface BasePage {
+export interface BasePageDefinition {
   /**
    * The name of the page.
    *
@@ -665,25 +714,25 @@ export interface BasePage {
 
 interface SubPage {
   name: string;
-  blocks: Block[];
+  blocks: BlockDefinition[];
 }
 
-export interface BasicPage extends BasePage {
+export interface BasicPageDefinition extends BasePageDefinition {
   type?: 'page';
-  blocks: Block[];
+  blocks: BlockDefinition[];
 }
 
-export interface FlowPage extends BasePage {
+export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
   subPages: SubPage[];
 }
 
-export interface TabsPage extends BasePage {
+export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
   subPages: SubPage[];
 }
 
-export type Page = BasicPage | FlowPage | TabsPage;
+export type PageDefinition = BasicPageDefinition | FlowPageDefinition | TabsPageDefinition;
 
 export interface AppDefinition {
   /**
@@ -732,12 +781,12 @@ export interface AppDefinition {
   /**
    * The pages of the app.
    */
-  pages: Page[];
+  pages: PageDefinition[];
 
   /**
    * Resource definitions that may be used by the app.
    */
-  resources?: { [key: string]: Resource };
+  resources?: { [key: string]: ResourceDefinition };
 
   /**
    * The global theme for the app.
@@ -863,4 +912,44 @@ export interface AppMember {
   name: string;
   primaryEmail: string;
   role: string;
+}
+
+/**
+ * A representation of an OAuth2 provider in Appsemble.
+ *
+ * This interface holds the properties needed to render a redirect button on the login or profile
+ * screen.
+ */
+export interface OAuth2Provider {
+  /**
+   * The OAuth2 redirect URL.
+   *
+   * The user will be redirected here. On this page the user will have to grant access to Appsemble
+   * to log them in.
+   */
+  authorizationUrl: string;
+
+  /**
+   * The public client id which identifies Appsemble to the authorization server.
+   */
+  clientId: string;
+
+  /**
+   * A Font Awesome icon which represents the OAuth2 provider.
+   */
+  icon: IconName;
+
+  /**
+   * A display name which represents the OAuth2 provider.
+   *
+   * I.e. `Facebook`, `GitLab`, or `Google`.
+   */
+  name: string;
+
+  /**
+   * The login scope that will be requested from the authorization server.
+   *
+   * This is represented as a space separated list of scopes.
+   */
+  scope: string;
 }

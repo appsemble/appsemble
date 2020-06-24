@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
@@ -6,12 +6,10 @@ import { App, AppBlockStyle, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
-let request: AxiosTestInstance;
-
 beforeAll(createTestSchema('blockcsshandler'));
 
 beforeAll(async () => {
-  request = await createInstance(
+  await setTestApp(
     new Koa()
       .use((ctx, next) => {
         ctx.argv = { host: 'http://localhost' };
@@ -24,10 +22,6 @@ beforeAll(async () => {
 });
 
 afterEach(truncate);
-
-afterAll(async () => {
-  await request.close();
-});
 
 afterAll(closeTestSchema);
 

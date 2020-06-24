@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/markdown",
-  "version": "0.12.8",
+  "version": "0.13.3",
   "private": true,
   "description": "A simple block that can display content based on Markdown input.",
   "homepage": "https://appsemble.dev",
@@ -12,8 +12,11 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
-    "@appsemble/sdk": "0.12.8",
-    "marked": "^1.0.0"
+    "@appsemble/sdk": "0.13.3",
+    "marked": "^1.1.0"
   }
 }

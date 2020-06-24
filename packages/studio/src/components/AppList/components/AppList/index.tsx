@@ -1,13 +1,12 @@
-import { Icon, Loader } from '@appsemble/react-components';
+import { Icon, Loader, Message, useData } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
-import axios from 'axios';
+import { Permission } from '@appsemble/utils';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import useOrganizations from '../../../../hooks/useOrganizations';
 import useUser from '../../../../hooks/useUser';
-import type { Organization } from '../../../../types';
 import checkRole from '../../../../utils/checkRole';
 import HelmetIntl from '../../../HelmetIntl';
 import AppCard from '../AppCard';
@@ -17,39 +16,25 @@ import messages from './messages';
 
 export default function AppList(): React.ReactElement {
   const [filter, setFilter] = React.useState('');
-  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
-  const [apps, setApps] = React.useState<App[]>(null);
-
+  const organizations = useOrganizations();
   const intl = useIntl();
   const { userInfo } = useUser();
+  const { data: apps, error, loading } = useData<App[]>(userInfo ? '/api/apps/me' : '/api/apps');
 
   const onFilterChange = React.useCallback((event) => {
     setFilter(event.target.value);
   }, []);
 
-  React.useEffect(() => {
-    setApps(null);
-    if (userInfo) {
-      axios.get<App[]>('/api/apps/me').then(({ data }) => {
-        setApps(data);
-      });
-    } else {
-      axios.get<App[]>('/api/apps').then(({ data }) => {
-        setApps(data);
-      });
-    }
-  }, [userInfo]);
-
-  React.useEffect(() => {
-    if (userInfo) {
-      axios
-        .get<Organization[]>('/api/user/organizations')
-        .then(({ data }) => setOrganizations(data));
-    }
-  }, [userInfo]);
-
-  if (!apps) {
+  if (loading) {
     return <Loader />;
+  }
+
+  if (error) {
+    return (
+      <Message color="danger">
+        <FormattedMessage {...messages.error} />
+      </Message>
+    );
   }
 
   const filteredApps = apps.filter((app) =>
@@ -57,7 +42,7 @@ export default function AppList(): React.ReactElement {
   );
 
   const createOrganizations = organizations.filter((org) =>
-    checkRole(org.role, permissions.CreateApps),
+    checkRole(org.role, Permission.CreateApps),
   );
 
   return (

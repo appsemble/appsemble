@@ -1,8 +1,8 @@
-import { Loader } from '@appsemble/react-components';
+import { Loader, Message, useData } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
-import axios from 'axios';
+import { Permission } from '@appsemble/utils';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
@@ -16,6 +16,7 @@ import Notifications from '../Notifications';
 import ProtectedRoute from '../ProtectedRoute';
 import Roles from '../Roles';
 import styles from './index.css';
+import messages from './messages';
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
@@ -37,19 +38,24 @@ const Context = React.createContext<AppValueContext>(null);
 export default function AppContext(): React.ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
-  const [app, setApp] = React.useState<App>();
-  const value = React.useMemo(() => ({ app, setApp }), [app]);
+  const { data: app, error, loading, setData: setApp } = useData<App>(
+    `/api/apps/${match.params.id}`,
+  );
+  const value = React.useMemo(() => ({ app, setApp }), [app, setApp]);
 
-  React.useEffect(() => {
-    const getApp = async (): Promise<void> => {
-      setApp(undefined);
-      const { data } = await axios.get<App>(`/api/apps/${match.params.id}`);
-      setApp(data);
-    };
-    getApp();
-  }, [match]);
+  if (error) {
+    return (
+      <Message color="danger">
+        {error.response?.status === 404 ? (
+          <FormattedMessage {...messages.notFound} />
+        ) : (
+          <FormattedMessage {...messages.uncaughtError} />
+        )}
+      </Message>
+    );
+  }
 
-  if (organizations === undefined || app === undefined) {
+  if (!organizations || loading) {
     return <Loader />;
   }
 
@@ -68,21 +74,21 @@ export default function AppContext(): React.ReactElement {
               exact
               organization={organization}
               path={`${match.path}/edit`}
-              permission={permissions.EditApps}
+              permission={Permission.EditApps}
             >
               <Editor />
             </ProtectedRoute>
             <ProtectedRoute
               organization={organization}
               path={`${match.path}/assets`}
-              permission={permissions.EditApps}
+              permission={Permission.EditApps}
             >
               <Assets />
             </ProtectedRoute>
             <ProtectedRoute
               organization={organization}
               path={`${match.path}/resources`}
-              permission={permissions.EditApps}
+              permission={Permission.EditApps}
             >
               <CMS />
             </ProtectedRoute>
@@ -90,7 +96,7 @@ export default function AppContext(): React.ReactElement {
               exact
               organization={organization}
               path={`${match.path}/roles`}
-              permission={permissions.EditApps}
+              permission={Permission.EditApps}
             >
               <Roles />
             </ProtectedRoute>
@@ -98,7 +104,7 @@ export default function AppContext(): React.ReactElement {
               exact
               organization={organization}
               path={`${match.path}/settings`}
-              permission={permissions.EditAppSettings}
+              permission={Permission.EditAppSettings}
             >
               <AppSettings />
             </ProtectedRoute>
@@ -106,7 +112,7 @@ export default function AppContext(): React.ReactElement {
               exact
               organization={organization}
               path={`${match.path}/notifications`}
-              permission={permissions.PushNotifications}
+              permission={Permission.PushNotifications}
             >
               <Notifications />
             </ProtectedRoute>

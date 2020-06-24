@@ -19,7 +19,12 @@ const mapperImplementations: MapperImplementations = {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     Object.fromEntries(Object.entries(mappers).map(([key, mapper]) => [key, remap(mapper, input)])),
 
-  prop: (prop, obj) => prop.split('.').reduce((acc, p) => acc[p], obj),
+  static: (input) => input,
+
+  prop: (prop, obj) =>
+    String(prop)
+      .split('.')
+      .reduce((acc, p) => acc?.[p] ?? null, obj),
 
   'date.parse': (format, input) => (format ? parse(input, format, new Date()) : parseISO(input)),
 

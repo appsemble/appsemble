@@ -1,25 +1,37 @@
 import { Role, roles } from '@appsemble/utils';
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  Column,
+  CreatedAt,
+  DataType,
+  Default,
+  ForeignKey,
+  Model,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
-export default class Member extends Model {
+import { Organization, User } from '.';
+
+@Table({ tableName: 'Member' })
+export default class Member extends Model<Member> {
+  @Default('Member')
+  @Column(DataType.ENUM(...Object.keys(roles)))
   role: Role;
 
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
+
+  @AllowNull(false)
+  @ForeignKey(() => Organization)
+  @Column
   OrganizationId: string;
 
-  static initialize(sequelize: Sequelize): void {
-    Member.init(
-      {
-        role: {
-          type: DataTypes.ENUM(...Object.keys(roles)),
-          defaultValue: 'Member',
-        },
-      },
-      {
-        sequelize,
-        tableName: 'Member',
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
+  @AllowNull(false)
+  @ForeignKey(() => User)
+  @Column
+  UserId: number;
 }

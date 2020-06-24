@@ -1,223 +1,119 @@
-import { Loader, Title } from '@appsemble/react-components';
-import type { App, BasicPage, Block } from '@appsemble/types';
+import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
+import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
-import axios from 'axios';
-import indentString from 'indent-string';
-import yaml, { safeLoad } from 'js-yaml';
-import { editor, Range } from 'monaco-editor';
-import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import type { JsonObject } from 'type-fest';
 
-import type { EditLocation, SelectedBlockManifest } from '../..';
-import { GuiEditorStep } from '../..';
+import type { NamedEvent } from '../../../../types';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
+import type { EditLocation } from '../../types';
 import ActionEditor from '../ActionEditor';
-import Stepper from '../Stepper';
 import styles from './index.css';
 import messages from './messages';
 
-interface Resource {
-  parameters: { [key: string]: any };
-  actions: { [key: string]: any };
-  events: { [key: string]: any };
-}
-
 interface GUIEditorEditBlockProps {
-  selectedBlock: SelectedBlockManifest;
-  setEditorStep: (value: GuiEditorStep) => void;
+  selectedBlock?: BlockManifest;
   app: App;
   editLocation: EditLocation;
-  setSelectedBlock: (value: SelectedBlockManifest) => void;
-  monacoEditor: editor.IStandaloneCodeEditor;
-  setApp: (app: App) => void;
-  setRecipe: (value: string) => void;
+  onChangeSelectedBlock: (value: BlockManifest) => void;
+  onChangeBlockValue: (value: BlockDefinition) => void;
+  blockValue: BlockDefinition;
 }
 
 export default function GUIEditorEditBlock({
   app,
+  blockValue,
   editLocation,
-  monacoEditor,
+  onChangeBlockValue,
+  onChangeSelectedBlock,
   selectedBlock,
-  setApp,
-  setEditorStep,
-  setRecipe,
-  setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
-  const [editingResource, setEditingResource] = React.useState<Resource>(undefined);
-  const [editExistingBlock, setEditExistingBlock] = React.useState(false);
-
   const onChange = React.useCallback(
-    (_event: any, value: any) => {
-      setEditingResource({ ...editingResource, parameters: { ...value } });
+    (_event: NamedEvent, parameters: JsonObject) => {
+      onChangeBlockValue({ ...blockValue, parameters });
     },
-    [editingResource],
+    [blockValue, onChangeBlockValue],
   );
 
-  const onChangeAction = React.useCallback(
-    (_event: any, value: any) => {
-      setEditingResource({ ...editingResource, actions: { ...value } });
-    },
-    [editingResource],
+  const { data: edittingBlock, error, loading } = useData<BlockManifest>(
+    `/api/blocks/${normalizeBlockName(editLocation.blockName)}`,
   );
 
-  const save = React.useCallback((): void => {
-    const blockParent = editLocation.parents
-      .slice()
-      .reverse()
-      .find((x) => x.name === 'blocks:');
-
-    const range = editExistingBlock
-      ? editLocation.editRange
-      : new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
-
-    const text = indentString(
-      yaml.safeDump(
-        [
-          {
-            type: stripBlockName(selectedBlock.name),
-            version: selectedBlock.version,
-            parameters: editingResource.parameters,
-            actions: editingResource.actions,
-            events: editingResource.events,
-          },
-        ],
-        { skipInvalid: true },
-      ),
-      blockParent.indent + 1,
-    );
-
-    monacoEditor.updateOptions({ readOnly: false });
-    monacoEditor.executeEdits('GUIEditor-saveBlock', [
-      {
-        range,
-        text,
-        forceMoveMarkers: true,
-      },
-    ]);
-    monacoEditor.updateOptions({ readOnly: true });
-    const recipe = monacoEditor.getValue();
-    setRecipe(recipe);
-    setEditorStep(GuiEditorStep.SELECT);
-    const definition = safeLoad(monacoEditor.getValue());
-    setApp({ ...app, yaml: recipe, definition });
-  }, [
-    app,
-    editExistingBlock,
-    editLocation,
-    selectedBlock,
-    setRecipe,
-    setEditorStep,
-    setApp,
-    editingResource,
-    monacoEditor,
-  ]);
-
-  React.useEffect(() => {
-    const getBlockParams = (): void => {
-      app.definition.pages.forEach((page: BasicPage) => {
-        if (!page.name.includes(editLocation.pageName)) {
+  const initBlockParameters = React.useCallback(() => {
+    app.definition.pages.forEach((page: BasicPageDefinition) => {
+      if (!page.name.includes(editLocation.pageName)) {
+        return;
+      }
+      page.blocks.forEach((block: BlockDefinition) => {
+        if (!block.type.includes(editLocation.blockName)) {
           return;
         }
-        page.blocks.forEach((block: Block) => {
-          if (!block.type.includes(editLocation.blockName) || editingResource) {
-            return;
-          }
-          let blockValues: Resource;
-
-          if (block.events) {
-            blockValues = { ...blockValues, events: block.events };
-          }
-          if (block.actions) {
-            blockValues = { ...blockValues, actions: block.actions };
-          }
-          if (block.parameters) {
-            blockValues = { ...blockValues, parameters: block.parameters };
-          }
-
-          setEditingResource(blockValues);
-        });
+        onChangeBlockValue(block);
       });
-    };
-
-    if (editExistingBlock === true) {
-      getBlockParams();
-    }
-  }, [editExistingBlock, editingResource, editLocation.pageName, editLocation.blockName, app]);
+    });
+  }, [onChangeBlockValue, editLocation, app]);
 
   React.useEffect(() => {
-    const getBlocks = async (): Promise<void> => {
-      const normalizedBlockName = normalizeBlockName(editLocation.blockName);
-      const { data } = await axios.get(`/api/blocks/${normalizedBlockName}`);
-      setSelectedBlock(data);
-      setEditExistingBlock(true);
-    };
-    if (selectedBlock === undefined) {
-      getBlocks();
+    if (!loading && !selectedBlock) {
+      onChangeSelectedBlock(edittingBlock);
+      initBlockParameters();
     }
-  }, [setEditExistingBlock, editLocation, selectedBlock, setSelectedBlock]);
+  }, [loading, initBlockParameters, onChangeSelectedBlock, edittingBlock, selectedBlock]);
 
-  if (selectedBlock === undefined) {
+  if (error && !selectedBlock) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <FormattedMessage
+            {...messages.error}
+            values={{ blockName: normalizeBlockName(editLocation.blockName) }}
+          />
+        </Message>
+      </Content>
+    );
+  }
+
+  if (loading || !selectedBlock) {
     return <Loader />;
   }
 
   return (
     <div className={styles.root}>
       <Title level={2}>{stripBlockName(selectedBlock.name)}</Title>
-      <div className={styles.main}>
-        {selectedBlock?.parameters ? (
-          <>
-            <Title level={3}>
-              <FormattedMessage {...messages.parameters} />
-            </Title>
-            <JSONSchemaEditor
-              name={stripBlockName(selectedBlock.name)}
-              onChange={onChange}
-              schema={selectedBlock?.parameters as OpenAPIV3.SchemaObject}
-              value={editingResource?.parameters}
-            />
-          </>
-        ) : (
-          <div>
-            <FormattedMessage
-              {...messages.noParameters}
-              values={{ name: stripBlockName(selectedBlock.name) }}
-            />
-          </div>
-        )}
-        {selectedBlock?.actions && (
-          <>
-            <Title className={styles.marginTop} level={3}>
-              <FormattedMessage {...messages.actions} />
-            </Title>
-            <ActionEditor
-              actions={selectedBlock?.actions}
-              app={app}
-              onChange={onChangeAction}
-              value={editingResource?.actions}
-            />
-          </>
-        )}
-      </div>
-      <Stepper
-        leftOnClick={
-          editExistingBlock
-            ? () => {
-                setEditorStep(GuiEditorStep.SELECT);
-                setSelectedBlock(undefined);
-              }
-            : () => {
-                setEditorStep(GuiEditorStep.ADD);
-                setSelectedBlock(undefined);
-              }
-        }
-        rightDisabled={!selectedBlock}
-        rightMessage={<FormattedMessage {...messages.save} />}
-        rightOnClick={() => {
-          save();
-          setSelectedBlock(undefined);
-        }}
-      />
+      {selectedBlock?.parameters ? (
+        <>
+          <Title className={styles.marginTop} level={3}>
+            <FormattedMessage {...messages.parameters} />
+          </Title>
+          <JSONSchemaEditor
+            name={stripBlockName(selectedBlock.name)}
+            onChange={onChange}
+            schema={selectedBlock?.parameters}
+            value={blockValue?.parameters}
+          />
+        </>
+      ) : (
+        <div>
+          <FormattedMessage
+            {...messages.noParameters}
+            values={{ name: stripBlockName(selectedBlock.name) }}
+          />
+        </div>
+      )}
+      {selectedBlock?.actions && (
+        <>
+          <Title className={styles.marginTop} level={3}>
+            <FormattedMessage {...messages.actions} />
+          </Title>
+          <ActionEditor
+            actions={selectedBlock?.actions}
+            app={app}
+            onChange={onChange}
+            value={blockValue?.actions}
+          />
+        </>
+      )}
     </div>
   );
 }

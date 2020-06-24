@@ -96,7 +96,8 @@ export type Action =
   | BaseAction<'resource.subscription.subscribe'>
   | BaseAction<'resource.subscription.unsubscribe'>
   | BaseAction<'resource.subscription.toggle'>
-  | BaseAction<'resource.subscription.status'>;
+  | BaseAction<'resource.subscription.status'>
+  | BaseAction<'message'>;
 
 /**
  * A color known to Bulma.
@@ -112,6 +113,37 @@ export type BulmaColor =
   | 'white';
 
 export type BulmaSize = 'small' | 'normal' | 'medium' | 'large';
+
+export interface BaseMessage {
+  /**
+   * The color to use for the message.
+   *
+   * @default 'info'
+   */
+  color?: BulmaColor;
+
+  /**
+   * The timeout period for this message (in milliseconds).
+   *
+   * @default 5000
+   */
+  timeout?: number;
+
+  /**
+    * Whether or not to show the dismiss button.
+    *
+    * @default false
+
+    */
+  dismissable?: boolean;
+}
+
+export interface Message extends BaseMessage {
+  /**
+   * The content of the message to display.
+   */
+  body: string;
+}
 
 export interface Theme {
   /**
