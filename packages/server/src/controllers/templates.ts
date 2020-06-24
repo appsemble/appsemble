@@ -29,13 +29,10 @@ export async function getAppTemplates(ctx: KoaContext): Promise<void> {
 
 export async function createTemplateApp(ctx: KoaContext): Promise<void> {
   const {
-    description,
-    name,
-    organizationId,
-    private: isPrivate,
-    resources,
-    templateId,
-  } = ctx.request.body;
+    request: {
+      body: { description, name, organizationId, private: isPrivate, resources, templateId },
+    },
+  } = ctx;
 
   const template = await App.findOne({
     where: { id: templateId },
