@@ -1,3 +1,4 @@
+import { Loader } from '@appsemble/react-components';
 import type { JwtPayload, TokenResponse, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
@@ -14,7 +15,7 @@ interface UserProviderProps {
 const REFRESH_BUFFER = 60e3;
 
 export default function UserProvider({ children }: UserProviderProps): React.ReactElement {
-  const [userInfo, setProfile] = React.useState<UserInfo>();
+  const [userInfo, setUserInfo] = React.useState<UserInfo>();
   const [initialized, setInitialized] = React.useState(false);
   const [tokenResponse, setTokenResponse] = React.useState<Partial<TokenResponse>>({
     access_token: localStorage.access_token,
@@ -30,7 +31,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
 
   const refreshUserInfo = React.useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/connect/userinfo');
-    setProfile(data);
+    setUserInfo(data);
   }, []);
 
   const login = React.useCallback(
@@ -42,7 +43,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
   );
 
   const logout = React.useCallback(() => {
-    setProfile(null);
+    setUserInfo(null);
     delete axios.defaults.headers.authorization;
     delete localStorage.access_token;
     delete localStorage.refresh_token;
@@ -54,9 +55,8 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       logout,
       userInfo,
       refreshUserInfo,
-      initialized,
     }),
-    [login, logout, userInfo, refreshUserInfo, initialized],
+    [login, logout, userInfo, refreshUserInfo],
   );
 
   React.useEffect(() => {
@@ -89,6 +89,10 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       clearTimeout(timeoutId);
     };
   }, [logout, refreshUserInfo, tokenResponse]);
+
+  if (!initialized) {
+    return <Loader />;
+  }
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }

@@ -18,13 +18,9 @@ export default function ProtectedRoute({
   ...props
 }: ProtectedRouteProps): React.ReactElement {
   const redirect = useLocationString();
-  const { initialized, userInfo } = useUser();
+  const { userInfo } = useUser();
   const qs = useQuery();
   const match = useRouteMatch();
-
-  if (!initialized) {
-    return null;
-  }
 
   if (!userInfo) {
     const search = new URLSearchParams(qs);
