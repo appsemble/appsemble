@@ -51,6 +51,7 @@ export default function ActionEditor({
           <Title className={styles.marginTop} level={5}>
             {key}
           </Title>
+          <span className="help">{actions[key].description}</span>
           {!selectedActionType[key] ? (
             <ActionEditorTypeSelect
               name={key}

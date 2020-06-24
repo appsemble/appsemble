@@ -1,8 +1,8 @@
-import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
+import { Content, Loader, Message, Tabs, Title, useData } from '@appsemble/react-components';
 import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import type { JsonObject } from 'type-fest';
 
 import type { NamedEvent } from '../../../../types';
@@ -29,6 +29,7 @@ export default function GUIEditorEditBlock({
   onChangeSelectedBlock,
   selectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
+  const intl = useIntl();
   const onChange = React.useCallback(
     (_event: NamedEvent, parameters: JsonObject) => {
       onChangeBlockValue({ ...blockValue, parameters });
@@ -81,39 +82,39 @@ export default function GUIEditorEditBlock({
   return (
     <div className={styles.root}>
       <Title level={2}>{stripBlockName(selectedBlock.name)}</Title>
-      {selectedBlock?.parameters ? (
-        <>
-          <Title className={styles.marginTop} level={3}>
-            <FormattedMessage {...messages.parameters} />
-          </Title>
-          <JSONSchemaEditor
-            name={stripBlockName(selectedBlock.name)}
-            onChange={onChange}
-            schema={selectedBlock?.parameters}
-            value={blockValue?.parameters}
-          />
-        </>
-      ) : (
-        <div>
-          <FormattedMessage
-            {...messages.noParameters}
-            values={{ name: stripBlockName(selectedBlock.name) }}
-          />
-        </div>
-      )}
-      {selectedBlock?.actions && (
-        <>
-          <Title className={styles.marginTop} level={3}>
-            <FormattedMessage {...messages.actions} />
-          </Title>
-          <ActionEditor
-            actions={selectedBlock?.actions}
-            app={app}
-            onChange={onChange}
-            value={blockValue?.actions}
-          />
-        </>
-      )}
+      <Tabs
+        tabs={[
+          {
+            disabled: selectedBlock.parameters === null,
+            name: intl.formatMessage(messages.parameters),
+            content: (
+              <JSONSchemaEditor
+                name={stripBlockName(selectedBlock.name)}
+                onChange={onChange}
+                schema={selectedBlock?.parameters}
+                value={blockValue?.parameters}
+              />
+            ),
+          },
+          {
+            disabled: selectedBlock.actions === null,
+            name: intl.formatMessage(messages.actions),
+            content: (
+              <ActionEditor
+                actions={selectedBlock?.actions}
+                app={app}
+                onChange={onChange}
+                value={blockValue?.actions}
+              />
+            ),
+          },
+          {
+            disabled: selectedBlock.events === null,
+            name: intl.formatMessage(messages.events),
+            content: <>Coming soon</>,
+          },
+        ]}
+      />
     </div>
   );
 }

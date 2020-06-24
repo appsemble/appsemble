@@ -47,7 +47,15 @@ export default function LinkActionEditor({
           );
         }
         if (key === 'parameters') {
-          return <UnknownTypeEditor key={key} name="parameters" value={value.parameters} />;
+          return (
+            <UnknownTypeEditor
+              key={key}
+              name="parameters"
+              onChange={handleChange}
+              required={false}
+              value={value.parameters}
+            />
+          );
         }
         return null;
       })}

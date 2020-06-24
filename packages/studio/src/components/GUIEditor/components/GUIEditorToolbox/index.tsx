@@ -1,7 +1,6 @@
 import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
-import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -54,7 +53,7 @@ export default function GUIEditorToolbox({
         value={selectedBlock}
       />
       {selectedBlock && (
-        <div className={classNames('container is-fluid notification', styles.marginBottom)}>
+        <div className="container is-fluid notification">
           <article className="media">
             <div className="media-content">
               <Title level={4}>{stripBlockName(selectedBlock.name)}</Title>
