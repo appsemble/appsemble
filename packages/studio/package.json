@@ -30,6 +30,7 @@
     "@sentry/browser": "^5.17.0",
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
+    "indent-string": "^4.0.0",
     "js-yaml": "^3.14.0",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",

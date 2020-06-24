@@ -29,3 +29,14 @@
   border: none;
   flex: 1;
 }
+
+.editorTabs {
+  margin-bottom: 0 !important;
+}
+
+.guiEditorButton {
+  justify-content: flex-start;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: clip;
+}

@@ -1,5 +1,5 @@
 import { applyRefs } from '@appsemble/react-components';
-import { editor, KeyCode, KeyMod } from 'monaco-editor';
+import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -37,13 +37,22 @@ interface MonacoEditorProps {
    * Editor options to set.
    */
   options?: Options;
+
+  /**
+   * Save decorations even when editor is disposed
+   */
+  decorationList?: string[];
+  onChangeDecorationList?: (value: string[]) => void;
 }
 
-const defaultOptions: Options = {
-  insertSpaces: true,
-  tabSize: 2,
-  minimap: { enabled: false },
-};
+const defaultOptions: Options = {};
+
+const emptyDecoration: editor.IModelDeltaDecoration[] = [
+  {
+    range: new Range(0, 0, 0, 0),
+    options: {},
+  },
+];
 
 /**
  * Render a Monaco standalone editor instance.
@@ -52,13 +61,30 @@ const defaultOptions: Options = {
  * object, it is recommended to use a state setter function.
  */
 export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
-  ({ language, onChange, onSave, options = defaultOptions, value = '' }, ref) => {
+  (
+    {
+      language,
+      onChange,
+      decorationList,
+      onChangeDecorationList,
+      onSave,
+      options = defaultOptions,
+      value = '',
+    },
+    ref,
+  ) => {
     const [monaco, setMonaco] = React.useState<editor.IStandaloneCodeEditor>();
 
     const saveRef = React.useRef(onSave);
     saveRef.current = onSave;
 
     const nodeRef = React.useCallback((node: HTMLDivElement) => {
+      if (!node) {
+        return () => {
+          applyRefs(null, ref);
+        };
+      }
+
       const ed = editor.create(node, options);
       // eslint-disable-next-line no-bitwise
       ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
@@ -81,7 +107,14 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
     React.useEffect(() => {
       if (monaco) {
         monaco.updateOptions(options);
+
+        if (decorationList && onChangeDecorationList) {
+          onChangeDecorationList(
+            monaco.getModel().deltaDecorations(decorationList, emptyDecoration),
+          );
+        }
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [monaco, options]);
 
     React.useEffect(() => {
@@ -97,7 +130,7 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
     }, [monaco, value]);
 
     React.useEffect(() => {
-      if (!monaco) {
+      if (!monaco || !onChange) {
         return undefined;
       }
       const model = monaco.getModel();
