@@ -32,16 +32,12 @@ export default function ActionEditor({
   );
 
   React.useEffect(() => {
-    const getActionTypes = (): void[] =>
-      Object.keys(actions).map((key: string): void => {
-        if (value[key]) {
-          if (value[key].type) {
-            setSelectedActionType({ [key]: value[key].type });
-          }
-        }
-        return value;
-      });
-    getActionTypes();
+    Object.keys(actions).map((key: string): void => {
+      if (value[key] && value[key].type) {
+        setSelectedActionType({ [key]: value[key].type });
+      }
+      return value;
+    });
   }, [setSelectedActionType, value, actions]);
 
   return (

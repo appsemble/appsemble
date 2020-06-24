@@ -1,5 +1,11 @@
 import { Content, Loader, Message, Tabs, Title, useData } from '@appsemble/react-components';
-import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
+import type {
+  ActionDefinition,
+  App,
+  BasicPageDefinition,
+  BlockDefinition,
+  BlockManifest,
+} from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -30,9 +36,16 @@ export default function GUIEditorEditBlock({
   selectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
   const intl = useIntl();
-  const onChange = React.useCallback(
+  const onChangeParameter = React.useCallback(
     (_event: NamedEvent, parameters: JsonObject) => {
       onChangeBlockValue({ ...blockValue, parameters });
+    },
+    [blockValue, onChangeBlockValue],
+  );
+
+  const onChangeAction = React.useCallback(
+    (_event: NamedEvent, actions: { [action: string]: ActionDefinition }) => {
+      onChangeBlockValue({ ...blockValue, actions });
     },
     [blockValue, onChangeBlockValue],
   );
@@ -90,7 +103,7 @@ export default function GUIEditorEditBlock({
             content: (
               <JSONSchemaEditor
                 name={stripBlockName(selectedBlock.name)}
-                onChange={onChange}
+                onChange={onChangeParameter}
                 schema={selectedBlock?.parameters}
                 value={blockValue?.parameters}
               />
@@ -103,7 +116,7 @@ export default function GUIEditorEditBlock({
               <ActionEditor
                 actions={selectedBlock?.actions}
                 app={app}
-                onChange={onChange}
+                onChange={onChangeAction}
                 value={blockValue?.actions}
               />
             ),
