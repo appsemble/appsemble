@@ -96,7 +96,7 @@ export default function OAuthSettings(): React.ReactElement {
           accounts[provider.authorizationUrl] ? (
             <AsyncButton
               key={`${provider.authorizationUrl} ${provider.clientId}`}
-              className={`${styles.button} mx-4 my-4`}
+              className={`${styles.button} mb-4`}
               icon={provider.icon}
               iconPrefix="fab"
               onClick={() => disconnect(provider)}
@@ -107,7 +107,7 @@ export default function OAuthSettings(): React.ReactElement {
             <OAuth2LoginButton
               key={provider.authorizationUrl}
               authorizationUrl={provider.authorizationUrl}
-              className={`${styles.button} mx-4 my-4`}
+              className={`${styles.button} mb-4`}
               clientId={provider.clientId}
               icon={provider.icon}
               redirect={location}

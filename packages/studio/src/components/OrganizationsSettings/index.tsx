@@ -456,14 +456,15 @@ export default function OrganizationsSettings(): React.ReactElement {
                     ) : (
                       <FormattedMessage {...messages[member.role]} />
                     )}
-                    <div className={`field is-grouped ${styles.tags}`}>
+                    <div className="field is-grouped is-inline">
                       {member.id === userInfo.sub &&
                         organization.members.length > 1 &&
                         organization.members.some((m) =>
                           checkRole(m.role, Permission.ManageRoles),
                         ) && (
-                          <p className="control is-inline-flex">
+                          <p className="control is-inline">
                             <Button
+                              className="is-inline"
                               color="danger"
                               icon="sign-out-alt"
                               onClick={() => onRemoveMemberClick(member.id)}
@@ -471,8 +472,9 @@ export default function OrganizationsSettings(): React.ReactElement {
                           </p>
                         )}
                       {member.id !== userInfo.sub && canManageMembers && (
-                        <p className={`control ${styles.memberButton}`}>
+                        <p className="control is-inline">
                           <Button
+                            className="is-inline"
                             color="danger"
                             icon="trash-alt"
                             onClick={() => onRemoveMemberClick(member.id)}
@@ -489,17 +491,21 @@ export default function OrganizationsSettings(): React.ReactElement {
                   <td>{invite.email}</td>
                   <td className="has-text-right">
                     {canInviteMembers ? (
-                      <div className={`field is-grouped ${styles.tags}`}>
-                        <p className={`control ${styles.memberButton}`}>
+                      <div className="field is-grouped is-inline">
+                        <p className="control is-inline">
                           <Button
-                            className="control is-outlined"
+                            className="control is-outlined is-inline"
                             onClick={() => resendInvitation(invite)}
                           >
                             <FormattedMessage {...messages.resendInvitation} />
                           </Button>
                         </p>
-                        <p className={`control ${styles.memberButton}`}>
-                          <Button color="danger" onClick={() => onRemoveInviteClick(invite)}>
+                        <p className="control is-inline">
+                          <Button
+                            className="is-inline"
+                            color="danger"
+                            onClick={() => onRemoveInviteClick(invite)}
+                          >
                             <Icon icon="trash-alt" size="small" />
                           </Button>
                         </p>
