@@ -99,7 +99,7 @@ export default function GUIEditorSelect({
           },
         ];
         let parentCount = 1;
-        if (i !== topParentLine) {
+        if (i + 1 !== topParentLine) {
           return;
         }
 
