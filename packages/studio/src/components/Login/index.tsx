@@ -8,6 +8,7 @@ import {
   SimpleInput,
   SimpleSubmit,
   useQuery,
+  useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import React from 'react';
@@ -29,15 +30,22 @@ export default function Login(): React.ReactElement {
   const location = useLocation();
   const { login } = useUser();
   const qs = useQuery();
+  const busy = useToggle();
 
   const onPasswordLogin = React.useCallback(
     async ({ email, password }: LoginFormValues) => {
-      const { data } = await axios.post('/api/login', undefined, {
-        headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
-      });
-      login(data);
+      busy.enable();
+      try {
+        const { data } = await axios.post('/api/login', undefined, {
+          headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
+        });
+        login(data);
+      } catch (error) {
+        busy.disable();
+        throw error;
+      }
     },
-    [login],
+    [busy, login],
   );
 
   return (
@@ -47,6 +55,7 @@ export default function Login(): React.ReactElement {
         <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
         <SimpleInput
           autoComplete="email"
+          disabled={busy.enabled}
           iconLeft="envelope"
           label={<FormattedMessage {...messages.emailLabel} />}
           name="email"
@@ -60,6 +69,7 @@ export default function Login(): React.ReactElement {
         <SimpleInput
           autoComplete="current-password"
           component={PasswordInput}
+          disabled={busy.enabled}
           label={<FormattedMessage {...messages.passwordLabel} />}
           name="password"
           required
@@ -81,7 +91,7 @@ export default function Login(): React.ReactElement {
               <FormattedMessage {...messages.forgotPasswordLink} />
             </Link>
           </div>
-          <SimpleSubmit>
+          <SimpleSubmit disabled={busy.enabled}>
             <FormattedMessage {...messages.loginButton} />
           </SimpleSubmit>
         </FormButtons>
@@ -93,8 +103,10 @@ export default function Login(): React.ReactElement {
             authorizationUrl={provider.authorizationUrl}
             className={styles.button}
             clientId={provider.clientId}
+            disabled={busy.enabled}
             icon={provider.icon}
             iconPrefix="fab"
+            onClick={busy.enable}
             redirect={qs.get('redirect')}
             redirectUrl="/callback"
             scope={provider.scope}

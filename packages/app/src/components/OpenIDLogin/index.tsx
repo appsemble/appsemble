@@ -1,4 +1,4 @@
-import { Content, OAuth2LoginButton, useQuery } from '@appsemble/react-components';
+import { Content, OAuth2LoginButton, useQuery, useToggle } from '@appsemble/react-components';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -8,10 +8,12 @@ import messages from './messages';
 
 export default function OpenIDLogin(): React.ReactElement {
   const qs = useQuery();
+  const busy = useToggle();
 
   const buttonProps = {
     className: styles.button,
     clientId: `app:${settings.id}`,
+    onClick: busy.enable,
     redirectUrl: '/Callback',
     scope: 'email openid profile resources:manage',
     redirect: qs.get('redirect'),
