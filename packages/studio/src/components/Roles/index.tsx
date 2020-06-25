@@ -7,7 +7,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import useUser from '../../hooks/useUser';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
-import styles from './index.css';
 import messages from './messages';
 
 export interface Member {
@@ -103,7 +102,7 @@ export default function Roles(): React.ReactElement {
             <tr key={member.id}>
               <td>
                 <span>{member.name || member.primaryEmail || member.id}</span>{' '}
-                <div className={`tags ${styles.tags}`}>
+                <div className="tags is-inline ml-2">
                   {member.id === userInfo.sub && (
                     <span className="tag is-success">
                       <FormattedMessage {...messages.you} />

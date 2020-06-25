@@ -158,11 +158,11 @@ export default function AppSettings(): React.ReactElement {
       <TitleBar>
         <FormattedMessage {...messages.settings} />
       </TitleBar>
-      <div className={styles.root}>
+      <div className={`${styles.root} px-3 py-3`}>
         {(definition.notifications !== undefined || Object.keys(subscriptions).length) && (
           <>
             <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
-              <div className={styles.setting}>
+              <div className={`${styles.setting} is-flex`}>
                 <p className={styles.settingDescription}>
                   <FormattedMessage {...messages.suscribeDescription} />
                 </p>
@@ -173,6 +173,7 @@ export default function AppSettings(): React.ReactElement {
                   onChange={onSubscribeClick}
                   switch
                   value={!!subscription}
+                  wrapperClassName="is-flex"
                 />
               </div>
             </FormComponent>

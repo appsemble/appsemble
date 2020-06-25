@@ -52,7 +52,7 @@ export default function GUIEditorToolboxBlock({
       {filterBlocks.map((block) => (
         <label
           key={block.name}
-          className={classNames('card', styles.blockFrame, {
+          className={classNames('card mb-5 ml-5 is-flex', styles.blockFrame, {
             [styles.selected]: value === block,
           })}
         >

@@ -297,7 +297,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
             </footer>
           </Modal>
           {highlightedField && (
-            <div className={styles.highlighted}>
+            <div className={`${styles.highlighted} px-2 py-2 is-inline-flex`}>
               <Field
                 {...highlightedField}
                 displayLabel={!!highlightedField.label}
@@ -310,7 +310,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
           )}
           {showModal && (
             <button
-              className={classNames('button', styles.filterDialogButton, {
+              className={classNames('button is-inline-flex mx-2 my-2', {
                 'is-primary': activeFilters,
               })}
               onClick={this.onOpen}
@@ -325,7 +325,11 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
         {newData.length > 0 && (
           <article className={`message ${styles.newDataBar}`}>
             <div className="message-header">
-              <button className={styles.newDataButton} onClick={this.onMergeRefresh} type="button">
+              <button
+                className={`${styles.newDataButton} is-paddingless`}
+                onClick={this.onMergeRefresh}
+                type="button"
+              >
                 <FormattedMessage {...messages.refreshData} values={{ amount: newData.length }} />
               </button>
               <button

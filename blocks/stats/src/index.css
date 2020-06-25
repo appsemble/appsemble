@@ -1,19 +1,12 @@
 .wrapper {
-  display: flex;
   margin: 10px auto;
   max-width: 640px;
 }
 
 .field {
-  display: inline;
   flex: 1 1;
-  text-align: center;
 }
 
 .icon {
   font-size: calc(min(3em, 10vw));
-}
-
-.value {
-  margin: 8px 0 2px;
 }

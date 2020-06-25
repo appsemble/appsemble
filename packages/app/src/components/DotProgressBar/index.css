@@ -1,6 +1,4 @@
 .dotContainer {
-  padding-right: 15px;
-  padding-top: 15px;
   position: fixed;
   right: 0;
   z-index: 1000;
@@ -10,9 +8,7 @@
   background-color: hsl(0, 0%, 100%);
   border: none;
   border-radius: 50%;
-  display: inline-block;
   height: 10px;
-  margin: 0 2px;
   opacity: 0.2;
   width: 10px;
 }

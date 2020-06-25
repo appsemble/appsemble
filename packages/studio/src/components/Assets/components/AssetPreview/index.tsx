@@ -30,11 +30,7 @@ export default function AssetPreview({ asset }: { asset: Asset }): React.ReactEl
 
   return (
     <Content className={styles.preview}>
-      <Button
-        className={`${styles.downloadButton} ${styles.center}`}
-        icon="download"
-        onClick={downloadAsset}
-      >
+      <Button className="mb-2" icon="download" onClick={downloadAsset}>
         <FormattedMessage {...messages.download} />
       </Button>
       <div className="box">
