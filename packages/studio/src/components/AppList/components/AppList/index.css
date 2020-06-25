@@ -21,6 +21,10 @@
   text-decoration: none;
 }
 
+.noAppsIcon {
+  font-size: 6em;
+}
+
 .noApps {
   display: grid;
   margin: 0 auto;
