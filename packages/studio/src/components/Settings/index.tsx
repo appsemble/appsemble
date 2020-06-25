@@ -3,6 +3,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
+import AppAccounts from '../AppAccounts';
 import ClientCredentials from '../ClientCredentials';
 import NavLink from '../NavLink';
 import OAuthSettings from '../OAuthSettings';
@@ -35,6 +36,11 @@ export default function Settings(): React.ReactElement {
           to={`${match.url}/organizations`}
         />
         <SideNavLink
+          icon="user-shield"
+          label={<FormattedMessage {...messages.apps} />}
+          to={`${match.url}/apps`}
+        />
+        <SideNavLink
           icon="key"
           label={<FormattedMessage {...messages.clientCredentials} />}
           to={`${match.url}/client-credentials`}
@@ -50,6 +56,9 @@ export default function Settings(): React.ReactElement {
           </Route>
           <Route exact path={`${match.path}/organizations`}>
             <OrganizationsSettings />
+          </Route>
+          <Route exact path={`${match.path}/apps`}>
+            <AppAccounts />
           </Route>
           <Route exact path={`${match.path}/client-credentials`}>
             <ClientCredentials />
