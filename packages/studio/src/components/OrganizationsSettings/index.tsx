@@ -26,7 +26,6 @@ import useUser from '../../hooks/useUser';
 import type { Member, Role } from '../../types';
 import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
-import styles from './index.css';
 import messages from './messages';
 
 interface Invite {

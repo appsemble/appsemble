@@ -4,8 +4,10 @@ import {
   Message,
   OAuth2LoginButton,
   Title,
+  useData,
   useLocationString,
   useMessages,
+  useToggle,
 } from '@appsemble/react-components';
 import type { OAuth2Provider } from '@appsemble/types';
 import axios from 'axios';
@@ -18,10 +20,6 @@ import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
 import messages from './messages';
 
-interface ConnectedAccountsState {
-  [authorizationUrl: string]: boolean;
-}
-
 interface ConnectedAccount {
   authorizationUrl: string;
 }
@@ -33,10 +31,11 @@ export default function OAuthSettings(): React.ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const location = useLocationString();
+  const connecting = useToggle();
 
-  const [isLoading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(false);
-  const [accounts, setAccounts] = React.useState<ConnectedAccountsState>(null);
+  const { data: accounts, error, loading, setData: setAccounts } = useData<ConnectedAccount[]>(
+    '/api/oauth2/connected',
+  );
 
   const disconnect = React.useCallback(
     async ({ authorizationUrl, name }: OAuth2Provider) => {
@@ -50,30 +49,12 @@ export default function OAuthSettings(): React.ReactElement {
         body: formatMessage(messages.disconnectSuccess, { name }),
         color: 'success',
       });
-      setAccounts({
-        ...accounts,
-        [authorizationUrl]: false,
-      });
+      setAccounts(accounts.filter((account) => account.authorizationUrl !== authorizationUrl));
     },
-    [accounts, formatMessage, push],
+    [accounts, formatMessage, push, setAccounts],
   );
 
-  React.useEffect(() => {
-    axios
-      .get<ConnectedAccount[]>('/api/oauth2/connected')
-      .then(({ data }) =>
-        setAccounts(
-          data.reduce((acc, { authorizationUrl }) => {
-            acc[authorizationUrl] = true;
-            return acc;
-          }, {} as ConnectedAccountsState),
-        ),
-      )
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (isLoading) {
+  if (loading) {
     return <Loader />;
   }
 
@@ -93,10 +74,11 @@ export default function OAuthSettings(): React.ReactElement {
           <FormattedMessage {...messages.header} />
         </Title>
         {settings.logins.map((provider) =>
-          accounts[provider.authorizationUrl] ? (
+          accounts.some((account) => account.authorizationUrl === provider.authorizationUrl) ? (
             <AsyncButton
-              key={`${provider.authorizationUrl} ${provider.clientId}`}
+              key={provider.authorizationUrl}
               className={`${styles.button} mb-4`}
+              disabled={connecting.enabled}
               icon={provider.icon}
               iconPrefix="fab"
               onClick={() => disconnect(provider)}
@@ -109,7 +91,9 @@ export default function OAuthSettings(): React.ReactElement {
               authorizationUrl={provider.authorizationUrl}
               className={`${styles.button} mb-4`}
               clientId={provider.clientId}
+              disabled={connecting.enabled}
               icon={provider.icon}
+              onClick={connecting.enable}
               redirect={location}
               redirectUrl="/callback"
               scope={provider.scope}
