@@ -8,11 +8,11 @@
  * @returns A URL on which the app is hosted.
  */
 export default function getAppUrl(organizationId: string, path: string, domain?: string): string {
-  const { host, port, protocol } = window.location;
+  const { hostname, port, protocol } = window.location;
   const portPostfix =
     port && ((protocol === 'https:' && port !== '443') || (protocol === 'http:' && port !== '80'))
       ? `:${port}`
       : '';
-  const origin = domain || `${path}.${organizationId}.${host}`;
+  const origin = domain || `${path}.${organizationId}.${hostname}`;
   return `${protocol}//${origin}${portPostfix}`;
 }
