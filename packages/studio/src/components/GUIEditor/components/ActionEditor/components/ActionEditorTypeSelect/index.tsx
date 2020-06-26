@@ -1,4 +1,3 @@
-import actions from '@appsemble/app/src/utils/actions';
 import { Select } from '@appsemble/react-components/src';
 import type { ActionDefinition } from '@appsemble/types';
 import React from 'react';
@@ -17,6 +16,30 @@ export default function ActionEditorTypeSelect({
   setSelectedActionType,
   value,
 }: ActionEditorTypeSelectProps): React.ReactElement {
+  const actionDefinitions: ActionDefinition['type'][] = [
+    'dialog',
+    'event',
+    'flow.back',
+    'flow.cancel',
+    'flow.finish',
+    'flow.next',
+    'link',
+    'log',
+    'message',
+    'noop',
+    'request',
+    'resource.create',
+    'resource.delete',
+    'resource.get',
+    'resource.query',
+    'resource.subscription.status',
+    'resource.subscription.subscribe',
+    'resource.subscription.toggle',
+    'resource.subscription.unsubscribe',
+    'resource.update',
+    'static',
+  ];
+
   const onChange = React.useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const actionType = event.target.value as ActionDefinition['type'];
@@ -33,9 +56,9 @@ export default function ActionEditorTypeSelect({
       value={value}
     >
       <FormattedMessage {...messages.empty} tagName="option" values={{ actionName: name }} />
-      {Object.keys(actions).map((key) => (
-        <option key={key} value={key}>
-          {key}
+      {actionDefinitions.map((action: string) => (
+        <option key={action} value={action}>
+          {action}
         </option>
       ))}
     </Select>

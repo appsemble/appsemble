@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.1",
-    "@appsemble/app": "0.13.3",
     "@appsemble/react-components": "0.13.3",
     "@appsemble/sdk": "0.13.3",
     "@appsemble/types": "0.13.3",

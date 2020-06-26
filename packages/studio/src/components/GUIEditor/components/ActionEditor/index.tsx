@@ -1,11 +1,12 @@
 import { Title } from '@appsemble/react-components/src';
 import type { ActionDefinition, ActionType, App } from '@appsemble/types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import type { NamedEvent } from '../../../../types';
 import ActionEditorTypeEditor from './components/ActionEditorTypeEditor';
 import ActionEditorTypeSelect from './components/ActionEditorTypeSelect';
-import styles from './index.css';
+import messages from './messages';
 
 interface ActionEditorProps {
   actions: { [action: string]: ActionType };
@@ -44,9 +45,14 @@ export default function ActionEditor({
     <div>
       {Object.keys(actions).map((key: string) => (
         <div key={key}>
-          <Title className={styles.marginTop} level={5}>
-            {key}
-          </Title>
+          <div className="is-flex">
+            <Title level={3}>{key}</Title>
+            {actions[key].required || (
+              <span>
+                (<FormattedMessage {...messages.optional} />)
+              </span>
+            )}
+          </div>
           <span className="help">{actions[key].description}</span>
           {!selectedActionType[key] ? (
             <ActionEditorTypeSelect
