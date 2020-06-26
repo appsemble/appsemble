@@ -11,7 +11,7 @@ export default function OpenIDLogin(): React.ReactElement {
   const busy = useToggle();
 
   const buttonProps = {
-    className: styles.button,
+    className: `is-fullwidth my-2 ${styles.button}`,
     clientId: `app:${settings.id}`,
     onClick: busy.enable,
     redirectUrl: '/Callback',
@@ -20,7 +20,7 @@ export default function OpenIDLogin(): React.ReactElement {
   };
 
   return (
-    <Content className={styles.root}>
+    <Content className={`is-flex ${styles.root}`}>
       <OAuth2LoginButton
         authorizationUrl={String(new URL('/connect/authorize', settings.apiUrl))}
         icon="user"

@@ -16,7 +16,6 @@ import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '../../../AppContext';
-import styles from './index.css';
 import messages from './messages';
 
 interface AppSecretCardProps {
@@ -69,7 +68,7 @@ export default function AppSecretCard({
         onClick={editing.toggle}
       />
       <Title level={5}>
-        <Icon className={styles.icon} icon={secret.icon} />
+        <Icon className="mr-0" icon={secret.icon} />
         {secret.name}
       </Title>
       {editing.enabled ? (

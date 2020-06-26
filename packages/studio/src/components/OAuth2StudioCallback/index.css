@@ -3,11 +3,6 @@
   max-width: 480px;
 }
 
-.section {
-  margin: 50px 10px;
-  text-align: center;
-}
-
 .header {
   align-items: center;
   flex-flow: column;
