@@ -11,6 +11,11 @@ interface BaseRequirement {
   errorMessage?: Remapper;
 }
 
+interface FormRequirement extends BaseRequirement {
+  isValid: string[];
+  remap?: Remapper;
+}
+
 /**
  * Requirement that matches using a given regex.
  */
@@ -346,9 +351,9 @@ declare module '@appsemble/sdk' {
     onSubmit: {};
 
     /**
-     * Action that gets dispatched when the form is submitted.
+     * A custom action that gets dispatched when checking form requirements.
      */
-    onSubmit: {};
+    [key: string]: {};
   }
 
   interface EventListeners {
@@ -371,5 +376,10 @@ declare module '@appsemble/sdk' {
      * The text that is shown in the submit button.
      */
     submitLabel?: string;
+
+    /**
+     * A list of requirements that are checked across all of the form data.
+     */
+    requirements?: FormRequirement[];
   }
 }
