@@ -78,7 +78,7 @@ export default function GUIEditorEditBlock({
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`is-flex mx-2 ${styles.root}`}>
       <Title level={2}>{stripBlockName(selectedBlock.name)}</Title>
       {selectedBlock?.parameters ? (
         <JSONSchemaEditor

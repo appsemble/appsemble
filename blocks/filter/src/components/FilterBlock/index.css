@@ -13,15 +13,8 @@
   justify-content: flex-end;
 }
 
-.filterDialogButton {
-  display: inline-flex;
-  margin: 10px;
-}
-
 .highlighted {
-  display: inline-flex;
   flex-grow: 11;
-  padding: 10px;
 }
 
 .newDataBar,
@@ -36,5 +29,4 @@
   cursor: pointer;
   font: inherit;
   outline: inherit;
-  padding: 0;
 }

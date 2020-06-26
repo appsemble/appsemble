@@ -127,9 +127,9 @@ export default function OAuth2StudioCallback({
   }
 
   return (
-    <Content padding>
-      <div className={styles.section}>
-        <header className={styles.header}>
+    <div className={`${styles.root} pt-5`}>
+      <div className="my-6 mx-3 has-text-centered">
+        <header className={`is-flex ${styles.header}`}>
           <a href={profile.profile} rel="noopener noreferrer" target="_blank">
             <figure className="image is-128x128 is-marginless">
               <img alt={profile.name} className="is-rounded" src={profile.picture} />
@@ -142,8 +142,8 @@ export default function OAuth2StudioCallback({
         </header>
       </div>
       {userInfo ? (
-        <div className={styles.section}>
-          <p className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}>
+        <div className="my-6 mx-3 has-text-centered">
+          <p className={classNames('mb-3', { 'has-text-grey-light': isSubmitting })}>
             <FormattedMessage {...messages.confirmLinkText} values={{ provider: provider.name }} />
           </p>
           <Button color="primary" disabled={isSubmitting} loading={isSubmitting} onClick={submit}>
@@ -152,7 +152,7 @@ export default function OAuth2StudioCallback({
         </div>
       ) : (
         <>
-          <div className={styles.section}>
+          <div className="my-6 mx-3 has-text-centered">
             {linkError ? (
               <p
                 className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}
@@ -183,7 +183,11 @@ export default function OAuth2StudioCallback({
               </>
             )}
           </div>
-          <p className={classNames(styles.section, { 'has-text-grey-light': isSubmitting })}>
+          <p
+            className={classNames('my-6 mx-3 has-text-centered', {
+              'has-text-grey-light': isSubmitting,
+            })}
+          >
             <FormattedMessage
               {...messages.loginInstead}
               values={{
@@ -205,6 +209,6 @@ export default function OAuth2StudioCallback({
           </p>
         </>
       )}
-    </Content>
+    </div>
   );
 }

@@ -1,9 +1,3 @@
-.editor {
-  height: 100%;
-}
-
 .selectionDecoration {
   background: rgb(173, 216, 230);
-  padding-bottom: 2px;
-  padding-top: 2px;
 }

@@ -80,9 +80,9 @@ export default function BlockDetails(): React.ReactElement {
   return (
     <>
       <HelmetIntl title={messages.title} titleValues={{ name: `@${organization}/${blockName}` }} />
-      <Content className={`content ${styles.content}`}>
+      <Content className={`content px-3 py-3 ${styles.content}`}>
         <div>
-          <figure className={`image is-inline-block is-marginless is-64x64 ${styles.logo}`}>
+          <figure className="image is-inline-block is-marginless is-64x64 mr-4">
             <img
               alt={formatMessage(messages.blockIcon)}
               src={`/api/blocks/@${organization}/${blockName}/versions/${urlVersion}/icon`}

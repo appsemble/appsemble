@@ -42,7 +42,7 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
   const title = field.label ?? field.name;
 
   return (
-    <div className={classNames('file', styles.root)}>
+    <div className={classNames('file mr-3', styles.root)}>
       <label className="file-label" htmlFor={field.name}>
         <input
           className={classNames('file-input', styles.input)}
@@ -53,8 +53,8 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
         />
         {url ? (
           <Fragment>
-            <figure className={classNames('image', styles.image)}>
-              <img alt={title} className={styles.img} src={url} />
+            <figure className={classNames('image is-relative')}>
+              <img alt={title} className={styles.image} src={url} />
             </figure>
             <button
               className={classNames('button', 'is-small', styles.removeButton)}
@@ -67,7 +67,9 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
             </button>
           </Fragment>
         ) : (
-          <span className={classNames('image is-128x128', styles.empty)}>
+          <span
+            className={classNames('image is-128x128 px-2 py-2 has-text-centered', styles.empty)}
+          >
             <span className="file-label">
               <FormattedMessage id="emptyFileLabel" />
             </span>

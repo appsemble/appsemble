@@ -7,7 +7,6 @@
   justify-content: center;
   margin: 0 auto;
   max-width: 960px;
-  padding: 10px;
 }
 
 .filter {
@@ -22,15 +21,6 @@
   text-decoration: none;
 }
 
-.appIcons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin: 0 auto;
-  max-width: 960px;
-  padding: 10px;
-}
-
 .noAppsIcon {
   font-size: 6em;
 }
@@ -38,6 +28,4 @@
 .noApps {
   display: grid;
   margin: 0 auto;
-  padding: 15px;
-  text-align: center;
 }

@@ -7,7 +7,6 @@ import { Link, useLocation } from 'react-router-dom';
 import getAppUrl from '../../../../utils/getAppUrl';
 import { useApp } from '../../../AppContext';
 import { GuiEditorStep } from '../../../GUIEditor/types';
-import styles from './index.css';
 import messages from './messages';
 
 interface EditorNavBarProps {
@@ -81,7 +80,7 @@ export default function EditorNavBar({
         </div>
       </nav>
       {editorStep === GuiEditorStep.YAML ? (
-        <div className={`tabs is-boxed ${styles.editorTabs}`}>
+        <div className="tabs is-boxed mb-0">
           <ul>
             <li className={classNames({ 'is-active': location.hash === '#editor' })} value="editor">
               <Link to="#editor">

@@ -1,9 +1,7 @@
 .root {
-  display: flex;
   flex-flow: column;
   margin: 0 auto;
   max-width: 480px;
-  padding: 8px;
 }
 
 .root > :global(.title) {

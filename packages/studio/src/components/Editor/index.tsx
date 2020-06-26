@@ -288,7 +288,7 @@ export default function Editor(): React.ReactElement {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} is-flex`}>
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
         <Form onSubmit={onSave}>
@@ -330,7 +330,7 @@ export default function Editor(): React.ReactElement {
         </div>
       </div>
 
-      <div className={styles.rightPanel}>
+      <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
         {path && (
           <iframe
             ref={frame}

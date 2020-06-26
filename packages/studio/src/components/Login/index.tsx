@@ -81,13 +81,13 @@ export default function Login(): React.ReactElement {
           <div>
             {settings.enableRegistration && (
               <Link
-                className={styles.formLink}
+                className="is-block"
                 to={{ pathname: '/register', search: location.search, hash: location.hash }}
               >
                 <FormattedMessage {...messages.registerLink} />
               </Link>
             )}
-            <Link className={styles.formLink} to="/reset-password">
+            <Link className="is-block" to="/reset-password">
               <FormattedMessage {...messages.forgotPasswordLink} />
             </Link>
           </div>
@@ -96,12 +96,12 @@ export default function Login(): React.ReactElement {
           </SimpleSubmit>
         </FormButtons>
       </SimpleForm>
-      <div className={styles.socialLogins}>
+      <div className={`${styles.socialLogins} mt-5`}>
         {settings.logins.map((provider) => (
           <OAuth2LoginButton
             key={provider.authorizationUrl}
             authorizationUrl={provider.authorizationUrl}
-            className={styles.button}
+            className="mr-2"
             clientId={provider.clientId}
             disabled={busy.enabled}
             icon={provider.icon}

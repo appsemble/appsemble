@@ -89,7 +89,7 @@ export default function OrganizationInvite(): React.ReactElement {
         <div className="field is-grouped">
           <p className="control">
             <Button
-              className={styles.registerButton}
+              className="mt-3"
               color="success"
               disabled={submitting}
               onClick={onAcceptClick}
@@ -150,7 +150,7 @@ export default function OrganizationInvite(): React.ReactElement {
   }
 
   return (
-    <div className={styles.noInvite}>
+    <div className={`px-4 py-4 has-text-centered ${styles.noInvite}`}>
       <span>
         <i className={`fas fa-exclamation-circle ${styles.noInviteIcon}`} />
       </span>

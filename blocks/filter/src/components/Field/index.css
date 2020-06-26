@@ -6,5 +6,5 @@
 :global(.control) input[type='date']::before {
   color: hsl(0, 0%, 83%);
   content: attr(placeholder) !important;
-  margin-right: 0.5em;
+  margin-right: 0.5rem;
 }
