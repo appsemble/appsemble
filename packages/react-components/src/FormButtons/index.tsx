@@ -4,6 +4,7 @@ import styles from './index.css';
 
 interface FormButtonsProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 /**
@@ -12,10 +13,12 @@ interface FormButtonsProps {
  * If one element is padded, it’s aligned to the right. If more are defined, space is added between
  * them.
  */
-export default function FormButtons({ children }: FormButtonsProps): React.ReactElement {
+export default function FormButtons({ children, className }: FormButtonsProps): React.ReactElement {
   const count = React.Children.count(children);
 
   return (
-    <div className={`${styles.root} ${count > 1 ? styles.multiple : styles.one}`}>{children}</div>
+    <div className={`${className} ${styles.root} ${count > 1 ? styles.multiple : styles.one}`}>
+      {children}
+    </div>
   );
 }

@@ -2,7 +2,6 @@ import { Button, Form, FormButtons } from '@appsemble/react-components';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './index.css';
 import messages from './messages';
 
 const Context = React.createContext<StepperProps>(null);
@@ -46,24 +45,22 @@ export default function Stepper({
   return (
     <Form onSubmit={next}>
       <Context.Provider value={context}>{childArray[step]}</Context.Provider>
-      <div className={styles.marginTop}>
-        <FormButtons>
-          <Button onClick={back}>
-            {step === 0 ? (
-              <FormattedMessage {...messages.cancel} />
-            ) : (
-              <FormattedMessage {...messages.back} />
-            )}
-          </Button>
-          <Button type="submit">
-            {step === childArray.length - 1 ? (
-              <FormattedMessage {...messages.finish} />
-            ) : (
-              <FormattedMessage {...messages.next} />
-            )}
-          </Button>
-        </FormButtons>
-      </div>
+      <FormButtons className="mt-1 mb-1">
+        <Button onClick={back}>
+          {step === 0 ? (
+            <FormattedMessage {...messages.cancel} />
+          ) : (
+            <FormattedMessage {...messages.back} />
+          )}
+        </Button>
+        <Button type="submit">
+          {step === childArray.length - 1 ? (
+            <FormattedMessage {...messages.finish} />
+          ) : (
+            <FormattedMessage {...messages.next} />
+          )}
+        </Button>
+      </FormButtons>
     </Form>
   );
 }
