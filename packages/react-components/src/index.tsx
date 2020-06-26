@@ -34,6 +34,13 @@ export { default as TextArea } from './Textarea';
 export { default as Title } from './Title';
 export { default as Stepper } from './Stepper';
 export { default as Subtitle } from './Subtitle';
+export { default as Tab } from './Tab';
+export { default as Tabs } from './Tabs';
+export {
+  default as ValuePickerProvider,
+  ValuePickerProviderProps,
+  useValuePickerProvider,
+} from './ValuePickerProvider';
 export { default as useClickOutside } from './hooks/useClickOutside';
 export { default as useMessages, MessagesContext } from './hooks/useMessages';
 export { default as useObjectURL } from './hooks/useObjectURL';
