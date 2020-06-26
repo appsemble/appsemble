@@ -1,7 +1,3 @@
-.root {
-  margin: 10px;
-}
-
 .avatarIcon {
   align-items: center;
   border-radius: 50%;
@@ -13,12 +9,7 @@
 }
 
 .button {
-  margin-bottom: 15px;
   margin-top: -10px;
-}
-
-.content {
-  padding: 1rem;
 }
 
 .figure {
@@ -39,11 +30,6 @@
 .images {
   display: flex;
   justify-content: center;
-  padding: 5px;
-}
-
-.images > .figure {
-  margin: 5px;
 }
 
 .location {
@@ -60,12 +46,6 @@
   overflow-y: auto;
 }
 
-.replyForm {
-  display: flex;
-  padding: 8px 0;
-}
-
 .replyButton {
   border-radius: 50%;
-  margin-left: 4px;
 }

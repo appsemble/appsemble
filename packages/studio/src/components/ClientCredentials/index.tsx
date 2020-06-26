@@ -28,7 +28,7 @@ import styles from './index.css';
 import messages from './messages';
 
 export default function ClientCredentials(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const { data: clients, error, loading, refresh, setData: setClients } = useData<
     OAuth2ClientCredentials[]
   >('/api/oauth2/client-credentials');
@@ -213,7 +213,7 @@ export default function ClientCredentials(): React.ReactElement {
                       <data
                         key={scope}
                         className={styles.scope}
-                        title={intl.formatMessage(
+                        title={formatMessage(
                           Object.hasOwnProperty.call(messages, scope)
                             ? messages[scope as keyof typeof messages]
                             : messages.unknownScope,

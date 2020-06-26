@@ -26,7 +26,7 @@ import styles from './index.css';
 import messages from './messages';
 
 export default function UserSettings(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
   const { data: emails, error, loading, setData: setEmails } = useData<UserEmail[]>(
@@ -37,16 +37,16 @@ export default function UserSettings(): React.ReactElement {
     async (values) => {
       await axios.put('/api/user', values);
       refreshUserInfo();
-      push({ body: intl.formatMessage(messages.submitSuccess), color: 'success' });
+      push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     },
-    [intl, push, refreshUserInfo],
+    [formatMessage, push, refreshUserInfo],
   );
 
   const onAddNewEmail = React.useCallback(
     async (values) => {
       await axios.post('/api/user/email', values);
       push({
-        body: intl.formatMessage(messages.addEmailSuccess),
+        body: formatMessage(messages.addEmailSuccess),
         color: 'success',
       });
       setEmails(
@@ -55,7 +55,7 @@ export default function UserSettings(): React.ReactElement {
           .sort(({ email: a }, { email: b }) => a.localeCompare(b)),
       );
     },
-    [emails, intl, push, setEmails],
+    [emails, formatMessage, push, setEmails],
   );
 
   const setPrimaryEmail = React.useCallback(
@@ -63,22 +63,22 @@ export default function UserSettings(): React.ReactElement {
       await axios.put('/api/user', { email });
       refreshUserInfo();
       push({
-        body: intl.formatMessage(messages.primaryEmailSuccess, { email }),
+        body: formatMessage(messages.primaryEmailSuccess, { email }),
         color: 'success',
       });
     },
-    [intl, push, refreshUserInfo],
+    [formatMessage, push, refreshUserInfo],
   );
 
   const resendVerification = React.useCallback(
     async (email: string) => {
       await axios.post('/api/email/resend', { email });
       push({
-        body: intl.formatMessage(messages.resendVerificationSent),
+        body: formatMessage(messages.resendVerificationSent),
         color: 'info',
       });
     },
-    [intl, push],
+    [formatMessage, push],
   );
 
   const deleteEmail = useConfirmation({
@@ -90,7 +90,7 @@ export default function UserSettings(): React.ReactElement {
     async action(deleting: string) {
       await axios.delete('/api/user/email', { data: { email: deleting } });
       setEmails(emails.filter(({ email }) => email !== deleting));
-      push({ body: intl.formatMessage(messages.deleteEmailSuccess), color: 'info' });
+      push({ body: formatMessage(messages.deleteEmailSuccess), color: 'info' });
     },
   });
 
@@ -122,7 +122,7 @@ export default function UserSettings(): React.ReactElement {
             iconLeft="user"
             label={<FormattedMessage {...messages.displayName} />}
             name="name"
-            placeholder={intl.formatMessage(messages.displayName)}
+            placeholder={formatMessage(messages.displayName)}
           />
           <FormButtons>
             <SimpleSubmit>
@@ -150,7 +150,7 @@ export default function UserSettings(): React.ReactElement {
             iconLeft="envelope"
             label={<FormattedMessage {...messages.addEmail} />}
             name="email"
-            placeholder={intl.formatMessage(messages.email)}
+            placeholder={formatMessage(messages.email)}
             required
             type="email"
           />
@@ -178,7 +178,7 @@ export default function UserSettings(): React.ReactElement {
             <tr key={email}>
               <td>
                 <span>{email}</span>
-                <div className={`tags ${styles.tags}`}>
+                <div className="tags is-inline ml-2">
                   {email === userInfo.email && (
                     <span className="tag is-primary">
                       <FormattedMessage {...messages.primary} />

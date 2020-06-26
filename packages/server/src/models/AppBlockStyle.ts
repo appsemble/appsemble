@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import App from './App';
+import { App } from '.';
 
 @Table({ tableName: 'AppBlockStyle' })
 export default class AppBlockStyle extends Model<AppBlockStyle> {

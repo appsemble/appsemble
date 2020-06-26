@@ -1,6 +1,5 @@
 .root {
   height: 108px;
-  margin-right: 12px;
   min-width: 108px;
   width: 108px;
 }
@@ -20,8 +19,6 @@
   color: hsl(0, 0%, 100%) !important;
   display: flex !important;
   height: 6.75em !important;
-  padding: 6px !important;
-  text-align: center !important;
   width: 6.75em !important;
 }
 
@@ -38,10 +35,6 @@
 }
 
 .image {
-  position: relative;
-
-  & .img {
-    height: 100% !important;
-    object-fit: cover;
-  }
+  height: 100% !important;
+  object-fit: cover;
 }

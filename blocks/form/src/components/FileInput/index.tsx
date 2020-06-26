@@ -39,7 +39,11 @@ export default function FileInput({
       required={field.required}
     >
       {field.repeated ? (
-        <div className={classNames(styles.repeatedContainer, { [styles.noLabel]: !field.label })}>
+        <div
+          className={classNames('is-flex py-2 px-0', styles.repeatedContainer, {
+            'mt-5': !field.label,
+          })}
+        >
           <FileEntry
             disabled={disabled}
             error={error}

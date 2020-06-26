@@ -1,20 +1,9 @@
 .root {
   margin: 0 auto;
   max-width: 480px;
-  padding-top: 20px;
-}
-
-.section {
-  margin: 50px 10px;
-  text-align: center;
 }
 
 .header {
   align-items: center;
-  display: flex;
   flex-flow: column;
-}
-
-.confirmText {
-  margin-bottom: 10px;
 }

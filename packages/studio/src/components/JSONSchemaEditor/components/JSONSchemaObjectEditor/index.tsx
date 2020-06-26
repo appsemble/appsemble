@@ -25,7 +25,7 @@ export default function JSONSchemaObjectEditor({
   );
 
   return (
-    <div className={nested ? styles.nested : null}>
+    <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : null}>
       <Title level={5}>
         <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />
       </Title>

@@ -9,7 +9,7 @@ import styles from './index.css';
 import messages from './messages';
 
 export default function OrganizationInvite(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const qs = useQuery();
 
@@ -34,20 +34,20 @@ export default function OrganizationInvite(): React.ReactElement {
         if (exception?.response) {
           const { status } = exception.response;
           if (status === 404) {
-            push(intl.formatMessage(messages.invalidInvite));
+            push(formatMessage(messages.invalidInvite));
           }
 
           if (status === 406) {
-            push(intl.formatMessage(messages.invalidOrganization));
+            push(formatMessage(messages.invalidOrganization));
           }
         } else {
-          push(intl.formatMessage(messages.error));
+          push(formatMessage(messages.error));
         }
         setSuccess(false);
       }
       setSubmitting(false);
     },
-    [intl, organization, push, qs],
+    [formatMessage, organization, push, qs],
   );
 
   const onAcceptClick = React.useCallback(() => sendResponse(true), [sendResponse]);
@@ -61,12 +61,12 @@ export default function OrganizationInvite(): React.ReactElement {
       .get(`/api/invites/${token}`)
       .then(({ data }) => setOrganization(data.organization))
       .catch(() => {
-        push({ body: intl.formatMessage(messages.invalidInvite), timeout: 0, dismissable: true });
+        push({ body: formatMessage(messages.invalidInvite), timeout: 0, dismissable: true });
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [intl, push, qs]);
+  }, [formatMessage, push, qs]);
 
   if (loading) {
     return <Loader />;
@@ -89,7 +89,7 @@ export default function OrganizationInvite(): React.ReactElement {
         <div className="field is-grouped">
           <p className="control">
             <Button
-              className={styles.registerButton}
+              className="mt-3"
               color="success"
               disabled={submitting}
               onClick={onAcceptClick}
@@ -150,7 +150,7 @@ export default function OrganizationInvite(): React.ReactElement {
   }
 
   return (
-    <div className={styles.noInvite}>
+    <div className={`px-4 py-4 has-text-centered ${styles.noInvite}`}>
       <span>
         <i className={`fas fa-exclamation-circle ${styles.noInviteIcon}`} />
       </span>

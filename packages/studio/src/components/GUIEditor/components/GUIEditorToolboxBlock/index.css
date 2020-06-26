@@ -1,0 +1,11 @@
+.blockFrame {
+  float: left;
+
+  &.selected {
+    background: hsl(204, 86%, 53%);
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}

@@ -1,6 +1,5 @@
 import { FormattedMessage } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
-import classNames from 'classnames';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
@@ -48,10 +47,10 @@ export default function FileEntry({
   const title = field.label ?? field.name;
 
   return (
-    <div className={classNames('file', styles.root, className)}>
+    <div className={`file mr-3 ${styles.root} ${className}`}>
       <label className="file-label" htmlFor={field.name}>
         <input
-          className={classNames('file-input', styles.input)}
+          className={`file-input ${styles.input}`}
           id={field.name}
           name={name}
           onChange={onSelect}
@@ -59,11 +58,11 @@ export default function FileEntry({
         />
         {url ? (
           <Fragment>
-            <figure className={classNames('image', styles.image)}>
-              <img alt={title} className={styles.img} src={url} />
+            <figure className="image is-relative">
+              <img alt={title} className={styles.image} src={url} />
             </figure>
             <button
-              className={classNames('button', 'is-small', styles.removeButton)}
+              className={`button is-small ${styles.removeButton}`}
               onClick={onRemove}
               type="button"
             >
@@ -73,7 +72,7 @@ export default function FileEntry({
             </button>
           </Fragment>
         ) : (
-          <span className={classNames('image is-128x128', styles.empty)}>
+          <span className={`image is-128x128 px-2 py-2 has-text-centered ${styles.empty}`}>
             <span className="file-label">
               <FormattedMessage id="emptyFileLabel" />
             </span>

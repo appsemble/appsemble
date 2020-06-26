@@ -5,10 +5,8 @@
   justify-content: space-around;
   margin: 0 auto;
   max-width: 960px;
-  padding: 10px;
 }
 
 .blockList > div {
-  margin: 10px;
   width: 450px;
 }

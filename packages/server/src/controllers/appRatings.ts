@@ -8,7 +8,9 @@ interface Params {
 }
 
 export async function getAppRatings(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
 
   const ratings = await AppRating.findAll({ where: { AppId: appId }, include: [User] });
   ctx.body = ratings.map(({ UserId, created, description, rating, updated, ...r }) => ({
@@ -22,28 +24,30 @@ export async function getAppRatings(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function submitAppRating(ctx: KoaContext<Params>): Promise<void> {
-  const { appId: AppId } = ctx.params;
   const {
-    user: { id: userId },
+    params: { appId: AppId },
+    request: {
+      body: { description, rating },
+    },
+    user: { id: UserId },
   } = ctx;
-  const { description, rating } = ctx.request.body;
 
   const app = await App.findByPk(AppId);
-  const user = await User.findByPk(userId);
+  const user = await User.findByPk(UserId);
 
   if (!app) {
     throw Boom.notFound('App not found');
   }
 
   const [result] = await AppRating.upsert(
-    { rating, description, UserId: user.id, AppId },
+    { rating, description, UserId, AppId },
     { returning: true },
   );
 
   ctx.body = {
     rating,
     description,
-    UserId: user.id,
+    UserId,
     name: user.name,
     $created: result.created,
     $updated: result.updated,

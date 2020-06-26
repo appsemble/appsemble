@@ -13,8 +13,7 @@ import {
   Unique,
 } from 'sequelize-typescript';
 
-import BlockAsset from './BlockAsset';
-import Organization from './Organization';
+import { BlockAsset, Organization } from '.';
 
 @Table({ tableName: 'BlockVersion', updatedAt: false })
 export default class BlockVersion extends Model<BlockVersion> {

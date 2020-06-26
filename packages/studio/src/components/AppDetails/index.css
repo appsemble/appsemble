@@ -3,16 +3,7 @@
   justify-content: space-between;
 }
 
-.cloneButton {
-  margin-right: 0.75rem;
-}
-
 .title {
   align-items: center;
   display: flex;
-  margin-bottom: 0.5em;
-}
-
-.title > figure {
-  margin-right: 1em !important;
 }

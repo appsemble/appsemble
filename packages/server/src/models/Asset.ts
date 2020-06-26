@@ -13,8 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import App from './App';
-import User from './User';
+import { App, User } from '.';
 
 @Table({ tableName: 'Asset', paranoid: true })
 export default class Asset extends Model<Asset> {

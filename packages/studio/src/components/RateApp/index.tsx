@@ -12,7 +12,6 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import StarRating from '../Rating';
-import styles from './index.css';
 import messages from './messages';
 
 interface RateAppProps {
@@ -25,7 +24,7 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
   const [isOpen, setIsOpen] = React.useState(false);
   const [rating, setRating] = React.useState(0);
   const [description, setDescription] = React.useState('');
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const openDialog = (): void => setIsOpen(true);
   const closeDialog = (): void => setIsOpen(false);
 
@@ -45,13 +44,13 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
         <FormattedMessage {...messages.rateApp} />
       </Button>
       <Modal
-        className={styles.modal}
+        className="px-0 py-0"
         isActive={isOpen}
         onClose={closeDialog}
         title={<FormattedMessage {...messages.rateApp} />}
       >
         <Form onSubmit={submit}>
-          <div className={styles.controls}>
+          <div className="px-5 py-5">
             <FormComponent label={<FormattedMessage {...messages.rating} />} required>
               <StarRating onClick={(value) => setRating(value)} value={rating} />
             </FormComponent>
@@ -60,7 +59,7 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
               maxLength={500}
               name="description"
               onChange={onDescriptionChange}
-              placeholder={intl.formatMessage(messages.descriptionPlaceholder)}
+              placeholder={formatMessage(messages.descriptionPlaceholder)}
               value={description}
             />
           </div>

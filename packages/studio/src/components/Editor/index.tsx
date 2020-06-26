@@ -1,12 +1,5 @@
 import RefParser from '@apidevtools/json-schema-ref-parser';
-import {
-  Button,
-  Form,
-  Icon,
-  Loader,
-  useConfirmation,
-  useMessages,
-} from '@appsemble/react-components';
+import { Form, Loader, useConfirmation, useMessages } from '@appsemble/react-components';
 import type { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
   api,
@@ -17,22 +10,39 @@ import {
   validateStyle,
 } from '@appsemble/utils';
 import axios from 'axios';
-import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
 import type { editor } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
+import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
+import GUIEditor from '../GUIEditor';
+import { GuiEditorStep } from '../GUIEditor/types';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
+import EditorNavBar from './components/EditorNavBar';
 import styles from './index.css';
 import messages from './messages';
 
+type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
+
 const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
+
+const monacoDefaultOptions: Options = {
+  insertSpaces: true,
+  tabSize: 2,
+  minimap: { enabled: false },
+  readOnly: false,
+};
+
+const monacoGuiOptions: Options = {
+  ...monacoDefaultOptions,
+  readOnly: true,
+};
 
 export default function Editor(): React.ReactElement {
   const { app, setApp } = useApp();
@@ -47,14 +57,16 @@ export default function Editor(): React.ReactElement {
   const [dirty, setDirty] = React.useState(true);
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
+  const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
+  const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
+  const [decorationList, setDecorationList] = React.useState<string[]>([]);
+
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const location = useLocation();
   const params = useParams<{ id: string }>();
   const push = useMessages();
-
-  const appUrl = `${window.location.protocol}//${app.path}.${app.OrganizationId}.${window.location.host}`;
 
   React.useEffect(() => {
     openApiDocumentPromise.then(setOpenApiDocument);
@@ -76,9 +88,9 @@ export default function Editor(): React.ReactElement {
         setSharedStyle(sharedStyleData);
       } catch (error) {
         if (error.response && (error.response.status === 404 || error.response.status === 401)) {
-          push(intl.formatMessage(messages.appNotFound));
+          push(formatMessage(messages.appNotFound));
         } else {
-          push(intl.formatMessage(messages.error));
+          push(formatMessage(messages.error));
         }
       }
     };
@@ -91,14 +103,14 @@ export default function Editor(): React.ReactElement {
 
     if (!yamlRecipe) {
       yamlRecipe = safeDump(definition);
-      push({ body: intl.formatMessage(messages.yamlNotFound), color: 'info' });
+      push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
     }
 
     setAppName(definition.name);
     setRecipe(yamlRecipe);
     setInitialRecipe(yamlRecipe);
     setPath(p);
-  }, [app, history, intl, location.hash, params, push]);
+  }, [app, history, formatMessage, location.hash, params, push]);
 
   const onSave = React.useCallback(async () => {
     let definition: AppDefinition;
@@ -106,7 +118,7 @@ export default function Editor(): React.ReactElement {
     try {
       definition = safeLoad(recipe);
     } catch (error) {
-      push(intl.formatMessage(messages.invalidYaml));
+      push(formatMessage(messages.invalidYaml));
       setValid(false);
       setDirty(false);
       return;
@@ -116,7 +128,7 @@ export default function Editor(): React.ReactElement {
       validateStyle(style);
       validateStyle(sharedStyle);
     } catch (error) {
-      push(intl.formatMessage(messages.invalidStyle));
+      push(formatMessage(messages.invalidStyle));
       setValid(false);
       setDirty(false);
       return;
@@ -147,24 +159,24 @@ export default function Editor(): React.ReactElement {
       // YAML and schema appear to be valid, send it to the app preview iframe
       frame.current.contentWindow.postMessage(
         { type: 'editor/EDIT_SUCCESS', definition, blockManifests, style, sharedStyle },
-        appUrl,
+        getAppUrl(app.OrganizationId, app.path),
       );
     } catch (error) {
       if (error instanceof SchemaValidationError) {
         const errors = error.data;
         push({
-          body: intl.formatMessage(messages.schemaValidationFailed, {
+          body: formatMessage(messages.schemaValidationFailed, {
             properties: Object.keys(errors).join(', '),
           }),
         });
       } else {
-        push(intl.formatMessage(messages.unexpected));
+        push(formatMessage(messages.unexpected));
       }
 
       setValid(false);
     }
     setDirty(false);
-  }, [appUrl, intl, openApiDocument, push, recipe, sharedStyle, style]);
+  }, [app, formatMessage, openApiDocument, push, recipe, sharedStyle, style]);
 
   const uploadApp = React.useCallback(async () => {
     if (!valid) {
@@ -185,15 +197,15 @@ export default function Editor(): React.ReactElement {
 
       const { data } = await axios.patch(`/api/apps/${id}`, formData);
       setPath(data.path);
-      push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
+      push({ body: formatMessage(messages.updateSuccess), color: 'success' });
 
       // update App State
       setApp(data);
     } catch (e) {
       if (e.response && e.response.status === 403) {
-        push(intl.formatMessage(messages.forbidden));
+        push(formatMessage(messages.forbidden));
       } else {
-        push(intl.formatMessage(messages.errorUpdate));
+        push(formatMessage(messages.errorUpdate));
       }
 
       return;
@@ -202,7 +214,7 @@ export default function Editor(): React.ReactElement {
     setAppName(definition.name);
     setDirty(true);
     setInitialRecipe(recipe);
-  }, [intl, params, push, recipe, sharedStyle, style, setApp, valid]);
+  }, [formatMessage, params, push, recipe, sharedStyle, style, setApp, valid]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -232,6 +244,10 @@ export default function Editor(): React.ReactElement {
       switch (location.hash) {
         case '#editor':
           setRecipe(value);
+          if (editorStep !== GuiEditorStep.YAML) {
+            const definition = safeLoad(value);
+            setApp({ ...app, yaml: value, definition });
+          }
           break;
         case '#style-core':
           setStyle(value);
@@ -245,7 +261,7 @@ export default function Editor(): React.ReactElement {
 
       setDirty(true);
     },
-    [location.hash],
+    [location.hash, app, editorStep, setApp],
   );
 
   if (recipe == null) {
@@ -272,84 +288,55 @@ export default function Editor(): React.ReactElement {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} is-flex`}>
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
-        <Form className={styles.editorForm} onSubmit={onSave}>
-          <nav className="navbar">
-            <div className="navbar-brand">
-              <span className="navbar-item">
-                <Button disabled={!dirty} icon="vial" type="submit">
-                  <FormattedMessage {...messages.preview} />
-                </Button>
-              </span>
-              <span className="navbar-item">
-                <Button
-                  className="button"
-                  disabled={!valid || dirty}
-                  icon="save"
-                  onClick={onUpload}
-                >
-                  <FormattedMessage {...messages.publish} />
-                </Button>
-              </span>
-              <span className="navbar-item">
-                <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
-                  <Icon icon="share-square" />
-                  <span>
-                    <FormattedMessage {...messages.viewLive} />
-                  </span>
-                </a>
-              </span>
-            </div>
-          </nav>
-          <div className={classNames('tabs', 'is-boxed', styles.editorTabs)}>
-            <ul>
-              <li
-                className={classNames({ 'is-active': location.hash === '#editor' })}
-                value="editor"
-              >
-                <Link to="#editor">
-                  <Icon icon="file-code" />
-                  <FormattedMessage {...messages.recipe} />
-                </Link>
-              </li>
-              <li
-                className={classNames({ 'is-active': location.hash === '#style-core' })}
-                value="style-core"
-              >
-                <Link to="#style-core">
-                  <Icon icon="brush" />
-                  <FormattedMessage {...messages.coreStyle} />
-                </Link>
-              </li>
-              <li
-                className={classNames({ 'is-active': location.hash === '#style-shared' })}
-                value="style-shared"
-              >
-                <Link to="#style-shared">
-                  <Icon icon="brush" />
-                  <FormattedMessage {...messages.sharedStyle} />
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <MonacoEditor
-            language={language}
-            onChange={onValueChange}
-            onSave={onSave}
-            value={value}
+        <Form onSubmit={onSave}>
+          <EditorNavBar
+            dirty={dirty}
+            editorStep={editorStep}
+            onUpload={onUpload}
+            setEditorStep={setEditorStep}
+            valid={valid}
           />
         </Form>
+        {editorStep !== GuiEditorStep.YAML && (
+          <GUIEditor
+            app={app}
+            decorationList={decorationList}
+            editorStep={editorStep}
+            monacoEditor={monacoEditor}
+            onChangeDecorationList={setDecorationList}
+            onChangeEditorStep={setEditorStep}
+          />
+        )}
+        <div
+          className={
+            editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
+              ? styles.editorForm
+              : 'is-hidden'
+          }
+        >
+          <MonacoEditor
+            ref={setMonacoEditor}
+            decorationList={decorationList}
+            language={language}
+            onChange={onValueChange}
+            onChangeDecorationList={setDecorationList}
+            onSave={onSave}
+            options={editorStep === GuiEditorStep.YAML ? monacoDefaultOptions : monacoGuiOptions}
+            value={value}
+          />
+        </div>
       </div>
 
-      <div className={styles.rightPanel}>
+      <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
         {path && (
           <iframe
             ref={frame}
             className={styles.appFrame}
-            src={appUrl}
-            title={intl.formatMessage(messages.iframeTitle)}
+            src={getAppUrl(app.OrganizationId, app.path)}
+            title={formatMessage(messages.iframeTitle)}
           />
         )}
       </div>

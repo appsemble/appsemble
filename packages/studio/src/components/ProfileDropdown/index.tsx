@@ -8,7 +8,7 @@ import styles from './index.css';
 import messages from './messages';
 
 export default function ProfileDropdown(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const { logout, userInfo } = useUser();
   const location = useLocation();
   const redirect = useLocationString();
@@ -31,7 +31,7 @@ export default function ProfileDropdown(): React.ReactElement {
         userInfo ? (
           <figure className="image is-32x32">
             <img
-              alt={intl.formatMessage(messages.pfp)}
+              alt={formatMessage(messages.pfp)}
               className={`is-rounded ${styles.gravatar}`}
               src={userInfo.picture}
             />
@@ -71,7 +71,7 @@ export default function ProfileDropdown(): React.ReactElement {
       <hr className="dropdown-divider" />
       {userInfo ? (
         <Button
-          className={`dropdown-item ${styles.logoutButton}`}
+          className={`dropdown-item pl-5 ${styles.logoutButton}`}
           icon="sign-out-alt"
           onClick={logout}
         >

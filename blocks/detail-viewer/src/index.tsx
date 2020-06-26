@@ -32,7 +32,7 @@ bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} px-2 py-2 is-flex`}>
       {parameters.fields.map((field, index) => {
         // Always default to string if type is not supported in renderers list.
         const Comp = renderers[field.type] || renderers.string;
