@@ -18,8 +18,8 @@ export default function PageSelect({
   app,
   name,
   onChange,
-  value = {},
   required,
+  value = null,
 }: PageSelectProps): React.ReactElement {
   const pages = Object.values(app.definition.pages);
 

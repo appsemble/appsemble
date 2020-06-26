@@ -41,13 +41,32 @@ export default function ActionEditorTypeEditor({
   switch (selectedActionTypeName) {
     case 'link':
       return <LinkActionEditor app={app} onChange={handleChange} value={value[name]} />;
-    case `No "${name}" action`:
-      return null;
-    default:
+    case 'dialog':
+    case 'event':
+    case 'flow.back':
+    case 'flow.next':
+    case 'flow.cancel':
+    case 'flow.finish':
+    case 'log':
+    case 'message':
+    case 'noop':
+    case 'request':
+    case 'resource.get':
+    case 'resource.query':
+    case 'resource.create':
+    case 'resource.delete':
+    case 'resource.subscription.status':
+    case 'resource.subscription.subscribe':
+    case 'resource.subscription.toggle':
+    case 'resource.subscription.unsubscribe':
+    case 'resource.update':
+    case 'static':
       return (
         <div>
           <FormattedMessage {...messages.notSupported} />
         </div>
       );
+    default:
+      return null;
   }
 }
