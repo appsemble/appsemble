@@ -1,19 +1,7 @@
-.iconContainer {
-  margin-bottom: 0.5em;
-}
-
 .icon {
   height: 128px !important;
   object-fit: contain;
   width: 128px !important;
-}
-
-.private {
-  margin-bottom: 0.75rem;
-}
-
-.private div {
-  margin-bottom: 0 !important;
 }
 
 .dangerZone {

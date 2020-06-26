@@ -5,7 +5,7 @@ import styles from './index.css';
 
 attach(({ events, parameters: { fields }, utils: { remap } }) => {
   const wrapper = (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} is-flex`}>
       <div className={styles.loader} />
     </div>
   );
@@ -23,9 +23,9 @@ attach(({ events, parameters: { fields }, utils: { remap } }) => {
           const remappedLabel = remap(label, data);
 
           return (
-            <div className={styles.field}>
+            <div className={`${styles.field} is-inline has-text-centered`}>
               <i className={`fas fa-${icon} ${styles.icon}`} />
-              <div className={`has-text-weight-bold ${styles.value}`}>{remap(value, data)}</div>
+              <div className="has-text-weight-bold mx-0 mt-2 mb-1">{remap(value, data)}</div>
               {remappedLabel && <div>{remappedLabel}</div>}
             </div>
           );

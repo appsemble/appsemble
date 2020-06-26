@@ -42,7 +42,7 @@ export default function GUIEditorToolbox({
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`mx-2 is-flex ${styles.root}`}>
       <Title>
         <FormattedMessage {...messages.title} />
       </Title>
@@ -53,7 +53,7 @@ export default function GUIEditorToolbox({
         value={selectedBlock}
       />
       {selectedBlock && (
-        <div className="container is-fluid notification">
+        <div className="container is-fluid notification mb-2">
           <article className="media">
             <div className="media-content">
               <Title level={4}>{stripBlockName(selectedBlock.name)}</Title>

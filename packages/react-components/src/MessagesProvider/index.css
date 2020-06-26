@@ -1,8 +1,6 @@
 .root {
   bottom: 10px;
   box-sizing: border-box;
-  margin-left: 10px;
-  margin-right: 10px;
   position: fixed;
   width: calc(100vw - 20px);
   z-index: 3000;

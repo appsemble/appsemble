@@ -143,7 +143,7 @@ export default function GUIEditorSelect({
           {
             range: editLocation.editRange,
             options: {
-              inlineClassName: styles.selectionDecoration,
+              inlineClassName: `py-1 ${styles.selectionDecoration}`,
             },
           },
         ];

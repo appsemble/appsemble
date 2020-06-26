@@ -18,7 +18,7 @@ export default function EmailLogin(): React.ReactElement {
 
   return (
     <SimpleForm
-      className={classNames('container', styles.root)}
+      className={classNames('container px-3 py-3', styles.root)}
       defaultValues={{ username: '', password: '' }}
       onSubmit={passwordLogin}
     >

@@ -21,7 +21,7 @@ export default function ImageField({ label, name, src }: ImageFieldProps): VNode
   const alt = utils.remap(label, src) || name;
 
   return (
-    <figure className={classNames('image', styles.root)}>
+    <figure className={classNames('image mr-3', styles.root)}>
       <img alt={alt} className={styles.img} src={url} />
     </figure>
   );

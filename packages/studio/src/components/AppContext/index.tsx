@@ -65,7 +65,7 @@ export default function AppContext(): React.ReactElement {
     <Context.Provider value={value}>
       <div className={styles.container}>
         <AppSideMenu />
-        <div className={styles.content}>
+        <div className={`${styles.content} px-3 py-3`}>
           <Switch>
             <Route exact path={match.path}>
               <AppDetails />

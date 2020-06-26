@@ -16,8 +16,13 @@ async function mayRegister({ argv }: KoaContext): Promise<void> {
 
 export async function registerEmail(ctx: KoaContext): Promise<void> {
   await mayRegister(ctx);
-  const { argv, mailer } = ctx;
-  const { email, name, password } = ctx.request.body;
+  const {
+    argv,
+    mailer,
+    request: {
+      body: { email, name, password },
+    },
+  } = ctx;
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const key = crypto.randomBytes(40).toString('hex');
@@ -61,8 +66,10 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
 
 export async function verifyEmail(ctx: KoaContext): Promise<void> {
   const {
-    body: { token },
-  } = ctx.request;
+    request: {
+      body: { token },
+    },
+  } = ctx;
 
   const email = await EmailAuthorization.findOne({ where: { key: token } });
 
@@ -78,8 +85,12 @@ export async function verifyEmail(ctx: KoaContext): Promise<void> {
 }
 
 export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
-  const { mailer } = ctx;
-  const { email } = ctx.request.body;
+  const {
+    mailer,
+    request: {
+      body: { email },
+    },
+  } = ctx;
 
   const record = await EmailAuthorization.findByPk(email, { raw: true });
   if (record && !record.verified) {
@@ -93,8 +104,12 @@ export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
 }
 
 export async function requestResetPassword(ctx: KoaContext): Promise<void> {
-  const { mailer } = ctx;
-  const { email } = ctx.request.body;
+  const {
+    mailer,
+    request: {
+      body: { email },
+    },
+  } = ctx;
 
   const emailRecord = await EmailAuthorization.findByPk(email);
 
@@ -113,7 +128,11 @@ export async function requestResetPassword(ctx: KoaContext): Promise<void> {
 }
 
 export async function resetPassword(ctx: KoaContext): Promise<void> {
-  const { token } = ctx.request.body;
+  const {
+    request: {
+      body: { token },
+    },
+  } = ctx;
 
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 

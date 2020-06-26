@@ -28,6 +28,10 @@ FROM node:14-slim
 COPY --from=prod /app /app
 COPY --from=build /app/dist /app/dist
 WORKDIR /app
+# By default colors aren’t detected within a Docker container. Let’s assume at least simple colors
+# are supported by those who inspect the logs.
+# https://www.npmjs.com/package/chalk#chalksupportscolor
+ENV FORCE_COLOR 1
 ENV NODE_ENV production
 USER node
 ENTRYPOINT ["node", "packages/server/dist"]

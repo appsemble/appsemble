@@ -7,7 +7,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import useUser from '../../hooks/useUser';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
-import styles from './index.css';
 import messages from './messages';
 
 export interface Member {
@@ -18,7 +17,7 @@ export interface Member {
 }
 
 export default function Roles(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const { userInfo } = useUser();
   const { app } = useApp();
@@ -65,13 +64,13 @@ export default function Roles(): React.ReactElement {
 
       push({
         color: 'success',
-        body: intl.formatMessage(messages.changeRoleSuccess, {
+        body: formatMessage(messages.changeRoleSuccess, {
           name: member.name || member.primaryEmail || member.id,
           role,
         }),
       });
     } catch (error) {
-      push({ body: intl.formatMessage(messages.changeRoleError) });
+      push({ body: formatMessage(messages.changeRoleError) });
     }
 
     setSubmittingMemberRoleId(undefined);
@@ -103,7 +102,7 @@ export default function Roles(): React.ReactElement {
             <tr key={member.id}>
               <td>
                 <span>{member.name || member.primaryEmail || member.id}</span>{' '}
-                <div className={`tags ${styles.tags}`}>
+                <div className="tags is-inline ml-2">
                   {member.id === userInfo.sub && (
                     <span className="tag is-success">
                       <FormattedMessage {...messages.you} />

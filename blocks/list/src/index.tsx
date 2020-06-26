@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import type { Item } from '../block';
 import ListItem from './components/ListItem';
-import styles from './index.css';
 
 const messages = {
   error: 'An error occurred when fetching the data.',
@@ -56,7 +55,7 @@ export default bootstrap(({ data: blockData, events, parameters: { base }, ready
 
   if (error) {
     return (
-      <Message className={styles.message} color="danger">
+      <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
         <FormattedMessage id="error" />
       </Message>
     );
@@ -64,14 +63,14 @@ export default bootstrap(({ data: blockData, events, parameters: { base }, ready
 
   if (!data.length) {
     return (
-      <Message className={styles.message}>
+      <Message className="mt-4 mr-6 mb-4 ml-5">
         <FormattedMessage id="noData" />
       </Message>
     );
   }
 
   return (
-    <ul className={styles.container}>
+    <ul className="py-4 px-5">
       {data.map((item, index) => (
         <li key={item.id ?? index}>
           <ListItem item={item} />

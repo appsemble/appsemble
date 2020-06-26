@@ -18,6 +18,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
+import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import GUIEditor from '../GUIEditor';
 import { GuiEditorStep } from '../GUIEditor/types';
@@ -62,12 +63,10 @@ export default function Editor(): React.ReactElement {
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const location = useLocation();
   const params = useParams<{ id: string }>();
   const push = useMessages();
-
-  const appUrl = `${window.location.protocol}//${app.path}.${app.OrganizationId}.${window.location.host}`;
 
   React.useEffect(() => {
     openApiDocumentPromise.then(setOpenApiDocument);
@@ -89,9 +88,9 @@ export default function Editor(): React.ReactElement {
         setSharedStyle(sharedStyleData);
       } catch (error) {
         if (error.response && (error.response.status === 404 || error.response.status === 401)) {
-          push(intl.formatMessage(messages.appNotFound));
+          push(formatMessage(messages.appNotFound));
         } else {
-          push(intl.formatMessage(messages.error));
+          push(formatMessage(messages.error));
         }
       }
     };
@@ -104,14 +103,14 @@ export default function Editor(): React.ReactElement {
 
     if (!yamlRecipe) {
       yamlRecipe = safeDump(definition);
-      push({ body: intl.formatMessage(messages.yamlNotFound), color: 'info' });
+      push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
     }
 
     setAppName(definition.name);
     setRecipe(yamlRecipe);
     setInitialRecipe(yamlRecipe);
     setPath(p);
-  }, [app, history, intl, location.hash, params, push]);
+  }, [app, history, formatMessage, location.hash, params, push]);
 
   const onSave = React.useCallback(async () => {
     let definition: AppDefinition;
@@ -119,7 +118,7 @@ export default function Editor(): React.ReactElement {
     try {
       definition = safeLoad(recipe);
     } catch (error) {
-      push(intl.formatMessage(messages.invalidYaml));
+      push(formatMessage(messages.invalidYaml));
       setValid(false);
       setDirty(false);
       return;
@@ -129,7 +128,7 @@ export default function Editor(): React.ReactElement {
       validateStyle(style);
       validateStyle(sharedStyle);
     } catch (error) {
-      push(intl.formatMessage(messages.invalidStyle));
+      push(formatMessage(messages.invalidStyle));
       setValid(false);
       setDirty(false);
       return;
@@ -160,24 +159,24 @@ export default function Editor(): React.ReactElement {
       // YAML and schema appear to be valid, send it to the app preview iframe
       frame.current.contentWindow.postMessage(
         { type: 'editor/EDIT_SUCCESS', definition, blockManifests, style, sharedStyle },
-        appUrl,
+        getAppUrl(app.OrganizationId, app.path),
       );
     } catch (error) {
       if (error instanceof SchemaValidationError) {
         const errors = error.data;
         push({
-          body: intl.formatMessage(messages.schemaValidationFailed, {
+          body: formatMessage(messages.schemaValidationFailed, {
             properties: Object.keys(errors).join(', '),
           }),
         });
       } else {
-        push(intl.formatMessage(messages.unexpected));
+        push(formatMessage(messages.unexpected));
       }
 
       setValid(false);
     }
     setDirty(false);
-  }, [appUrl, intl, openApiDocument, push, recipe, sharedStyle, style]);
+  }, [app, formatMessage, openApiDocument, push, recipe, sharedStyle, style]);
 
   React.useEffect(() => {
     if (editorStep !== GuiEditorStep.YAML && openApiDocument) {
@@ -204,15 +203,15 @@ export default function Editor(): React.ReactElement {
 
       const { data } = await axios.patch(`/api/apps/${id}`, formData);
       setPath(data.path);
-      push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
+      push({ body: formatMessage(messages.updateSuccess), color: 'success' });
 
       // update App State
       setApp(data);
     } catch (e) {
       if (e.response && e.response.status === 403) {
-        push(intl.formatMessage(messages.forbidden));
+        push(formatMessage(messages.forbidden));
       } else {
-        push(intl.formatMessage(messages.errorUpdate));
+        push(formatMessage(messages.errorUpdate));
       }
 
       return;
@@ -221,7 +220,7 @@ export default function Editor(): React.ReactElement {
     setAppName(definition.name);
     setDirty(true);
     setInitialRecipe(recipe);
-  }, [intl, params, push, recipe, sharedStyle, style, setApp, valid]);
+  }, [formatMessage, params, push, recipe, sharedStyle, style, setApp, valid]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -295,12 +294,11 @@ export default function Editor(): React.ReactElement {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} is-flex`}>
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
         <Form onSubmit={onSave}>
           <EditorNavBar
-            appUrl={appUrl}
             dirty={dirty}
             editorStep={editorStep}
             onUpload={onUpload}
@@ -338,13 +336,13 @@ export default function Editor(): React.ReactElement {
         </div>
       </div>
 
-      <div className={styles.rightPanel}>
+      <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
         {path && (
           <iframe
             ref={frame}
             className={styles.appFrame}
-            src={appUrl}
-            title={intl.formatMessage(messages.iframeTitle)}
+            src={getAppUrl(app.OrganizationId, app.path)}
+            title={formatMessage(messages.iframeTitle)}
           />
         )}
       </div>

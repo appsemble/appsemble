@@ -4,21 +4,20 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
+import getAppUrl from '../../../../utils/getAppUrl';
+import { useApp } from '../../../AppContext';
 import { GuiEditorStep } from '../../../GUIEditor/types';
-import styles from './index.css';
 import messages from './messages';
 
 interface EditorNavBarProps {
   dirty: boolean;
   editorStep: GuiEditorStep;
   setEditorStep: (value: GuiEditorStep) => void;
-  appUrl: string;
   onUpload: () => void;
   valid: boolean;
 }
 
 export default function EditorNavBar({
-  appUrl,
   dirty,
   editorStep,
   onUpload,
@@ -26,6 +25,7 @@ export default function EditorNavBar({
   valid,
 }: EditorNavBarProps): React.ReactElement {
   const location = useLocation();
+  const { app } = useApp();
 
   const switchEditor = React.useCallback(() => {
     if (editorStep !== GuiEditorStep.YAML) {
@@ -56,7 +56,12 @@ export default function EditorNavBar({
             </Button>
           </span>
           <span className="navbar-item">
-            <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
+            <a
+              className="button"
+              href={getAppUrl(app.OrganizationId, app.path, app.domain)}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
               <Icon icon="share-square" />
               <span>
                 <FormattedMessage {...messages.viewLive} />
@@ -75,7 +80,7 @@ export default function EditorNavBar({
         </div>
       </nav>
       {editorStep === GuiEditorStep.YAML ? (
-        <div className={`tabs is-boxed ${styles.editorTabs}`}>
+        <div className="tabs is-boxed mb-0">
           <ul>
             <li className={classNames({ 'is-active': location.hash === '#editor' })} value="editor">
               <Link to="#editor">

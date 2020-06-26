@@ -1,6 +1,5 @@
 import { Loader, Message, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -35,7 +34,7 @@ export default function VerifyEmail(): React.ReactElement {
 
   if (success) {
     return (
-      <div className={classNames('container', styles.root)}>
+      <div className={`container px-3 py-3 ${styles.root}`}>
         <Message color="success">
           <FormattedMessage {...messages.requestSuccess} />
         </Message>
@@ -44,7 +43,7 @@ export default function VerifyEmail(): React.ReactElement {
   }
 
   return (
-    <div className={classNames('container', styles.root)}>
+    <div className={`container ${styles.root}`}>
       <Message color="danger">
         <FormattedMessage {...messages.requestFailed} />
       </Message>

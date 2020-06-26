@@ -21,6 +21,7 @@ import { useHistory } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
 import checkRole from '../../utils/checkRole';
+import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import AppRatings from '../AppRatings';
 import styles from './index.css';
@@ -33,7 +34,7 @@ export default function AppDetails(): React.ReactElement {
   );
   const cloneDialog = useToggle();
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
 
   const organizations = useOrganizations();
 
@@ -60,9 +61,9 @@ export default function AppDetails(): React.ReactElement {
     <>
       <div>
         <div className={styles.titleContainer}>
-          <header className={styles.title}>
-            <figure className="image is-96x96 is-marginless">
-              <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
+          <header className={`${styles.title} mb-2`}>
+            <figure className="image is-96x96 my-0 ml-0 mr-4">
+              <img alt={formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
             </figure>
             <div>
               <Title className="is-marginless" level={1}>
@@ -75,17 +76,13 @@ export default function AppDetails(): React.ReactElement {
           </header>
           <div>
             {createOrganizations.length ? (
-              <Button className={styles.cloneButton} onClick={cloneDialog.enable}>
+              <Button className="mr-3" onClick={cloneDialog.enable}>
                 <FormattedMessage {...messages.clone} />
               </Button>
             ) : null}
             <a
               className="button is-primary"
-              href={
-                app.domain
-                  ? `//${app.domain}${window.location.port && `:${window.location.port}`}`
-                  : `//${app.path}.${app.OrganizationId}.${window.location.host}`
-              }
+              href={getAppUrl(app.OrganizationId, app.path, app.domain)}
               rel="noopener noreferrer"
               target="_blank"
             >

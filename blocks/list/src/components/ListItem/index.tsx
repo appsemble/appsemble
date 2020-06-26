@@ -30,7 +30,12 @@ export default function ListItem({ item }: ListItemProps): VNode {
   const headerValue = remap(header, item);
 
   return (
-    <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
+    <ListItemWrapper
+      actions={actions}
+      className={`${styles.item} has-text-left is-block my-1 pt-4 pr-6 pb-4 pl-5`}
+      item={item}
+      onClick={onItemClick}
+    >
       {(icon || headerValue) && (
         <div className={classNames({ [styles.header]: fields?.length })}>
           {icon && <Icon icon={icon} />}
@@ -45,7 +50,7 @@ export default function ListItem({ item }: ListItemProps): VNode {
         }
 
         return (
-          <span className={styles.itemField}>
+          <span className={`${styles.itemField} mr-1 is-inline-block`}>
             {field.icon && <Icon icon={field.icon} />}
             {field.label && (
               <span>
@@ -62,7 +67,7 @@ export default function ListItem({ item }: ListItemProps): VNode {
         );
       })}
       {actions.onClick.type !== 'noop' && (
-        <Icon className={styles.button} icon="angle-right" size="large" />
+        <Icon className={`${styles.button} mx-0 my-0 px-0 py-0`} icon="angle-right" size="large" />
       )}
     </ListItemWrapper>
   );

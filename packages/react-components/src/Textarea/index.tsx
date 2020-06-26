@@ -79,12 +79,12 @@ export default React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
         {control && React.cloneElement(control, { className: 'is-right' })}
-        <div className={styles.help}>
+        <div className={`${styles.help} is-flex`}>
           <p className={classNames('help', { 'is-danger': error })}>
             {React.isValidElement(error) ? error : help}
           </p>
           {maxLength ? (
-            <span className={`help ${styles.counter}`}>
+            <span className={`help ml-1 ${styles.counter}`}>
               {value == null ? 0 : `${value}`.length} / {maxLength}
             </span>
           ) : null}

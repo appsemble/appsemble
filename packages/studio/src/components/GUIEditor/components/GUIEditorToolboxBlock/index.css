@@ -1,8 +1,5 @@
 .blockFrame {
-  display: flex;
   float: left;
-  margin-bottom: 18px;
-  margin-left: 18px;
 
   &.selected {
     background: hsl(204, 86%, 53%);

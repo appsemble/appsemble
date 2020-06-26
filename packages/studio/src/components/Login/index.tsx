@@ -8,6 +8,7 @@ import {
   SimpleInput,
   SimpleSubmit,
   useQuery,
+  useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import React from 'react';
@@ -29,15 +30,22 @@ export default function Login(): React.ReactElement {
   const location = useLocation();
   const { login } = useUser();
   const qs = useQuery();
+  const busy = useToggle();
 
   const onPasswordLogin = React.useCallback(
     async ({ email, password }: LoginFormValues) => {
-      const { data } = await axios.post('/api/login', undefined, {
-        headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
-      });
-      login(data);
+      busy.enable();
+      try {
+        const { data } = await axios.post('/api/login', undefined, {
+          headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
+        });
+        login(data);
+      } catch (error) {
+        busy.disable();
+        throw error;
+      }
     },
-    [login],
+    [busy, login],
   );
 
   return (
@@ -47,6 +55,7 @@ export default function Login(): React.ReactElement {
         <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
         <SimpleInput
           autoComplete="email"
+          disabled={busy.enabled}
           iconLeft="envelope"
           label={<FormattedMessage {...messages.emailLabel} />}
           name="email"
@@ -60,6 +69,7 @@ export default function Login(): React.ReactElement {
         <SimpleInput
           autoComplete="current-password"
           component={PasswordInput}
+          disabled={busy.enabled}
           label={<FormattedMessage {...messages.passwordLabel} />}
           name="password"
           required
@@ -71,30 +81,32 @@ export default function Login(): React.ReactElement {
           <div>
             {settings.enableRegistration && (
               <Link
-                className={styles.formLink}
+                className="is-block"
                 to={{ pathname: '/register', search: location.search, hash: location.hash }}
               >
                 <FormattedMessage {...messages.registerLink} />
               </Link>
             )}
-            <Link className={styles.formLink} to="/reset-password">
+            <Link className="is-block" to="/reset-password">
               <FormattedMessage {...messages.forgotPasswordLink} />
             </Link>
           </div>
-          <SimpleSubmit>
+          <SimpleSubmit disabled={busy.enabled}>
             <FormattedMessage {...messages.loginButton} />
           </SimpleSubmit>
         </FormButtons>
       </SimpleForm>
-      <div className={styles.socialLogins}>
+      <div className={`${styles.socialLogins} mt-5`}>
         {settings.logins.map((provider) => (
           <OAuth2LoginButton
             key={provider.authorizationUrl}
             authorizationUrl={provider.authorizationUrl}
-            className={styles.button}
+            className="mr-2"
             clientId={provider.clientId}
+            disabled={busy.enabled}
             icon={provider.icon}
             iconPrefix="fab"
+            onClick={busy.enable}
             redirect={qs.get('redirect')}
             redirectUrl="/callback"
             scope={provider.scope}
