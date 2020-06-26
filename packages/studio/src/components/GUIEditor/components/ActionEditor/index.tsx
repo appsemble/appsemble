@@ -13,6 +13,7 @@ interface ActionEditorProps {
   app: App;
   onChange: (event: NamedEvent, value?: any) => void;
   value: any;
+  name: string;
 }
 
 export default function ActionEditor({
@@ -20,16 +21,17 @@ export default function ActionEditor({
   app,
   onChange,
   value = {},
+  name,
 }: ActionEditorProps): React.ReactElement {
   const [selectedActionType, setSelectedActionType] = React.useState<{
     [actionName: string]: ActionDefinition['type'];
   }>({});
 
   const handleChange = React.useCallback(
-    (event, val) => {
-      onChange(event.target.name, val);
+    (_event, val) => {
+      onChange({ target: { name } }, val);
     },
-    [onChange],
+    [name, onChange],
   );
 
   React.useEffect(() => {
