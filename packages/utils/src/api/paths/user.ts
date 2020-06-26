@@ -174,22 +174,4 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/user/app-accounts': {
-    get: {
-      operationId: 'getAppAccounts',
-      tags: ['user'],
-      description: 'Get all linked app accounts for the logged in user.',
-      security: [{ studio: [] }],
-      responses: {
-        200: {
-          description: 'All app accounts linked to the logged in user.',
-          content: {
-            'application/json': {
-              schema: {},
-            },
-          },
-        },
-      },
-    },
-  },
 };

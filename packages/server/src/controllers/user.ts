@@ -3,15 +3,7 @@ import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { verify } from 'jsonwebtoken';
 
-import {
-  App,
-  AppOAuth2Authorization,
-  AppOAuth2Secret,
-  EmailAuthorization,
-  OAuthAuthorization,
-  Organization,
-  User,
-} from '../models';
+import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
 import type { KoaContext } from '../types';
 import createJWTResponse from '../utils/createJWTResponse';
 
@@ -207,51 +199,4 @@ export async function refreshToken(ctx: KoaContext): Promise<void> {
   const { sub } = verify(body.token, argv.secret, { audience: argv.host }) as JwtPayload;
 
   ctx.body = createJWTResponse(sub, argv);
-}
-
-export async function getAppAccounts(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
-
-  const authorizations = await AppOAuth2Authorization.findAll({
-    attributes: ['sub'],
-    where: { UserId: user.id },
-    include: [
-      {
-        model: AppOAuth2Secret,
-        attributes: ['icon', 'name', 'AppId'],
-        include: [
-          {
-            model: App,
-            attributes: ['definition', 'domain', 'path', 'OrganizationId'],
-          },
-        ],
-      },
-    ],
-  });
-
-  ctx.body = authorizations.map(
-    ({
-      AppOAuth2Secret: {
-        App: {
-          OrganizationId,
-          definition: { name: appName },
-          domain,
-          path,
-        },
-        AppId,
-        icon,
-        name: providerName,
-      },
-      sub,
-    }) => ({
-      AppId,
-      appName,
-      domain,
-      icon,
-      OrganizationId,
-      path,
-      providerName,
-      sub,
-    }),
-  );
 }
