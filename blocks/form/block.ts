@@ -341,9 +341,9 @@ export interface InputProps<T, F extends Field> {
 declare module '@appsemble/sdk' {
   interface Actions {
     /**
-     * Action that gets dispatched when the form has been submitted successfully.
+     * Action that gets dispatched when the form is submitted.
      */
-    onSubmitSuccess: {};
+    onSubmit: {};
 
     /**
      * Action that gets dispatched when the form is submitted.

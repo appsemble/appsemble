@@ -215,23 +215,17 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       event.preventDefault();
 
       if (!submitting) {
+        setSubmitting(true);
         actions.onSubmit
           .dispatch(values)
-          .then(() => {
-            setSubmitting(true);
-            return actions.onSubmitSuccess.dispatch(values);
-          })
           .catch((error) => {
             if (error.message !== 'Schema Validation Failed') {
-              setSubmitting(false);
               throw error;
             }
             setErrors(error.data);
-            setSubmitting(false);
-          });
+          })
+          .finally(() => setSubmitting(false));
       }
-
-      setSubmitting(true);
     },
     [actions, submitting, values],
   );
@@ -284,4 +278,4 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       </div>
     </form>
   );
-}, messages);
+});
