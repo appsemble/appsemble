@@ -1,6 +1,7 @@
 import { Loader, useLocationString } from '@appsemble/react-components';
 import type { BlockDefinition, Security } from '@appsemble/types';
-import { checkAppRole } from '@appsemble/utils';
+import { checkAppRole, normalizeBlockName } from '@appsemble/utils';
+import classNames from 'classnames';
 import type { EventEmitter } from 'events';
 import React from 'react';
 import { Redirect } from 'react-router-dom';
@@ -47,7 +48,7 @@ export default function BlockList({
   showDialog,
   transitions,
 }: BlockListProps): React.ReactElement {
-  const { definition, revision } = useAppDefinition();
+  const { blockManifests, definition, revision } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
   const redirect = useLocationString();
 
@@ -91,13 +92,22 @@ export default function BlockList({
   }
 
   const list = blockList.map((block, index) => {
+    const manifest = blockManifests.find(
+      (m) => m.name === normalizeBlockName(block.type) && m.version === block.version,
+    );
+
+    const layout = manifest.layout || 'grow';
+
     const content = (
       <Block
         // As long as blocks are in a static list, using the index as a key should be fine.
         // eslint-disable-next-line react/no-array-index-key
         key={`${revision}-${index}`}
         block={block}
-        className={isLoading ? 'is-hidden' : null}
+        className={classNames(styles[layout], {
+          'is-hidden': isLoading,
+          [styles.transitionWrapper]: transitions,
+        })}
         data={data}
         ee={ee}
         extraCreators={extraCreators}
@@ -108,6 +118,10 @@ export default function BlockList({
         showDialog={showDialog}
       />
     );
+
+    if (layout === 'float' || layout === 'hidden') {
+      return content;
+    }
 
     return transitions ? (
       <CSSTransition
@@ -122,7 +136,7 @@ export default function BlockList({
         }}
         timeout={300}
       >
-        <div className={styles.transitionWrapper}>{content}</div>
+        {content}
       </CSSTransition>
     ) : (
       content

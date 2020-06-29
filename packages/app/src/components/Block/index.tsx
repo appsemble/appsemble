@@ -232,25 +232,15 @@ export default function Block({
 
   switch (manifest.layout) {
     case 'float':
-      return ReactDOM.createPortal(
-        <div ref={ref} className={classNames(styles.float, className)} />,
-        document.body,
-      );
-    case 'static':
-      return (
-        <>
-          {header}
-          <div ref={ref} className={classNames(styles.static, className)} />
-        </>
-      );
+      return ReactDOM.createPortal(<div ref={ref} className={className} />, document.body);
     case 'hidden':
       return null;
     default:
       return (
-        <>
+        <div className={`${className} ${styles.blockRoot}`}>
           {header}
-          <div ref={ref} className={classNames(styles.grow, className)} />
-        </>
+          <div ref={ref} />
+        </div>
       );
   }
 }

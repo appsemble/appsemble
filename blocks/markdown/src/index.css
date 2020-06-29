@@ -1,3 +1,5 @@
 .markdownContainer {
-  margin: 10px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 10px;
 }
