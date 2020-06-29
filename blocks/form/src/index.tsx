@@ -1,11 +1,10 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { Message } from '@appsemble/preact-components';
-import type { Parameters, Remapper } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { h } from 'preact';
-import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import type { Field, FileField } from '../block';
+import type { BaseRequirement } from '../block';
 import BooleanInput from './components/BooleanInput';
 import EnumInput from './components/EnumInput';
 import FileInput from './components/FileInput';
@@ -15,15 +14,9 @@ import RadioInput from './components/RadioInput';
 import StringInput from './components/StringInput';
 import styles from './index.css';
 import messages from './messages';
-import validateString from './utils/validateString';
-import ValidationError from './utils/ValidationError';
-
-type Validator = (
-  field: Field,
-  event: Event,
-  value: any,
-  remap: (remapper: Remapper, data: any) => any,
-) => boolean;
+import generateDefaultValues from './utils/generateDefaultValues';
+import generateValidity from './utils/generateValidity';
+import validators from './utils/validators';
 
 const inputs = {
   enum: EnumInput,
@@ -37,94 +30,6 @@ const inputs = {
   radio: RadioInput,
 };
 
-function validateInput(_field: Field, event: Event): boolean {
-  return (event.target as HTMLInputElement).validity.valid;
-}
-
-const validators: { [name: string]: Validator } = {
-  file: (field: FileField, _event, value) => {
-    if (!field.required) {
-      return true;
-    }
-
-    if (value === null) {
-      return false;
-    }
-
-    if (field.accept) {
-      if (field.repeated) {
-        return (
-          (value as File[]).every((file) => field.accept.includes(file.type)) &&
-          (value as File[]).length >= 1
-        );
-      }
-      return field.accept.includes((value as File).type);
-    }
-
-    return true;
-  },
-  geocoordinates: (_, _event, value: { longitude: number; latitude: number }) =>
-    !!(value.latitude && value.longitude),
-  hidden: (): boolean => true,
-  string: validateString,
-  number: validateInput,
-  integer: validateInput,
-  boolean: () => true,
-};
-
-function generateValidity(parameters: Parameters, data: any): { [field: string]: boolean } {
-  return parameters.fields.reduce<{ [field: string]: boolean }>(
-    (acc, { defaultValue, name, readOnly, required, type }) => {
-      let valid = !required;
-      if (required) {
-        valid = defaultValue !== undefined;
-      }
-      if (readOnly) {
-        if (required) {
-          valid = !!data[name];
-        } else {
-          valid = true;
-        }
-      }
-
-      if (type === 'boolean') {
-        valid = true;
-      }
-
-      acc[name] = valid;
-      return acc;
-    },
-    {},
-  );
-}
-
-function generateDefaultValues(parameters: Parameters): { [field: string]: any } {
-  return parameters.fields.reduce((acc, field) => {
-    if ('defaultValue' in field) {
-      acc[field.name] = field.defaultValue;
-    } else if (field.type === 'string') {
-      acc[field.name] = '';
-    } else if (field.type === 'boolean') {
-      acc[field.name] = false;
-    } else if (
-      field.type === 'enum' ||
-      field.type === 'hidden' ||
-      field.type === 'integer' ||
-      field.type === 'number'
-    ) {
-      acc[field.name] = null;
-    } else if (field.type === 'geocoordinates') {
-      acc[field.name] = {};
-    } else if (field.type === 'file' && field.repeated) {
-      acc[field.name] = [];
-    } else {
-      acc[field.name] = null;
-    }
-
-    return acc;
-  }, {} as { [key: string]: any });
-}
-
 bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [formError, setFormError] = useState<string>(null);
@@ -136,81 +41,74 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
     ...defaultValues,
     ...data,
   });
+  const ref = useRef<object>({});
 
   const validateField = useCallback(
-    (event: Event, value: any): boolean => {
+    (event: Event, value: any): BaseRequirement => {
       const { fields } = parameters;
       const { name } = event.target as HTMLInputElement;
       const field = fields.find((f) => f.name === name);
 
       if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
-        return validators[field.type](field, event, value, remap);
+        return validators[field.type](field, value, remap);
       }
-      return true;
+      return null;
     },
     [parameters, remap],
   );
 
-  const validateForm = useCallback(() => {
-    const requirements = parameters.requirements || [];
-    let e = null;
+  const validateForm = useCallback(
+    async (v: any, newValidity: { [field: string]: boolean }, lock: object) => {
+      const requirements = parameters.requirements || [];
+      let e = null;
 
-    const newData = requirements.map(async (requirement) => {
-      try {
-        if (requirement.isValid.every((field) => validity[field])) {
-          return await actions[requirement.action].dispatch(values);
-        }
+      const newData = await Promise.all(
+        requirements.map(async (requirement) => {
+          try {
+            if (requirement.isValid.every((field) => newValidity[field])) {
+              return await actions[requirement.action].dispatch(v);
+            }
 
-        return null;
-      } catch (ex) {
-        e = remap(requirement.errorMessage, values) || messages.error;
-        return null;
+            return null;
+          } catch (error) {
+            e = remap(requirement.errorMessage, v) || messages.error;
+            return error;
+          }
+        }),
+      );
+
+      if (lock !== ref.current) {
+        return;
       }
-    });
 
-    if (e) {
-      setFormError(e);
-      return;
-    }
-
-    let mergedData = { ...data };
-    newData.forEach((d) => {
-      mergedData = { ...mergedData, ...d };
-    });
-
-    setValues(mergedData);
-    setFormError(null);
-  }, [actions, data, parameters.requirements, remap, validity, values]);
+      const newValues = Object.assign({}, v, ...newData);
+      setValues(newValues);
+      setFormError(e ?? null);
+    },
+    [actions, ref, parameters, remap],
+  );
 
   const onChange = useCallback(
     (event: Event, value: any): void => {
       const { name } = event.target as HTMLInputElement;
-      let valid: boolean;
-      let error: string;
 
-      try {
-        valid = validateField(event, value);
-        if (!valid) {
-          error = messages.invalid;
-        }
-      } catch (e) {
-        if (!(e instanceof ValidationError)) {
-          throw e;
-        }
+      const invalid = validateField(event, value);
+      const error = remap(invalid.errorMessage, value) || messages.error;
 
-        valid = false;
-        error = e.message || messages.invalid;
-      }
-
-      setErrors({ ...errors, [name]: error });
-      setValidity({ ...validity, [name]: valid });
-      setValues({
+      setErrors({ ...errors, [name]: invalid && error });
+      const newValues = {
         ...values,
         [(event.target as HTMLInputElement).name]: value,
-      });
-      validateForm();
+      };
+      const newValidity = { ...validity, [name]: !invalid };
+      setValidity(newValidity);
+      const lock = {};
+      setValues(newValues);
+      ref.current = lock;
+      validateForm(newValues, newValidity, lock);
     },
-    [errors, validateField, validateForm, validity, values],
+
+    [errors, remap, validateField, validateForm, validity, values],
   );
 
   const onSubmit = useCallback(

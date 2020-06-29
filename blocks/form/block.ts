@@ -1,14 +1,46 @@
-import type { Action, Remapper } from '@appsemble/sdk';
+import type { Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 /**
  * Properties that are shared between all requirements.
  */
-interface BaseRequirement {
+export interface BaseRequirement {
   /**
    * The error message that is displayed when the requirement is not met.
    */
   errorMessage?: Remapper;
+}
+
+/**
+ * Minimum and maximum form requirements for number fields.
+ */
+interface MinMaxRequirement extends BaseRequirement {
+  /**
+   * The minimum value of the field.
+   */
+  min?: number;
+
+  /**
+   * The maximum value of the field.
+   */
+  max?: number;
+}
+
+interface StepRequirement extends BaseRequirement {
+  /**
+   * The amount to increment or decrement when using the stepper buttons of the field.
+   */
+  step: number;
+}
+
+/**
+ * Requirement used to mark the field as required.
+ */
+interface RequiredRequirement extends BaseRequirement {
+  /**
+   * Whether the field is required.
+   */
+  required: boolean;
 }
 
 interface FormRequirement extends BaseRequirement {
@@ -16,11 +48,6 @@ interface FormRequirement extends BaseRequirement {
    * The list of fields that must be valid before running the requirement action.
    */
   isValid: string[];
-
-  /**
-   * How the data from the dispatched requirement action should be remapped before returning it.
-   */
-  remap?: Remapper;
 
   /**
    * The name of the action to trigger when the requirement is checked.
@@ -68,7 +95,15 @@ interface LengthRequirement extends BaseRequirement {
   maxLength?: number;
 }
 
-type Requirement = RegexRequirement | LengthRequirement;
+/**
+ * All requirements applicable to string fields.
+ */
+export type StringRequirement = RegexRequirement | LengthRequirement | RequiredRequirement;
+
+/**
+ * All requirements applicable to number fields.
+ */
+export type NumberRequirement = StepRequirement | MinMaxRequirement | RequiredRequirement;
 
 /**
  * An option that is displayed in a dropdown menu or radio button field.
@@ -111,11 +146,6 @@ interface AbstractField {
    * Whether the field should be read-only.
    */
   readOnly?: boolean;
-
-  /**
-   * Whether the field is required or not. The form input will be validated based on its type.
-   */
-  required?: boolean;
 }
 
 /**
@@ -138,6 +168,9 @@ export interface BooleanField extends AbstractField {
   type: 'boolean';
 }
 
+/**
+ * A radio button that returns the associated value when selected.
+ */
 export interface RadioField extends AbstractField {
   /**
    * The default value of the field.
@@ -212,6 +245,15 @@ export interface FileField extends AbstractField {
    * The type of the field.
    */
   type: 'file';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   *
+   * XXX: Implement field requirements
+   */
+  requirements?: RequiredRequirement[];
 }
 
 /**
@@ -253,24 +295,16 @@ export interface NumberField extends AbstractField {
   defaultValue?: number;
 
   /**
-   * The maximum value of the field.
-   */
-  max?: number;
-
-  /**
-   * The minimum value of the field.
-   */
-  min?: number;
-
-  /**
-   * The amount to increment or decrement when using the stepper buttons of the field.
-   */
-  step?: number;
-
-  /**
    * The type of the field.
    */
   type: 'integer' | 'number';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  requirements?: NumberRequirement[];
 }
 
 /**
@@ -317,7 +351,7 @@ export interface StringField extends AbstractField {
    *
    * These are evaluated in the order they are defined in.
    */
-  requirements?: Requirement[];
+  requirements?: StringRequirement[];
 }
 
 export type Field =
