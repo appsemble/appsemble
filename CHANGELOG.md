@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.4] - 2020-06-29
+
 ### Added
 
 - Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
