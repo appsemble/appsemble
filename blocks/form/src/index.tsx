@@ -1,4 +1,5 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
+import { Message } from '@appsemble/preact-components';
 import type { Parameters, Remapper } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { h } from 'preact';
@@ -71,7 +72,7 @@ const validators: { [name: string]: Validator } = {
   boolean: () => true,
 };
 
-function generateDefaultValues(parameters: Parameters, data: any): { [field: string]: boolean } {
+function generateValidity(parameters: Parameters, data: any): { [field: string]: boolean } {
   return parameters.fields.reduce<{ [field: string]: boolean }>(
     (acc, { defaultValue, name, readOnly, required, type }) => {
       let valid = !required;
@@ -97,39 +98,40 @@ function generateDefaultValues(parameters: Parameters, data: any): { [field: str
   );
 }
 
+function generateDefaultValues(parameters: Parameters): { [field: string]: any } {
+  return parameters.fields.reduce((acc, field) => {
+    if ('defaultValue' in field) {
+      acc[field.name] = field.defaultValue;
+    } else if (field.type === 'string') {
+      acc[field.name] = '';
+    } else if (field.type === 'boolean') {
+      acc[field.name] = false;
+    } else if (
+      field.type === 'enum' ||
+      field.type === 'hidden' ||
+      field.type === 'integer' ||
+      field.type === 'number'
+    ) {
+      acc[field.name] = null;
+    } else if (field.type === 'geocoordinates') {
+      acc[field.name] = {};
+    } else if (field.type === 'file' && field.repeated) {
+      acc[field.name] = [];
+    } else {
+      acc[field.name] = null;
+    }
+
+    return acc;
+  }, {} as { [key: string]: any });
+}
+
 bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
+  const [formError, setFormError] = useState<string>(null);
   const [disabled, setDisabled] = useState(true);
-  const [validity, setValidity] = useState(generateDefaultValues(parameters, data));
+  const [validity, setValidity] = useState(generateValidity(parameters, data));
   const [submitting, setSubmitting] = useState(false);
-  const defaultValues = useMemo(
-    () =>
-      parameters.fields.reduce((acc, field) => {
-        if ('defaultValue' in field) {
-          acc[field.name] = field.defaultValue;
-        } else if (field.type === 'string') {
-          acc[field.name] = '';
-        } else if (field.type === 'boolean') {
-          acc[field.name] = false;
-        } else if (
-          field.type === 'enum' ||
-          field.type === 'hidden' ||
-          field.type === 'integer' ||
-          field.type === 'number'
-        ) {
-          acc[field.name] = null;
-        } else if (field.type === 'geocoordinates') {
-          acc[field.name] = {};
-        } else if (field.type === 'file' && field.repeated) {
-          acc[field.name] = [];
-        } else {
-          acc[field.name] = null;
-        }
-
-        return acc;
-      }, {} as { [key: string]: any }),
-    [parameters],
-  );
+  const defaultValues = useMemo(() => generateDefaultValues(parameters), [parameters]);
   const [values, setValues] = useState({
     ...defaultValues,
     ...data,
@@ -148,6 +150,37 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
     },
     [parameters, remap],
   );
+
+  const validateForm = useCallback(() => {
+    const requirements = parameters.requirements || [];
+    let e = null;
+
+    const newData = requirements.map(async (requirement) => {
+      try {
+        if (requirement.isValid.every((field) => validity[field])) {
+          return await actions[requirement.action].dispatch(values);
+        }
+
+        return null;
+      } catch (ex) {
+        e = remap(requirement.errorMessage, values) || messages.error;
+        return null;
+      }
+    });
+
+    if (e) {
+      setFormError(e);
+      return;
+    }
+
+    let mergedData = { ...data };
+    newData.forEach((d) => {
+      mergedData = { ...mergedData, ...d };
+    });
+
+    setValues(mergedData);
+    setFormError(null);
+  }, [actions, data, parameters.requirements, remap, validity, values]);
 
   const onChange = useCallback(
     (event: Event, value: any): void => {
@@ -175,8 +208,9 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
         ...values,
         [(event.target as HTMLInputElement).name]: value,
       });
+      validateForm();
     },
-    [errors, validateField, validity, values],
+    [errors, validateField, validateForm, validity, values],
   );
 
   const onSubmit = useCallback(
@@ -217,6 +251,9 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   return (
     <form className={styles.root} noValidate onSubmit={onSubmit}>
       {disabled && <progress className="progress is-small is-primary" />}
+      <Message className={classNames(styles.error, { [styles.hidden]: !formError })} color="danger">
+        <span>{formError}</span>
+      </Message>
       {parameters.fields.map((field) => {
         const Comp = inputs[field.type];
         return (

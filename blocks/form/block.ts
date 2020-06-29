@@ -1,4 +1,4 @@
-import type { Remapper } from '@appsemble/sdk';
+import type { Action, Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 /**
@@ -12,8 +12,22 @@ interface BaseRequirement {
 }
 
 interface FormRequirement extends BaseRequirement {
+  /**
+   * The list of fields that must be valid before running the requirement action.
+   */
   isValid: string[];
+
+  /**
+   * How the data from the dispatched requirement action should be remapped before returning it.
+   */
   remap?: Remapper;
+
+  /**
+   * The name of the action to trigger when the requirement is checked.
+   *
+   * @format action
+   */
+  action: string;
 }
 
 /**
