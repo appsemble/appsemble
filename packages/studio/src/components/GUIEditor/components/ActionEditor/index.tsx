@@ -1,5 +1,5 @@
 import { Title } from '@appsemble/react-components/src';
-import type { ActionDefinition, ActionType, App } from '@appsemble/types';
+import type { ActionType, App } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -19,68 +19,39 @@ interface ActionEditorProps {
 export default function ActionEditor({
   actions,
   app,
-  onChange,
-  value = {},
   name,
+  onChange,
+  value,
 }: ActionEditorProps): React.ReactElement {
-  const [selectedActionType, setSelectedActionType] = React.useState<{
-    [actionName: string]: ActionDefinition['type'];
-  }>({});
+  const [selectedActionType, setSelectedActionType] = React.useState(value?.type);
 
   const handleChange = React.useCallback(
-    (_event, val) => {
+    (_event: NamedEvent, val) => {
       onChange({ target: { name } }, val);
     },
     [name, onChange],
   );
 
-  React.useEffect(() => {
-    Object.keys(actions).map((key: string): void => {
-      if (value[key] && value[key].type) {
-        setSelectedActionType({ [key]: value[key].type });
-      }
-      return value;
-    });
-  }, [setSelectedActionType, value, actions]);
-
   return (
     <div>
-      {Object.keys(actions).map((key: string) => (
-        <div key={key}>
-          <div className="is-flex">
-            <Title level={3}>{key}</Title>
-            {actions[key].required || (
-              <span>
-                (<FormattedMessage {...messages.optional} />)
-              </span>
-            )}
-          </div>
-          <span className="help">{actions[key].description}</span>
-          {!selectedActionType[key] ? (
-            <ActionEditorTypeSelect
-              name={key}
-              setSelectedActionType={setSelectedActionType}
-              value={key}
-            />
-          ) : (
-            <>
-              <ActionEditorTypeSelect
-                name={key}
-                setSelectedActionType={setSelectedActionType}
-                value={selectedActionType[key]}
-              />
-
-              <ActionEditorTypeEditor
-                app={app}
-                name={key}
-                onChange={handleChange}
-                selectedActionType={selectedActionType}
-                value={value}
-              />
-            </>
-          )}
-        </div>
-      ))}
+      <div className="is-flex">
+        <Title level={3}>{name}</Title>
+        {actions[name].required || (
+          <span>
+            (<FormattedMessage {...messages.optional} />)
+          </span>
+        )}
+      </div>
+      <span className="help">{actions[name]?.description}</span>
+      <ActionEditorTypeSelect onChange={setSelectedActionType} value={selectedActionType} />
+      {selectedActionType && (
+        <ActionEditorTypeEditor
+          app={app}
+          onChange={handleChange}
+          selectedActionType={selectedActionType}
+          value={value}
+        />
+      )}
     </div>
   );
 }

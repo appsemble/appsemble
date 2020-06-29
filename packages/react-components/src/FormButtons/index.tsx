@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import * as React from 'react';
 
 import styles from './index.css';
@@ -17,7 +18,7 @@ export default function FormButtons({ children, className }: FormButtonsProps): 
   const count = React.Children.count(children);
 
   return (
-    <div className={`${className} ${styles.root} ${count > 1 ? styles.multiple : styles.one}`}>
+    <div className={classNames(styles.root, count > 1 ? styles.multiple : styles.one, className)}>
       {children}
     </div>
   );

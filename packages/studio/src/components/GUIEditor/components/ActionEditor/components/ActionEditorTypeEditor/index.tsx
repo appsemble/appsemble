@@ -7,8 +7,7 @@ import LinkActionEditor from '../LinkActionEditor';
 import messages from './messages';
 
 interface ActionEditorTypeEditorProps {
-  name: string;
-  selectedActionType: { [actionName: string]: ActionDefinition['type'] };
+  selectedActionType: ActionDefinition['type'];
   app: App;
   onChange: (event: any, value?: any) => void;
   value: any;
@@ -16,31 +15,21 @@ interface ActionEditorTypeEditorProps {
 
 export default function ActionEditorTypeEditor({
   app,
-  name,
   onChange,
   selectedActionType,
   value,
 }: ActionEditorTypeEditorProps): React.ReactElement {
-  const selectedActionTypeName = selectedActionType[name];
-
   const handleChange = React.useCallback(
     (event: NamedEvent, val) => {
-      const valWithType = { type: selectedActionTypeName, ...val };
-      onChange(event, { ...value, [name]: valWithType });
+      const valWithType = { type: selectedActionType, ...val };
+      onChange(event, valWithType);
     },
-    [name, onChange, selectedActionTypeName, value],
+    [onChange, selectedActionType],
   );
 
-  React.useEffect(() => {
-    if (selectedActionTypeName === `No "${name}" action`) {
-      onChange({ target: name }, {});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedActionTypeName]);
-
-  switch (selectedActionTypeName) {
+  switch (selectedActionType) {
     case 'link':
-      return <LinkActionEditor app={app} onChange={handleChange} value={value[name]} />;
+      return <LinkActionEditor app={app} onChange={handleChange} value={value} />;
     case 'dialog':
     case 'event':
     case 'flow.back':
@@ -67,6 +56,10 @@ export default function ActionEditorTypeEditor({
         </div>
       );
     default:
-      return null;
+      return (
+        <div>
+          <FormattedMessage {...messages.noAction} />
+        </div>
+      );
   }
 }

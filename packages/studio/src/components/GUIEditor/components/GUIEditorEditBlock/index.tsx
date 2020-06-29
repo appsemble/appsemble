@@ -7,7 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import type { NamedEvent } from '../../../../types';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
-import ActionEditor from '../ActionEditor';
+import ActionsEditor from '../ActionsEditor';
 import styles from './index.css';
 import messages from './messages';
 
@@ -106,7 +106,7 @@ export default function GUIEditorEditBlock({
             />
           )}
           {tab === 'actions' && (
-            <ActionEditor
+            <ActionsEditor
               actions={selectedBlock?.actions}
               app={app}
               name="actions"

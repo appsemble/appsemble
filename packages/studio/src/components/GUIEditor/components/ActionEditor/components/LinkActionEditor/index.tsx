@@ -1,9 +1,10 @@
-import type { App, LinkActionDefinition } from '@appsemble/types';
+import { Select } from '@appsemble/react-components';
+import type { App } from '@appsemble/types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import type { NamedEvent } from '../../../../../../types';
-import PageSelect from '../PageSelect';
-import UnknownTypeEditor from '../UnknownTypeEditor';
+import messages from './messages';
 
 interface LinkActionEditorProps {
   app: App;
@@ -16,16 +17,8 @@ export default function LinkActionEditor({
   onChange,
   value = {},
 }: LinkActionEditorProps): React.ReactElement {
-  const linkActionDefinition: (keyof LinkActionDefinition)[] = [
-    'to',
-    'parameters',
-    'base',
-    'type',
-    'remap',
-  ];
-
   const handleChange = React.useCallback(
-    (event, val) => {
+    (event: NamedEvent, val) => {
       onChange(event, { ...value, [event.target.name]: val });
     },
     [onChange, value],
@@ -33,32 +26,23 @@ export default function LinkActionEditor({
 
   return (
     <div>
-      {linkActionDefinition.map((key: keyof LinkActionDefinition) => {
-        if (key === 'to') {
-          return (
-            <PageSelect
-              key={key}
-              app={app}
-              name="to"
-              onChange={handleChange}
-              required
-              value={value.to}
-            />
-          );
-        }
-        if (key === 'parameters') {
-          return (
-            <UnknownTypeEditor
-              key={key}
-              name="parameters"
-              onChange={handleChange}
-              required={false}
-              value={value.parameters}
-            />
-          );
-        }
-        return null;
-      })}
+      <Select
+        help={<FormattedMessage {...messages.toHelp} />}
+        label={<FormattedMessage {...messages.toLabel} />}
+        name="to"
+        onChange={handleChange}
+        required
+        value={value.to}
+      >
+        <option disabled hidden>
+          <FormattedMessage {...messages.empty} />
+        </option>
+        {Object.values(app.definition.pages).map((page) => (
+          <option key={page.name} value={page.name}>
+            {page.name}
+          </option>
+        ))}
+      </Select>
     </div>
   );
 }

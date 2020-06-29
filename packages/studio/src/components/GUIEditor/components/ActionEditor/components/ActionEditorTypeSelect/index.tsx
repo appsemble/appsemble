@@ -6,14 +6,12 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 
 interface ActionEditorTypeSelectProps {
-  name: string;
-  setSelectedActionType: (value: { [actionName: string]: ActionDefinition['type'] }) => void;
-  value: string;
+  onChange: (value: ActionDefinition['type']) => void;
+  value: ActionDefinition['type'];
 }
 
 export default function ActionEditorTypeSelect({
-  name,
-  setSelectedActionType,
+  onChange,
   value,
 }: ActionEditorTypeSelectProps): React.ReactElement {
   const actionDefinitions: ActionDefinition['type'][] = [
@@ -40,22 +38,22 @@ export default function ActionEditorTypeSelect({
     'static',
   ];
 
-  const onChange = React.useCallback(
+  const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const actionType = event.target.value as ActionDefinition['type'];
-      setSelectedActionType({ [name]: actionType });
+      onChange(actionType);
     },
-    [setSelectedActionType, name],
+    [onChange],
   );
 
   return (
     <Select
       label={<FormattedMessage {...messages.actionType} />}
-      name={name}
-      onChange={onChange}
+      name="type"
+      onChange={handleChange}
       value={value}
     >
-      <FormattedMessage {...messages.empty} tagName="option" values={{ actionName: name }} />
+      <FormattedMessage {...messages.empty} tagName="option" />
       {actionDefinitions.map((action: string) => (
         <option key={action} value={action}>
           {action}
