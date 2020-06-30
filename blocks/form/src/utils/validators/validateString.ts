@@ -9,7 +9,7 @@ import type { StringField, StringRequirement } from '../../../block';
  */
 export default function validateString(field: StringField, value: string): StringRequirement {
   return field.requirements?.find((requirement) => {
-    if ('required' in requirement && value != null) {
+    if ('required' in requirement && value == null) {
       return true;
     }
 
@@ -18,11 +18,11 @@ export default function validateString(field: StringField, value: string): Strin
       return !regex.test(value);
     }
 
-    if ('maxLength' in requirement && value.length >= requirement.maxLength) {
+    if ('maxLength' in requirement && value.length > requirement.maxLength) {
       return true;
     }
 
-    if ('minLength' in requirement && value.length <= requirement.minLength) {
+    if ('minLength' in requirement && value.length < requirement.minLength) {
       return true;
     }
 

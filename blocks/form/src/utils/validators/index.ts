@@ -12,7 +12,7 @@ export default {
     }
 
     if (value === null) {
-      return false;
+      return undefined;
     }
 
     if (field.accept) {
@@ -27,15 +27,15 @@ export default {
       return !field.accept.includes((value as File).type) && {};
     }
 
-    return null;
+    return undefined;
   },
   geocoordinates: (_, value: { longitude: number; latitude: number }) =>
     !(value.latitude && value.longitude) && {},
-  hidden: (): boolean => null,
+  hidden: (): boolean => undefined,
   string: validateString,
   number: validateNumber,
   integer: validateNumber,
-  boolean: () => null,
+  boolean: () => undefined,
 } as { [name: string]: Validator };
 
 type Validator = (

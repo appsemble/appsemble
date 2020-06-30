@@ -11,17 +11,7 @@ type StringInputProps = InputProps<string, StringField>;
 export default function StringInput({
   disabled,
   error,
-  field: {
-    format,
-    icon,
-    label,
-    multiline,
-    name,
-    placeholder,
-    readOnly,
-    required,
-    requirements = [],
-  },
+  field: { format, icon, label, multiline, name, placeholder, readOnly, requirements = [] },
   onInput,
   value = '',
 }: StringInputProps): VNode {
@@ -36,6 +26,8 @@ export default function StringInput({
       ?.map((requirement) => 'minLength' in requirement && requirement.minLength)
       .filter(Number.isFinite),
   );
+
+  const required = !!requirements?.find((req) => 'required' in req && req.required);
 
   return (
     <Input

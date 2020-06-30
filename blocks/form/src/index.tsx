@@ -52,20 +52,21 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
         return validators[field.type](field, value, remap);
       }
+
       return null;
     },
     [parameters, remap],
   );
 
   const validateForm = useCallback(
-    async (v: any, newValidity: { [field: string]: boolean }, lock: object) => {
+    async (v: any, currentValidity: { [field: string]: boolean }, lock: object) => {
       const requirements = parameters.requirements || [];
       let e = null;
 
       const newData = await Promise.all(
         requirements.map(async (requirement) => {
           try {
-            if (requirement.isValid.every((field) => newValidity[field])) {
+            if (requirement.isValid.every((field) => currentValidity[field])) {
               return await actions[requirement.action].dispatch(v);
             }
 
@@ -82,8 +83,15 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       }
 
       const newValues = Object.assign({}, v, ...newData);
+      const newValidity = Object.fromEntries(
+        parameters.fields.map((field) => [
+          field.name,
+          !validators[field.type](field, newValues[field.name], remap),
+        ]),
+      );
       setValues(newValues);
       setFormError(e ?? null);
+      setValidity(newValidity);
     },
     [actions, ref, parameters, remap],
   );
@@ -93,8 +101,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       const { name } = event.target as HTMLInputElement;
 
       const invalid = validateField(event, value);
-      const error = remap(invalid.errorMessage, value) || messages.error;
-
+      const error = (invalid != null && remap(invalid.errorMessage, value)) || messages.error;
       setErrors({ ...errors, [name]: invalid && error });
       const newValues = {
         ...values,

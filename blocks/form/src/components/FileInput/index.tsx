@@ -30,8 +30,10 @@ export default function FileInput({
     [field.name, onInput, value],
   );
 
+  const required = !!field.requirements?.find((req) => 'required' in req && req.required);
+
   return (
-    <FormComponent iconLeft={field.icon} label={field.label} required={field.required}>
+    <FormComponent iconLeft={field.icon} label={field.label} required={required}>
       {field.repeated ? (
         <div className={classNames(styles.repeatedContainer, { [styles.noLabel]: !field.label })}>
           <FileEntry

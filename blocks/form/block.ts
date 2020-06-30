@@ -26,6 +26,11 @@ interface MinMaxRequirement extends BaseRequirement {
   max?: number;
 }
 
+/**
+ * Requirement used to indicate how big a step should be for the field.
+ *
+ * Note that for `integer` type fields are rounded _down_.
+ */
 interface StepRequirement extends BaseRequirement {
   /**
    * The amount to increment or decrement when using the stepper buttons of the field.
@@ -166,6 +171,15 @@ export interface BooleanField extends AbstractField {
    * The type of the field.
    */
   type: 'boolean';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   *
+   * This typically means that the checkbox *must* be checked.
+   */
+  requirements?: RequiredRequirement[];
 }
 
 /**
@@ -183,6 +197,14 @@ export interface RadioField extends AbstractField {
   options?: Choice[];
 
   type: 'radio';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  // XXX: Implement field requirements
+  requirements?: RequiredRequirement[];
 }
 
 /**
@@ -203,6 +225,15 @@ export interface EnumField extends AbstractField {
    * The type of the field.
    */
   type: 'enum';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   *
+   */
+  // XXX: Implement field requirements
+  requirements?: RequiredRequirement[];
 }
 
 /**
@@ -250,9 +281,8 @@ export interface FileField extends AbstractField {
    * The requirements that are used to validate the field with.
    *
    * These are evaluated in the order they are defined in.
-   *
-   * XXX: Implement field requirements
    */
+  // XXX: Implement field requirements
   requirements?: RequiredRequirement[];
 }
 

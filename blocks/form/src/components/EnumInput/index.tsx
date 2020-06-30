@@ -10,24 +10,31 @@ type EnumInputProps = InputProps<string, EnumField>;
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
-export default function EnumInput({ disabled, field, onInput, value = '' }: EnumInputProps): VNode {
+export default function EnumInput({
+  disabled,
+  field: { icon, name, label, placeholder, enum: options, requirements = [] },
+  onInput,
+  value = '',
+}: EnumInputProps): VNode {
+  const required = !!requirements?.find((req) => 'required' in req && req.required);
+
   return (
     <Select
       disabled={disabled}
-      iconLeft={field.icon}
-      id={field.name}
-      label={field.label}
-      name={field.name}
+      iconLeft={icon}
+      id={name}
+      label={label}
+      name={name}
       onInput={onInput}
-      required={field.required}
+      required={required}
       value={value}
     >
-      {(!field.required || !value) && (
-        <option className={classNames({ [styles.hidden]: field.required })} value={null}>
-          {field.placeholder ?? ''}
+      {(!required || !value) && (
+        <option className={classNames({ [styles.hidden]: required })} value={null}>
+          {placeholder ?? ''}
         </option>
       )}
-      {field.enum.map((choice) => (
+      {options.map((choice) => (
         <option key={choice.value} value={choice.value}>
           {choice.label ?? choice.value}
         </option>

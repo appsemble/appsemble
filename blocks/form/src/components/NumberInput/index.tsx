@@ -12,32 +12,57 @@ type NumberInputProps = InputProps<number, NumberField>;
 export default function NumberInput({
   disabled,
   error,
-  field,
+  field: { name, label, type, placeholder, readOnly, icon, requirements = [] },
   onInput,
   value,
 }: NumberInputProps): VNode {
+  const required = !!requirements?.find((req) => 'required' in req && req.required);
+  const max = Math.max(
+    ...requirements
+      ?.map((requirement) => 'max' in requirement && requirement.max)
+      .filter(Number.isFinite),
+  );
+
+  const min = Math.min(
+    ...requirements
+      ?.map((requirement) => 'min' in requirement && requirement.min)
+      .filter(Number.isFinite),
+  );
+
+  let step = Math.min(
+    ...requirements
+      ?.map((requirement) => 'step' in requirement && requirement.step)
+      .filter(Number.isFinite),
+  );
+
+  if (Number.isFinite(step)) {
+    step = type === 'integer' ? Math.floor(step) : step;
+  } else {
+    step = undefined;
+  }
+
   return (
     <Input
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
-      iconLeft={field.icon}
-      id={field.name}
-      label={field.label}
-      max={field.max}
-      min={field.min}
-      name={field.name}
+      iconLeft={icon}
+      id={name}
+      label={label}
+      max={Number.isFinite(max) ? max : undefined}
+      min={Number.isFinite(min) ? min : undefined}
+      name={name}
       onInput={(event) => {
         onInput(
           event,
-          field.type === 'integer'
+          type === 'integer'
             ? Math.floor((event.target as HTMLInputElement).valueAsNumber)
             : (event.target as HTMLInputElement).valueAsNumber,
         );
       }}
-      placeholder={field.placeholder || field.label || field.name}
-      readOnly={field.readOnly}
-      required={field.required}
-      step={field.step || field.type === 'integer' ? 1 : undefined}
+      placeholder={placeholder || label || name}
+      readOnly={readOnly}
+      required={required}
+      step={step}
       type="number"
       value={value}
     />

@@ -13,21 +13,23 @@ type RadioInputProps = InputProps<any, RadioField>;
 export default function RadioInput({
   disabled,
   error,
-  field,
+  field: { name, label, options, requirements = [] },
   onInput,
   value,
 }: RadioInputProps): VNode {
+  const required = !!requirements?.find((req) => 'required' in req && req.required);
+
   return (
     <RadioGroup
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
-      label={field.label}
-      name={field.name}
+      label={label}
+      name={name}
       onChange={onInput}
-      required={field.required}
+      required={required}
       value={value}
     >
-      {field.options.map((option) => (
+      {options.map((option) => (
         <RadioButton value={option.value} wrapperClassName={styles.choice}>
           {option.label ?? option.value}
         </RadioButton>

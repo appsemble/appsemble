@@ -13,25 +13,27 @@ type BooleanInputProps = InputProps<boolean, BooleanField>;
 export default function BooleanInput({
   disabled,
   error,
-  field,
+  field: { label, labelText, name, readOnly, requirements = [] },
   onInput,
   value = false,
 }: BooleanInputProps): VNode {
+  const required = !!requirements?.find((req) => 'required' in req && req.required);
+
   return (
     <Checkbox
       checked={!!value}
       className={classNames({ 'is-danger': error })}
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
-      help={field.labelText ?? field.label ?? null}
-      id={field.name}
-      label={field.label}
-      name={field.name}
+      help={labelText ?? label ?? null}
+      id={name}
+      label={label}
+      name={name}
       onChange={(event) => {
         onInput(event, (event.target as HTMLInputElement).checked);
       }}
-      readOnly={field.readOnly}
-      required={field.required}
+      readOnly={readOnly}
+      required={required}
     />
   );
 }
