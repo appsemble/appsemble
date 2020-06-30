@@ -43,6 +43,7 @@ export {
 } from './ValuePickerProvider';
 export { default as useClickOutside } from './hooks/useClickOutside';
 export { default as useMessages, MessagesContext } from './hooks/useMessages';
+export { default as useEventListener } from './hooks/useEventListener';
 export { default as useObjectURL } from './hooks/useObjectURL';
 export { default as useData } from './hooks/useData';
 export { default as useQuery } from './hooks/useQuery';
