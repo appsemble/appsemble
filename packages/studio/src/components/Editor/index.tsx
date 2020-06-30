@@ -178,6 +178,12 @@ export default function Editor(): React.ReactElement {
     setDirty(false);
   }, [app, formatMessage, openApiDocument, push, recipe, sharedStyle, style]);
 
+  React.useEffect(() => {
+    if (editorStep !== GuiEditorStep.YAML && openApiDocument) {
+      onSave();
+    }
+  }, [recipe, editorStep, onSave, openApiDocument]);
+
   const uploadApp = React.useCallback(async () => {
     if (!valid) {
       return;

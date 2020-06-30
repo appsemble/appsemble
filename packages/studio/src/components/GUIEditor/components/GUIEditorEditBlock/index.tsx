@@ -1,13 +1,13 @@
-import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
+import { Content, Loader, Message, Tab, Tabs, Title, useData } from '@appsemble/react-components';
 import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import type { JsonObject } from 'type-fest';
 
 import type { NamedEvent } from '../../../../types';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
+import ActionsEditor from '../ActionsEditor';
 import styles from './index.css';
 import messages from './messages';
 
@@ -28,9 +28,12 @@ export default function GUIEditorEditBlock({
   onChangeSelectedBlock,
   selectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
+  const [tab, setTab] = React.useState('parameters');
+  const onTabChange = React.useCallback((_, value: string) => setTab(value), []);
+
   const onChange = React.useCallback(
-    (_event: NamedEvent, parameters: JsonObject) => {
-      onChangeBlockValue({ ...blockValue, parameters });
+    (event: NamedEvent, value: any) => {
+      onChangeBlockValue({ ...blockValue, [event.target.name]: value });
     },
     [blockValue, onChangeBlockValue],
   );
@@ -80,21 +83,39 @@ export default function GUIEditorEditBlock({
   return (
     <div className={`is-flex mx-2 ${styles.root}`}>
       <Title level={2}>{stripBlockName(selectedBlock.name)}</Title>
-      {selectedBlock?.parameters ? (
-        <JSONSchemaEditor
-          name={stripBlockName(selectedBlock.name)}
-          onChange={onChange}
-          schema={selectedBlock?.parameters}
-          value={blockValue?.parameters}
-        />
-      ) : (
-        <div>
-          <FormattedMessage
-            {...messages.noParameters}
-            values={{ name: stripBlockName(selectedBlock.name) }}
-          />
-        </div>
-      )}
+      <div>
+        <Tabs onChange={onTabChange} value={tab}>
+          {selectedBlock.parameters && (
+            <Tab value="parameters">
+              <FormattedMessage {...messages.parameters} />
+            </Tab>
+          )}
+          {selectedBlock.actions && (
+            <Tab value="actions">
+              <FormattedMessage {...messages.actions} />
+            </Tab>
+          )}
+        </Tabs>
+        <Content padding>
+          {tab === 'parameters' && (
+            <JSONSchemaEditor
+              name="parameters"
+              onChange={onChange}
+              schema={selectedBlock?.parameters}
+              value={blockValue?.parameters}
+            />
+          )}
+          {tab === 'actions' && (
+            <ActionsEditor
+              actions={selectedBlock?.actions}
+              app={app}
+              name="actions"
+              onChange={onChange}
+              value={blockValue?.actions}
+            />
+          )}
+        </Content>
+      </div>
     </div>
   );
 }

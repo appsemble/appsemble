@@ -45,7 +45,7 @@ export default function Stepper({
   return (
     <Form onSubmit={next}>
       <Context.Provider value={context}>{childArray[step]}</Context.Provider>
-      <FormButtons>
+      <FormButtons className="mt-1 mb-1">
         <Button onClick={back}>
           {step === 0 ? (
             <FormattedMessage {...messages.cancel} />
