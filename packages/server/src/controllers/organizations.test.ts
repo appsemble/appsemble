@@ -421,6 +421,9 @@ describe('removeInvite', () => {
 
 describe('removeMember', () => {
   it('should leave the organization if there are other members', async () => {
+    // Set member role to the lowest available role, since this should not require any permissions
+    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+
     const userB = await User.create();
     await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
