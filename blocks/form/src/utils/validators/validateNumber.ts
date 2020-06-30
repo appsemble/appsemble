@@ -6,16 +6,18 @@ export default function validateNumber(field: NumberField, value: number): Numbe
       return true;
     }
 
-    if ('max' in requirement && value <= requirement.max) {
+    if ('max' in requirement && value > requirement.max) {
       return true;
     }
 
-    if ('min' in requirement && value >= requirement.min) {
+    if ('min' in requirement && value < requirement.min) {
       return true;
     }
 
     if ('step' in requirement) {
-      return value % requirement.step;
+      return field.type === 'integer'
+        ? value % Math.floor(requirement.step)
+        : value % requirement.step;
     }
 
     return false;
