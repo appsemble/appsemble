@@ -76,7 +76,7 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
         }
 
         if (!Object.keys(version.actions).includes(key)) {
-          acc[`${loc}.actions.${key}`] = `Custom action ${key} is unused`;
+          acc[`${loc}.actions.${key}`] = `Custom action “${key}” is unused`;
         }
       } else if (!Object.prototype.hasOwnProperty.call(version.actions, key)) {
         acc[`${loc}.actions.${key}`] = 'Unknown action type';
