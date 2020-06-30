@@ -1,6 +1,7 @@
 export default {
   type: 'object',
   description: 'Settings for login in apps using third party OAuth2 providers',
+  required: ['authorizationUrl', 'clientId', 'clientSecret', 'icon', 'name', 'scope', 'tokenUrl'],
   properties: {
     id: {
       type: 'number',
@@ -36,6 +37,11 @@ export default {
     scope: {
       type: 'string',
       description: 'The login scope that will be requested from the authorization server.',
+    },
+    userInfoUrl: {
+      type: 'string',
+      format: 'uri',
+      description: 'The URL to request user info from',
     },
   },
 };

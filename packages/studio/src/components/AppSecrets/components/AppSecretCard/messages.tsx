@@ -9,6 +9,8 @@ export default defineMessages({
   authorizationUrlHelp: 'The URL where the user will be redirected to confirm their login',
   tokenUrlLabel: 'Token URL',
   tokenUrlHelp: 'The URL where Appsemble should request tokens to log in the user',
+  userInfoUrlHelp: 'The URL from which Appsemble should fetch user information.',
+  userInfoUrlLabel: 'User info URL',
   clientIdLabel: 'Client ID',
   clientIdHelp: 'An ID which identifies the app to the login provider',
   clientSecretLabel: 'Client secret',

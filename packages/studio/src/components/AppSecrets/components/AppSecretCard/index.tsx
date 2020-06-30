@@ -112,6 +112,17 @@ export default function AppSecretCard({
             }}
           />
           <SimpleInput
+            help={<FormattedMessage {...messages.userInfoUrlHelp} />}
+            iconLeft="id-card"
+            label={<FormattedMessage {...messages.userInfoUrlLabel} />}
+            name="userInfoUrl"
+            placeholder="https://example.com/oauth2/token"
+            type="url"
+            validityMessages={{
+              typeMismatch: <FormattedMessage {...messages.badUrl} />,
+            }}
+          />
+          <SimpleInput
             help={<FormattedMessage {...messages.clientIdHelp} />}
             iconLeft="fingerprint"
             label={<FormattedMessage {...messages.clientIdLabel} />}

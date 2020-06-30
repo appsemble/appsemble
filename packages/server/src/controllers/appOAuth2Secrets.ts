@@ -31,6 +31,10 @@ export async function createAppOAuth2Secret(ctx: KoaContext<Params>): Promise<vo
     attributes: ['OrganizationId'],
   });
 
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   ctx.body = await AppOAuth2Secret.create({ ...body, AppId: appId });
@@ -95,6 +99,7 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
       {
         attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret'],
         model: AppOAuth2Secret,
+        required: false,
         where: { id: appOAuth2SecretId },
       },
     ],
@@ -124,22 +129,10 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
     const { id: UserId } = user ?? (await User.create({ transaction }));
 
     if (authorization) {
-      await authorization.update(
-        {
-          accessToken,
-          refreshToken,
-        },
-        { transaction },
-      );
+      await authorization.update({ accessToken, refreshToken }, { transaction });
     } else {
       await AppOAuth2Authorization.create(
-        {
-          accessToken,
-          AppOAuth2SecretId: secret.id,
-          refreshToken,
-          sub,
-          UserId,
-        },
+        { accessToken, AppOAuth2SecretId: secret.id, refreshToken, sub, UserId },
         { transaction },
       );
     }
