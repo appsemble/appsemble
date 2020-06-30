@@ -99,7 +99,7 @@ export default function GUIEditorSelect({
           },
         ];
         let parentCount = 1;
-        if (i !== topParentLine) {
+        if (i + 1 !== topParentLine) {
           return;
         }
 
@@ -143,7 +143,7 @@ export default function GUIEditorSelect({
           {
             range: editLocation.editRange,
             options: {
-              inlineClassName: styles.selectionDecoration,
+              className: `${styles.selectionDecoration}`,
             },
           },
         ];

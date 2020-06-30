@@ -1,13 +1,10 @@
 .root {
-  display: flex;
   flex-flow: column;
   margin: 0 auto;
   max-width: 480px;
-  padding: 8px;
 }
 
 .buttonWrapper {
-  display: flex;
   justify-content: flex-end;
   margin: 0 auto;
   max-width: 480px;
@@ -17,7 +14,6 @@
 
 .submit {
   align-self: flex-end;
-  margin-top: 1em;
 }
 
 .error {

@@ -178,7 +178,7 @@ export default function UserSettings(): React.ReactElement {
             <tr key={email}>
               <td>
                 <span>{email}</span>
-                <div className={`tags ${styles.tags}`}>
+                <div className="tags is-inline ml-2">
                   {email === userInfo.email && (
                     <span className="tag is-primary">
                       <FormattedMessage {...messages.primary} />

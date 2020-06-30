@@ -15,16 +15,18 @@ interface BottomNavigationProps {
  */
 export default function BottomNavigation({ pages }: BottomNavigationProps): React.ReactElement {
   return (
-    <nav className="bottom-nav">
-      <ul className={styles.list}>
+    <nav className="bottom-nav mb-0">
+      <ul className={`${styles.list} is-flex`}>
         {pages.map((page) => (
           <li key={page.name} className="bottom-nav-item">
             <NavLink
               activeClassName="is-active"
-              className="bottom-nav-item-link"
+              className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
               to={`/${normalize(page.name)}`}
             >
-              {page.icon ? <Icon icon={page.icon} iconSize="3x" size="large" /> : null}
+              {page.icon ? (
+                <Icon className="mb-1" icon={page.icon} iconSize="3x" size="large" />
+              ) : null}
               <span>{page.name}</span>
             </NavLink>
           </li>

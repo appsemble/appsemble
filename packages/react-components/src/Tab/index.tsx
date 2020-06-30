@@ -1,0 +1,55 @@
+import classNames from 'classnames';
+import * as React from 'react';
+
+import { useValuePickerProvider } from '../ValuePickerProvider';
+
+interface TabProps {
+  /**
+   * Child elements to render in the tab.
+   */
+  children: React.ReactNode;
+
+  /**
+   * An additional class name to apply to the root element.
+   */
+  className?: string;
+
+  /**
+   * The `href` to apply on the anchor tag.
+   *
+   * The value will be ignored when clicked. This is for display purposes only.
+   */
+  href?: string;
+
+  /**
+   * The value to emit when this tab is selected.
+   */
+  value: any;
+}
+
+/**
+ * Render a single tab for use with the `<Tabs />` component.
+ *
+ * Beware that this renders an anchor element. This means no anchor elements should be rendered as
+ * children.
+ */
+export default function Tab({ children, className, href, value }: TabProps): React.ReactElement {
+  const { onChange, value: currentValue } = useValuePickerProvider();
+
+  const handleClick = React.useCallback(
+    (event) => {
+      event.preventDefault();
+
+      onChange(event, value);
+    },
+    [onChange, value],
+  );
+
+  return (
+    <li className={classNames(className, { 'is-active': currentValue === value })}>
+      <a href={href} onClick={handleClick}>
+        {children}
+      </a>
+    </li>
+  );
+}

@@ -20,7 +20,7 @@ interface ContentProps {
   fullwidth?: boolean;
 
   /**
-   * If true, add a padding of 10px.
+   * If true, add a padding of 12px.
    */
   padding?: boolean;
 }
@@ -35,9 +35,7 @@ export default function Content({
   padding,
 }: ContentProps): React.ReactElement {
   return (
-    <div
-      className={classNames(className, { [styles.center]: !fullwidth, [styles.padding]: padding })}
-    >
+    <div className={classNames(className, { [styles.center]: !fullwidth, 'px-3 py-3': padding })}>
       {children}
     </div>
   );

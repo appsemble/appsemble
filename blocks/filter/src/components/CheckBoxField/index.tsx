@@ -18,19 +18,19 @@ export default function CheckBoxField({
   ...props
 }: CheckBoxFieldProps): React.ReactElement {
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} is-flex`}>
       {enumerator.map(({ icon, label, value }) => (
         <div key={`${name}${value}`} className={styles.inputContainer}>
           <input
             checked={parentValue.includes(value)}
-            className={styles.input}
+            className="is-hidden"
             id={`${name}${value}`}
             name={name}
             type="checkbox"
             value={value}
             {...props}
           />
-          <label className={styles.label} htmlFor={`${name}${value}`}>
+          <label className={`${styles.label} px-3 py-3`} htmlFor={`${name}${value}`}>
             {icon && <Icon icon={icon} />}
             <span>{label ?? value}</span>
           </label>

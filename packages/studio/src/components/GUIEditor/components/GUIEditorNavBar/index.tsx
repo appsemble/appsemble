@@ -29,11 +29,7 @@ export default function GUIEditorNavBar({
   const location = useLocation();
 
   return (
-    <div
-      className={
-        editorStep === GuiEditorStep.SELECT ? `tabs is-boxed ${styles.editorTabs}` : 'is-hidden'
-      }
-    >
+    <div className={editorStep === GuiEditorStep.SELECT ? 'tabs is-boxed mb-0' : 'is-hidden'}>
       <ul>
         <li className={classNames({ 'is-active': location.hash === '#editor' })} value="editor">
           <Link to="#editor">
@@ -41,7 +37,7 @@ export default function GUIEditorNavBar({
             <FormattedMessage {...messages.recipe} />
           </Link>
         </li>
-        <li value="addblock">
+        <li className="ml-1" value="addblock">
           <Button
             color="success"
             disabled={editLocation?.blockName === undefined}
@@ -51,7 +47,7 @@ export default function GUIEditorNavBar({
             <FormattedMessage {...messages.addBlock} />
           </Button>
         </li>
-        <li value="editblock">
+        <li className="mx-1" value="editblock">
           <Button
             className={styles.guiEditorButton}
             color="warning"

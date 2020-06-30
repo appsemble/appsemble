@@ -1,12 +1,10 @@
-import { Icon, Input } from '@appsemble/react-components';
+import { Input, ValuePickerProvider } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
-import { stripBlockName } from '@appsemble/utils';
-import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { NamedEvent } from '../../../../types';
-import styles from './index.css';
+import GUIEditorBlockItem from '../GUIEditorBlockItem';
 import messages from './messages';
 
 interface GUIEditorToolboxBlockProps {
@@ -49,27 +47,11 @@ export default function GUIEditorToolboxBlock({
         required
         value={searchValue}
       />
-      {filterBlocks.map((block) => (
-        <label
-          key={block.name}
-          className={classNames('card', styles.blockFrame, {
-            [styles.selected]: value === block,
-          })}
-        >
-          <div className="card-content">
-            <Icon icon="box" size="medium" />
-            <span className="subtitle">{stripBlockName(block.name)}</span>
-            <input
-              checked={value ? value.name === block.name : false}
-              hidden
-              name="type"
-              onChange={(event) => onChange(event, block)}
-              type="radio"
-              value={name}
-            />
-          </div>
-        </label>
-      ))}
+      <ValuePickerProvider name={name} onChange={onChange} value={value}>
+        {filterBlocks.map((block) => (
+          <GUIEditorBlockItem value={block} />
+        ))}
+      </ValuePickerProvider>
     </div>
   );
 }

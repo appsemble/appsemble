@@ -154,7 +154,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   }, [parameters, events, ready, receiveData]);
 
   return (
-    <form className={styles.root} noValidate onSubmit={onSubmit}>
+    <form className={`${styles.root} is-flex px-2 py-2`} noValidate onSubmit={onSubmit}>
       {disabled && <progress className="progress is-small is-primary" />}
       <Message className={classNames(styles.error, { [styles.hidden]: !formError })} color="danger">
         <span>{formError}</span>
@@ -178,9 +178,9 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
           />
         );
       })}
-      <div className={styles.buttonWrapper}>
+      <div className={`${styles.buttonWrapper} is-flex`}>
         <button
-          className={classNames('button', 'is-primary', styles.submit)}
+          className={classNames('button is-primary mt-4', styles.submit)}
           disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >

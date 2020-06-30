@@ -17,7 +17,7 @@ export default function DotProgressBar({
       {Array.from(Array(amount), (_, index) => (
         <div
           key={index}
-          className={classNames(styles.dot, {
+          className={classNames('is-inline-block mx-1', styles.dot, {
             [styles.previous]: index < active,
             [styles.active]: index === active,
           })}

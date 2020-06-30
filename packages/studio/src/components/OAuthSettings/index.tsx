@@ -77,7 +77,7 @@ export default function OAuthSettings(): React.ReactElement {
           accounts.some((account) => account.authorizationUrl === provider.authorizationUrl) ? (
             <AsyncButton
               key={provider.authorizationUrl}
-              className={styles.button}
+              className={`${styles.button} mb-4`}
               disabled={connecting.enabled}
               icon={provider.icon}
               iconPrefix="fab"
@@ -89,7 +89,7 @@ export default function OAuthSettings(): React.ReactElement {
             <OAuth2LoginButton
               key={provider.authorizationUrl}
               authorizationUrl={provider.authorizationUrl}
-              className={styles.button}
+              className={`${styles.button} mb-4`}
               clientId={provider.clientId}
               disabled={connecting.enabled}
               icon={provider.icon}

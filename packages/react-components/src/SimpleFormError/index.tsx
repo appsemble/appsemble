@@ -15,7 +15,10 @@ export default function SimpleFormError({
   const { submitError } = useSimpleForm();
 
   return (
-    <Message className={classNames(styles.root, { [styles.hidden]: !submitError })} color="danger">
+    <Message
+      className={classNames(styles.root, { [`${styles.hidden} mb-0`]: !submitError })}
+      color="danger"
+    >
       {submitError && <Children error={submitError} />}
     </Message>
   );
