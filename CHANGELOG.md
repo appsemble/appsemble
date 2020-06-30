@@ -7,6 +7,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add `throw` action. This can be used when a block specifically wants data to be thrown
+  instead of returned.
+- Block(`form`): Add `requirements` parameter to base of form. This can be used to perform an action
+  that mutates the form based on what is returned from the action.
+
+### Changed
+
+- App: Make `noop` action return the data it received instead of returning nothing.
+- Block(`form`): Move several fields specific to validation to the `requirements` array. Refer to
+  the block documentation for specific changes.
+
 ## [0.13.4] - 2020-06-29
 
 ### Added
