@@ -4,6 +4,7 @@ import {
   CardFooterButton,
   Checkbox,
   Content,
+  IconButton,
   Input,
   Join,
   Loader,
@@ -15,6 +16,7 @@ import {
   Title,
   useConfirmation,
   useData,
+  useMessages,
   useToggle,
 } from '@appsemble/react-components';
 import { scopes as knownScopes } from '@appsemble/utils';
@@ -28,12 +30,30 @@ import styles from './index.css';
 import messages from './messages';
 
 export default function ClientCredentials(): React.ReactElement {
+  const outputRef = React.useRef<HTMLInputElement>();
   const { formatMessage } = useIntl();
   const { data: clients, error, loading, refresh, setData: setClients } = useData<
     OAuth2ClientCredentials[]
   >('/api/oauth2/client-credentials');
   const [newClientCredentials, setNewClientCredentials] = React.useState<string>(null);
   const modal = useToggle();
+  const push = useMessages();
+
+  const copyClientCredentials = React.useCallback(() => {
+    outputRef.current.select();
+    const success = document.execCommand('copy');
+    if (success) {
+      push({ body: formatMessage(messages.copiedSuccess), color: 'success' });
+    } else {
+      push({ body: formatMessage(messages.copiedError), color: 'danger' });
+    }
+  }, [formatMessage, push]);
+
+  const resetModal = React.useCallback(() => {
+    modal.disable();
+    // The modal closing animation takes 300ms.
+    setTimeout(() => setNewClientCredentials(null), 300);
+  }, [modal]);
 
   const registerClient = React.useCallback(
     async ({ description, expires, ...values }) => {
@@ -104,12 +124,12 @@ export default function ClientCredentials(): React.ReactElement {
         }}
         footer={
           newClientCredentials ? (
-            <CardFooterButton onClick={modal.disable}>
+            <CardFooterButton onClick={resetModal}>
               <FormattedMessage {...messages.close} />
             </CardFooterButton>
           ) : (
             <>
-              <CardFooterButton onClick={modal.disable}>
+              <CardFooterButton onClick={resetModal}>
                 <FormattedMessage {...messages.cancel} />
               </CardFooterButton>
               <CardFooterButton color="primary" type="submit">
@@ -119,12 +139,15 @@ export default function ClientCredentials(): React.ReactElement {
           )
         }
         isActive={modal.enabled}
-        onClose={modal.disable}
+        onClose={resetModal}
         onSubmit={registerClient}
+        resetOnSuccess
         title={<FormattedMessage {...messages.register} />}
       >
         {newClientCredentials ? (
           <Input
+            ref={outputRef}
+            control={<IconButton icon="copy" onClick={copyClientCredentials} />}
             help={<FormattedMessage {...messages.credentialsHelp} />}
             label={<FormattedMessage {...messages.credentials} />}
             name="clientCredentials"
