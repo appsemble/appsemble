@@ -292,7 +292,9 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('This member is not part of this organization.');
   }
 
-  await checkRole(ctx, organization.id, Permission.ManageMembers);
+  if (memberId !== user.id) {
+    await checkRole(ctx, organization.id, Permission.ManageMembers);
+  }
 
   if (memberId === user.id && organization.Users.length <= 1) {
     throw Boom.notAcceptable(
