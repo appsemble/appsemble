@@ -3,6 +3,7 @@ import '@creativebulma/bulma-tagsinput/dist/css/bulma-tagsinput.css';
 import BulmaTagsInput, { BulmaTagsInputOptions } from '@creativebulma/bulma-tagsinput';
 import * as React from 'react';
 
+import useCombinedRefs from '../hooks/useCombinedRefs';
 import Input from '../Input';
 
 type TagsInputProps = Omit<React.ComponentPropsWithoutRef<typeof Input>, 'onChange' | 'value'> &
@@ -16,18 +17,7 @@ export default React.forwardRef<HTMLInputElement, TagsInputProps>(
   ({ delimiter, onChange, ...props }, ref) => {
     const innerRef = React.useRef<HTMLInputElement>();
 
-    const mergedRef = React.useCallback(
-      (input) => {
-        if (ref instanceof Function) {
-          ref(input);
-        } else if ('current' in ref) {
-          // eslint-disable-next-line no-param-reassign
-          ref.current = input;
-        }
-        innerRef.current = input;
-      },
-      [ref],
-    );
+    const mergedRef = useCombinedRefs(innerRef, ref);
 
     React.useEffect(() => {
       const element = innerRef.current;
