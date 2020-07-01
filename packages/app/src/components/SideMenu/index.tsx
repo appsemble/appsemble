@@ -1,3 +1,4 @@
+import { useEventListener } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -12,7 +13,6 @@ interface SideMenuProps {
 /**
  * A side menu whose open state is managed by the state hook.
  */
-
 export default function SideMenu({ children }: SideMenuProps): React.ReactElement {
   const history = useHistory();
   const { disable: closeMenu, enabled: isOpen } = useMenu();
@@ -27,15 +27,9 @@ export default function SideMenu({ children }: SideMenuProps): React.ReactElemen
     [closeMenu],
   );
 
-  useEffect(() => {
-    document.addEventListener('keydown', onKeyDown, false);
-    const unlisten = history.listen(closeMenu);
+  useEventListener(document, 'keydown', onKeyDown, false);
 
-    return () => {
-      document.removeEventListener('keydown', onKeyDown, false);
-      unlisten();
-    };
-  }, [closeMenu, history, onKeyDown]);
+  useEffect(() => history.listen(closeMenu), [closeMenu, history]);
 
   return (
     <>

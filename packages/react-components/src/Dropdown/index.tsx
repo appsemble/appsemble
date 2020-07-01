@@ -1,50 +1,59 @@
 import classNames from 'classnames';
 import * as React from 'react';
 
+import Button from '../Button';
 import useClickOutside from '../hooks/useClickOutside';
+import useToggle from '../hooks/useToggle';
 import Icon from '../Icon';
 
 interface DropdownProps {
-  className?: string;
-  label: React.ReactNode;
+  /**
+   * The children to render as menu items.
+   *
+   * Typically these are nodes that have the `dropdown-item` or `dropdown-divicer` class.
+   */
   children: React.ReactNode;
+
+  /**
+   * An optional class name to add to the root element.
+   */
+  className?: string;
+
+  /**
+   * The label to render on the menu toggle button.
+   */
+  label: React.ReactNode;
 }
 
+/**
+ * Render an aria compliant Bulma dropdown menu.
+ */
 export default function Dropdown({
   children,
   className,
   label,
 }: DropdownProps): React.ReactElement {
-  const [isActive, setActive] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>();
+  const { disable, enabled, toggle } = useToggle();
 
-  const toggle = React.useCallback(() => {
-    setActive(!isActive);
-  }, [isActive]);
+  const onKeyDown = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        disable();
+      }
+    },
+    [disable],
+  );
 
-  const onKeyDown = React.useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      setActive(false);
-    }
-  }, []);
-
-  useClickOutside(ref, () => {
-    setActive(false);
-  });
+  useClickOutside(ref, disable);
 
   return (
-    <div ref={ref} className={classNames('dropdown', className, { 'is-active': isActive })}>
+    <div ref={ref} className={classNames('dropdown', className, { 'is-active': enabled })}>
       <div className="dropdown-trigger">
-        <button
-          aria-haspopup
-          className="button"
-          onClick={toggle}
-          onKeyDown={onKeyDown}
-          type="button"
-        >
+        <Button aria-haspopup onClick={toggle} onKeyDown={onKeyDown}>
           {label}
           <Icon icon="angle-down" size="small" />
-        </button>
+        </Button>
       </div>
       <div
         className="dropdown-menu"
