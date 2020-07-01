@@ -70,6 +70,15 @@ declare module '@appsemble/sdk' {
     longitude: string;
 
     /**
+     * The location (latitude, longitude) to default to when the user’s location cannot be found.
+     *
+     * This can be used to set the location to something that is more relevant to the user.
+     *
+     * @default [51.476852, 0]
+     */
+    defaultLocation?: [number, number];
+
+    /**
      * Whether clustering should be disabled.
      *
      * By default markers are clustered if they are too close to each other.
