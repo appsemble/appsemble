@@ -4,7 +4,7 @@ import { DataTypes } from 'sequelize';
 import type { Migration } from '../utils/migrate';
 
 export default {
-  key: '0.13.3',
+  key: '0.13.5',
 
   /**
    * Summary:

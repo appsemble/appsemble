@@ -11,7 +11,7 @@ import userUuid from './0.13.0-user-uuid';
 import oauth2LoginFixesBlockDescriptions from './0.13.1-oauth2-login-fixes-block-descriptions';
 import convertEvents from './0.13.2-convert-events';
 import fixAppLoginFlow from './0.13.3-fix-app-login-flow';
-import appOAuth2Provider from './0.13.4-app-oauth2-provider';
+import appOAuth2Provider from './0.13.5-app-oauth2-provider';
 
 export default [
   postgresql,
