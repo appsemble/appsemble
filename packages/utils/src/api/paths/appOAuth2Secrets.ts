@@ -15,7 +15,11 @@ export default {
       responses: {
         201: {
           description: 'A list of the OAuth2 secrets for the app.',
-          schema: { $ref: '#/components/schemas/AppOAuth2Secret' },
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/AppOAuth2Secret' },
+            },
+          },
         },
       },
     },
@@ -26,9 +30,13 @@ export default {
       responses: {
         200: {
           description: 'A list of the OAuth2 secrets for the app.',
-          schema: {
-            type: 'array',
-            items: { $ref: '#/components/schemas/AppOAuth2Secret' },
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: { $ref: '#/components/schemas/AppOAuth2Secret' },
+              },
+            },
           },
         },
       },
@@ -49,9 +57,13 @@ export default {
 
             Only public facing values are output on this endpoint.
           `,
-          schema: {
-            type: 'array',
-            items: { $ref: '#/components/schemas/AppOAuth2Secret' },
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: { $ref: '#/components/schemas/AppOAuth2Secret' },
+              },
+            },
           },
         },
       },
@@ -88,10 +100,14 @@ export default {
 
             Only public facing values are output on this endpoint.
           `,
-          schema: {
-            type: 'object',
-            properties: {
-              code: { type: 'string' },
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  code: { type: 'string' },
+                },
+              },
             },
           },
         },
