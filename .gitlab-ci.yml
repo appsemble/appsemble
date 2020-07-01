@@ -80,7 +80,7 @@ prettier:
 remark lint:
   extends: .yarn
   script:
-    - yarn remark --frail .
+    - yarn remark --frail --no-stdout .
 
 # Lint CSS using stylelint.
 stylelint:
