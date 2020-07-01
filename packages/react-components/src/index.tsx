@@ -37,13 +37,12 @@ export { default as Stepper } from './Stepper';
 export { default as Subtitle } from './Subtitle';
 export { default as Tab } from './Tab';
 export { default as Tabs } from './Tabs';
-export {
-  default as ValuePickerProvider,
-  ValuePickerProviderProps,
-  useValuePickerProvider,
-} from './ValuePickerProvider';
+export { default as ValuePickerProvider, useValuePickerProvider } from './ValuePickerProvider';
+export type { ValuePickerProviderProps } from './ValuePickerProvider';
 export { default as useClickOutside } from './hooks/useClickOutside';
+export { default as useCombinedRefs } from './hooks/useCombinedRefs';
 export { default as useMessages, MessagesContext } from './hooks/useMessages';
+export { default as useEventListener } from './hooks/useEventListener';
 export { default as useObjectURL } from './hooks/useObjectURL';
 export { default as useData } from './hooks/useData';
 export { default as useQuery } from './hooks/useQuery';

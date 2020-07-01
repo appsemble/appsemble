@@ -1,3 +1,4 @@
+import { useEventListener } from '@appsemble/react-components';
 import type { AppDefinition, BlockManifest } from '@appsemble/types';
 import * as React from 'react';
 
@@ -42,8 +43,8 @@ export default function AppDefinitionProvider({
     revision,
   ]);
 
-  React.useEffect(() => {
-    const onMessage = ({ data, origin }: MessageEvent): void => {
+  const onMessage = React.useCallback(
+    ({ data, origin }: MessageEvent) => {
       if (origin === settings.apiUrl && data?.type === 'editor/EDIT_SUCCESS') {
         replaceStyle('appsemble-style-core', data.style);
         replaceStyle('appsemble-style-shared', data.sharedStyle);
@@ -51,14 +52,11 @@ export default function AppDefinitionProvider({
         setDefinition(resolveJsonPointers(data.definition) as AppDefinition);
         setRevision(revision + 1);
       }
-    };
+    },
+    [revision],
+  );
 
-    window.addEventListener('message', onMessage);
-
-    return () => {
-      window.removeEventListener('message', onMessage);
-    };
-  }, [revision]);
+  useEventListener(window, 'message', onMessage);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
