@@ -1,6 +1,5 @@
 import {
   Button,
-  Content,
   Loader,
   Message,
   Title,
