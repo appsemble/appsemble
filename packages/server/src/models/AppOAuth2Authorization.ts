@@ -60,6 +60,7 @@ export default class AppOAuth2Authorization extends Model<AppOAuth2Authorization
    * The id of the linked Appsemble user.
    */
   @ForeignKey(() => User)
+  @AllowNull(false)
   @Column(DataType.UUID)
   UserId: string;
 

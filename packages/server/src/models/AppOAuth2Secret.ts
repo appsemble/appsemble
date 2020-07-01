@@ -1,6 +1,7 @@
 import type { AppOAuth2Secret as Interface } from '@appsemble/types';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import {
+  AllowNull,
   AutoIncrement,
   BelongsTo,
   Column,
@@ -22,27 +23,34 @@ export default class AppOAuth2Secret extends Model<AppOAuth2Secret> implements I
   @Column
   id: number;
 
+  @AllowNull(false)
   @Column
   authorizationUrl: string;
 
+  @AllowNull(false)
   @Column
   tokenUrl: string;
 
   @Column
   userInfoUrl: string;
 
+  @AllowNull(false)
   @Column
   clientId: string;
 
+  @AllowNull(false)
   @Column
   clientSecret: string;
 
+  @AllowNull(false)
   @Column(DataType.STRING)
   icon: IconName;
 
+  @AllowNull(false)
   @Column
   name: string;
 
+  @AllowNull(false)
   @Column
   scope: string;
 
@@ -56,6 +64,7 @@ export default class AppOAuth2Secret extends Model<AppOAuth2Secret> implements I
    * The id of the app this secret is linked to.
    */
   @ForeignKey(() => App)
+  @AllowNull(false)
   @Column
   AppId: number;
 
