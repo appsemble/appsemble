@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { commandDirOptions, configureLogger, handleError, logger } from '@appsemble/node-utils';
+import path from 'path';
 import yargs from 'yargs';
 
 async function main(): Promise<any> {
@@ -15,7 +16,9 @@ async function main(): Promise<any> {
       type: 'count',
     })
     .middleware([configureLogger])
-    .commandDir(...commandDirOptions(__filename))
+    .commandDir(path.join(__dirname, 'commands'), {
+      extensions: [path.extname(__filename).slice(1)],
+    })
     .demandCommand(1)
     .fail(handleError)
     .help()
