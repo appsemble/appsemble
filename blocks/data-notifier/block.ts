@@ -12,7 +12,7 @@ declare module '@appsemble/sdk' {
     id?: string;
 
     /**
-     * The Bulma color to use for the message.
+     * The Bulma color to use for the message and the refresh button.
      *
      * @default 'dark'
      */
