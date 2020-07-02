@@ -77,7 +77,7 @@ attach(
     });
 
     return (
-      <div className={`message is-${color}`}>
+      <div className={`message mx-3 my-3 is-${color}`}>
         <div
           ref={(node) => {
             messageBody = node;
