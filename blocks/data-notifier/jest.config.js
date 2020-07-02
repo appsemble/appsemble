@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: '@appsemble/data-loader',
+  displayName: '@appsemble/data-notifier',
   globals: {
     'ts-jest': {
       isolatedModules: true,
