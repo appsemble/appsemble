@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Block(`list`): Add `image` property.
 - Block(`map`): Add `defaultLocation` property. This property is used to set the location of the map
   when the user’s location cannot be found. It defaults to Greenwich Park.
 
