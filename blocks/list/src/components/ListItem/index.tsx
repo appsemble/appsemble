@@ -39,7 +39,7 @@ export default function ListItem({ item }: ListItemProps): VNode {
     >
       {img && (
         <figure className={`image is-48x48 mr-2 ${styles.image}`}>
-          <img alt="list icon" src={img.startsWith('http') ? img : asset(img)} />
+          <img alt="list icon" src={/^(https?:)?\/\//.test(img) ? img : asset(img)} />
         </figure>
       )}
       <div className="is-inline-block">
