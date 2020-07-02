@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 interface TableProps {
   /**
@@ -10,7 +10,7 @@ interface TableProps {
   /**
    * A `<thead />`, `<tbody />` and `<tfoot />` element.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * An optional class name to add to the table container.
@@ -49,7 +49,7 @@ export default function Table({
   hoverable = true,
   narrow,
   striped = true,
-}: TableProps): React.ReactElement {
+}: TableProps): ReactElement {
   return (
     <div className={classNames('table-container', className)}>
       <table

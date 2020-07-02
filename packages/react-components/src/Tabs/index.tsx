@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 
 import ValuePickerProvider, { ValuePickerProviderProps } from '../ValuePickerProvider';
 
@@ -25,7 +25,7 @@ export default function Tabs<T>({
   children,
   className,
   ...props
-}: TabsProps<T>): React.ReactElement {
+}: TabsProps<T>): ReactElement {
   return (
     <div className={classNames('tabs', className, { 'is-boxed': boxed })}>
       <ul>

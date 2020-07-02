@@ -1,6 +1,6 @@
 import { Icon, Table } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -15,7 +15,7 @@ interface ActionTableProps {
 /**
  * Render a table of all available actions for a block.
  */
-export default function ActionTable({ manifest }: ActionTableProps): React.ReactElement {
+export default function ActionTable({ manifest }: ActionTableProps): ReactElement {
   return (
     <Table>
       <thead>

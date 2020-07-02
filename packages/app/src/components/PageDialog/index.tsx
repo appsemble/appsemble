@@ -1,23 +1,20 @@
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import type { ShowDialogParams } from '../../types';
 import BlockList from '../BlockList';
 import styles from './index.css';
 
 interface PageDialogProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix'> {
+  extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix'> {
   dialog: ShowDialogParams;
 }
 
 /**
  * The dialog component to render on a page when the `dialog` action is dispatched.
  */
-export default function PageDialog({
-  dialog = null,
-  ...props
-}: PageDialogProps): React.ReactElement {
+export default function PageDialog({ dialog = null, ...props }: PageDialogProps): ReactElement {
   return (
     <Modal
       cardClassName={classNames({ [styles.fullscreen]: dialog?.fullscreen })}

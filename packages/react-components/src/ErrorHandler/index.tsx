@@ -1,9 +1,9 @@
 import { captureException, withScope } from '@sentry/browser';
-import * as React from 'react';
+import React, { Component, ElementType, ErrorInfo, ReactNode } from 'react';
 
 interface ErrorHandlerProps {
-  children: React.ReactNode;
-  fallback: React.ElementType;
+  children: ReactNode;
+  fallback: ElementType;
 }
 
 interface ErrorHandlerState {
@@ -13,12 +13,12 @@ interface ErrorHandlerState {
 /**
  * Capture renderer errors using Sentry.
  */
-export default class ErrorHandler extends React.Component<ErrorHandlerProps, ErrorHandlerState> {
+export default class ErrorHandler extends Component<ErrorHandlerProps, ErrorHandlerState> {
   state: ErrorHandlerState = {
     error: false,
   };
 
-  componentDidCatch(error: Error, info: React.ErrorInfo): void {
+  componentDidCatch(error: Error, info: ErrorInfo): void {
     this.setState({ error: true });
     withScope((scope) => {
       Object.entries(info).forEach(([key, value]) => {
@@ -28,7 +28,7 @@ export default class ErrorHandler extends React.Component<ErrorHandlerProps, Err
     });
   }
 
-  render(): React.ReactNode {
+  render(): ReactNode {
     const { children, fallback: Fallback } = this.props;
     const { error } = this.state;
 

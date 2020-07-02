@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import Button from '../Button';
 import styles from './index.css';
@@ -8,7 +8,7 @@ export default function CardFooterButton({
   className,
   color = 'white',
   ...props
-}: React.ComponentPropsWithoutRef<typeof Button>): React.ReactElement {
+}: ComponentPropsWithoutRef<typeof Button>): ReactElement {
   return (
     <Button
       className={classNames(`card-footer-item ${styles.root}`, className)}

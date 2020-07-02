@@ -1,18 +1,25 @@
 import equal from 'fast-deep-equal';
-import * as React from 'react';
+import React, {
+  ChangeEvent,
+  ComponentPropsWithoutRef,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import TextArea from '../Textarea';
 import messages from './messages';
 
-interface JSONInputProps extends React.ComponentPropsWithoutRef<typeof TextArea> {
+interface JSONInputProps extends ComponentPropsWithoutRef<typeof TextArea> {
   /**
    * This is called when he input has changed to match a new valid JSON value.
    *
    * @param event The original event.
    * @param value The new value.
    */
-  onChange: (event: React.ChangeEvent<HTMLTextAreaElement>, value: any) => void;
+  onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: any) => void;
 
   /**
    * The current value to render.
@@ -32,11 +39,11 @@ export default function JSONInput({
   onChange,
   value,
   ...props
-}: JSONInputProps): React.ReactElement {
-  const [oldValue, setOldValue] = React.useState(JSON.stringify(value, null, 2));
-  const [parseError, setParseError] = React.useState(false);
+}: JSONInputProps): ReactElement {
+  const [oldValue, setOldValue] = useState(JSON.stringify(value, null, 2));
+  const [parseError, setParseError] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       if (equal(value, JSON.parse(oldValue))) {
         return;
@@ -47,7 +54,7 @@ export default function JSONInput({
     setOldValue(JSON.stringify(value, null, 2));
   }, [oldValue, value]);
 
-  const handleChange = React.useCallback(
+  const handleChange = useCallback(
     (event, v) => {
       let val: any;
       setOldValue(val);

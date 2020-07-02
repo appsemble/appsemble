@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
 
@@ -6,7 +6,7 @@ export default function JSONSchemaLabel({
   name,
   prefix,
   schema,
-}: Pick<CommonJSONSchemaEditorProps<never>, 'name' | 'prefix' | 'schema'>): React.ReactElement {
+}: Pick<CommonJSONSchemaEditorProps<never>, 'name' | 'prefix' | 'schema'>): ReactElement {
   return (schema?.title ? (
     <>
       {`${schema.title} `}
@@ -16,5 +16,5 @@ export default function JSONSchemaLabel({
     </>
   ) : (
     name.slice(prefix.length + 1)
-  )) as React.ReactElement;
+  )) as ReactElement;
 }

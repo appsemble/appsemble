@@ -1,17 +1,17 @@
 import { Toggle, useToggle } from '@appsemble/react-components';
-import * as React from 'react';
+import React, { createContext, ReactElement, ReactNode, useContext } from 'react';
 
 interface MenuProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const MenuProviderContext = React.createContext<Toggle>(null);
+const MenuProviderContext = createContext<Toggle>(null);
 
 export function useMenu(): Toggle {
-  return React.useContext(MenuProviderContext);
+  return useContext(MenuProviderContext);
 }
 
-export default function MenuProvider({ children }: MenuProviderProps): React.ReactElement {
+export default function MenuProvider({ children }: MenuProviderProps): ReactElement {
   const value = useToggle();
 
   return <MenuProviderContext.Provider value={value}>{children}</MenuProviderContext.Provider>;

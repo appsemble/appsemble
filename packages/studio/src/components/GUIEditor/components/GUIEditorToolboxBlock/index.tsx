@@ -1,6 +1,6 @@
 import { Input, ValuePickerProvider } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { NamedEvent } from '../../../../types';
@@ -10,7 +10,7 @@ import messages from './messages';
 interface GUIEditorToolboxBlockProps {
   blocks: BlockManifest[];
   name: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>, block: BlockManifest) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>, block: BlockManifest) => void;
   value: BlockManifest;
 }
 
@@ -19,13 +19,13 @@ export default function GUIEditorToolboxBlock({
   name,
   onChange,
   value,
-}: GUIEditorToolboxBlockProps): React.ReactElement {
-  const [searchValue, setSearchValue] = React.useState<string>('');
-  const [filterBlocks, setFilterBlocks] = React.useState<BlockManifest[]>(blocks);
+}: GUIEditorToolboxBlockProps): ReactElement {
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [filterBlocks, setFilterBlocks] = useState<BlockManifest[]>(blocks);
 
   const intl = useIntl();
 
-  const onChangeSearch = React.useCallback(
+  const onChangeSearch = useCallback(
     (_event: NamedEvent, query: string) => {
       setSearchValue(query);
       const updatedList = blocks.filter(

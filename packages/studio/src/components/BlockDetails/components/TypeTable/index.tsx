@@ -1,5 +1,5 @@
 import { Join, Table } from '@appsemble/react-components';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import type { Definition } from 'typescript-json-schema';
 
@@ -15,7 +15,7 @@ interface TypeTableProps {
 /**
  * Render a table describing the types definitions that are passed through.
  */
-export default function TypeTable({ definition }: TypeTableProps): React.ReactElement {
+export default function TypeTable({ definition }: TypeTableProps): ReactElement {
   return (
     <Table>
       <thead>

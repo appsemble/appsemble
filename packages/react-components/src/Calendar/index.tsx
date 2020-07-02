@@ -1,25 +1,35 @@
 import BulmaCalendar, { Options } from 'bulma-calendar';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, {
+  cloneElement,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  isValidElement,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 
 import FormComponent from '../FormComponent';
 import Icon from '../Icon';
 
-type CalendarProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
-  Omit<React.ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
-    control?: React.ReactElement;
+type CalendarProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
+  Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
+    control?: ReactElement;
 
     displayMode?: Options['displayMode'];
 
     /**
      * An error message to render.
      */
-    error?: React.ReactNode;
+    error?: ReactNode;
 
     /**
      * A help message to render.
      */
-    help?: React.ReactNode;
+    help?: ReactNode;
 
     /**
      * The name of the HTML element.
@@ -47,7 +57,7 @@ type CalendarProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
 /**
  * A Bulma styled form input element.
  */
-export default React.forwardRef<HTMLInputElement, CalendarProps>(
+export default forwardRef<HTMLInputElement, CalendarProps>(
   (
     {
       control,
@@ -68,11 +78,11 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
     },
     ref,
   ) => {
-    const inputRef = React.useRef<HTMLInputElement>();
-    const calendarRef = React.useRef<BulmaCalendar>();
+    const inputRef = useRef<HTMLInputElement>();
+    const calendarRef = useRef<BulmaCalendar>();
 
-    React.useImperativeHandle(ref, () => inputRef.current);
-    React.useEffect(() => {
+    useImperativeHandle(ref, () => inputRef.current);
+    useEffect(() => {
       calendarRef.current = new BulmaCalendar(inputRef.current, {
         showHeader,
         type,
@@ -80,7 +90,7 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
       });
     }, [displayMode, showHeader, type]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       calendarRef.current.on('select', () => {
         onChange({ target: inputRef.current }, calendarRef.current.startDate);
       });
@@ -108,9 +118,9 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
           required={required}
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        {control && React.cloneElement(control, { className: 'is-right' })}
+        {control && cloneElement(control, { className: 'is-right' })}
         <p className={classNames('help', { 'is-danger': error })}>
-          {React.isValidElement(error) ? error : help}
+          {isValidElement(error) ? error : help}
         </p>
       </FormComponent>
     );

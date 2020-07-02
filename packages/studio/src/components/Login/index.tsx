@@ -11,7 +11,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -26,13 +26,13 @@ interface LoginFormValues {
   password: string;
 }
 
-export default function Login(): React.ReactElement {
+export default function Login(): ReactElement {
   const location = useLocation();
   const { login } = useUser();
   const qs = useQuery();
   const busy = useToggle();
 
-  const onPasswordLogin = React.useCallback(
+  const onPasswordLogin = useCallback(
     async ({ email, password }: LoginFormValues) => {
       busy.enable();
       try {

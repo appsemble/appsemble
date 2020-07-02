@@ -1,7 +1,14 @@
 import { Button, Content, Loader, Message, useQuery } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import axios from 'axios';
-import * as React from 'react';
+import React, {
+  ComponentPropsWithoutRef,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -13,19 +20,17 @@ import messages from './messages';
 /**
  * Handle login to apps using OAuth2.
  */
-export default function OpenIDLogin(): React.ReactElement {
+export default function OpenIDLogin(): ReactElement {
   const qs = useQuery();
 
-  const [appLoading, setAppLoading] = React.useState(true);
-  const [app, setApp] = React.useState<App>();
-  const [error, setError] = React.useState<React.ComponentPropsWithoutRef<typeof FormattedMessage>>(
-    null,
-  );
-  const [generating, setGenerating] = React.useState(false);
+  const [appLoading, setAppLoading] = useState(true);
+  const [app, setApp] = useState<App>();
+  const [error, setError] = useState<ComponentPropsWithoutRef<typeof FormattedMessage>>(null);
+  const [generating, setGenerating] = useState(false);
 
-  const scopes = React.useMemo(() => qs.get('scope')?.split(' '), [qs]);
+  const scopes = useMemo(() => qs.get('scope')?.split(' '), [qs]);
 
-  const onAccept = React.useCallback(() => {
+  const onAccept = useCallback(() => {
     setGenerating(true);
     axios
       .post('/api/oauth2/authorization-code', {
@@ -37,11 +42,11 @@ export default function OpenIDLogin(): React.ReactElement {
       .catch(() => oauth2Redirect(qs, { error: 'server_error' }));
   }, [app, qs, scopes]);
 
-  const onDeny = React.useCallback(() => {
+  const onDeny = useCallback(() => {
     oauth2Redirect(qs, { error: 'access_denied' });
   }, [qs]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       if (!verifyOAuth2LoginRequest(qs, ['email', 'openid', 'profile', 'resources:manage'])) {
         return;

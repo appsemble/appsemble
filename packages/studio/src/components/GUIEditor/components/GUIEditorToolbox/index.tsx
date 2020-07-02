@@ -1,7 +1,7 @@
 import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -17,11 +17,11 @@ interface GUIEditorToolboxProps {
 export default function GUIEditorToolbox({
   selectedBlock,
   setSelectedBlock,
-}: GUIEditorToolboxProps): React.ReactElement {
+}: GUIEditorToolboxProps): ReactElement {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
-  const onChange = React.useCallback(
-    (_event: React.ChangeEvent, block: BlockManifest): void => {
+  const onChange = useCallback(
+    (_event: ChangeEvent, block: BlockManifest): void => {
       setSelectedBlock(block);
     },
     [setSelectedBlock],

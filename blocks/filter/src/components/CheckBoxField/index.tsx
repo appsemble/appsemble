@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import React from 'react';
+import React, { ChangeEventHandler, ReactElement } from 'react';
 
 import type { Enum } from '../../../block';
 import styles from './index.css';
@@ -8,7 +8,7 @@ interface CheckBoxFieldProps {
   value: string[];
   name: string;
   enumerator: Enum[];
-  onChange: React.ChangeEventHandler<HTMLElement>;
+  onChange: ChangeEventHandler<HTMLElement>;
 }
 
 export default function CheckBoxField({
@@ -16,7 +16,7 @@ export default function CheckBoxField({
   name,
   value: parentValue,
   ...props
-}: CheckBoxFieldProps): React.ReactElement {
+}: CheckBoxFieldProps): ReactElement {
   return (
     <div className={`${styles.container} is-flex`}>
       {enumerator.map(({ icon, label, value }) => (

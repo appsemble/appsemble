@@ -1,11 +1,17 @@
 import { Button } from '@appsemble/react-components';
-import * as React from 'react';
+import React, {
+  ComponentPropsWithoutRef,
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 
-interface AsyncButtonProps extends React.ComponentPropsWithoutRef<typeof Button> {
+interface AsyncButtonProps extends ComponentPropsWithoutRef<typeof Button> {
   /**
    * The asynchtonous action to perform when the button is clicked.
    */
-  onClick: (event: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
+  onClick: (event: MouseEvent<HTMLButtonElement>) => Promise<void>;
 }
 
 /**
@@ -16,11 +22,11 @@ export default function AsyncButton({
   disabled,
   onClick,
   ...props
-}: AsyncButtonProps): React.ReactElement {
-  const [isBusy, setBusy] = React.useState(false);
+}: AsyncButtonProps): ReactElement {
+  const [isBusy, setBusy] = useState(false);
 
-  const handleClick = React.useCallback(
-    async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = useCallback(
+    async (event: MouseEvent<HTMLButtonElement>) => {
       setBusy(true);
       try {
         await onClick(event);

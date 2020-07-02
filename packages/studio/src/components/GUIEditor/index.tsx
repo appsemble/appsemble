@@ -5,7 +5,7 @@ import indentString from 'indent-string';
 import yaml from 'js-yaml';
 import type { editor } from 'monaco-editor';
 import { Range } from 'monaco-editor';
-import React from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 
 import GUIEditorEditBlock from './components/GUIEditorEditBlock';
 import GUIEditorNavBar from './components/GUIEditorNavBar';
@@ -33,18 +33,18 @@ export default function GUIEditor({
   monacoEditor,
   onChangeDecorationList,
   onChangeEditorStep,
-}: GUIEditorProps): React.ReactElement {
-  const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>(undefined);
-  const [editLocation, setEditLocation] = React.useState<EditLocation>(undefined);
-  const [editedBlockValues, setEditedBlockValues] = React.useState<BlockDefinition>(undefined);
+}: GUIEditorProps): ReactElement {
+  const [selectedBlock, setSelectedBlock] = useState<BlockManifest>(undefined);
+  const [editLocation, setEditLocation] = useState<EditLocation>(undefined);
+  const [editedBlockValues, setEditedBlockValues] = useState<BlockDefinition>(undefined);
 
-  const onCancel = React.useCallback((): void => {
+  const onCancel = useCallback((): void => {
     onChangeEditorStep(GuiEditorStep.SELECT);
     setSelectedBlock(null);
     setEditedBlockValues(undefined);
   }, [onChangeEditorStep]);
 
-  const save = React.useCallback(
+  const save = useCallback(
     (editExistingBlock: boolean): void => {
       const blockParent = editLocation.parents
         .slice()
