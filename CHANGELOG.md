@@ -9,6 +9,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Block(`data-notifier`): Add new the `data-notifier` block. This has the same functionality as the
+  filter block for refreshing new data, but for general use.
 - Block(`list`): Add `image` property.
 - Block(`map`): Add `defaultLocation` property. This property is used to set the location of the map
   when the user’s location cannot be found. It defaults to Greenwich Park.
