@@ -1,24 +1,33 @@
 import classNames from 'classnames';
 import { format } from 'date-fns';
-import * as React from 'react';
+import React, {
+  ChangeEvent,
+  cloneElement,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  isValidElement,
+  ReactElement,
+  ReactNode,
+  useCallback,
+} from 'react';
 
 import FormComponent from '../FormComponent';
 import Icon from '../Icon';
 import styles from './index.css';
 
-type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
-  Omit<React.ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
-    control?: React.ReactElement;
+type InputProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
+  Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
+    control?: ReactElement;
 
     /**
      * An error message to render.
      */
-    error?: React.ReactNode;
+    error?: ReactNode;
 
     /**
      * A help message to render.
      */
-    help?: React.ReactNode;
+    help?: ReactNode;
 
     /**
      * The name of the HTML element.
@@ -31,7 +40,7 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'ch
      * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
      * value is a number, otherwise it is a string.
      */
-    onChange: (event: React.ChangeEvent<HTMLInputElement>, value: number | string) => void;
+    onChange: (event: ChangeEvent<HTMLInputElement>, value: number | string) => void;
 
     /**
      * The HTML input type.
@@ -54,7 +63,7 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'ch
 /**
  * A Bulma styled form input element.
  */
-export default React.forwardRef<HTMLInputElement, InputProps>(
+export default forwardRef<HTMLInputElement, InputProps>(
   (
     {
       control,
@@ -73,8 +82,8 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref,
   ) => {
-    const handleChange = React.useCallback(
-      (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = useCallback(
+      (event: ChangeEvent<HTMLInputElement>) => {
         const { target } = event;
         let newValue: number | string = target.value;
         if (type === 'number') {
@@ -114,10 +123,10 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
           }
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        {control && React.cloneElement(control, { className: 'is-right' })}
+        {control && cloneElement(control, { className: 'is-right' })}
         <div className={`${styles.help} is-flex`}>
           <span className={classNames('help', { 'is-danger': error })}>
-            {React.isValidElement(error) ? error : help}
+            {isValidElement(error) ? error : help}
           </span>
           {maxLength ? (
             <span className={`help ml-1 ${styles.counter}`}>

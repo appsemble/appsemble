@@ -1,5 +1,12 @@
 import type { BulmaColor } from '@appsemble/sdk';
-import * as React from 'react';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 
 import { CardFooterButton, Modal } from '..';
 
@@ -7,22 +14,22 @@ interface ConfirmationOptions<T, A extends any[]> {
   /**
    * The title to render on the confirmation prompt.
    */
-  title: React.ReactNode;
+  title: ReactNode;
 
   /**
    * The body to render on the confirmation prompt.
    */
-  body: React.ReactNode;
+  body: ReactNode;
 
   /**
    * The label to render on the cancellation button.
    */
-  cancelLabel: React.ReactNode;
+  cancelLabel: ReactNode;
 
   /**
    * The label to render on the confirmation button.
    */
-  confirmLabel: React.ReactNode;
+  confirmLabel: ReactNode;
 
   /**
    * The color to use for the confirmation button.
@@ -36,7 +43,7 @@ interface ConfirmationOptions<T, A extends any[]> {
 }
 
 interface ConfirmationProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 interface DeferredConfirmationOptions extends ConfirmationOptions<any, any[]> {
@@ -44,16 +51,16 @@ interface DeferredConfirmationOptions extends ConfirmationOptions<any, any[]> {
   reject: () => void;
 }
 
-const Context = React.createContext(null);
+const Context = createContext(null);
 
 /**
  * A provider for the {@link useConfirmation} hook.
  */
-export default function Confirmation({ children }: ConfirmationProps): React.ReactElement {
-  const [options, setOptions] = React.useState<DeferredConfirmationOptions>(null);
-  const [isActive, setActive] = React.useState(false);
+export default function Confirmation({ children }: ConfirmationProps): ReactElement {
+  const [options, setOptions] = useState<DeferredConfirmationOptions>(null);
+  const [isActive, setActive] = useState(false);
 
-  const confirm = React.useCallback(async (opts: ConfirmationOptions<any, any[]>, args) => {
+  const confirm = useCallback(async (opts: ConfirmationOptions<any, any[]>, args) => {
     try {
       await new Promise((resolve, reject) => {
         setOptions({ ...opts, resolve, reject });
@@ -96,7 +103,7 @@ export default function Confirmation({ children }: ConfirmationProps): React.Rea
 export function useConfirmation<T, A extends any[]>(
   options: ConfirmationOptions<T, A>,
 ): (...args: A) => T extends PromiseLike<void> ? T : Promise<T> {
-  const confirm = React.useContext(Context);
+  const confirm = useContext(Context);
 
-  return React.useCallback((...args: A) => confirm(options, args), [confirm, options]);
+  return useCallback((...args: A) => confirm(options, args), [confirm, options]);
 }

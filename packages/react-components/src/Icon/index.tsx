@@ -1,7 +1,7 @@
 import type { BulmaSize } from '@appsemble/sdk';
 import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 
 interface IconProps {
   className?: string;
@@ -23,7 +23,7 @@ export default function Icon({
   prefix = 'fas',
   size,
   iconSize = iconSizeMap[size as 'medium' | 'large'],
-}: IconProps): React.ReactElement {
+}: IconProps): ReactElement {
   return (
     <span className={classNames('icon', size && `is-${size}`, className)}>
       <i className={classNames(prefix, `fa-${icon}`, iconSize && `fa-${iconSize}`)} />

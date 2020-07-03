@@ -1,8 +1,8 @@
 import { Button } from '@appsemble/react-components';
 import { OAuth2LoginOptions, startOAuth2Login } from '@appsemble/web-utils';
-import * as React from 'react';
+import React, { ComponentPropsWithoutRef, ReactElement, useCallback, useState } from 'react';
 
-type OAuth2LoginButtonProps = React.ComponentPropsWithoutRef<typeof Button> & OAuth2LoginOptions;
+type OAuth2LoginButtonProps = ComponentPropsWithoutRef<typeof Button> & OAuth2LoginOptions;
 
 /**
  * A button which will initiate the OAuth2 login process.
@@ -18,10 +18,10 @@ export default function OAuth2LoginButton({
   redirectUrl,
   scope,
   ...props
-}: OAuth2LoginButtonProps): React.ReactElement {
-  const [loading, setLoading] = React.useState(false);
+}: OAuth2LoginButtonProps): ReactElement {
+  const [loading, setLoading] = useState(false);
 
-  const handleClick = React.useCallback(
+  const handleClick = useCallback(
     (event) => {
       setLoading(true);
       onClick?.(event);

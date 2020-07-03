@@ -1,6 +1,6 @@
 import { applyRefs } from '@appsemble/react-components';
 import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
-import * as React from 'react';
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import styles from './index.css';
@@ -60,7 +60,7 @@ const emptyDecoration: editor.IModelDeltaDecoration[] = [
  * The forwarded ref might not trigger a rerender of the parent component. Instead of passing a ref
  * object, it is recommended to use a state setter function.
  */
-export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
+export default forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
   (
     {
       language,
@@ -73,12 +73,12 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
     },
     ref,
   ) => {
-    const [monaco, setMonaco] = React.useState<editor.IStandaloneCodeEditor>();
+    const [monaco, setMonaco] = useState<editor.IStandaloneCodeEditor>();
 
-    const saveRef = React.useRef(onSave);
+    const saveRef = useRef(onSave);
     saveRef.current = onSave;
 
-    const nodeRef = React.useCallback((node: HTMLDivElement) => {
+    const nodeRef = useCallback((node: HTMLDivElement) => {
       if (!node) {
         return () => {
           applyRefs(null, ref);
@@ -104,7 +104,7 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (monaco) {
         monaco.updateOptions(options);
 
@@ -117,19 +117,19 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [monaco, options]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (monaco) {
         editor.setModelLanguage(monaco.getModel(), language);
       }
     }, [language, monaco]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (monaco && monaco.getModel().getValue() !== value) {
         monaco.getModel().setValue(value);
       }
     }, [monaco, value]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (!monaco || !onChange) {
         return undefined;
       }

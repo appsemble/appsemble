@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEventHandler, ReactElement } from 'react';
 
 import type { Enum } from '../../../block';
 
@@ -7,7 +7,7 @@ interface EnumFieldProps {
   defaultValue?: any;
   emptyLabel?: string;
   enumerator: Enum[];
-  onChange: React.ChangeEventHandler<HTMLElement>;
+  onChange: ChangeEventHandler<HTMLElement>;
 }
 
 export default function EnumField({
@@ -16,7 +16,7 @@ export default function EnumField({
   enumerator,
   value,
   ...props
-}: EnumFieldProps): React.ReactElement {
+}: EnumFieldProps): ReactElement {
   return (
     <div className="select is-fullwidth">
       <select value={value} {...props}>

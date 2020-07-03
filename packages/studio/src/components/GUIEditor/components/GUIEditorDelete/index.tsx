@@ -2,7 +2,7 @@ import { Button, useConfirmation } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
 import { editor, Range } from 'monaco-editor';
-import React from 'react';
+import React, { ReactElement, ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import type { EditLocation } from '../../types';
@@ -21,8 +21,8 @@ export default function GUIEditorDelete({
   disabled,
   editLocation,
   monacoEditor,
-}: GUIEditorDeleteProps): React.ReactElement {
-  const [range, body] = React.useMemo<[Range, React.ReactNode]>(() => {
+}: GUIEditorDeleteProps): ReactElement {
+  const [range, body] = useMemo<[Range, ReactNode]>(() => {
     if (!app.definition?.pages?.length || !editLocation) {
       return [null, null];
     }
@@ -67,7 +67,7 @@ export default function GUIEditorDelete({
     ];
   }, [app, editLocation]);
 
-  const action = React.useCallback((): void => {
+  const action = useCallback((): void => {
     const edits: editor.IIdentifiedSingleEditOperation[] = [
       {
         range,

@@ -1,11 +1,11 @@
 import type { BulmaColor } from '@appsemble/sdk';
 import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import Icon from '../Icon';
 
-interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
+interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   /**
    * The bulma color to apply to the button.
    */
@@ -46,7 +46,7 @@ export default function Button({
   inverted,
   loading,
   ...props
-}: ButtonProps): React.ReactElement {
+}: ButtonProps): ReactElement {
   return (
     <button
       className={classNames('button', className, {

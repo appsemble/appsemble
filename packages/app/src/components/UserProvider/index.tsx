@@ -2,7 +2,15 @@ import { Loader } from '@appsemble/react-components';
 import type { AppMember, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
-import * as React from 'react';
+import React, {
+  createContext,
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -44,7 +52,7 @@ interface UserContext extends LoginState {
 }
 
 interface UserProviderProps {
-  children: React.ReactElement;
+  children: ReactElement;
 }
 
 /**
@@ -66,20 +74,20 @@ interface TokenResponse {
 
 const REFRESH_TOKEN = 'refresh_token';
 
-const Context = React.createContext<UserContext>(null);
+const Context = createContext<UserContext>(null);
 
-export default function UserProvider({ children }: UserProviderProps): React.ReactElement {
+export default function UserProvider({ children }: UserProviderProps): ReactElement {
   const { definition } = useAppDefinition();
   // If there is no security definition, don’t even bother going into the loading state.
-  const [isLoading, setLoading] = React.useState(!!definition.security);
-  const [state, setState] = React.useState(initialState);
-  const [exp, setExp] = React.useState(null);
-  const [authorization, setAuthorization] = React.useState<string>(null);
+  const [isLoading, setLoading] = useState(!!definition.security);
+  const [state, setState] = useState(initialState);
+  const [exp, setExp] = useState(null);
+  const [authorization, setAuthorization] = useState<string>(null);
 
   /**
    * Reset everything to its initial state for a logged out user.
    */
-  const logout = React.useCallback(() => {
+  const logout = useCallback(() => {
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
     setState(initialState);
@@ -92,28 +100,25 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
    * @param grantType The grant type to authenticate with
    * @param params Additional parameters, which depend on the grant type.
    */
-  const fetchToken = React.useCallback(
-    async (grantType: string, params: { [key: string]: string }) => {
-      const {
-        data: { access_token: accessToken, refresh_token: rt },
-      } = await axios.post<TokenResponse>(
-        `${settings.apiUrl}/oauth2/token`,
-        new URLSearchParams({
-          client_id: `app:${settings.id}`,
-          grant_type: grantType,
-          scope: 'openid',
-          ...params,
-        }),
-      );
-      const payload = jwtDecode<JwtPayload>(accessToken);
-      localStorage.setItem(REFRESH_TOKEN, rt);
-      const auth = `Bearer ${accessToken}`;
-      setAuthorization(auth);
-      setExp(payload.exp);
-      return [auth, payload] as const;
-    },
-    [],
-  );
+  const fetchToken = useCallback(async (grantType: string, params: { [key: string]: string }) => {
+    const {
+      data: { access_token: accessToken, refresh_token: rt },
+    } = await axios.post<TokenResponse>(
+      `${settings.apiUrl}/oauth2/token`,
+      new URLSearchParams({
+        client_id: `app:${settings.id}`,
+        grant_type: grantType,
+        scope: 'openid',
+        ...params,
+      }),
+    );
+    const payload = jwtDecode<JwtPayload>(accessToken);
+    localStorage.setItem(REFRESH_TOKEN, rt);
+    const auth = `Bearer ${accessToken}`;
+    setAuthorization(auth);
+    setExp(payload.exp);
+    return [auth, payload] as const;
+  }, []);
 
   /**
    * Fetch an access token, the user info, and member role, or log out if any step fails.
@@ -121,7 +126,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
    * @param grantType The grant type to authenticate with
    * @param params Additional parameters, which depend on the grant type.
    */
-  const login = React.useCallback(
+  const login = useCallback(
     async <P extends {}>(grantType: string, params: P) => {
       try {
         const [auth, { sub }] = await fetchToken(grantType, params);
@@ -164,7 +169,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
    *
    * @param credentials The username and password.
    */
-  const passwordLogin = React.useCallback(
+  const passwordLogin = useCallback(
     (credentials: PasswordLoginParams) => login('password', credentials),
     [login],
   );
@@ -174,13 +179,13 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
    *
    * @param credentials The authorization code and redirect uri.
    */
-  const authorizationCodeLogin = React.useCallback(
+  const authorizationCodeLogin = useCallback(
     (credentials: AuthorizationCodeLoginParams) => login('authorization_code', credentials),
     [login],
   );
 
   // Initialize the login session/
-  React.useEffect(() => {
+  useEffect(() => {
     // If the app doesn’t have a security definition, don’t even bother initializing anything.
     if (!definition.security) {
       return;
@@ -198,7 +203,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
   }, [definition, login, logout]);
 
   // Handle refreshing access tokens
-  React.useEffect(() => {
+  useEffect(() => {
     // Don’t start the refresh token loop until an access token expiration is known.
     if (exp == null) {
       return undefined;
@@ -232,7 +237,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
     };
   }, [exp, fetchToken, logout]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!authorization) {
       return undefined;
     }
@@ -248,7 +253,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
   }, [authorization]);
 
   // The value is memoized to prevent unnecessary rerenders.
-  const value = React.useMemo(() => ({ authorizationCodeLogin, passwordLogin, logout, ...state }), [
+  const value = useMemo(() => ({ authorizationCodeLogin, passwordLogin, logout, ...state }), [
     authorizationCodeLogin,
     passwordLogin,
     logout,
@@ -265,5 +270,5 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
 }
 
 export function useUser(): UserContext {
-  return React.useContext(Context);
+  return useContext(Context);
 }

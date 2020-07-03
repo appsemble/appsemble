@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { Children, ReactChild, ReactElement, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface PortalProps {
   /**
    * The child node to mount. This may only result in a single top level HTML node.
    */
-  children: React.ReactChild;
+  children: ReactChild;
 
   /**
    * The HTML element to render the children into.
@@ -20,7 +20,7 @@ interface PortalProps {
  *
  * This component doesn’t handle the lifecycle of receiving new props.
  */
-export default function Portal({ children, element }: PortalProps): React.ReactElement {
+export default function Portal({ children, element }: PortalProps): ReactElement {
   useEffect(() => {
     const fragment = document.createDocumentFragment();
     element.childNodes.forEach((child) => fragment.appendChild(child));
@@ -31,5 +31,5 @@ export default function Portal({ children, element }: PortalProps): React.ReactE
     };
   }, [element]);
 
-  return ReactDOM.createPortal(React.Children.only(children), element);
+  return createPortal(Children.only(children), element);
 }

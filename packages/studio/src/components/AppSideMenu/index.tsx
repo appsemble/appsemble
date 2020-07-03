@@ -1,6 +1,6 @@
 import { useToggle } from '@appsemble/react-components/src';
 import { Permission } from '@appsemble/utils';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ export interface AppSideMenuState {
   isCollapsed: boolean;
 }
 
-export default function AppSideMenu(): React.ReactElement {
+export default function AppSideMenu(): ReactElement {
   const { app } = useApp();
 
   const collapsed = useToggle();

@@ -1,5 +1,5 @@
 import type { ActionType, App } from '@appsemble/types';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import type { NamedEvent } from '../../../../types';
 import ActionEditor from '../ActionEditor';
@@ -18,8 +18,8 @@ export default function ActionsEditor({
   name,
   onChange,
   value,
-}: ActionsEditorProps): React.ReactElement {
-  const handleChange = React.useCallback(
+}: ActionsEditorProps): ReactElement {
+  const handleChange = useCallback(
     (event: NamedEvent, val) =>
       onChange({ target: { name } }, { ...value, [event.target.name]: val }),
     [name, value, onChange],

@@ -15,7 +15,7 @@ import {
 import type { Organization } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -27,7 +27,7 @@ import AppRatings from '../AppRatings';
 import styles from './index.css';
 import messages from './messages';
 
-export default function AppDetails(): React.ReactElement {
+export default function AppDetails(): ReactElement {
   const { app } = useApp();
   const { data: organization, error, loading } = useData<Organization>(
     `/api/organizations/${app.OrganizationId}`,
@@ -38,7 +38,7 @@ export default function AppDetails(): React.ReactElement {
 
   const organizations = useOrganizations();
 
-  const cloneApp = React.useCallback(
+  const cloneApp = useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
       const { data: clone } = await axios.post('/api/templates', {
         templateId: app.id,

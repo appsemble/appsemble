@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { ChangeEventHandler, ReactElement } from 'react';
 
 interface DateFieldProps {
   className?: string;
@@ -9,14 +9,10 @@ interface DateFieldProps {
   name: string;
   placeholder?: string;
   value?: string | number;
-  onChange: React.ChangeEventHandler<HTMLElement>;
+  onChange: ChangeEventHandler<HTMLElement>;
 }
 
-export default function DateField({
-  loading,
-  value = '',
-  ...props
-}: DateFieldProps): React.ReactElement {
+export default function DateField({ loading, value = '', ...props }: DateFieldProps): ReactElement {
   return (
     <div className={classNames('control', { 'is-loading': loading })}>
       <input className="input" type="date" value={value} {...props} />

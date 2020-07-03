@@ -1,10 +1,10 @@
 import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import styles from './index.css';
 
-interface IconButtonProps extends React.ComponentPropsWithoutRef<'button'> {
+interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
   /**
    * The Fontawesome icon to render.
    */
@@ -26,7 +26,7 @@ export default function IconButton({
   icon,
   prefix = 'fas',
   ...props
-}: IconButtonProps): React.ReactElement {
+}: IconButtonProps): ReactElement {
   return (
     <button className={classNames('icon', styles.root, className)} type="button" {...props}>
       <i className={`${prefix} fa-${icon}`} />

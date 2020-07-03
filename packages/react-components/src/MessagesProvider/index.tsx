@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { ReactElement, ReactNode, useCallback, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -12,7 +12,7 @@ interface MessagesProviderProps {
   /**
    * Children to which {@link useMessages} will be available.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 interface UniqueMessage extends Msg {
@@ -24,16 +24,16 @@ interface UniqueMessage extends Msg {
 /**
  * Render messages that may be pushed using {@link useMessages}.
  */
-export default function MessagesProvider({ children }: MessagesProviderProps): React.ReactElement {
+export default function MessagesProvider({ children }: MessagesProviderProps): ReactElement {
   const { formatMessage } = useIntl();
   const forceUpdate = useForceUpdate();
 
   // The counter is used as a key of messages.
-  const counter = React.useRef(0);
+  const counter = useRef(0);
   // Updating messages should not redefine the push callback.
-  const messages = React.useRef<UniqueMessage[]>([]);
+  const messages = useRef<UniqueMessage[]>([]);
 
-  const push = React.useCallback(
+  const push = useCallback(
     (message: Msg | string) => {
       const id = counter.current;
       counter.current += 1;

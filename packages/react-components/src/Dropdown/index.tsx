@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
 import Button from '../Button';
 import useClickOutside from '../hooks/useClickOutside';
@@ -12,7 +12,7 @@ interface DropdownProps {
    *
    * Typically these are nodes that have the `dropdown-item` or `dropdown-divicer` class.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * An optional class name to add to the root element.
@@ -22,22 +22,18 @@ interface DropdownProps {
   /**
    * The label to render on the menu toggle button.
    */
-  label: React.ReactNode;
+  label: ReactNode;
 }
 
 /**
  * Render an aria compliant Bulma dropdown menu.
  */
-export default function Dropdown({
-  children,
-  className,
-  label,
-}: DropdownProps): React.ReactElement {
-  const ref = React.useRef<HTMLDivElement>();
+export default function Dropdown({ children, className, label }: DropdownProps): ReactElement {
+  const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
-  const onKeyDown = React.useCallback(
-    (event: React.KeyboardEvent) => {
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         disable();
       }

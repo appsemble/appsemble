@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import HelmetIntl from '../HelmetIntl';
@@ -10,7 +10,7 @@ import messages from './messages';
 /**
  * Capture renderer errors using Sentry.
  */
-export default function ErrorFallback(): React.ReactElement {
+export default function ErrorFallback(): ReactElement {
   return (
     <>
       <HelmetIntl title={messages.title} />

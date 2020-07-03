@@ -8,7 +8,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import type { Rating } from '@appsemble/types';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import useUser from '../../hooks/useUser';
@@ -18,7 +18,7 @@ import StarRating from '../Rating';
 import styles from './index.css';
 import messages from './messages';
 
-export default function AppRatings(): React.ReactElement {
+export default function AppRatings(): ReactElement {
   const { app } = useApp();
   const { data: ratings, error, loading, refresh, setData: setRatings } = useData<Rating[]>(
     `/api/apps/${app.id}/ratings`,

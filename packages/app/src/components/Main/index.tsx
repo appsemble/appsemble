@@ -1,5 +1,5 @@
 import { normalize } from '@appsemble/utils';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -14,7 +14,7 @@ import styles from './index.css';
  *
  * This maps the page to a route and displays a page depending on URL.
  */
-export default function Main(): React.ReactElement {
+export default function Main(): ReactElement {
   const { definition } = useAppDefinition();
 
   if (definition == null) {
