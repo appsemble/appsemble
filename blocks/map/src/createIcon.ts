@@ -57,11 +57,34 @@ export default async function createIcon(
       iconSize: [width, fullSize],
     });
   }
+
+  let color = theme.primaryColor;
+
+  switch (icons?.color) {
+    case 'danger':
+      color = theme.dangerColor;
+      break;
+    case 'info':
+      color = theme.infoColor;
+      break;
+    case 'warning':
+      color = theme.warningColor;
+      break;
+    case 'link':
+      color = theme.linkColor;
+      break;
+    case 'success':
+      color = theme.successColor;
+      break;
+    default:
+      color = theme.primaryColor;
+  }
+
   const { icon = 'map-marker-alt' } = icons;
   const html = document.createElement('i');
   html.className = `fas fa-${icon}`;
   html.style.fontSize = `${size}px`;
-  html.style.color = theme.primaryColor;
+  html.style.color = color;
   return new DivIcon({
     className: styles.fontawesomeMarker,
     html,
