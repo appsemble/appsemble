@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { commandDirOptions, configureLogger, handleError, logger } from '@appsemble/node-utils';
+import { configureLogger, handleError, logger } from '@appsemble/node-utils';
 import path from 'path';
 import yargs from 'yargs';
 
