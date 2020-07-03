@@ -84,6 +84,6 @@ sequenceDiagram
   Note right of App: The user is now logged in.
 ```
 
-Interesting to note is that user accounts are always linked to Appsemble. This allows to assign
-users roles within an app or organization. The steps in the login flow regarding Appsemble Studio go
-very fast, so app users aren’t aware of this technical detail.
+Note that user accounts are always linked to Appsemble. This allows for assigning user roles with an
+app or organization. The step in the login flow where the user gets redirected to the Appsemble
+Studio should be fast enough for users to not notice this technical detail.
