@@ -19,47 +19,46 @@ export default {
       authorizationUrl: { type: DataTypes.STRING, allowNull: false },
       tokenUrl: { type: DataTypes.STRING, allowNull: false },
       userInfoUrl: { type: DataTypes.STRING },
+      remapper: { type: DataTypes.JSON },
       clientId: { type: DataTypes.STRING, allowNull: false },
       clientSecret: { type: DataTypes.STRING, allowNull: false },
       icon: { type: DataTypes.STRING, allowNull: false },
       name: { type: DataTypes.STRING, allowNull: false },
       scope: { type: DataTypes.STRING, allowNull: false },
+      AppId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
+        references: {
+          key: 'id',
+          model: 'App',
+        },
+      },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
-      AppId: { type: DataTypes.NUMBER, allowNull: false },
-    });
-    await queryInterface.addConstraint('AppOAuth2Secret', ['AppId'], {
-      type: 'foreign key',
-      name: 'AppOAuth2Secret_AppId_fkey',
-      onDelete: 'cascade',
-      onUpdate: 'cascade',
-      references: { table: 'App', field: 'id' },
     });
 
     logger.info('Adding new table AppOAuth2Authorization');
     await queryInterface.createTable('AppOAuth2Authorization', {
       sub: { type: DataTypes.STRING, primaryKey: true },
-      AppOAuth2SecretId: { type: DataTypes.INTEGER, primaryKey: true },
-      accessToken: { type: DataTypes.STRING, allowNull: false },
-      expires: { type: DataTypes.DATE },
-      refreshToken: { type: DataTypes.STRING },
+      AppOAuth2SecretId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        onUpdate: 'cascade',
+        references: { key: 'id', model: 'AppOAuth2Secret' },
+      },
+      accessToken: { type: DataTypes.TEXT, allowNull: false },
+      expiresAt: { type: DataTypes.DATE },
+      refreshToken: { type: DataTypes.TEXT },
+      UserId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        onUpdate: 'cascade',
+        references: { key: 'id', model: 'User' },
+      },
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
-      UserId: { type: DataTypes.UUID, allowNull: false },
-    });
-    await queryInterface.addConstraint('AppOAuth2Authorization', ['AppId'], {
-      type: 'foreign key',
-      name: 'AppOAuth2Authorization_AppId_fkey',
-      onDelete: 'cascade',
-      onUpdate: 'cascade',
-      references: { table: 'App', field: 'id' },
-    });
-    await queryInterface.addConstraint('AppOAuth2Authorization', ['UserId'], {
-      type: 'foreign key',
-      name: 'AppOAuth2Authorization_UserId_fkey',
-      onDelete: 'cascade',
-      onUpdate: 'cascade',
-      references: { table: 'User', field: 'id' },
     });
   },
 
