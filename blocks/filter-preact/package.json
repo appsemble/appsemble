@@ -20,6 +20,7 @@
     "@appsemble/preact-components": "0.13.4",
     "@appsemble/sdk": "0.13.4",
     "@appsemble/utils": "0.13.4",
+    "classnames": "^2.2.6",
     "preact": "^10.4.4"
   }
 }
