@@ -2,20 +2,20 @@ import { Content, Loader, Message, useLocationString, useQuery } from '@appsembl
 import type { AppOAuth2Secret } from '@appsemble/types';
 import { startOAuth2Login } from '@appsemble/web-utils';
 import axios from 'axios';
-import * as React from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import messages from './messages';
 
-export default function ForwardOAuth2Login(): React.ReactElement {
+export default function ForwardOAuth2Login(): ReactElement {
   const { id } = useParams<{ id: string }>();
   const qs = useQuery();
   const location = useLocationString();
 
-  const [hasError, setError] = React.useState(false);
+  const [hasError, setError] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const clientId = qs.get('client_id');
     const [, appId] = clientId.split(':');
     axios

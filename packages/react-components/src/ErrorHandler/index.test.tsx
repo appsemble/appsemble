@@ -1,11 +1,11 @@
 import { mount } from 'enzyme';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 
 import ErrorHandler from '.';
 
 it('should render its children if no errors are thrown', () => {
-  const Child = (): React.ReactElement => <p>Test</p>;
-  const Fallback = (): React.ReactElement => <p>Something went wrong!</p>;
+  const Child = (): ReactElement => <p>Test</p>;
+  const Fallback = (): ReactElement => <p>Something went wrong!</p>;
   const result = mount(
     <ErrorHandler fallback={Fallback}>
       <Child />
@@ -17,10 +17,10 @@ it('should render its children if no errors are thrown', () => {
 
 it('should render its fallback when errors are thrown', () => {
   jest.spyOn(console, 'error').mockImplementation();
-  const Child = (): React.ReactElement => {
+  const Child = (): ReactElement => {
     throw Error('test');
   };
-  const Fallback = (): React.ReactElement => <p>Something went wrong!</p>;
+  const Fallback = (): ReactElement => <p>Something went wrong!</p>;
   const result = mount(
     <ErrorHandler fallback={Fallback}>
       <Child />

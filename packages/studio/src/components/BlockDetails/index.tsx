@@ -9,7 +9,7 @@ import {
   useData,
 } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
-import React from 'react';
+import React, { ChangeEvent, Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
@@ -42,7 +42,7 @@ interface BlockDetailsRoutesMatch {
 /**
  * Render documentation for blocks.
  */
-export default function BlockDetails(): React.ReactElement {
+export default function BlockDetails(): ReactElement {
   const { formatMessage } = useIntl();
   const match = useRouteMatch<BlockDetailsRoutesMatch>();
   const history = useHistory();
@@ -52,8 +52,8 @@ export default function BlockDetails(): React.ReactElement {
     `/api/blocks/@${organization}/${blockName}/versions`,
   );
 
-  const onSelectedVersionChange = React.useCallback(
-    async (_: React.ChangeEvent<HTMLSelectElement>, value: string) => {
+  const onSelectedVersionChange = useCallback(
+    async (_: ChangeEvent<HTMLSelectElement>, value: string) => {
       history.push(match.url.replace(urlVersion, value));
     },
     [history, match.url, urlVersion],
@@ -153,7 +153,7 @@ export default function BlockDetails(): React.ReactElement {
             </Title>
             {Object.entries((selectedBlockManifest.parameters as any).definitions).map(
               ([key, definition]: [string, Definition]) => (
-                <React.Fragment key={key}>
+                <Fragment key={key}>
                   <Title level={5}>
                     <a href={`${match.url}#${key}`} id={key}>
                       {key}
@@ -165,7 +165,7 @@ export default function BlockDetails(): React.ReactElement {
                   ) : (
                     <TypeTable definition={definition} />
                   )}
-                </React.Fragment>
+                </Fragment>
               ),
             )}
           </>

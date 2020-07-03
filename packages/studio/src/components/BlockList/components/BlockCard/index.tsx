@@ -1,6 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components/src';
 import type { BlockManifest } from '@appsemble/types';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ interface BlockCardProps {
 /**
  * Display a card that contains basic information of a block and a link to further documentation.
  */
-export default function BlockCard({ block, className }: BlockCardProps): React.ReactElement {
+export default function BlockCard({ block, className }: BlockCardProps): ReactElement {
   const match = useRouteMatch();
   const { formatMessage } = useIntl();
   const [org, ...name] = block.name.split('/');

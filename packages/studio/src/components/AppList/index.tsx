@@ -1,7 +1,7 @@
 import { Icon, Loader, Message, useData } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import React from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -14,14 +14,14 @@ import CreateAppCard from './components/CreateAppCard';
 import styles from './index.css';
 import messages from './messages';
 
-export default function AppList(): React.ReactElement {
-  const [filter, setFilter] = React.useState('');
+export default function AppList(): ReactElement {
+  const [filter, setFilter] = useState('');
   const organizations = useOrganizations();
   const { formatMessage } = useIntl();
   const { userInfo } = useUser();
   const { data: apps, error, loading } = useData<App[]>(userInfo ? '/api/apps/me' : '/api/apps');
 
-  const onFilterChange = React.useCallback((event) => {
+  const onFilterChange = useCallback((event) => {
     setFilter(event.target.value);
   }, []);
 

@@ -1,6 +1,6 @@
 import { Select } from '@appsemble/react-components/src';
 import type { ActionDefinition } from '@appsemble/types';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
@@ -13,7 +13,7 @@ interface ActionEditorTypeSelectProps {
 export default function ActionEditorTypeSelect({
   onChange,
   value,
-}: ActionEditorTypeSelectProps): React.ReactElement {
+}: ActionEditorTypeSelectProps): ReactElement {
   const actionDefinitions: ActionDefinition['type'][] = [
     'dialog',
     'event',
@@ -38,8 +38,8 @@ export default function ActionEditorTypeSelect({
     'static',
   ];
 
-  const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
       const actionType = event.target.value as ActionDefinition['type'];
       onChange(actionType);
     },

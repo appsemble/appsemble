@@ -10,7 +10,7 @@ import type { TokenResponse, UserInfo } from '@appsemble/types';
 import { appendOAuth2State, clearOAuth2State } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -33,9 +33,7 @@ interface OAuth2StudioCallbackProps {
  * - If the user has logged in using an unknown account, they are prompted if they want to link the
  *   OAuth2 account to a new or an existing Appsemble account.
  */
-export default function OAuth2StudioCallback({
-  session,
-}: OAuth2StudioCallbackProps): React.ReactElement {
+export default function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): ReactElement {
   const history = useHistory();
   const redirect = useLocationString();
   const qs = useQuery();
@@ -45,13 +43,13 @@ export default function OAuth2StudioCallback({
   const state = qs.get('state');
   const provider = settings.logins.find((p) => p.authorizationUrl === session?.authorizationUrl);
 
-  const [profile, setProfile] = React.useState(session?.userinfo);
-  const [isLoading, setLoading] = React.useState(true);
-  const [linkError, setLinkError] = React.useState(false);
-  const [error, setError] = React.useState<MessageDescriptor>();
-  const [isSubmitting, setSubmitting] = React.useState(false);
+  const [profile, setProfile] = useState(session?.userinfo);
+  const [isLoading, setLoading] = useState(true);
+  const [linkError, setLinkError] = useState(false);
+  const [error, setError] = useState<MessageDescriptor>();
+  const [isSubmitting, setSubmitting] = useState(false);
 
-  const finalizeLogin = React.useCallback(
+  const finalizeLogin = useCallback(
     (response: TokenResponse) => {
       login(response);
       clearOAuth2State();
@@ -60,7 +58,7 @@ export default function OAuth2StudioCallback({
     [history, login, session],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function connect(): Promise<void> {
       try {
         const { data } = await axios.post<TokenResponse | UserInfo>(
@@ -94,7 +92,7 @@ export default function OAuth2StudioCallback({
     }
   }, [code, finalizeLogin, profile, session, state]);
 
-  const submit = React.useCallback(async () => {
+  const submit = useCallback(async () => {
     setSubmitting(true);
     try {
       const { data } = await axios.post<TokenResponse>('/api/oauth2/connect/pending', {

@@ -1,7 +1,7 @@
 import { Content, Loader, Message, useQuery } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import { clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
-import * as React from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
 
@@ -13,23 +13,23 @@ import messages from './messages';
 /**
  * Handle the OAuth2 callback.
  */
-export default function OpenIDCallback(): React.ReactElement {
+export default function OpenIDCallback(): ReactElement {
   const query = useQuery();
   const code = query.get('code');
   const errorMessage = query.get('error');
   const state = query.get('state');
 
-  const session = React.useMemo(() => loadOAuth2State(), []);
+  const session = useMemo(() => loadOAuth2State(), []);
   const { authorizationCodeLogin, isLoggedIn } = useUser();
   const { definition } = useAppDefinition();
 
-  const [error, setError] = React.useState(false);
+  const [error, setError] = useState(false);
 
   const { redirect } = session;
   const stateOk = state && session.state && state === session.state;
   const isOk = code && !errorMessage && !error && !isLoggedIn && stateOk;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOk) {
       authorizationCodeLogin({
         code,
@@ -40,7 +40,7 @@ export default function OpenIDCallback(): React.ReactElement {
     }
   }, [authorizationCodeLogin, code, isOk]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isLoggedIn) {
       clearOAuth2State();
     }

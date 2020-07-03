@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import styles from './index.css';
 
@@ -8,10 +8,7 @@ interface DotProgressBarProps {
   active: number;
 }
 
-export default function DotProgressBar({
-  active,
-  amount,
-}: DotProgressBarProps): React.ReactElement {
+export default function DotProgressBar({ active, amount }: DotProgressBarProps): ReactElement {
   return (
     <div className={styles.dotContainer}>
       {Array.from(Array(amount), (_, index) => (

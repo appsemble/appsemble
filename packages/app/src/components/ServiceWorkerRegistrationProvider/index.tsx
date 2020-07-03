@@ -1,37 +1,44 @@
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import axios from 'axios';
-import * as React from 'react';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import type { Permission, ServiceWorkerRegistrationContextType } from '../../types';
 import settings from '../../utils/settings';
 
 interface ServiceWorkerRegistrationProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
 }
 
-const ServiceWorkerRegistrationContext = React.createContext<ServiceWorkerRegistrationContextType>(
-  null,
-);
+const ServiceWorkerRegistrationContext = createContext<ServiceWorkerRegistrationContextType>(null);
 
 export function useServiceWorkerRegistration(): ServiceWorkerRegistrationContextType {
-  return React.useContext(ServiceWorkerRegistrationContext);
+  return useContext(ServiceWorkerRegistrationContext);
 }
 
 export default function ServiceWorkerRegistrationProvider({
   children,
   serviceWorkerRegistrationPromise,
-}: ServiceWorkerRegistrationProviderProps): React.ReactElement {
-  const [permission, setPermission] = React.useState<Permission>(window.Notification?.permission);
-  const [subscription, setSubscription] = React.useState<PushSubscription>();
+}: ServiceWorkerRegistrationProviderProps): ReactElement {
+  const [permission, setPermission] = useState<Permission>(window.Notification?.permission);
+  const [subscription, setSubscription] = useState<PushSubscription>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     serviceWorkerRegistrationPromise.then((registration) =>
       registration?.pushManager.getSubscription().then(setSubscription),
     );
   }, [serviceWorkerRegistrationPromise]);
 
-  const requestPermission = React.useCallback(async () => {
+  const requestPermission = useCallback(async () => {
     if (window.Notification?.permission === 'default') {
       setPermission('pending');
     }
@@ -42,7 +49,7 @@ export default function ServiceWorkerRegistrationProvider({
     return newPermission;
   }, []);
 
-  const subscribe = React.useCallback(async () => {
+  const subscribe = useCallback(async () => {
     const registration = await serviceWorkerRegistrationPromise;
 
     if (permission !== 'granted') {
@@ -71,7 +78,7 @@ export default function ServiceWorkerRegistrationProvider({
     return sub;
   }, [permission, requestPermission, serviceWorkerRegistrationPromise]);
 
-  const unsubscribe = React.useCallback(async () => {
+  const unsubscribe = useCallback(async () => {
     if (!subscription) {
       return false;
     }
@@ -80,7 +87,7 @@ export default function ServiceWorkerRegistrationProvider({
     return result;
   }, [subscription]);
 
-  const value = React.useMemo(
+  const value = useMemo(
     () => ({
       subscribe,
       subscription,

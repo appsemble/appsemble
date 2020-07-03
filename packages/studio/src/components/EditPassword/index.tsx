@@ -10,18 +10,18 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 
-export default function EditPassword(): React.ReactElement {
+export default function EditPassword(): ReactElement {
   const qs = useQuery();
-  const [success, setSuccess] = React.useState(false);
+  const [success, setSuccess] = useState(false);
   const token = qs.get('token');
-  const submit = React.useCallback(
+  const submit = useCallback(
     async ({ password }) => {
       await axios.post('/api/email/reset', { token, password });
       setSuccess(true);

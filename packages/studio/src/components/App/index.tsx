@@ -1,5 +1,5 @@
 import { Confirmation, ErrorHandler, MessagesProvider } from '@appsemble/react-components';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
@@ -26,7 +26,7 @@ import Toolbar from '../Toolbar';
 import UserProvider from '../UserProvider';
 import VerifyEmail from '../VerifyEmail';
 
-export default function App(): React.ReactElement {
+export default function App(): ReactElement {
   return (
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <BrowserRouter>

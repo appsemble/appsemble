@@ -8,7 +8,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import type { AppOAuth2Secret } from '@appsemble/types';
-import * as React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '../AppContext';
@@ -26,7 +26,7 @@ const initialSecret: AppOAuth2Secret = {
   tokenUrl: '',
 };
 
-export default function AppSecrets(): React.ReactElement {
+export default function AppSecrets(): ReactElement {
   const { app } = useApp();
 
   const { data: secrets, error, loading, setData: setSecrets } = useData<AppOAuth2Secret[]>(
@@ -34,14 +34,14 @@ export default function AppSecrets(): React.ReactElement {
   );
   const adding = useToggle();
 
-  const onUpdated = React.useCallback(
+  const onUpdated = useCallback(
     (newSecret: AppOAuth2Secret, oldSecret: AppOAuth2Secret) => {
       setSecrets(secrets.map((s) => (s === oldSecret ? newSecret : s)));
     },
     [secrets, setSecrets],
   );
 
-  const onAdded = React.useCallback(
+  const onAdded = useCallback(
     (newSecret: AppOAuth2Secret) => {
       setSecrets([...secrets, newSecret]);
       adding.disable();

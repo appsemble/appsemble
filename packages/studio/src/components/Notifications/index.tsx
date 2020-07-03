@@ -8,7 +8,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -16,12 +16,12 @@ import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 
-export default function Notifications(): React.ReactElement {
+export default function Notifications(): ReactElement {
   const { app } = useApp();
 
   const { formatMessage } = useIntl();
   const push = useMessages();
-  const submit = React.useCallback(
+  const submit = useCallback(
     async ({ body, title }: { title: string; body: string }): Promise<void> => {
       try {
         await axios.post(`/api/apps/${app.id}/broadcast`, { title, body });

@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import type { App, Rating } from '@appsemble/types';
 import axios from 'axios';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import StarRating from '../Rating';
@@ -20,15 +20,15 @@ interface RateAppProps {
   onRate: (rate: Rating) => void;
 }
 
-export default function RateApp({ app, className, onRate }: RateAppProps): React.ReactElement {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [rating, setRating] = React.useState(0);
-  const [description, setDescription] = React.useState('');
+export default function RateApp({ app, className, onRate }: RateAppProps): ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [description, setDescription] = useState('');
   const { formatMessage } = useIntl();
   const openDialog = (): void => setIsOpen(true);
   const closeDialog = (): void => setIsOpen(false);
 
-  const onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void =>
+  const onDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>): void =>
     setDescription(event.target.value);
   const submit = async (): Promise<void> => {
     const { data } = await axios.post(`/api/apps/${app.id}/ratings`, { rating, description });

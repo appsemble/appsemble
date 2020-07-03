@@ -2,7 +2,7 @@ import { Loader, useLocationString } from '@appsemble/react-components';
 import type { BlockDefinition, Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import type { EventEmitter } from 'events';
-import React from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -48,24 +48,24 @@ export default function BlockList({
   prefix,
   showDialog,
   transitions,
-}: BlockListProps): React.ReactElement {
+}: BlockListProps): ReactElement {
   const { definition, revision } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
   const redirect = useLocationString();
 
-  const blockList = React.useMemo(() => filterBlocks(definition.security, blocks, role), [
+  const blockList = useMemo(() => filterBlocks(definition.security, blocks, role), [
     blocks,
     definition,
     role,
   ]);
 
-  const blockStatus = React.useRef(blockList.map(() => false));
-  const [pageReady, setPageReady] = React.useState<Promise<void>>();
+  const blockStatus = useRef(blockList.map(() => false));
+  const [pageReady, setPageReady] = useState<Promise<void>>();
 
-  const [isLoading, setLoading] = React.useState(true);
-  const resolvePageReady = React.useRef<Function>();
+  const [isLoading, setLoading] = useState(true);
+  const resolvePageReady = useRef<Function>();
 
-  const ready = React.useCallback(
+  const ready = useCallback(
     (block: BlockDefinition) => {
       blockStatus.current[blockList.findIndex(([b]) => b === block)] = true;
       if (blockStatus.current.every(Boolean)) {
@@ -76,7 +76,7 @@ export default function BlockList({
     [blockList],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     setPageReady(
       new Promise((resolve) => {
         resolvePageReady.current = resolve;

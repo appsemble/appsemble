@@ -1,25 +1,25 @@
 import '@creativebulma/bulma-tagsinput/dist/css/bulma-tagsinput.css';
 
 import BulmaTagsInput, { BulmaTagsInputOptions } from '@creativebulma/bulma-tagsinput';
-import * as React from 'react';
+import React, { ComponentPropsWithoutRef, forwardRef, useEffect, useRef } from 'react';
 
 import useCombinedRefs from '../hooks/useCombinedRefs';
 import Input from '../Input';
 
-type TagsInputProps = Omit<React.ComponentPropsWithoutRef<typeof Input>, 'onChange' | 'value'> &
+type TagsInputProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'onChange' | 'value'> &
   Pick<BulmaTagsInputOptions, 'delimiter'> & {
     onChange(event: Event, value: string[]): void;
 
     value?: string[];
   };
 
-export default React.forwardRef<HTMLInputElement, TagsInputProps>(
+export default forwardRef<HTMLInputElement, TagsInputProps>(
   ({ delimiter, onChange, ...props }, ref) => {
-    const innerRef = React.useRef<HTMLInputElement>();
+    const innerRef = useRef<HTMLInputElement>();
 
     const mergedRef = useCombinedRefs(innerRef, ref);
 
-    React.useEffect(() => {
+    useEffect(() => {
       const element = innerRef.current;
       const bulmaInput = new BulmaTagsInput(element, { delimiter });
       const onEvent = (): void => {

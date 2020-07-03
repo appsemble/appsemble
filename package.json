@@ -25,6 +25,9 @@
     "*.css": [
       "stylelint"
     ],
+    "*.md": [
+      "remark --frail --no-stdout"
+    ],
     "*.{html,json,md,scss,yaml,yml}": [
       "prettier --check"
     ],

@@ -1,6 +1,6 @@
 import { Loader, useQuery } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
-import * as React from 'react';
+import React, { ReactElement, useEffect } from 'react';
 
 import type { ExtendedOAuth2State } from '../../types';
 import { oauth2Redirect } from '../../utils/oauth2Utils';
@@ -9,10 +9,10 @@ interface OAuth2AppCallbackProps {
   session: ExtendedOAuth2State;
 }
 
-export default function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): React.ReactElement {
+export default function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactElement {
   const qs = useQuery();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const code = qs.get('code');
     const state = qs.get('state');
     const error = state === session.state ? qs.get('error') : 'invalid_request';

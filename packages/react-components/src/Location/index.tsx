@@ -12,7 +12,7 @@ import {
   Point,
   TileLayer,
 } from 'leaflet';
-import * as React from 'react';
+import React, { Component, createRef, ReactElement } from 'react';
 
 interface LocationProps {
   className?: string;
@@ -28,8 +28,8 @@ interface LocationProps {
 /**
  * Render a location based marker based on leaflet.
  */
-class Location extends React.Component<LocationProps & BlockProps> {
-  ref = React.createRef<HTMLDivElement>();
+class Location extends Component<LocationProps & BlockProps> {
+  ref = createRef<HTMLDivElement>();
 
   componentDidMount(): void {
     const {
@@ -67,7 +67,7 @@ class Location extends React.Component<LocationProps & BlockProps> {
       .locate({ watch: true, timeout: 10e3, maximumAge: 60e3 });
   }
 
-  render(): React.ReactElement {
+  render(): ReactElement {
     const { className } = this.props;
     return <div ref={this.ref} className={className} />;
   }

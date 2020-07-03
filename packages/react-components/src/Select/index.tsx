@@ -1,10 +1,17 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, {
+  ChangeEvent,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  ReactElement,
+  ReactNode,
+  useCallback,
+} from 'react';
 
 import FormComponent from '../FormComponent';
 
-type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
-  Omit<React.ComponentPropsWithoutRef<'select'>, 'onChange'> & {
+type SelectProps = ComponentPropsWithoutRef<typeof FormComponent> &
+  Omit<ComponentPropsWithoutRef<'select'>, 'onChange'> & {
     /**
      * The name of the HTML element.
      */
@@ -13,7 +20,7 @@ type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
     /**
      * This is fired when the input value has changed.
      */
-    onChange: (event: React.ChangeEvent<HTMLSelectElement>, value: string) => void;
+    onChange: (event: ChangeEvent<HTMLSelectElement>, value: string) => void;
 
     /**
      * Indicate the select box is in a loading state.
@@ -28,13 +35,13 @@ type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
     /**
      * A help message to render.
      */
-    help?: React.ReactNode;
+    help?: ReactNode;
   };
 
 /**
  * A Bulma styled form select element.
  */
-export default React.forwardRef<HTMLSelectElement, SelectProps>(
+export default forwardRef<HTMLSelectElement, SelectProps>(
   (
     {
       fullwidth = true,
@@ -49,9 +56,9 @@ export default React.forwardRef<HTMLSelectElement, SelectProps>(
       ...props
     },
     ref,
-  ): React.ReactElement => {
-    const handleChange = React.useCallback(
-      (event: React.ChangeEvent<HTMLSelectElement>) => {
+  ): ReactElement => {
+    const handleChange = useCallback(
+      (event: ChangeEvent<HTMLSelectElement>) => {
         onChange(event, event.target.value);
       },
       [onChange],

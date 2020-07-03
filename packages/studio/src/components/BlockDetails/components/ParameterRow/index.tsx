@@ -1,6 +1,6 @@
 import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
-import React from 'react';
+import React, { Fragment, ReactElement } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
 
@@ -39,7 +39,7 @@ export default function ParameterRow({
   parent,
   recurse,
   value,
-}: ParameterRowProps): React.ReactElement {
+}: ParameterRowProps): ReactElement {
   const match = useRouteMatch();
 
   if (value.type === 'array' && recurse) {
@@ -106,7 +106,7 @@ export default function ParameterRow({
 
           if (!refName) {
             // eslint-disable-next-line react/no-array-index-key
-            return <React.Fragment key={index}>{(any as any).type}</React.Fragment>;
+            return <Fragment key={index}>{(any as any).type}</Fragment>;
           }
           return (
             <a key={refName} href={`${match.url}#${refName}`}>
@@ -150,7 +150,7 @@ export default function ParameterRow({
                 .filter(Boolean)
                 .filter((t) => t !== 'object' && t !== 'array')
                 .map((t) => (
-                  <React.Fragment key={t}>{t}</React.Fragment>
+                  <Fragment key={t}>{t}</Fragment>
                 ))}
               {ref}
             </Join>
@@ -161,7 +161,7 @@ export default function ParameterRow({
         {!ref && !value?.enum?.length && type !== 'array' && (
           <Join separator=" | ">
             {[].concat(type).map((t) => (
-              <React.Fragment key={t}>{t}</React.Fragment>
+              <Fragment key={t}>{t}</Fragment>
             ))}
           </Join>
         )}

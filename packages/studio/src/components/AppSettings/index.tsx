@@ -13,7 +13,7 @@ import {
 } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactText, useState } from 'react';
+import React, { ChangeEvent, ReactElement, ReactText, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ import { useApp } from '../AppContext';
 import styles from './index.css';
 import messages from './messages';
 
-export default function AppSettings(): React.ReactElement {
+export default function AppSettings(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const [icon, setIcon] = useState<File>();
@@ -59,15 +59,15 @@ export default function AppSettings(): React.ReactElement {
     }
   };
 
-  const onChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
+  const onChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
       event.persist();
       setInputs((val) => ({ ...val, [event.target.name]: value }));
     },
     [],
   );
 
-  const onIconChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
+  const onIconChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setIcon(e.target.files[0]);
   }, []);
 

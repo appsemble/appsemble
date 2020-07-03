@@ -1,6 +1,6 @@
 import { MarkdownContent, Select } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
@@ -15,7 +15,7 @@ export default function JSONSchemaEnumEditor({
   required,
   schema,
   value = '',
-}: CommonJSONSchemaEditorProps<any>): React.ReactElement {
+}: CommonJSONSchemaEditorProps<any>): ReactElement {
   return (
     <Select
       disabled={disabled}

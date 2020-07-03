@@ -1,7 +1,7 @@
 import { Loader, Message, useData } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import React from 'react';
+import React, { createContext, ReactElement, useContext, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
@@ -34,15 +34,15 @@ interface AppValueContext {
   setApp: (app: App) => void;
 }
 
-const Context = React.createContext<AppValueContext>(null);
+const Context = createContext<AppValueContext>(null);
 
-export default function AppContext(): React.ReactElement {
+export default function AppContext(): ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
   const { data: app, error, loading, setData: setApp } = useData<App>(
     `/api/apps/${match.params.id}`,
   );
-  const value = React.useMemo(() => ({ app, setApp }), [app, setApp]);
+  const value = useMemo(() => ({ app, setApp }), [app, setApp]);
 
   if (error) {
     return (
@@ -134,5 +134,5 @@ export default function AppContext(): React.ReactElement {
 }
 
 export function useApp(): AppValueContext {
-  return React.useContext(Context);
+  return useContext(Context);
 }

@@ -1,5 +1,5 @@
 import { Button, Dropdown, Icon, useLocationString, useQuery } from '@appsemble/react-components';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ import useUser from '../../hooks/useUser';
 import styles from './index.css';
 import messages from './messages';
 
-export default function ProfileDropdown(): React.ReactElement {
+export default function ProfileDropdown(): ReactElement {
   const { formatMessage } = useIntl();
   const { logout, userInfo } = useUser();
   const location = useLocation();

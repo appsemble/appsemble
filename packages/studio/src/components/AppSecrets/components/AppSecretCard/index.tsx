@@ -12,7 +12,7 @@ import {
 } from '@appsemble/react-components';
 import type { AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
-import * as React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '../../../AppContext';
@@ -33,14 +33,11 @@ interface AppSecretCardProps {
   secret: AppOAuth2Secret;
 }
 
-export default function AppSecretCard({
-  onUpdated,
-  secret,
-}: AppSecretCardProps): React.ReactElement {
+export default function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactElement {
   const editing = useToggle();
   const { app } = useApp();
 
-  const onSubmit = React.useCallback(
+  const onSubmit = useCallback(
     async (values) => {
       let data: AppOAuth2Secret;
       if ('id' in values) {
