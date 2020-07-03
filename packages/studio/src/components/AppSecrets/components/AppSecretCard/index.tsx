@@ -1,5 +1,6 @@
 import {
   FormButtons,
+  FormOutput,
   Icon,
   IconButton,
   PasswordInput,
@@ -13,7 +14,7 @@ import {
 import type { AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../../../AppContext';
 import messages from './messages';
@@ -36,6 +37,7 @@ interface AppSecretCardProps {
 export default function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactElement {
   const editing = useToggle();
   const { app } = useApp();
+  const { formatMessage } = useIntl();
 
   const onSubmit = useCallback(
     async (values) => {
@@ -83,6 +85,15 @@ export default function AppSecretCard({ onUpdated, secret }: AppSecretCardProps)
             label={<FormattedMessage {...messages.iconLabel} />}
             name="icon"
             required
+          />
+          <FormOutput
+            copyErrorMessage={formatMessage(messages.redirectUrlCopyError)}
+            copySuccessMessage={formatMessage(messages.redirectUrlCopySuccess)}
+            help={<FormattedMessage {...messages.redirectUrlHelp} />}
+            iconLeft="route"
+            label={<FormattedMessage {...messages.redirectUrlLabel} />}
+            name="redirectUri"
+            value={`${window.location.origin}/callback`}
           />
           <SimpleInput
             help={<FormattedMessage {...messages.authorizationUrlHelp} />}
