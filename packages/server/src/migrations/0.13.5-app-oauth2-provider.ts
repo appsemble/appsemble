@@ -8,9 +8,8 @@ export default {
 
   /**
    * Summary:
-   * - Query all blocks with events
-   * - Parse them back into JS objects
-   * - Convert all event emitters and listeners to empty objects
+   * - Add the AppOAuth2Secret table.
+   * - Add the AppOAuth2Authorization table.
    */
   async up(db) {
     const queryInterface = db.getQueryInterface();
