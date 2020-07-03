@@ -4,6 +4,7 @@ import { BlockProps, withBlock } from '@appsemble/preact';
 import type { Theme } from '@appsemble/sdk';
 import {
   CircleMarker,
+  DivIcon,
   Icon,
   LocationEvent,
   Map,
@@ -23,6 +24,7 @@ export interface LocationProps {
   longitude: number;
   mapOptions?: MapOptions;
   theme: Theme;
+  marker?: Icon | DivIcon;
 }
 
 /**
@@ -39,6 +41,7 @@ class Location extends Component<LocationProps & BlockProps> {
       latitude,
       longitude,
       mapOptions,
+      marker,
       theme: { primaryColor, tileLayer },
     } = this.props;
 
@@ -53,10 +56,12 @@ class Location extends Component<LocationProps & BlockProps> {
       layers: [
         new TileLayer(tileLayer),
         new Marker([latitude, longitude], {
-          icon: new Icon({
-            iconUrl,
-            iconAnchor: new Point(iconWidth / 2, iconHeight),
-          }),
+          icon:
+            marker ||
+            new Icon({
+              iconUrl,
+              iconAnchor: new Point(iconWidth / 2, iconHeight),
+            }),
         }),
       ],
       ...mapOptions,
