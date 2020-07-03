@@ -1,4 +1,4 @@
-import type { MessagesContext } from '@appsemble/react-components';
+import type { ShowMessage } from '@appsemble/react-components';
 import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
@@ -83,7 +83,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
-  showMessage: MessagesContext;
+  showMessage: ShowMessage;
 }
 
 export type Permission = NotificationPermission | 'pending';
