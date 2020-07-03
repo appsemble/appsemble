@@ -1,9 +1,11 @@
 import {
+  AllowNull,
   AutoIncrement,
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
+  Default,
   DeletedAt,
   ForeignKey,
   HasMany,
@@ -27,6 +29,11 @@ export default class Resource extends Model<Resource> {
 
   @Column(DataType.JSON)
   data: any;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  clonable: boolean;
 
   @CreatedAt
   created: Date;

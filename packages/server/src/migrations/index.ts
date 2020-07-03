@@ -11,6 +11,7 @@ import userUuid from './0.13.0-user-uuid';
 import oauth2LoginFixesBlockDescriptions from './0.13.1-oauth2-login-fixes-block-descriptions';
 import convertEvents from './0.13.2-convert-events';
 import fixAppLoginFlow from './0.13.3-fix-app-login-flow';
+import clonableResources from './0.13.5-clonable-resources';
 
 export default [
   postgresql,
@@ -25,4 +26,5 @@ export default [
   oauth2LoginFixesBlockDescriptions,
   convertEvents,
   fixAppLoginFlow,
+  clonableResources,
 ] as Migration[];
