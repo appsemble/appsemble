@@ -2,9 +2,9 @@ import React, { ReactElement, ReactNode, useCallback, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import useForceUpdate from '../hooks/useForceUpdate';
-import { Message as Msg, MessagesContext } from '../hooks/useMessages';
 import Message from '../Message';
+import useForceUpdate from '../useForceUpdate';
+import { Message as Msg, MessagesContext } from '../useMessages';
 import styles from './index.css';
 import msgs from './messages';
 
