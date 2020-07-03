@@ -11,9 +11,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Block(`data-notifier`): Add new the `data-notifier` block. This has the same functionality as the
   filter block for refreshing new data, but for general use.
+- Block(`detail-viewer`): Add `icons` property which can be used to customize the way the marker
+  looks. It is identical to how works in `map`.
 - Block(`list`): Add `image` property.
 - Block(`map`): Add `defaultLocation` property. This property is used to set the location of the map
   when the user’s location cannot be found. It defaults to Greenwich Park.
+- Block(`map`): Add `color` property to `icons`. This can be used to change the color of custom
+  markers.
 
 ## [0.13.4] - 2020-06-29
 
