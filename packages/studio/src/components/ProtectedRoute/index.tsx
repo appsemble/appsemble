@@ -3,9 +3,9 @@ import type { Permission } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { Redirect, Route, RouteProps, useRouteMatch } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
 import type { Organization } from '../../types';
 import checkRole from '../../utils/checkRole';
+import { useUser } from '../UserProvider';
 
 interface ProtectedRouteProps extends RouteProps {
   permission?: Permission;

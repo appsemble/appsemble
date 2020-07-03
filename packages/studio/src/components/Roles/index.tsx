@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import useUser from '../../hooks/useUser';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import messages from './messages';
 
 export interface Member {
