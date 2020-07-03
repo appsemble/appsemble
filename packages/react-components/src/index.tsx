@@ -47,5 +47,5 @@ export { default as useQuery } from './useQuery';
 export { default as useToggle } from './useToggle';
 export { default as useLocationString } from './useLocationString';
 export type { Toggle } from './useToggle';
-export { default as ValuePickerProvider, useValuePickerProvider } from './ValuePickerProvider';
+export { default as ValuePickerProvider, useValuePicker } from './ValuePickerProvider';
 export type { ValuePickerProviderProps } from './ValuePickerProvider';
