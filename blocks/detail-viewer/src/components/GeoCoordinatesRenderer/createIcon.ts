@@ -1,0 +1,94 @@
+import type { BootstrapParams } from '@appsemble/sdk';
+import { DivIcon, Icon } from 'leaflet';
+
+import styles from './createMarker.css';
+
+/**
+ * A set of Font Awesome markers known to represent a pin.
+ *
+ * These icons get special treatment when for their positioning.
+ */
+const KNOWN_MARKER_ICONS = new Set(['map-marker', 'map-marker-alt', 'map-pin', 'thumbtack']);
+
+const sizeMap = new Map<string, Promise<[number, number]>>();
+
+/**
+ * Get the natural width and height of an image url as a tuple.
+ *
+ * The value is memoized.
+ *
+ * @param url The URL for which to get the image dimensions.
+ * @returns The natural width and height as a tuple.
+ */
+function getIconSize(url: string): Promise<[number, number]> {
+  if (!sizeMap.has(url)) {
+    sizeMap.set(
+      url,
+      new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve([image.naturalWidth, image.naturalHeight]);
+        image.onerror = reject;
+        image.src = url;
+      }),
+    );
+  }
+  return sizeMap.get(url);
+}
+
+/**
+ * Create a leaflet icon based on an asset id or a font awesome icon.
+ *
+ * @param blockParams The block parameters.
+ * @returns The leaflet icon.
+ */
+export default async function createIcon(
+  { parameters: { icons = {} }, theme, utils }: BootstrapParams,
+  highlight: boolean,
+): Promise<Icon | DivIcon> {
+  const { activeRatio = 1, anchor, size = 28 } = icons;
+  const fullSize = highlight ? size * activeRatio : size;
+  if ('asset' in icons) {
+    const iconUrl = utils.asset(icons.asset);
+    const [naturalWidth, naturalHeight] = await getIconSize(iconUrl);
+    const width = (fullSize * naturalWidth) / naturalHeight;
+    return new Icon({
+      iconUrl,
+      iconAnchor: anchor || [width / 2, fullSize / 2],
+      iconSize: [width, fullSize],
+    });
+  }
+
+  let color = theme.primaryColor;
+
+  switch (icons?.color) {
+    case 'danger':
+      color = theme.dangerColor;
+      break;
+    case 'info':
+      color = theme.infoColor;
+      break;
+    case 'warning':
+      color = theme.warningColor;
+      break;
+    case 'link':
+      color = theme.linkColor;
+      break;
+    case 'success':
+      color = theme.successColor;
+      break;
+    default:
+      color = theme.primaryColor;
+  }
+
+  const { icon = 'map-marker-alt' } = icons;
+  const html = document.createElement('i');
+  html.className = `fas fa-${icon}`;
+  html.style.fontSize = `${size}px`;
+  html.style.color = color;
+  return new DivIcon({
+    className: styles.fontawesomeMarker,
+    html,
+    iconAnchor: anchor || [fullSize / 2, KNOWN_MARKER_ICONS.has(icon) ? fullSize : fullSize / 2],
+    iconSize: [fullSize, fullSize],
+  });
+}
