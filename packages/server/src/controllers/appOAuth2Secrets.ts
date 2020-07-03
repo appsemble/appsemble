@@ -97,7 +97,7 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
     attributes: ['id'],
     include: [
       {
-        attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret'],
+        attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret', 'remapper', 'userInfoUrl'],
         model: AppOAuth2Secret,
         required: false,
         where: { id: appOAuth2SecretId },
@@ -120,7 +120,7 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
     refresh_token: refreshToken,
   } = await getAccessToken(secret.tokenUrl, code, referer, secret.clientId, secret.clientSecret);
 
-  const { sub } = await getUserInfo(accessToken, idToken, secret.userInfoUrl);
+  const { sub } = await getUserInfo(accessToken, idToken, secret.userInfoUrl, secret.remapper);
   const authorization = await AppOAuth2Authorization.findOne({
     where: { sub, AppOAuth2SecretId: secret.id },
   });

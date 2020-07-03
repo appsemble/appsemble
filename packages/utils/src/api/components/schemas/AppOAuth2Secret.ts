@@ -43,5 +43,9 @@ export default {
       format: 'uri',
       description: 'The URL to request user info from',
     },
+    remapper: {
+      type: 'array',
+      description: 'A remapper to apply on retrieved user information from the user info endpoint.',
+    },
   },
 };

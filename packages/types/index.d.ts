@@ -974,4 +974,9 @@ export interface AppOAuth2Secret extends OAuth2Provider {
    * The URL from where to fetch user info.
    */
   userInfoUrl?: string;
+
+  /**
+   * The remapper to apply on the user info data.
+   */
+  remapper: Remapper;
 }

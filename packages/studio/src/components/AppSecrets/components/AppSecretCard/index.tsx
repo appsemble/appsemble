@@ -3,6 +3,7 @@ import {
   FormOutput,
   Icon,
   IconButton,
+  JSONInput,
   PasswordInput,
   SimpleForm,
   SimpleInput,
@@ -120,17 +121,6 @@ export default function AppSecretCard({ onUpdated, secret }: AppSecretCardProps)
             }}
           />
           <SimpleInput
-            help={<FormattedMessage {...messages.userInfoUrlHelp} />}
-            iconLeft="id-card"
-            label={<FormattedMessage {...messages.userInfoUrlLabel} />}
-            name="userInfoUrl"
-            placeholder="https://example.com/oauth2/token"
-            type="url"
-            validityMessages={{
-              typeMismatch: <FormattedMessage {...messages.badUrl} />,
-            }}
-          />
-          <SimpleInput
             help={<FormattedMessage {...messages.clientIdHelp} />}
             iconLeft="fingerprint"
             label={<FormattedMessage {...messages.clientIdLabel} />}
@@ -153,6 +143,23 @@ export default function AppSecretCard({ onUpdated, secret }: AppSecretCardProps)
             label={<FormattedMessage {...messages.scopeLabel} />}
             name="scope"
             required
+          />
+          <SimpleInput
+            help={<FormattedMessage {...messages.userInfoUrlHelp} />}
+            iconLeft="id-card"
+            label={<FormattedMessage {...messages.userInfoUrlLabel} />}
+            name="userInfoUrl"
+            placeholder="https://example.com/oauth2/token"
+            type="url"
+            validityMessages={{
+              typeMismatch: <FormattedMessage {...messages.badUrl} />,
+            }}
+          />
+          <SimpleInput
+            component={JSONInput}
+            help={<FormattedMessage {...messages.remapperHelp} />}
+            label={<FormattedMessage {...messages.remapperLabel} />}
+            name="remapper"
           />
           <FormButtons>
             <SimpleSubmit>

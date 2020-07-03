@@ -1,4 +1,4 @@
-import type { AppOAuth2Secret as Interface } from '@appsemble/types';
+import type { AppOAuth2Secret as Interface, Remapper } from '@appsemble/types';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import {
   AllowNull,
@@ -33,6 +33,9 @@ export default class AppOAuth2Secret extends Model<AppOAuth2Secret> implements I
 
   @Column
   userInfoUrl: string;
+
+  @Column(DataType.JSON)
+  remapper: Remapper;
 
   @AllowNull(false)
   @Column
