@@ -33,17 +33,6 @@ interface AbstractMarkerIcon {
    * @default 28
    */
   size?: number;
-
-  /**
-   * Enlarge an active marker with this ratio.
-   *
-   * This modifier is applied if a marker matches the block data which may be received by the block
-   * context. For example, this is applied if a marker matches the data that was passed in from a
-   * link action.
-   *
-   * @default 1
-   */
-  activeRatio?: number;
 }
 
 /**

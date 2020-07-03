@@ -6,7 +6,7 @@ import { useEffect, useState } from 'preact/hooks';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 import type { GeoCoordinatesField, RendererProps } from '../../../block';
-import createIcon from './createIcon';
+import createIcon from '../utils/createIcon';
 import styles from './index.css';
 
 /**
@@ -32,14 +32,9 @@ export default function GeoCoordinatesRenderer({
   const [marker, setMarker] = useState<Icon | DivIcon>(null);
 
   useEffect(() => {
-    const getMarker = async (): Promise<void> => {
-      if (icons) {
-        const m = await createIcon(block, false);
-        setMarker(m);
-      }
-    };
-
-    getMarker();
+    if (icons) {
+      createIcon(block).then(setMarker);
+    }
   }, [block, icons]);
 
   return (

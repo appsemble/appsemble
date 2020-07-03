@@ -1,7 +1,7 @@
 import type { BootstrapParams } from '@appsemble/sdk';
 import { DivIcon, Icon } from 'leaflet';
 
-import styles from './createMarker.css';
+import styles from './createIcon.css';
 
 /**
  * A set of Font Awesome markers known to represent a pin.
@@ -58,33 +58,10 @@ export default async function createIcon(
     });
   }
 
-  let color = theme.primaryColor;
-
-  switch (icons?.color) {
-    case 'danger':
-      color = theme.dangerColor;
-      break;
-    case 'info':
-      color = theme.infoColor;
-      break;
-    case 'warning':
-      color = theme.warningColor;
-      break;
-    case 'link':
-      color = theme.linkColor;
-      break;
-    case 'success':
-      color = theme.successColor;
-      break;
-    default:
-      color = theme.primaryColor;
-  }
-
   const { icon = 'map-marker-alt' } = icons;
   const html = document.createElement('i');
-  html.className = `fas fa-${icon}`;
+  html.className = `fas fa-${icon} has-text-${icons?.color || 'primary'}`;
   html.style.fontSize = `${size}px`;
-  html.style.color = color;
   return new DivIcon({
     className: styles.fontawesomeMarker,
     html,
