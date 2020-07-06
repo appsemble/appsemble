@@ -1,4 +1,4 @@
-import { Icon, useValuePickerProvider } from '@appsemble/react-components';
+import { Icon, useValuePicker } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
@@ -11,7 +11,7 @@ interface GUIEditorBlockItemProps {
 }
 
 export default function GUIEditorBlockItem({ value }: GUIEditorBlockItemProps): ReactElement {
-  const { name, onChange, value: currentValue } = useValuePickerProvider();
+  const { name, onChange, value: currentValue } = useValuePicker();
 
   const handleChange = useCallback((event) => onChange(event, value), [onChange, value]);
 

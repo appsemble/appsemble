@@ -14,8 +14,8 @@ import React, { ReactElement, useCallback, useEffect, useMemo, useState } from '
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
 import settings from '../../utils/settings';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 

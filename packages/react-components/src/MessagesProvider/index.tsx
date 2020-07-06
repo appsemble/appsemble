@@ -1,12 +1,30 @@
-import React, { ReactElement, ReactNode, useCallback, useRef } from 'react';
+import type { BaseMessage } from '@appsemble/sdk';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useRef,
+} from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import useForceUpdate from '../hooks/useForceUpdate';
-import { Message as Msg, MessagesContext } from '../hooks/useMessages';
 import Message from '../Message';
+import useForceUpdate from '../useForceUpdate';
 import styles from './index.css';
 import msgs from './messages';
+
+export interface Msg extends BaseMessage {
+  /**
+   * The content of the message to display.
+   */
+  body: string;
+}
+
+export type ShowMessage = (message: Msg | string) => void;
+
+const Context = createContext<ShowMessage>(null);
 
 interface MessagesProviderProps {
   /**
@@ -61,7 +79,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
   );
 
   return (
-    <MessagesContext.Provider value={push}>
+    <Context.Provider value={push}>
       {children}
       <div className={`${styles.root} mx-3`}>
         <TransitionGroup>
@@ -91,6 +109,10 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
           ))}
         </TransitionGroup>
       </div>
-    </MessagesContext.Provider>
+    </Context.Provider>
   );
+}
+
+export function useMessages(): ShowMessage {
+  return useContext(Context);
 }

@@ -5,10 +5,10 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import useOrganizations from '../../hooks/useOrganizations';
-import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
+import { useOrganizations } from '../OrganizationsProvider';
+import { useUser } from '../UserProvider';
 import AppCard from './components/AppCard';
 import CreateAppCard from './components/CreateAppCard';
 import styles from './index.css';

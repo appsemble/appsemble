@@ -2,13 +2,29 @@ import { Loader } from '@appsemble/react-components';
 import type { JwtPayload, TokenResponse, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
-import React, { ReactElement, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-
-import { UserContext } from '../../hooks/useUser';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 interface UserProviderProps {
   children: ReactNode;
 }
+
+interface UserContext {
+  login(tokenResponse: TokenResponse): void;
+  logout(): void;
+  userInfo: UserInfo;
+  refreshUserInfo(): Promise<void>;
+}
+
+const Context = createContext<UserContext>(null);
 
 // The buffer between the access token expiration and the refresh token request. A minute should be
 // plenty of time for the refresh token request to finish.
@@ -94,5 +110,9 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
     return <Loader />;
   }
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+}
+
+export function useUser(): UserContext {
+  return useContext(Context);
 }

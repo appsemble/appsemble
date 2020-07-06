@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
