@@ -66,11 +66,3 @@ declare global {
     };
   }
 }
-
-export interface NamedEventTarget {
-  name?: string;
-}
-
-export interface NamedEvent<T extends NamedEventTarget = NamedEventTarget> {
-  target: T;
-}

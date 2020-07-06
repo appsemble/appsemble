@@ -1,9 +1,9 @@
 import { Select } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
+import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import type { NamedEvent } from '../../../../../../types';
 import messages from './messages';
 
 interface LinkActionEditorProps {

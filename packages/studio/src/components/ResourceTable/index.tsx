@@ -11,12 +11,12 @@ import {
   useData,
   useMessages,
 } from '@appsemble/react-components';
+import type { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import React, { FormEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
-import type { NamedEvent } from '../../types';
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
