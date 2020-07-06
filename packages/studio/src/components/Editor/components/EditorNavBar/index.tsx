@@ -1,5 +1,5 @@
 import { Button, Icon, Tab, Tabs } from '@appsemble/react-components';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -22,14 +22,14 @@ export default function EditorNavBar({
   onUpload,
   setEditorStep,
   valid,
-}: EditorNavBarProps): React.ReactElement {
+}: EditorNavBarProps): ReactElement {
   const location = useLocation();
   const history = useHistory();
   const { app } = useApp();
 
-  const changeTab = React.useCallback((_, hash: string) => history.push({ hash }), [history]);
+  const changeTab = useCallback((_, hash: string) => history.push({ hash }), [history]);
 
-  const switchEditor = React.useCallback(() => {
+  const switchEditor = useCallback(() => {
     if (editorStep !== GuiEditorStep.YAML) {
       setEditorStep(GuiEditorStep.YAML);
     } else {

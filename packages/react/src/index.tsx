@@ -1,7 +1,7 @@
 import type { BootstrapParams } from '@appsemble/sdk';
 import { bootstrap as sdkBootstrap } from '@appsemble/sdk';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import React, { ComponentType, createContext, ReactElement } from 'react';
+import { render, unmountComponentAtNode } from 'react-dom';
 import retargetEvents from 'react-shadow-dom-retarget-events';
 
 export { provideIntl } from './intl';
@@ -13,13 +13,13 @@ export interface BlockProps extends BootstrapParams {
   reactRoot: HTMLElement;
 }
 
-const { Consumer, Provider } = React.createContext<BlockProps>(null);
+const { Consumer, Provider } = createContext<BlockProps>(null);
 
 /**
  * Mount a React component returned by a bootstrap function in the shadow DOM of a block.
  */
 export function mount(
-  Component: React.ComponentType<BlockProps>,
+  Component: ComponentType<BlockProps>,
   root?: HTMLElement,
 ): (params: BootstrapParams) => void {
   return (params) => {
@@ -30,13 +30,13 @@ export function mount(
       ...params,
       reactRoot,
     };
-    const component: React.ReactElement = (
+    const component: ReactElement = (
       <Provider value={props}>
         <Component {...props} />
       </Provider>
     );
-    ReactDOM.render(component, reactRoot);
-    params.utils.addCleanup(() => ReactDOM.unmountComponentAtNode(reactRoot));
+    render(component, reactRoot);
+    params.utils.addCleanup(() => unmountComponentAtNode(reactRoot));
     /**
      * React doesn’t play nice with shadow DOM. This library works around that. However, the
      * implementation does contain some bugs.
@@ -56,10 +56,7 @@ export function mount(
   };
 }
 
-export function bootstrap(
-  Component: React.ComponentType<BlockProps>,
-  reactRoot?: HTMLElement,
-): void {
+export function bootstrap(Component: ComponentType<BlockProps>, reactRoot?: HTMLElement): void {
   sdkBootstrap(mount(Component, reactRoot));
 }
 
@@ -67,9 +64,9 @@ export function bootstrap(
  * A HOC which passes the Appsemble block values to he wrapped React component.
  */
 export function withBlock<P extends object>(
-  Component: React.ComponentType<P & Omit<BlockProps, keyof P>>,
-): React.ComponentType<P> {
-  function Wrapper(props: P): React.ReactElement {
+  Component: ComponentType<P & Omit<BlockProps, keyof P>>,
+): ComponentType<P> {
+  function Wrapper(props: P): ReactElement {
     return <Consumer>{(values) => <Component {...values} {...props} />}</Consumer>;
   }
   if (process.env.NODE_ENV !== 'production') {

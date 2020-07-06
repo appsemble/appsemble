@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
@@ -7,7 +7,7 @@ import styles from './index.css';
 /**
  * Render all different authentication methods for an app.
  */
-export default function PermissionRequest(): React.ReactElement {
+export default function PermissionRequest(): ReactElement {
   const { definition } = useAppDefinition();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
 

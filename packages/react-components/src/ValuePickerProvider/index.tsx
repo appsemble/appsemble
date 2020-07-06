@@ -1,4 +1,11 @@
-import * as React from 'react';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  SyntheticEvent,
+  useContext,
+  useMemo,
+} from 'react';
 
 interface ValuePickerContext<T> {
   /**
@@ -9,7 +16,7 @@ interface ValuePickerContext<T> {
   /**
    * The change handler for if a value changes.
    */
-  onChange: (event: React.SyntheticEvent, value: T) => void;
+  onChange: (event: SyntheticEvent, value: T) => void;
 
   /**
    * The current value.
@@ -17,10 +24,10 @@ interface ValuePickerContext<T> {
   value: T;
 }
 
-const Context = React.createContext<ValuePickerContext<unknown>>(null);
+const Context = createContext<ValuePickerContext<unknown>>(null);
 
 export interface ValuePickerProviderProps<T> extends ValuePickerContext<T> {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**
@@ -34,8 +41,8 @@ export default function ValuePickerProvider<T>({
   name,
   onChange,
   value,
-}: ValuePickerProviderProps<T>): React.ReactElement {
-  const context = React.useMemo(() => ({ name, onChange, value }), [name, onChange, value]);
+}: ValuePickerProviderProps<T>): ReactElement {
+  const context = useMemo(() => ({ name, onChange, value }), [name, onChange, value]);
 
   return <Context.Provider value={context}>{children}</Context.Provider>;
 }
@@ -43,6 +50,6 @@ export default function ValuePickerProvider<T>({
 /**
  * Get the value of the value picker context
  */
-export function useValuePickerProvider<T>(): ValuePickerContext<T> {
-  return React.useContext(Context) as ValuePickerContext<T>;
+export function useValuePicker<T>(): ValuePickerContext<T> {
+  return useContext(Context) as ValuePickerContext<T>;
 }

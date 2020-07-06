@@ -1,6 +1,6 @@
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ import messages from './messages';
 /**
  * A toolbar button which can be used to open the side menu.
  */
-export default function SideMenuButton(): React.ReactElement {
+export default function SideMenuButton(): ReactElement {
   const { definition } = useAppDefinition();
   const location = useLocation();
   const { formatMessage } = useIntl();

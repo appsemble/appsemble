@@ -1,9 +1,9 @@
 import { Select } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
-import React from 'react';
+import type { NamedEvent } from '@appsemble/web-utils';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import type { NamedEvent } from '../../../../../../types';
 import messages from './messages';
 
 interface LinkActionEditorProps {
@@ -16,8 +16,8 @@ export default function LinkActionEditor({
   app,
   onChange,
   value = {},
-}: LinkActionEditorProps): React.ReactElement {
-  const handleChange = React.useCallback(
+}: LinkActionEditorProps): ReactElement {
+  const handleChange = useCallback(
     (event: NamedEvent, val) => {
       onChange(event, { ...value, [event.target.name]: val });
     },

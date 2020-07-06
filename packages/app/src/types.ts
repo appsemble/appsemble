@@ -1,8 +1,9 @@
-import type { MessagesContext } from '@appsemble/react-components';
+import type { ShowMessage } from '@appsemble/react-components';
 import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
   AppDefinition,
+  AppOAuth2Secret,
   BlockDefinition,
   BlockManifest,
   UserInfo,
@@ -49,6 +50,7 @@ declare global {
       vapidPublicKey: string;
       id: number;
       definition: AppDefinition;
+      logins: Pick<AppOAuth2Secret, 'icon' | 'id' | 'name'>[];
       sentryDsn: string;
     };
   }
@@ -83,7 +85,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
-  showMessage: MessagesContext;
+  showMessage: ShowMessage;
 }
 
 export type Permission = NotificationPermission | 'pending';

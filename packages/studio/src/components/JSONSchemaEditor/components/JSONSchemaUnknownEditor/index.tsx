@@ -1,5 +1,5 @@
 import { JSONInput, MarkdownContent } from '@appsemble/react-components';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
@@ -11,7 +11,7 @@ export default function JSONSchemaUnknownEditor({
   required,
   schema,
   value = null,
-}: CommonJSONSchemaEditorProps<any>): React.ReactElement {
+}: CommonJSONSchemaEditorProps<any>): ReactElement {
   return (
     <JSONInput
       help={<MarkdownContent content={schema.description} />}

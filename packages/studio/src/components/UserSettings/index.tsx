@@ -15,17 +15,17 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import useUser from '../../hooks/useUser';
 import type { UserEmail } from '../../types';
 import AsyncButton from '../AsyncButton';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
-export default function UserSettings(): React.ReactElement {
+export default function UserSettings(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
@@ -33,7 +33,7 @@ export default function UserSettings(): React.ReactElement {
     '/api/user/email',
   );
 
-  const onSaveProfile = React.useCallback(
+  const onSaveProfile = useCallback(
     async (values) => {
       await axios.put('/api/user', values);
       refreshUserInfo();
@@ -42,7 +42,7 @@ export default function UserSettings(): React.ReactElement {
     [formatMessage, push, refreshUserInfo],
   );
 
-  const onAddNewEmail = React.useCallback(
+  const onAddNewEmail = useCallback(
     async (values) => {
       await axios.post('/api/user/email', values);
       push({
@@ -58,7 +58,7 @@ export default function UserSettings(): React.ReactElement {
     [emails, formatMessage, push, setEmails],
   );
 
-  const setPrimaryEmail = React.useCallback(
+  const setPrimaryEmail = useCallback(
     async (email: string) => {
       await axios.put('/api/user', { email });
       refreshUserInfo();
@@ -70,7 +70,7 @@ export default function UserSettings(): React.ReactElement {
     [formatMessage, push, refreshUserInfo],
   );
 
-  const resendVerification = React.useCallback(
+  const resendVerification = useCallback(
     async (email: string) => {
       await axios.post('/api/email/resend', { email });
       push({

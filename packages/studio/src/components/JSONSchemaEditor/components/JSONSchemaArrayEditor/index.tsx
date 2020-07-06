@@ -1,7 +1,7 @@
 import { Button, Title } from '@appsemble/react-components';
+import type { NamedEvent } from '@appsemble/web-utils';
 import type { OpenAPIV3 } from 'openapi-types';
-import type { NamedEvent } from 'packages/studio/src/types';
-import * as React from 'react';
+import React, { MouseEvent, ReactElement, useCallback } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
@@ -25,10 +25,10 @@ export default function JSONSchemaArrayEditor({
   onChange,
   schema,
   value = [],
-}: CommonJSONSchemaEditorProps<any[]>): React.ReactElement {
+}: CommonJSONSchemaEditorProps<any[]>): ReactElement {
   const items = (schema as OpenAPIV3.ArraySchemaObject).items as OpenAPIV3.SchemaObject;
 
-  const onPropertyChange = React.useCallback(
+  const onPropertyChange = useCallback(
     ({ target }: NamedEvent, val) => {
       const index = Number(target.name.slice(name.length + 1));
       onChange(
@@ -39,8 +39,8 @@ export default function JSONSchemaArrayEditor({
     [onChange, name, value],
   );
 
-  const removeItem = React.useCallback(
-    ({ currentTarget }: React.MouseEvent<HTMLButtonElement>) => {
+  const removeItem = useCallback(
+    ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
       const index = Number(currentTarget.name.slice(name.length + 1));
       onChange(
         { target: { name } },
@@ -50,8 +50,8 @@ export default function JSONSchemaArrayEditor({
     [onChange, name, value],
   );
 
-  const onItemAdded = React.useCallback(
-    ({ currentTarget }: React.MouseEvent<HTMLButtonElement>) => {
+  const onItemAdded = useCallback(
+    ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
       const addedName = currentTarget.name;
       const index = addedName ? Number(addedName.slice(addedName.length + 1)) + 1 : 0;
       onChange({ target: { name } }, [

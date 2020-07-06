@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { ChangeEventHandler, ReactElement } from 'react';
 
 interface StringFieldProps {
   className?: string;
@@ -9,7 +9,7 @@ interface StringFieldProps {
   name: string;
   placeholder?: string;
   value?: any;
-  onChange: React.ChangeEventHandler<HTMLElement>;
+  onChange: ChangeEventHandler<HTMLElement>;
 }
 
 export default function StringField({
@@ -17,7 +17,7 @@ export default function StringField({
   loading,
   value = '',
   ...props
-}: StringFieldProps): React.ReactElement {
+}: StringFieldProps): ReactElement {
   return (
     <div className={classNames('control', { 'is-loading': loading })}>
       <input className={classNames('input', className)} type="text" value={value} {...props} />

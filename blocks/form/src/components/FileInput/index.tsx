@@ -44,7 +44,7 @@ export default function FileInput({
             field={field}
             name={`${field.name}.${(value as string[]).length}`}
             onInput={handleInput}
-            value={value as Blob}
+            value={null}
           />
           {(value as string[]).map((val, index) => (
             <FileEntry

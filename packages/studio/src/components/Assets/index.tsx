@@ -15,7 +15,7 @@ import {
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { extension } from 'mime-types';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import download from '../../utils/download';
@@ -31,7 +31,7 @@ export interface Asset {
   filename: string;
 }
 
-export default function Assets(): React.ReactElement {
+export default function Assets(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const push = useMessages();
@@ -39,21 +39,21 @@ export default function Assets(): React.ReactElement {
   const { data: assets, error, loading, setData: setAssets } = useData<Asset[]>(
     `/api/apps/${app.id}/assets`,
   );
-  const [selectedAssets, setSelectedAssets] = React.useState<string[]>([]);
-  const [dialog, setDialog] = React.useState<'upload' | 'preview'>(null);
-  const [previewedAsset, setPreviewedAsset] = React.useState<Asset>(null);
-  const [file, setFile] = React.useState<File>();
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+  const [dialog, setDialog] = useState<'upload' | 'preview'>(null);
+  const [previewedAsset, setPreviewedAsset] = useState<Asset>(null);
+  const [file, setFile] = useState<File>();
 
-  const onClose = React.useCallback(() => {
+  const onClose = useCallback(() => {
     setDialog(null);
     setPreviewedAsset(null);
   }, []);
 
-  const onUploadClick = React.useCallback(() => {
+  const onUploadClick = useCallback(() => {
     setDialog('upload');
   }, []);
 
-  const onUpload = React.useCallback(async () => {
+  const onUpload = useCallback(async () => {
     const formData = new FormData();
     formData.append('file', file, file.name);
     const { data } = await axios.post(`/api/apps/${app.id}/assets`, file, {
@@ -67,7 +67,7 @@ export default function Assets(): React.ReactElement {
     onClose();
   }, [app, assets, file, formatMessage, onClose, push, setAssets]);
 
-  const onFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
+  const onFileChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setFile(e.target.files[0]);
   }, []);
 
@@ -99,12 +99,12 @@ export default function Assets(): React.ReactElement {
     },
   });
 
-  const onPreviewClick = React.useCallback((asset: Asset) => {
+  const onPreviewClick = useCallback((asset: Asset) => {
     setPreviewedAsset(asset);
     setDialog('preview');
   }, []);
 
-  const downloadAsset = React.useCallback(
+  const downloadAsset = useCallback(
     async (asset) => {
       try {
         const { filename, id } = asset;
@@ -118,8 +118,8 @@ export default function Assets(): React.ReactElement {
     [app, formatMessage, push],
   );
 
-  const onAssetCheckboxClick = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+  const onAssetCheckboxClick = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
       const id = event.target.name.replace(/^asset/, '');
 
       if (!checked) {

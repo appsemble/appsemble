@@ -1,13 +1,13 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement, ReactNode, useCallback } from 'react';
 
-import { useValuePickerProvider } from '../ValuePickerProvider';
+import { useValuePicker } from '../ValuePickerProvider';
 
 interface TabProps {
   /**
    * Child elements to render in the tab.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * An additional class name to apply to the root element.
@@ -33,10 +33,10 @@ interface TabProps {
  * Beware that this renders an anchor element. This means no anchor elements should be rendered as
  * children.
  */
-export default function Tab({ children, className, href, value }: TabProps): React.ReactElement {
-  const { onChange, value: currentValue } = useValuePickerProvider();
+export default function Tab({ children, className, href, value }: TabProps): ReactElement {
+  const { onChange, value: currentValue } = useValuePicker();
 
-  const handleClick = React.useCallback(
+  const handleClick = useCallback(
     (event) => {
       event.preventDefault();
 

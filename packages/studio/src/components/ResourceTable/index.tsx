@@ -11,12 +11,12 @@ import {
   useData,
   useMessages,
 } from '@appsemble/react-components';
+import type { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
-import React from 'react';
+import React, { FormEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
-import type { NamedEvent } from '../../types';
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
@@ -36,7 +36,7 @@ interface RouteParams {
   resourceName: string;
 }
 
-export default function ResourceTable(): React.ReactElement {
+export default function ResourceTable(): ReactElement {
   const { app } = useApp();
 
   const history = useHistory();
@@ -44,7 +44,7 @@ export default function ResourceTable(): React.ReactElement {
   const match = useRouteMatch<RouteParams>();
   const push = useMessages();
 
-  const [editingResource, setEditingResource] = React.useState<Resource>();
+  const [editingResource, setEditingResource] = useState<Resource>();
 
   const { id: appId, mode, resourceId, resourceName } = match.params;
 
@@ -52,7 +52,7 @@ export default function ResourceTable(): React.ReactElement {
     `/api/apps/${appId}/resources/${resourceName}`,
   );
 
-  const closeModal = React.useCallback(() => {
+  const closeModal = useCallback(() => {
     history.push(match.url.replace(`/${mode}${mode === 'edit' ? `/${resourceId}` : ''}`, ''));
   }, [history, match.url, mode, resourceId]);
 
@@ -75,12 +75,12 @@ export default function ResourceTable(): React.ReactElement {
     },
   });
 
-  const onChange = React.useCallback((_event: NamedEvent, value: any) => {
+  const onChange = useCallback((_event: NamedEvent, value: any) => {
     setEditingResource(value);
   }, []);
 
-  const submitCreate = React.useCallback(
-    async (event: React.FormEvent) => {
+  const submitCreate = useCallback(
+    async (event: FormEvent) => {
       event.preventDefault();
 
       try {
@@ -116,7 +116,7 @@ export default function ResourceTable(): React.ReactElement {
     ],
   );
 
-  const submitEdit = React.useCallback(async () => {
+  const submitEdit = useCallback(async () => {
     try {
       await axios.put<Resource>(
         `/api/apps/${appId}/resources/${resourceName}/${resourceId}`,
@@ -153,7 +153,7 @@ export default function ResourceTable(): React.ReactElement {
     setResources,
   ]);
 
-  const downloadCsv = React.useCallback(async () => {
+  const downloadCsv = useCallback(async () => {
     await download(
       `/api/apps/${app.id}/resources/${resourceName}`,
       `${resourceName}.csv`,
@@ -161,7 +161,7 @@ export default function ResourceTable(): React.ReactElement {
     );
   }, [app, resourceName]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (resources && mode === 'edit') {
       setEditingResource(resources.find((resource) => resource.id === Number(resourceId)));
     }

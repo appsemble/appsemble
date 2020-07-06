@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -6,7 +6,7 @@ import ProfileDropdown from '../ProfileDropdown';
 import styles from './index.css';
 import messages from './messages';
 
-export default function Toolbar(): React.ReactElement {
+export default function Toolbar(): ReactElement {
   const { formatMessage } = useIntl();
 
   return (

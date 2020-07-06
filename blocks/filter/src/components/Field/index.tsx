@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback } from 'react';
+import React, { ChangeEventHandler, ReactElement, ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import type { Filter, FilterField, RangeFilter } from '../../../block';
@@ -14,15 +14,9 @@ interface FieldProps {
   displayLabel?: boolean;
   filter: Filter;
   loading: boolean;
-  onChange:
-    | React.ChangeEventHandler<HTMLInputElement>
-    | React.ChangeEventHandler<HTMLSelectElement>;
-  onRangeChange:
-    | React.ChangeEventHandler<HTMLInputElement>
-    | React.ChangeEventHandler<HTMLSelectElement>;
-  onCheckBoxChange?:
-    | React.ChangeEventHandler<HTMLInputElement>
-    | React.ChangeEventHandler<HTMLSelectElement>;
+  onChange: ChangeEventHandler<HTMLInputElement> | ChangeEventHandler<HTMLSelectElement>;
+  onRangeChange: ChangeEventHandler<HTMLInputElement> | ChangeEventHandler<HTMLSelectElement>;
+  onCheckBoxChange?: ChangeEventHandler<HTMLInputElement> | ChangeEventHandler<HTMLSelectElement>;
 }
 
 export default function Field({
@@ -38,11 +32,11 @@ export default function Field({
   onChange,
   onRangeChange,
   ...props
-}: FieldProps & FilterField): React.ReactElement {
+}: FieldProps & FilterField): ReactElement {
   const intl = useIntl();
   const { name } = props;
 
-  const generateField = useCallback((): React.ReactNode => {
+  const generateField = useCallback((): ReactNode => {
     if (enumerator) {
       switch (type) {
         case 'checkbox':

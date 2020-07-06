@@ -1,12 +1,12 @@
 import { Loader, Table, Title, useMessages } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import useUser from '../../hooks/useUser';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import messages from './messages';
 
 export interface Member {
@@ -16,15 +16,15 @@ export interface Member {
   role: string;
 }
 
-export default function Roles(): React.ReactElement {
+export default function Roles(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const { userInfo } = useUser();
   const { app } = useApp();
-  const [members, setMembers] = React.useState<Member[]>();
-  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState<string>();
+  const [members, setMembers] = useState<Member[]>();
+  const [submittingMemberRoleId, setSubmittingMemberRoleId] = useState<string>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const getMembers = async (): Promise<void> => {
       const { data: appMembers } = await axios.get<Member[]>(`/api/apps/${app.id}/members`);
       if (app.definition.security.default.policy === 'invite') {
@@ -49,7 +49,7 @@ export default function Roles(): React.ReactElement {
     getMembers();
   }, [app]);
   const onChangeRole = async (
-    event: React.ChangeEvent<HTMLSelectElement>,
+    event: ChangeEvent<HTMLSelectElement>,
     userId: string,
   ): Promise<void> => {
     event.preventDefault();

@@ -1,0 +1,59 @@
+import { IconButton, Input, useMessages } from '@appsemble/react-components';
+import React, { ComponentPropsWithoutRef, ReactElement, useCallback, useRef } from 'react';
+
+interface FormOutputProps
+  extends Omit<
+    ComponentPropsWithoutRef<typeof Input>,
+    'control' | 'onChange' | 'readOnly' | 'required'
+  > {
+  /**
+   * The message to display if there was a problem copying the content.
+   */
+  copyErrorMessage: string;
+
+  /**
+   * The message to display if the contents have been copied succesfully.
+   */
+  copySuccessMessage: string;
+}
+
+/**
+ * Render a read-only input field with a copy button.
+ *
+ * If the copy button is pressed, the value of the input is copied to the clipboard and the user is
+ * notified of this.
+ */
+export default function FormOutput({
+  copyErrorMessage,
+  copySuccessMessage,
+  ...props
+}: FormOutputProps): ReactElement {
+  const ref = useRef<HTMLInputElement>();
+  const push = useMessages();
+
+  const onClick = useCallback(() => {
+    const input = ref.current;
+    let success = false;
+    if (input) {
+      input.select();
+      success = document.execCommand('copy');
+    }
+    if (success) {
+      push({ body: copySuccessMessage, color: 'success' });
+    } else {
+      push({ body: copyErrorMessage, color: 'danger' });
+    }
+  }, [copyErrorMessage, copySuccessMessage, push]);
+
+  return (
+    <Input
+      ref={ref}
+      control={<IconButton icon="copy" onClick={onClick} />}
+      onChange={null}
+      readOnly
+      // Hide the (Optional) label.
+      required
+      {...props}
+    />
+  );
+}

@@ -1,18 +1,24 @@
-import * as React from 'react';
+import React, {
+  ComponentPropsWithoutRef,
+  FormEvent,
+  FormEventHandler,
+  ReactElement,
+  useCallback,
+} from 'react';
 
-interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 'noValidate'> {
+interface FormProps extends Omit<ComponentPropsWithoutRef<'form'>, 'noValidate'> {
   /**
    * The submit event handler for the form.
    */
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onSubmit: FormEventHandler<HTMLFormElement>;
 }
 
 /**
  * A simple form wrapper that ensures `noValidate` is passed and `onSubmit` is used.
  */
-export default function Form({ onSubmit, ...props }: FormProps): React.ReactElement {
-  const handleSubmit = React.useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
+export default function Form({ onSubmit, ...props }: FormProps): ReactElement {
+  const handleSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       onSubmit(event);
     },

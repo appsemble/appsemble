@@ -1,12 +1,12 @@
 import type { BulmaColor } from '@appsemble/sdk';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 interface MessageProps {
   /**
    * The message content.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * Additional class names to assign to the message element.
@@ -21,7 +21,7 @@ interface MessageProps {
   /**
    * An optional header for the message.
    */
-  header?: React.ReactNode;
+  header?: ReactNode;
 }
 
 export default function Message({
@@ -29,7 +29,7 @@ export default function Message({
   className,
   color,
   header,
-}: MessageProps): React.ReactElement {
+}: MessageProps): ReactElement {
   return (
     <div className={classNames('message', className, { [`is-${color}`]: color })}>
       {header && <h6 className="message-header">{header}</h6>}

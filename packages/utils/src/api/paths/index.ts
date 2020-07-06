@@ -1,5 +1,6 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
+import appOAuth2Secrets from './appOAuth2Secrets';
 import apps from './apps';
 import assets from './assets';
 import blocks from './blocks';
@@ -16,6 +17,7 @@ import templates from './templates';
 import user from './user';
 
 export default {
+  ...appOAuth2Secrets,
   ...apps,
   ...assets,
   ...blocks,

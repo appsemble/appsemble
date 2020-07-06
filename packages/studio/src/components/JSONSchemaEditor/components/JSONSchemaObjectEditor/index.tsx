@@ -1,6 +1,6 @@
 import { Title } from '@appsemble/react-components/src';
 import type { OpenAPIV3 } from 'openapi-types';
-import * as React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
@@ -15,8 +15,8 @@ export default function JSONSchemaObjectEditor({
   prefix,
   schema,
   value = {},
-}: CommonJSONSchemaEditorProps<{ [key: string]: string }>): React.ReactElement {
-  const onPropertyChange = React.useCallback(
+}: CommonJSONSchemaEditorProps<{ [key: string]: string }>): ReactElement {
+  const onPropertyChange = useCallback(
     ({ target }, val) => {
       const id = target.name.slice(name.length + 1);
       onChange({ target: { name } }, { ...value, [id]: val });

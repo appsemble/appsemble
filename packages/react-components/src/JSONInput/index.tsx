@@ -1,25 +1,33 @@
 import equal from 'fast-deep-equal';
-import * as React from 'react';
+import React, {
+  ChangeEvent,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import TextArea from '../Textarea';
 import messages from './messages';
 
-interface JSONInputProps extends React.ComponentPropsWithoutRef<typeof TextArea> {
+interface JSONInputProps extends ComponentPropsWithoutRef<typeof TextArea> {
   /**
    * This is called when he input has changed to match a new valid JSON value.
    *
    * @param event The original event.
    * @param value The new value.
    */
-  onChange: (event: React.ChangeEvent<HTMLTextAreaElement>, value: any) => void;
+  onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: any) => void;
 
   /**
    * The current value to render.
    *
    * If this changes and doesn’t match the old value, a stringified value of this rendered.
    */
-  value: any;
+  value?: any;
 }
 
 /**
@@ -27,48 +35,46 @@ interface JSONInputProps extends React.ComponentPropsWithoutRef<typeof TextArea>
  *
  * If the user enters invalid JSON, an error help message will be rendered.
  */
-export default function JSONInput({
-  error,
-  onChange,
-  value,
-  ...props
-}: JSONInputProps): React.ReactElement {
-  const [oldValue, setOldValue] = React.useState(JSON.stringify(value, null, 2));
-  const [parseError, setParseError] = React.useState(false);
+export default forwardRef<HTMLTextAreaElement, JSONInputProps>(
+  ({ error, onChange, value, ...props }, ref): ReactElement => {
+    const [oldValue, setOldValue] = useState(JSON.stringify(value, null, 2));
+    const [parseError, setParseError] = useState(false);
 
-  React.useEffect(() => {
-    try {
-      if (equal(value, JSON.parse(oldValue))) {
-        return;
-      }
-    } catch (err) {
-      return;
-    }
-    setOldValue(JSON.stringify(value, null, 2));
-  }, [oldValue, value]);
-
-  const handleChange = React.useCallback(
-    (event, v) => {
-      let val: any;
-      setOldValue(val);
+    useEffect(() => {
       try {
-        val = v === '' ? null : JSON.parse(v);
+        if (equal(value, JSON.parse(oldValue))) {
+          return;
+        }
       } catch (err) {
-        setParseError(true);
         return;
       }
-      setParseError(false);
-      onChange(event, val);
-    },
-    [onChange],
-  );
+      setOldValue(JSON.stringify(value, null, 2));
+    }, [oldValue, value]);
 
-  return (
-    <TextArea
-      error={parseError ? <FormattedMessage {...messages.error} /> : error}
-      onChange={handleChange}
-      value={oldValue}
-      {...props}
-    />
-  );
-}
+    const handleChange = useCallback(
+      (event, v) => {
+        let val: any;
+        setOldValue(val);
+        try {
+          val = v === '' ? null : JSON.parse(v);
+        } catch (err) {
+          setParseError(true);
+          return;
+        }
+        setParseError(false);
+        onChange(event, val);
+      },
+      [onChange],
+    );
+
+    return (
+      <TextArea
+        ref={ref}
+        error={parseError ? <FormattedMessage {...messages.error} /> : error}
+        onChange={handleChange}
+        value={oldValue}
+        {...props}
+      />
+    );
+  },
+);
