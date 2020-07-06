@@ -41,20 +41,19 @@ function getIconSize(url: string): Promise<[number, number]> {
  * @param blockParams The block parameters.
  * @returns The leaflet icon.
  */
-export default async function createIcon(
-  { parameters: { icons = {} }, utils }: BootstrapParams,
-  highlight: boolean,
-): Promise<Icon | DivIcon> {
-  const { activeRatio = 1, anchor, size = 28 } = icons;
-  const fullSize = highlight ? size * activeRatio : size;
+export default async function createIcon({
+  parameters: { icons = {} },
+  utils,
+}: BootstrapParams): Promise<Icon | DivIcon> {
+  const { anchor, size = 28 } = icons;
   if ('asset' in icons) {
     const iconUrl = utils.asset(icons.asset);
     const [naturalWidth, naturalHeight] = await getIconSize(iconUrl);
-    const width = (fullSize * naturalWidth) / naturalHeight;
+    const width = (size * naturalWidth) / naturalHeight;
     return new Icon({
       iconUrl,
-      iconAnchor: anchor || [width / 2, fullSize / 2],
-      iconSize: [width, fullSize],
+      iconAnchor: anchor || [width / 2, size / 2],
+      iconSize: [width, size],
     });
   }
 
@@ -65,7 +64,7 @@ export default async function createIcon(
   return new DivIcon({
     className: styles.fontawesomeMarker,
     html,
-    iconAnchor: anchor || [fullSize / 2, KNOWN_MARKER_ICONS.has(icon) ? fullSize : fullSize / 2],
-    iconSize: [fullSize, fullSize],
+    iconAnchor: anchor || [size / 2, KNOWN_MARKER_ICONS.has(icon) ? size : size / 2],
+    iconSize: [size, size],
   });
 }

@@ -1,3 +1,4 @@
+import type { BulmaColor } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 interface AbstractMarkerIcon {
@@ -45,6 +46,13 @@ interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
    * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
    */
   icon?: IconName;
+
+  /**
+   * The color to apply to the icon.
+   *
+   * @default primary
+   */
+  color?: BulmaColor;
 }
 
 /**
