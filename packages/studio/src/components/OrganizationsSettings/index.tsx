@@ -22,10 +22,10 @@ import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } fr
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
 import type { Member, Role } from '../../types';
 import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import messages from './messages';
 
 interface Invite {

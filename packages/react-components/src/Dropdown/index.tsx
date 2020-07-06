@@ -2,9 +2,9 @@ import classNames from 'classnames';
 import React, { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
 import Button from '../Button';
-import useClickOutside from '../hooks/useClickOutside';
-import useToggle from '../hooks/useToggle';
 import Icon from '../Icon';
+import useClickOutside from '../useClickOutside';
+import useToggle from '../useToggle';
 
 interface DropdownProps {
   /**

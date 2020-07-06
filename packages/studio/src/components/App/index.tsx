@@ -17,7 +17,7 @@ import Login from '../Login';
 import OAuth2Callback from '../OAuth2Callback';
 import OpenIDLogin from '../OpenIDLogin';
 import OrganizationInvite from '../OrganizationInvite';
-import OrganizationProvider from '../OrganizationProvider';
+import OrganizationsProvider from '../OrganizationsProvider';
 import ProtectedRoute from '../ProtectedRoute';
 import Register from '../Register';
 import ResetPassword from '../ResetPassword';
@@ -31,7 +31,7 @@ export default function App(): ReactElement {
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <BrowserRouter>
         <UserProvider>
-          <OrganizationProvider>
+          <OrganizationsProvider>
             <ErrorHandler fallback={ErrorFallback}>
               <Confirmation>
                 <MessagesProvider>
@@ -93,7 +93,7 @@ export default function App(): ReactElement {
                 </MessagesProvider>
               </Confirmation>
             </ErrorHandler>
-          </OrganizationProvider>
+          </OrganizationsProvider>
         </UserProvider>
       </BrowserRouter>
     </IntlProvider>

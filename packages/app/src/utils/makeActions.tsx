@@ -1,4 +1,4 @@
-import type { MessagesContext } from '@appsemble/react-components';
+import type { ShowMessage } from '@appsemble/react-components';
 import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
@@ -26,7 +26,7 @@ interface MakeActionsParams {
   pageReady: Promise<void>;
   prefix: string;
   ee: EventEmitter;
-  showMessage: MessagesContext;
+  showMessage: ShowMessage;
 }
 
 interface CreateActionParams {
@@ -41,7 +41,7 @@ interface CreateActionParams {
   pushNotifications: ServiceWorkerRegistrationContextType;
   showDialog: ShowDialogAction;
   type: Action['type'];
-  showMessage: MessagesContext;
+  showMessage: ShowMessage;
 }
 
 function createAction({

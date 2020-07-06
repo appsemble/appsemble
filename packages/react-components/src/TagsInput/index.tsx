@@ -3,8 +3,8 @@ import '@creativebulma/bulma-tagsinput/dist/css/bulma-tagsinput.css';
 import BulmaTagsInput, { BulmaTagsInputOptions } from '@creativebulma/bulma-tagsinput';
 import React, { ComponentPropsWithoutRef, forwardRef, useEffect, useRef } from 'react';
 
-import useCombinedRefs from '../hooks/useCombinedRefs';
 import Input from '../Input';
+import useCombinedRefs from '../useCombinedRefs';
 
 type TagsInputProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'onChange' | 'value'> &
   Pick<BulmaTagsInputOptions, 'delimiter'> & {

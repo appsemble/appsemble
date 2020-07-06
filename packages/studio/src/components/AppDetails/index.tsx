@@ -19,11 +19,11 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import useOrganizations from '../../hooks/useOrganizations';
 import checkRole from '../../utils/checkRole';
 import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import AppRatings from '../AppRatings';
+import { useOrganizations } from '../OrganizationsProvider';
 import styles from './index.css';
 import messages from './messages';
 

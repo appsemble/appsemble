@@ -11,8 +11,8 @@ import axios, { AxiosError } from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import useUser from '../../hooks/useUser';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import messages from './messages';
 
 interface RegistrationFormValues {

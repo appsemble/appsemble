@@ -11,10 +11,10 @@ import type { Rating } from '@appsemble/types';
 import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import useUser from '../../hooks/useUser';
 import { useApp } from '../AppContext';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 

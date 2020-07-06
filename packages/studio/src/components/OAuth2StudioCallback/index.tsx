@@ -14,9 +14,9 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
 import type { ExtendedOAuth2State } from '../../types';
 import settings from '../../utils/settings';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
