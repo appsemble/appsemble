@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import qs from 'querystring';
 import { Op } from 'sequelize';
 
-import { BlockAsset, BlockVersion } from '../../models';
+import { AppOAuth2Secret, BlockAsset, BlockVersion } from '../../models';
 import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';
 import getApp from '../../utils/getApp';
@@ -23,7 +23,12 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
 
   const app = await getApp(ctx, {
     attributes: ['definition', 'id', 'sharedStyle', 'style', 'vapidPublicKey'],
-    raw: true,
+    include: [
+      {
+        attributes: ['icon', 'id', 'name'],
+        model: AppOAuth2Secret,
+      },
+    ],
   });
 
   if (!app) {
@@ -72,6 +77,7 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
       }),
     ),
     id: app.id,
+    logins: app.AppOAuth2Secrets,
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
     sentryDsn,

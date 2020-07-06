@@ -9,11 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add support for login with third party OAuth2 providers.
 - Block(`data-notifier`): Add new the `data-notifier` block. This has the same functionality as the
   filter block for refreshing new data, but for general use.
 - Block(`list`): Add `image` property.
 - Block(`map`): Add `defaultLocation` property. This property is used to set the location of the map
   when the user’s location cannot be found. It defaults to Greenwich Park.
+- Server: Add login flow for user apps using third party OAuth2 providers.
+- Studio: Add login flow for user apps using third party OAuth2 providers.
 
 ## [0.13.4] - 2020-06-29
 

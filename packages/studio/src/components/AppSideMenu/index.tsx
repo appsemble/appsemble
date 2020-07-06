@@ -87,6 +87,11 @@ export default function AppSideMenu(): ReactElement {
             label={<FormattedMessage {...messages.settings} />}
             to={`${match.url}/settings`}
           />
+          <SideNavLink
+            icon="key"
+            label={<FormattedMessage {...messages.secrets} />}
+            to={`${match.url}/secrets`}
+          />
         </>
       )}
     </SideMenu>

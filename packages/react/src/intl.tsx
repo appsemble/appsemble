@@ -4,7 +4,7 @@ import { IntlConfig, IntlProvider } from 'react-intl';
 import type { BlockProps } from '.';
 
 /**
- * A HOC which provides `intl` in a block written in React.
+ * A HOC which provides `intl` in a block written in
  */
 // eslint-disable-next-line import/prefer-default-export
 export function provideIntl(

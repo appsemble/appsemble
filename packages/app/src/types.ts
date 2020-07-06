@@ -3,6 +3,7 @@ import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
   AppDefinition,
+  AppOAuth2Secret,
   BlockDefinition,
   BlockManifest,
   UserInfo,
@@ -49,6 +50,7 @@ declare global {
       vapidPublicKey: string;
       id: number;
       definition: AppDefinition;
+      logins: Pick<AppOAuth2Secret, 'icon' | 'id' | 'name'>[];
       sentryDsn: string;
     };
   }

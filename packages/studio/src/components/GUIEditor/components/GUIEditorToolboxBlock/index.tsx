@@ -1,9 +1,9 @@
 import { Input, ValuePickerProvider } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
+import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import type { NamedEvent } from '../../../../types';
 import GUIEditorBlockItem from '../GUIEditorBlockItem';
 import messages from './messages';
 
