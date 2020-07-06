@@ -17,7 +17,7 @@ import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import * as webpush from 'web-push';
 
-import { App, AppBlockStyle, AppRating, BlockVersion, Member } from '../models';
+import { App, AppBlockStyle, AppRating, BlockVersion, Member, Resource } from '../models';
 import type { KoaContext } from '../types';
 import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
@@ -166,10 +166,14 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
       include: [
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+        [fn('COUNT', col('Resources.id')), 'ResourceCount'],
       ],
       exclude: ['icon', 'style', 'sharedStyle'],
     },
-    include: [{ model: AppRating, attributes: [] }],
+    include: [
+      { model: AppRating, attributes: [] },
+      { model: Resource, attributes: [], where: { clonable: true }, required: false },
+    ],
     group: ['App.id'],
   });
 

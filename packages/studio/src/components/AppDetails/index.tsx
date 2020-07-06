@@ -101,6 +101,7 @@ export default function AppDetails(): ReactElement {
             description: app.definition.description,
             private: true,
             selectedOrganization: 0,
+            resources: false,
           }}
           footer={
             <>
@@ -149,6 +150,14 @@ export default function AppDetails(): ReactElement {
             label={<FormattedMessage {...messages.private} />}
             name="private"
           />
+          {app.resources && (
+            <SimpleInput<typeof Checkbox>
+              component={Checkbox}
+              help={<FormattedMessage {...messages.resourcesDescription} />}
+              label={<FormattedMessage {...messages.resources} />}
+              name="resources"
+            />
+          )}
         </Modal>
       ) : null}
     </>

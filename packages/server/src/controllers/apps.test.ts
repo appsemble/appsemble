@@ -406,6 +406,7 @@ pages:
         average: null,
         count: 0,
       },
+      resources: false,
     });
   });
 

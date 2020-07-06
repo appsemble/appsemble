@@ -150,7 +150,6 @@ export default function CreateAppCard(): ReactElement {
         </SimpleInput>
         <Message>{templates[selectedTemplate].description}</Message>
         <SimpleInput
-          className="is-warning"
           component={Checkbox}
           help={<FormattedMessage {...messages.privateHelp} />}
           label={<FormattedMessage {...messages.private} />}
