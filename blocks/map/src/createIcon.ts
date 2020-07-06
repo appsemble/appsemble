@@ -42,7 +42,7 @@ function getIconSize(url: string): Promise<[number, number]> {
  * @returns The leaflet icon.
  */
 export default async function createIcon(
-  { parameters: { icons = {} }, theme, utils }: BootstrapParams,
+  { parameters: { icons = {} }, utils }: BootstrapParams,
   highlight: boolean,
 ): Promise<Icon | DivIcon> {
   const { activeRatio = 1, anchor, size = 28 } = icons;
