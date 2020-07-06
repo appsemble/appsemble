@@ -24,6 +24,7 @@ const initialSecret: AppOAuth2Secret = {
   name: '',
   scope: 'email openid profile',
   tokenUrl: '',
+  remapper: undefined,
 };
 
 export default function AppSecrets(): ReactElement {
