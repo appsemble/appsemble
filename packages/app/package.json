@@ -3,6 +3,14 @@
   "version": "0.13.5",
   "private": true,
   "description": "The base for Appsemble apps",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
