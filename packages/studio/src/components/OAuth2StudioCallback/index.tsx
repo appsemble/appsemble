@@ -7,20 +7,21 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import type { TokenResponse, UserInfo } from '@appsemble/types';
-import { appendOAuth2State, clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
+import { appendOAuth2State, clearOAuth2State } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
+import type { ExtendedOAuth2State } from '../../types';
 import settings from '../../utils/settings';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
-interface ExtendedOAuth2State {
-  userinfo?: UserInfo;
+interface OAuth2StudioCallbackProps {
+  session: ExtendedOAuth2State;
 }
 
 /**
@@ -32,7 +33,7 @@ interface ExtendedOAuth2State {
  * - If the user has logged in using an unknown account, they are prompted if they want to link the
  *   OAuth2 account to a new or an existing Appsemble account.
  */
-export default function OAuth2Connect(): ReactElement {
+export default function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): ReactElement {
   const history = useHistory();
   const redirect = useLocationString();
   const qs = useQuery();
@@ -40,7 +41,6 @@ export default function OAuth2Connect(): ReactElement {
 
   const code = qs.get('code');
   const state = qs.get('state');
-  const session = useMemo(() => loadOAuth2State<ExtendedOAuth2State>(), []);
   const provider = settings.logins.find((p) => p.authorizationUrl === session?.authorizationUrl);
 
   const [profile, setProfile] = useState(session?.userinfo);

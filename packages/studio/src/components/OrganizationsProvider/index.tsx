@@ -1,17 +1,26 @@
 import axios from 'axios';
-import React, { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
-import { OrganizationContext } from '../../hooks/useOrganizations';
-import useUser from '../../hooks/useUser';
 import type { Organization } from '../../types';
+import { useUser } from '../UserProvider';
 
-interface OrganizationProviderProps {
+const Context = createContext<Organization[]>(null);
+
+interface OrganizationsProviderProps {
   children: ReactNode;
 }
 
-export default function OrganizationProvider({
+export default function OrganizationsProvider({
   children,
-}: OrganizationProviderProps): ReactElement {
+}: OrganizationsProviderProps): ReactElement {
   const { userInfo } = useUser();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
 
@@ -30,5 +39,9 @@ export default function OrganizationProvider({
     getOrganizations();
   }, [userInfo]);
 
-  return <OrganizationContext.Provider value={value}>{children}</OrganizationContext.Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+}
+
+export function useOrganizations(): Organization[] {
+  return useContext(Context);
 }

@@ -1,6 +1,6 @@
 import { Button, Title } from '@appsemble/react-components';
+import type { NamedEvent } from '@appsemble/web-utils';
 import type { OpenAPIV3 } from 'openapi-types';
-import type { NamedEvent } from 'packages/studio/src/types';
 import React, { MouseEvent, ReactElement, useCallback } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';

@@ -1,8 +1,8 @@
 import React, { ComponentPropsWithoutRef, forwardRef, useCallback, useRef, useState } from 'react';
 
-import useCombinedRefs from '../hooks/useCombinedRefs';
 import IconButton from '../IconButton';
 import Input from '../Input';
+import useCombinedRefs from '../useCombinedRefs';
 
 type PasswordInputProps = Omit<
   ComponentPropsWithoutRef<typeof Input>,

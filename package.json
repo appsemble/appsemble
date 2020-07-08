@@ -45,6 +45,7 @@
     "@types/bulma-calendar": "^6.0.1",
     "@types/classnames": "^2.2.10",
     "@types/concat-stream": "^1.6.0",
+    "@types/creativebulma__bulma-tagsinput": "^1.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",

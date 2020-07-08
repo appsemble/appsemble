@@ -21,6 +21,7 @@ import {
 import {
   AppBlockStyle,
   AppMember,
+  AppOAuth2Secret,
   AppRating,
   AppSubscription,
   Asset,
@@ -99,6 +100,9 @@ export default class App extends Model<App> {
 
   @HasMany(() => AppBlockStyle)
   AppBlockStyles: AppBlockStyle[];
+
+  @HasMany(() => AppOAuth2Secret)
+  AppOAuth2Secrets: AppOAuth2Secret[];
 
   @BelongsTo(() => Organization)
   Organization: Organization;

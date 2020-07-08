@@ -50,6 +50,6 @@ export default function ValuePickerProvider<T>({
 /**
  * Get the value of the value picker context
  */
-export function useValuePickerProvider<T>(): ValuePickerContext<T> {
+export function useValuePicker<T>(): ValuePickerContext<T> {
   return useContext(Context) as ValuePickerContext<T>;
 }

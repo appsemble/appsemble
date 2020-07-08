@@ -18,10 +18,10 @@ import axios, { AxiosError } from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import useUser from '../../hooks/useUser';
 import type { UserEmail } from '../../types';
 import AsyncButton from '../AsyncButton';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 

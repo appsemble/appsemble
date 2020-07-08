@@ -15,9 +15,9 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
 import settings from '../../utils/settings';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 

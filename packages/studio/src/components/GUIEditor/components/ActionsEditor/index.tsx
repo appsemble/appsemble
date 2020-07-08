@@ -1,7 +1,7 @@
 import type { ActionType, App } from '@appsemble/types';
+import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback } from 'react';
 
-import type { NamedEvent } from '../../../../types';
 import ActionEditor from '../ActionEditor';
 
 interface ActionsEditorProps {

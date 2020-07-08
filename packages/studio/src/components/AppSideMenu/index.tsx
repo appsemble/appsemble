@@ -4,10 +4,10 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import useOrganizations from '../../hooks/useOrganizations';
 import checkRole from '../../utils/checkRole';
 import { useApp } from '../AppContext';
 import NavLink from '../NavLink';
+import { useOrganizations } from '../OrganizationsProvider';
 import SideMenu from '../SideMenu';
 import SideNavLink from '../SideNavLink';
 import messages from './messages';
@@ -86,6 +86,11 @@ export default function AppSideMenu(): ReactElement {
             icon="cogs"
             label={<FormattedMessage {...messages.settings} />}
             to={`${match.url}/settings`}
+          />
+          <SideNavLink
+            icon="key"
+            label={<FormattedMessage {...messages.secrets} />}
+            to={`${match.url}/secrets`}
           />
         </>
       )}

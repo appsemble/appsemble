@@ -16,7 +16,7 @@ import React, { KeyboardEvent, ReactElement, useCallback, useState } from 'react
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import useOrganizations from '../../../../hooks/useOrganizations';
+import { useOrganizations } from '../../../OrganizationsProvider';
 import styles from './index.css';
 import messages from './messages';
 

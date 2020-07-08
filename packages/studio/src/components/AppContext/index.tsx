@@ -5,14 +5,15 @@ import React, { createContext, ReactElement, useContext, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import useOrganizations from '../../hooks/useOrganizations';
 import AppDetails from '../AppDetails';
+import AppSecrets from '../AppSecrets';
 import AppSettings from '../AppSettings';
 import AppSideMenu from '../AppSideMenu';
 import Assets from '../Assets';
 import CMS from '../CMS';
 import Editor from '../Editor';
 import Notifications from '../Notifications';
+import { useOrganizations } from '../OrganizationsProvider';
 import ProtectedRoute from '../ProtectedRoute';
 import Roles from '../Roles';
 import styles from './index.css';
@@ -115,6 +116,14 @@ export default function AppContext(): ReactElement {
               permission={Permission.PushNotifications}
             >
               <Notifications />
+            </ProtectedRoute>
+            <ProtectedRoute
+              exact
+              organization={organization}
+              path={`${match.path}/secrets`}
+              permission={Permission.EditApps}
+            >
+              <AppSecrets />
             </ProtectedRoute>
             <Redirect to={match.path} />
           </Switch>

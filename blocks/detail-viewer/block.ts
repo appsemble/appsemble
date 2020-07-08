@@ -1,11 +1,65 @@
 import type { BlockProps } from '@appsemble/preact';
-import type { Remapper } from '@appsemble/sdk';
+import type { BulmaColor, Remapper } from '@appsemble/sdk';
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 interface AbstractField {
   /**
    * The label that is presented to the user. No label will be displayed if this is not defined.
    */
   label?: Remapper;
+}
+
+interface AbstractMarkerIcon {
+  /**
+   * The anchor X and Y offset used for positioning the image.
+   *
+   * By default, the center of the icon will be used to mark the location. For many icons, it may
+   * be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a
+   * height of 16, you’ll probably want to set this to `[5, 16]`
+   *
+   * The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
+   * treated in a special way, since they are often used to represent a location:
+   *
+   * - `map-marker`
+   * - `map-marker-alt`
+   * - `map-pin`
+   * - `thumbtrack`
+   */
+  anchor?: [number, number];
+
+  /**
+   * The height of marker icons in pixels.
+   *
+   * @default 28
+   */
+  size?: number;
+}
+
+/**
+ * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).
+ */
+interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
+  /**
+   * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
+   */
+  icon?: IconName;
+
+  /**
+   * The color to apply to the icon.
+   *
+   * @default primary
+   */
+  color?: BulmaColor;
+}
+
+/**
+ * A marker based on an existing asset.
+ */
+interface AssetMarkerIcon extends AbstractMarkerIcon {
+  /**
+   * The id of an asset to use.
+   */
+  asset: number;
 }
 
 export interface FileField extends AbstractField {
@@ -104,6 +158,11 @@ declare module '@appsemble/sdk' {
      * A list of fields to display based on the name from the schema.
      */
     fields: Field[];
+
+    /**
+     * Custom icon configuration for geocoordinate fields.
+     */
+    icons?: FontAwesomeMarkerIcon | AssetMarkerIcon;
   }
 
   interface EventListeners {
