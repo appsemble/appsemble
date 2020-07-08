@@ -16,7 +16,7 @@ import messages from './messages';
 
 export default function AppList(): ReactElement {
   const [filter, setFilter] = useState('');
-  const organizations = useOrganizations();
+  const { organizations } = useOrganizations();
   const { formatMessage } = useIntl();
   const { userInfo } = useUser();
   const { data: apps, error, loading } = useData<App[]>(userInfo ? '/api/apps/me' : '/api/apps');

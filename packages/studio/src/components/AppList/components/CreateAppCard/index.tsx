@@ -34,7 +34,7 @@ export default function CreateAppCard(): ReactElement {
 
   const history = useHistory();
   const match = useRouteMatch();
-  const organizations = useOrganizations();
+  const { organizations } = useOrganizations();
 
   const onCreate = useCallback(
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {

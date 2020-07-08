@@ -36,7 +36,7 @@ export default function AppDetails(): ReactElement {
   const history = useHistory();
   const { formatMessage } = useIntl();
 
-  const organizations = useOrganizations();
+  const { organizations } = useOrganizations();
 
   const cloneApp = useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
