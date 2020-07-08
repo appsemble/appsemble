@@ -21,11 +21,13 @@ import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
 import JSONSchemaEditor from '../JSONSchemaEditor';
+import ClonableCheckbox from './components/ClonableCheckbox';
 import styles from './index.css';
 import messages from './messages';
 
 interface Resource {
   id: number;
+  $clonable: boolean;
   [key: string]: any;
 }
 
@@ -74,6 +76,20 @@ export default function ResourceTable(): ReactElement {
       }
     },
   });
+
+  const setClonable = useCallback(
+    async (id: number) => {
+      const resource = resources.find((r) => r.id === id);
+      await axios.put(`/api/apps/${appId}/resources/${resourceName}/${id}`, {
+        ...resource,
+        $clonable: !resource.$clonable,
+      });
+      setResources(
+        resources.map((r) => (r.id === id ? { ...resource, $clonable: !resource.$clonable } : r)),
+      );
+    },
+    [appId, resourceName, resources, setResources],
+  );
 
   const onChange = useCallback((_event: NamedEvent, value: any) => {
     setEditingResource(value);
@@ -237,16 +253,23 @@ export default function ResourceTable(): ReactElement {
         <tbody>
           {resources.map((resource) => (
             <tr key={resource.id}>
-              <td className={styles.actionsCell}>
-                <Link className="button" to={`${match.url}/edit/${resource.id}`}>
-                  <Icon className="has-text-info" icon="pen" size="small" />
-                </Link>
-                <Button
-                  color="danger"
-                  icon="trash"
-                  inverted
-                  onClick={() => deleteResource(resource)}
-                />
+              <td>
+                <div className={styles.actionsCell}>
+                  <Link className="button" to={`${match.url}/edit/${resource.id}`}>
+                    <Icon className="has-text-info" icon="pen" size="small" />
+                  </Link>
+                  <Button
+                    color="danger"
+                    icon="trash"
+                    inverted
+                    onClick={() => deleteResource(resource)}
+                  />
+                  <ClonableCheckbox
+                    checked={resource.$clonable}
+                    id={`clonable${resource.id}`}
+                    onChange={() => setClonable(resource.id)}
+                  />
+                </div>
               </td>
               {keys.map((key) => (
                 <td key={key} className={styles.contentCell}>
