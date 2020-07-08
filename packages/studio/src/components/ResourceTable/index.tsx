@@ -5,6 +5,7 @@ import {
   Icon,
   Loader,
   Modal,
+  Portal,
   Table,
   Title,
   useData,
@@ -202,6 +203,7 @@ export default function ResourceTable(): ReactElement {
         title={messages.title}
         titleValues={{ name: app.definition.name, resourceName }}
       />
+      <div id="editModalContainer" />
       <Title>Resource {resourceName}</Title>
       <div className="buttons">
         <Link className="button is-primary" to={`${url}/new`}>

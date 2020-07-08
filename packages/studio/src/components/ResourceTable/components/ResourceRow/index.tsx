@@ -5,7 +5,7 @@ import {
   Icon,
   Modal,
   useConfirmation,
-} from '@appsemble/react-components/src';
+} from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import type { NamedEvent } from 'packages/studio/src/types';
 import React, { ReactElement, useCallback, useState } from 'react';
@@ -13,6 +13,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
 import type { Resource, RouteParams } from '../..';
+import { useApp } from '../../../AppContext';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import ClonableCheckbox from '../ClonableCheckbox';
 import styles from './index.css';
@@ -39,7 +40,7 @@ export default function ResourceRow({
     url,
   } = useRouteMatch<RouteParams>();
   const history = useHistory();
-
+  const { app } = useApp();
   const [editingResource, setEditingResource] = useState({ ...resource });
 
   const handleDeleteResource = useConfirmation({
@@ -69,56 +70,56 @@ export default function ResourceRow({
   }, [closeEditModal, editingResource, onEdit]);
 
   return (
-    <>
-      <tr key={resource.id}>
-        <td>
-          <div className={styles.actionsCell}>
-            <Link className="button" to={`${url}/edit/${resource.id}`}>
-              <Icon className="has-text-info" icon="pen" size="small" />
-            </Link>
-            <Button color="danger" icon="trash" inverted onClick={handleDeleteResource} />
+    <tr key={resource.id}>
+      <td>
+        <div className={styles.actionsCell}>
+          <Link className="button" to={`${url}/edit/${resource.id}`}>
+            <Icon className="has-text-info" icon="pen" size="small" />
+          </Link>
+          <Button color="danger" icon="trash" inverted onClick={handleDeleteResource} />
+          {Object.prototype.hasOwnProperty.call(app, 'resources') && (
             <ClonableCheckbox
               checked={resource.$clonable}
               id={`clonable${resource.id}`}
               onChange={handleSetClonable}
             />
-          </div>
-        </td>
-        {keys.map((key) => (
-          <td key={key} className={styles.contentCell}>
-            {typeof resource[key] === 'string' ? resource[key] : JSON.stringify(resource[key])}
-          </td>
-        ))}
-      </tr>
-      <Modal
-        component={Form}
-        footer={
-          <>
-            <CardFooterButton onClick={closeEditModal}>
-              <FormattedMessage {...messages.cancelButton} />
-            </CardFooterButton>
-            <CardFooterButton color="primary" type="submit">
-              <FormattedMessage {...messages.editButton} />
-            </CardFooterButton>
-          </>
-        }
-        isActive={mode === 'edit' && resourceId === `${resource.id}`}
-        onClose={closeEditModal}
-        onSubmit={onEditSubmit}
-        title={
-          <FormattedMessage
-            {...messages.editTitle}
-            values={{ resource: resourceName, id: resource.id }}
+          )}
+        </div>
+        <Modal
+          component={Form}
+          footer={
+            <>
+              <CardFooterButton onClick={closeEditModal}>
+                <FormattedMessage {...messages.cancelButton} />
+              </CardFooterButton>
+              <CardFooterButton color="primary" type="submit">
+                <FormattedMessage {...messages.editButton} />
+              </CardFooterButton>
+            </>
+          }
+          isActive={mode === 'edit' && resourceId === `${resource.id}`}
+          onClose={closeEditModal}
+          onSubmit={onEditSubmit}
+          title={
+            <FormattedMessage
+              {...messages.editTitle}
+              values={{ resource: resourceName, id: resource.id }}
+            />
+          }
+        >
+          <JSONSchemaEditor
+            name="resource"
+            onChange={onEditChange}
+            schema={schema}
+            value={editingResource}
           />
-        }
-      >
-        <JSONSchemaEditor
-          name="resource"
-          onChange={onEditChange}
-          schema={schema}
-          value={editingResource}
-        />
-      </Modal>
-    </>
+        </Modal>
+      </td>
+      {keys.map((key) => (
+        <td key={key} className={styles.contentCell}>
+          {typeof resource[key] === 'string' ? resource[key] : JSON.stringify(resource[key])}
+        </td>
+      ))}
+    </tr>
   );
 }
