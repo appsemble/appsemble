@@ -21,6 +21,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   when the user’s location cannot be found. It defaults to Greenwich Park.
 - Server: Add login flow for user apps using third party OAuth2 providers.
 - Studio: Add login flow for user apps using third party OAuth2 providers.
+- Studio: Add option to mark specific resources to be included when cloning template apps.
+
+### Fixed
+
+- Studio: Fix bug where user gets redirected to app details when trying to access secured routes.
 
 ## [0.13.4] - 2020-06-29
 
