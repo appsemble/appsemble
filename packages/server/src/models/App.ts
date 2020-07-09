@@ -24,6 +24,7 @@ import {
   AppOAuth2Secret,
   AppRating,
   AppSubscription,
+  AppTranslation,
   Asset,
   Organization,
   Resource,
@@ -109,6 +110,9 @@ export default class App extends Model<App> {
 
   @HasMany(() => AppSubscription)
   AppSubscriptions: AppSubscription[];
+
+  @HasMany(() => AppTranslation)
+  AppTranslations: AppTranslation[];
 
   @HasMany(() => Asset)
   Assets: Asset[];
