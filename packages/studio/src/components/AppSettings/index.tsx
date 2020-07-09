@@ -62,13 +62,13 @@ export default function AppSettings(): ReactElement {
   const onChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
       event.persist();
-      setInputs((val) => ({ ...val, [event.target.name]: value }));
+      setInputs((val) => ({ ...val, [event.currentTarget.name]: value }));
     },
     [],
   );
 
   const onIconChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
-    setIcon(e.target.files[0]);
+    setIcon(e.currentTarget.files[0]);
   }, []);
 
   const onDelete = useConfirmation({

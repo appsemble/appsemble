@@ -29,7 +29,7 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
   const closeDialog = (): void => setIsOpen(false);
 
   const onDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>): void =>
-    setDescription(event.target.value);
+    setDescription(event.currentTarget.value);
   const submit = async (): Promise<void> => {
     const { data } = await axios.post(`/api/apps/${app.id}/ratings`, { rating, description });
     onRate(data);

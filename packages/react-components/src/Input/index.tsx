@@ -84,13 +84,13 @@ export default forwardRef<HTMLInputElement, InputProps>(
   ) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
-        const { target } = event;
-        let newValue: number | string = target.value;
+        const { currentTarget } = event;
+        let newValue: number | string = currentTarget.value;
         if (type === 'number') {
-          newValue = target.valueAsNumber;
+          newValue = currentTarget.valueAsNumber;
         } else if (type === 'date' || type === 'datetime-local') {
           newValue = new Date(
-            target.valueAsNumber + new Date().getTimezoneOffset() * 60000,
+            currentTarget.valueAsNumber + new Date().getTimezoneOffset() * 60000,
           ).toISOString();
         }
         onChange(event, newValue);

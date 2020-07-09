@@ -52,7 +52,7 @@ export default function Roles(): ReactElement {
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, userId: string): Promise<void> => {
       event.preventDefault();
-      const { value: role } = event.target;
+      const { value: role } = event.currentTarget;
 
       setSubmittingMemberRoleId(userId);
 

@@ -31,7 +31,7 @@ export default function Select({
 }: SelectProps): VNode {
   const handleInput = useCallback(
     (event: Event): void => {
-      onInput(event, (event.target as HTMLSelectElement).value);
+      onInput(event, (event.currentTarget as HTMLSelectElement).value);
     },
     [onInput],
   );

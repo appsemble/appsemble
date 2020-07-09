@@ -75,7 +75,7 @@ export default forwardRef<HTMLInputElement, CheckboxProps>(
   ): ReactElement => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
-        onChange(event, event.target.checked);
+        onChange(event, event.currentTarget.checked);
       },
       [onChange],
     );

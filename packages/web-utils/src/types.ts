@@ -15,10 +15,10 @@ export interface NamedEvent<T extends NamedEventTarget = NamedEventTarget, C = T
   /**
    * The event target.
    */
-  target: T;
+  target?: T;
 
   /**
    * The current event target.
    */
-  currentTarget?: C;
+  currentTarget: C;
 }

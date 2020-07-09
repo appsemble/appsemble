@@ -139,7 +139,7 @@ export default function CreateAppCard(): ReactElement {
           component={Select}
           label={<FormattedMessage {...messages.template} />}
           name="selectedTemplate"
-          onChange={({ target }) => setSelectedTemplate(target.value)}
+          onChange={({ currentTarget }) => setSelectedTemplate(currentTarget.value)}
           required
         >
           {templates.map((template, index) => (

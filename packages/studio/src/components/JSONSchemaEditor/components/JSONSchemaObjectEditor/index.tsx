@@ -17,9 +17,9 @@ export default function JSONSchemaObjectEditor({
   value = {},
 }: CommonJSONSchemaEditorProps<{ [key: string]: string }>): ReactElement {
   const onPropertyChange = useCallback(
-    ({ target }, val) => {
-      const id = target.name.slice(name.length + 1);
-      onChange({ target: { name } }, { ...value, [id]: val });
+    ({ currentTarget }, val) => {
+      const id = currentTarget.name.slice(name.length + 1);
+      onChange({ currentTarget: { name } }, { ...value, [id]: val });
     },
     [name, onChange, value],
   );

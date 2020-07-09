@@ -26,7 +26,7 @@ type CheckboxProps = Omit<typeof FormComponent, 'children'> &
     /**
      * This is fired when the input value has changed.
      */
-    onChange: (event: Event, value: boolean) => void;
+    onChange: (event: h.JSX.TargetedEvent<HTMLInputElement>, value: boolean) => void;
 
     /**
      * Whether or not the checkbox is checked.
@@ -69,8 +69,8 @@ export default function Checkbox({
   ...props
 }: CheckboxProps): VNode {
   const handleChange = useCallback(
-    (event: Event) => {
-      onChange(event, (event.target as HTMLInputElement).checked);
+    (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+      onChange(event, event.currentTarget.checked);
     },
     [onChange],
   );

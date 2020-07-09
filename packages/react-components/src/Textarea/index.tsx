@@ -62,7 +62,7 @@ export default forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLTextAreaElement>) => {
-        onChange(event, event.target.value);
+        onChange(event, event.currentTarget.value);
       },
       [onChange],
     );

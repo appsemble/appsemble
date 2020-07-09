@@ -15,7 +15,7 @@ export default function useClickOutside(
   const listener = useCallback(
     (event: Event): void => {
       // Do nothing if clicking ref's element or descendent elements
-      if (!ref.current || ref.current.contains(event.target as Node)) {
+      if (!ref.current || ref.current.contains(event.currentTarget as Node)) {
         return;
       }
 
