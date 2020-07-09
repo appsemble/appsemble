@@ -101,7 +101,7 @@ export default function Roles(): ReactElement {
           {members.map((member) => (
             <tr key={member.id}>
               <td>
-                <span>{member.name || member.primaryEmail || member.id}</span>{' '}
+                <span>{member.name || member.primaryEmail || member.id}</span>
                 <div className="tags is-inline ml-2">
                   {member.id === userInfo.sub && (
                     <span className="tag is-success">
