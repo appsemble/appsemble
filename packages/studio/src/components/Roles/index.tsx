@@ -53,7 +53,7 @@ export default function Roles(): ReactElement {
     userId: string,
   ): Promise<void> => {
     event.preventDefault();
-    const { value: role } = event.target;
+    const { value: role } = event.currentTarget;
 
     setSubmittingMemberRoleId(userId);
 

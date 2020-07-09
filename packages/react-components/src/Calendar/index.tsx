@@ -42,7 +42,7 @@ type CalendarProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'child
      * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
      * value is a number, otherwise it is a string.
      */
-    onChange: (event: { target: HTMLInputElement }, value: Date) => void;
+    onChange: (event: { currentTarget: HTMLInputElement }, value: Date) => void;
 
     showHeader?: boolean;
 
@@ -92,7 +92,7 @@ export default forwardRef<HTMLInputElement, CalendarProps>(
 
     useEffect(() => {
       calendarRef.current.on('select', () => {
-        onChange({ target: inputRef.current }, calendarRef.current.startDate);
+        onChange({ currentTarget: inputRef.current }, calendarRef.current.startDate);
       });
 
       return () => {

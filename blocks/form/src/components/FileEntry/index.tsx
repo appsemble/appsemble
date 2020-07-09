@@ -16,17 +16,17 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
   const url = useObjectURL(value);
 
   const onSelect = useCallback(
-    async (event: Event): Promise<void> => {
+    async (event: h.JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
       const { maxHeight, maxWidth, quality } = field;
-      const target = event.target as HTMLInputElement;
-      let file: Blob = target.files[0];
-      target.value = null;
+      const { currentTarget } = event;
+      let file: Blob = currentTarget.files[0];
+      currentTarget.value = null;
 
       if (file?.type.match('image/*') && (maxWidth || maxHeight || quality)) {
         file = await resize(file, maxWidth, maxHeight, quality / 100);
       }
 
-      onInput(({ target } as any) as Event, file);
+      onInput(event, file);
     },
     [field, onInput],
   );
@@ -34,7 +34,7 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
   const onRemove = useCallback(
     (event: Event) => {
       event.preventDefault();
-      onInput(({ target: { name } } as any) as Event, null);
+      onInput(({ currentTarget: { name } } as any) as Event, null);
     },
     [name, onInput],
   );

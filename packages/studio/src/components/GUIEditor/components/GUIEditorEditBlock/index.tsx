@@ -33,7 +33,7 @@ export default function GUIEditorEditBlock({
 
   const onChange = useCallback(
     (event: NamedEvent, value: any) => {
-      onChangeBlockValue({ ...blockValue, [event.target.name]: value });
+      onChangeBlockValue({ ...blockValue, [event.currentTarget.name]: value });
     },
     [blockValue, onChangeBlockValue],
   );

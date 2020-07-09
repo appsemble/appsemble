@@ -56,12 +56,12 @@ export default function SimpleInput<C extends ComponentType = typeof Input>({
   const { formErrors, pristine, setFormError, setValue, submitting, values } = useSimpleForm();
   const ref = useRef<MinimalHTMLElement>(null);
   const internalOnChange = useCallback(
-    (event: ChangeEvent<MinimalHTMLElement>, value = event.target.value) => {
+    (event: ChangeEvent<MinimalHTMLElement>, value = event.currentTarget.value) => {
       const val = preprocess ? preprocess(value, values) : value;
       if (onChange) {
         onChange(event, val);
       }
-      const { validity } = event.target;
+      const { validity } = event.currentTarget;
       let message: ReactNode;
       if (validity && !validity.valid) {
         const reason = Object.entries(validityMessages).find(

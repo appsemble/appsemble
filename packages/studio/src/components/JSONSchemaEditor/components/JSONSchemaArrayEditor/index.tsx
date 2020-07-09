@@ -29,10 +29,10 @@ export default function JSONSchemaArrayEditor({
   const items = (schema as OpenAPIV3.ArraySchemaObject).items as OpenAPIV3.SchemaObject;
 
   const onPropertyChange = useCallback(
-    ({ target }: NamedEvent, val) => {
-      const index = Number(target.name.slice(name.length + 1));
+    ({ currentTarget }: NamedEvent, val) => {
+      const index = Number(currentTarget.name.slice(name.length + 1));
       onChange(
-        { target: { name } },
+        { currentTarget: { name } },
         value.map((v, i) => (i === index ? val : v)),
       );
     },
@@ -43,7 +43,7 @@ export default function JSONSchemaArrayEditor({
     ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
       const index = Number(currentTarget.name.slice(name.length + 1));
       onChange(
-        { target: { name } },
+        { currentTarget: { name } },
         value.filter((_val, i) => i !== index),
       );
     },
@@ -54,7 +54,7 @@ export default function JSONSchemaArrayEditor({
     ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
       const addedName = currentTarget.name;
       const index = addedName ? Number(addedName.slice(addedName.length + 1)) + 1 : 0;
-      onChange({ target: { name } }, [
+      onChange({ currentTarget: { name } }, [
         ...value.slice(0, index),
         items.default ?? defaults[items.type],
         ...value.slice(index, value.length),

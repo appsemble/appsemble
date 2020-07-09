@@ -96,7 +96,7 @@ export default class FilterBlock extends Component<BlockProps, FilterBlockState>
       parameters: { fields, highlight },
     } = this.props;
 
-    if (e && (e.target as HTMLButtonElement).disabled) {
+    if (e && (e.currentTarget as HTMLButtonElement).disabled) {
       return;
     }
 
@@ -144,13 +144,13 @@ export default class FilterBlock extends Component<BlockProps, FilterBlockState>
     this.setState({ newData: [], data: updatedData });
   };
 
-  onChange = ({ target }: ChangeEvent<HTMLInputElement>): void => {
+  onChange = ({ currentTarget }: ChangeEvent<HTMLInputElement>): void => {
     this.setState(({ filter, typingTimer }, { parameters: { fields, highlight } }) => {
       const newFilter = {
         ...filter,
-        [target.name]: target.value,
+        [currentTarget.name]: currentTarget.value,
       };
-      if (highlight && target.name === highlight) {
+      if (highlight && currentTarget.name === highlight) {
         if (!fields.find((field) => field.name === highlight).enum) {
           // wait 300ms, then submit
           clearTimeout(typingTimer);
@@ -167,7 +167,7 @@ export default class FilterBlock extends Component<BlockProps, FilterBlockState>
   };
 
   onCheckBoxChange = async ({
-    target: { checked, name, value },
+    currentTarget: { checked, name, value },
   }: ChangeEvent<HTMLInputElement>): Promise<void> => {
     this.setState(({ filter }) => {
       const entry = (filter[name] as string[]) || [];
@@ -192,7 +192,7 @@ export default class FilterBlock extends Component<BlockProps, FilterBlockState>
     });
   };
 
-  onRangeChange = ({ target: { id, name, value } }: ChangeEvent<HTMLInputElement>): void => {
+  onRangeChange = ({ currentTarget: { id, name, value } }: ChangeEvent<HTMLInputElement>): void => {
     this.setState(({ filter }) => ({
       filter: {
         ...filter,

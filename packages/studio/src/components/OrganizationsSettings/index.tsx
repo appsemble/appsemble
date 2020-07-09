@@ -69,7 +69,7 @@ export default function OrganizationsSettings(): ReactElement {
   const onOrganizationChange = useCallback(
     async (event) => {
       setLoading(true);
-      const organizationId = event.target.value;
+      const organizationId = event.currentTarget.value;
       const { data: members } = await axios.get(`/api/organizations/${organizationId}/members`);
       const { data: invites } = await axios.get(`/api/organizations/${organizationId}/invites`);
       setSelectedOrganization(organizationId);
@@ -166,7 +166,7 @@ export default function OrganizationsSettings(): ReactElement {
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, userId: string) => {
       event.preventDefault();
-      const role = event.target.value as Role;
+      const role = event.currentTarget.value as Role;
       setSubmittingRole(userId);
 
       try {
