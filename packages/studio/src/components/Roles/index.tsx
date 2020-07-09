@@ -1,7 +1,7 @@
 import { Loader, Table, Title, useMessages } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
-import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
+import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';
@@ -48,33 +48,34 @@ export default function Roles(): ReactElement {
     };
     getMembers();
   }, [app]);
-  const onChangeRole = async (
-    event: ChangeEvent<HTMLSelectElement>,
-    userId: string,
-  ): Promise<void> => {
-    event.preventDefault();
-    const { value: role } = event.target;
 
-    setSubmittingMemberRoleId(userId);
+  const onChangeRole = useCallback(
+    async (event: ChangeEvent<HTMLSelectElement>, userId: string): Promise<void> => {
+      event.preventDefault();
+      const { value: role } = event.target;
 
-    try {
-      const { data: member } = await axios.post<Member>(`/api/apps/${app.id}/members/${userId}`, {
-        role,
-      });
+      setSubmittingMemberRoleId(userId);
 
-      push({
-        color: 'success',
-        body: formatMessage(messages.changeRoleSuccess, {
-          name: member.name || member.primaryEmail || member.id,
+      try {
+        const { data: member } = await axios.post<Member>(`/api/apps/${app.id}/members/${userId}`, {
           role,
-        }),
-      });
-    } catch (error) {
-      push({ body: formatMessage(messages.changeRoleError) });
-    }
+        });
 
-    setSubmittingMemberRoleId(undefined);
-  };
+        push({
+          color: 'success',
+          body: formatMessage(messages.changeRoleSuccess, {
+            name: member.name || member.primaryEmail || member.id,
+            role,
+          }),
+        });
+      } catch (error) {
+        push({ body: formatMessage(messages.changeRoleError) });
+      }
+
+      setSubmittingMemberRoleId(undefined);
+    },
+    [app, formatMessage, push],
+  );
 
   if (members === undefined) {
     return <Loader />;
