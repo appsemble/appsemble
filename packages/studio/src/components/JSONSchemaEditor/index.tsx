@@ -18,7 +18,7 @@ export default function JSONSchemaEditor({
 >): ReactElement {
   const handleChange = useCallback(
     (_event, val) => {
-      onChange({ target: { name } }, val);
+      onChange({ currentTarget: { name } }, val);
     },
     [name, onChange],
   );

@@ -76,8 +76,9 @@ class Card extends Component<BlockProps & CardProps, CardState> {
     }
   };
 
-  onChange = (event: Event): void => {
-    const { validity, value } = event.target as HTMLInputElement;
+  onChange = ({
+    currentTarget: { validity, value },
+  }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
     this.setState({ message: value, valid: validity.valid });
   };
 

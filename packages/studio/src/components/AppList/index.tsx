@@ -22,7 +22,7 @@ export default function AppList(): ReactElement {
   const { data: apps, error, loading } = useData<App[]>(userInfo ? '/api/apps/me' : '/api/apps');
 
   const onFilterChange = useCallback((event) => {
-    setFilter(event.target.value);
+    setFilter(event.currentTarget.value);
   }, []);
 
   if (loading) {

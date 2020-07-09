@@ -40,7 +40,7 @@ export default function ActionEditorTypeSelect({
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      const actionType = event.target.value as ActionDefinition['type'];
+      const actionType = event.currentTarget.value as ActionDefinition['type'];
       onChange(actionType);
     },
     [onChange],
