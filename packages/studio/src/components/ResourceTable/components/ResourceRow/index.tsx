@@ -6,8 +6,8 @@ import {
   Modal,
   useConfirmation,
 } from '@appsemble/react-components';
+import type { NamedEvent } from '@appsemble/web-utils';
 import type { OpenAPIV3 } from 'openapi-types';
-import type { NamedEvent } from 'packages/studio/src/types';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
