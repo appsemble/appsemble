@@ -14,6 +14,7 @@ import organizations from './organizations';
 import proxy from './proxy';
 import resources from './resources';
 import templates from './templates';
+import translations from './translations';
 import user from './user';
 
 export default {
@@ -31,5 +32,6 @@ export default {
   ...proxy,
   ...resources,
   ...templates,
+  ...translations,
   ...user,
 } as OpenAPIV3.PathsObject;

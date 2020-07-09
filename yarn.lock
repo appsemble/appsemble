@@ -43,6 +43,13 @@
     openapi-types "^1.3.5"
     z-schema "^4.2.2"
 
+"@appsemble/sdk@0.13.3":
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/@appsemble/sdk/-/sdk-0.13.3.tgz#484f14592488a3a72c5f7aefa91fa09b2ce023e0"
+  integrity sha512-Hj0ktWvAKJ6QmBCji4juljTdEtyn2w4mMS2gNJv6igMP++94XzYlxrV5u3+nKxuDkY3Yt2bl1vhAxfpC+wYtHA==
+  dependencies:
+    type-fest "^0.15.0"
+
 "@babel/cli@^7.5.5":
   version "7.10.1"
   resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.10.1.tgz#b6e5cd43a17b8f639442ab027976408ebe6d79a0"
@@ -2408,6 +2415,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/bcp-47@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/bcp-47/-/bcp-47-1.0.0.tgz#9b0482cab6cbefe4a18e2aee8d4f061951feb969"
+  integrity sha512-KNuP/hxVUX2+H5Gps3kCm1QtBWczQ82P2GEK61bcKqk7L0UkXWnsLOBoLm6lwmntnQwcGGSl/V3qwAtQM+aGhg==
+
 "@types/bcrypt@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/bcrypt/-/bcrypt-3.0.0.tgz#851489a9065a067cb7f3c9cbe4ce9bed8bba0876"
@@ -4523,6 +4535,15 @@ batch@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
   integrity sha1-3DQxT05nkxgJP8dgJyUl+UvyXBY=
+
+bcp-47@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/bcp-47/-/bcp-47-1.0.7.tgz#521eb1933ff3db971c995ffa1a80aa922d884091"
+  integrity sha512-XywQRckEigetKCTuxsaecL/68psvr7ayWsPq6LLwoz5k+qwpwnpcTMyU/Gs+JO3u8J+BxofouYCS+s9ACiNyrw==
+  dependencies:
+    is-alphabetical "^1.0.0"
+    is-alphanumerical "^1.0.0"
+    is-decimal "^1.0.0"
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"
@@ -21365,7 +21386,7 @@ type-fest@^0.13.1:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.13.1.tgz#0172cb5bce80b0bd542ea348db50c7e21834d934"
   integrity sha512-34R7HTnG0XIJcBSn5XhDd7nNFPRcXYRZrBB2O2jdKqYODldSzBAqzsWoZYYvduky73toYS/ESqxPvkDf/F0XMg==
 
-type-fest@^0.15.1:
+type-fest@^0.15.0, type-fest@^0.15.1:
   version "0.15.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.15.1.tgz#d2c4e73d3e4a53cf1a906396dd460a1c5178ca00"
   integrity sha512-n+UXrN8i5ioo7kqT/nF8xsEzLaqFra7k32SEsSPwvXVGyAcRgV/FUQN/sgfptJTR1oRmmq7z4IXMFSM7im7C9A==

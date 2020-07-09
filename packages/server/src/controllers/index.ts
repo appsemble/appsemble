@@ -3,6 +3,7 @@ export * from './appMembers';
 export * from './appRatings';
 export * from './appNotifications';
 export * from './appOAuth2Secrets';
+export * from './appTranslations';
 export * from './assets';
 export * from './auth';
 export * from './oauth2ClientCredentials';

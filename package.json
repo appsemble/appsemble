@@ -40,6 +40,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.10.1",
     "@lhci/cli": "^0.4.1",
     "@types/autoprefixer": "^9.7.2",
+    "@types/bcp-47": "^1.0.0",
     "@types/bcrypt": "^3.0.0",
     "@types/bluebird": "^3.5.32",
     "@types/bulma-calendar": "^6.0.1",
