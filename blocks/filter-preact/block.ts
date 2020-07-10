@@ -2,7 +2,7 @@ import type { Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import type { h } from 'preact';
 
-export interface Enum {
+export interface EnumOption {
   /**
    * The value that gets submitted when filtering.
    */
@@ -14,7 +14,7 @@ export interface Enum {
   label?: string;
 }
 
-export interface CheckboxOption {
+export interface ButtonOption {
   /**
    * The value that gets submitted when filtering.
    */
@@ -25,11 +25,22 @@ export interface CheckboxOption {
    */
   label?: string;
 
+  /**
+   * An icon to render on the button.
+   */
   icon: IconName;
 }
 
-export interface AbstractField {
+export interface AbstractField<T extends string, D> {
+  /**
+   * The name of the field to filter on.
+   */
   name: string;
+
+  /**
+   * The type of the filter field.
+   */
+  type: T;
 
   /**
    * The label displayed next to the field.
@@ -41,45 +52,47 @@ export interface AbstractField {
    * the label.
    */
   icon?: IconName;
+
+  /**
+   * The filter to apply by default..
+   */
+  defaultValue: D;
 }
 
-export interface ButtonsField extends AbstractField {
-  type: 'buttons';
-
-  defaultValue?: string[];
-
-  options: CheckboxOption[];
+export interface ButtonsField extends AbstractField<'buttons', string[]> {
+  /**
+   * A list of button options.
+   */
+  options: ButtonOption[];
 }
 
-export interface DateField extends AbstractField {
-  type: 'date';
+export type DateField = AbstractField<'date', string>;
 
-  defaultValue?: string;
-}
-
-export interface DateRangeField extends AbstractField {
-  type: 'date-range';
-
-  defaultValue?: [string, string];
-
+export interface DateRangeField extends AbstractField<'date-range', [string, string]> {
+  /**
+   * The label to render on the `from` field.
+   */
   fromLabel?: Remapper;
 
+  /**
+   * The label to render on the `to` field.
+   */
   toLabel?: Remapper;
 }
 
-export interface EnumField extends AbstractField {
-  type: 'enum';
-
-  defaultValue?: string;
-
-  enum: Enum[];
+export interface EnumField extends AbstractField<'enum', string> {
+  /**
+   * A list of enum options.
+   */
+  enum: EnumOption[];
 }
 
-export interface StringField extends AbstractField {
-  type: 'string';
-
-  defaultValue?: string;
-
+export interface StringField extends AbstractField<'string', string> {
+  /**
+   * By default string fields search for fields starting with the user into.
+   *
+   * By setting this to true, an exact match is used.
+   */
   exact?: boolean;
 }
 
@@ -107,22 +120,51 @@ export interface FieldComponentProps<F extends Field, T = F['defaultValue']> {
 
 declare module '@appsemble/sdk' {
   interface Parameters {
+    /**
+     * A list of fields the user is allowed to search on.
+     */
     fields: Field[];
 
+    /**
+     * The name of a field to highlight.
+     *
+     * This means this field will be displayed directly on the screen instead of in the modal.
+     */
     highlight?: string;
 
+    /**
+     * The title of the modal.
+     *
+     * @default 'Filter'
+     */
     modalTitle?: Remapper;
 
+    /**
+     * The label of the clear button.
+     *
+     * @default 'Clear'
+     */
     clearLabel?: Remapper;
 
+    /**
+     * The label of the filter button.
+     *
+     * @default 'Filter'
+     */
     submitLabel?: Remapper;
   }
 
   interface Actions {
+    /**
+     * The action to dispatch to load data. Typically this is a `resource.query` action.
+     */
     onLoad: {};
   }
 
   interface EventEmitters {
+    /**
+     * This event is emitted when new filter data is available.
+     */
     data: {};
   }
 }
