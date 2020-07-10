@@ -54,7 +54,7 @@ export interface AbstractField<T extends string, D> {
   icon?: IconName;
 
   /**
-   * The filter to apply by default..
+   * The filter to apply by default.
    */
   defaultValue: D;
 }
