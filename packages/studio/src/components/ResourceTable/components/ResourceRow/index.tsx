@@ -10,7 +10,7 @@ import {
 import type { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import type { OpenAPIV3 } from 'openapi-types';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
@@ -63,11 +63,15 @@ export default function ResourceRow({
     action: onConfirmDelete,
   });
 
-  const onSetClonable = useCallback(() => {
-    const r = { ...resource, $clonable: !resource.$clonable };
-    axios.put(`/api/apps/${appId}/resources/${resourceName}/${resource.id}`, r).then(() => {
-      onEdit(r);
-    });
+  const onSetClonable = useCallback(async () => {
+    const { data } = await axios.put<Resource>(
+      `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
+      {
+        ...resource,
+        $clonable: !resource.$clonable,
+      },
+    );
+    onEdit(data);
   }, [appId, onEdit, resource, resourceName]);
 
   const openEditModal = useCallback(() => {
@@ -84,24 +88,30 @@ export default function ResourceRow({
     setEditingResource(value);
   }, []);
 
-  const onEditSubmit = useCallback(() => {
-    axios
-      .put<Resource>(`/api/apps/${appId}/resources/${resourceName}/${resource.id}`, resource)
-      .then(() => {
-        push({
-          body: formatMessage(messages.updateSuccess, { id: resource.id }),
-          color: 'primary',
-        });
-        onEdit(editingResource);
-        closeEditModal();
-      })
-      .catch(() => {
-        push(formatMessage(messages.updateError));
+  const onEditSubmit = useCallback(async () => {
+    try {
+      const { data } = await axios.put<Resource>(
+        `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
+        editingResource,
+      );
+      push({
+        body: formatMessage(messages.updateSuccess, { id: resource.id }),
+        color: 'primary',
       });
-  }, [appId, closeEditModal, editingResource, formatMessage, onEdit, push, resource, resourceName]);
-
-  const keys = useMemo(() => ['id', ...Object.keys(schema?.properties || {})], [
-    schema?.properties,
+      onEdit(data);
+      closeEditModal();
+    } catch {
+      push(formatMessage(messages.updateError));
+    }
+  }, [
+    appId,
+    closeEditModal,
+    editingResource,
+    formatMessage,
+    onEdit,
+    push,
+    resource.id,
+    resourceName,
   ]);
 
   return (
@@ -148,11 +158,14 @@ export default function ResourceRow({
           />
         </Modal>
       </td>
-      {keys.map((key) => (
-        <td key={key} className={styles.contentCell}>
-          {typeof resource[key] === 'string' ? resource[key] : JSON.stringify(resource[key])}
-        </td>
-      ))}
+      <td className={styles.contentCell}>{resource.id}</td>
+      {Object.keys(schema?.properties ?? {})
+        .filter((key) => key !== 'id')
+        .map((key) => (
+          <td key={key} className={styles.contentCell}>
+            {typeof resource[key] === 'string' ? resource[key] : JSON.stringify(resource[key])}
+          </td>
+        ))}
     </tr>
   );
 }
