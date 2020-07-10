@@ -2,15 +2,17 @@ import {
   Button,
   CardFooterButton,
   Form,
-  Icon,
   Modal,
   useConfirmation,
+  useMessages,
+  useToggle,
 } from '@appsemble/react-components';
 import type { NamedEvent } from '@appsemble/web-utils';
+import axios from 'axios';
 import type { OpenAPIV3 } from 'openapi-types';
-import React, { ReactElement, useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Link, useHistory, useRouteMatch } from 'react-router-dom';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useRouteMatch } from 'react-router-dom';
 
 import type { Resource, RouteParams } from '../..';
 import { useApp } from '../../../AppContext';
@@ -21,67 +23,98 @@ import messages from './messages';
 
 interface ResourceRowProps {
   resource: Resource;
-  keys: string[];
-  deleteResource: (id: number) => Promise<void>;
-  setClonable: (id: number) => Promise<void>;
-  onEdit: (resource: Resource) => Promise<void>;
+  onDelete: (id: number) => void;
+  onEdit: (resource: Resource) => void;
   schema: OpenAPIV3.SchemaObject;
 }
 export default function ResourceRow({
-  deleteResource,
-  keys,
+  onDelete,
   onEdit,
   resource,
   schema,
-  setClonable,
 }: ResourceRowProps): ReactElement {
   const {
-    params: { mode, resourceId, resourceName },
-    url,
+    params: { id: appId, resourceName },
   } = useRouteMatch<RouteParams>();
-  const history = useHistory();
   const { app } = useApp();
-  const [editingResource, setEditingResource] = useState({ ...resource });
+  const [editingResource, setEditingResource] = useState<Resource>();
+  const modal = useToggle();
+  const push = useMessages();
+  const { formatMessage } = useIntl();
+
+  const onConfirmDelete = useCallback(() => {
+    axios
+      .delete(`/api/apps/${appId}/resources/${resourceName}/${resource.id}`)
+      .then(() => {
+        push({
+          body: formatMessage(messages.deleteSuccess, { id: resource.id }),
+          color: 'primary',
+        });
+        onDelete(resource.id);
+      })
+      .catch(() => push(formatMessage(messages.deleteError)));
+  }, [appId, formatMessage, onDelete, push, resource, resourceName]);
 
   const handleDeleteResource = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
     body: <FormattedMessage {...messages.resourceWarning} />,
     cancelLabel: <FormattedMessage {...messages.cancelButton} />,
     confirmLabel: <FormattedMessage {...messages.deleteButton} />,
-    action: () => deleteResource(resource.id),
+    action: onConfirmDelete,
   });
 
-  const handleSetClonable = useCallback(
-    () => new Promise<void>((resolve) => setClonable(resource.id).then(resolve)),
-    [resource.id, setClonable],
-  );
+  const onSetClonable = useCallback(() => {
+    const r = { ...resource, $clonable: !resource.$clonable };
+    axios.put(`/api/apps/${appId}/resources/${resourceName}/${resource.id}`, r).then(() => {
+      onEdit(r);
+    });
+  }, [appId, onEdit, resource, resourceName]);
+
+  const openEditModal = useCallback(() => {
+    modal.enable();
+    setEditingResource(resource);
+  }, [modal, resource]);
 
   const closeEditModal = useCallback(() => {
-    history.push(url.replace(`/${mode}/${resource.id}`, ''));
-    setEditingResource(resource);
-  }, [history, url, mode, resource]);
+    modal.disable();
+    setEditingResource(null);
+  }, [modal]);
 
   const onEditChange = useCallback((_event: NamedEvent, value: any) => {
     setEditingResource(value);
   }, []);
 
   const onEditSubmit = useCallback(() => {
-    onEdit(editingResource).then(closeEditModal);
-  }, [closeEditModal, editingResource, onEdit]);
+    axios
+      .put<Resource>(`/api/apps/${appId}/resources/${resourceName}/${resource.id}`, resource)
+      .then(() => {
+        push({
+          body: formatMessage(messages.updateSuccess, { id: resource.id }),
+          color: 'primary',
+        });
+        onEdit(editingResource);
+        closeEditModal();
+      })
+      .catch(() => {
+        push(formatMessage(messages.updateError));
+      });
+  }, [appId, closeEditModal, editingResource, formatMessage, onEdit, push, resource, resourceName]);
+
+  const keys = useMemo(() => ['id', ...Object.keys(schema?.properties || {})], [
+    schema?.properties,
+  ]);
 
   return (
-    <tr key={resource.id}>
+    <tr>
       <td>
         <div className={styles.actionsCell}>
-          <Link className="button" to={`${url}/edit/${resource.id}`}>
-            <Icon className="has-text-info" icon="pen" size="small" />
-          </Link>
+          <Button className="has-text-info" icon="pen" onClick={openEditModal} />
           <Button color="danger" icon="trash" inverted onClick={handleDeleteResource} />
           {Object.prototype.hasOwnProperty.call(app, 'resources') && (
             <ClonableCheckbox
               checked={resource.$clonable}
               id={`clonable${resource.id}`}
-              onChange={handleSetClonable}
+              onChange={onSetClonable}
             />
           )}
         </div>
@@ -97,7 +130,7 @@ export default function ResourceRow({
               </CardFooterButton>
             </>
           }
-          isActive={mode === 'edit' && resourceId === `${resource.id}`}
+          isActive={modal.enabled}
           onClose={closeEditModal}
           onSubmit={onEditSubmit}
           title={

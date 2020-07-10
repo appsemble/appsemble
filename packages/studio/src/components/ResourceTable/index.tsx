@@ -2,19 +2,19 @@ import {
   Button,
   CardFooterButton,
   Form,
-  Icon,
   Loader,
   Modal,
   Table,
   Title,
   useData,
   useMessages,
+  useToggle,
 } from '@appsemble/react-components';
 import type { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
-import React, { FormEvent, ReactElement, useCallback, useState } from 'react';
+import React, { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
@@ -31,80 +31,45 @@ export interface Resource {
 
 export interface RouteParams {
   id: string;
-  mode: string;
-  resourceId: string;
   resourceName: string;
 }
 
 export default function ResourceTable(): ReactElement {
   const { app } = useApp();
-  const history = useHistory();
   const { formatMessage } = useIntl();
   const {
-    params: { id: appId, mode, resourceName },
-    url,
+    params: { id: appId, resourceName },
   } = useRouteMatch<RouteParams>();
   const push = useMessages();
 
+  const modal = useToggle();
   const [creatingResource, setCreatingResource] = useState<Resource>();
   const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}`,
   );
 
+  const { schema } = app.definition.resources[resourceName];
+  const keys = useMemo(() => ['id', ...Object.keys(schema?.properties || {})], [
+    schema?.properties,
+  ]);
+
   const closeCreateModal = useCallback(() => {
-    history.push(url.replace(`/${mode}`, ''));
-  }, [history, url, mode]);
+    modal.disable();
+    setCreatingResource(null);
+  }, [modal]);
 
-  const editResource = useCallback(
-    async (resource: Resource) => {
-      try {
-        await axios.put<Resource>(
-          `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
-          resource,
-        );
-
-        setResources(resources.map((r) => (r.id === resource.id ? resource : r)));
-        history.push(url.replace(`/${mode}/${resource.id}`, ''));
-
-        push({
-          body: formatMessage(messages.updateSuccess, { id: resource.id }),
-          color: 'primary',
-        });
-      } catch (e) {
-        push(formatMessage(messages.updateError));
-      }
+  const onEditResource = useCallback(
+    (resource: Resource) => {
+      setResources(resources.map((r) => (r.id === resource.id ? resource : r)));
     },
-    [appId, formatMessage, history, mode, push, resourceName, resources, setResources, url],
+    [resources, setResources],
   );
 
-  const deleteResource = useCallback(
+  const onDeleteResource = useCallback(
     async (id: number) => {
-      try {
-        await axios.delete(`/api/apps/${appId}/resources/${resourceName}/${id}`);
-        push({
-          body: formatMessage(messages.deleteSuccess, { id }),
-          color: 'primary',
-        });
-        setResources(resources.filter((resource) => resource.id !== id));
-      } catch (e) {
-        push(formatMessage(messages.deleteError));
-      }
+      setResources(resources.filter((resource) => resource.id !== id));
     },
-    [appId, formatMessage, push, resourceName, resources, setResources],
-  );
-
-  const setClonable = useCallback(
-    async (id: number) => {
-      const resource = resources.find((r) => r.id === id);
-      await axios.put(`/api/apps/${appId}/resources/${resourceName}/${id}`, {
-        ...resource,
-        $clonable: !resource.$clonable,
-      });
-      setResources(
-        resources.map((r) => (r.id === id ? { ...resource, $clonable: !resource.$clonable } : r)),
-      );
-    },
-    [appId, resourceName, resources, setResources],
+    [resources, setResources],
   );
 
   const onChange = useCallback((_event: NamedEvent, value: any) => {
@@ -122,9 +87,7 @@ export default function ResourceTable(): ReactElement {
         );
 
         setResources([...resources, data]);
-        setCreatingResource(null);
-
-        history.push(url.replace(`/${mode}`, ''));
+        closeCreateModal();
 
         push({
           body: formatMessage(messages.createSuccess, { id: data.id }),
@@ -136,15 +99,13 @@ export default function ResourceTable(): ReactElement {
     },
     [
       appId,
+      closeCreateModal,
       creatingResource,
       formatMessage,
-      history,
-      mode,
       push,
       resourceName,
       resources,
       setResources,
-      url,
     ],
   );
 
@@ -177,24 +138,21 @@ export default function ResourceTable(): ReactElement {
       );
     }
 
-    const { url: resourceUrl } = app.definition.resources[resourceName];
+    const { url } = app.definition.resources[resourceName];
 
     return (
       <FormattedMessage
         {...messages.notManaged}
         values={{
           link: (
-            <a href={resourceUrl} rel="noopener noreferrer" target="_blank">
-              {resourceUrl}
+            <a href={url} rel="noopener noreferrer" target="_blank">
+              {url}
             </a>
           ),
         }}
       />
     );
   }
-
-  const { schema } = app.definition.resources[resourceName];
-  const keys = ['id', ...Object.keys(schema?.properties || {})];
 
   return (
     <>
@@ -204,12 +162,11 @@ export default function ResourceTable(): ReactElement {
       />
       <Title>Resource {resourceName}</Title>
       <div className="buttons">
-        <Link className="button is-primary" to={`${url}/new`}>
-          <Icon icon="plus-square" />
+        <Button className="is-primary" icon="plus-square" onClick={modal.enable}>
           <span>
             <FormattedMessage {...messages.createButton} />
           </span>
-        </Link>
+        </Button>
         <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
         </Button>
@@ -227,12 +184,10 @@ export default function ResourceTable(): ReactElement {
           {resources.map((resource) => (
             <ResourceRow
               key={resource.id}
-              deleteResource={deleteResource}
-              keys={keys}
-              onEdit={editResource}
+              onDelete={onDeleteResource}
+              onEdit={onEditResource}
               resource={resource}
               schema={schema}
-              setClonable={setClonable}
             />
           ))}
         </tbody>
@@ -249,7 +204,7 @@ export default function ResourceTable(): ReactElement {
             </CardFooterButton>
           </>
         }
-        isActive={mode === 'new'}
+        isActive={modal.enabled}
         onClose={closeCreateModal}
         onSubmit={submitCreate}
         title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}

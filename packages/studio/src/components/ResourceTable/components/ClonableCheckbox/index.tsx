@@ -6,7 +6,7 @@ import styles from './index.css';
 interface ClonableCheckboxProps {
   checked: boolean;
   id: string;
-  onChange: () => Promise<void>;
+  onChange: () => void;
 }
 
 export default function ClonableCheckbox({
@@ -17,7 +17,8 @@ export default function ClonableCheckbox({
   const { disable, enable, enabled } = useToggle();
   const handleChange = useCallback(() => {
     enable();
-    onChange().then(disable);
+    onChange();
+    disable();
   }, [onChange, enable, disable]);
 
   return (
