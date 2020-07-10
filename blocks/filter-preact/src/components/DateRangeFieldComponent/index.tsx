@@ -7,8 +7,8 @@ import type { DateRangeField, FieldComponentProps } from '../../../block';
 import styles from './index.css';
 
 export default function DateRangeFieldComponent({
+  className,
   field,
-  highlight,
   loading,
   onChange,
   value,
@@ -31,7 +31,9 @@ export default function DateRangeFieldComponent({
 
   return (
     <div
-      className={classNames('field is-grouped my-2', { 'is-loading': loading, 'mx-2': highlight })}
+      className={classNames(`field is-grouped ${styles.root} ${className}`, {
+        'is-loading': loading,
+      })}
     >
       <input
         className={`input ${styles.input}`}

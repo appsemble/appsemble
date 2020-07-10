@@ -7,7 +7,6 @@ import type { FieldComponentProps, StringField } from '../../../block';
 export default function StringFieldComponent({
   className,
   field,
-  highlight,
   loading,
   onChange,
   value,
@@ -19,7 +18,8 @@ export default function StringFieldComponent({
 
   return (
     <input
-      className={classNames('input my-2', className, { 'is-loading': loading, 'mx-2': highlight })}
+      className={classNames(`input ${className}`, { 'is-loading': loading })}
+      id={field.name}
       name={field.name}
       onInput={handleChange}
       value={value}

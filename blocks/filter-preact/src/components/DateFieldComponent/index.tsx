@@ -5,8 +5,8 @@ import { useCallback } from 'preact/hooks';
 import type { DateField, FieldComponentProps } from '../../../block';
 
 export default function DateFieldComponent({
+  className,
   field,
-  highlight,
   loading,
   onChange,
   value,
@@ -18,7 +18,7 @@ export default function DateFieldComponent({
 
   return (
     <input
-      className={classNames('input my-2', { 'is-loading': loading, 'mx-2': highlight })}
+      className={classNames(`input ${className}`, { 'is-loading': loading })}
       name={field.name}
       onChange={handleChange}
       type="date"

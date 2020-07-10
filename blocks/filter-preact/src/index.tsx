@@ -84,6 +84,7 @@ bootstrap(
       >
         {highlightedField && (
           <FieldComponent
+            className="mx-2 my-2"
             field={highlightedField}
             highlight
             loading={loading}
@@ -115,12 +116,17 @@ bootstrap(
           {fields.map(
             (field) =>
               field === highlightedField || (
-                <FieldComponent
-                  field={field}
-                  loading={loading}
-                  onChange={onChange}
-                  value={values[field.name]}
-                />
+                <div className="field">
+                  {field.label && <label className="label">{utils.remap(field.label, {})}</label>}
+                  <div className="control">
+                    <FieldComponent
+                      field={field}
+                      loading={loading}
+                      onChange={onChange}
+                      value={values[field.name]}
+                    />
+                  </div>
+                </div>
               ),
           )}
         </Modal>

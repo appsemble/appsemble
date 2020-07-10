@@ -6,8 +6,8 @@ import { useCallback } from 'preact/hooks';
 import type { EnumField, FieldComponentProps } from '../../../block';
 
 export default function EnumFieldComponent({
+  className,
   field,
-  highlight,
   loading,
   onChange,
   value,
@@ -19,12 +19,7 @@ export default function EnumFieldComponent({
   );
 
   return (
-    <div
-      className={classNames('select is-fullwidth my-2', {
-        'is-loading': loading,
-        'mx-2': highlight,
-      })}
-    >
+    <div className={classNames(`select is-fullwidth ${className}`, { 'is-loading': loading })}>
       <select name={field.name} onChange={handleChange} value={value}>
         {field.enum.map(({ label, value: val }) => (
           <option key={val} selected={value === val} value={val}>

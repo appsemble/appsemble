@@ -1,3 +1,7 @@
+.highlight {
+  flex: 1 1 auto;
+}
+
 .input::before {
   color: hsl(0, 0%, 83%);
   content: attr(placeholder) !important;
