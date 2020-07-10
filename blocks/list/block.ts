@@ -61,6 +61,13 @@ declare module '@appsemble/sdk' {
      * A list of fields to display.
      */
     fields?: Field[];
+
+    /**
+     * The image that is shown to the left of the list item.
+     *
+     * This can be either a full image path or an asset id.
+     */
+    image?: Remapper;
   }
 
   interface Actions {

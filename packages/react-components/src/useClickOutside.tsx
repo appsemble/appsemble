@@ -1,4 +1,6 @@
-import { RefObject, useEffect } from 'react';
+import { RefObject, useCallback } from 'react';
+
+import useEventListener from './useEventListener';
 
 /**
  * Run a function when the user clicks outside of an element.
@@ -10,22 +12,18 @@ export default function useClickOutside(
   ref: RefObject<Element>,
   handler: (event: Event) => void,
 ): void {
-  useEffect(() => {
-    const listener = (event: Event): void => {
+  const listener = useCallback(
+    (event: Event): void => {
       // Do nothing if clicking ref's element or descendent elements
       if (!ref.current || ref.current.contains(event.target as Node)) {
         return;
       }
 
       handler(event);
-    };
+    },
+    [handler, ref],
+  );
 
-    document.addEventListener('mousedown', listener);
-    document.addEventListener('touchstart', listener);
-
-    return () => {
-      document.removeEventListener('mousedown', listener);
-      document.removeEventListener('touchstart', listener);
-    };
-  }, [handler, ref]);
+  useEventListener(document, 'mousedown', listener);
+  useEventListener(document, 'touchstart', listener);
 }

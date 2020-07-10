@@ -1,11 +1,11 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 interface SubtitleProps {
   /**
    * The content to render inside the header element.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * An additional class name to add.
@@ -23,11 +23,7 @@ interface SubtitleProps {
 /**
  * A bulma styled subtitle element.
  */
-export default function Subtitle({
-  children,
-  className,
-  level = 5,
-}: SubtitleProps): React.ReactElement {
+export default function Subtitle({ children, className, level = 5 }: SubtitleProps): ReactElement {
   const Component = `h${level}` as 'h1';
 
   return (

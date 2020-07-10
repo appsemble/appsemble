@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import type { OAuth2Provider } from '@appsemble/types';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import settings from '../../utils/settings';
@@ -27,7 +27,7 @@ interface ConnectedAccount {
 /**
  * Managed OAuth2 accounts linked to the current user.
  */
-export default function OAuthSettings(): React.ReactElement {
+export default function OAuthSettings(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const location = useLocationString();
@@ -37,7 +37,7 @@ export default function OAuthSettings(): React.ReactElement {
     '/api/oauth2/connected',
   );
 
-  const disconnect = React.useCallback(
+  const disconnect = useCallback(
     async ({ authorizationUrl, name }: OAuth2Provider) => {
       try {
         await axios.delete('/api/oauth2/connected', { params: { authorizationUrl } });

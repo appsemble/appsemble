@@ -41,8 +41,8 @@ export default function RadioGroup({
   value,
 }: RadioGroupProps): VNode {
   const handleChange = useCallback(
-    (event: Event) => {
-      onChange(event, (event.target as HTMLInputElement).value);
+    (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+      onChange(event, event.currentTarget.value);
     },
     [onChange],
   );

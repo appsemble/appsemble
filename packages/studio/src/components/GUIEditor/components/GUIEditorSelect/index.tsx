@@ -1,5 +1,5 @@
 import { editor, Position, Range } from 'monaco-editor';
-import * as React from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 
 import type { EditLocation } from '../../types';
 import styles from './index.css';
@@ -27,10 +27,10 @@ export default function GUIEditorSelect({
   monacoEditor,
   onChangeDecorationList,
   onChangeEditLocation,
-}: GUIEditorSelectProps): React.ReactElement {
-  const [newDecoration, setNewDecoration] = React.useState<editor.IModelDeltaDecoration[]>();
+}: GUIEditorSelectProps): ReactElement {
+  const [newDecoration, setNewDecoration] = useState<editor.IModelDeltaDecoration[]>();
 
-  const getBlockName = React.useCallback(
+  const getBlockName = useCallback(
     (parents: EditLocation['parents'], position: Position): string => {
       let blockName: string;
 
@@ -52,7 +52,7 @@ export default function GUIEditorSelect({
     [],
   );
 
-  const getEditLocation = React.useCallback(
+  const getEditLocation = useCallback(
     (model: editor.ITextModel, position: Position): void => {
       let editLocation: EditLocation;
       const lines = model.getValue().split(/\r?\n/g);
@@ -99,7 +99,7 @@ export default function GUIEditorSelect({
           },
         ];
         let parentCount = 1;
-        if (i !== topParentLine) {
+        if (i + 1 !== topParentLine) {
           return;
         }
 
@@ -143,7 +143,7 @@ export default function GUIEditorSelect({
           {
             range: editLocation.editRange,
             options: {
-              inlineClassName: `py-1 ${styles.selectionDecoration}`,
+              className: `${styles.selectionDecoration}`,
             },
           },
         ];
@@ -156,7 +156,7 @@ export default function GUIEditorSelect({
     [getBlockName, onChangeEditLocation],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (monacoEditor) {
       monacoEditor.onDidChangeCursorSelection(() => {
         getEditLocation(monacoEditor.getModel(), monacoEditor.getPosition());
@@ -164,7 +164,7 @@ export default function GUIEditorSelect({
     }
   }, [monacoEditor, getEditLocation]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (monacoEditor && newDecoration !== undefined) {
       onChangeDecorationList(
         monacoEditor.getModel().deltaDecorations(decorationList, newDecoration),

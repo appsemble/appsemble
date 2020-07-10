@@ -1,5 +1,5 @@
 import { Table } from '@appsemble/react-components';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import type { Definition } from 'typescript-json-schema';
 
@@ -16,7 +16,7 @@ interface ParameterTableProps {
 /**
  * Render out the parameters of a block in a table.
  */
-export default function ParameterTable({ parameters }: ParameterTableProps): React.ReactElement {
+export default function ParameterTable({ parameters }: ParameterTableProps): ReactElement {
   return (
     <Table>
       <thead>

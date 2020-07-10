@@ -32,8 +32,8 @@ export default function NumberInput({
         onInput(
           event,
           field.type === 'integer'
-            ? Math.floor((event.target as HTMLInputElement).valueAsNumber)
-            : (event.target as HTMLInputElement).valueAsNumber,
+            ? Math.floor((event.currentTarget as HTMLInputElement).valueAsNumber)
+            : (event.currentTarget as HTMLInputElement).valueAsNumber,
         );
       }}
       placeholder={field.placeholder || field.label || field.name}

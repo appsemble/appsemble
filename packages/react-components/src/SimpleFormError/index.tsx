@@ -1,17 +1,17 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { ComponentType, ReactElement } from 'react';
 
 import Message from '../Message';
 import { useSimpleForm } from '../SimpleForm';
 import styles from './index.css';
 
 interface SimpleFormErrorProps {
-  children: React.ComponentType<{ error: Error }>;
+  children: ComponentType<{ error: Error }>;
 }
 
 export default function SimpleFormError({
   children: Children,
-}: SimpleFormErrorProps): React.ReactElement {
+}: SimpleFormErrorProps): ReactElement {
   const { submitError } = useSimpleForm();
 
   return (

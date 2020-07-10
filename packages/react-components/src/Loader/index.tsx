@@ -1,17 +1,17 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ElementType, ReactElement } from 'react';
 
 import styles from './index.css';
 
 interface LoaderProps {
   className?: string;
-  component?: React.ElementType;
+  component?: ElementType;
 }
 
 export default function Loader({
   className,
   component: Component = 'div',
   ...props
-}: LoaderProps): React.ReactElement {
+}: LoaderProps): ReactElement {
   return <Component className={classNames(styles.loader, className)} {...props} />;
 }

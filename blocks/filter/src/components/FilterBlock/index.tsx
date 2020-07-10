@@ -1,7 +1,7 @@
 import type { BlockProps } from '@appsemble/react';
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ChangeEvent, Component, KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import type { Filter, RangeFilter } from '../../../block';
@@ -21,7 +21,7 @@ interface FilterBlockState {
   typingTimer?: NodeJS.Timeout;
 }
 
-export default class FilterBlock extends React.Component<BlockProps, FilterBlockState> {
+export default class FilterBlock extends Component<BlockProps, FilterBlockState> {
   refreshTimer: NodeJS.Timeout = null;
 
   state: FilterBlockState = {
@@ -90,13 +90,13 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
     });
   };
 
-  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>, skipHighlighted = true): void => {
+  resetFilter = (e?: MouseEvent<HTMLButtonElement>, skipHighlighted = true): void => {
     const {
       events,
       parameters: { fields, highlight },
     } = this.props;
 
-    if (e && (e.target as HTMLButtonElement).disabled) {
+    if (e && (e.currentTarget as HTMLButtonElement).disabled) {
       return;
     }
 
@@ -119,7 +119,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
     });
   };
 
-  resetAllFilter = (e?: React.MouseEvent<HTMLButtonElement>): void => this.resetFilter(e, false);
+  resetAllFilter = (e?: MouseEvent<HTMLButtonElement>): void => this.resetFilter(e, false);
 
   onRefresh = async (): Promise<void> => {
     const { lastRefreshedDate = new Date(), newData } = this.state;
@@ -144,13 +144,13 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
     this.setState({ newData: [], data: updatedData });
   };
 
-  onChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
+  onChange = ({ currentTarget }: ChangeEvent<HTMLInputElement>): void => {
     this.setState(({ filter, typingTimer }, { parameters: { fields, highlight } }) => {
       const newFilter = {
         ...filter,
-        [target.name]: target.value,
+        [currentTarget.name]: currentTarget.value,
       };
-      if (highlight && target.name === highlight) {
+      if (highlight && currentTarget.name === highlight) {
         if (!fields.find((field) => field.name === highlight).enum) {
           // wait 300ms, then submit
           clearTimeout(typingTimer);
@@ -167,8 +167,8 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
   };
 
   onCheckBoxChange = async ({
-    target: { checked, name, value },
-  }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    currentTarget: { checked, name, value },
+  }: ChangeEvent<HTMLInputElement>): Promise<void> => {
     this.setState(({ filter }) => {
       const entry = (filter[name] as string[]) || [];
       if (checked) {
@@ -192,7 +192,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
     });
   };
 
-  onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>): void => {
+  onRangeChange = ({ currentTarget: { id, name, value } }: ChangeEvent<HTMLInputElement>): void => {
     this.setState(({ filter }) => ({
       filter: {
         ...filter,
@@ -229,13 +229,13 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
     this.setState({ isOpen: false });
   };
 
-  onFilterKeyDown = (event: React.KeyboardEvent): void => {
+  onFilterKeyDown = (event: KeyboardEvent): void => {
     if (event.key === 'Escape') {
       this.onClose();
     }
   };
 
-  render(): React.ReactNode {
+  render(): ReactNode {
     const {
       parameters: { fields, highlight },
     } = this.props;

@@ -46,14 +46,13 @@ export interface OAuth2LoginOptions
  * Initiate the login process using OAuth2.
  *
  * @param options OAuth2 login options.
+ * @param data Additional data to store in `sessionStorage`. This data will be available after the
+ *             user has been redirected back.
  */
-export function startOAuth2Login({
-  authorizationUrl,
-  clientId,
-  redirect,
-  redirectUrl,
-  scope,
-}: OAuth2LoginOptions): void {
+export function startOAuth2Login(
+  { authorizationUrl, clientId, redirect, redirectUrl, scope }: OAuth2LoginOptions,
+  data?: object,
+): void {
   const url = new URL(authorizationUrl);
   const state = randomString();
   url.searchParams.set('client_id', clientId);
@@ -63,7 +62,7 @@ export function startOAuth2Login({
   url.searchParams.set('state', state);
   sessionStorage.setItem(
     storageKey,
-    JSON.stringify({ state, redirect, authorizationUrl } as OAuth2State),
+    JSON.stringify({ ...data, state, redirect, authorizationUrl } as OAuth2State),
   );
   window.location.href = String(url);
 }
@@ -71,7 +70,7 @@ export function startOAuth2Login({
 /**
  * Load the state as it is stored in `sessionStorage`.
  */
-export function loadOAuth2State<T extends {} = {}>(): T & OAuth2State {
+export function loadOAuth2State<T extends OAuth2State = OAuth2State>(): T {
   try {
     return JSON.parse(sessionStorage.getItem(storageKey));
   } catch (error) {

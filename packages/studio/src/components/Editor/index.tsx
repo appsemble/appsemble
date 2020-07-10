@@ -14,7 +14,7 @@ import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
 import type { editor } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
-import React from 'react';
+import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
@@ -44,35 +44,35 @@ const monacoGuiOptions: Options = {
   readOnly: true,
 };
 
-export default function Editor(): React.ReactElement {
+export default function Editor(): ReactElement {
   const { app, setApp } = useApp();
 
-  const [appName, setAppName] = React.useState('');
-  const [recipe, setRecipe] = React.useState<string>(null);
-  const [style, setStyle] = React.useState('');
-  const [sharedStyle, setSharedStyle] = React.useState('');
-  const [initialRecipe, setInitialRecipe] = React.useState('');
-  const [path, setPath] = React.useState('');
-  const [valid, setValid] = React.useState(false);
-  const [dirty, setDirty] = React.useState(true);
-  const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
+  const [appName, setAppName] = useState('');
+  const [recipe, setRecipe] = useState<string>(null);
+  const [style, setStyle] = useState('');
+  const [sharedStyle, setSharedStyle] = useState('');
+  const [initialRecipe, setInitialRecipe] = useState('');
+  const [path, setPath] = useState('');
+  const [valid, setValid] = useState(false);
+  const [dirty, setDirty] = useState(true);
+  const [openApiDocument, setOpenApiDocument] = useState<OpenAPIV3.Document>();
 
-  const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
-  const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
-  const [decorationList, setDecorationList] = React.useState<string[]>([]);
+  const [editorStep, setEditorStep] = useState<GuiEditorStep>(GuiEditorStep.SELECT);
+  const [monacoEditor, setMonacoEditor] = useState<editor.IStandaloneCodeEditor>();
+  const [decorationList, setDecorationList] = useState<string[]>([]);
 
-  const frame = React.useRef<HTMLIFrameElement>();
+  const frame = useRef<HTMLIFrameElement>();
   const history = useHistory();
   const { formatMessage } = useIntl();
   const location = useLocation();
   const params = useParams<{ id: string }>();
   const push = useMessages();
 
-  React.useEffect(() => {
+  useEffect(() => {
     openApiDocumentPromise.then(setOpenApiDocument);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const { id } = params;
 
     if (!location.hash) {
@@ -112,7 +112,7 @@ export default function Editor(): React.ReactElement {
     setPath(p);
   }, [app, history, formatMessage, location.hash, params, push]);
 
-  const onSave = React.useCallback(async () => {
+  const onSave = useCallback(async () => {
     let definition: AppDefinition;
     // Attempt to parse the YAML into a JSON object
     try {
@@ -178,7 +178,13 @@ export default function Editor(): React.ReactElement {
     setDirty(false);
   }, [app, formatMessage, openApiDocument, push, recipe, sharedStyle, style]);
 
-  const uploadApp = React.useCallback(async () => {
+  useEffect(() => {
+    if (editorStep !== GuiEditorStep.YAML && openApiDocument) {
+      onSave();
+    }
+  }, [recipe, editorStep, onSave, openApiDocument]);
+
+  const uploadApp = useCallback(async () => {
     if (!valid) {
       return;
     }
@@ -225,7 +231,7 @@ export default function Editor(): React.ReactElement {
     color: 'warning',
   });
 
-  const onUpload = React.useCallback(async () => {
+  const onUpload = useCallback(async () => {
     if (valid) {
       const newApp = safeLoad(recipe);
       const originalApp = safeLoad(initialRecipe);
@@ -239,7 +245,7 @@ export default function Editor(): React.ReactElement {
     }
   }, [initialRecipe, promptUpdateApp, recipe, uploadApp, valid]);
 
-  const onMonacoChange = React.useCallback(
+  const onMonacoChange = useCallback(
     (_event: editor.IModelContentChangedEvent, value: string) => {
       switch (location.hash) {
         case '#editor':

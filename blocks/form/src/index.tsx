@@ -36,9 +36,8 @@ const inputs = {
   radio: RadioInput,
 };
 
-function validateInput(_field: Field, event: Event): boolean {
-  return (event.target as HTMLInputElement).validity.valid;
-}
+const validateInput: Validator = (_field, event) =>
+  (event.currentTarget as HTMLInputElement).validity.valid;
 
 const validators: { [name: string]: Validator } = {
   file: (field: FileField, _event, value) => {
@@ -138,7 +137,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const validateField = useCallback(
     (event: Event, value: any): boolean => {
       const { fields } = parameters;
-      const { name } = event.target as HTMLInputElement;
+      const { name } = event.currentTarget as HTMLInputElement;
       const field = fields.find((f) => f.name === name);
 
       if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
@@ -151,7 +150,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
 
   const onChange = useCallback(
     (event: Event, value: any): void => {
-      const { name } = event.target as HTMLInputElement;
+      const { name } = event.currentTarget as HTMLInputElement;
       let valid: boolean;
       let error: string;
 
@@ -173,7 +172,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       setValidity({ ...validity, [name]: valid });
       setValues({
         ...values,
-        [(event.target as HTMLInputElement).name]: value,
+        [(event.currentTarget as HTMLInputElement).name]: value,
       });
     },
     [errors, validateField, validity, values],

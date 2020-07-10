@@ -2,7 +2,7 @@ import { Button, Icon } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import classNames from 'classnames';
 import type { editor } from 'monaco-editor';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ export default function GUIEditorNavBar({
   editorStep,
   monacoEditor,
   onChangeEditorStep,
-}: GUIEditorNavBarProps): React.ReactElement {
+}: GUIEditorNavBarProps): ReactElement {
   const location = useLocation();
 
   return (

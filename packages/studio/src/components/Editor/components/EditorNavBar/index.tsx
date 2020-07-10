@@ -1,8 +1,7 @@
-import { Button, Icon } from '@appsemble/react-components';
-import classNames from 'classnames';
-import React from 'react';
+import { Button, Icon, Tab, Tabs } from '@appsemble/react-components';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import getAppUrl from '../../../../utils/getAppUrl';
 import { useApp } from '../../../AppContext';
@@ -23,11 +22,14 @@ export default function EditorNavBar({
   onUpload,
   setEditorStep,
   valid,
-}: EditorNavBarProps): React.ReactElement {
+}: EditorNavBarProps): ReactElement {
   const location = useLocation();
+  const history = useHistory();
   const { app } = useApp();
 
-  const switchEditor = React.useCallback(() => {
+  const changeTab = useCallback((_, hash: string) => history.push({ hash }), [history]);
+
+  const switchEditor = useCallback(() => {
     if (editorStep !== GuiEditorStep.YAML) {
       setEditorStep(GuiEditorStep.YAML);
     } else {
@@ -79,36 +81,22 @@ export default function EditorNavBar({
           </span>
         </div>
       </nav>
-      {editorStep === GuiEditorStep.YAML ? (
-        <div className="tabs is-boxed mb-0">
-          <ul>
-            <li className={classNames({ 'is-active': location.hash === '#editor' })} value="editor">
-              <Link to="#editor">
-                <Icon icon="file-code" />
-                <FormattedMessage {...messages.recipe} />
-              </Link>
-            </li>
-            <li
-              className={classNames({ 'is-active': location.hash === '#style-core' })}
-              value="style-core"
-            >
-              <Link to="#style-core">
-                <Icon icon="brush" />
-                <FormattedMessage {...messages.coreStyle} />
-              </Link>
-            </li>
-            <li
-              className={classNames({ 'is-active': location.hash === '#style-shared' })}
-              value="style-shared"
-            >
-              <Link to="#style-shared">
-                <Icon icon="brush" />
-                <FormattedMessage {...messages.sharedStyle} />
-              </Link>
-            </li>
-          </ul>
-        </div>
-      ) : null}
+      {editorStep === GuiEditorStep.YAML && (
+        <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
+          <Tab href="#editor" value="editor">
+            <Icon icon="file-code" />
+            <FormattedMessage {...messages.recipe} />
+          </Tab>
+          <Tab href="#style-core" value="style-core">
+            <Icon icon="brush" />
+            <FormattedMessage {...messages.coreStyle} />
+          </Tab>
+          <Tab href="#style-shared" value="style-shared">
+            <Icon icon="brush" />
+            <FormattedMessage {...messages.sharedStyle} />
+          </Tab>
+        </Tabs>
+      )}
     </>
   );
 }

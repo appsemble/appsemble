@@ -1,23 +1,32 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, {
+  ChangeEvent,
+  cloneElement,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  isValidElement,
+  ReactElement,
+  ReactNode,
+  useCallback,
+} from 'react';
 
 import FormComponent from '../FormComponent';
 import Icon from '../Icon';
 import styles from './index.css';
 
-type TextAreaProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
-  Omit<React.ComponentPropsWithoutRef<'textarea'>, 'label' | 'onChange'> & {
-    control?: React.ReactElement;
+type TextAreaProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
+  Omit<ComponentPropsWithoutRef<'textarea'>, 'label' | 'onChange'> & {
+    control?: ReactElement;
 
     /**
      * An error message to render.
      */
-    error?: React.ReactNode;
+    error?: ReactNode;
 
     /**
      * A help message to render.
      */
-    help?: React.ReactNode;
+    help?: ReactNode;
 
     /**
      * The name of the HTML element.
@@ -27,13 +36,13 @@ type TextAreaProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
     /**
      * This is fired when the input value has changed.
      */
-    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>, value: string) => void;
+    onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: string) => void;
   };
 
 /**
  * A Bulma styled textarea element.
  */
-export default React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
+export default forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
     {
       control,
@@ -51,9 +60,9 @@ export default React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     },
     ref,
   ) => {
-    const handleChange = React.useCallback(
-      (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        onChange(event, event.target.value);
+    const handleChange = useCallback(
+      (event: ChangeEvent<HTMLTextAreaElement>) => {
+        onChange(event, event.currentTarget.value);
       },
       [onChange],
     );
@@ -78,10 +87,10 @@ export default React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           value={value}
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        {control && React.cloneElement(control, { className: 'is-right' })}
+        {control && cloneElement(control, { className: 'is-right' })}
         <div className={`${styles.help} is-flex`}>
           <p className={classNames('help', { 'is-danger': error })}>
-            {React.isValidElement(error) ? error : help}
+            {isValidElement(error) ? error : help}
           </p>
           {maxLength ? (
             <span className={`help ml-1 ${styles.counter}`}>

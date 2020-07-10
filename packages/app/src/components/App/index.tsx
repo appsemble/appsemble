@@ -1,5 +1,5 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ interface AppProps {
  *
  * This configures all providers and sets up the global app structure.
  */
-export default function App({ serviceWorkerRegistrationPromise }: AppProps): React.ReactElement {
+export default function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElement {
   return (
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <ErrorHandler fallback={ErrorFallback}>

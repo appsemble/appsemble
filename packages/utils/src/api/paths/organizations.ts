@@ -233,7 +233,8 @@ export default {
     ],
     delete: {
       tags: ['organization'],
-      description: 'Remove a member from the organization that matches the given id.',
+      description:
+        'Remove a member from the organization that matches the given id, or leave the organization if the member id matches the user’s member id',
       operationId: 'removeMember',
       responses: {
         204: {

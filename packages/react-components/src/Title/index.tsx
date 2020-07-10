@@ -1,11 +1,11 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 interface TitleProps {
   /**
    * The content to render inside the header element.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * An additional class name to add.
@@ -21,7 +21,7 @@ interface TitleProps {
 /**
  * A bulma styled title element.
  */
-export default function Title({ children, className, level = 3 }: TitleProps): React.ReactElement {
+export default function Title({ children, className, level = 3 }: TitleProps): ReactElement {
   const Component = `h${level}` as 'h1';
 
   return <Component className={classNames(`title is-${level}`, className)}>{children}</Component>;

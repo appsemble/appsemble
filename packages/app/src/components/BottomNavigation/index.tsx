@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import type { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import styles from './index.css';
@@ -13,7 +13,7 @@ interface BottomNavigationProps {
 /**
  * The app navigation that is displayed at the bottom of the app.
  */
-export default function BottomNavigation({ pages }: BottomNavigationProps): React.ReactElement {
+export default function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
   return (
     <nav className="bottom-nav mb-0">
       <ul className={`${styles.list} is-flex`}>

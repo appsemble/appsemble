@@ -1,10 +1,17 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, {
+  ChangeEvent,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  ReactElement,
+  ReactNode,
+  useCallback,
+} from 'react';
 
 import FormComponent from '../FormComponent';
 
-type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
-  Omit<React.ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
+type CheckboxProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
+  Omit<ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
     error?: any;
 
     /**
@@ -15,12 +22,12 @@ type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
     /**
      * A help message to render next to the checkbox.
      */
-    help?: React.ReactNode;
+    help?: ReactNode;
 
     /**
      * This is fired when the input value has changed.
      */
-    onChange: (event: React.ChangeEvent<HTMLInputElement>, value: boolean) => void;
+    onChange: (event: ChangeEvent<HTMLInputElement>, value: boolean) => void;
 
     /**
      * Whether or not the checkbox is checked.
@@ -48,7 +55,7 @@ type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
 /**
  * A Bulma styled form select element.
  */
-export default React.forwardRef<HTMLInputElement, CheckboxProps>(
+export default forwardRef<HTMLInputElement, CheckboxProps>(
   (
     {
       className,
@@ -65,10 +72,10 @@ export default React.forwardRef<HTMLInputElement, CheckboxProps>(
       ...props
     },
     ref,
-  ): React.ReactElement => {
-    const handleChange = React.useCallback(
-      (event: React.ChangeEvent<HTMLInputElement>) => {
-        onChange(event, event.target.checked);
+  ): ReactElement => {
+    const handleChange = useCallback(
+      (event: ChangeEvent<HTMLInputElement>) => {
+        onChange(event, event.currentTarget.checked);
       },
       [onChange],
     );

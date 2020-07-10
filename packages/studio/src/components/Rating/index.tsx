@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ReactElement, useState } from 'react';
 
 import styles from './index.css';
 
@@ -11,13 +11,8 @@ interface RatingProps {
   onClick?: (value: number) => void;
 }
 
-export default function Rating({
-  className,
-  count,
-  onClick,
-  value,
-}: RatingProps): React.ReactElement {
-  const [localRating, setLocalRating] = React.useState(value);
+export default function Rating({ className, count, onClick, value }: RatingProps): ReactElement {
+  const [localRating, setLocalRating] = useState(value);
   const resetRating = (): void => setLocalRating(value);
 
   const inactiveIcons = [];

@@ -1,6 +1,6 @@
 import type { PageDefinition } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -13,7 +13,7 @@ import { useUser } from '../UserProvider';
  *
  * Also handles filtering pages based on accessibility.
  */
-export default function Navigation(): React.ReactElement {
+export default function Navigation(): ReactElement {
   const { definition } = useAppDefinition();
   const { role } = useUser();
   const location = useLocation();

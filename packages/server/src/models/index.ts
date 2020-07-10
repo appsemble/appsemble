@@ -5,6 +5,8 @@ import { logSQL } from '../utils/sqlUtils';
 import App from './App';
 import AppBlockStyle from './AppBlockStyle';
 import AppMember from './AppMember';
+import AppOAuth2Authorization from './AppOAuth2Authorization';
+import AppOAuth2Secret from './AppOAuth2Secret';
 import AppRating from './AppRating';
 import AppSubscription from './AppSubscription';
 import Asset from './Asset';
@@ -40,6 +42,8 @@ export {
   App,
   AppBlockStyle,
   AppMember,
+  AppOAuth2Authorization,
+  AppOAuth2Secret,
   AppRating,
   AppSubscription,
   Asset,
@@ -80,6 +84,8 @@ export function initDB({
       App,
       AppBlockStyle,
       AppMember,
+      AppOAuth2Authorization,
+      AppOAuth2Secret,
       AppRating,
       AppSubscription,
       Asset,

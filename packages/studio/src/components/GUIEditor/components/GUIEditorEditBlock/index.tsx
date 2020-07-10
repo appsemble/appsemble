@@ -1,13 +1,13 @@
-import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
+import { Content, Loader, Message, Tab, Tabs, Title, useData } from '@appsemble/react-components';
 import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
-import React from 'react';
+import type { NamedEvent } from '@appsemble/web-utils';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import type { JsonObject } from 'type-fest';
 
-import type { NamedEvent } from '../../../../types';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
+import ActionsEditor from '../ActionsEditor';
 import styles from './index.css';
 import messages from './messages';
 
@@ -27,10 +27,13 @@ export default function GUIEditorEditBlock({
   onChangeBlockValue,
   onChangeSelectedBlock,
   selectedBlock,
-}: GUIEditorEditBlockProps): React.ReactElement {
-  const onChange = React.useCallback(
-    (_event: NamedEvent, parameters: JsonObject) => {
-      onChangeBlockValue({ ...blockValue, parameters });
+}: GUIEditorEditBlockProps): ReactElement {
+  const [tab, setTab] = useState('parameters');
+  const onTabChange = useCallback((_, value: string) => setTab(value), []);
+
+  const onChange = useCallback(
+    (event: NamedEvent, value: any) => {
+      onChangeBlockValue({ ...blockValue, [event.currentTarget.name]: value });
     },
     [blockValue, onChangeBlockValue],
   );
@@ -39,7 +42,7 @@ export default function GUIEditorEditBlock({
     `/api/blocks/${normalizeBlockName(editLocation.blockName)}`,
   );
 
-  const initBlockParameters = React.useCallback(() => {
+  const initBlockParameters = useCallback(() => {
     app.definition.pages.forEach((page: BasicPageDefinition) => {
       if (!page.name.includes(editLocation.pageName)) {
         return;
@@ -53,7 +56,7 @@ export default function GUIEditorEditBlock({
     });
   }, [onChangeBlockValue, editLocation, app]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && !selectedBlock) {
       onChangeSelectedBlock(edittingBlock);
       initBlockParameters();
@@ -80,21 +83,39 @@ export default function GUIEditorEditBlock({
   return (
     <div className={`is-flex mx-2 ${styles.root}`}>
       <Title level={2}>{stripBlockName(selectedBlock.name)}</Title>
-      {selectedBlock?.parameters ? (
-        <JSONSchemaEditor
-          name={stripBlockName(selectedBlock.name)}
-          onChange={onChange}
-          schema={selectedBlock?.parameters}
-          value={blockValue?.parameters}
-        />
-      ) : (
-        <div>
-          <FormattedMessage
-            {...messages.noParameters}
-            values={{ name: stripBlockName(selectedBlock.name) }}
-          />
-        </div>
-      )}
+      <div>
+        <Tabs onChange={onTabChange} value={tab}>
+          {selectedBlock.parameters && (
+            <Tab value="parameters">
+              <FormattedMessage {...messages.parameters} />
+            </Tab>
+          )}
+          {selectedBlock.actions && (
+            <Tab value="actions">
+              <FormattedMessage {...messages.actions} />
+            </Tab>
+          )}
+        </Tabs>
+        <Content padding>
+          {tab === 'parameters' && (
+            <JSONSchemaEditor
+              name="parameters"
+              onChange={onChange}
+              schema={selectedBlock?.parameters}
+              value={blockValue?.parameters}
+            />
+          )}
+          {tab === 'actions' && (
+            <ActionsEditor
+              actions={selectedBlock?.actions}
+              app={app}
+              name="actions"
+              onChange={onChange}
+              value={blockValue?.actions}
+            />
+          )}
+        </Content>
+      </div>
     </div>
   );
 }

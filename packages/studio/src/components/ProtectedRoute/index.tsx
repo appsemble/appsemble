@@ -1,11 +1,11 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
 import type { Permission } from '@appsemble/utils';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 import { Redirect, Route, RouteProps, useRouteMatch } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
 import type { Organization } from '../../types';
 import checkRole from '../../utils/checkRole';
+import { useUser } from '../UserProvider';
 
 interface ProtectedRouteProps extends RouteProps {
   permission?: Permission;
@@ -16,7 +16,7 @@ export default function ProtectedRoute({
   organization,
   permission,
   ...props
-}: ProtectedRouteProps): React.ReactElement {
+}: ProtectedRouteProps): ReactElement {
   const redirect = useLocationString();
   const { userInfo } = useUser();
   const qs = useQuery();

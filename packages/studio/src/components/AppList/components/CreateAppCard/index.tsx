@@ -12,11 +12,11 @@ import {
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
-import React from 'react';
+import React, { KeyboardEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import useOrganizations from '../../../../hooks/useOrganizations';
+import { useOrganizations } from '../../../OrganizationsProvider';
 import styles from './index.css';
 import messages from './messages';
 
@@ -27,16 +27,16 @@ interface Template {
   resources: boolean;
 }
 
-export default function CreateAppCard(): React.ReactElement {
+export default function CreateAppCard(): ReactElement {
   const modal = useToggle();
   const { data: templates } = useData<Template[]>('/api/templates');
-  const [selectedTemplate, setSelectedTemplate] = React.useState(0);
+  const [selectedTemplate, setSelectedTemplate] = useState(0);
 
   const history = useHistory();
   const match = useRouteMatch();
   const organizations = useOrganizations();
 
-  const onCreate = React.useCallback(
+  const onCreate = useCallback(
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
 
@@ -53,7 +53,7 @@ export default function CreateAppCard(): React.ReactElement {
     [history, match.url, organizations, selectedTemplate, templates],
   );
 
-  const onKeyDown = (event: React.KeyboardEvent): void => {
+  const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key === 'Escape') {
       modal.disable();
     }
@@ -139,7 +139,7 @@ export default function CreateAppCard(): React.ReactElement {
           component={Select}
           label={<FormattedMessage {...messages.template} />}
           name="selectedTemplate"
-          onChange={({ target }) => setSelectedTemplate(target.value)}
+          onChange={({ currentTarget }) => setSelectedTemplate(currentTarget.value)}
           required
         >
           {templates.map((template, index) => (

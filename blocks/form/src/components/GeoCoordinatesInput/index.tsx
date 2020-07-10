@@ -53,7 +53,7 @@ class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
       })
       .on('move', () => {
         const { lat, lng } = map.getCenter();
-        onInput(({ target: { name: field.name } } as any) as Event, {
+        onInput(({ currentTarget: { name: field.name } } as any) as Event, {
           latitude: lat,
           longitude: lng,
         });

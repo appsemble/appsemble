@@ -20,6 +20,8 @@ export default defineMessages({
   expiresHelp: 'The date on which the client credentials expire',
   credentials: 'Client credentials',
   credentialsHelp: 'Never share these client credentials with anyone.',
+  copiedSuccess: 'Copied client credentials to clipboard',
+  copiedError: 'Failed to copy client credentials to clipboard',
   close: 'Close',
   cancel: 'Cancel',
   submit: 'Create',
