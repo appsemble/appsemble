@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 import type { FilterValue, FilterValues } from '../block';
 import FieldComponent from './components/FieldComponent';
 import styles from './index.css';
+import toOData from './utils/toOData';
 
 bootstrap(
   ({
@@ -55,13 +56,13 @@ bootstrap(
     const onSubmit = useCallback(async () => {
       setLoading(true);
       try {
-        const data = await actions.onLoad.dispatch();
+        const data = await actions.onLoad.dispatch({ $filter: toOData(fields, values) });
         events.emit.data(data);
       } catch (error) {
         events.emit.data(null, error);
       }
       setLoading(false);
-    }, [actions, events]);
+    }, [actions, events, fields, values]);
 
     const resetFilter = useCallback(() => {
       setValues(defaultValues);
