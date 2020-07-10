@@ -71,7 +71,9 @@ bootstrap(
     useEffect(ready, [ready]);
 
     useEffect(() => {
+      // Load the initial data when the block is rendered.
       onSubmit();
+      // This should only be called once, so `onSubmit` should not be in the dependency array.
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
