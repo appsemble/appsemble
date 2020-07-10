@@ -1,8 +1,0 @@
-{
-  "extends": "../../tsconfig",
-  "compilerOptions": {
-    "jsxFactory": "h",
-    "lib": ["dom", "esnext"],
-    "types": ["css-modules", "file-loader", "jest"]
-  }
-}
