@@ -58,26 +58,22 @@ export async function createTranslation(ctx: KoaContext<Params>): Promise<void> 
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 
-  await AppTranslation.create({ AppId: dbApp.id, language: lang.toLowerCase(), content });
+  await AppTranslation.upsert({ AppId: dbApp.id, language: lang.toLowerCase(), content });
 }
 
 export async function getTranslations(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { appId, language },
+    params: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: [],
-    include: [{ model: AppTranslation, where: { language }, required: false }],
+    include: [{ model: AppTranslation, required: false }],
   });
 
   if (!app) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = app.Assets.map((asset) => ({
-    id: asset.id,
-    mime: asset.mime,
-    filename: asset.filename,
-  }));
+  ctx.body = app.AppTranslations.map((message) => message.language);
 }

@@ -31,7 +31,7 @@ export default {
         allowNull: false,
       },
       content: {
-        type: DataTypes.TEXT,
+        type: DataTypes.JSON,
         allowNull: true,
       },
       created: { type: DataTypes.DATE, allowNull: false },

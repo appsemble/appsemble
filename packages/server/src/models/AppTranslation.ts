@@ -26,8 +26,8 @@ export default class AppTranslation extends Model<AppTranslation> {
   @Column
   language: string;
 
-  @Column(DataType.TEXT)
-  content: string;
+  @Column(DataType.JSON)
+  content: { [key: string]: string };
 
   @CreatedAt
   created: Date;

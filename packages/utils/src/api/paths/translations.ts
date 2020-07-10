@@ -1,25 +1,37 @@
 export default {
   '/apps/{appId}/translations': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['language'],
+      description: 'Get a list of all languages with messages.',
+      operationId: 'getTranslations',
+      responses: {
+        200: {
+          content: {
+            'application/json': {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    },
     post: {
       tags: ['language'],
       description: 'Upload a translation for the given language.',
       operationId: 'createTranslation',
       requestBody: {
-        description: 'The asset to upload.',
+        required: true,
         content: {
-          'multipart/form-data': {
+          'application/json': {
             schema: {
               type: 'object',
-              required: ['content', 'language'],
+              required: ['language', 'content'],
               properties: {
-                language: {
-                  type: 'string',
-                },
-                content: {
-                  type: 'string',
-                  format: 'binary',
-                },
+                language: { type: 'string' },
+                content: { type: 'object', additionalProperties: { type: 'string' } },
               },
             },
           },
