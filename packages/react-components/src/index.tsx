@@ -18,7 +18,6 @@ export { default as Input } from './Input';
 export { default as Join } from './Join';
 export { default as JSONInput } from './JSONInput';
 export { default as Loader } from './Loader';
-export { default as Location } from './Location';
 export { default as MarkdownContent } from './MarkdownContent';
 export { default as Message } from './Message';
 export { default as MessagesProvider, useMessages } from './MessagesProvider';
