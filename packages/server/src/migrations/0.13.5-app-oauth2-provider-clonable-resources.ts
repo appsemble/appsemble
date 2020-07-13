@@ -8,6 +8,7 @@ export default {
 
   /**
    * Summary:
+   * - Add clonable field to resources
    * - Add the AppOAuth2Secret table.
    * - Add the AppOAuth2Authorization table.
    */
@@ -60,6 +61,13 @@ export default {
       created: { type: DataTypes.DATE, allowNull: false },
       updated: { type: DataTypes.DATE, allowNull: false },
     });
+
+    logger.info('Adding clonable column to Resource');
+    await queryInterface.addColumn('Resource', 'clonable', {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    });
   },
 
   async down(db) {
@@ -69,5 +77,8 @@ export default {
 
     logger.warn('Dropping table AppOAuth2Secret');
     await queryInterface.dropTable('AppOAuth2Secret');
+
+    logger.warn('Removing clonable column from Resource');
+    await queryInterface.removeColumn('Resource', 'clonable');
   },
 } as Migration;

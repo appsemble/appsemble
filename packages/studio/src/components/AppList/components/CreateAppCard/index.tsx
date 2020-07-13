@@ -34,7 +34,7 @@ export default function CreateAppCard(): ReactElement {
 
   const history = useHistory();
   const match = useRouteMatch();
-  const organizations = useOrganizations();
+  const { organizations } = useOrganizations();
 
   const onCreate = useCallback(
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
@@ -150,7 +150,6 @@ export default function CreateAppCard(): ReactElement {
         </SimpleInput>
         <Message>{templates[selectedTemplate].description}</Message>
         <SimpleInput
-          className="is-warning"
           component={Checkbox}
           help={<FormattedMessage {...messages.privateHelp} />}
           label={<FormattedMessage {...messages.private} />}

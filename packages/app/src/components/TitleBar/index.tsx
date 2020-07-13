@@ -1,7 +1,7 @@
+import { Portal } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React, { ReactChild, ReactElement } from 'react';
 
-import Portal from '../Portal';
 import ProfileDropdown from '../ProfileDropdown';
 import SideMenuButton from '../SideMenuButton';
 import styles from './index.css';

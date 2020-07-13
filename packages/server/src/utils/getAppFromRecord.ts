@@ -30,6 +30,8 @@ export default function getAppFromRecord(
         count: record.get('RatingCount') ? Number(record.get('RatingCount')) : null,
       },
     }),
+    ...(record.get('ResourceCount') &&
+      record.template && { resources: record.get('ResourceCount') > 0 }),
     OrganizationId: record.OrganizationId,
   };
 

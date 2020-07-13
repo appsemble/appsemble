@@ -336,6 +336,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
       id: resource.id,
       $created: resource.created,
       $updated: resource.updated,
+      $clonable: resource.clonable,
       ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
     }));
   } catch (e) {
@@ -649,7 +650,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceId, resourceType },
     request: {
-      body: { id: _, ...updatedResource },
+      body: { $clonable: clonable = false, id: _, ...updatedResource },
     },
     user,
   } = ctx;
@@ -697,7 +698,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
 
   resource.changed('updated', true);
   resource = await resource.update(
-    { data: updatedResource },
+    { data: updatedResource, clonable },
     { where: { id: resourceId, type: resourceType, AppId: appId } },
   );
 

@@ -694,6 +694,26 @@ describe('updateResource', () => {
       data: {},
     });
   });
+
+  it('should set clonable if specified in the request', async () => {
+    const app = await exampleApp(organizationId);
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.', $clonable: true },
+      { headers: { authorization } },
+    );
+
+    await resource.reload();
+
+    expect(response.status).toBe(200);
+    expect(resource.clonable).toBe(true);
+  });
 });
 
 describe('deleteResource', () => {

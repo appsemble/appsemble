@@ -38,7 +38,7 @@ const Context = createContext<AppValueContext>(null);
 
 export default function AppContext(): ReactElement {
   const match = useRouteMatch<{ id: string }>();
-  const organizations = useOrganizations();
+  const { loading: organizationsLoading, organizations } = useOrganizations();
   const { data: app, error, loading, setData: setApp } = useData<App>(
     `/api/apps/${match.params.id}`,
   );
@@ -56,7 +56,7 @@ export default function AppContext(): ReactElement {
     );
   }
 
-  if (!organizations || loading) {
+  if (organizationsLoading || loading) {
     return <Loader />;
   }
 

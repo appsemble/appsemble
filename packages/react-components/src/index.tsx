@@ -26,6 +26,7 @@ export type { ShowMessage } from './MessagesProvider';
 export { default as Modal } from './Modal';
 export { default as OAuth2LoginButton } from './OAuth2LoginButton';
 export { default as PasswordInput } from './PasswordInput';
+export { default as Portal } from './Portal';
 export { default as Select } from './Select';
 export { default as SimpleForm } from './SimpleForm';
 export { default as SimpleFormError } from './SimpleFormError';
