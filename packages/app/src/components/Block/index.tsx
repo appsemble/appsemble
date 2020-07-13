@@ -233,12 +233,7 @@ export default function Block({
   switch (manifest.layout) {
     case 'float':
       return createPortal(
-        <div
-          ref={ref}
-          className={classNames(styles.float, className)}
-          data-block={blockName}
-          data-path={prefix}
-        />,
+        <div ref={ref} className={className} data-block={blockName} data-path={prefix} />,
         document.body,
       );
     case 'hidden':

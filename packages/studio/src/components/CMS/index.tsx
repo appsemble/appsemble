@@ -12,7 +12,7 @@ export default function CMS(): ReactElement {
       <Route exact path={match.path}>
         <CMSRoot />
       </Route>
-      <Route path={`${match.path}/:resourceName/:mode?/:resourceId?`}>
+      <Route path={`${match.path}/:resourceName`}>
         <ResourceTable />
       </Route>
       <Redirect to={match.path} />

@@ -13,4 +13,6 @@ export default defineMessages({
   organization: 'Organization',
   submit: 'Create',
   view: 'View App',
+  resources: 'Resources',
+  resourcesDescription: 'Copy any resources that are allowed to be cloned.',
 });

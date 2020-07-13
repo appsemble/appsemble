@@ -20,7 +20,7 @@ export default function AppSideMenu(): ReactElement {
   const { app } = useApp();
 
   const collapsed = useToggle();
-  const organizations = useOrganizations();
+  const { organizations } = useOrganizations();
   const organization = organizations?.find((org) => org.id === app.OrganizationId);
   const match = useRouteMatch();
 
