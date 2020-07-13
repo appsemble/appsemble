@@ -150,8 +150,9 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
             { transaction },
           );
           if (!verified) {
+            const { host } = argv;
             await mailer.sendEmail(userInfo as Recipient, 'resend', {
-              url: `${ctx.origin}/verify?token=${key}`,
+              url: `${host}/verify?token=${key}`,
             });
           }
         }

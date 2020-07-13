@@ -50,12 +50,14 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
     throw e;
   }
 
+  const { host } = argv;
+
   // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
   // will still be logged in, but will have to request a new verification email in order to verify
   // their account.
   mailer
     .sendEmail({ email, name }, 'welcome', {
-      url: `${ctx.origin}/verify?token=${key}`,
+      url: `${host}/verify?token=${key}`,
     })
     .catch((error) => {
       logger.error(error);
@@ -86,6 +88,7 @@ export async function verifyEmail(ctx: KoaContext): Promise<void> {
 
 export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
   const {
+    argv: { host },
     mailer,
     request: {
       body: { email },
@@ -96,7 +99,7 @@ export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
   if (record && !record.verified) {
     const { key } = record;
     await mailer.sendEmail(record, 'resend', {
-      url: `${ctx.origin}/verify?token=${key}`,
+      url: `${host}/verify?token=${key}`,
     });
   }
 
@@ -105,6 +108,7 @@ export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
 
 export async function requestResetPassword(ctx: KoaContext): Promise<void> {
   const {
+    argv: { host },
     mailer,
     request: {
       body: { email },
@@ -120,7 +124,7 @@ export async function requestResetPassword(ctx: KoaContext): Promise<void> {
     const token = crypto.randomBytes(40).toString('hex');
     await ResetPasswordToken.create({ UserId: user.id, token });
     await mailer.sendEmail({ email, name }, 'reset', {
-      url: `${ctx.origin}/edit-password?token=${token}`,
+      url: `${host}/edit-password?token=${token}`,
     });
   }
 

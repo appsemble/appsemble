@@ -110,6 +110,7 @@ export async function listEmails(ctx: KoaContext): Promise<void> {
 
 export async function addEmail(ctx: KoaContext): Promise<void> {
   const {
+    argv: { host },
     mailer,
     request: {
       body: { email },
@@ -138,7 +139,7 @@ export async function addEmail(ctx: KoaContext): Promise<void> {
   await EmailAuthorization.create({ UserId: user.id, email, key });
 
   await mailer.sendEmail({ email, name: dbUser.name }, 'emailAdded', {
-    url: `${ctx.origin}/verify?token=${key}`,
+    url: `${host}/verify?token=${key}`,
   });
 
   ctx.status = 201;
