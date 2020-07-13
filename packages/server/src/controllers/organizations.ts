@@ -216,7 +216,7 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
     'organizationInvite',
     {
       organization: organization.id,
-      url: `${ctx.origin}/organization-invite?token=${key}`,
+      url: `${Object.getPrototypeOf(ctx).argv.host}/organization-invite?token=${key}`,
     },
   );
 
@@ -254,7 +254,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   await mailer.sendEmail({ email, ...(user && { name: user.name }) }, 'organizationInvite', {
     organization: organization.id,
-    url: `${ctx.origin}/organization-invite?token=${invite.key}`,
+    url: `${Object.getPrototypeOf(ctx).argv.host}/organization-invite?token=${invite.key}`,
   });
 
   ctx.body = 204;
