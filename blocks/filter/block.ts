@@ -56,7 +56,7 @@ export interface AbstractField<T extends string, D> {
   /**
    * The filter to apply by default.
    */
-  defaultValue: D;
+  defaultValue?: D;
 }
 
 export interface ButtonsField extends AbstractField<'buttons', string[]> {
