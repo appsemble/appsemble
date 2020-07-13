@@ -1,11 +1,13 @@
-.transitionGroup,
-.transitionWrapper {
+.transitionGroup {
   display: flex;
+  flex-flow: column;
   height: 100%;
   position: relative;
 }
 
 .transitionWrapper {
+  display: flex;
+  height: 100%;
   left: 0;
   position: absolute;
   top: 0;
@@ -28,4 +30,29 @@
 .pageExitActive {
   opacity: 0;
   transition: opacity 300ms ease-in;
+}
+
+.float {
+  position: fixed;
+  z-index: 1100;
+}
+
+.static {
+  flex: 0 0 auto;
+  flex-flow: column;
+  position: relative;
+
+  &:last-child {
+    padding-bottom: 109px;
+  }
+}
+
+.grow {
+  flex: 1 1 auto;
+  flex-flow: column;
+  position: relative;
+
+  &:last-child {
+    padding-bottom: 109px;
+  }
 }
