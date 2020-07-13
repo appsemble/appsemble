@@ -1,5 +1,5 @@
 import { bootstrap } from '@appsemble/preact';
-import { Button, Form, Modal, useToggle } from '@appsemble/preact-components';
+import { Button, CardFooterButton, Form, Modal, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { Fragment, h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
@@ -71,7 +71,9 @@ bootstrap(
     useEffect(ready, [ready]);
 
     useEffect(() => {
+      // Load the initial data when the block is rendered.
       onSubmit();
+      // This should only be called once, so `onSubmit` should not be in the dependency array.
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -101,12 +103,12 @@ bootstrap(
         <Modal
           footer={
             <Fragment>
-              <Button className="card-footer-item" onClick={resetFilter}>
+              <CardFooterButton onClick={resetFilter}>
                 {utils.remap(clearLabel, {})}
-              </Button>
-              <Button className="card-footer-item" color="primary" type="submit">
+              </CardFooterButton>
+              <CardFooterButton color="primary" type="submit">
                 {utils.remap(submitLabel, {})}
-              </Button>
+              </CardFooterButton>
             </Fragment>
           }
           isActive={modal.enabled}

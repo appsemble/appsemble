@@ -54,9 +54,9 @@ export interface AbstractField<T extends string, D> {
   icon?: IconName;
 
   /**
-   * The filter to apply by default..
+   * The filter to apply by default.
    */
-  defaultValue: D;
+  defaultValue?: D;
 }
 
 export interface ButtonsField extends AbstractField<'buttons', string[]> {
@@ -89,7 +89,7 @@ export interface EnumField extends AbstractField<'enum', string> {
 
 export interface StringField extends AbstractField<'string', string> {
   /**
-   * By default string fields search for fields starting with the user into.
+   * By default string fields search for fields containing the user input.
    *
    * By setting this to true, an exact match is used.
    */

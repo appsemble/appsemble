@@ -1,6 +1,7 @@
 export { default as Button } from './Button';
 export { default as ButtonGroup } from './ButtonGroup';
 export { default as ButtonOption } from './ButtonOption';
+export { default as CardFooterButton } from './CardFooterButton';
 export { default as Form } from './Form';
 export { default as FormComponent } from './FormComponent';
 export { default as Icon } from './Icon';
