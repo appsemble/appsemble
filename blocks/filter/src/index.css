@@ -1,0 +1,8 @@
+.root {
+  box-shadow: 0 0.25rem 0.25rem 0 hsla(0, 0%, 0%, 0.1);
+  justify-content: flex-end;
+
+  &.highlighted {
+    justify-content: space-between;
+  }
+}

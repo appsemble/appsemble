@@ -1,6 +1,20 @@
+import type { Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
+import type { h } from 'preact';
 
-export interface Enum {
+export interface EnumOption {
+  /**
+   * The value that gets submitted when filtering.
+   */
+  value: string;
+
+  /**
+   *  User-facing label describing the option.
+   */
+  label?: string;
+}
+
+export interface ButtonOption {
   /**
    * The value that gets submitted when filtering.
    */
@@ -12,24 +26,21 @@ export interface Enum {
   label?: string;
 
   /**
-   * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-   * the label.
+   * An icon to render on the button.
    */
-  icon?: IconName;
+  icon: IconName;
 }
 
-export interface FilterField {
+export interface AbstractField<T extends string, D> {
   /**
-   * The text to show for empty enum items.
+   * The name of the field to filter on.
    */
-  emptyLabel?: string;
+  name: string;
 
   /**
-   * The default value used for the field.
-   *
-   * If not set, an empty filter option is added to allow for not filtering on this field at all.
+   * The type of the filter field.
    */
-  defaultValue?: string | number;
+  type: T;
 
   /**
    * The label displayed next to the field.
@@ -37,80 +48,122 @@ export interface FilterField {
   label?: string;
 
   /**
-   * A list of predetermined options the user can pick from.
-   */
-  enum?: Enum[];
-
-  /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
    * the label.
    */
   icon?: IconName;
 
   /**
-   * The name used when storing this field.
+   * The filter to apply by default.
    */
-  name: string;
+  defaultValue?: D;
+}
+
+export interface ButtonsField extends AbstractField<'buttons', string[]> {
+  /**
+   * A list of button options.
+   */
+  options: ButtonOption[];
+}
+
+export type DateField = AbstractField<'date', string>;
+
+export interface DateRangeField extends AbstractField<'date-range', [string, string]> {
+  /**
+   * The label to render on the `from` field.
+   */
+  fromLabel?: Remapper;
 
   /**
-   * Whether a range picker should be used.
+   * The label to render on the `to` field.
    */
-  range?: boolean;
+  toLabel?: Remapper;
+}
 
+export interface EnumField extends AbstractField<'enum', string> {
   /**
-   * The type of the data.
+   * A list of enum options.
    */
-  type: 'date' | 'checkbox' | 'radio' | 'string';
+  enum: EnumOption[];
+}
 
+export interface StringField extends AbstractField<'string', string> {
   /**
-   * Whether exact matching should be used when matching string values.
+   * By default string fields search for fields containing the user input.
+   *
+   * By setting this to true, an exact match is used.
    */
   exact?: boolean;
 }
 
-export interface RangeFilter {
-  from?: string | number;
-  to?: string | number;
+export type Field = ButtonsField | DateField | DateRangeField | EnumField | StringField;
+
+export type FilterValue = Field['defaultValue'];
+
+export interface FilterValues {
+  [name: string]: FilterValue;
 }
 
-export interface Filter {
-  [filter: string]: string | number | RangeFilter | string[];
+export interface FieldComponentProps<F extends Field, T = F['defaultValue']> {
+  className?: string;
+
+  field: F;
+
+  highlight?: boolean;
+
+  loading: boolean;
+
+  onChange: (event: h.JSX.TargetedEvent<HTMLElement & { name: string }>, value: T) => void;
+
+  value: T;
 }
 
 declare module '@appsemble/sdk' {
   interface Parameters {
     /**
-     * A list of objects describing each field that can be filtered.
+     * A list of fields the user is allowed to search on.
      */
-    fields: FilterField[];
+    fields: Field[];
 
     /**
-     * The field to highlight outside of the filter dialog.
+     * The name of a field to highlight.
      *
-     * If set, changing the highlighted value will immediately apply a new filter
+     * This means this field will be displayed directly on the screen instead of in the modal.
      */
-    highlight: string;
+    highlight?: string;
 
     /**
-     * The time it seconds between each time the filter should be refreshed automatically.
+     * The title of the modal.
      *
-     * If not set, no automatic refresh will be performed.
+     * @default 'Filter'
      */
-    refreshTimeout: number;
+    modalTitle?: Remapper;
+
+    /**
+     * The label of the clear button.
+     *
+     * @default 'Clear'
+     */
+    clearLabel?: Remapper;
+
+    /**
+     * The label of the filter button.
+     *
+     * @default 'Filter'
+     */
+    submitLabel?: Remapper;
   }
 
   interface Actions {
     /**
-     * Action that gets dispatched when a new filter gets applied.
-     *
-     * This also gets called during the initial load.
+     * The action to dispatch to load data. Typically this is a `resource.query` action.
      */
     onLoad: {};
   }
 
   interface EventEmitters {
     /**
-     * The event that is emitted when data is finished loading.
+     * This event is emitted when new filter data is available.
      */
     data: {};
   }
