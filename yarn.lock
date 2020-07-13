@@ -3007,11 +3007,6 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react-shadow-dom-retarget-events@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react-shadow-dom-retarget-events/-/react-shadow-dom-retarget-events-1.0.0.tgz#dabd1d467826f7988604d3c6e80bee02e1d17ef0"
-  integrity sha512-IVeyB+jl4l0j3QQxyouIMLc7T+6OqyYUKhaa2djyxrFJrL3BtEUhn2n5+IeRpvv1pwUl9yTUEyCeA98Gy2sexg==
-
 "@types/react-transition-group@^4.4.0":
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.0.tgz#882839db465df1320e4753e6e9f70ca7e9b4d46d"
@@ -17913,11 +17908,6 @@ react-router@5.2.0:
     react-is "^16.6.0"
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
-
-react-shadow-dom-retarget-events@^1.0.11:
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/react-shadow-dom-retarget-events/-/react-shadow-dom-retarget-events-1.0.11.tgz#e57ce3ba0bc8159fec4861778daf02161440f156"
-  integrity sha512-4ExKxKEWUCEmVBZmtly5lgHd9vz/NDKv5H7KmFZZxHZW/W6EmmzyOA928OqeWPxcfXUjfNG8q3hpwCD9O7CRRg==
 
 react-side-effect@^2.1.0:
   version "2.1.0"
