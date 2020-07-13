@@ -4,6 +4,7 @@ import {
   AppsembleValidationError,
   checkBlocks,
   validateHooks,
+  validateLanguage,
   validateReferences,
   validateSecurity,
 } from './validateAppDefinition';
@@ -454,6 +455,22 @@ describe('validateReferences', () => {
     expect(() => validateReferences(definition)).toThrow(
       new AppsembleValidationError(
         'Property “testId” referencing “test” does not exist in resource “testGroup”',
+      ),
+    );
+  });
+});
+
+describe('validateLanguage', () => {
+  it('should pass on valid languages', () => {
+    const languages = ['en', 'en-US', 'en-us', 'en-Gb', 'zh-hans', 'az-Latn', 'en-US-x-twain'];
+    languages.forEach((lang) => expect(() => validateLanguage(lang)).not.toThrow());
+  });
+
+  it('should throw on invalid languages', () => {
+    const languages = ['blaaaaaaaaaaaaaaaa', 'dutch', 'jp'];
+    languages.forEach((lang) =>
+      expect(() => validateLanguage(lang)).toThrow(
+        new AppsembleValidationError(`Language code “${lang}” is invalid.`),
       ),
     );
   });

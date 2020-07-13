@@ -748,6 +748,13 @@ export interface AppDefinition {
   description?: string;
 
   /**
+   * The default language of the app.
+   *
+   * @default us
+   */
+  defaultLanguage?: string;
+
+  /**
    * The security definition of the app.
    *
    * This determines user roles and login behavior.

@@ -1,5 +1,5 @@
+import { validateLanguage } from '@appsemble/utils/src/validateAppDefinition';
 import Boom from '@hapi/boom';
-import bcp47 from 'bcp-47';
 
 import { App, AppTranslation } from '../models';
 import type { KoaContext } from '../types';
@@ -14,16 +14,17 @@ export async function getTranslation(ctx: KoaContext<Params>): Promise<void> {
     params: { appId, language },
   } = ctx;
 
-  const bcp = bcp47.parse(language);
-  const lang = bcp47.stringify(bcp);
-
-  if (!lang) {
+  try {
+    validateLanguage(language);
+  } catch (e) {
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 
   const app = await App.findByPk(appId, {
     attributes: [],
-    include: [{ model: AppTranslation, where: { language: lang.toLowerCase() }, required: false }],
+    include: [
+      { model: AppTranslation, where: { language: language.toLowerCase() }, required: false },
+    ],
   });
 
   if (!app) {
@@ -51,14 +52,13 @@ export async function createTranslation(ctx: KoaContext<Params>): Promise<void> 
     throw Boom.notFound('App not found');
   }
 
-  const bcp = bcp47.parse(language);
-  const lang = bcp47.stringify(bcp);
-
-  if (!lang) {
+  try {
+    validateLanguage(language);
+  } catch (e) {
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 
-  await AppTranslation.upsert({ AppId: dbApp.id, language: lang.toLowerCase(), content });
+  await AppTranslation.upsert({ AppId: dbApp.id, language: language.toLowerCase(), content });
 }
 
 export async function getTranslations(ctx: KoaContext<Params>): Promise<void> {
