@@ -1,4 +1,4 @@
-import { validateLanguage } from '@appsemble/utils/src/validateAppDefinition';
+import { validateLanguage } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 import { App, AppTranslation } from '../models';
@@ -75,5 +75,5 @@ export async function getTranslations(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = app.AppTranslations.map((message) => message.language);
+  ctx.body = app.AppTranslations.map((message) => message.language).sort();
 }

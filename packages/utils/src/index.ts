@@ -14,5 +14,6 @@ export { default as mapValues } from './mapValues';
 export { default as remap } from './remap';
 export {
   default as validateAppDefinition,
+  validateLanguage,
   AppsembleValidationError,
 } from './validateAppDefinition';
