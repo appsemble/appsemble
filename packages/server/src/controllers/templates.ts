@@ -15,7 +15,7 @@ export async function getAppTemplates(ctx: KoaContext): Promise<void> {
     attributes: {
       include: ['id', 'definition', [fn('COUNT', col('Resources.id')), 'ResourceCount']],
     },
-    include: [{ model: Resource, attributes: [] }],
+    include: [{ model: Resource, where: { clonable: true }, attributes: [], required: false }],
     group: ['App.id'],
   });
 
@@ -29,17 +29,14 @@ export async function getAppTemplates(ctx: KoaContext): Promise<void> {
 
 export async function createTemplateApp(ctx: KoaContext): Promise<void> {
   const {
-    description,
-    name,
-    organizationId,
-    private: isPrivate,
-    resources,
-    templateId,
-  } = ctx.request.body;
+    request: {
+      body: { description, name, organizationId, private: isPrivate, resources, templateId },
+    },
+  } = ctx;
 
   const template = await App.findOne({
     where: { id: templateId },
-    include: [Resource],
+    include: [{ model: Resource, where: { clonable: true }, required: false }],
   });
 
   await checkRole(ctx, organizationId, Permission.CreateApps);

@@ -13,17 +13,18 @@ import {
 } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactText, useState } from 'react';
+import React, { ChangeEvent, ReactElement, ReactText, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
+import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import styles from './index.css';
 import messages from './messages';
 
-export default function AppSettings(): React.ReactElement {
+export default function AppSettings(): ReactElement {
   const { app } = useApp();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const [icon, setIcon] = useState<File>();
   const [inputs, setInputs] = useState(app);
 
@@ -52,22 +53,22 @@ export default function AppSettings(): React.ReactElement {
 
     try {
       await axios.patch(`/api/apps/${app.id}`, data);
-      push({ color: 'success', body: intl.formatMessage(messages.updateSuccess) });
+      push({ color: 'success', body: formatMessage(messages.updateSuccess) });
     } catch (ex) {
-      push({ color: 'danger', body: intl.formatMessage(messages.updateError) });
+      push({ color: 'danger', body: formatMessage(messages.updateError) });
     }
   };
 
-  const onChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
+  const onChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
       event.persist();
-      setInputs((val) => ({ ...val, [event.target.name]: value }));
+      setInputs((val) => ({ ...val, [event.currentTarget.name]: value }));
     },
     [],
   );
 
-  const onIconChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
-    setIcon(e.target.files[0]);
+  const onIconChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
+    setIcon(e.currentTarget.files[0]);
   }, []);
 
   const onDelete = useConfirmation({
@@ -81,14 +82,14 @@ export default function AppSettings(): React.ReactElement {
       try {
         await axios.delete(`/api/apps/${id}`);
         push({
-          body: intl.formatMessage(messages.deleteSuccess, {
+          body: formatMessage(messages.deleteSuccess, {
             name: `@${OrganizationId}/${path}`,
           }),
           color: 'info',
         });
         history.push('/apps');
       } catch (e) {
-        push(intl.formatMessage(messages.errorDelete));
+        push(formatMessage(messages.errorDelete));
       }
     },
   });
@@ -106,16 +107,12 @@ export default function AppSettings(): React.ReactElement {
             name="icon"
             onChange={onIconChange}
             preview={
-              <figure className={`image is-128x128 ${styles.iconContainer}`}>
-                <img
-                  alt={intl.formatMessage(messages.icon)}
-                  className={styles.icon}
-                  src={iconUrl}
-                />
+              <figure className="image is-128x128 mb-2">
+                <img alt={formatMessage(messages.icon)} className={styles.icon} src={iconUrl} />
               </figure>
             }
           />
-          <div className={styles.private}>
+          <div className="mb-3">
             <Checkbox
               className="is-marginless"
               help={<FormattedMessage {...messages.private} />}
@@ -123,6 +120,7 @@ export default function AppSettings(): React.ReactElement {
               name="private"
               onChange={onChange}
               value={inputs.private}
+              wrapperClassName="mb-0"
             />
             <p className="help">
               <FormattedMessage {...messages.privateDescription} />
@@ -133,7 +131,7 @@ export default function AppSettings(): React.ReactElement {
               <>
                 <FormattedMessage {...messages.pathDescription} />
                 <br />
-                {`${window.location.protocol}//${inputs.path}.${app.OrganizationId}.${window.location.host}`}
+                {getAppUrl(app.OrganizationId, inputs.path)}
               </>
             }
             label={<FormattedMessage {...messages.path} />}

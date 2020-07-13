@@ -1,30 +1,30 @@
 import { Button } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React from 'react';
+import React, { Children, createContext, ReactChild, ReactElement, useContext } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.css';
 import messages from './messages';
 
 interface SideMenuProps {
-  children: React.ReactChild[];
+  children: ReactChild[];
   isCollapsed: boolean;
   toggleCollapse: () => void;
 }
 
-const Context = React.createContext<boolean>(false);
+const Context = createContext<boolean>(false);
 
 export default function SideMenu({
   children = [],
   isCollapsed,
   toggleCollapse,
-}: SideMenuProps): React.ReactElement {
+}: SideMenuProps): ReactElement {
   return (
     <div className={classNames({ [styles.collapsed]: isCollapsed }, styles.sideMenuContainer)}>
       <aside className={classNames('menu', styles.sideMenu)}>
         <ul className="menu-list">
           <Context.Provider value={isCollapsed}>
-            {React.Children.map(children, (item, index) => (
+            {Children.map(children, (item, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <li key={index}>{item}</li>
             ))}
@@ -45,5 +45,5 @@ export default function SideMenu({
 }
 
 export function useSideMenu(): boolean {
-  return React.useContext(Context);
+  return useContext(Context);
 }

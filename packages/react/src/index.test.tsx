@@ -1,7 +1,7 @@
 import type { BootstrapParams } from '@appsemble/sdk';
 import * as enzyme from 'enzyme';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import React, { ReactElement } from 'react';
+import ReactDOM from 'react-dom';
 import retargetEvents from 'react-shadow-dom-retarget-events';
 
 import { mount, withBlock } from '.';
@@ -53,7 +53,7 @@ beforeEach(() => {
 
 describe('mount', () => {
   it('should mount the react component', () => {
-    let component: React.ReactElement;
+    let component: ReactElement;
     (ReactDOM.render as jest.Mock).mockImplementation((c) => {
       component = c;
     });
@@ -70,7 +70,7 @@ describe('mount', () => {
 describe('withBlock', () => {
   it('should pass block props to the child element', () => {
     const Test = withBlock(() => null);
-    let component: React.ReactElement;
+    let component: ReactElement;
     (ReactDOM.render as jest.Mock).mockImplementation((c) => {
       component = c;
     });

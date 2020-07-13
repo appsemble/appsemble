@@ -1109,6 +1109,11 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@creativebulma/bulma-tagsinput@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@creativebulma/bulma-tagsinput/-/bulma-tagsinput-1.0.2.tgz#62411a9afc57809eff25d59eef25f22e3b31c36f"
+  integrity sha512-Cahgrmvne4MGx5X7G1jJm+lPif8cTbwmpBlXGM0tcZ30lJY9kc3hkXj6dTSOZ8I8nFyTOpbqTYcFeJbGXUzRNg==
+
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
@@ -2488,6 +2493,11 @@
     "@types/express" "*"
     "@types/keygrip" "*"
     "@types/node" "*"
+
+"@types/creativebulma__bulma-tagsinput@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/creativebulma__bulma-tagsinput/-/creativebulma__bulma-tagsinput-1.0.0.tgz#7531d334e3619c90d39f588335c0d36f694352a4"
+  integrity sha512-DXeL7L//UGlNSfhFdcyDenXEVxQDOWPRgpwJgqHo6VlBYpzbenVEbvemZL8Xjt2TtzXBnSXoGE3+LBVwuCR7+w==
 
 "@types/css-modules@^1.0.0":
   version "1.0.0"
@@ -4959,10 +4969,10 @@ bulma-switch@^2.0.0:
   resolved "https://registry.yarnpkg.com/bulma-switch/-/bulma-switch-2.0.0.tgz#7a187cd1bb8073e9a542478d936b89315f1ffcd8"
   integrity sha512-myD38zeUfjmdduq+pXabhJEe3x2hQP48l/OI+Y0fO3HdDynZUY/VJygucvEAJKRjr4HxD5DnEm4yx+oDOBXpAA==
 
-bulma@0.8.2, bulma@latest:
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/bulma/-/bulma-0.8.2.tgz#5d928f16ed4a84549c2873f95c92c38c69c631a7"
-  integrity sha512-vMM/ijYSxX+Sm+nD7Lmc1UgWDy2JcL2nTKqwgEqXuOMU+IGALbXd5MLt/BcjBAPLIx36TtzhzBcSnOP974gcqA==
+bulma@0.9.0, bulma@latest:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/bulma/-/bulma-0.9.0.tgz#948c5445a49e9d7546f0826cb3820d17178a814f"
+  integrity sha512-rV75CJkubNUroAt0qCRkjznZLoaXq/ctfMXsMvKSL84UetbSyx5REl96e8GoQ04G4Tkw0XF3STECffTOQrbzOQ==
 
 busboy@^0.3.1:
   version "0.3.1"

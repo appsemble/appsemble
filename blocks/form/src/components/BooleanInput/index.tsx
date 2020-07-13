@@ -27,9 +27,7 @@ export default function BooleanInput({
       id={field.name}
       label={field.label}
       name={field.name}
-      onChange={(event) => {
-        onInput(event, (event.target as HTMLInputElement).checked);
-      }}
+      onChange={onInput}
       readOnly={field.readOnly}
       required={field.required}
     />

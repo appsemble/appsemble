@@ -1,12 +1,12 @@
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
 export interface FormComponentProps {
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * A class name to pass to the field element.
@@ -28,7 +28,7 @@ export interface FormComponentProps {
   /**
    * The label element to render.
    */
-  label?: React.ReactNode;
+  label?: ReactNode;
 
   /**
    * Whether or not the input is required.
@@ -47,7 +47,7 @@ export default function FormComponent({
   id,
   label,
   required,
-}: FormComponentProps): React.ReactElement {
+}: FormComponentProps): ReactElement {
   return (
     <div className={classNames('field', className)}>
       {label ? (

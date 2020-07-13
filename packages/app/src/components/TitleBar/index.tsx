@@ -1,13 +1,13 @@
+import { Portal } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ReactChild, ReactElement } from 'react';
 
-import Portal from '../Portal';
 import ProfileDropdown from '../ProfileDropdown';
 import SideMenuButton from '../SideMenuButton';
 import styles from './index.css';
 
 interface TitleBarProps {
-  children: React.ReactChild;
+  children: ReactChild;
 }
 
 /**
@@ -15,7 +15,7 @@ interface TitleBarProps {
  *
  * This displays the app name,
  */
-export default function TitleBar({ children }: TitleBarProps): React.ReactElement {
+export default function TitleBar({ children }: TitleBarProps): ReactElement {
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className={styles.container}>

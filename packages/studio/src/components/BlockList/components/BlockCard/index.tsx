@@ -1,6 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components/src';
 import type { BlockManifest } from '@appsemble/types';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
@@ -12,25 +12,30 @@ interface BlockCardProps {
    * The block to display.
    */
   block: BlockManifest;
+
+  /**
+   * The class to apply to the component.
+   */
+  className?: string;
 }
 
 /**
  * Display a card that contains basic information of a block and a link to further documentation.
  */
-export default function BlockCard({ block }: BlockCardProps): React.ReactElement {
+export default function BlockCard({ block, className }: BlockCardProps): ReactElement {
   const match = useRouteMatch();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const [org, ...name] = block.name.split('/');
 
   return (
-    <div key={block.name} className="card">
+    <div key={block.name} className={`card ${className}`}>
       <header className="card-header">
         <div className="card-header-title">
           <article className="media">
             <figure className="media-left">
               <p className="image is-64x64">
                 <img
-                  alt={intl.formatMessage(messages.blockLogo, { name: `@${org}${name}` })}
+                  alt={formatMessage(messages.blockLogo, { name: `@${org}${name}` })}
                   src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
                 />
               </p>
@@ -47,7 +52,7 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
       </header>
       <div className={styles.cardBody}>
         <div className="card-content">
-          <div className={`content ${styles.description}`}>
+          <div className="content mb-3">
             {block.description ?? (
               <span className="has-text-grey-light">
                 <FormattedMessage {...messages.noDescription} />

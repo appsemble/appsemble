@@ -18,14 +18,17 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import AppBlockStyle from './AppBlockStyle';
-import AppMember from './AppMember';
-import AppRating from './AppRating';
-import AppSubscription from './AppSubscription';
-import Asset from './Asset';
-import Organization from './Organization';
-import Resource from './Resource';
-import User from './User';
+import {
+  AppBlockStyle,
+  AppMember,
+  AppOAuth2Secret,
+  AppRating,
+  AppSubscription,
+  Asset,
+  Organization,
+  Resource,
+  User,
+} from '.';
 
 @Table({ tableName: 'App', paranoid: true })
 export default class App extends Model<App> {
@@ -97,6 +100,9 @@ export default class App extends Model<App> {
 
   @HasMany(() => AppBlockStyle)
   AppBlockStyles: AppBlockStyle[];
+
+  @HasMany(() => AppOAuth2Secret)
+  AppOAuth2Secrets: AppOAuth2Secret[];
 
   @BelongsTo(() => Organization)
   Organization: Organization;

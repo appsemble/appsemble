@@ -10,8 +10,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import BlockVersion from './BlockVersion';
-import Organization from './Organization';
+import { BlockVersion, Organization } from '.';
 
 /**
  * Blob assets may be stored in the database before a block version itself is actually stored.

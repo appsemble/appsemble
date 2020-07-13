@@ -10,7 +10,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import User from './User';
+import { User } from '.';
 
 @Table({ tableName: 'OAuth2ClientCredentials', updatedAt: false })
 export default class OAuth2ClientCredentials extends Model<OAuth2ClientCredentials> {

@@ -1,7 +1,13 @@
 import { useMessages } from '@appsemble/react-components/src';
 import type { BootstrapParams } from '@appsemble/sdk';
 import type { AppDefinition, FlowPageDefinition } from '@appsemble/types';
-import React from 'react';
+import React, {
+  ComponentPropsWithoutRef,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import { useHistory } from 'react-router-dom';
 
 import makeActions from '../../utils/makeActions';
@@ -9,7 +15,7 @@ import BlockList from '../BlockList';
 import DotProgressBar from '../DotProgressBar';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 
-interface FlowPageProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
+interface FlowPageProps extends ComponentPropsWithoutRef<typeof BlockList> {
   definition: AppDefinition;
   page: FlowPageDefinition;
 }
@@ -21,16 +27,16 @@ export default function FlowPage({
   page,
   prefix,
   showDialog,
-}: FlowPageProps): React.ReactElement {
+}: FlowPageProps): ReactElement {
   const history = useHistory();
-  const [currentPage, setCurrentPage] = React.useState(0);
-  const [data, setData] = React.useState(inputData);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [data, setData] = useState(inputData);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
 
   let actions: BootstrapParams['actions'];
 
-  const finish = React.useCallback(
+  const finish = useCallback(
     async (d: any): Promise<any> => {
       await actions.onFlowFinish.dispatch(d);
       setData(d);
@@ -39,7 +45,7 @@ export default function FlowPage({
     [actions],
   );
 
-  const next = React.useCallback(
+  const next = useCallback(
     async (d: any): Promise<any> => {
       const { subPages } = page;
 
@@ -55,7 +61,7 @@ export default function FlowPage({
     [currentPage, finish, page],
   );
 
-  const back = React.useCallback(
+  const back = useCallback(
     async (d: any): Promise<any> => {
       if (currentPage <= 0) {
         // Don't do anything if a previous page does not exist
@@ -70,7 +76,7 @@ export default function FlowPage({
     [currentPage],
   );
 
-  const cancel = React.useCallback(
+  const cancel = useCallback(
     async (d: any): Promise<void> => {
       await actions.onFlowCancel.dispatch(d);
       setData(d);
@@ -78,7 +84,7 @@ export default function FlowPage({
     [actions],
   );
 
-  const flowActions = React.useMemo(
+  const flowActions = useMemo(
     () => ({
       next,
       finish,
@@ -88,7 +94,7 @@ export default function FlowPage({
     [back, cancel, finish, next],
   );
 
-  actions = React.useMemo(
+  actions = useMemo(
     () =>
       makeActions({
         actions: { onFlowFinish: {}, onFlowCancel: {} },

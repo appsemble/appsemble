@@ -12,8 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import Organization from './Organization';
-import User from './User';
+import { Organization, User } from '.';
 
 @Table({ tableName: 'OrganizationInvite' })
 export default class OrganizationInvite extends Model<OrganizationInvite> {

@@ -29,11 +29,12 @@ attach((params) => {
   const locationMarker = new CircleMarker(null, {
     color: primaryColor,
   });
+  const { defaultLocation = [51.476852, 0] } = parameters;
 
   const map = new Map(node, {
     attributionControl: false,
     layers: [new TileLayer(tileLayer)],
-    center: hasExplicitCenter ? [lat, lng] : [0, 0],
+    center: hasExplicitCenter ? [lat, lng] : defaultLocation,
     zoom: 16,
   });
 

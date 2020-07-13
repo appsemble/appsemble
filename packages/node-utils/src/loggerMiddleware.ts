@@ -27,9 +27,14 @@ export default function loggerMiddleware(): compose.Middleware<ParameterizedCont
       res.removeListener('finish', logResponse);
       res.removeListener('close', logResponse);
 
-      const { message, status } = ctx;
+      const {
+        message,
+        response: {
+          header: { location },
+        },
+        status,
+      } = ctx;
       const s = `${status} ${message}`;
-      const { location } = ctx.response.headers;
       const duration = Date.now() - start;
 
       const formatDuration = rangeFormat(duration, {

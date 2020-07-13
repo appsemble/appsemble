@@ -1,7 +1,7 @@
 import { Checkbox, FormComponent, Loader, useMessages } from '@appsemble/react-components';
 import type { ResourceHooks, SubscriptionResponse } from '@appsemble/types';
 import axios from 'axios';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import settings from '../../utils/settings';
@@ -28,10 +28,10 @@ interface SubscriptionState {
  *
  * This configures all providers and sets up the global app structure.
  */
-export default function AppSettings(): React.ReactElement {
-  const intl = useIntl();
+export default function AppSettings(): ReactElement {
+  const { formatMessage } = useIntl();
   const push = useMessages();
-  const [subscriptions, setSubscriptions] = React.useState<ResourceState>();
+  const [subscriptions, setSubscriptions] = useState<ResourceState>();
   const { definition } = useAppDefinition();
   const {
     requestPermission,
@@ -40,7 +40,7 @@ export default function AppSettings(): React.ReactElement {
     unsubscribe,
   } = useServiceWorkerRegistration();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const subs = Object.entries(definition.resources).reduce<ResourceState>(
       (acc, [resourceType, resource]) => {
         Object.keys(resource)
@@ -94,32 +94,32 @@ export default function AppSettings(): React.ReactElement {
     }
   }, [definition, push, subscription]);
 
-  const onSubscribeClick = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+  const onSubscribeClick = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
     event.preventDefault();
 
     if (subscription) {
       await unsubscribe();
-      push({ body: intl.formatMessage(messages.unsubscribeSuccess), color: 'info' });
+      push({ body: formatMessage(messages.unsubscribeSuccess), color: 'info' });
       return;
     }
 
     if (window.Notification?.permission === 'denied') {
-      push({ body: intl.formatMessage(messages.blocked), color: 'warning' });
+      push({ body: formatMessage(messages.blocked), color: 'warning' });
       return;
     }
 
     const result = await requestPermission();
 
     if (result !== 'granted') {
-      push({ body: intl.formatMessage(messages.permissionDenied), color: 'danger' });
+      push({ body: formatMessage(messages.permissionDenied), color: 'danger' });
       return;
     }
 
     try {
       await subscribe();
-      push({ body: intl.formatMessage(messages.subscribeSuccessful), color: 'success' });
+      push({ body: formatMessage(messages.subscribeSuccessful), color: 'success' });
     } catch (error) {
-      push({ body: intl.formatMessage(messages.subscribeError), color: 'danger' });
+      push({ body: formatMessage(messages.subscribeError), color: 'danger' });
     }
   };
 
@@ -145,7 +145,7 @@ export default function AppSettings(): React.ReactElement {
         },
       });
     } catch (error) {
-      push({ body: intl.formatMessage(messages.subscribeError), color: 'danger' });
+      push({ body: formatMessage(messages.subscribeError), color: 'danger' });
     }
   };
 
@@ -158,11 +158,11 @@ export default function AppSettings(): React.ReactElement {
       <TitleBar>
         <FormattedMessage {...messages.settings} />
       </TitleBar>
-      <div className={styles.root}>
+      <div className={`${styles.root} px-3 py-3`}>
         {(definition.notifications !== undefined || Object.keys(subscriptions).length) && (
           <>
             <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
-              <div className={styles.setting}>
+              <div className={`${styles.setting} is-flex`}>
                 <p className={styles.settingDescription}>
                   <FormattedMessage {...messages.suscribeDescription} />
                 </p>
@@ -173,6 +173,7 @@ export default function AppSettings(): React.ReactElement {
                   onChange={onSubscribeClick}
                   switch
                   value={!!subscription}
+                  wrapperClassName="is-flex"
                 />
               </div>
             </FormComponent>

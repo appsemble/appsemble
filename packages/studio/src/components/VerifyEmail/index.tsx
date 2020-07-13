@@ -1,21 +1,20 @@
 import { Loader, Message, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import classNames from 'classnames';
-import React from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import useUser from '../../hooks/useUser';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
-export default function VerifyEmail(): React.ReactElement {
-  const [submitting, setSubmitting] = React.useState(true);
-  const [success, setSuccess] = React.useState(false);
+export default function VerifyEmail(): ReactElement {
+  const [submitting, setSubmitting] = useState(true);
+  const [success, setSuccess] = useState(false);
   const qs = useQuery();
   const token = qs.get('token');
   const { refreshUserInfo } = useUser();
 
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       try {
         await axios.post('/api/email/verify', { token });
@@ -35,7 +34,7 @@ export default function VerifyEmail(): React.ReactElement {
 
   if (success) {
     return (
-      <div className={classNames('container', styles.root)}>
+      <div className={`container px-3 py-3 ${styles.root}`}>
         <Message color="success">
           <FormattedMessage {...messages.requestSuccess} />
         </Message>
@@ -44,7 +43,7 @@ export default function VerifyEmail(): React.ReactElement {
   }
 
   return (
-    <div className={classNames('container', styles.root)}>
+    <div className={`container ${styles.root}`}>
       <Message color="danger">
         <FormattedMessage {...messages.requestFailed} />
       </Message>

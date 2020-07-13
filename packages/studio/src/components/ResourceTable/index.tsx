@@ -2,113 +2,106 @@ import {
   Button,
   CardFooterButton,
   Form,
-  Icon,
   Loader,
   Modal,
   Table,
   Title,
-  useConfirmation,
   useData,
   useMessages,
+  useToggle,
 } from '@appsemble/react-components';
+import type { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
-import React from 'react';
+import React, { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
-import type { NamedEvent } from '../../types';
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
 import JSONSchemaEditor from '../JSONSchemaEditor';
-import styles from './index.css';
+import ResourceRow from './components/ResourceRow';
 import messages from './messages';
 
-interface Resource {
+export interface Resource {
   id: number;
+  $clonable: boolean;
   [key: string]: any;
 }
 
-interface RouteParams {
+export interface RouteParams {
   id: string;
-  mode: string;
-  resourceId: string;
   resourceName: string;
 }
 
-export default function ResourceTable(): React.ReactElement {
+export default function ResourceTable(): ReactElement {
   const { app } = useApp();
-
-  const history = useHistory();
-  const intl = useIntl();
-  const match = useRouteMatch<RouteParams>();
+  const { formatMessage } = useIntl();
+  const {
+    params: { id: appId, resourceName },
+  } = useRouteMatch<RouteParams>();
   const push = useMessages();
 
-  const [editingResource, setEditingResource] = React.useState<Resource>();
-
-  const { id: appId, mode, resourceId, resourceName } = match.params;
-
+  const modal = useToggle();
+  const [creatingResource, setCreatingResource] = useState<Resource>();
   const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}`,
   );
 
-  const closeModal = React.useCallback(() => {
-    history.push(match.url.replace(`/${mode}${mode === 'edit' ? `/${resourceId}` : ''}`, ''));
-  }, [history, match.url, mode, resourceId]);
+  const { schema } = app.definition.resources[resourceName];
+  const keys = useMemo(() => ['id', ...Object.keys(schema?.properties || {})], [
+    schema?.properties,
+  ]);
 
-  const deleteResource = useConfirmation({
-    title: <FormattedMessage {...messages.resourceWarningTitle} />,
-    body: <FormattedMessage {...messages.resourceWarning} />,
-    cancelLabel: <FormattedMessage {...messages.cancelButton} />,
-    confirmLabel: <FormattedMessage {...messages.deleteButton} />,
-    async action(deletingResource: Resource) {
-      try {
-        await axios.delete(`/api/apps/${appId}/resources/${resourceName}/${deletingResource.id}`);
-        push({
-          body: intl.formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
-          color: 'primary',
-        });
-        setResources(resources.filter((resource) => resource.id !== deletingResource.id));
-      } catch (e) {
-        push(intl.formatMessage(messages.deleteError));
-      }
+  const closeCreateModal = useCallback(() => {
+    modal.disable();
+    setCreatingResource(null);
+  }, [modal]);
+
+  const onEditResource = useCallback(
+    (resource: Resource) => {
+      setResources(resources.map((r) => (r.id === resource.id ? resource : r)));
     },
-  });
+    [resources, setResources],
+  );
 
-  const onChange = React.useCallback((_event: NamedEvent, value: any) => {
-    setEditingResource(value);
+  const onDeleteResource = useCallback(
+    async (id: number) => {
+      setResources(resources.filter((resource) => resource.id !== id));
+    },
+    [resources, setResources],
+  );
+
+  const onChange = useCallback((_event: NamedEvent, value: any) => {
+    setCreatingResource(value);
   }, []);
 
-  const submitCreate = React.useCallback(
-    async (event: React.FormEvent) => {
+  const submitCreate = useCallback(
+    async (event: FormEvent) => {
       event.preventDefault();
 
       try {
         const { data } = await axios.post<Resource>(
           `/api/apps/${appId}/resources/${resourceName}`,
-          editingResource,
+          creatingResource,
         );
 
         setResources([...resources, data]);
-        setEditingResource(null);
-
-        history.push(match.url.replace(`/${mode}`, ''));
+        closeCreateModal();
 
         push({
-          body: intl.formatMessage(messages.createSuccess, { id: data.id }),
+          body: formatMessage(messages.createSuccess, { id: data.id }),
           color: 'primary',
         });
       } catch (e) {
-        push(intl.formatMessage(messages.createError));
+        push(formatMessage(messages.createError));
       }
     },
     [
       appId,
-      editingResource,
-      history,
-      intl,
-      match,
-      mode,
+      closeCreateModal,
+      creatingResource,
+      formatMessage,
       push,
       resourceName,
       resources,
@@ -116,56 +109,13 @@ export default function ResourceTable(): React.ReactElement {
     ],
   );
 
-  const submitEdit = React.useCallback(async () => {
-    try {
-      await axios.put<Resource>(
-        `/api/apps/${appId}/resources/${resourceName}/${resourceId}`,
-        editingResource,
-      );
-
-      setResources(
-        resources.map((resource) =>
-          resource.id === editingResource.id ? editingResource : resource,
-        ),
-      );
-      setEditingResource(null);
-
-      history.push(match.url.replace(`/${mode}/${resourceId}`, ''));
-
-      push({
-        body: intl.formatMessage(messages.updateSuccess, { id: resourceId }),
-        color: 'primary',
-      });
-    } catch (e) {
-      push(intl.formatMessage(messages.updateError));
-    }
-  }, [
-    appId,
-    editingResource,
-    history,
-    intl,
-    match,
-    mode,
-    push,
-    resourceId,
-    resourceName,
-    resources,
-    setResources,
-  ]);
-
-  const downloadCsv = React.useCallback(async () => {
+  const downloadCsv = useCallback(async () => {
     await download(
       `/api/apps/${app.id}/resources/${resourceName}`,
       `${resourceName}.csv`,
       'text/csv',
     );
   }, [app, resourceName]);
-
-  React.useEffect(() => {
-    if (resources && mode === 'edit') {
-      setEditingResource(resources.find((resource) => resource.id === Number(resourceId)));
-    }
-  }, [mode, resourceId, resources]);
 
   if (!app || loading) {
     return <Loader />;
@@ -204,9 +154,6 @@ export default function ResourceTable(): React.ReactElement {
     );
   }
 
-  const { schema } = app.definition.resources[resourceName];
-  const keys = ['id', ...Object.keys(schema?.properties || {})];
-
   return (
     <>
       <HelmetIntl
@@ -215,12 +162,11 @@ export default function ResourceTable(): React.ReactElement {
       />
       <Title>Resource {resourceName}</Title>
       <div className="buttons">
-        <Link className="button is-primary" to={`${match.url}/new`}>
-          <Icon icon="plus-square" />
+        <Button className="is-primary" icon="plus-square" onClick={modal.enable}>
           <span>
             <FormattedMessage {...messages.createButton} />
           </span>
-        </Link>
+        </Button>
         <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
         </Button>
@@ -236,26 +182,13 @@ export default function ResourceTable(): React.ReactElement {
         </thead>
         <tbody>
           {resources.map((resource) => (
-            <tr key={resource.id}>
-              <td className={styles.actionsCell}>
-                <Link className="button" to={`${match.url}/edit/${resource.id}`}>
-                  <Icon className="has-text-info" icon="pen" size="small" />
-                </Link>
-                <Button
-                  color="danger"
-                  icon="trash"
-                  inverted
-                  onClick={() => deleteResource(resource)}
-                />
-              </td>
-              {keys.map((key) => (
-                <td key={key} className={styles.contentCell}>
-                  {typeof resource[key] === 'string'
-                    ? resource[key]
-                    : JSON.stringify(resource[key])}
-                </td>
-              ))}
-            </tr>
+            <ResourceRow
+              key={resource.id}
+              onDelete={onDeleteResource}
+              onEdit={onEditResource}
+              resource={resource}
+              schema={schema}
+            />
           ))}
         </tbody>
       </Table>
@@ -263,37 +196,24 @@ export default function ResourceTable(): React.ReactElement {
         component={Form}
         footer={
           <>
-            <CardFooterButton onClick={closeModal}>
+            <CardFooterButton onClick={closeCreateModal}>
               <FormattedMessage {...messages.cancelButton} />
             </CardFooterButton>
             <CardFooterButton color="primary" type="submit">
-              {mode === 'edit' ? (
-                <FormattedMessage {...messages.editButton} />
-              ) : (
-                <FormattedMessage {...messages.createButton} />
-              )}
+              <FormattedMessage {...messages.createButton} />
             </CardFooterButton>
           </>
         }
-        isActive={mode === 'edit' || mode === 'new'}
-        onClose={closeModal}
-        onSubmit={mode === 'edit' ? submitEdit : submitCreate}
-        title={
-          mode === 'edit' ? (
-            <FormattedMessage
-              {...messages.editTitle}
-              values={{ resource: resourceName, id: resourceId }}
-            />
-          ) : (
-            <FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />
-          )
-        }
+        isActive={modal.enabled}
+        onClose={closeCreateModal}
+        onSubmit={submitCreate}
+        title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}
       >
         <JSONSchemaEditor
           name="resource"
           onChange={onChange}
           schema={schema}
-          value={editingResource}
+          value={creatingResource}
         />
       </Modal>
     </>

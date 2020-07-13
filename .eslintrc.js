@@ -103,8 +103,7 @@ module.exports = {
           'error',
           {
             types: {
-              'JSX.Element':
-                'Use React.ReactElement for React contexts and VNode for Preact contexts',
+              'JSX.Element': 'Use ReactElement for React contexts and VNode for Preact contexts',
               Record: 'Use a mapped type instead',
               ComponentProps: {
                 message: 'Use ComponentPropsWithoutRef instead',

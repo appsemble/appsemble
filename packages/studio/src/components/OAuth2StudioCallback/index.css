@@ -1,0 +1,9 @@
+.root {
+  margin: 0 auto;
+  max-width: 480px;
+}
+
+.header {
+  align-items: center;
+  flex-flow: column;
+}

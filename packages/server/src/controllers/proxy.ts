@@ -28,13 +28,18 @@ const allowResponseHeaders = [
 
 function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
   return async (ctx) => {
-    const { appId, path } = ctx.params;
+    const {
+      method,
+      params: { appId, path },
+      query,
+      request: { body },
+    } = ctx;
     let data;
     if (useBody) {
-      data = ctx.request.body;
+      data = body;
     } else {
       try {
-        data = JSON.parse(ctx.query.data);
+        data = JSON.parse(query.data);
       } catch (err) {
         throw Boom.badRequest('data should be a JSON object');
       }
@@ -52,7 +57,7 @@ function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
 
     const axiosConfig = formatRequestAction(action, data);
 
-    if (axiosConfig.method.toUpperCase() !== ctx.method) {
+    if (axiosConfig.method.toUpperCase() !== method) {
       throw Boom.badRequest('Method does match the request action method');
     }
 

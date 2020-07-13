@@ -15,7 +15,8 @@ export default defineMessages({
     'Successfully joined {organization}. You can start making apps in the {makeApps} or view your organization in the {viewOrganization}.',
   successDeclined: 'Successfully declined the invitation. You can go back to Appsemble {makeApps}.',
   here: 'here',
-  noInvite: 'No invite has been found. You can return to Appsemble {here}.',
+  noInvite:
+    'No invite has been found. It may have been used or revoked. You can return to Appsemble {here}.',
   joined: 'joined',
   left: 'left',
 });

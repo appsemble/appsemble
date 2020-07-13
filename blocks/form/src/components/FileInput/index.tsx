@@ -17,15 +17,15 @@ export default function FileInput({
   value,
 }: FileInputProps): VNode {
   const handleInput = useCallback(
-    (event: Event, val: string): void => {
+    (event: h.JSX.TargetedEvent<HTMLInputElement>, val: string): void => {
       const copy = [].concat(value);
-      const index = Number((event.target as HTMLInputElement).name.split('.').pop());
+      const index = Number(event.currentTarget.name.split('.').pop());
       if (val == null) {
         copy.splice(index, 1);
       } else {
         copy[index] = val;
       }
-      onInput(({ target: { name: field.name } } as any) as Event, copy);
+      onInput(({ currentTarget: { name: field.name } } as any) as Event, copy);
     },
     [field.name, onInput, value],
   );
@@ -33,14 +33,18 @@ export default function FileInput({
   return (
     <FormComponent iconLeft={field.icon} label={field.label} required={field.required}>
       {field.repeated ? (
-        <div className={classNames(styles.repeatedContainer, { [styles.noLabel]: !field.label })}>
+        <div
+          className={classNames('is-flex py-2 px-0', styles.repeatedContainer, {
+            'mt-5': !field.label,
+          })}
+        >
           <FileEntry
             disabled={disabled}
             error={error}
             field={field}
             name={`${field.name}.${(value as string[]).length}`}
             onInput={handleInput}
-            value={value as Blob}
+            value={null}
           />
           {(value as string[]).map((val, index) => (
             <FileEntry

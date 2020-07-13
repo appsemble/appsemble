@@ -17,7 +17,7 @@ import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import * as webpush from 'web-push';
 
-import { App, AppBlockStyle, AppRating, BlockVersion, Member } from '../models';
+import { App, AppBlockStyle, AppRating, BlockVersion, Member, Resource } from '../models';
 import type { KoaContext } from '../types';
 import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
@@ -86,16 +86,20 @@ function handleAppValidationError(error: Error, app: Partial<App>): never {
 
 export async function createApp(ctx: KoaContext): Promise<void> {
   const {
-    OrganizationId,
-    definition,
-    domain,
-    icon,
-    private: isPrivate = true,
-    sharedStyle,
-    style,
-    template = false,
-    yaml,
-  } = ctx.request.body;
+    request: {
+      body: {
+        OrganizationId,
+        definition,
+        domain,
+        icon,
+        private: isPrivate = true,
+        sharedStyle,
+        style,
+        template = false,
+        yaml,
+      },
+    },
+  } = ctx;
 
   let result: Partial<App>;
 
@@ -153,17 +157,23 @@ export async function createApp(ctx: KoaContext): Promise<void> {
 }
 
 export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: {
       include: [
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+        [fn('COUNT', col('Resources.id')), 'ResourceCount'],
       ],
       exclude: ['icon', 'style', 'sharedStyle'],
     },
-    include: [{ model: AppRating, attributes: [] }],
+    include: [
+      { model: AppRating, attributes: [] },
+      { model: Resource, attributes: [], where: { clonable: true }, required: false },
+    ],
     group: ['App.id'],
   });
 
@@ -216,8 +226,12 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
 }
 
 export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
-  const { definition, domain, path, sharedStyle, style, yaml } = ctx.request.body;
+  const {
+    params: { appId },
+    request: {
+      body: { definition, domain, path, sharedStyle, style, yaml },
+    },
+  } = ctx;
 
   let result;
 
@@ -266,18 +280,22 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
   const {
-    definition,
-    domain,
-    icon,
-    path,
-    private: isPrivate,
-    sharedStyle,
-    style,
-    template,
-    yaml,
-  } = ctx.request.body;
+    params: { appId },
+    request: {
+      body: {
+        definition,
+        domain,
+        icon,
+        path,
+        private: isPrivate,
+        sharedStyle,
+        style,
+        template,
+        yaml,
+      },
+    },
+  } = ctx;
 
   let result: Partial<App>;
 
@@ -368,7 +386,9 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
 
   const app = await App.findByPk(appId);
 
@@ -383,7 +403,9 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
   const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
@@ -399,7 +421,9 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
 
   const app = await App.findByPk(appId, { raw: true });
 
@@ -413,7 +437,9 @@ export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getAppSharedStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
 
   const app = await App.findByPk(appId, { raw: true });
 
@@ -427,7 +453,9 @@ export async function getAppSharedStyle(ctx: KoaContext<Params>): Promise<void> 
 }
 
 export async function getAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, blockId, organizationId } = ctx.params;
+  const {
+    params: { appId, blockId, organizationId },
+  } = ctx;
 
   const blockStyle = await AppBlockStyle.findOne({
     where: {
@@ -442,8 +470,12 @@ export async function getAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, blockId, organizationId } = ctx.params;
-  const { style } = ctx.request.body;
+  const {
+    params: { appId, blockId, organizationId },
+    request: {
+      body: { style },
+    },
+  } = ctx;
   const css = style.toString().trim();
 
   try {

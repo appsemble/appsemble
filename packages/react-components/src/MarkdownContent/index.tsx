@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import marked from 'marked';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface MarkdownContentProps {
@@ -27,10 +27,10 @@ export default function MarkdownContent({
   className,
   content,
   sanitize = true,
-}: MarkdownContentProps): React.ReactElement {
+}: MarkdownContentProps): ReactElement {
   const location = useLocation();
   return content ? (
-    <div
+    <span
       className={classNames('content', className)}
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{

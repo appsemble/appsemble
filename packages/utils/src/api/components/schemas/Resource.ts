@@ -6,5 +6,8 @@ export default {
       type: 'number',
       readOnly: true,
     },
+    $clonable: {
+      type: 'boolean',
+    },
   },
 };

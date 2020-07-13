@@ -1,9 +1,11 @@
 import {
+  AllowNull,
   AutoIncrement,
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
+  Default,
   DeletedAt,
   ForeignKey,
   HasMany,
@@ -13,9 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import App from './App';
-import ResourceSubscription from './ResourceSubscription';
-import User from './User';
+import { App, ResourceSubscription, User } from '.';
 
 @Table({ tableName: 'Resource', paranoid: true })
 export default class Resource extends Model<Resource> {
@@ -29,6 +29,11 @@ export default class Resource extends Model<Resource> {
 
   @Column(DataType.JSON)
   data: any;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  clonable: boolean;
 
   @CreatedAt
   created: Date;

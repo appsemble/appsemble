@@ -22,7 +22,7 @@ export function register(
   blockDefId: string,
 ): void {
   const { document, fn } = event.detail;
-  if (scriptNode !== event.target || scriptNode !== document.currentScript) {
+  if (scriptNode !== event.currentTarget || scriptNode !== document.currentScript) {
     throw new Error(
       'Block bootstrapper was registered from within an unhandled node. What’s going on?',
     );

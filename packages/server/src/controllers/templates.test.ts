@@ -49,7 +49,8 @@ beforeEach(async () => {
       test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
     },
   });
-  await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' } });
+  await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
+  await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
 
   templates = [t1, t2];
 });

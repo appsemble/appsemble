@@ -54,7 +54,7 @@ class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
       })
       .on('move', () => {
         const { lat, lng } = map.getCenter();
-        onInput(({ target: { name: field.name } } as any) as Event, {
+        onInput(({ currentTarget: { name: field.name } } as any) as Event, {
           latitude: lat,
           longitude: lng,
         });
@@ -79,7 +79,7 @@ class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
   render(): VNode {
     const { disabled } = this.props;
     return (
-      <div className={styles.root}>
+      <div className={`${styles.root} is-relative mb-5`}>
         <div ref={this.ref} className={styles.map} />
         <div className={styles.crossHairsOverlay}>
           <i className={classNames('fas', 'fa-crosshairs', styles.crossHairs)} />

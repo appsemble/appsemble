@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
 import messages from './messages';
 
-export default function CMSRoot(): React.ReactElement {
+export default function CMSRoot(): ReactElement {
   const match = useRouteMatch();
   const { app } = useApp();
 

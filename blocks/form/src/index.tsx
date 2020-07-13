@@ -35,7 +35,7 @@ const inputs = {
 };
 
 const validateString: Validator = (field: StringField, event, value: string, remap) => {
-  const inputValid = (event.target as HTMLInputElement).validity.valid;
+  const inputValid = (event.currentTarget as HTMLInputElement).validity.valid;
 
   if (!inputValid) {
     return false;
@@ -66,7 +66,7 @@ const validateString: Validator = (field: StringField, event, value: string, rem
 };
 
 const validateInput: Validator = (_field, event) =>
-  (event.target as HTMLInputElement).validity.valid;
+  (event.currentTarget as HTMLInputElement).validity.valid;
 
 const validators: { [name: string]: Validator } = {
   file: (field: FileField, _event, value) => {
@@ -169,7 +169,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const validateField = useCallback(
     (event: Event, value: any): boolean => {
       const { fields } = parameters;
-      const { name } = event.target as HTMLInputElement;
+      const { name } = event.currentTarget as HTMLInputElement;
       const field = fields.find((f) => f.name === name);
 
       if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
@@ -182,7 +182,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
 
   const onChange = useCallback(
     (event: Event, value: any): void => {
-      const { name } = event.target as HTMLInputElement;
+      const { name } = event.currentTarget as HTMLInputElement;
       let valid: boolean;
       let error: string;
 
@@ -204,7 +204,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       setValidity({ ...validity, [name]: valid });
       setValues({
         ...values,
-        [(event.target as HTMLInputElement).name]: value,
+        [(event.currentTarget as HTMLInputElement).name]: value,
       });
     },
     [errors, validateField, validity, values],
@@ -252,7 +252,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   }, [parameters, events, ready, receiveData]);
 
   return (
-    <form className={styles.root} noValidate onSubmit={onSubmit}>
+    <form className={`${styles.root} is-flex px-2 py-2`} noValidate onSubmit={onSubmit}>
       {disabled && <progress className="progress is-small is-primary" />}
       {parameters.fields.map((field) => {
         const Comp = inputs[field.type];
@@ -273,9 +273,9 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
           />
         );
       })}
-      <div className={styles.buttonWrapper}>
+      <div className={`${styles.buttonWrapper} is-flex`}>
         <button
-          className={classNames('button', 'is-primary', styles.submit)}
+          className={classNames('button is-primary mt-4', styles.submit)}
           disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >

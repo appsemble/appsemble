@@ -1,16 +1,24 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, {
+  ComponentPropsWithoutRef,
+  ElementType,
+  EventHandler,
+  ReactElement,
+  ReactNode,
+  SyntheticEvent,
+  useCallback,
+} from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition } from 'react-transition-group';
 
 import styles from './index.css';
 import messages from './messages';
 
-interface ModalProps<T extends React.ElementType> {
+interface ModalProps<T extends ElementType> {
   /**
    * The child elements to render on the modal.
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 
   /**
    * Whether the user is allowed to click on the close button or outside of the modal to close it.
@@ -27,12 +35,12 @@ interface ModalProps<T extends React.ElementType> {
   /**
    * A function that will be called when the user closes the modal.
    */
-  onClose?: React.EventHandler<React.SyntheticEvent>;
+  onClose?: EventHandler<SyntheticEvent>;
 
   /**
    * The title that is displayed at the top of the modal.
    */
-  title?: React.ReactNode;
+  title?: ReactNode;
 
   /**
    * The CSS class applied to the card
@@ -44,13 +52,13 @@ interface ModalProps<T extends React.ElementType> {
    */
   className?: string;
 
-  footer?: React.ReactNode;
+  footer?: ReactNode;
 }
 
 /**
  * Render an aria compliant modal overlay.
  */
-export default function Modal<T extends React.ElementType = 'div'>({
+export default function Modal<T extends ElementType = 'div'>({
   cardClassName,
   children = null,
   className,
@@ -61,11 +69,10 @@ export default function Modal<T extends React.ElementType = 'div'>({
   onClose = () => {},
   title,
   ...props
-}: ModalProps<T> &
-  Omit<React.ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): React.ReactElement {
-  const intl = useIntl();
+}: ModalProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): ReactElement {
+  const { formatMessage } = useIntl();
 
-  const onKeyDown = React.useCallback(
+  const onKeyDown = useCallback(
     (event) => {
       if (event.key === 'Escape') {
         onClose(event);
@@ -100,7 +107,7 @@ export default function Modal<T extends React.ElementType = 'div'>({
             <p className="modal-card-title">{title}</p>
             {closable && (
               <button
-                aria-label={intl.formatMessage(messages.closeDialog)}
+                aria-label={formatMessage(messages.closeDialog)}
                 className="delete is-large"
                 onClick={onClose}
                 type="button"

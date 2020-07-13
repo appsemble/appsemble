@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import RecursiveJSONSchemaEditor from './components/RecursiveJSONSchemaEditor';
 import type { CommonJSONSchemaEditorProps } from './types';
@@ -15,10 +15,10 @@ export default function JSONSchemaEditor({
 }: Pick<
   CommonJSONSchemaEditorProps<any>,
   'disabled' | 'name' | 'onChange' | 'schema' | 'value'
->): React.ReactElement {
-  const handleChange = React.useCallback(
+>): ReactElement {
+  const handleChange = useCallback(
     (_event, val) => {
-      onChange({ target: { name } }, val);
+      onChange({ currentTarget: { name } }, val);
     },
     [name, onChange],
   );

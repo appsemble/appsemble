@@ -20,7 +20,9 @@ interface Params {
 }
 
 export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
-  const { blockId, organizationId } = ctx.params;
+  const {
+    params: { blockId, organizationId },
+  } = ctx;
 
   const blockVersion = await BlockVersion.findOne({
     attributes: [
@@ -194,7 +196,9 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
-  const { blockId, blockVersion, organizationId } = ctx.params;
+  const {
+    params: { blockId, blockVersion, organizationId },
+  } = ctx;
   const name = `@${organizationId}/${blockId}`;
 
   const version = await BlockVersion.findOne({
@@ -231,7 +235,9 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
-  const { blockId, organizationId } = ctx.params;
+  const {
+    params: { blockId, organizationId },
+  } = ctx;
   const name = `@${organizationId}/${blockId}`;
 
   const blockVersions = await BlockVersion.findAll({
@@ -262,7 +268,9 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
-  const { blockId, blockVersion, organizationId } = ctx.params;
+  const {
+    params: { blockId, blockVersion, organizationId },
+  } = ctx;
 
   const version = await BlockVersion.findOne({
     attributes: ['icon'],

@@ -1,50 +1,55 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
-import useClickOutside from '../hooks/useClickOutside';
+import Button from '../Button';
 import Icon from '../Icon';
+import useClickOutside from '../useClickOutside';
+import useToggle from '../useToggle';
 
 interface DropdownProps {
+  /**
+   * The children to render as menu items.
+   *
+   * Typically these are nodes that have the `dropdown-item` or `dropdown-divicer` class.
+   */
+  children: ReactNode;
+
+  /**
+   * An optional class name to add to the root element.
+   */
   className?: string;
-  label: React.ReactNode;
-  children: React.ReactNode;
+
+  /**
+   * The label to render on the menu toggle button.
+   */
+  label: ReactNode;
 }
 
-export default function Dropdown({
-  children,
-  className,
-  label,
-}: DropdownProps): React.ReactElement {
-  const [isActive, setActive] = React.useState(false);
-  const ref = React.useRef<HTMLDivElement>();
+/**
+ * Render an aria compliant Bulma dropdown menu.
+ */
+export default function Dropdown({ children, className, label }: DropdownProps): ReactElement {
+  const ref = useRef<HTMLDivElement>();
+  const { disable, enabled, toggle } = useToggle();
 
-  const toggle = React.useCallback(() => {
-    setActive(!isActive);
-  }, [isActive]);
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        disable();
+      }
+    },
+    [disable],
+  );
 
-  const onKeyDown = React.useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      setActive(false);
-    }
-  }, []);
-
-  useClickOutside(ref, () => {
-    setActive(false);
-  });
+  useClickOutside(ref, disable);
 
   return (
-    <div ref={ref} className={classNames('dropdown', className, { 'is-active': isActive })}>
+    <div ref={ref} className={classNames('dropdown', className, { 'is-active': enabled })}>
       <div className="dropdown-trigger">
-        <button
-          aria-haspopup
-          className="button"
-          onClick={toggle}
-          onKeyDown={onKeyDown}
-          type="button"
-        >
+        <Button aria-haspopup onClick={toggle} onKeyDown={onKeyDown}>
           {label}
           <Icon icon="angle-down" size="small" />
-        </button>
+        </Button>
       </div>
       <div
         className="dropdown-menu"

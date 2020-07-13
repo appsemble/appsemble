@@ -219,7 +219,9 @@ async function sendSubscriptionNotifications(
   resourceId: number,
   options: SendNotificationOptions,
 ): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
   const to = notification.to || [];
   const roles = to.filter((n) => n !== '$author');
   const author = resourceUserId && to.includes('$author');
@@ -291,12 +293,15 @@ async function sendSubscriptionNotifications(
 }
 
 export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, resourceType },
+    user,
+  } = ctx;
+
   const updatedHash = `updated${crypto.randomBytes(5).toString('hex')}`;
   const createdHash = `created${crypto.randomBytes(5).toString('hex')}`;
 
   const query = generateQuery(ctx, { updatedHash, createdHash });
-  const { appId, resourceType } = ctx.params;
-  const { user } = ctx;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -331,6 +336,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
       id: resource.id,
       $created: resource.created,
       $updated: resource.updated,
+      $clonable: resource.clonable,
       ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
     }));
   } catch (e) {
@@ -343,8 +349,10 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, resourceId, resourceType } = ctx.params;
-  const { user } = ctx;
+  const {
+    params: { appId, resourceId, resourceType },
+    user,
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -385,8 +393,10 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getResourceTypeSubscription(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, resourceType } = ctx.params;
-  const { endpoint } = ctx.query;
+  const {
+    params: { appId, resourceType },
+    query: { endpoint },
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
@@ -455,8 +465,10 @@ export async function getResourceTypeSubscription(ctx: KoaContext<Params>): Prom
 }
 
 export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, resourceId, resourceType } = ctx.params;
-  const { endpoint } = ctx.query;
+  const {
+    params: { appId, resourceId, resourceType },
+    query: { endpoint },
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
@@ -574,8 +586,13 @@ async function processReferenceHooks(
 }
 
 export async function createResource(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, resourceType } = ctx.params;
-  const { user } = ctx;
+  const {
+    params: { appId, resourceType },
+    request: {
+      body: { id: _, ...resource },
+    },
+    user,
+  } = ctx;
   const action = 'create';
 
   const app = await App.findByPk(appId, {
@@ -595,7 +612,6 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
 
   verifyResourceDefinition(app, resourceType);
 
-  const { id: _, ...resource } = ctx.request.body;
   await verifyAppRole(ctx, app, resource, resourceType, action);
   const { schema } = app.definition.resources[resourceType];
 
@@ -631,8 +647,13 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, resourceId, resourceType } = ctx.params;
-  const { user } = ctx;
+  const {
+    params: { appId, resourceId, resourceType },
+    request: {
+      body: { $clonable: clonable = false, id: _, ...updatedResource },
+    },
+    user,
+  } = ctx;
   const action = 'update';
 
   const app = await App.findByPk(appId, {
@@ -661,7 +682,6 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
 
   await verifyAppRole(ctx, app, resource, resourceType, action);
 
-  const { id: _, ...updatedResource } = ctx.request.body;
   const { schema } = app.definition.resources[resourceType];
 
   try {
@@ -678,7 +698,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
 
   resource.changed('updated', true);
   resource = await resource.update(
-    { data: updatedResource },
+    { data: updatedResource, clonable },
     { where: { id: resourceId, type: resourceType, AppId: appId } },
   );
 
@@ -696,8 +716,10 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, resourceId, resourceType } = ctx.params;
-  const { user } = ctx;
+  const {
+    params: { appId, resourceId, resourceType },
+    user,
+  } = ctx;
   const action = 'delete';
 
   const app = await App.findByPk(appId, {

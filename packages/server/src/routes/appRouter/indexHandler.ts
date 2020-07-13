@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import qs from 'querystring';
 import { Op } from 'sequelize';
 
-import { BlockAsset, BlockVersion } from '../../models';
+import { AppOAuth2Secret, BlockAsset, BlockVersion } from '../../models';
 import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';
 import getApp from '../../utils/getApp';
@@ -16,10 +16,19 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  */
 export default async function indexHandler(ctx: KoaContext): Promise<void> {
   ctx.type = 'text/html';
-  const { render } = ctx.state;
+  const {
+    argv: { host, sentryDsn },
+    state: { render },
+  } = ctx;
+
   const app = await getApp(ctx, {
     attributes: ['definition', 'id', 'sharedStyle', 'style', 'vapidPublicKey'],
-    raw: true,
+    include: [
+      {
+        attributes: ['icon', 'id', 'name'],
+        model: AppOAuth2Secret,
+      },
+    ],
   });
 
   if (!app) {
@@ -53,7 +62,6 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
       }),
     },
   });
-  const { host, sentryDsn } = ctx.argv;
   const nonce = crypto.randomBytes(16).toString('base64');
   const reportUri = sentryDsnToReportUri(sentryDsn);
   const [settingsHash, settings] = createSettings({
@@ -69,6 +77,7 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
       }),
     ),
     id: app.id,
+    logins: app.AppOAuth2Secrets,
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
     sentryDsn,

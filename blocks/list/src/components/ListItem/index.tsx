@@ -15,8 +15,8 @@ interface ListItemProps {
 export default function ListItem({ item }: ListItemProps): VNode {
   const {
     actions,
-    parameters: { fields, header, icon },
-    utils: { remap },
+    parameters: { fields, header, icon, image },
+    utils: { asset, remap },
   } = useBlock();
 
   const onItemClick = useCallback(
@@ -28,41 +28,54 @@ export default function ListItem({ item }: ListItemProps): VNode {
   );
 
   const headerValue = remap(header, item);
+  const img: string = remap(image, item);
 
   return (
-    <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
-      {(icon || headerValue) && (
-        <div className={classNames({ [styles.header]: fields?.length })}>
-          {icon && <Icon icon={icon} />}
-          {headerValue && <h4>{headerValue}</h4>}
-        </div>
+    <ListItemWrapper
+      actions={actions}
+      className={`${styles.item} has-text-left is-block my-1 pt-4 pr-6 pb-4 pl-5`}
+      item={item}
+      onClick={onItemClick}
+    >
+      {img && (
+        <figure className={`image is-48x48 mr-2 ${styles.image}`}>
+          <img alt="list icon" src={/^(https?:)?\/\//.test(img) ? img : asset(img)} />
+        </figure>
       )}
-      {fields?.map((field) => {
-        let value;
+      <div className="is-inline-block">
+        {(icon || headerValue) && (
+          <div className={classNames({ [styles.header]: fields?.length })}>
+            {icon && <Icon icon={icon} />}
+            {headerValue && <h4>{headerValue}</h4>}
+          </div>
+        )}
+        {fields?.map((field) => {
+          let value;
 
-        if (field.value) {
-          value = remap(field.value, item);
-        }
+          if (field.value) {
+            value = remap(field.value, item);
+          }
 
-        return (
-          <span className={styles.itemField}>
-            {field.icon && <Icon icon={field.icon} />}
-            {field.label && (
-              <span>
-                {field.label}
-                {value && ': '}
-              </span>
-            )}
-            {value && (
-              <strong className="has-text-bold">
-                {typeof value === 'string' ? value : JSON.stringify(value)}
-              </strong>
-            )}
-          </span>
-        );
-      })}
+          return (
+            <span className={`${styles.itemField} mr-1 is-inline-block`}>
+              {field.icon && <Icon icon={field.icon} />}
+              {field.label && (
+                <span>
+                  {field.label}
+                  {value && ': '}
+                </span>
+              )}
+              {value && (
+                <strong className="has-text-bold">
+                  {typeof value === 'string' ? value : JSON.stringify(value)}
+                </strong>
+              )}
+            </span>
+          );
+        })}
+      </div>
       {actions.onClick.type !== 'noop' && (
-        <Icon className={styles.button} icon="angle-right" size="large" />
+        <Icon className={`${styles.button} mx-0 my-0 px-0 py-0`} icon="angle-right" size="large" />
       )}
     </ListItemWrapper>
   );

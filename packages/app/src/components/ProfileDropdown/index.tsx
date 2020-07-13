@@ -1,5 +1,5 @@
 import { Button, Dropdown, Icon } from '@appsemble/react-components';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -8,8 +8,8 @@ import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
-export default function ProfileDropdown(): React.ReactElement {
-  const intl = useIntl();
+export default function ProfileDropdown(): ReactElement {
+  const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
 
@@ -34,7 +34,7 @@ export default function ProfileDropdown(): React.ReactElement {
       label={
         <figure className="image is-32x32">
           <img
-            alt={intl.formatMessage(messages.pfp)}
+            alt={formatMessage(messages.pfp)}
             className={`is-rounded ${styles.gravatar}`}
             src={userInfo?.picture}
           />
@@ -52,7 +52,7 @@ export default function ProfileDropdown(): React.ReactElement {
       {showSettings && showLogin && <hr className="dropdown-divider" />}
       {showLogin && (
         <Button
-          className={`dropdown-item ${styles.logoutButton}`}
+          className={`dropdown-item pl-5 ${styles.logoutButton}`}
           icon="sign-out-alt"
           onClick={logout}
         >

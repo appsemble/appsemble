@@ -1,18 +1,19 @@
 import { Loader, Message, useData } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import React from 'react';
+import React, { createContext, ReactElement, useContext, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import useOrganizations from '../../hooks/useOrganizations';
 import AppDetails from '../AppDetails';
+import AppSecrets from '../AppSecrets';
 import AppSettings from '../AppSettings';
 import AppSideMenu from '../AppSideMenu';
 import Assets from '../Assets';
 import CMS from '../CMS';
 import Editor from '../Editor';
 import Notifications from '../Notifications';
+import { useOrganizations } from '../OrganizationsProvider';
 import ProtectedRoute from '../ProtectedRoute';
 import Roles from '../Roles';
 import styles from './index.css';
@@ -33,15 +34,15 @@ interface AppValueContext {
   setApp: (app: App) => void;
 }
 
-const Context = React.createContext<AppValueContext>(null);
+const Context = createContext<AppValueContext>(null);
 
-export default function AppContext(): React.ReactElement {
+export default function AppContext(): ReactElement {
   const match = useRouteMatch<{ id: string }>();
-  const organizations = useOrganizations();
+  const { loading: organizationsLoading, organizations } = useOrganizations();
   const { data: app, error, loading, setData: setApp } = useData<App>(
     `/api/apps/${match.params.id}`,
   );
-  const value = React.useMemo(() => ({ app, setApp }), [app, setApp]);
+  const value = useMemo(() => ({ app, setApp }), [app, setApp]);
 
   if (error) {
     return (
@@ -55,7 +56,7 @@ export default function AppContext(): React.ReactElement {
     );
   }
 
-  if (!organizations || loading) {
+  if (organizationsLoading || loading) {
     return <Loader />;
   }
 
@@ -65,7 +66,7 @@ export default function AppContext(): React.ReactElement {
     <Context.Provider value={value}>
       <div className={styles.container}>
         <AppSideMenu />
-        <div className={styles.content}>
+        <div className={`${styles.content} px-3 py-3`}>
           <Switch>
             <Route exact path={match.path}>
               <AppDetails />
@@ -116,6 +117,14 @@ export default function AppContext(): React.ReactElement {
             >
               <Notifications />
             </ProtectedRoute>
+            <ProtectedRoute
+              exact
+              organization={organization}
+              path={`${match.path}/secrets`}
+              permission={Permission.EditApps}
+            >
+              <AppSecrets />
+            </ProtectedRoute>
             <Redirect to={match.path} />
           </Switch>
         </div>
@@ -125,5 +134,5 @@ export default function AppContext(): React.ReactElement {
 }
 
 export function useApp(): AppValueContext {
-  return React.useContext(Context);
+  return useContext(Context);
 }

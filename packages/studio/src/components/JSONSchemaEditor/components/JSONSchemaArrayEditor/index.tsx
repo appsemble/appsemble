@@ -1,7 +1,7 @@
 import { Button, Title } from '@appsemble/react-components';
+import type { NamedEvent } from '@appsemble/web-utils';
 import type { OpenAPIV3 } from 'openapi-types';
-import type { NamedEvent } from 'packages/studio/src/types';
-import * as React from 'react';
+import React, { MouseEvent, ReactElement, useCallback } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
@@ -25,36 +25,36 @@ export default function JSONSchemaArrayEditor({
   onChange,
   schema,
   value = [],
-}: CommonJSONSchemaEditorProps<any[]>): React.ReactElement {
+}: CommonJSONSchemaEditorProps<any[]>): ReactElement {
   const items = (schema as OpenAPIV3.ArraySchemaObject).items as OpenAPIV3.SchemaObject;
 
-  const onPropertyChange = React.useCallback(
-    ({ target }: NamedEvent, val) => {
-      const index = Number(target.name.slice(name.length + 1));
+  const onPropertyChange = useCallback(
+    ({ currentTarget }: NamedEvent, val) => {
+      const index = Number(currentTarget.name.slice(name.length + 1));
       onChange(
-        { target: { name } },
+        { currentTarget: { name } },
         value.map((v, i) => (i === index ? val : v)),
       );
     },
     [onChange, name, value],
   );
 
-  const removeItem = React.useCallback(
-    ({ currentTarget }: React.MouseEvent<HTMLButtonElement>) => {
+  const removeItem = useCallback(
+    ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
       const index = Number(currentTarget.name.slice(name.length + 1));
       onChange(
-        { target: { name } },
+        { currentTarget: { name } },
         value.filter((_val, i) => i !== index),
       );
     },
     [onChange, name, value],
   );
 
-  const onItemAdded = React.useCallback(
-    ({ currentTarget }: React.MouseEvent<HTMLButtonElement>) => {
+  const onItemAdded = useCallback(
+    ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
       const addedName = currentTarget.name;
       const index = addedName ? Number(addedName.slice(addedName.length + 1)) + 1 : 0;
-      onChange({ target: { name } }, [
+      onChange({ currentTarget: { name } }, [
         ...value.slice(0, index),
         items.default ?? defaults[items.type],
         ...value.slice(index, value.length),
@@ -64,7 +64,7 @@ export default function JSONSchemaArrayEditor({
   );
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} px-3 py-3 my-2 mx-0`}>
       <Button className="is-pulled-right" color="success" icon="plus" onClick={onItemAdded} />
       <Title className={styles.title} level={5}>
         <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />

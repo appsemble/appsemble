@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement, ReactNode } from 'react';
 
 import styles from './index.css';
 
@@ -12,7 +12,7 @@ interface ContentProps {
   /**
    * Children to render inside the content wrapper.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * If true, don’t apply a maximum width
@@ -20,7 +20,7 @@ interface ContentProps {
   fullwidth?: boolean;
 
   /**
-   * If true, add a padding of 10px.
+   * If true, add a padding of 12px.
    */
   padding?: boolean;
 }
@@ -33,11 +33,9 @@ export default function Content({
   className,
   fullwidth,
   padding,
-}: ContentProps): React.ReactElement {
+}: ContentProps): ReactElement {
   return (
-    <div
-      className={classNames(className, { [styles.center]: !fullwidth, [styles.padding]: padding })}
-    >
+    <div className={classNames(className, { [styles.center]: !fullwidth, 'px-3 py-3': padding })}>
       {children}
     </div>
   );

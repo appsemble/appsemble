@@ -11,11 +11,19 @@ export interface CardProps {
 
 export default function AvatarWrapper({ action, children, onAvatarClick }: CardProps): VNode {
   return action.type === 'link' ? (
-    <a className={`media-left ${styles.avatar}`} href={action.href()} onClick={onAvatarClick}>
+    <a
+      className={`media-left px-0 py-0 ${styles.avatar}`}
+      href={action.href()}
+      onClick={onAvatarClick}
+    >
       {children}
     </a>
   ) : (
-    <button className={`media-left ${styles.avatar}`} onClick={onAvatarClick} type="button">
+    <button
+      className={`media-left px-0 py-0 ${styles.avatar}`}
+      onClick={onAvatarClick}
+      type="button"
+    >
       {children}
     </button>
   );

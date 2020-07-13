@@ -1,6 +1,6 @@
 import { Title } from '@appsemble/react-components/src';
 import type { OpenAPIV3 } from 'openapi-types';
-import * as React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
@@ -15,17 +15,17 @@ export default function JSONSchemaObjectEditor({
   prefix,
   schema,
   value = {},
-}: CommonJSONSchemaEditorProps<{ [key: string]: string }>): React.ReactElement {
-  const onPropertyChange = React.useCallback(
-    ({ target }, val) => {
-      const id = target.name.slice(name.length + 1);
-      onChange({ target: { name } }, { ...value, [id]: val });
+}: CommonJSONSchemaEditorProps<{ [key: string]: string }>): ReactElement {
+  const onPropertyChange = useCallback(
+    ({ currentTarget }, val) => {
+      const id = currentTarget.name.slice(name.length + 1);
+      onChange({ currentTarget: { name } }, { ...value, [id]: val });
     },
     [name, onChange, value],
   );
 
   return (
-    <div className={nested ? styles.nested : null}>
+    <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : null}>
       <Title level={5}>
         <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />
       </Title>

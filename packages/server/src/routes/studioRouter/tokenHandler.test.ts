@@ -1,3 +1,4 @@
+import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
@@ -278,9 +279,7 @@ describe('client_credentials', () => {
 
   it('should handle invalid client credentials', async () => {
     const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
-      headers: {
-        authorization: `Basic ${Buffer.from('invalidId:invalidSecret').toString('base64')}`,
-      },
+      headers: { authorization: basicAuth('invalidId', 'invalidSecret') },
     });
     expect(response).toMatchObject({
       status: 400,
@@ -293,9 +292,7 @@ describe('client_credentials', () => {
   it('should handle expired clients', async () => {
     clock.setSystemTime(new Date('2000-03-01T00:00:00Z'));
     const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
-      headers: {
-        authorization: `Basic ${Buffer.from('testClientId:testClientSecret').toString('base64')}`,
-      },
+      headers: { authorization: basicAuth('testClientId', 'testClientSecret') },
     });
     expect(response).toMatchObject({
       status: 400,
@@ -309,11 +306,7 @@ describe('client_credentials', () => {
     const response = await request.post(
       '/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write organizations:styles:write',
-      {
-        headers: {
-          authorization: `Basic ${Buffer.from('testClientId:testClientSecret').toString('base64')}`,
-        },
-      },
+      { headers: { authorization: basicAuth('testClientId', 'testClientSecret') } },
     );
     expect(response).toMatchObject({
       status: 400,
@@ -327,11 +320,7 @@ describe('client_credentials', () => {
     const response = await request.post(
       '/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write',
-      {
-        headers: {
-          authorization: `Basic ${Buffer.from('testClientId:testClientSecret').toString('base64')}`,
-        },
-      },
+      { headers: { authorization: basicAuth('testClientId', 'testClientSecret') } },
     );
     expect(response).toMatchObject({
       status: 200,

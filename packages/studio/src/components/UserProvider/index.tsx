@@ -1,39 +1,56 @@
+import { Loader } from '@appsemble/react-components';
 import type { JwtPayload, TokenResponse, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
-import * as React from 'react';
-
-import { UserContext } from '../../hooks/useUser';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 interface UserProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
+
+interface UserContext {
+  login(tokenResponse: TokenResponse): void;
+  logout(): void;
+  userInfo: UserInfo;
+  refreshUserInfo(): Promise<void>;
+}
+
+const Context = createContext<UserContext>(null);
 
 // The buffer between the access token expiration and the refresh token request. A minute should be
 // plenty of time for the refresh token request to finish.
 const REFRESH_BUFFER = 60e3;
 
-export default function UserProvider({ children }: UserProviderProps): React.ReactElement {
-  const [userInfo, setProfile] = React.useState<UserInfo>();
-  const [initialized, setInitialized] = React.useState(false);
-  const [tokenResponse, setTokenResponse] = React.useState<Partial<TokenResponse>>({
+export default function UserProvider({ children }: UserProviderProps): ReactElement {
+  const [userInfo, setUserInfo] = useState<UserInfo>();
+  const [initialized, setInitialized] = useState(false);
+  const [tokenResponse, setTokenResponse] = useState<Partial<TokenResponse>>({
     access_token: localStorage.access_token,
     refresh_token: localStorage.refresh_token,
   });
 
-  const setToken = React.useCallback((response: TokenResponse) => {
+  const setToken = useCallback((response: TokenResponse) => {
     axios.defaults.headers.authorization = `Bearer ${response.access_token}`;
     localStorage.access_token = response.access_token;
     localStorage.refresh_token = response.refresh_token;
     setTokenResponse(response);
   }, []);
 
-  const refreshUserInfo = React.useCallback(async () => {
+  const refreshUserInfo = useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/connect/userinfo');
-    setProfile(data);
+    setUserInfo(data);
   }, []);
 
-  const login = React.useCallback(
+  const login = useCallback(
     (response: TokenResponse) => {
       setToken(response);
       refreshUserInfo();
@@ -41,25 +58,24 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
     [refreshUserInfo, setToken],
   );
 
-  const logout = React.useCallback(() => {
-    setProfile(null);
+  const logout = useCallback(() => {
+    setUserInfo(null);
     delete axios.defaults.headers.authorization;
     delete localStorage.access_token;
     delete localStorage.refresh_token;
   }, []);
 
-  const value = React.useMemo(
+  const value = useMemo(
     () => ({
       login,
       logout,
       userInfo,
       refreshUserInfo,
-      initialized,
     }),
-    [login, logout, userInfo, refreshUserInfo, initialized],
+    [login, logout, userInfo, refreshUserInfo],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
       logout();
       setInitialized(true);
@@ -90,5 +106,13 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
     };
   }, [logout, refreshUserInfo, tokenResponse]);
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  if (!initialized) {
+    return <Loader />;
+  }
+
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+}
+
+export function useUser(): UserContext {
+  return useContext(Context);
 }

@@ -15,29 +15,30 @@ import {
 import type { Organization } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import useOrganizations from '../../hooks/useOrganizations';
 import checkRole from '../../utils/checkRole';
+import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import AppRatings from '../AppRatings';
+import { useOrganizations } from '../OrganizationsProvider';
 import styles from './index.css';
 import messages from './messages';
 
-export default function AppDetails(): React.ReactElement {
+export default function AppDetails(): ReactElement {
   const { app } = useApp();
   const { data: organization, error, loading } = useData<Organization>(
     `/api/organizations/${app.OrganizationId}`,
   );
   const cloneDialog = useToggle();
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
 
-  const organizations = useOrganizations();
+  const { organizations } = useOrganizations();
 
-  const cloneApp = React.useCallback(
+  const cloneApp = useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
       const { data: clone } = await axios.post('/api/templates', {
         templateId: app.id,
@@ -60,9 +61,9 @@ export default function AppDetails(): React.ReactElement {
     <>
       <div>
         <div className={styles.titleContainer}>
-          <header className={styles.title}>
-            <figure className="image is-96x96 is-marginless">
-              <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
+          <header className={`${styles.title} mb-2`}>
+            <figure className="image is-96x96 my-0 ml-0 mr-4">
+              <img alt={formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
             </figure>
             <div>
               <Title className="is-marginless" level={1}>
@@ -75,17 +76,13 @@ export default function AppDetails(): React.ReactElement {
           </header>
           <div>
             {createOrganizations.length ? (
-              <Button className={styles.cloneButton} onClick={cloneDialog.enable}>
+              <Button className="mr-3" onClick={cloneDialog.enable}>
                 <FormattedMessage {...messages.clone} />
               </Button>
             ) : null}
             <a
               className="button is-primary"
-              href={
-                app.domain
-                  ? `//${app.domain}${window.location.port && `:${window.location.port}`}`
-                  : `//${app.path}.${app.OrganizationId}.${window.location.host}`
-              }
+              href={getAppUrl(app.OrganizationId, app.path, app.domain)}
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -104,6 +101,7 @@ export default function AppDetails(): React.ReactElement {
             description: app.definition.description,
             private: true,
             selectedOrganization: 0,
+            resources: false,
           }}
           footer={
             <>
@@ -152,6 +150,14 @@ export default function AppDetails(): React.ReactElement {
             label={<FormattedMessage {...messages.private} />}
             name="private"
           />
+          {app.resources && (
+            <SimpleInput<typeof Checkbox>
+              component={Checkbox}
+              help={<FormattedMessage {...messages.resourcesDescription} />}
+              label={<FormattedMessage {...messages.resources} />}
+              name="resources"
+            />
+          )}
         </Modal>
       ) : null}
     </>

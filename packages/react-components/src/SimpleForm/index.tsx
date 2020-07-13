@@ -1,10 +1,19 @@
-import React from 'react';
+import React, {
+  ComponentPropsWithoutRef,
+  createContext,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 import type { Promisable } from 'type-fest';
 
 import Form from '../Form';
 
-interface SimpleFormProps<T> extends Omit<React.ComponentProps<typeof Form>, 'onSubmit' | 'ref'> {
-  children: React.ReactNode;
+interface SimpleFormProps<T>
+  extends Omit<ComponentPropsWithoutRef<typeof Form>, 'onSubmit' | 'ref'> {
+  children: ReactNode;
   defaultValues: T;
   onSubmit: (values: T) => Promisable<void>;
   preprocess?: (name: string, newValues: T, oldValues: T) => T;
@@ -12,7 +21,7 @@ interface SimpleFormProps<T> extends Omit<React.ComponentProps<typeof Form>, 'on
 }
 
 interface FormErrors {
-  [field: string]: React.ReactNode;
+  [field: string]: ReactNode;
 }
 
 interface FormValues {
@@ -22,15 +31,15 @@ interface FormValues {
 interface SimpleFormContext {
   formErrors: FormErrors;
   pristine: boolean;
-  setFormError: (name: string, errorMessage: React.ReactNode) => void;
-  setValue: (name: string, value: any, errorMessage?: React.ReactNode) => void;
+  setFormError: (name: string, errorMessage: ReactNode) => void;
+  setValue: (name: string, value: any, errorMessage?: ReactNode) => void;
   setValues: (values: FormValues) => void;
   submitError?: Error;
   submitting: boolean;
   values: FormValues;
 }
 
-const Context = React.createContext<SimpleFormContext>(null);
+const Context = createContext<SimpleFormContext>(null);
 
 export default function SimpleForm<T extends {}>({
   children,
@@ -39,19 +48,19 @@ export default function SimpleForm<T extends {}>({
   preprocess,
   resetOnSuccess,
   ...props
-}: SimpleFormProps<T>): React.ReactElement {
-  const [values, setValues] = React.useState(defaultValues);
-  const [submitError, setSubmitError] = React.useState<Error>(null);
-  const [formErrors, setFormErrors] = React.useState<FormErrors>({});
-  const [pristine, setPristine] = React.useState(true);
-  const [submitting, setSubmitting] = React.useState(false);
+}: SimpleFormProps<T>): ReactElement {
+  const [values, setValues] = useState(defaultValues);
+  const [submitError, setSubmitError] = useState<Error>(null);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [pristine, setPristine] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const reset = React.useCallback(() => {
+  const reset = useCallback(() => {
     setValues(defaultValues);
     setPristine(true);
   }, [defaultValues]);
 
-  const doSubmit = React.useCallback(async () => {
+  const doSubmit = useCallback(async () => {
     setSubmitError(null);
     setSubmitting(true);
     try {
@@ -68,8 +77,8 @@ export default function SimpleForm<T extends {}>({
     }
   }, [onSubmit, reset, resetOnSuccess, values]);
 
-  const setFormError = React.useCallback(
-    (name: string, errorMessage?: React.ReactNode) => {
+  const setFormError = useCallback(
+    (name: string, errorMessage?: ReactNode) => {
       setFormErrors({
         ...formErrors,
         [name]: errorMessage,
@@ -78,8 +87,8 @@ export default function SimpleForm<T extends {}>({
     [formErrors],
   );
 
-  const setValue = React.useCallback(
-    (name: string, value: any, errorMessage?: React.ReactNode) => {
+  const setValue = useCallback(
+    (name: string, value: any, errorMessage?: ReactNode) => {
       setPristine(false);
       let newValues = {
         ...values,
@@ -115,5 +124,5 @@ export default function SimpleForm<T extends {}>({
 }
 
 export function useSimpleForm(): SimpleFormContext {
-  return React.useContext(Context);
+  return useContext(Context);
 }

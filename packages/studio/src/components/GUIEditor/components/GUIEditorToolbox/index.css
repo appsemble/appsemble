@@ -1,0 +1,5 @@
+.root {
+  flex: 1;
+  flex-direction: column;
+  height: 93%;
+}

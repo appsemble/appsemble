@@ -9,10 +9,33 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add support for login with third party OAuth2 providers.
+- Block(`data-notifier`): Add new the `data-notifier` block. This has the same functionality as the
+  filter block for refreshing new data, but for general use.
+- Block(`detail-viewer`): Add `icons` property which can be used to customize the way the marker
+  looks. It is identical to how works in `map`.
+- Block(`list`): Add `image` property.
+- Block(`map`): Add `color` property to `icons`. This can be used to change the color of custom
+  markers.
+- Block(`map`): Add `defaultLocation` property. This property is used to set the location of the map
+  when the user’s location cannot be found. It defaults to Greenwich Park.
+- Server: Add login flow for user apps using third party OAuth2 providers.
+- Studio: Add login flow for user apps using third party OAuth2 providers.
+- Studio: Add option to mark specific resources to be included when cloning template apps.
+
+### Fixed
+
+- Studio: Fix bug where user gets redirected to app details when trying to access secured routes.
+
+## [0.13.4] - 2020-06-29
+
+### Added
+
 - Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
 - Block(`form`): Add support for `requirements` in string fields. Please consult the block
   documentation for further details.
 - Block(`form`): Add support for `radio` type fields.
+- Block(`timer`): Add the timer block.
 - Studio: Add new `InviteMember` permission to the maintainer role within an organization. They are
   allowed to invite members, resend invitations and delete pending invitations.
 - Studio: Add `Default` column to block documentation.

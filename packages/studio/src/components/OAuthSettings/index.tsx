@@ -4,12 +4,14 @@ import {
   Message,
   OAuth2LoginButton,
   Title,
+  useData,
   useLocationString,
   useMessages,
+  useToggle,
 } from '@appsemble/react-components';
 import type { OAuth2Provider } from '@appsemble/types';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import settings from '../../utils/settings';
@@ -18,10 +20,6 @@ import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
 import messages from './messages';
 
-interface ConnectedAccountsState {
-  [authorizationUrl: string]: boolean;
-}
-
 interface ConnectedAccount {
   authorizationUrl: string;
 }
@@ -29,51 +27,34 @@ interface ConnectedAccount {
 /**
  * Managed OAuth2 accounts linked to the current user.
  */
-export default function OAuthSettings(): React.ReactElement {
-  const intl = useIntl();
+export default function OAuthSettings(): ReactElement {
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const location = useLocationString();
+  const connecting = useToggle();
 
-  const [isLoading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(false);
-  const [accounts, setAccounts] = React.useState<ConnectedAccountsState>(null);
+  const { data: accounts, error, loading, setData: setAccounts } = useData<ConnectedAccount[]>(
+    '/api/oauth2/connected',
+  );
 
-  const disconnect = React.useCallback(
+  const disconnect = useCallback(
     async ({ authorizationUrl, name }: OAuth2Provider) => {
       try {
         await axios.delete('/api/oauth2/connected', { params: { authorizationUrl } });
       } catch (err) {
-        push(intl.formatMessage(messages.disconnectError, { name }));
+        push(formatMessage(messages.disconnectError, { name }));
         return;
       }
       push({
-        body: intl.formatMessage(messages.disconnectSuccess, { name }),
+        body: formatMessage(messages.disconnectSuccess, { name }),
         color: 'success',
       });
-      setAccounts({
-        ...accounts,
-        [authorizationUrl]: false,
-      });
+      setAccounts(accounts.filter((account) => account.authorizationUrl !== authorizationUrl));
     },
-    [accounts, intl, push],
+    [accounts, formatMessage, push, setAccounts],
   );
 
-  React.useEffect(() => {
-    axios
-      .get<ConnectedAccount[]>('/api/oauth2/connected')
-      .then(({ data }) =>
-        setAccounts(
-          data.reduce((acc, { authorizationUrl }) => {
-            acc[authorizationUrl] = true;
-            return acc;
-          }, {} as ConnectedAccountsState),
-        ),
-      )
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (isLoading) {
+  if (loading) {
     return <Loader />;
   }
 
@@ -93,10 +74,11 @@ export default function OAuthSettings(): React.ReactElement {
           <FormattedMessage {...messages.header} />
         </Title>
         {settings.logins.map((provider) =>
-          accounts[provider.authorizationUrl] ? (
+          accounts.some((account) => account.authorizationUrl === provider.authorizationUrl) ? (
             <AsyncButton
-              key={`${provider.authorizationUrl} ${provider.clientId}`}
-              className={styles.button}
+              key={provider.authorizationUrl}
+              className={`${styles.button} mb-4`}
+              disabled={connecting.enabled}
               icon={provider.icon}
               iconPrefix="fab"
               onClick={() => disconnect(provider)}
@@ -107,9 +89,11 @@ export default function OAuthSettings(): React.ReactElement {
             <OAuth2LoginButton
               key={provider.authorizationUrl}
               authorizationUrl={provider.authorizationUrl}
-              className={styles.button}
+              className={`${styles.button} mb-4`}
               clientId={provider.clientId}
+              disabled={connecting.enabled}
               icon={provider.icon}
+              onClick={connecting.enable}
               redirect={location}
               redirectUrl="/callback"
               scope={provider.scope}

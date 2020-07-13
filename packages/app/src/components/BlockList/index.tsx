@@ -3,7 +3,7 @@ import type { BlockDefinition, Security } from '@appsemble/types';
 import { checkAppRole, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
-import React from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -29,13 +29,15 @@ function filterBlocks(
   security: Security,
   blocks: BlockDefinition[],
   userRole: string,
-): BlockDefinition[] {
-  return blocks.filter(
-    (block) =>
-      block.roles === undefined ||
-      block.roles.length === 0 ||
-      block.roles.some((r) => checkAppRole(security, r, userRole)),
-  );
+): [BlockDefinition, number][] {
+  return blocks
+    .map<[BlockDefinition, number]>((block, index) => [block, index])
+    .filter(
+      ([block]) =>
+        block.roles === undefined ||
+        block.roles.length === 0 ||
+        block.roles.some((r) => checkAppRole(security, r, userRole)),
+    );
 }
 
 export default function BlockList({
@@ -47,26 +49,26 @@ export default function BlockList({
   prefix,
   showDialog,
   transitions,
-}: BlockListProps): React.ReactElement {
+}: BlockListProps): ReactElement {
   const { blockManifests, definition, revision } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
   const redirect = useLocationString();
 
-  const blockList = React.useMemo(() => filterBlocks(definition.security, blocks, role), [
+  const blockList = useMemo(() => filterBlocks(definition.security, blocks, role), [
     blocks,
     definition,
     role,
   ]);
 
-  const blockStatus = React.useRef(blockList.map(() => false));
-  const [pageReady, setPageReady] = React.useState<Promise<void>>();
+  const blockStatus = useRef(blockList.map(() => false));
+  const [pageReady, setPageReady] = useState<Promise<void>>();
 
-  const [isLoading, setLoading] = React.useState(true);
-  const resolvePageReady = React.useRef<Function>();
+  const [isLoading, setLoading] = useState(true);
+  const resolvePageReady = useRef<Function>();
 
-  const ready = React.useCallback(
+  const ready = useCallback(
     (block: BlockDefinition) => {
-      blockStatus.current[blockList.indexOf(block)] = true;
+      blockStatus.current[blockList.findIndex(([b]) => b === block)] = true;
       if (blockStatus.current.every(Boolean)) {
         setLoading(false);
         resolvePageReady.current();
@@ -75,7 +77,7 @@ export default function BlockList({
     [blockList],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     setPageReady(
       new Promise((resolve) => {
         resolvePageReady.current = resolve;
@@ -91,7 +93,7 @@ export default function BlockList({
     return <Redirect to="/" />;
   }
 
-  const list = blockList.map((block, index) => {
+  const list = blockList.map(([block, index]) => {
     const manifest = blockManifests.find(
       (m) => m.name === normalizeBlockName(block.type) && m.version === block.version,
     );
@@ -101,7 +103,6 @@ export default function BlockList({
     const content = (
       <Block
         // As long as blocks are in a static list, using the index as a key should be fine.
-        // eslint-disable-next-line react/no-array-index-key
         key={`${revision}-${index}`}
         block={block}
         className={classNames(styles[layout], {
@@ -126,7 +127,6 @@ export default function BlockList({
     return transitions ? (
       <CSSTransition
         // Since blocks are in a static list, using the index as a key should be fine.
-        // eslint-disable-next-line react/no-array-index-key
         key={`${revision}-${index}`}
         classNames={{
           enter: styles.pageEnter,

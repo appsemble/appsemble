@@ -1,5 +1,5 @@
 import { Confirmation, ErrorHandler, MessagesProvider } from '@appsemble/react-components';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
@@ -12,11 +12,12 @@ import BlockDetails from '../BlockDetails';
 import BlockList from '../BlockList';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
+import ForwardOAuth2Login from '../ForwardOAuth2Login';
 import Login from '../Login';
-import OAuth2Connect from '../OAuth2Connect';
+import OAuth2Callback from '../OAuth2Callback';
 import OpenIDLogin from '../OpenIDLogin';
 import OrganizationInvite from '../OrganizationInvite';
-import OrganizationProvider from '../OrganizationProvider';
+import OrganizationsProvider from '../OrganizationsProvider';
 import ProtectedRoute from '../ProtectedRoute';
 import Register from '../Register';
 import ResetPassword from '../ResetPassword';
@@ -25,12 +26,12 @@ import Toolbar from '../Toolbar';
 import UserProvider from '../UserProvider';
 import VerifyEmail from '../VerifyEmail';
 
-export default function App(): React.ReactElement {
+export default function App(): ReactElement {
   return (
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <BrowserRouter>
         <UserProvider>
-          <OrganizationProvider>
+          <OrganizationsProvider>
             <ErrorHandler fallback={ErrorFallback}>
               <Confirmation>
                 <MessagesProvider>
@@ -52,6 +53,9 @@ export default function App(): React.ReactElement {
                     <ProtectedRoute exact path="/connect/authorize">
                       <OpenIDLogin />
                     </ProtectedRoute>
+                    <Route exact path="/connect/authorize/:id">
+                      <ForwardOAuth2Login />
+                    </Route>
                     <Route path="/apps/:id(\d+)">
                       <AppContext />
                     </Route>
@@ -65,7 +69,7 @@ export default function App(): React.ReactElement {
                       <VerifyEmail />
                     </Route>
                     <Route exact path="/callback">
-                      <OAuth2Connect />
+                      <OAuth2Callback />
                     </Route>
                     <AnonymousRoute exact path="/login">
                       <Login />
@@ -89,7 +93,7 @@ export default function App(): React.ReactElement {
                 </MessagesProvider>
               </Confirmation>
             </ErrorHandler>
-          </OrganizationProvider>
+          </OrganizationsProvider>
         </UserProvider>
       </BrowserRouter>
     </IntlProvider>

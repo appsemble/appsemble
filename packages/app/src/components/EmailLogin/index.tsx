@@ -6,19 +6,19 @@ import {
   SimpleSubmit,
 } from '@appsemble/react-components';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
-export default function EmailLogin(): React.ReactElement {
+export default function EmailLogin(): ReactElement {
   const { passwordLogin } = useUser();
 
   return (
     <SimpleForm
-      className={classNames('container', styles.root)}
+      className={classNames('container px-3 py-3', styles.root)}
       defaultValues={{ username: '', password: '' }}
       onSubmit={passwordLogin}
     >

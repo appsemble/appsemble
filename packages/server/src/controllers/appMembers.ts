@@ -11,7 +11,9 @@ interface Params {
 }
 
 export async function getAppMembers(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
 
   const app = await App.findByPk(appId, { include: [User] });
   if (!app) {
@@ -27,7 +29,9 @@ export async function getAppMembers(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, memberId } = ctx.params;
+  const {
+    params: { appId, memberId },
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     include: [{ model: User, where: { id: memberId }, required: false }, Organization],
@@ -78,8 +82,12 @@ export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function setAppMember(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, memberId } = ctx.params;
-  const { role } = ctx.request.body;
+  const {
+    params: { appId, memberId },
+    request: {
+      body: { role },
+    },
+  } = ctx;
 
   const app = await App.findByPk(appId, { include: [User] });
   if (!app) {

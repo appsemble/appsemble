@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import CMSRoot from '../CMSRoot';
 import ResourceTable from '../ResourceTable';
 
-export default function CMS(): React.ReactElement {
+export default function CMS(): ReactElement {
   const match = useRouteMatch();
 
   return (
@@ -12,7 +12,7 @@ export default function CMS(): React.ReactElement {
       <Route exact path={match.path}>
         <CMSRoot />
       </Route>
-      <Route path={`${match.path}/:resourceName/:mode?/:resourceId?`}>
+      <Route path={`${match.path}/:resourceName`}>
         <ResourceTable />
       </Route>
       <Redirect to={match.path} />

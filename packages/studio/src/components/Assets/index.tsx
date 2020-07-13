@@ -15,7 +15,7 @@ import {
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { extension } from 'mime-types';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import download from '../../utils/download';
@@ -31,44 +31,44 @@ export interface Asset {
   filename: string;
 }
 
-export default function Assets(): React.ReactElement {
+export default function Assets(): ReactElement {
   const { app } = useApp();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
 
   const { data: assets, error, loading, setData: setAssets } = useData<Asset[]>(
     `/api/apps/${app.id}/assets`,
   );
-  const [selectedAssets, setSelectedAssets] = React.useState<string[]>([]);
-  const [dialog, setDialog] = React.useState<'upload' | 'preview'>(null);
-  const [previewedAsset, setPreviewedAsset] = React.useState<Asset>(null);
-  const [file, setFile] = React.useState<File>();
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+  const [dialog, setDialog] = useState<'upload' | 'preview'>(null);
+  const [previewedAsset, setPreviewedAsset] = useState<Asset>(null);
+  const [file, setFile] = useState<File>();
 
-  const onClose = React.useCallback(() => {
+  const onClose = useCallback(() => {
     setDialog(null);
     setPreviewedAsset(null);
   }, []);
 
-  const onUploadClick = React.useCallback(() => {
+  const onUploadClick = useCallback(() => {
     setDialog('upload');
   }, []);
 
-  const onUpload = React.useCallback(async () => {
+  const onUpload = useCallback(async () => {
     const formData = new FormData();
     formData.append('file', file, file.name);
     const { data } = await axios.post(`/api/apps/${app.id}/assets`, file, {
       headers: { 'content-type': file.type },
     });
 
-    push({ color: 'success', body: intl.formatMessage(messages.uploadSuccess, { id: data.id }) });
+    push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
     setAssets([...assets, data]);
     setFile(null);
     onClose();
-  }, [app, assets, file, intl, onClose, push, setAssets]);
+  }, [app, assets, file, formatMessage, onClose, push, setAssets]);
 
-  const onFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
-    setFile(e.target.files[0]);
+  const onFileChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
+    setFile(e.currentTarget.files[0]);
   }, []);
 
   const onDelete = useConfirmation({
@@ -89,7 +89,7 @@ export default function Assets(): React.ReactElement {
       );
 
       push(
-        intl.formatMessage(messages.deleteSuccess, {
+        formatMessage(messages.deleteSuccess, {
           amount: selectedAssets.length,
           assets: selectedAssets.sort().join(', '),
         }),
@@ -99,12 +99,12 @@ export default function Assets(): React.ReactElement {
     },
   });
 
-  const onPreviewClick = React.useCallback((asset: Asset) => {
+  const onPreviewClick = useCallback((asset: Asset) => {
     setPreviewedAsset(asset);
     setDialog('preview');
   }, []);
 
-  const downloadAsset = React.useCallback(
+  const downloadAsset = useCallback(
     async (asset) => {
       try {
         const { filename, id } = asset;
@@ -112,15 +112,15 @@ export default function Assets(): React.ReactElement {
 
         await download(`/api/apps/${app.id}/assets/${id}`, filename || mime ? `${id}.${mime}` : id);
       } catch (e) {
-        push(intl.formatMessage(messages.downloadError));
+        push(formatMessage(messages.downloadError));
       }
     },
-    [app, push, intl],
+    [app, formatMessage, push],
   );
 
-  const onAssetCheckboxClick = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-      const id = event.target.name.replace(/^asset/, '');
+  const onAssetCheckboxClick = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      const id = event.currentTarget.name.replace(/^asset/, '');
 
       if (!checked) {
         setSelectedAssets(selectedAssets.filter((a) => a !== id));
@@ -190,7 +190,7 @@ export default function Assets(): React.ReactElement {
                   checked={selectedAssets.includes(asset.id)}
                   name={`asset${asset.id}`}
                   onChange={onAssetCheckboxClick}
-                  wrapperClassName={`is-inline-block ${styles.assetCheckbox}`}
+                  wrapperClassName="is-inline-block mt-2"
                 />
                 <Button color="primary" icon="download" onClick={() => downloadAsset(asset)} />
               </td>
@@ -223,10 +223,10 @@ export default function Assets(): React.ReactElement {
       >
         <Content>
           <FileUpload
-            className={styles.filePicker}
+            className={`${styles.filePicker} has-text-centered`}
             fileButtonLabel={<FormattedMessage {...messages.chooseFile} />}
             fileLabel={file?.name || <FormattedMessage {...messages.noFile} />}
-            formComponentClassName={styles.filePicker}
+            formComponentClassName="has-text-centered"
             label={<FormattedMessage {...messages.file} />}
             name="file"
             onChange={onFileChange}

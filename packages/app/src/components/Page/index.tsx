@@ -7,7 +7,7 @@ import type {
 } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
-import React from 'react';
+import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -26,23 +26,23 @@ interface PageProps {
   prefix: string;
 }
 
-export default function Page({ page, prefix }: PageProps): React.ReactElement {
+export default function Page({ page, prefix }: PageProps): ReactElement {
   const { definition } = useAppDefinition();
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const redirect = useLocationString();
   const { isLoggedIn, logout, role } = useUser();
 
-  const [dialog, setDialog] = React.useState<ShowDialogParams>();
-  const [blocks, setBlocks] = React.useState<BlockDefinition[]>([]);
+  const [dialog, setDialog] = useState<ShowDialogParams>();
+  const [blocks, setBlocks] = useState<BlockDefinition[]>([]);
 
-  const ee = React.useRef<EventEmitter>();
+  const ee = useRef<EventEmitter>();
   if (!ee.current) {
     ee.current = new EventEmitter();
   }
 
-  const createBulmaQueryString = React.useCallback(() => {
+  const createBulmaQueryString = useCallback(() => {
     const params = { ...definition.theme, ...page.theme };
     const queryStringParams = new URLSearchParams(params);
     queryStringParams.sort();
@@ -50,7 +50,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
     return queryStringParams.toString();
   }, [definition, page.theme]);
 
-  const applyBulmaThemes = React.useCallback(
+  const applyBulmaThemes = useCallback(
     (d: AppDefinition, p: PageDefinition) => {
       const bulmaStyle = document.getElementById('bulma-style-app') as HTMLLinkElement;
       const [bulmaUrl] = bulmaStyle.href.split('?');
@@ -59,7 +59,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
     [createBulmaQueryString],
   );
 
-  const checkPagePermissions = React.useCallback(
+  const checkPagePermissions = useCallback(
     (p: PageDefinition): boolean => {
       const roles = p.roles || definition.roles || [];
       return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
@@ -67,7 +67,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
     [definition, role],
   );
 
-  const handlePagePermissions = React.useCallback(() => {
+  const handlePagePermissions = useCallback(() => {
     const permission = checkPagePermissions(page);
     if (!permission) {
       if (!isLoggedIn) {
@@ -92,7 +92,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
         // Show message that explains the app is inaccessible with the current permissions.
         if (!redirectPage) {
           push({
-            body: intl.formatMessage(messages.permissionLogout),
+            body: formatMessage(messages.permissionLogout),
             color: 'danger',
             dismissable: true,
           });
@@ -102,16 +102,26 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
         }
       }
     }
-  }, [checkPagePermissions, definition, history, intl, isLoggedIn, logout, page, push, redirect]);
+  }, [
+    checkPagePermissions,
+    definition,
+    formatMessage,
+    history,
+    isLoggedIn,
+    logout,
+    page,
+    push,
+    redirect,
+  ]);
 
-  const showDialog = React.useCallback((d: ShowDialogParams) => {
+  const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
     return () => {
       setDialog(null);
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setBlocks([
       ...(page.type === 'tabs' || page.type === 'flow'
         ? page.subPages.map((f) => f.blocks).flat()
@@ -120,7 +130,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
     ]);
   }, [page]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     applyBulmaThemes(definition, page);
 
     if (ee.current) {

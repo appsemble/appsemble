@@ -8,11 +8,10 @@ import {
 } from '@appsemble/react-components';
 import type { App, Rating } from '@appsemble/types';
 import axios from 'axios';
-import React from 'react';
+import React, { ChangeEvent, ReactElement, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import StarRating from '../Rating';
-import styles from './index.css';
 import messages from './messages';
 
 interface RateAppProps {
@@ -21,16 +20,16 @@ interface RateAppProps {
   onRate: (rate: Rating) => void;
 }
 
-export default function RateApp({ app, className, onRate }: RateAppProps): React.ReactElement {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [rating, setRating] = React.useState(0);
-  const [description, setDescription] = React.useState('');
-  const intl = useIntl();
+export default function RateApp({ app, className, onRate }: RateAppProps): ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [description, setDescription] = useState('');
+  const { formatMessage } = useIntl();
   const openDialog = (): void => setIsOpen(true);
   const closeDialog = (): void => setIsOpen(false);
 
-  const onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void =>
-    setDescription(event.target.value);
+  const onDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>): void =>
+    setDescription(event.currentTarget.value);
   const submit = async (): Promise<void> => {
     const { data } = await axios.post(`/api/apps/${app.id}/ratings`, { rating, description });
     onRate(data);
@@ -45,13 +44,13 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
         <FormattedMessage {...messages.rateApp} />
       </Button>
       <Modal
-        className={styles.modal}
+        className="px-0 py-0"
         isActive={isOpen}
         onClose={closeDialog}
         title={<FormattedMessage {...messages.rateApp} />}
       >
         <Form onSubmit={submit}>
-          <div className={styles.controls}>
+          <div className="px-5 py-5">
             <FormComponent label={<FormattedMessage {...messages.rating} />} required>
               <StarRating onClick={(value) => setRating(value)} value={rating} />
             </FormComponent>
@@ -60,7 +59,7 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
               maxLength={500}
               name="description"
               onChange={onDescriptionChange}
-              placeholder={intl.formatMessage(messages.descriptionPlaceholder)}
+              placeholder={formatMessage(messages.descriptionPlaceholder)}
               value={description}
             />
           </div>

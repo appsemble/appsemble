@@ -23,7 +23,9 @@ interface Params {
 }
 
 export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
-  const { organizationId } = ctx.params;
+  const {
+    params: { organizationId },
+  } = ctx;
 
   const organization = await Organization.findByPk(organizationId);
   if (!organization) {
@@ -37,8 +39,10 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function createOrganization(ctx: KoaContext): Promise<void> {
-  const { id, name } = ctx.request.body;
   const {
+    request: {
+      body: { id, name },
+    },
     user: { id: userId },
   } = ctx;
 
@@ -89,7 +93,9 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
 }
 
 export async function getMembers(ctx: KoaContext<Params>): Promise<void> {
-  const { organizationId } = ctx.params;
+  const {
+    params: { organizationId },
+  } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
     include: [User],
@@ -107,7 +113,9 @@ export async function getMembers(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getInvites(ctx: KoaContext<Params>): Promise<void> {
-  const { organizationId } = ctx.params;
+  const {
+    params: { organizationId },
+  } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
     include: [OrganizationInvite],
@@ -122,7 +130,9 @@ export async function getInvites(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
-  const { token } = ctx.params;
+  const {
+    params: { token },
+  } = ctx;
 
   const invite = await OrganizationInvite.findOne({
     where: { key: token },
@@ -138,9 +148,11 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> {
-  const { organizationId } = ctx.params;
-  const { response, token } = ctx.request.body;
   const {
+    params: { organizationId },
+    request: {
+      body: { response, token },
+    },
     user: { id: userId },
   } = ctx;
 
@@ -164,9 +176,14 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
 }
 
 export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
-  const { mailer, user } = ctx;
-  const { organizationId } = ctx.params;
-  const { email } = ctx.request.body;
+  const {
+    mailer,
+    params: { organizationId },
+    request: {
+      body: { email },
+    },
+    user,
+  } = ctx;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization) {
@@ -211,9 +228,13 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
-  const { mailer } = ctx;
-  const { organizationId } = ctx.params;
-  const { email } = ctx.request.body;
+  const {
+    mailer,
+    params: { organizationId },
+    request: {
+      body: { email },
+    },
+  } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
     include: [OrganizationInvite],
@@ -240,7 +261,11 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function removeInvite(ctx: KoaContext): Promise<void> {
-  const { email } = ctx.request.body;
+  const {
+    request: {
+      body: { email },
+    },
+  } = ctx;
 
   const invite = await OrganizationInvite.findOne({ where: { email } });
   if (!invite) {
@@ -253,8 +278,10 @@ export async function removeInvite(ctx: KoaContext): Promise<void> {
 }
 
 export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
-  const { memberId, organizationId } = ctx.params;
-  const { user } = ctx;
+  const {
+    params: { memberId, organizationId },
+    user,
+  } = ctx;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
@@ -265,7 +292,9 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('This member is not part of this organization.');
   }
 
-  await checkRole(ctx, organization.id, Permission.ManageMembers);
+  if (memberId !== user.id) {
+    await checkRole(ctx, organization.id, Permission.ManageMembers);
+  }
 
   if (memberId === user.id && organization.Users.length <= 1) {
     throw Boom.notAcceptable(
@@ -277,9 +306,13 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function setRole(ctx: KoaContext<Params>): Promise<void> {
-  const { memberId, organizationId } = ctx.params;
-  const { role } = ctx.request.body;
-  const { user } = ctx;
+  const {
+    params: { memberId, organizationId },
+    request: {
+      body: { role },
+    },
+    user,
+  } = ctx;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
@@ -307,7 +340,9 @@ export async function setRole(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getOrganizationCoreStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { organizationId } = ctx.params;
+  const {
+    params: { organizationId },
+  } = ctx;
   const organization = await Organization.findByPk(organizationId, { raw: true });
 
   if (!organization) {
@@ -320,8 +355,12 @@ export async function getOrganizationCoreStyle(ctx: KoaContext<Params>): Promise
 }
 
 export async function setOrganizationCoreStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { organizationId } = ctx.params;
-  const { style } = ctx.request.body;
+  const {
+    params: { organizationId },
+    request: {
+      body: { style },
+    },
+  } = ctx;
   const css = style.toString().trim();
 
   try {
@@ -346,7 +385,9 @@ export async function setOrganizationCoreStyle(ctx: KoaContext<Params>): Promise
 }
 
 export async function getOrganizationSharedStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { organizationId } = ctx.params;
+  const {
+    params: { organizationId },
+  } = ctx;
   const organization = await Organization.findByPk(organizationId, { raw: true });
 
   if (!organization) {
@@ -359,8 +400,12 @@ export async function getOrganizationSharedStyle(ctx: KoaContext<Params>): Promi
 }
 
 export async function setOrganizationSharedStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { organizationId } = ctx.params;
-  const { style } = ctx.request.body;
+  const {
+    params: { organizationId },
+    request: {
+      body: { style },
+    },
+  } = ctx;
   const css = style.toString().trim();
 
   try {
@@ -385,7 +430,9 @@ export async function setOrganizationSharedStyle(ctx: KoaContext<Params>): Promi
 }
 
 export async function getOrganizationBlockStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { blockId, blockOrganizationId, organizationId } = ctx.params;
+  const {
+    params: { blockId, blockOrganizationId, organizationId },
+  } = ctx;
 
   const blockStyle = await OrganizationBlockStyle.findOne({
     where: {
@@ -400,8 +447,12 @@ export async function getOrganizationBlockStyle(ctx: KoaContext<Params>): Promis
 }
 
 export async function setOrganizationBlockStyle(ctx: KoaContext<Params>): Promise<void> {
-  const { blockId, blockOrganizationId, organizationId } = ctx.params;
-  const { style } = ctx.request.body;
+  const {
+    params: { blockId, blockOrganizationId, organizationId },
+    request: {
+      body: { style },
+    },
+  } = ctx;
   const css = style.toString().trim();
 
   try {

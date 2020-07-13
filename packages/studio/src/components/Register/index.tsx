@@ -8,11 +8,11 @@ import {
   SimpleSubmit,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import useUser from '../../hooks/useUser';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import messages from './messages';
 
 interface RegistrationFormValues {
@@ -21,9 +21,9 @@ interface RegistrationFormValues {
   password: string;
 }
 
-export default function Register(): React.ReactElement {
+export default function Register(): ReactElement {
   const { login } = useUser();
-  const register = React.useCallback(
+  const register = useCallback(
     async (values: RegistrationFormValues) => {
       const { data } = await axios.post('/api/email', values);
       login(data);
