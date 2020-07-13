@@ -7,11 +7,14 @@ export default {
       operationId: 'getTranslations',
       responses: {
         200: {
+          description: 'The list of supported languages',
           content: {
             'application/json': {
-              type: 'array',
-              items: {
-                type: 'string',
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
               },
             },
           },
