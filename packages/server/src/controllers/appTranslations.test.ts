@@ -1,6 +1,6 @@
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppTranslation, Member, Organization, Resource, User } from '../models';
+import { App, AppTranslation, Member, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
