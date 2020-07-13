@@ -1,5 +1,4 @@
 import { Portal } from '@appsemble/react-components';
-import classNames from 'classnames';
 import React, { ReactChild, ReactElement } from 'react';
 
 import ProfileDropdown from '../ProfileDropdown';
@@ -18,11 +17,13 @@ interface TitleBarProps {
 export default function TitleBar({ children }: TitleBarProps): ReactElement {
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
-      <div className={styles.container}>
-        <div className={classNames('navbar-brand', styles.brand)}>
+      <div className={`is-flex ${styles.container}`}>
+        <div className="navbar-brand">
           <span>
             <SideMenuButton />
           </span>
+        </div>
+        <div className={`navbar-brand ${styles.title}`}>
           <h2 className="navbar-item title is-4">{children}</h2>
         </div>
         <div className="navbar-brand">
