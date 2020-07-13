@@ -68,7 +68,7 @@ export default function Assets(): ReactElement {
   }, [app, assets, file, formatMessage, onClose, push, setAssets]);
 
   const onFileChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
-    setFile(e.target.files[0]);
+    setFile(e.currentTarget.files[0]);
   }, []);
 
   const onDelete = useConfirmation({
@@ -120,7 +120,7 @@ export default function Assets(): ReactElement {
 
   const onAssetCheckboxClick = useCallback(
     (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
-      const id = event.target.name.replace(/^asset/, '');
+      const id = event.currentTarget.name.replace(/^asset/, '');
 
       if (!checked) {
         setSelectedAssets(selectedAssets.filter((a) => a !== id));

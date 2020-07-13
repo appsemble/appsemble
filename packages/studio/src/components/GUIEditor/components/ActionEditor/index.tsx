@@ -27,7 +27,7 @@ export default function ActionEditor({
 
   const handleChange = useCallback(
     (_event: NamedEvent, val) => {
-      onChange({ target: { name } }, val);
+      onChange({ currentTarget: { name } }, val);
     },
     [name, onChange],
   );

@@ -17,15 +17,15 @@ export default function FileInput({
   value,
 }: FileInputProps): VNode {
   const handleInput = useCallback(
-    (event: Event, val: string): void => {
+    (event: h.JSX.TargetedEvent<HTMLInputElement>, val: string): void => {
       const copy = [].concat(value);
-      const index = Number((event.target as HTMLInputElement).name.split('.').pop());
+      const index = Number(event.currentTarget.name.split('.').pop());
       if (val == null) {
         copy.splice(index, 1);
       } else {
         copy[index] = val;
       }
-      onInput(({ target: { name: field.name } } as any) as Event, copy);
+      onInput(({ currentTarget: { name: field.name } } as any) as Event, copy);
     },
     [field.name, onInput, value],
   );

@@ -21,7 +21,7 @@ export default function ActionsEditor({
 }: ActionsEditorProps): ReactElement {
   const handleChange = useCallback(
     (event: NamedEvent, val) =>
-      onChange({ target: { name } }, { ...value, [event.target.name]: val }),
+      onChange({ currentTarget: { name } }, { ...value, [event.currentTarget.name]: val }),
     [name, value, onChange],
   );
 

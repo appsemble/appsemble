@@ -34,7 +34,7 @@ export default function CreateAppCard(): ReactElement {
 
   const history = useHistory();
   const match = useRouteMatch();
-  const organizations = useOrganizations();
+  const { organizations } = useOrganizations();
 
   const onCreate = useCallback(
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
@@ -139,7 +139,7 @@ export default function CreateAppCard(): ReactElement {
           component={Select}
           label={<FormattedMessage {...messages.template} />}
           name="selectedTemplate"
-          onChange={({ target }) => setSelectedTemplate(target.value)}
+          onChange={({ currentTarget }) => setSelectedTemplate(currentTarget.value)}
           required
         >
           {templates.map((template, index) => (
@@ -150,7 +150,6 @@ export default function CreateAppCard(): ReactElement {
         </SimpleInput>
         <Message>{templates[selectedTemplate].description}</Message>
         <SimpleInput
-          className="is-warning"
           component={Checkbox}
           help={<FormattedMessage {...messages.privateHelp} />}
           label={<FormattedMessage {...messages.private} />}

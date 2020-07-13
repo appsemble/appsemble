@@ -850,6 +850,11 @@ export interface App {
   rating?: Rating;
 
   /**
+   * Whether the app has clonable resources.
+   */
+  resources?: boolean;
+
+  /**
    * An app icon url
    */
   iconUrl?: string;

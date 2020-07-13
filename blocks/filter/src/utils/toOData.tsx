@@ -1,36 +1,46 @@
-import type { Filter, FilterField, RangeFilter } from '../../block';
+import type { Field, FilterValues } from '../../block';
 
-export default function toOData(fields: FilterField[], filter: Filter): string {
-  return Object.entries(filter)
-    .map(([key, data]) => {
-      if (!data) {
-        return '';
+export default function toOData(fields: Field[], values: FilterValues): string {
+  return fields
+    .map((field) => {
+      const value = values[field.name];
+
+      if (value == null || value.length === 0) {
+        return null;
       }
 
-      const field = fields.find((f) => f.name === key);
-
-      if (field.type === 'string' && !field.exact) {
-        return `substringof('${data}',${key})`;
-      }
-
-      if (field.range) {
-        const { from, to } = data as RangeFilter;
-        const f = from == null || from === '' ? null : `${key} ge ${from}`;
-        const t = to == null || to === '' ? null : `${key} le ${to}`;
-        return [f, t];
-      }
-
-      if (field.type === 'checkbox') {
-        if (!(data as string[]).length) {
-          return '';
+      switch (field.type) {
+        case 'buttons':
+          return `(${(value as string[]).map((val) => `${field.name} eq '${val}'`).join(' or ')})`;
+        case 'date':
+          // Quotes are disallowed for eq by odata-sequelize
+          return `${field.name} eq ${value}`;
+        case 'date-range': {
+          const filters = [];
+          if (value[0]) {
+            // Quotes are required for ge by odata-sequelize
+            filters.push(`${field.name} ge '${value[0]}'`);
+          }
+          if (value[1]) {
+            // Quotes are required for ge by odata-sequelize
+            filters.push(`${field.name} ge '${value[1]}'`);
+          }
+          if (!filters.length) {
+            return null;
+          }
+          return `(${filters.join(' and ')})`;
         }
-
-        return `(${(data as string[]).map((value) => `${key} eq '${value}'`).join(' or ')})`;
+        case 'enum':
+          return `${field.name} eq '${value}'`;
+        case 'string':
+          if (field.exact) {
+            return `${field.name} eq '${value}'`;
+          }
+          return `substringof('${value}',${field.name})`;
+        default:
+          return null;
       }
-
-      return `${key} eq '${data}'`;
     })
-    .flat()
     .filter(Boolean)
     .join(' and ');
 }

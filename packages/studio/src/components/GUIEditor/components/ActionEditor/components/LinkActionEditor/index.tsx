@@ -19,7 +19,7 @@ export default function LinkActionEditor({
 }: LinkActionEditorProps): ReactElement {
   const handleChange = useCallback(
     (event: NamedEvent, val) => {
-      onChange(event, { ...value, [event.target.name]: val });
+      onChange(event, { ...value, [event.currentTarget.name]: val });
     },
     [onChange, value],
   );
