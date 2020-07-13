@@ -26,7 +26,7 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
         file = await resize(file, maxWidth, maxHeight, quality / 100);
       }
 
-      onInput(event, file);
+      onInput({ currentTarget, ...event }, file);
     },
     [field, onInput],
   );
@@ -43,10 +43,9 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
 
   return (
     <div className={classNames('file mr-3', styles.root)}>
-      <label className="file-label" htmlFor={field.name}>
+      <label className="file-label">
         <input
           className={classNames('file-input', styles.input)}
-          id={field.name}
           name={name}
           onChange={onSelect}
           type="file"
