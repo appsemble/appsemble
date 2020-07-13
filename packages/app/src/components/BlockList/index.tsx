@@ -97,7 +97,9 @@ export default function BlockList({
     const manifest = blockManifests.find(
       (m) => m.name === normalizeBlockName(block.type) && m.version === block.version,
     );
+
     const layout = manifest.layout || 'grow';
+
     const content = (
       <Block
         // As long as blocks are in a static list, using the index as a key should be fine.

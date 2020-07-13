@@ -15,6 +15,7 @@ bootstrap(({ actions, data: defaultData, events, parameters: { buttons }, ready,
     events.on.data(loadData);
     ready();
   }, [events, loadData, ready]);
+
   return (
     <div className="buttons is-centered">
       {buttons.map((button) => (

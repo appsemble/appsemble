@@ -33,7 +33,6 @@ export default function Main(): ReactElement {
     if (page.name === definition.defaultPage) {
       defaultPath = path;
     }
-
     return (
       <Route key={path} exact path={path}>
         <Page page={page} prefix={`pages.${index}`} />
