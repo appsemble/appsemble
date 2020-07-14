@@ -2,7 +2,7 @@ import { FormattedMessage } from '@appsemble/preact';
 import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import type { InputProps, RadioField, RequiredRequirement } from '../../../block';
+import type { InputProps, RadioField } from '../../../block';
 import isRequired from '../../utils/isRequired';
 import styles from './index.css';
 

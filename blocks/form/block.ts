@@ -203,7 +203,6 @@ export interface RadioField extends AbstractField {
    *
    * These are evaluated in the order they are defined in.
    */
-  // XXX: Implement field requirements
   requirements?: RequiredRequirement[];
 }
 
