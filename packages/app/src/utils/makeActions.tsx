@@ -122,7 +122,7 @@ function createAction({
           return onError.dispatch(error);
         }
 
-        return error;
+        throw error;
       }
 
       if (onSuccess) {

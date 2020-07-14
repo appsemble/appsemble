@@ -1,11 +1,11 @@
 import type { BaseAction } from '@appsemble/sdk';
 
-export default function noop(): BaseAction<'noop'> {
+export default function throwAction(): BaseAction<'throw'> {
   return {
-    type: 'noop',
+    type: 'throw',
 
     async dispatch(data: any) {
-      return data;
+      throw data;
     },
   };
 }

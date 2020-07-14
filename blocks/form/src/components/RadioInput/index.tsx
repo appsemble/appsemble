@@ -3,6 +3,7 @@ import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, RadioField } from '../../../block';
+import isRequired from '../../utils/isRequired';
 import styles from './index.css';
 
 type RadioInputProps = InputProps<any, RadioField>;
@@ -17,18 +18,21 @@ export default function RadioInput({
   onInput,
   value,
 }: RadioInputProps): VNode {
+  const { label, name, options } = field;
+  const required = isRequired(field);
+
   return (
     <RadioGroup
       className="appsemble-radio"
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
-      label={field.label}
-      name={field.name}
+      label={label}
+      name={name}
       onChange={onInput}
-      required={field.required}
+      required={required}
       value={value}
     >
-      {field.options.map((option) => (
+      {options.map((option) => (
         <RadioButton value={option.value} wrapperClassName={styles.choice}>
           {option.label ?? option.value}
         </RadioButton>
