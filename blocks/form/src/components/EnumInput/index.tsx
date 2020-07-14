@@ -16,7 +16,7 @@ export default function EnumInput({
   onInput,
   value = '',
 }: EnumInputProps): VNode {
-  const required = !!requirements?.find((req) => 'required' in req && req.required);
+  const required = Boolean(requirements?.find((req) => (req as RequiredRequirement).required));
 
   return (
     <Select
