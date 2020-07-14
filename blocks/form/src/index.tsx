@@ -1,5 +1,5 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
-import type { Parameters, Remapper } from '@appsemble/sdk';
+import type { Remapper } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
@@ -14,6 +14,7 @@ import RadioInput from './components/RadioInput';
 import StringInput from './components/StringInput';
 import styles from './index.css';
 import messages from './messages';
+import generateDefaultValidity from './utils/generateDefaultValidity';
 import validateString from './utils/validateString';
 import ValidationError from './utils/ValidationError';
 
@@ -70,36 +71,10 @@ const validators: { [name: string]: Validator } = {
   boolean: () => true,
 };
 
-function generateDefaultValues(parameters: Parameters, data: any): { [field: string]: boolean } {
-  return parameters.fields.reduce<{ [field: string]: boolean }>(
-    (acc, { defaultValue, name, readOnly, required, type }) => {
-      let valid = !required;
-      if (required) {
-        valid = defaultValue !== undefined;
-      }
-      if (readOnly) {
-        if (required) {
-          valid = !!data[name];
-        } else {
-          valid = true;
-        }
-      }
-
-      if (type === 'boolean') {
-        valid = true;
-      }
-
-      acc[name] = valid;
-      return acc;
-    },
-    {},
-  );
-}
-
 bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [disabled, setDisabled] = useState(true);
-  const [validity, setValidity] = useState(generateDefaultValues(parameters, data));
+  const [validity, setValidity] = useState(generateDefaultValidity(parameters, data));
   const [submitting, setSubmitting] = useState(false);
   const defaultValues = useMemo(
     () =>
