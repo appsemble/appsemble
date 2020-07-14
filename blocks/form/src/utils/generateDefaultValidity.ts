@@ -6,9 +6,7 @@ export default function generateDefaultValidity(
 ): { [field: string]: boolean } {
   return parameters.fields.reduce<{ [field: string]: boolean }>(
     (acc, { defaultValue, name, readOnly, type, ...field }) => {
-      const required =
-        'requirements' in field &&
-        !!field.requirements.find((req) => 'required' in req && req.required);
+      const required = Boolean(requirements?.find((req) => (req as RequiredRequirement).required));
 
       let valid = !required;
       if (required) {
