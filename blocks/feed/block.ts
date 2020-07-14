@@ -1,4 +1,6 @@
+import type { BulmaColor } from '@appsemble/sdk';
 import type { MapperFunction } from '@appsemble/utils';
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 interface Reply {
   /**
@@ -28,6 +30,33 @@ export interface Remappers {
   content: MapperFunction;
   latitude: MapperFunction;
   longitude: MapperFunction;
+}
+
+/**
+ * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).
+ */
+interface FontAwesomeMarkerIcon {
+  /**
+   * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
+   */
+  icon?: IconName;
+
+  /**
+   * The color to apply to the icon.
+   *
+   * @default primary
+   */
+  color?: BulmaColor;
+}
+
+/**
+ * A marker based on an existing asset.
+ */
+interface AssetMarkerIcon {
+  /**
+   * The id of an asset to use.
+   */
+  asset: number;
 }
 
 declare module '@appsemble/sdk' {
@@ -80,18 +109,43 @@ declare module '@appsemble/sdk' {
     description?: string;
 
     /**
-     * The latitude of the card.
-     *
-     * If `latidude` and `longitude` are defined, a map will be rendered.
+     * The location marker that is displayed on the card.
      */
-    latitude?: string;
+    marker?: {
+      /**
+       * The latitude of the marker.
+       */
+      latitude: string;
 
-    /**
-     * The longitude of the card.
-     *
-     * If `latidude` and `longitude` are defined, a map will be rendered.
-     */
-    longitude?: string;
+      /**
+       * The longitude of the marker.
+       */
+      longitude: string;
+
+      /**
+       * The anchor X and Y offset used for positioning the image.
+       *
+       * By default, the center of the icon will be used to mark the location.
+       * For many icons, it may be desirable to customize this. For example, for a symmetric pin
+       * which has a width of 10, and a  height of 16, you’ll probably want to set this to `[5, 16]`
+       *
+       * The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
+       * treated in a special way, since they are often used to represent a location:
+       *
+       * - `map-marker`
+       * - `map-marker-alt`
+       * - `map-pin`
+       * - `thumbtrack`
+       */
+      anchor?: [number, number];
+
+      /**
+       * The height of marker icons in pixels.
+       *
+       * @default 28
+       */
+      size?: number;
+    } & (FontAwesomeMarkerIcon | AssetMarkerIcon);
   }
 
   interface Actions {
