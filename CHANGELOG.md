@@ -27,6 +27,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Server: Add login flow for user apps using third party OAuth2 providers.
 - Studio: Add login flow for user apps using third party OAuth2 providers.
 - Studio: Add option to mark specific resources to be included when cloning template apps.
+- Studio: Add prompt when closing the editor with unsaved changes.
 
 ### Fixed
 

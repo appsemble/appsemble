@@ -1,5 +1,11 @@
 import RefParser from '@apidevtools/json-schema-ref-parser';
-import { Form, Loader, useConfirmation, useMessages } from '@appsemble/react-components';
+import {
+  Form,
+  Loader,
+  useConfirmation,
+  useEventListener,
+  useMessages,
+} from '@appsemble/react-components';
 import type { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
   api,
@@ -183,6 +189,21 @@ export default function Editor(): ReactElement {
       onSave();
     }
   }, [recipe, editorStep, onSave, openApiDocument]);
+
+  const checkSavePrompt = useCallback(
+    (e: BeforeUnloadEvent) => {
+      if (recipe !== initialRecipe) {
+        e.preventDefault();
+        e.returnValue = '';
+        return;
+      }
+
+      delete e.returnValue;
+    },
+    [initialRecipe, recipe],
+  );
+
+  useEventListener(window, 'beforeunload', checkSavePrompt);
 
   const uploadApp = useCallback(async () => {
     if (!valid) {
