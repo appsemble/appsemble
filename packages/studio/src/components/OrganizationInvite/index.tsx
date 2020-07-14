@@ -88,7 +88,7 @@ export default function OrganizationInvite(): ReactElement {
 
         <div className="field is-grouped">
           <p className="control">
-            <Button color="success" disabled={submitting} onClick={onAcceptClick} type="button">
+            <Button color="success" disabled={submitting} onClick={onAcceptClick}>
               <FormattedMessage {...messages.accept} />
             </Button>
           </p>
