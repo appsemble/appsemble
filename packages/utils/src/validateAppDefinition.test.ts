@@ -32,6 +32,17 @@ describe('validateDefaultPage', () => {
       new AppsembleValidationError('Page “Foo” as specified in defaultPage does not exist.'),
     );
   });
+
+  it('should not allow pages with page parameters', () => {
+    const definition: AppDefinition = {
+      defaultPage: 'Foo',
+      pages: [{ name: 'Foo', parameters: ['id'], blocks: [] }],
+    };
+
+    expect(() => validateDefaultPage(definition)).toThrow(
+      new AppsembleValidationError('Default page “Foo” can not have page parameters.'),
+    );
+  });
 });
 
 describe('checkBlocks', () => {
