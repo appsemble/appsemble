@@ -189,4 +189,4 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       </div>
     </form>
   );
-});
+}, messages);
