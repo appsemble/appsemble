@@ -3,7 +3,7 @@ import { Checkbox } from '@appsemble/preact-components/src';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
-import type { BooleanField, InputProps } from '../../../block';
+import type { BooleanField, InputProps, RequiredRequirement } from '../../../block';
 
 type BooleanInputProps = InputProps<boolean, BooleanField>;
 

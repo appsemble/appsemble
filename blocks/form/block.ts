@@ -41,7 +41,7 @@ interface StepRequirement extends BaseRequirement {
 /**
  * Requirement used to mark the field as required.
  */
-interface RequiredRequirement extends BaseRequirement {
+export interface RequiredRequirement extends BaseRequirement {
   /**
    * Whether the field is required.
    */

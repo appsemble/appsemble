@@ -2,7 +2,7 @@ import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import type { InputProps, NumberField } from '../../../block';
+import type { InputProps, NumberField, RequiredRequirement } from '../../../block';
 
 type NumberInputProps = InputProps<number, NumberField>;
 
