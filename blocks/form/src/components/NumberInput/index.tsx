@@ -16,7 +16,7 @@ export default function NumberInput({
   onInput,
   value,
 }: NumberInputProps): VNode {
-  const required = !!requirements?.find((req) => 'required' in req && req.required);
+  const required = Boolean(requirements?.find((req) => (req as RequiredRequirement).required));
   const max = Math.max(
     ...requirements
       ?.map((requirement) => 'max' in requirement && requirement.max)
