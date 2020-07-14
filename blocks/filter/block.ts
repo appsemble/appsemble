@@ -163,8 +163,20 @@ declare module '@appsemble/sdk' {
 
   interface EventEmitters {
     /**
-     * This event is emitted when new filter data is available.
+     * This event is emitted when new data is available because of a user interaction with filters.
      */
-    data: {};
+    filtered: {};
+
+    /**
+     * This event is emitted when new data is available because of a refresh event.
+     */
+    refreshed: {};
+  }
+
+  interface EventListeners {
+    /**
+     * Force reload data using the current filters.
+     */
+    refresh: {};
   }
 }
