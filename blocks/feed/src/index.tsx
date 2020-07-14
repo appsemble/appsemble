@@ -54,8 +54,8 @@ bootstrap(({ events, parameters, ready }) => {
         author: createRemapper(parameters.reply.author),
         content: createRemapper(parameters.reply.content),
       }),
-      latitude: createRemapper(parameters.latitude),
-      longitude: createRemapper(parameters.longitude),
+      latitude: createRemapper(parameters.marker.latitude),
+      longitude: createRemapper(parameters.marker.longitude),
     });
   }, [parameters]);
 
