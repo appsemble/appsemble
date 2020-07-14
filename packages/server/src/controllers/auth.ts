@@ -50,14 +50,12 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
     throw e;
   }
 
-  const { host } = argv;
-
   // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
   // will still be logged in, but will have to request a new verification email in order to verify
   // their account.
   mailer
     .sendEmail({ email, name }, 'welcome', {
-      url: `${host}/verify?token=${key}`,
+      url: `${argv.host}/verify?token=${key}`,
     })
     .catch((error) => {
       logger.error(error);
