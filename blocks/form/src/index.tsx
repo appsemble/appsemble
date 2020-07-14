@@ -1,10 +1,10 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
-import type { Remapper } from '@appsemble/sdk';
+import { Message } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h } from 'preact';
-import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import type { Field, FileField } from '../block';
+import type { BaseRequirement } from '../block';
 import BooleanInput from './components/BooleanInput';
 import EnumInput from './components/EnumInput';
 import FileInput from './components/FileInput';
@@ -15,15 +15,8 @@ import StringInput from './components/StringInput';
 import styles from './index.css';
 import messages from './messages';
 import generateDefaultValidity from './utils/generateDefaultValidity';
-import validateString from './utils/validateString';
-import ValidationError from './utils/ValidationError';
-
-type Validator = (
-  field: Field,
-  event: Event,
-  value: any,
-  remap: (remapper: Remapper, data: any) => any,
-) => boolean;
+import generateDefaultValues from './utils/generateDefaultValues';
+import validators from './utils/validators';
 
 const inputs = {
   enum: EnumInput,
@@ -37,120 +30,92 @@ const inputs = {
   radio: RadioInput,
 };
 
-const validateInput: Validator = (_field, event) =>
-  (event.currentTarget as HTMLInputElement).validity.valid;
-
-const validators: { [name: string]: Validator } = {
-  file: (field: FileField, _event, value) => {
-    if (!field.required) {
-      return true;
-    }
-
-    if (value === null) {
-      return false;
-    }
-
-    if (field.accept) {
-      if (field.repeated) {
-        return (
-          (value as File[]).every((file) => field.accept.includes(file.type)) &&
-          (value as File[]).length >= 1
-        );
-      }
-      return field.accept.includes((value as File).type);
-    }
-
-    return true;
-  },
-  geocoordinates: (_, _event, value: { longitude: number; latitude: number }) =>
-    !!(value.latitude && value.longitude),
-  hidden: (): boolean => true,
-  string: validateString,
-  number: validateInput,
-  integer: validateInput,
-  boolean: () => true,
-};
-
 bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
+  const [formError, setFormError] = useState<string>(null);
   const [disabled, setDisabled] = useState(true);
   const [validity, setValidity] = useState(generateDefaultValidity(parameters, data));
   const [submitting, setSubmitting] = useState(false);
-  const defaultValues = useMemo(
-    () =>
-      parameters.fields.reduce((acc, field) => {
-        if ('defaultValue' in field) {
-          acc[field.name] = field.defaultValue;
-        } else if (field.type === 'string') {
-          acc[field.name] = '';
-        } else if (field.type === 'boolean') {
-          acc[field.name] = false;
-        } else if (
-          field.type === 'enum' ||
-          field.type === 'hidden' ||
-          field.type === 'integer' ||
-          field.type === 'number'
-        ) {
-          acc[field.name] = null;
-        } else if (field.type === 'geocoordinates') {
-          acc[field.name] = {};
-        } else if (field.type === 'file' && field.repeated) {
-          acc[field.name] = [];
-        } else {
-          acc[field.name] = null;
-        }
-
-        return acc;
-      }, {} as { [key: string]: any }),
-    [parameters],
-  );
+  const defaultValues = useMemo(() => generateDefaultValues(parameters), [parameters]);
   const [values, setValues] = useState({
     ...defaultValues,
     ...data,
   });
+  const ref = useRef<object>({});
 
   const validateField = useCallback(
-    (event: Event, value: any): boolean => {
+    (event: Event, value: any): BaseRequirement => {
       const { fields } = parameters;
       const { name } = event.currentTarget as HTMLInputElement;
       const field = fields.find((f) => f.name === name);
 
       if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
-        return validators[field.type](field, event, value, remap);
+        return validators[field.type](field, value, remap);
       }
-      return true;
+
+      return null;
     },
     [parameters, remap],
+  );
+
+  const validateForm = useCallback(
+    async (v: any, currentValidity: { [field: string]: boolean }, lock: object) => {
+      const requirements = parameters.requirements || [];
+      let e = null;
+
+      const newData = await Promise.all(
+        requirements.map(async (requirement) => {
+          try {
+            if (requirement.isValid.every((field) => currentValidity[field])) {
+              return await actions[requirement.action].dispatch(v);
+            }
+
+            return null;
+          } catch (error) {
+            e = remap(requirement.errorMessage, v) || messages.error;
+            return error;
+          }
+        }),
+      );
+
+      if (lock !== ref.current) {
+        return;
+      }
+
+      const newValues = Object.assign({}, v, ...newData);
+      const newValidity = Object.fromEntries(
+        parameters.fields.map((field) => [
+          field.name,
+          !validators[field.type](field, newValues[field.name], remap),
+        ]),
+      );
+      setValues(newValues);
+      setFormError(e ?? null);
+      setValidity(newValidity);
+    },
+    [actions, ref, parameters, remap],
   );
 
   const onChange = useCallback(
     (event: Event, value: any): void => {
       const { name } = event.currentTarget as HTMLInputElement;
-      let valid: boolean;
-      let error: string;
 
-      try {
-        valid = validateField(event, value);
-        if (!valid) {
-          error = messages.invalid;
-        }
-      } catch (e) {
-        if (!(e instanceof ValidationError)) {
-          throw e;
-        }
-
-        valid = false;
-        error = e.message || messages.invalid;
-      }
-
-      setErrors({ ...errors, [name]: error });
-      setValidity({ ...validity, [name]: valid });
-      setValues({
+      const invalid = validateField(event, value);
+      const error = (invalid != null && remap(invalid.errorMessage, value)) || messages.error;
+      setErrors({ ...errors, [name]: invalid && error });
+      const newValues = {
         ...values,
         [(event.currentTarget as HTMLInputElement).name]: value,
-      });
+      };
+      const newValidity = { ...validity, [name]: !invalid };
+      setValidity(newValidity);
+      const lock = {};
+      setValues(newValues);
+      ref.current = lock;
+      validateForm(newValues, newValidity, lock);
     },
-    [errors, validateField, validity, values],
+
+    [errors, remap, validateField, validateForm, validity, values],
   );
 
   const onSubmit = useCallback(
@@ -158,23 +123,17 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       event.preventDefault();
 
       if (!submitting) {
+        setSubmitting(true);
         actions.onSubmit
           .dispatch(values)
-          .then(() => {
-            setSubmitting(true);
-            return actions.onSubmitSuccess.dispatch(values);
-          })
           .catch((error) => {
             if (error.message !== 'Schema Validation Failed') {
-              setSubmitting(false);
               throw error;
             }
             setErrors(error.data);
-            setSubmitting(false);
-          });
+          })
+          .finally(() => setSubmitting(false));
       }
-
-      setSubmitting(true);
     },
     [actions, submitting, values],
   );
@@ -197,6 +156,9 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   return (
     <form className={`${styles.root} is-flex px-2 py-2`} noValidate onSubmit={onSubmit}>
       {disabled && <progress className="progress is-small is-primary" />}
+      <Message className={classNames(styles.error, { [styles.hidden]: !formError })} color="danger">
+        <span>{formError}</span>
+      </Message>
       {parameters.fields.map((field) => {
         const Comp = inputs[field.type];
         return (

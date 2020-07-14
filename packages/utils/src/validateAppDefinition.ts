@@ -70,10 +70,15 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
     }
 
     Object.keys(block.actions || {}).forEach((key) => {
-      if (version.actions.$any && actionParameters.has(key)) {
-        return;
-      }
-      if (!Object.prototype.hasOwnProperty.call(version.actions, key)) {
+      if (version.actions.$any) {
+        if (actionParameters.has(key)) {
+          return;
+        }
+
+        if (!Object.keys(version.actions).includes(key)) {
+          acc[`${loc}.actions.${key}`] = `Custom action “${key}” is unused`;
+        }
+      } else if (!Object.prototype.hasOwnProperty.call(version.actions, key)) {
         acc[`${loc}.actions.${key}`] = 'Unknown action type';
       }
     });

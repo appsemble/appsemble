@@ -84,6 +84,7 @@ export type Action =
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'noop'>
+  | BaseAction<'throw'>
   | BaseAction<'static'>
   | LinkAction
   | LogAction

@@ -9,6 +9,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add `throw` action. This can be used when a block specifically wants data to be thrown
+  instead of returned.
 - App: Add `data-path` and `data-type` attributes to pages and blocks on pages.
 - Block(`detail`): Add `appsemble-` type classes to the containers of fields to make it easier to
   style them. For example: `appsemble-file` for file type fields.
@@ -19,6 +21,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   looks. It is identical to how works in `map`.
 - Block(`form`): Add `appsemble-` type classes to the containers of fields to make it easier to
   style them. For example: `appsemble-file` for file type fields.
+- Block(`form`): Add `requirements` parameter to base of form. This can be used to perform an action
+  that mutates the form based on what is returned from the action.
 - Block(`list`): Add `image` property.
 - Block(`map`): Add `color` property to `icons`. This can be used to change the color of custom
   markers.
@@ -28,6 +32,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Studio: Add login flow for user apps using third party OAuth2 providers.
 - Studio: Add option to mark specific resources to be included when cloning template apps.
 - Studio: Add prompt when closing the editor with unsaved changes.
+
+### Changed
+
+- App: Make `noop` action return the data it received instead of returning nothing.
+- Block(`form`): Move several fields specific to validation to the `requirements` array. Refer to
+  the block documentation for specific changes.
 
 ### Fixed
 
