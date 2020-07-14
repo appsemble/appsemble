@@ -36,6 +36,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - App: Make `noop` action return the data it received instead of returning nothing.
+- Block(`filter`): This block has been rewritten, because it had too many issues. Support for data
+  notifications has been removed. Use `data-notifier` instead.
 - Block(`form`): Move several fields specific to validation to the `requirements` array. Refer to
   the block documentation for specific changes.
 

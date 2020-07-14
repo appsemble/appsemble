@@ -48,9 +48,9 @@ bootstrap(
         setLoading(true);
         try {
           const data = await actions.onLoad.dispatch({ $filter: toOData(fields, submitValues) });
-          events.emit.data(data);
+          events.emit.filtered(data);
         } catch (error) {
-          events.emit.data(null, error);
+          events.emit.filtered(null, error);
         }
         setLoading(false);
       },
@@ -84,6 +84,21 @@ bootstrap(
       setValues(defaultValues);
       return fetchData(defaultValues);
     }, [defaultValues, fetchData]);
+
+    useEffect(() => {
+      const refresh = async (): Promise<void> => {
+        try {
+          const data = await actions.onLoad.dispatch({ $filter: toOData(fields, values) });
+          events.emit.refreshed(data);
+        } catch (error) {
+          events.emit.refreshed(null, error);
+        }
+      };
+
+      events.on.refresh(refresh);
+
+      return () => events.off.refresh(refresh);
+    }, [actions, events, fields, values]);
 
     useEffect(ready, [ready]);
 
