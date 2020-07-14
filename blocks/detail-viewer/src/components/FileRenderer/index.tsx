@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
-import { Fragment, h, VNode } from 'preact';
+import { h, VNode } from 'preact';
 
 import type { FileField, RendererProps } from '../../../block';
 import ImageField from '../ImageField';
@@ -14,7 +14,7 @@ export default function FileRenderer({ data, field }: RendererProps<FileField>):
   const value = utils.remap(field.name, data);
 
   return (
-    <Fragment>
+    <div className="appsemble-file">
       {field.label && <h6 className="title is-6">{field.label}</h6>}
       {field.repeated ? (
         <div className={classNames('container', styles.repeated)}>
@@ -31,6 +31,6 @@ export default function FileRenderer({ data, field }: RendererProps<FileField>):
       ) : (
         value && <ImageField label={field.label} name={field.name} src={value} />
       )}
-    </Fragment>
+    </div>
   );
 }

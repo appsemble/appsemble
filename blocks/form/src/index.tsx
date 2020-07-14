@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
-import type { Field, FileField, StringField } from '../block';
+import type { Field, FileField } from '../block';
 import BooleanInput from './components/BooleanInput';
 import EnumInput from './components/EnumInput';
 import FileInput from './components/FileInput';
@@ -13,6 +13,9 @@ import NumberInput from './components/NumberInput';
 import RadioInput from './components/RadioInput';
 import StringInput from './components/StringInput';
 import styles from './index.css';
+import messages from './messages';
+import generateDefaultValidity from './utils/generateDefaultValidity';
+import validateString from './utils/validateString';
 import ValidationError from './utils/ValidationError';
 
 type Validator = (
@@ -32,37 +35,6 @@ const inputs = {
   integer: NumberInput,
   boolean: BooleanInput,
   radio: RadioInput,
-};
-
-const validateString: Validator = (field: StringField, event, value: string, remap) => {
-  const inputValid = (event.currentTarget as HTMLInputElement).validity.valid;
-
-  if (!inputValid) {
-    return false;
-  }
-
-  field.requirements?.forEach((requirement) => {
-    let valid = true;
-
-    if ('regex' in requirement) {
-      const regex = new RegExp(requirement.regex, requirement.flags || 'g');
-      valid = regex.test(value);
-    }
-
-    if ('maxLength' in requirement || 'minLength' in requirement) {
-      const maxValid = requirement.maxLength != null ? value.length >= requirement.maxLength : true;
-      const minValid = requirement.minLength != null ? value.length <= requirement.minLength : true;
-
-      valid = maxValid && minValid;
-    }
-
-    if (!valid) {
-      const error = remap(requirement.errorMessage, value);
-      throw new ValidationError(error);
-    }
-  });
-
-  return inputValid;
 };
 
 const validateInput: Validator = (_field, event) =>
@@ -99,39 +71,10 @@ const validators: { [name: string]: Validator } = {
   boolean: () => true,
 };
 
-const messages = {
-  invalid: 'This value is invalid',
-  emptyFileLabel: ' ',
-  submit: 'Submit',
-  unsupported: 'This file type is not supported',
-};
-
 bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [disabled, setDisabled] = useState(true);
-  const [validity, setValidity] = useState({
-    ...parameters.fields.reduce<{ [name: string]: boolean }>(
-      (acc, { defaultValue, name, readOnly, required, type }) => {
-        let valid = !required;
-        if (required) {
-          valid = defaultValue !== undefined;
-        }
-        if (readOnly) {
-          if (required) {
-            valid = !!data[name];
-          } else {
-            valid = true;
-          }
-        }
-        if (type === 'boolean') {
-          valid = true;
-        }
-        acc[name] = valid;
-        return acc;
-      },
-      {},
-    ),
-  });
+  const [validity, setValidity] = useState(generateDefaultValidity(parameters, data));
   const [submitting, setSubmitting] = useState(false);
   const defaultValues = useMemo(
     () =>

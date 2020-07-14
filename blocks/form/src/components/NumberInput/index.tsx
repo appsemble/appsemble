@@ -18,6 +18,7 @@ export default function NumberInput({
 }: NumberInputProps): VNode {
   return (
     <Input
+      className="appsemble-number"
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       iconLeft={field.icon}

@@ -20,7 +20,7 @@ export default function BooleanInput({
   return (
     <Checkbox
       checked={!!value}
-      className={classNames({ 'is-danger': error })}
+      className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       help={field.labelText ?? field.label ?? null}

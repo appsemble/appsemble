@@ -19,6 +19,7 @@ export default function RadioInput({
 }: RadioInputProps): VNode {
   return (
     <RadioGroup
+      className="appsemble-radio"
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       label={field.label}

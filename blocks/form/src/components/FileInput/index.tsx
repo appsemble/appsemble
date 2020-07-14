@@ -31,7 +31,12 @@ export default function FileInput({
   );
 
   return (
-    <FormComponent iconLeft={field.icon} label={field.label} required={field.required}>
+    <FormComponent
+      className="appsemble-file"
+      iconLeft={field.icon}
+      label={field.label}
+      required={field.required}
+    >
       {field.repeated ? (
         <div
           className={classNames('is-flex py-2 px-0', styles.repeatedContainer, {

@@ -39,6 +39,7 @@ export default function StringInput({
 
   return (
     <Input
+      className="appsemble-string"
       disabled={disabled}
       error={error}
       iconLeft={icon}

@@ -159,7 +159,7 @@ export default function AppSettings(): ReactElement {
         <FormattedMessage {...messages.settings} />
       </TitleBar>
       <div className={`${styles.root} px-3 py-3`}>
-        {(definition.notifications !== undefined || Object.keys(subscriptions).length) && (
+        {(definition.notifications !== undefined || Object.keys(subscriptions).length > 0) && (
           <>
             <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
               <div className={`${styles.setting} is-flex`}>

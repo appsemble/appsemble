@@ -9,11 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add `data-path` and `data-type` attributes to pages and blocks on pages.
+- Block(`detail`): Add `appsemble-` type classes to the containers of fields to make it easier to
+  style them. For example: `appsemble-file` for file type fields.
 - App: Add support for login with third party OAuth2 providers.
 - Block(`data-notifier`): Add new the `data-notifier` block. This has the same functionality as the
   filter block for refreshing new data, but for general use.
 - Block(`detail-viewer`): Add `icons` property which can be used to customize the way the marker
   looks. It is identical to how works in `map`.
+- Block(`form`): Add `appsemble-` type classes to the containers of fields to make it easier to
+  style them. For example: `appsemble-file` for file type fields.
 - Block(`list`): Add `image` property.
 - Block(`map`): Add `color` property to `icons`. This can be used to change the color of custom
   markers.

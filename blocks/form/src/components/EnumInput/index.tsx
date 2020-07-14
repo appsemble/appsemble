@@ -13,6 +13,7 @@ type EnumInputProps = InputProps<string, EnumField>;
 export default function EnumInput({ disabled, field, onInput, value = '' }: EnumInputProps): VNode {
   return (
     <Select
+      className="appsemble-enum"
       disabled={disabled}
       iconLeft={field.icon}
       id={field.name}
