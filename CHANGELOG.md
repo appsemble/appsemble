@@ -29,6 +29,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Studio: Add option to mark specific resources to be included when cloning template apps.
 - Studio: Add prompt when closing the editor with unsaved changes.
 
+### Changed
+
+- Block(`filter`): This block has been rewritten, because it had too many issues. Support for data
+  notifications has been removed. Use `data-notifier` instead.
+
 ### Fixed
 
 - Studio: Fix bug where user gets redirected to app details when trying to access secured routes.
