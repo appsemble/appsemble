@@ -14,7 +14,7 @@ interface ButtonProps {
   utils: Utils;
 }
 
-export default function Button({ action, button, data, utils, ...props }: ButtonProps): VNode {
+export default function Button({ action, button, data, utils }: ButtonProps): VNode {
   const onButtonClick = useCallback(
     (event: Event) => {
       event.preventDefault();
@@ -37,7 +37,6 @@ export default function Button({ action, button, data, utils, ...props }: Button
         'is-outlined': button.outlined,
       })}
       onClick={onButtonClick}
-      {...props}
     >
       {button.icon && <Icon icon={button.icon} />}
       {label && <span>{label}</span>}

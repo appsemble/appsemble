@@ -10,7 +10,6 @@ import styles from './index.css';
 type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
 
 export default function FileInput({
-  className,
   disabled,
   error,
   field,
@@ -33,7 +32,7 @@ export default function FileInput({
 
   return (
     <FormComponent
-      className={className}
+      className="appsemble-file"
       iconLeft={field.icon}
       label={field.label}
       required={field.required}

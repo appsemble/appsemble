@@ -76,9 +76,9 @@ class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
   };
 
   render(): VNode {
-    const { className, disabled } = this.props;
+    const { disabled } = this.props;
     return (
-      <div className={`${styles.root} ${className} is-relative mb-5`}>
+      <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
         <div ref={this.ref} className={styles.map} />
         <div className={styles.crossHairsOverlay}>
           <i className={`fas fa-crosshairs ${styles.crossHairs}`} />

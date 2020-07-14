@@ -10,7 +10,6 @@ type NumberInputProps = InputProps<number, NumberField>;
  * An input element for a number type schema.
  */
 export default function NumberInput({
-  className,
   disabled,
   error,
   field,
@@ -19,7 +18,7 @@ export default function NumberInput({
 }: NumberInputProps): VNode {
   return (
     <Input
-      className={className}
+      className="appsemble-number"
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       iconLeft={field.icon}

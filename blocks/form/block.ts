@@ -336,11 +336,6 @@ export interface InputProps<T, F extends Field> {
    * The current value.
    */
   value: T;
-
-  /**
-   * The class names to apply to the component.
-   */
-  className?: string;
 }
 
 declare module '@appsemble/sdk' {

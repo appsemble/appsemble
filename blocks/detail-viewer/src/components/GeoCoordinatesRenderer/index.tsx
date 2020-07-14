@@ -15,7 +15,6 @@ import styles from './index.css';
  * https://schema.org/GeoCoordinates
  */
 export default function GeoCoordinatesRenderer({
-  className,
   data,
   field,
   theme,
@@ -39,7 +38,7 @@ export default function GeoCoordinatesRenderer({
   }, [block, icons]);
 
   return (
-    <div className={`${styles.root} ${className}`}>
+    <div className={`appsemble-geocoordinates ${styles.root}`}>
       {label && <h1 className="label">{label}</h1>}
 
       {((icons && marker) || !icons) && (
