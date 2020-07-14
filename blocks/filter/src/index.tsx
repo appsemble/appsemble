@@ -43,30 +43,47 @@ bootstrap(
 
     const highlightedField = fields.find((field) => field.name === highlight);
 
-    const onChange = useCallback(
-      (event: h.JSX.TargetedEvent<HTMLInputElement | HTMLButtonElement>, value: FilterValue) => {
-        setValues({
-          ...values,
-          [event.currentTarget.name]: value,
-        });
+    const fetchData = useCallback(
+      async (submitValues: FilterValues) => {
+        setLoading(true);
+        try {
+          const data = await actions.onLoad.dispatch({ $filter: toOData(fields, submitValues) });
+          events.emit.data(data);
+        } catch (error) {
+          events.emit.data(null, error);
+        }
+        setLoading(false);
       },
-      [values],
+      [actions, events, fields],
     );
 
-    const onSubmit = useCallback(async () => {
-      setLoading(true);
-      try {
-        const data = await actions.onLoad.dispatch({ $filter: toOData(fields, values) });
-        events.emit.data(data);
-      } catch (error) {
-        events.emit.data(null, error);
-      }
-      setLoading(false);
-    }, [actions, events, fields, values]);
+    const onChange = useCallback(
+      (
+        { currentTarget: { name } }: h.JSX.TargetedEvent<HTMLInputElement | HTMLButtonElement>,
+        value: FilterValue,
+      ) => {
+        const newValues = {
+          ...values,
+          [name]: value,
+        };
+        setValues(newValues);
+        if (name === highlight) {
+          fetchData(newValues);
+        }
+      },
+      [fetchData, highlight, values],
+    );
+
+    const onSubmit = useCallback(() => fetchData(values).then(modal.disable), [
+      fetchData,
+      modal,
+      values,
+    ]);
 
     const resetFilter = useCallback(() => {
       setValues(defaultValues);
-    }, [defaultValues]);
+      return fetchData(defaultValues);
+    }, [defaultValues, fetchData]);
 
     useEffect(ready, [ready]);
 
