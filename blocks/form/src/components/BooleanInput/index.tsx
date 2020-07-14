@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import type { BooleanField, InputProps, RequiredRequirement } from '../../../block';
+import isRequired from '../../utils/isRequired';
 
 type BooleanInputProps = InputProps<boolean, BooleanField>;
 
@@ -13,11 +14,12 @@ type BooleanInputProps = InputProps<boolean, BooleanField>;
 export default function BooleanInput({
   disabled,
   error,
-  field: { label, labelText, name, readOnly, requirements = [] },
+  field,
   onInput,
   value = false,
 }: BooleanInputProps): VNode {
-  const required = Boolean(requirements?.find((req) => (req as RequiredRequirement).required));
+  const { label, labelText, name, readOnly } = field;
+  const required = isRequired(field);
 
   return (
     <Checkbox

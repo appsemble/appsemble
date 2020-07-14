@@ -3,6 +3,7 @@ import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, RadioField, RequiredRequirement } from '../../../block';
+import isRequired from '../../utils/isRequired';
 import styles from './index.css';
 
 type RadioInputProps = InputProps<any, RadioField>;
@@ -13,11 +14,12 @@ type RadioInputProps = InputProps<any, RadioField>;
 export default function RadioInput({
   disabled,
   error,
-  field: { name, label, options, requirements = [] },
+  field,
   onInput,
   value,
 }: RadioInputProps): VNode {
-  const required = Boolean(requirements?.find((req) => (req as RequiredRequirement).required));
+  const { label, name, options } = field;
+  const required = isRequired(field);
 
   return (
     <RadioGroup

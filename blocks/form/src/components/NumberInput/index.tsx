@@ -2,7 +2,8 @@ import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import type { InputProps, NumberField, RequiredRequirement } from '../../../block';
+import type { InputProps, NumberField } from '../../../block';
+import isRequired from '../../utils/isRequired';
 
 type NumberInputProps = InputProps<number, NumberField>;
 
@@ -12,11 +13,12 @@ type NumberInputProps = InputProps<number, NumberField>;
 export default function NumberInput({
   disabled,
   error,
-  field: { name, label, type, placeholder, readOnly, icon, requirements = [] },
+  field,
   onInput,
   value,
 }: NumberInputProps): VNode {
-  const required = Boolean(requirements?.find((req) => (req as RequiredRequirement).required));
+  const { name, label, type, placeholder, readOnly, icon, requirements = [] } = field;
+  const required = isRequired(field);
   const max = Math.max(
     ...requirements
       ?.map((requirement) => 'max' in requirement && requirement.max)

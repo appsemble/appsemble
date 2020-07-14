@@ -2,7 +2,8 @@ import { Select } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
-import type { EnumField, InputProps, RequiredRequirement } from '../../../block';
+import type { EnumField, InputProps } from '../../../block';
+import isRequired from '../../utils/isRequired';
 import styles from './index.css';
 
 type EnumInputProps = InputProps<string, EnumField>;
@@ -10,13 +11,9 @@ type EnumInputProps = InputProps<string, EnumField>;
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
-export default function EnumInput({
-  disabled,
-  field: { icon, name, label, placeholder, enum: options, requirements = [] },
-  onInput,
-  value = '',
-}: EnumInputProps): VNode {
-  const required = Boolean(requirements?.find((req) => (req as RequiredRequirement).required));
+export default function EnumInput({ disabled, field, onInput, value = '' }: EnumInputProps): VNode {
+  const { enum: options, icon, label, name, placeholder } = field;
+  const required = isRequired(field);
 
   return (
     <Select
