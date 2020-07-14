@@ -21,6 +21,7 @@ export default function RadioInput({
 
   return (
     <RadioGroup
+      className="appsemble-radio"
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       label={label}

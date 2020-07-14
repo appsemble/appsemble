@@ -18,14 +18,14 @@ import {
 import type { Organization } from '@appsemble/types';
 import { normalize, Permission, roles } from '@appsemble/utils';
 import axios from 'axios';
-import * as React from 'react';
+import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
 import type { Member, Role } from '../../types';
 import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
+import { useUser } from '../UserProvider';
 import messages from './messages';
 
 interface Invite {
@@ -54,22 +54,22 @@ function calculateOrganizationId(
   return newValues;
 }
 
-export default function OrganizationsSettings(): React.ReactElement {
+export default function OrganizationsSettings(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const { userInfo } = useUser();
 
-  const [loading, setLoading] = React.useState(true);
-  const [organizations, setOrganizations] = React.useState<LocalOrganization[]>([]);
-  const [selectedOrganization, setSelectedOrganization] = React.useState('');
-  const [submittingRole, setSubmittingRole] = React.useState<string>();
-  const [removingMember, setRemovingMember] = React.useState<string>();
-  const [removingInvite, setRemovingInvite] = React.useState<Invite>();
+  const [loading, setLoading] = useState(true);
+  const [organizations, setOrganizations] = useState<LocalOrganization[]>([]);
+  const [selectedOrganization, setSelectedOrganization] = useState('');
+  const [submittingRole, setSubmittingRole] = useState<string>();
+  const [removingMember, setRemovingMember] = useState<string>();
+  const [removingInvite, setRemovingInvite] = useState<Invite>();
 
-  const onOrganizationChange = React.useCallback(
+  const onOrganizationChange = useCallback(
     async (event) => {
       setLoading(true);
-      const organizationId = event.target.value;
+      const organizationId = event.currentTarget.value;
       const { data: members } = await axios.get(`/api/organizations/${organizationId}/members`);
       const { data: invites } = await axios.get(`/api/organizations/${organizationId}/invites`);
       setSelectedOrganization(organizationId);
@@ -83,7 +83,7 @@ export default function OrganizationsSettings(): React.ReactElement {
     [organizations],
   );
 
-  const onSubmitNewOrganization = React.useCallback(
+  const onSubmitNewOrganization = useCallback(
     async (newOrg: Organization) => {
       try {
         const { data: organization } = await axios.post('/api/organizations', newOrg);
@@ -108,7 +108,7 @@ export default function OrganizationsSettings(): React.ReactElement {
     [formatMessage, organizations, push],
   );
 
-  const onInviteMember = React.useCallback(
+  const onInviteMember = useCallback(
     async ({ email }: Invite) => {
       const organization = organizations.find((o) => o.id === selectedOrganization);
 
@@ -153,7 +153,7 @@ export default function OrganizationsSettings(): React.ReactElement {
     [formatMessage, organizations, push, selectedOrganization],
   );
 
-  const resendInvitation = React.useCallback(
+  const resendInvitation = useCallback(
     async (invite) => {
       await axios.post(`/api/organizations/${selectedOrganization}/invites/resend`, {
         email: invite.email,
@@ -163,10 +163,10 @@ export default function OrganizationsSettings(): React.ReactElement {
     [formatMessage, push, selectedOrganization],
   );
 
-  const onChangeRole = React.useCallback(
-    async (event: React.ChangeEvent<HTMLSelectElement>, userId: string) => {
+  const onChangeRole = useCallback(
+    async (event: ChangeEvent<HTMLSelectElement>, userId: string) => {
       event.preventDefault();
-      const role = event.target.value as Role;
+      const role = event.currentTarget.value as Role;
       setSubmittingRole(userId);
 
       try {
@@ -204,15 +204,15 @@ export default function OrganizationsSettings(): React.ReactElement {
     [formatMessage, organizations, push, selectedOrganization],
   );
 
-  const onRemoveMemberClick = React.useCallback(async (memberId: string) => {
+  const onRemoveMemberClick = useCallback(async (memberId: string) => {
     setRemovingMember(memberId);
   }, []);
 
-  const onRemoveInviteClick = React.useCallback(async (invite: Invite) => {
+  const onRemoveInviteClick = useCallback(async (invite: Invite) => {
     setRemovingInvite(invite);
   }, []);
 
-  const onLeaveOrganization = React.useCallback(async () => {
+  const onLeaveOrganization = useCallback(async () => {
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${userInfo.sub}`);
 
     const organization = organizations.find((o) => o.id === selectedOrganization);
@@ -230,7 +230,7 @@ export default function OrganizationsSettings(): React.ReactElement {
     });
   }, [formatMessage, organizations, push, selectedOrganization, userInfo.sub]);
 
-  const onRemoveMember = React.useCallback(async () => {
+  const onRemoveMember = useCallback(async () => {
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
 
     const organization = organizations.find((o) => o.id === selectedOrganization);
@@ -252,7 +252,7 @@ export default function OrganizationsSettings(): React.ReactElement {
     });
   }, [formatMessage, organizations, push, removingMember, selectedOrganization, userInfo.sub]);
 
-  const onRemoveInvite = React.useCallback(async () => {
+  const onRemoveInvite = useCallback(async () => {
     const organization = organizations.find((o) => o.id === selectedOrganization);
     const filteredInvites = organization.invites.filter((m) => m.email !== removingInvite.email);
 
@@ -273,15 +273,15 @@ export default function OrganizationsSettings(): React.ReactElement {
     });
   }, [formatMessage, organizations, push, removingInvite, selectedOrganization]);
 
-  const onCloseDeleteDialog = React.useCallback(() => {
+  const onCloseDeleteDialog = useCallback(() => {
     setRemovingMember(null);
   }, []);
 
-  const onCloseInviteDialog = React.useCallback(() => {
+  const onCloseInviteDialog = useCallback(() => {
     setRemovingInvite(null);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       let selected = '';
 
@@ -442,7 +442,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                         fullwidth={false}
                         loading={submittingRole === member.id}
                         name={`role-${member.id}`}
-                        onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                        onChange={(event: ChangeEvent<HTMLSelectElement>) =>
                           onChangeRole(event, member.id)
                         }
                       >

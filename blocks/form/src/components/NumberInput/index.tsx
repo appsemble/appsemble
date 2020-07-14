@@ -43,6 +43,7 @@ export default function NumberInput({
 
   return (
     <Input
+      className="appsemble-number"
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       iconLeft={icon}
@@ -55,8 +56,8 @@ export default function NumberInput({
         onInput(
           event,
           type === 'integer'
-            ? Math.floor((event.target as HTMLInputElement).valueAsNumber)
-            : (event.target as HTMLInputElement).valueAsNumber,
+            ? Math.floor((event.currentTarget as HTMLInputElement).valueAsNumber)
+            : (event.currentTarget as HTMLInputElement).valueAsNumber,
         );
       }}
       placeholder={placeholder || label || name}

@@ -1,20 +1,15 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { ReactChild, ReactElement } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface NavLinkProps {
   className?: string;
-  children: React.ReactChild[] | React.ReactChild;
+  children: ReactChild[] | ReactChild;
   exact?: boolean;
   to: string;
 }
 
-export default function NavLink({
-  children,
-  className,
-  exact,
-  to,
-}: NavLinkProps): React.ReactElement {
+export default function NavLink({ children, className, exact, to }: NavLinkProps): ReactElement {
   const location = useLocation();
 
   return (

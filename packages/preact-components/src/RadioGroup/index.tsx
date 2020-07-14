@@ -30,6 +30,7 @@ interface RadioGroupProps
 
 export default function RadioGroup({
   children,
+  className,
   disabled,
   error,
   label,
@@ -40,14 +41,14 @@ export default function RadioGroup({
   value,
 }: RadioGroupProps): VNode {
   const handleChange = useCallback(
-    (event: Event) => {
-      onChange(event, (event.target as HTMLInputElement).value);
+    (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+      onChange(event, event.currentTarget.value);
     },
     [onChange],
   );
 
   return (
-    <FormComponent id={name} label={label} required={required}>
+    <FormComponent className={className} id={name} label={label} required={required}>
       {children.map((child, index) =>
         cloneElement(child, {
           checked: child.props.value === value,

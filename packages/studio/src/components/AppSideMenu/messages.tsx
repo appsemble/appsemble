@@ -6,6 +6,7 @@ export default defineMessages({
   editor: 'Editor',
   resources: 'Resources',
   settings: 'Settings',
+  secrets: 'Secrets',
   notifications: 'Notifications',
   roles: 'Roles',
 });

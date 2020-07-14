@@ -1,15 +1,15 @@
-import * as React from 'react';
+import React, { Children, ReactElement, ReactNode } from 'react';
 
 interface JoinProps {
-  children: React.ReactNode;
-  separator: React.ReactNode;
+  children: ReactNode;
+  separator: ReactNode;
 }
 
 /**
  * Join React JSX children using a separator node.
  */
-export default function Join({ children, separator }: JoinProps): React.ReactElement {
-  return React.Children.toArray(children)
+export default function Join({ children, separator }: JoinProps): ReactElement {
+  return Children.toArray(children)
     .filter((child) => child != null && typeof child !== 'boolean')
     .map((child, index) => (
       <>

@@ -1,4 +1,5 @@
-import type { OAuth2Provider } from '@appsemble/types';
+import type { OAuth2Provider, UserInfo } from '@appsemble/types';
+import type { OAuth2State } from '@appsemble/web-utils';
 
 /**
  * A user email registration.
@@ -39,6 +40,15 @@ export interface Organization {
   role: Role;
 }
 
+/**
+ * This extended state is stored in `sessionStorage` during the login process with OAuth2.
+ */
+export interface ExtendedOAuth2State extends OAuth2State {
+  id: string;
+  appRequest?: string;
+  userinfo?: UserInfo;
+}
+
 declare global {
   interface Window {
     /**
@@ -55,12 +65,4 @@ declare global {
       sentryDsn: string;
     };
   }
-}
-
-export interface NamedEventTarget {
-  name?: string;
-}
-
-export interface NamedEvent<T extends NamedEventTarget = NamedEventTarget> {
-  target: T;
 }

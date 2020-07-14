@@ -22,16 +22,14 @@ export default function BooleanInput({
   return (
     <Checkbox
       checked={!!value}
-      className={classNames({ 'is-danger': error })}
+      className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       help={labelText ?? label ?? null}
       id={name}
       label={label}
       name={name}
-      onChange={(event) => {
-        onInput(event, (event.target as HTMLInputElement).checked);
-      }}
+      onChange={onInput}
       readOnly={readOnly}
       required={required}
     />

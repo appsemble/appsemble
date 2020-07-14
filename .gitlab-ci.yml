@@ -25,6 +25,7 @@ workflow:
 
 # A preset for running Docker in Docker.
 .docker:
+  interruptible: true
   services:
     - docker:dind
   image: docker
@@ -47,6 +48,7 @@ workflow:
 
 # A preconfigured environment for using Yarn.
 .yarn:
+  interruptible: true
   dependencies: []
   before_script:
     - yarn --frozen-lockfile --ignore-scripts
@@ -80,7 +82,7 @@ prettier:
 remark lint:
   extends: .yarn
   script:
-    - yarn remark --frail .
+    - yarn remark --frail --no-stdout .
 
 # Lint CSS using stylelint.
 stylelint:
@@ -92,6 +94,7 @@ stylelint:
 
 # Run unittests using NodeJS 12.
 test node 12:
+  interruptible: true
   image: node:12-slim
   services:
     - name: postgres:11
@@ -110,6 +113,7 @@ test node 12:
 
 # Run unittests using NodeJS 14.
 test node 14:
+  interruptible: true
   services:
     - name: postgres:11
   variables:
@@ -498,6 +502,7 @@ provision production:
 
 # Test template apps using Lighthouse.
 lighthouse:
+  interruptible: true
   stage: end 2 end
   dependencies: []
   needs:

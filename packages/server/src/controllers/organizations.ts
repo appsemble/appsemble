@@ -177,6 +177,7 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
 
 export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
   const {
+    argv: { host },
     mailer,
     params: { organizationId },
     request: {
@@ -216,7 +217,7 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
     'organizationInvite',
     {
       organization: organization.id,
-      url: `${ctx.origin}/organization-invite?token=${key}`,
+      url: `${host}/organization-invite?token=${key}`,
     },
   );
 
@@ -229,6 +230,7 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
 
 export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
   const {
+    argv: { host },
     mailer,
     params: { organizationId },
     request: {
@@ -254,7 +256,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   await mailer.sendEmail({ email, ...(user && { name: user.name }) }, 'organizationInvite', {
     organization: organization.id,
-    url: `${ctx.origin}/organization-invite?token=${invite.key}`,
+    url: `${host}/organization-invite?token=${invite.key}`,
   });
 
   ctx.body = 204;
@@ -292,7 +294,9 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('This member is not part of this organization.');
   }
 
-  await checkRole(ctx, organization.id, Permission.ManageMembers);
+  if (memberId !== user.id) {
+    await checkRole(ctx, organization.id, Permission.ManageMembers);
+  }
 
   if (memberId === user.id && organization.Users.length <= 1) {
     throw Boom.notAcceptable(

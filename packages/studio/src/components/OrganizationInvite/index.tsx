@@ -1,6 +1,6 @@
 import { Button, Loader, Message, useMessages, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -8,18 +8,18 @@ import type { Organization } from '../../types';
 import styles from './index.css';
 import messages from './messages';
 
-export default function OrganizationInvite(): React.ReactElement {
+export default function OrganizationInvite(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const qs = useQuery();
 
-  const [success, setSuccess] = React.useState(false);
-  const [organization, setOrganization] = React.useState<Organization>();
-  const [submitting, setSubmitting] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-  const [joined, setJoined] = React.useState(false);
+  const [success, setSuccess] = useState(false);
+  const [organization, setOrganization] = useState<Organization>();
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [joined, setJoined] = useState(false);
 
-  const sendResponse = React.useCallback(
+  const sendResponse = useCallback(
     async (response) => {
       setSubmitting(true);
 
@@ -50,11 +50,11 @@ export default function OrganizationInvite(): React.ReactElement {
     [formatMessage, organization, push, qs],
   );
 
-  const onAcceptClick = React.useCallback(() => sendResponse(true), [sendResponse]);
+  const onAcceptClick = useCallback(() => sendResponse(true), [sendResponse]);
 
-  const onDeclineClick = React.useCallback(() => sendResponse(false), [sendResponse]);
+  const onDeclineClick = useCallback(() => sendResponse(false), [sendResponse]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const token = qs.get('token');
 
     axios
@@ -88,13 +88,7 @@ export default function OrganizationInvite(): React.ReactElement {
 
         <div className="field is-grouped">
           <p className="control">
-            <Button
-              className="mt-3"
-              color="success"
-              disabled={submitting}
-              onClick={onAcceptClick}
-              type="button"
-            >
+            <Button color="success" disabled={submitting} onClick={onAcceptClick}>
               <FormattedMessage {...messages.accept} />
             </Button>
           </p>

@@ -1,5 +1,5 @@
 import { Content, useToggle } from '@appsemble/react-components';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ import UserSettings from '../UserSettings';
 import styles from './index.css';
 import messages from './messages';
 
-export default function Settings(): React.ReactElement {
+export default function Settings(): ReactElement {
   const collapsed = useToggle();
   const match = useRouteMatch();
 

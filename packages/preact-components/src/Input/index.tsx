@@ -102,6 +102,7 @@ export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps
  * A Bulma styled form input element.
  */
 export default function Input({
+  className,
   disabled,
   error,
   iconLeft,
@@ -117,13 +118,13 @@ export default function Input({
 }: InputProps): VNode {
   const handleInput = useCallback(
     (event: Event): void => {
-      const target = event.target as HTMLInputElement;
+      const currentTarget = event.currentTarget as HTMLInputElement;
       if (type === 'number') {
-        (onInput as InputEventHandler<number>)(event, target.valueAsNumber);
+        (onInput as InputEventHandler<number>)(event, currentTarget.valueAsNumber);
       } else if (type === 'checkbox') {
-        (onInput as InputEventHandler<boolean>)(event, target.checked);
+        (onInput as InputEventHandler<boolean>)(event, currentTarget.checked);
       } else {
-        (onInput as InputEventHandler<string>)(event, target.value);
+        (onInput as InputEventHandler<string>)(event, currentTarget.value);
       }
     },
     [onInput, type],
@@ -132,7 +133,13 @@ export default function Input({
   const Comp = type === 'textarea' ? 'textarea' : 'input';
 
   return (
-    <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
+    <FormComponent
+      className={className}
+      iconLeft={iconLeft}
+      id={id}
+      label={label}
+      required={required}
+    >
       <Comp
         checked={type === 'checkbox' ? (value as boolean) : undefined}
         className={classNames(type === 'textarea' ? 'textarea' : 'input', { 'is-danger': error })}

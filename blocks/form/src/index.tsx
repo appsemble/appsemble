@@ -14,8 +14,8 @@ import RadioInput from './components/RadioInput';
 import StringInput from './components/StringInput';
 import styles from './index.css';
 import messages from './messages';
+import generateDefaultValidity from './utils/generateDefaultValidity';
 import generateDefaultValues from './utils/generateDefaultValues';
-import generateValidity from './utils/generateValidity';
 import validators from './utils/validators';
 
 const inputs = {
@@ -34,7 +34,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [formError, setFormError] = useState<string>(null);
   const [disabled, setDisabled] = useState(true);
-  const [validity, setValidity] = useState(generateValidity(parameters, data));
+  const [validity, setValidity] = useState(generateDefaultValidity(parameters, data));
   const [submitting, setSubmitting] = useState(false);
   const defaultValues = useMemo(() => generateDefaultValues(parameters), [parameters]);
   const [values, setValues] = useState({
@@ -46,7 +46,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const validateField = useCallback(
     (event: Event, value: any): BaseRequirement => {
       const { fields } = parameters;
-      const { name } = event.target as HTMLInputElement;
+      const { name } = event.currentTarget as HTMLInputElement;
       const field = fields.find((f) => f.name === name);
 
       if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
@@ -98,14 +98,14 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
 
   const onChange = useCallback(
     (event: Event, value: any): void => {
-      const { name } = event.target as HTMLInputElement;
+      const { name } = event.currentTarget as HTMLInputElement;
 
       const invalid = validateField(event, value);
       const error = (invalid != null && remap(invalid.errorMessage, value)) || messages.error;
       setErrors({ ...errors, [name]: invalid && error });
       const newValues = {
         ...values,
-        [(event.target as HTMLInputElement).name]: value,
+        [(event.currentTarget as HTMLInputElement).name]: value,
       };
       const newValidity = { ...validity, [name]: !invalid };
       setValidity(newValidity);

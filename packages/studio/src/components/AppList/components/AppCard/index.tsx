@@ -1,6 +1,6 @@
 import type { App } from '@appsemble/types';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ interface AppCardProps {
   app: App;
 }
 
-export default function AppCard({ app }: AppCardProps): React.ReactElement {
+export default function AppCard({ app }: AppCardProps): ReactElement {
   const { formatMessage } = useIntl();
   const match = useRouteMatch();
 

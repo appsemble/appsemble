@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/react-components/src';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import * as React from 'react';
+import React, { Children, ReactElement, ReactNode } from 'react';
 
 import NavLink from '../NavLink';
 import { useSideMenu } from '../SideMenu';
@@ -17,7 +17,7 @@ interface SideNavLinkProps {
    *
    * These should be `<NavLink />` elements.
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 
   /**
    * The icon to render.
@@ -27,7 +27,7 @@ interface SideNavLinkProps {
   /**
    * The label to render.
    */
-  label: React.ReactNode;
+  label: ReactNode;
 
   /**
    * Where to navigate to.
@@ -46,7 +46,7 @@ export default function SideNavLink({
   icon,
   label,
   to,
-}: SideNavLinkProps): React.ReactElement {
+}: SideNavLinkProps): ReactElement {
   const isCollapsed = useSideMenu();
 
   return (
@@ -55,9 +55,9 @@ export default function SideNavLink({
         <Icon icon={icon} size="medium" />
         <span className={classNames({ 'is-hidden': isCollapsed })}>{label}</span>
       </NavLink>
-      {!isCollapsed && React.Children.count(children) ? (
+      {!isCollapsed && Children.count(children) ? (
         <ul>
-          {React.Children.map(children, (child) => (
+          {Children.map(children, (child) => (
             <li>{child}</li>
           ))}
         </ul>

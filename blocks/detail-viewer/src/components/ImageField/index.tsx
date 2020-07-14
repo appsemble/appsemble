@@ -2,7 +2,6 @@
 import { useBlock } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
 import type { Remapper } from '@appsemble/sdk';
-import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import styles from './ImageField.css';
@@ -21,7 +20,7 @@ export default function ImageField({ label, name, src }: ImageFieldProps): VNode
   const alt = utils.remap(label, src) || name;
 
   return (
-    <figure className={classNames('image mr-3', styles.root)}>
+    <figure className={`image mr-3 ${styles.root}`}>
       <img alt={alt} className={styles.img} src={url} />
     </figure>
   );

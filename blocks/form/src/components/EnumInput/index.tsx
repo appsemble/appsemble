@@ -20,6 +20,7 @@ export default function EnumInput({
 
   return (
     <Select
+      className="appsemble-enum"
       disabled={disabled}
       iconLeft={icon}
       id={name}

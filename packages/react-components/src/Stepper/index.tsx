@@ -1,26 +1,30 @@
 import { Button, Form, FormButtons } from '@appsemble/react-components';
-import React from 'react';
+import React, {
+  Children,
+  createContext,
+  ReactElement,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
-const Context = React.createContext<StepperProps>(null);
+const Context = createContext<StepperProps>(null);
 
 interface StepperProps {
-  children: React.ReactElement | React.ReactElement[];
+  children: ReactElement | ReactElement[];
   onFinish: () => void;
   onCancel: () => void;
 }
 
-export default function Stepper({
-  children,
-  onCancel,
-  onFinish,
-}: StepperProps): React.ReactElement {
-  const [step, setStep] = React.useState(0);
-  const childArray = React.Children.toArray(children);
+export default function Stepper({ children, onCancel, onFinish }: StepperProps): ReactElement {
+  const [step, setStep] = useState(0);
+  const childArray = Children.toArray(children);
 
-  const back = React.useCallback(() => {
+  const back = useCallback(() => {
     if (step === 0) {
       onCancel();
     } else {
@@ -28,7 +32,7 @@ export default function Stepper({
     }
   }, [step, onCancel]);
 
-  const next = React.useCallback(() => {
+  const next = useCallback(() => {
     if (step >= childArray.length - 1) {
       onFinish();
     } else {
@@ -36,11 +40,7 @@ export default function Stepper({
     }
   }, [step, onFinish, childArray]);
 
-  const context = React.useMemo(() => ({ children, onFinish, onCancel }), [
-    onFinish,
-    onCancel,
-    children,
-  ]);
+  const context = useMemo(() => ({ children, onFinish, onCancel }), [onFinish, onCancel, children]);
 
   return (
     <Form onSubmit={next}>
@@ -66,5 +66,5 @@ export default function Stepper({
 }
 
 export function useStepper(): StepperProps {
-  return React.useContext(Context);
+  return useContext(Context);
 }

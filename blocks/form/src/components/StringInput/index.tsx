@@ -31,6 +31,7 @@ export default function StringInput({
 
   return (
     <Input
+      className="appsemble-string"
       disabled={disabled}
       error={error}
       iconLeft={icon}
@@ -39,7 +40,7 @@ export default function StringInput({
       maxLength={Number.isFinite(maxLength) ? maxLength : undefined}
       minLength={Number.isFinite(minLength) ? minLength : undefined}
       name={name}
-      onInput={(event) => onInput(event, (event.target as HTMLInputElement).value)}
+      onInput={(event) => onInput(event, (event.currentTarget as HTMLInputElement).value)}
       placeholder={placeholder ?? label ?? name}
       readOnly={readOnly}
       required={required}

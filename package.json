@@ -25,6 +25,9 @@
     "*.css": [
       "stylelint"
     ],
+    "*.md": [
+      "remark --frail --no-stdout"
+    ],
     "*.{html,json,md,scss,yaml,yml}": [
       "prettier --check"
     ],
@@ -42,6 +45,7 @@
     "@types/bulma-calendar": "^6.0.1",
     "@types/classnames": "^2.2.10",
     "@types/concat-stream": "^1.6.0",
+    "@types/creativebulma__bulma-tagsinput": "^1.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
@@ -76,7 +80,6 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-helmet": "^6.0.0",
     "@types/react-router-dom": "^5.1.5",
-    "@types/react-shadow-dom-retarget-events": "^1.0.0",
     "@types/react-transition-group": "^4.4.0",
     "@types/semver": "^7.2.0",
     "@types/service-worker-mock": "^2.0.1",

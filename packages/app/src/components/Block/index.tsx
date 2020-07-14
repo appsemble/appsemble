@@ -3,8 +3,8 @@ import type { BlockDefinition } from '@appsemble/types';
 import { baseTheme, normalize, normalizeBlockName, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import type { ShowDialogAction } from '../../types';
@@ -61,29 +61,29 @@ export default function Block({
   prefix,
   ready,
   showDialog,
-}: BlockProps): React.ReactElement {
+}: BlockProps): ReactElement {
   const history = useHistory();
   const match = useRouteMatch();
   const location = useLocation();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
 
-  const ref = React.useRef<HTMLDivElement>();
-  const cleanups = React.useRef<Function[]>([]);
-  const [initialized, setInitialized] = React.useState(false);
+  const ref = useRef<HTMLDivElement>();
+  const cleanups = useRef<Function[]>([]);
+  const [initialized, setInitialized] = useState(false);
   const pushNotifications = useServiceWorkerRegistration();
 
   const blockName = normalizeBlockName(block.type);
   const manifest = blockManifests.find((m) => m.name === blockName && m.version === block.version);
 
-  React.useEffect(
+  useEffect(
     () => () => {
       cleanups.current.forEach(async (fn) => fn());
     },
     [],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const div = ref.current;
     if (initialized || (!div && manifest.layout !== 'hidden') || !pageReady) {
       return;
@@ -232,12 +232,19 @@ export default function Block({
 
   switch (manifest.layout) {
     case 'float':
-      return ReactDOM.createPortal(<div ref={ref} className={className} />, document.body);
+      return createPortal(
+        <div ref={ref} className={className} data-block={blockName} data-path={prefix} />,
+        document.body,
+      );
     case 'hidden':
       return null;
     default:
       return (
-        <div className={`${className} ${styles.blockRoot}`}>
+        <div
+          className={`${className} ${styles.blockRoot}`}
+          data-block={blockName}
+          data-path={prefix}
+        >
           {header}
           <div ref={ref} />
         </div>

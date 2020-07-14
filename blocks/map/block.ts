@@ -1,3 +1,4 @@
+import type { BulmaColor } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 interface AbstractMarkerIcon {
@@ -45,6 +46,13 @@ interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
    * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
    */
   icon?: IconName;
+
+  /**
+   * The color to apply to the icon.
+   *
+   * @default primary
+   */
+  color?: BulmaColor;
 }
 
 /**
@@ -68,6 +76,15 @@ declare module '@appsemble/sdk' {
      * The name of the field used to retrieve the latitude
      */
     longitude: string;
+
+    /**
+     * The location (latitude, longitude) to default to when the user’s location cannot be found.
+     *
+     * This can be used to set the location to something that is more relevant to the user.
+     *
+     * @default [51.476852, 0]
+     */
+    defaultLocation?: [number, number];
 
     /**
      * Whether clustering should be disabled.

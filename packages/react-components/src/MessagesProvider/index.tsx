@@ -1,18 +1,36 @@
-import * as React from 'react';
+import type { BaseMessage } from '@appsemble/sdk';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useRef,
+} from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import useForceUpdate from '../hooks/useForceUpdate';
-import { Message as Msg, MessagesContext } from '../hooks/useMessages';
 import Message from '../Message';
+import useForceUpdate from '../useForceUpdate';
 import styles from './index.css';
 import msgs from './messages';
+
+export interface Msg extends BaseMessage {
+  /**
+   * The content of the message to display.
+   */
+  body: string;
+}
+
+export type ShowMessage = (message: Msg | string) => void;
+
+const Context = createContext<ShowMessage>(null);
 
 interface MessagesProviderProps {
   /**
    * Children to which {@link useMessages} will be available.
    */
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 interface UniqueMessage extends Msg {
@@ -24,16 +42,16 @@ interface UniqueMessage extends Msg {
 /**
  * Render messages that may be pushed using {@link useMessages}.
  */
-export default function MessagesProvider({ children }: MessagesProviderProps): React.ReactElement {
+export default function MessagesProvider({ children }: MessagesProviderProps): ReactElement {
   const { formatMessage } = useIntl();
   const forceUpdate = useForceUpdate();
 
   // The counter is used as a key of messages.
-  const counter = React.useRef(0);
+  const counter = useRef(0);
   // Updating messages should not redefine the push callback.
-  const messages = React.useRef<UniqueMessage[]>([]);
+  const messages = useRef<UniqueMessage[]>([]);
 
-  const push = React.useCallback(
+  const push = useCallback(
     (message: Msg | string) => {
       const id = counter.current;
       counter.current += 1;
@@ -61,7 +79,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
   );
 
   return (
-    <MessagesContext.Provider value={push}>
+    <Context.Provider value={push}>
       {children}
       <div className={`${styles.root} mx-3`}>
         <TransitionGroup>
@@ -91,6 +109,10 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
           ))}
         </TransitionGroup>
       </div>
-    </MessagesContext.Provider>
+    </Context.Provider>
   );
+}
+
+export function useMessages(): ShowMessage {
+  return useContext(Context);
 }

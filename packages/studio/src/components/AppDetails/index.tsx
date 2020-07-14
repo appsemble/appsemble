@@ -15,19 +15,19 @@ import {
 import type { Organization } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import React from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import useOrganizations from '../../hooks/useOrganizations';
 import checkRole from '../../utils/checkRole';
 import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import AppRatings from '../AppRatings';
+import { useOrganizations } from '../OrganizationsProvider';
 import styles from './index.css';
 import messages from './messages';
 
-export default function AppDetails(): React.ReactElement {
+export default function AppDetails(): ReactElement {
   const { app } = useApp();
   const { data: organization, error, loading } = useData<Organization>(
     `/api/organizations/${app.OrganizationId}`,
@@ -36,9 +36,9 @@ export default function AppDetails(): React.ReactElement {
   const history = useHistory();
   const { formatMessage } = useIntl();
 
-  const organizations = useOrganizations();
+  const { organizations } = useOrganizations();
 
-  const cloneApp = React.useCallback(
+  const cloneApp = useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
       const { data: clone } = await axios.post('/api/templates', {
         templateId: app.id,
@@ -101,6 +101,7 @@ export default function AppDetails(): React.ReactElement {
             description: app.definition.description,
             private: true,
             selectedOrganization: 0,
+            resources: false,
           }}
           footer={
             <>
@@ -149,6 +150,14 @@ export default function AppDetails(): React.ReactElement {
             label={<FormattedMessage {...messages.private} />}
             name="private"
           />
+          {app.resources && (
+            <SimpleInput<typeof Checkbox>
+              component={Checkbox}
+              help={<FormattedMessage {...messages.resourcesDescription} />}
+              label={<FormattedMessage {...messages.resources} />}
+              name="resources"
+            />
+          )}
         </Modal>
       ) : null}
     </>

@@ -8,7 +8,7 @@ import {
   SimpleSubmit,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import * as React from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import HelmetIntl from '../HelmetIntl';
@@ -18,10 +18,10 @@ interface FormValues {
   email: string;
 }
 
-export default function ResetPassword(): React.ReactElement {
-  const [success, setSuccess] = React.useState(false);
+export default function ResetPassword(): ReactElement {
+  const [success, setSuccess] = useState(false);
 
-  const submit = React.useCallback(async ({ email }: FormValues): Promise<void> => {
+  const submit = useCallback(async ({ email }: FormValues): Promise<void> => {
     await axios.post('/api/email/reset/request', { email });
     setSuccess(true);
   }, []);

@@ -1,19 +1,19 @@
 import type { TabsPageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 import { Link, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import BlockList from '../BlockList';
 
-type TabsPageProps = Omit<React.ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> &
+type TabsPageProps = Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> &
   Pick<TabsPageDefinition, 'subPages'>;
 
 export default function TabsPage({
   prefix,
   subPages,
   ...blockListProps
-}: TabsPageProps): React.ReactElement {
+}: TabsPageProps): ReactElement {
   const match = useRouteMatch<{ subPage: string }>();
 
   return (
@@ -33,9 +33,13 @@ export default function TabsPage({
         </ul>
       </div>
       <Switch>
-        {subPages.map(({ blocks, name }) => (
+        {subPages.map(({ blocks, name }, index) => (
           <Route key={name} exact path={`${match.path}/${normalize(name)}`}>
-            <BlockList {...blockListProps} blocks={blocks} prefix={`${prefix}.subPages`} />
+            <BlockList
+              {...blockListProps}
+              blocks={blocks}
+              prefix={`${prefix}.subPages.${index}.blocks`}
+            />
           </Route>
         ))}
 

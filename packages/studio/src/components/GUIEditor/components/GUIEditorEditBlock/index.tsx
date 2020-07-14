@@ -1,10 +1,10 @@
 import { Content, Loader, Message, Tab, Tabs, Title, useData } from '@appsemble/react-components';
 import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
-import React from 'react';
+import type { NamedEvent } from '@appsemble/web-utils';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import type { NamedEvent } from '../../../../types';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
 import ActionsEditor from '../ActionsEditor';
@@ -27,13 +27,13 @@ export default function GUIEditorEditBlock({
   onChangeBlockValue,
   onChangeSelectedBlock,
   selectedBlock,
-}: GUIEditorEditBlockProps): React.ReactElement {
-  const [tab, setTab] = React.useState('parameters');
-  const onTabChange = React.useCallback((_, value: string) => setTab(value), []);
+}: GUIEditorEditBlockProps): ReactElement {
+  const [tab, setTab] = useState('parameters');
+  const onTabChange = useCallback((_, value: string) => setTab(value), []);
 
-  const onChange = React.useCallback(
+  const onChange = useCallback(
     (event: NamedEvent, value: any) => {
-      onChangeBlockValue({ ...blockValue, [event.target.name]: value });
+      onChangeBlockValue({ ...blockValue, [event.currentTarget.name]: value });
     },
     [blockValue, onChangeBlockValue],
   );
@@ -42,7 +42,7 @@ export default function GUIEditorEditBlock({
     `/api/blocks/${normalizeBlockName(editLocation.blockName)}`,
   );
 
-  const initBlockParameters = React.useCallback(() => {
+  const initBlockParameters = useCallback(() => {
     app.definition.pages.forEach((page: BasicPageDefinition) => {
       if (!page.name.includes(editLocation.pageName)) {
         return;
@@ -56,7 +56,7 @@ export default function GUIEditorEditBlock({
     });
   }, [onChangeBlockValue, editLocation, app]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && !selectedBlock) {
       onChangeSelectedBlock(edittingBlock);
       initBlockParameters();
