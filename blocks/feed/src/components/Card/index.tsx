@@ -4,7 +4,6 @@ import { Fragment, h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
-import type { Remappers } from '../../../block';
 import AvatarWrapper from '../AvatarWrapper';
 import styles from './index.css';
 
@@ -22,17 +21,12 @@ export interface CardProps {
    * Update function that can be called to update a single resource
    */
   onUpdate: (data: any) => void;
-
-  /**
-   * Remapper functions that have been prepared by a parent component.
-   */
-  remappers: Remappers;
 }
 
 /**
  * A single card in the feed.
  */
-export default function Card({ content, onUpdate, remappers }: CardProps): VNode {
+export default function Card({ content, onUpdate }: CardProps): VNode {
   const replyContainer = useRef<HTMLDivElement>();
   const { actions, messages, parameters, theme, utils } = useBlock();
   const [message, setMessage] = useState('');
@@ -99,12 +93,9 @@ export default function Card({ content, onUpdate, remappers }: CardProps): VNode
       }
 
       try {
-        const contentField = parameters.reply?.content ?? 'content';
-        const parentId = parameters.reply?.parentId ?? 'parentId';
-
         const result = await actions.onSubmitReply.dispatch({
-          [parentId]: content.id,
-          [contentField]: message,
+          parentId: content.id,
+          contentField: message,
         });
 
         setMessage('');
@@ -116,16 +107,16 @@ export default function Card({ content, onUpdate, remappers }: CardProps): VNode
         utils.showMessage([].concat(messages.replyError.format()).join(''));
       }
     },
-    [actions, content, message, messages, parameters, replies, utils, valid],
+    [actions, content, message, messages, replies, utils, valid],
   );
 
-  const title: string = remappers.title(content);
-  const subtitle: string = remappers.subtitle(content);
-  const heading: string = remappers.heading(content);
-  const picture: string = remappers.picture(content);
-  const description: string = remappers.description(content);
-  const latitude: number = remappers.latitude(content);
-  const longitude: number = remappers.longitude(content);
+  const title = utils.remap(parameters.title, content);
+  const subtitle = utils.remap(parameters.subtitle, content);
+  const heading = utils.remap(parameters.heading, content);
+  const picture = utils.remap(parameters.picture, content);
+  const description = utils.remap(parameters.description, content);
+  const latitude = utils.remap(parameters.marker.latitude, content);
+  const longitude = utils.remap(parameters.marker.longitude, content);
 
   if (parameters.pictureBase && parameters.pictureBase.endsWith('/')) {
     parameters.pictureBase = parameters.pictureBase.slice(0, -1);
@@ -221,8 +212,15 @@ export default function Card({ content, onUpdate, remappers }: CardProps): VNode
           <Fragment>
             <div ref={replyContainer} className={styles.replies}>
               {replies.map((reply: any) => {
-                const author = remappers.author(reply);
-                const replyContent = remappers.content(reply);
+                const author = utils.remap(
+                  parameters?.reply.author ?? [{ prop: '$author' }, { prop: 'name' }],
+                  reply,
+                );
+                const replyContent = utils.remap(
+                  parameters?.reply.content ?? [{ prop: 'content' }],
+                  reply,
+                );
+
                 return (
                   <div key={reply.id} className="content">
                     <h6 className="is-marginless">
@@ -241,8 +239,6 @@ export default function Card({ content, onUpdate, remappers }: CardProps): VNode
                 required
                 value={message}
               />
-              {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
-              See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
               <button
                 className={`button ${styles.replyButton} ml-1`}
                 disabled={!valid}
