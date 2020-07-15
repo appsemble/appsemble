@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Block(`feed`): Replace remapping logic with remappers.
+- Block(`feed`): Move `longitude` and `latitude` into the `marker` object.
+
 ## [0.13.5] - 2020-07-15
 
 ### Added
