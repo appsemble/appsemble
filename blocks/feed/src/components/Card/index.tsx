@@ -1,5 +1,6 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
+import type { DivIcon, Icon } from 'leaflet';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -33,6 +34,16 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
   const [message, setMessage] = useState('');
   const [replies, setReplies] = useState<any[]>(null);
   const [valid, setValid] = useState(false);
+  const [marker, setMarker] = useState<Icon | DivIcon>(null);
+  const hasCustomMarkers = Object.keys(parameters?.marker ?? {}).some((key) =>
+    ['size', 'anchor', 'asset', 'color', 'icon'].includes(key),
+  );
+
+  useEffect(() => {
+    if (hasCustomMarkers) {
+      createIcon({ parameters, utils }).then(setMarker);
+    }
+  }, [hasCustomMarkers, parameters, utils]);
 
   useEffect(() => {
     const parentId = parameters.reply?.parentId ?? 'parentId';
@@ -94,7 +105,6 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
       }
 
       try {
-        // XXX Adjust the logic for this.
         const result = await actions.onSubmitReply.dispatch({
           parentId: content.id,
           content: message,
@@ -188,7 +198,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
             ))}
           </div>
         )}
-        {(latitude && longitude) != null && (
+        {(latitude && longitude) != null && ((hasCustomMarkers && marker) || !hasCustomMarkers) && (
           <Location
             className={styles.location}
             iconHeight={40}
@@ -200,6 +210,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
               dragging: false,
               zoomControl: false,
             }}
+            marker={marker}
             theme={theme}
           />
         )}

@@ -153,6 +153,9 @@ declare module '@appsemble/sdk' {
 
     /**
      * Action that gets dispatched when submitting a reply.
+     *
+     * When submitting replies, the data will be structured
+     * as an object containing `parentId` and `content`.
      */
     onSubmitReply: any;
 
