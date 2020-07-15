@@ -4,8 +4,8 @@ import { Fragment, h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
-import type { Remappers } from '../../../block';
 import AvatarWrapper from '../AvatarWrapper';
+import createIcon from '../utils/createIcon';
 import styles from './index.css';
 
 export interface CardProps {
@@ -17,20 +17,17 @@ export interface CardProps {
     status: string;
     fotos: string[];
   };
+
   /**
    * Update function that can be called to update a single resource
    */
   onUpdate: (data: any) => void;
-  /**
-   * Remapper functions that have been prepared by a parent component.
-   */
-  remappers: Remappers;
 }
 
 /**
  * A single card in the feed.
  */
-export default function Card({ content, onUpdate, remappers }: CardProps): VNode {
+export default function Card({ content, onUpdate }: CardProps): VNode {
   const replyContainer = useRef<HTMLDivElement>();
   const { actions, messages, parameters, theme, utils } = useBlock();
   const [message, setMessage] = useState('');
@@ -98,12 +95,10 @@ export default function Card({ content, onUpdate, remappers }: CardProps): VNode
     }
 
     try {
-      const contentField = parameters.reply?.content ?? 'content';
-      const parentId = parameters.reply?.parentId ?? 'parentId';
-
+      // XXX Adjust the logic for this.
       const result = await actions.onSubmitReply.dispatch({
-        [parentId]: content.id,
-        [contentField]: message,
+        parentId: content.id,
+        content: message,
       });
 
       setMessage('');
@@ -114,26 +109,15 @@ export default function Card({ content, onUpdate, remappers }: CardProps): VNode
     } catch (e) {
       utils.showMessage([].concat(messages.replyError.format()).join(''));
     }
-  }, [
-    actions,
-    content,
-    message,
-    messages,
-    parameters,
-    replies,
-    setMessage,
-    setReplies,
-    utils,
-    valid,
-  ]);
+  }, [actions, content, message, messages, replies, setMessage, setReplies, utils, valid]);
 
-  const title: string = remappers.title(content);
-  const subtitle: string = remappers.subtitle(content);
-  const heading: string = remappers.heading(content);
-  const picture: string = remappers.picture(content);
-  const description: string = remappers.description(content);
-  const latitude: number = remappers.latitude(content);
-  const longitude: number = remappers.longitude(content);
+  const title = utils.remap(parameters.title, content);
+  const subtitle = utils.remap(parameters.subtitle, content);
+  const heading = utils.remap(parameters.heading, content);
+  const picture = utils.remap(parameters.picture, content);
+  const description = utils.remap(parameters.description, content);
+  const latitude = utils.remap(parameters.marker.latitude, content);
+  const longitude = utils.remap(parameters.marker.longitude, content);
 
   if (parameters.pictureBase && parameters.pictureBase.endsWith('/')) {
     parameters.pictureBase = parameters.pictureBase.slice(0, -1);
@@ -160,6 +144,8 @@ export default function Card({ content, onUpdate, remappers }: CardProps): VNode
       color = '';
       icon = 'user';
   }
+
+  createIcon({ parameters, utils });
 
   return (
     <article className="card mx-2 my-2">
@@ -229,8 +215,11 @@ export default function Card({ content, onUpdate, remappers }: CardProps): VNode
           <Fragment>
             <div ref={replyContainer} className={styles.replies}>
               {replies.map((reply: any) => {
-                const author = remappers.author(reply);
-                const replyContent = remappers.content(reply);
+                const author = utils.remap(parameters?.reply.author ?? [{ prop: 'author' }], reply);
+                const replyContent = utils.remap(
+                  parameters?.reply.content ?? [{ prop: 'content' }],
+                  reply,
+                );
                 return (
                   <div key={reply.id} className="content">
                     <h6 className="is-marginless">

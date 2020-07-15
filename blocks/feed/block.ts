@@ -1,5 +1,4 @@
-import type { BulmaColor } from '@appsemble/sdk';
-import type { MapperFunction } from '@appsemble/utils';
+import type { BulmaColor, Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 interface Reply {
@@ -10,26 +9,17 @@ interface Reply {
 
   /**
    * The field that is used to fetch the name of the author.
+   *
+   * @default [{ prop: 'author' }]
    */
-  author?: string;
+  author?: Remapper;
 
   /**
    * The field that is used to read the content of the reply.
+   *
+   * @default [{ prop: 'content' }]
    */
-  content?: string;
-}
-
-export interface Remappers {
-  title: MapperFunction;
-  subtitle: MapperFunction;
-  heading: MapperFunction;
-  picture: MapperFunction;
-  pictures: MapperFunction;
-  description: MapperFunction;
-  author: MapperFunction;
-  content: MapperFunction;
-  latitude: MapperFunction;
-  longitude: MapperFunction;
+  content?: Remapper;
 }
 
 /**
@@ -81,32 +71,32 @@ declare module '@appsemble/sdk' {
     /**
      * The title displayed on the card.
      */
-    title?: string;
+    title?: Remapper;
 
     /**
      * The subtitle displayed on the card.
      */
-    subtitle?: string;
+    subtitle?: Remapper;
 
     /**
      * The heading displayed on the card.
      */
-    heading?: string;
+    heading?: Remapper;
 
     /**
      * The highlighted picture.
      */
-    picture?: string;
+    picture?: Remapper;
 
     /**
      * A list of pictures that are displayed below the highlighted picture.
      */
-    pictures?: string[];
+    pictures?: Remapper;
 
     /**
      * The description or content of the card.
      */
-    description?: string;
+    description?: Remapper;
 
     /**
      * The location marker that is displayed on the card.
@@ -115,12 +105,12 @@ declare module '@appsemble/sdk' {
       /**
        * The latitude of the marker.
        */
-      latitude: string;
+      latitude: Remapper;
 
       /**
        * The longitude of the marker.
        */
-      longitude: string;
+      longitude: Remapper;
 
       /**
        * The anchor X and Y offset used for positioning the image.
