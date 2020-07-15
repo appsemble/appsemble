@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/types",
-  "version": "0.13.4",
+  "version": "0.13.5",
   "private": true,
   "description": "TypeScript definitions reused within Appsemble internally",
   "homepage": "https://appsemble.dev",
@@ -17,7 +17,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.13.4",
+    "@appsemble/sdk": "0.13.5",
     "@fortawesome/fontawesome-common-types": "^0.2.28",
     "openapi-types": "^1.3.5",
     "type-fest": "^0.15.1"

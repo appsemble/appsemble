@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.5] - 2020-07-15
+
 ### Added
 
 - App: Add `throw` action. This can be used when a block specifically wants data to be thrown
