@@ -3,10 +3,47 @@ import type { AppDefinition } from '@appsemble/types';
 import {
   AppsembleValidationError,
   checkBlocks,
+  validateDefaultPage,
   validateHooks,
   validateReferences,
   validateSecurity,
 } from './validateAppDefinition';
+
+describe('validateDefaultPage', () => {
+  it('should pass if defaultPage exists', () => {
+    const definition: AppDefinition = {
+      defaultPage: 'Foo',
+      pages: [
+        { name: 'Foo', blocks: [] },
+        { name: 'Bar', blocks: [] },
+      ],
+    };
+
+    expect(() => validateDefaultPage(definition)).not.toThrow();
+  });
+
+  it('should throw if defaultPage does not exist', () => {
+    const definition: AppDefinition = {
+      defaultPage: 'Foo',
+      pages: [{ name: 'Bar', blocks: [] }],
+    };
+
+    expect(() => validateDefaultPage(definition)).toThrow(
+      new AppsembleValidationError('Page “Foo” as specified in defaultPage does not exist.'),
+    );
+  });
+
+  it('should not allow pages with page parameters', () => {
+    const definition: AppDefinition = {
+      defaultPage: 'Foo',
+      pages: [{ name: 'Foo', parameters: ['id'], blocks: [] }],
+    };
+
+    expect(() => validateDefaultPage(definition)).toThrow(
+      new AppsembleValidationError('Default page “Foo” can not have page parameters.'),
+    );
+  });
+});
 
 describe('checkBlocks', () => {
   it('should validate block parameters using JSON schema', () => {

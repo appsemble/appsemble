@@ -217,10 +217,28 @@ export function validateReferences(definition: AppDefinition): void {
   });
 }
 
+export function validateDefaultPage({ defaultPage, pages }: AppDefinition): void {
+  const page = pages.find((p) => p.name === defaultPage);
+
+  if (!page) {
+    throw new AppsembleValidationError(
+      `Page “${defaultPage}” as specified in defaultPage does not exist.`,
+    );
+  }
+
+  if (page.parameters) {
+    throw new AppsembleValidationError(
+      `Default page “${defaultPage}” can not have page parameters.`,
+    );
+  }
+}
+
 export default async function validateAppDefinition(
   definition: AppDefinition,
   getBlockVersions: (blockMap: BlockMap) => Promisable<BlockManifest[]>,
 ): Promise<void> {
+  validateDefaultPage(definition);
+
   const blocks = getAppBlocks(definition);
   const blockVersions = await getBlockVersions(blocks);
 
