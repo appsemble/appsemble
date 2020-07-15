@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.13.4",
+  "version": "0.13.5",
   "private": true,
   "description": "Utility functions used in Appsemble internally",
   "homepage": "https://appsemble.dev",
@@ -19,7 +19,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.13.4",
+    "@appsemble/types": "0.13.5",
     "ajv": "^6.12.2",
     "date-fns": "^2.14.0",
     "intl-messageformat": "^8.3.23",
