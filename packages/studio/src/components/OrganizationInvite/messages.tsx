@@ -19,4 +19,9 @@ export default defineMessages({
     'No invite has been found. It may have been used or revoked. You can return to Appsemble {here}.',
   joined: 'joined',
   left: 'left',
+  alreadyJoined:
+    'You are already part of the organization. If you wish to accept this invitation, please log into a different account.',
+  logout: 'Logout',
+  login: 'Login',
+  loginPrompt: 'Please log into an existing account or create one to join this organization.',
 });

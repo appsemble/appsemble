@@ -62,9 +62,9 @@ export default function App(): ReactElement {
                     <AnonymousRoute exact path="/edit-password">
                       <EditPassword />
                     </AnonymousRoute>
-                    <ProtectedRoute exact path="/organization-invite">
+                    <Route exact path="/organization-invite">
                       <OrganizationInvite />
-                    </ProtectedRoute>
+                    </Route>
                     <Route exact path="/verify">
                       <VerifyEmail />
                     </Route>
