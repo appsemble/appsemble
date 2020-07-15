@@ -6,7 +6,7 @@ import validateString from './validateString';
 
 export default {
   file: (field: FileField, value) => {
-    const required = field.requirements.find((requirement) => requirement.required && !value);
+    const required = field.requirements?.find((requirement) => requirement.required && !value);
     if (required) {
       return required;
     }
@@ -36,6 +36,7 @@ export default {
   number: validateNumber,
   integer: validateNumber,
   boolean: () => undefined,
+  enum: () => undefined,
 } as { [name: string]: Validator };
 
 type Validator = (
