@@ -56,5 +56,12 @@ declare module '@appsemble/sdk' {
      * The event to listen on for new data.
      */
     data: {};
+
+    /**
+     * Set and emit the initial data.
+     *
+     * This is useful for example in combination with the `filter` block.
+     */
+    seed: {};
   }
 }

@@ -1,6 +1,5 @@
 import { FormattedMessage } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
-import classNames from 'classnames';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
@@ -26,7 +25,7 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
         file = await resize(file, maxWidth, maxHeight, quality / 100);
       }
 
-      onInput(event, file);
+      onInput({ currentTarget, ...event }, file);
     },
     [field, onInput],
   );
@@ -42,22 +41,21 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
   const title = field.label ?? field.name;
 
   return (
-    <div className={classNames('file mr-3', styles.root)}>
-      <label className="file-label" htmlFor={field.name}>
+    <div className={`appsemble-file file mr-3 ${styles.root}`}>
+      <label className="file-label">
         <input
-          className={classNames('file-input', styles.input)}
-          id={field.name}
+          className={`file-input ${styles.input}`}
           name={name}
           onChange={onSelect}
           type="file"
         />
         {url ? (
           <Fragment>
-            <figure className={classNames('image is-relative')}>
+            <figure className="image is-relative">
               <img alt={title} className={styles.image} src={url} />
             </figure>
             <button
-              className={classNames('button', 'is-small', styles.removeButton)}
+              className={`button is-small ${styles.removeButton}`}
               onClick={onRemove}
               type="button"
             >
@@ -67,9 +65,7 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
             </button>
           </Fragment>
         ) : (
-          <span
-            className={classNames('image is-128x128 px-2 py-2 has-text-centered', styles.empty)}
-          >
+          <span className={`image is-128x128 px-2 py-2 has-text-centered ${styles.empty}`}>
             <span className="file-label">
               <FormattedMessage id="emptyFileLabel" />
             </span>

@@ -15,3 +15,14 @@
 .submit {
   align-self: flex-end;
 }
+
+.error {
+  max-height: 64px;
+  overflow: hidden;
+  transition: 150ms;
+
+  &.hidden {
+    margin-bottom: 0;
+    max-height: 0;
+  }
+}

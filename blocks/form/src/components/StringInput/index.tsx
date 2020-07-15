@@ -2,6 +2,7 @@ import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, StringField } from '../../../block';
+import isRequired from '../../utils/isRequired';
 
 type StringInputProps = InputProps<string, StringField>;
 
@@ -11,20 +12,11 @@ type StringInputProps = InputProps<string, StringField>;
 export default function StringInput({
   disabled,
   error,
-  field: {
-    format,
-    icon,
-    label,
-    multiline,
-    name,
-    placeholder,
-    readOnly,
-    required,
-    requirements = [],
-  },
+  field,
   onInput,
   value = '',
 }: StringInputProps): VNode {
+  const { format, icon, label, multiline, name, placeholder, readOnly, requirements = [] } = field;
   const maxLength = Math.max(
     ...requirements
       ?.map((requirement) => 'maxLength' in requirement && requirement.maxLength)
@@ -37,8 +29,11 @@ export default function StringInput({
       .filter(Number.isFinite),
   );
 
+  const required = isRequired(field);
+
   return (
     <Input
+      className="appsemble-string"
       disabled={disabled}
       error={error}
       iconLeft={icon}

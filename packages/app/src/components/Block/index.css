@@ -1,26 +1,8 @@
 .title {
   margin: 1rem auto !important;
+  text-align: center;
 }
 
-.float {
-  position: fixed;
-  z-index: 1100;
-}
-
-.static {
-  flex: 0 0 auto;
-  position: relative;
-
-  &:last-child {
-    padding-bottom: 109px;
-  }
-}
-
-.grow {
-  flex: 1 1 auto;
-  position: relative;
-
-  &:last-child {
-    padding-bottom: 109px;
-  }
+.blockRoot {
+  flex: 1 0 auto;
 }

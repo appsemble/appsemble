@@ -12,6 +12,7 @@ import noop from './noop';
 import request from './request';
 import resource from './resource';
 import staticAction from './static';
+import throwAction from './throwAction';
 
 // XXX fix type, this requires a generic mapping key to type.
 export type ActionCreator = (args: MakeActionParameters<ActionDefinition>) => Action;
@@ -25,6 +26,7 @@ export default {
   log,
   message,
   noop,
+  throw: throwAction,
   request,
   dialog,
   event,

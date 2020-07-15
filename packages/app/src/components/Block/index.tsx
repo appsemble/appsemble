@@ -233,24 +233,21 @@ export default function Block({
   switch (manifest.layout) {
     case 'float':
       return createPortal(
-        <div ref={ref} className={classNames(styles.float, className)} />,
+        <div ref={ref} className={className} data-block={blockName} data-path={prefix} />,
         document.body,
-      );
-    case 'static':
-      return (
-        <>
-          {header}
-          <div ref={ref} className={classNames(styles.static, className)} />
-        </>
       );
     case 'hidden':
       return null;
     default:
       return (
-        <>
+        <div
+          className={`${className} ${styles.blockRoot}`}
+          data-block={blockName}
+          data-path={prefix}
+        >
           {header}
-          <div ref={ref} className={classNames(styles.grow, className)} />
-        </>
+          <div ref={ref} />
+        </div>
       );
   }
 }

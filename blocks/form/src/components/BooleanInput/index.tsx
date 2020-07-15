@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import type { BooleanField, InputProps } from '../../../block';
+import isRequired from '../../utils/isRequired';
 
 type BooleanInputProps = InputProps<boolean, BooleanField>;
 
@@ -17,19 +18,22 @@ export default function BooleanInput({
   onInput,
   value = false,
 }: BooleanInputProps): VNode {
+  const { label, labelText, name, readOnly } = field;
+  const required = isRequired(field);
+
   return (
     <Checkbox
       checked={!!value}
-      className={classNames({ 'is-danger': error })}
+      className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
-      help={field.labelText ?? field.label ?? null}
-      id={field.name}
-      label={field.label}
-      name={field.name}
+      help={labelText ?? label ?? null}
+      id={name}
+      label={label}
+      name={name}
       onChange={onInput}
-      readOnly={field.readOnly}
-      required={field.required}
+      readOnly={readOnly}
+      required={required}
     />
   );
 }

@@ -38,7 +38,7 @@ export default function GeoCoordinatesRenderer({
   }, [block, icons]);
 
   return (
-    <div className={styles.root}>
+    <div className={`appsemble-geocoordinates ${styles.root}`}>
       {label && <h1 className="label">{label}</h1>}
 
       {((icons && marker) || !icons) && (

@@ -39,6 +39,11 @@ attach(
       events.emit.data(pendingData);
     };
 
+    events.on.seed((newData: Data) => {
+      pendingData = newData;
+      onClick();
+    });
+
     events.on.data((newData: Data) => {
       // Just emit the data if there is nothing to compara against.
       if (oldData === undefined) {

@@ -4,6 +4,7 @@ import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import type { FileField, InputProps } from '../../../block';
+import isRequired from '../../utils/isRequired';
 import FileEntry from '../FileEntry';
 import styles from './index.css';
 
@@ -16,6 +17,9 @@ export default function FileInput({
   onInput,
   value,
 }: FileInputProps): VNode {
+  const { icon, label, name, repeated } = field;
+  const required = isRequired(field);
+
   const handleInput = useCallback(
     (event: h.JSX.TargetedEvent<HTMLInputElement>, val: string): void => {
       const copy = [].concat(value);
@@ -27,22 +31,22 @@ export default function FileInput({
       }
       onInput(({ currentTarget: { name: field.name } } as any) as Event, copy);
     },
-    [field.name, onInput, value],
+    [field, onInput, value],
   );
 
   return (
-    <FormComponent iconLeft={field.icon} label={field.label} required={field.required}>
-      {field.repeated ? (
+    <FormComponent className="appsemble-file" iconLeft={icon} label={label} required={required}>
+      {repeated ? (
         <div
           className={classNames('is-flex py-2 px-0', styles.repeatedContainer, {
-            'mt-5': !field.label,
+            'mt-5': !label,
           })}
         >
           <FileEntry
             disabled={disabled}
             error={error}
             field={field}
-            name={`${field.name}.${(value as string[]).length}`}
+            name={`${name}.${(value as string[]).length}`}
             onInput={handleInput}
             value={null}
           />
@@ -52,7 +56,7 @@ export default function FileInput({
               key={index}
               error={error}
               field={field}
-              name={`${field.name}.${index}`}
+              name={`${name}.${index}`}
               onInput={handleInput}
               value={val}
             />
@@ -62,7 +66,7 @@ export default function FileInput({
         <FileEntry
           error={error}
           field={field}
-          name={field.name}
+          name={name}
           onInput={onInput}
           value={value as string}
         />

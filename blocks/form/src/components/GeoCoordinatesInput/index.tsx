@@ -1,7 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 
 import { BlockProps, withBlock } from '@appsemble/preact';
-import classNames from 'classnames';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 import { Component, createRef, h, VNode } from 'preact';
 
@@ -79,18 +78,18 @@ class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
   render(): VNode {
     const { disabled } = this.props;
     return (
-      <div className={`${styles.root} is-relative mb-5`}>
+      <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
         <div ref={this.ref} className={styles.map} />
         <div className={styles.crossHairsOverlay}>
-          <i className={classNames('fas', 'fa-crosshairs', styles.crossHairs)} />
+          <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
         </div>
         <button
-          className={classNames('button', styles.resetButton)}
+          className={`button ${styles.resetButton}`}
           disabled={disabled}
           onClick={this.onReset}
           type="button"
         >
-          <span className={classNames('icon', styles.currentlocation)}>
+          <span className={`icon ${styles.currentlocation}`}>
             <i className="fas fa-crosshairs" />
           </span>
         </button>

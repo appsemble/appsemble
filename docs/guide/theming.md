@@ -195,6 +195,38 @@ form {
 }
 ```
 
+### Applying themes to specific pages or parts of pages
+
+Specific pages and elements can be styled in the core styling by using the `data-` attributes that
+are applied to pages. Each page has a `data-path` property indicating the path Appsemble used
+internally to access this page, for example, the first page would have `data-path="pages.0"`.
+
+To target this using CSS:
+
+```css
+[data-path='pages.0'] {
+  background-color: red;
+}
+```
+
+The blocks within a page also have their own data properties applied to them. These are `data-path`
+and `data-type`. The property `data-path` looks similar to `data-path` on pages, with `.blocks.`
+being added following by the index number of the block, such as: `pages.0.blocks.1` for the second
+block on the first page. The `data-type` property contains the full name of the block. Both of these
+can be combined to target specific blocks on specific pages.
+
+```css
+/* List blocks have a yellow background. */
+[data-type='@appsemble/list'] {
+  background-color: yellow;
+}
+
+/* List blocks on the first page have a blue background. */
+[data-path='pages.0'] [data-type='@appsemble/list'] {
+  background-color: blue;
+}
+```
+
 ### Applying themes for an organization
 
 Organization themes can be uploaded using the [CLI](cli). The command for uploading themes is as
