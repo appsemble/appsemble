@@ -92,8 +92,9 @@ pages:
                   fields:
                     - type: string
                       name: title
-                      required: true
                       label: Title
+                      requirements:
+                        - required: true
                     - type: string
                       name: body
                       label: Body
