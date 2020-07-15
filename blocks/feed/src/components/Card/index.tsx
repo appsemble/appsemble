@@ -85,31 +85,32 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
     [setMessage, setValid],
   );
 
-  const onSubmit = (event: Event): void => {
-    event.preventDefault();
-  };
+  const onSubmit = useCallback(
+    async (event: Event): Promise<void> => {
+      event.preventDefault();
 
-  const onClick = useCallback(async (): Promise<void> => {
-    if (!valid) {
-      return;
-    }
+      if (!valid) {
+        return;
+      }
 
-    try {
-      // XXX Adjust the logic for this.
-      const result = await actions.onSubmitReply.dispatch({
-        parentId: content.id,
-        content: message,
-      });
+      try {
+        // XXX Adjust the logic for this.
+        const result = await actions.onSubmitReply.dispatch({
+          parentId: content.id,
+          content: message,
+        });
 
-      setMessage('');
-      setReplies([...replies, result]);
+        setMessage('');
+        setReplies([...replies, result]);
 
-      // Scroll to the bottom of the reply container
-      replyContainer.current.scrollTop = replyContainer.current.scrollHeight;
-    } catch (e) {
-      utils.showMessage([].concat(messages.replyError.format()).join(''));
-    }
-  }, [actions, content, message, messages, replies, setMessage, setReplies, utils, valid]);
+        // Scroll to the bottom of the reply container
+        replyContainer.current.scrollTop = replyContainer.current.scrollHeight;
+      } catch (e) {
+        utils.showMessage([].concat(messages.replyError.format()).join(''));
+      }
+    },
+    [actions, content, message, messages, replies, utils, valid],
+  );
 
   const title = utils.remap(parameters.title, content);
   const subtitle = utils.remap(parameters.subtitle, content);
@@ -211,7 +212,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
           </button>
         )}
 
-        {actions.onLoadReply.type !== 'noop' && (
+        {actions.onLoadReply.type !== 'noop' && replies && (
           <Fragment>
             <div ref={replyContainer} className={styles.replies}>
               {replies.map((reply: any) => {
@@ -238,13 +239,10 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
                 required
                 value={message}
               />
-              {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
-              See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
               <button
                 className={`button ${styles.replyButton} ml-1`}
                 disabled={!valid}
-                onClick={onClick}
-                type="button"
+                type="submit"
               >
                 <span className="icon is-small">
                   <i className="fas fa-paper-plane" />

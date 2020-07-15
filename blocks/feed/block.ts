@@ -8,14 +8,14 @@ interface Reply {
   parentId?: string;
 
   /**
-   * The field that is used to fetch the name of the author.
+   * The author of the reply.
    *
    * @default [{ prop: 'author' }]
    */
   author?: Remapper;
 
   /**
-   * The field that is used to read the content of the reply.
+   * The content of the reply.
    *
    * @default [{ prop: 'content' }]
    */
