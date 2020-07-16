@@ -2,7 +2,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
-const merge = require('webpack-merge');
 
 const shared = require('./shared');
 
@@ -14,7 +13,10 @@ module.exports = ({ dir, name }, argv) => {
   const srcPath = path.join(dir, 'src');
   const production = argv.mode === 'production';
 
-  return merge.smart(shared(blockName, argv), {
+  const sharedConfig = shared(blockName, argv);
+
+  return {
+    ...sharedConfig,
     name,
     entry: [srcPath],
     output: {
@@ -22,13 +24,7 @@ module.exports = ({ dir, name }, argv) => {
     },
     module: {
       rules: [
-        {
-          test: /\/messages\.tsx?$/,
-          loader: 'babel-loader',
-          options: {
-            plugins: ['babel-plugin-react-intl-auto'],
-          },
-        },
+        ...sharedConfig.module.rules,
         {
           test: /\.tsx?$/,
           loader: 'ts-loader',
@@ -65,5 +61,5 @@ module.exports = ({ dir, name }, argv) => {
       }),
       production && new CleanWebpackPlugin(),
     ].filter(Boolean),
-  });
+  };
 };
