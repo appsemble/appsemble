@@ -13,9 +13,9 @@ import Assets from '../Assets';
 import CMS from '../CMS';
 import Editor from '../Editor';
 import Notifications from '../Notifications';
-import { useOrganizations } from '../OrganizationsProvider';
 import ProtectedRoute from '../ProtectedRoute';
 import Roles from '../Roles';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
@@ -38,7 +38,7 @@ const Context = createContext<AppValueContext>(null);
 
 export default function AppContext(): ReactElement {
   const match = useRouteMatch<{ id: string }>();
-  const { loading: organizationsLoading, organizations } = useOrganizations();
+  const { organizations } = useUser();
   const { data: app, error, loading, setData: setApp } = useData<App>(
     `/api/apps/${match.params.id}`,
   );
@@ -56,7 +56,7 @@ export default function AppContext(): ReactElement {
     );
   }
 
-  if (organizationsLoading || loading) {
+  if (!organizations || loading) {
     return <Loader />;
   }
 

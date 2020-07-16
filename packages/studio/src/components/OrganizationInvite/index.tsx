@@ -14,7 +14,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import type { Organization } from '../../types';
-import { useOrganizations } from '../OrganizationsProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
@@ -23,8 +22,7 @@ export default function OrganizationInvite(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const qs = useQuery();
-  const { logout, userInfo } = useUser();
-  const organizations = useOrganizations();
+  const { logout, organizations, setOrganizations, userInfo } = useUser();
   const redirect = useLocationString();
 
   const [success, setSuccess] = useState(false);
@@ -52,6 +50,10 @@ export default function OrganizationInvite(): ReactElement {
         });
         setSuccess(true);
         setJoined(response);
+
+        if (response) {
+          setOrganizations([...organizations, { ...organization, role: 'Member' }]);
+        }
       } catch (exception) {
         if (exception?.response) {
           const { status } = exception.response;
@@ -69,7 +71,7 @@ export default function OrganizationInvite(): ReactElement {
       }
       setSubmitting(false);
     },
-    [formatMessage, organization, push, qs],
+    [formatMessage, organization, organizations, push, qs, setOrganizations],
   );
 
   const onAcceptClick = useCallback(() => sendResponse(true), [sendResponse]);
@@ -80,9 +82,21 @@ export default function OrganizationInvite(): ReactElement {
     return <Loader />;
   }
 
-  if (userInfo && organizations.organizations.some((o) => o.id === organization.id)) {
+  if (
+    userInfo &&
+    !submitting &&
+    !success &&
+    organization &&
+    organizations.some((o) => o.id === organization.id)
+  ) {
     return (
       <div className={`${styles.root} content`}>
+        <h2>
+          <FormattedMessage
+            {...messages.joining}
+            values={{ organization: organization.name || organization.id }}
+          />
+        </h2>
         <p>
           <FormattedMessage {...messages.alreadyJoined} />
         </p>

@@ -26,6 +26,7 @@ import type { Member, Role } from '../../types';
 import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
 import { useUser } from '../UserProvider';
+import styles from './index.css';
 import messages from './messages';
 
 interface Invite {
@@ -57,7 +58,11 @@ function calculateOrganizationId(
 export default function OrganizationsSettings(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
-  const { userInfo } = useUser();
+  const {
+    organizations: userOrganizations,
+    setOrganizations: setUserOrganizations,
+    userInfo,
+  } = useUser();
 
   const [loading, setLoading] = useState(true);
   const [organizations, setOrganizations] = useState<LocalOrganization[]>([]);
@@ -90,6 +95,10 @@ export default function OrganizationsSettings(): ReactElement {
 
         setSelectedOrganization(organization.id);
         setOrganizations([...organizations, organization]);
+        setUserOrganizations([
+          ...userOrganizations,
+          { id: organization.id, name: organization.name, role: 'Owner' },
+        ]);
 
         push({
           body: formatMessage(messages.createOrganizationSuccess, {
@@ -105,7 +114,7 @@ export default function OrganizationsSettings(): ReactElement {
         }
       }
     },
-    [formatMessage, organizations, push],
+    [formatMessage, organizations, push, setUserOrganizations, userOrganizations],
   );
 
   const onInviteMember = useCallback(
@@ -433,10 +442,9 @@ export default function OrganizationsSettings(): ReactElement {
                       )}
                     </div>
                   </td>
-                  <td className="has-text-right">
+                  <td className={`has-text-right ${styles.actionsCell}`}>
                     {canManageRoles ? (
                       <Select
-                        className="is-inline"
                         defaultValue={member.role}
                         disabled={member.id === userInfo.sub || submittingRole === member.id}
                         fullwidth={false}
@@ -453,17 +461,18 @@ export default function OrganizationsSettings(): ReactElement {
                         ))}
                       </Select>
                     ) : (
-                      <FormattedMessage {...messages[member.role]} />
+                      <span className="mr-2">
+                        <FormattedMessage {...messages[member.role]} />
+                      </span>
                     )}
-                    <div className="field is-grouped is-inline">
+                    <div className="field is-grouped is-grouped-right">
                       {member.id === userInfo.sub &&
                         organization.members.length > 1 &&
                         organization.members.some((m) =>
                           checkRole(m.role, Permission.ManageRoles),
                         ) && (
-                          <p className="control is-inline">
+                          <p className="control">
                             <Button
-                              className="is-inline"
                               color="danger"
                               icon="sign-out-alt"
                               onClick={() => onRemoveMemberClick(member.id)}
@@ -471,9 +480,8 @@ export default function OrganizationsSettings(): ReactElement {
                           </p>
                         )}
                       {member.id !== userInfo.sub && canManageMembers && (
-                        <p className="control is-inline">
+                        <p className="control">
                           <Button
-                            className="is-inline"
                             color="danger"
                             icon="trash-alt"
                             onClick={() => onRemoveMemberClick(member.id)}
@@ -490,21 +498,17 @@ export default function OrganizationsSettings(): ReactElement {
                   <td>{invite.email}</td>
                   <td className="has-text-right">
                     {canInviteMembers ? (
-                      <div className="field is-grouped is-inline">
-                        <p className="control is-inline">
+                      <div className="field ml-2 is-grouped is-grouped-right">
+                        <p className="control">
                           <Button
-                            className="control is-outlined is-inline"
+                            className="control is-outlined"
                             onClick={() => resendInvitation(invite)}
                           >
                             <FormattedMessage {...messages.resendInvitation} />
                           </Button>
                         </p>
-                        <p className="control is-inline">
-                          <Button
-                            className="is-inline"
-                            color="danger"
-                            onClick={() => onRemoveInviteClick(invite)}
-                          >
+                        <p className="control">
+                          <Button color="danger" onClick={() => onRemoveInviteClick(invite)}>
                             <Icon icon="trash-alt" size="small" />
                           </Button>
                         </p>

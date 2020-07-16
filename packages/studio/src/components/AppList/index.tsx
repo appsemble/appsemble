@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 
 import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
-import { useOrganizations } from '../OrganizationsProvider';
 import { useUser } from '../UserProvider';
 import AppCard from './components/AppCard';
 import CreateAppCard from './components/CreateAppCard';
@@ -16,9 +15,8 @@ import messages from './messages';
 
 export default function AppList(): ReactElement {
   const [filter, setFilter] = useState('');
-  const { organizations } = useOrganizations();
   const { formatMessage } = useIntl();
-  const { userInfo } = useUser();
+  const { organizations, userInfo } = useUser();
   const { data: apps, error, loading } = useData<App[]>(userInfo ? '/api/apps/me' : '/api/apps');
 
   const onFilterChange = useCallback((event) => {

@@ -23,7 +23,7 @@ import checkRole from '../../utils/checkRole';
 import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import AppRatings from '../AppRatings';
-import { useOrganizations } from '../OrganizationsProvider';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
@@ -36,7 +36,7 @@ export default function AppDetails(): ReactElement {
   const history = useHistory();
   const { formatMessage } = useIntl();
 
-  const { organizations } = useOrganizations();
+  const { organizations } = useUser();
 
   const cloneApp = useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
