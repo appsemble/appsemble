@@ -74,13 +74,13 @@ declare module '@appsemble/sdk' {
      * Action that gets dispatched when a button is clicked that doesn’t specify its own click
      * action.
      */
-    onClick: {};
+    onClick: never;
 
     /**
      * A custom action that gets dispatched when a button is clicked that has the same click action
      * specified as the name of this action.
      */
-    [key: string]: {};
+    [key: string]: never;
   }
 
   interface EventListeners {
@@ -89,6 +89,6 @@ declare module '@appsemble/sdk' {
      *
      * This data can be used with remap to display labels dynamically based on the received data.
      */
-    data: {};
+    data: never;
   }
 }
