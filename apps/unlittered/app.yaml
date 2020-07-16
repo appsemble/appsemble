@@ -78,9 +78,9 @@ pages:
           onSubmit:
             type: resource.create
             resource: litter
-          onSubmitSuccess:
-            type: link
-            to: Litter Overview
+            onSuccess:
+              type: link
+              to: Litter Overview
 
   - name: Litter Overview
     blocks:
