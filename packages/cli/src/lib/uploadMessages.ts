@@ -1,4 +1,5 @@
 import { logger } from '@appsemble/node-utils';
+import type { AppMessages } from '@appsemble/types';
 import axios from 'axios';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
@@ -16,13 +17,13 @@ export default async function uploadMessages(path: string, appId: string): Promi
   }
 
   logger.info(`Traversing app messages for ${messageDir.length} languages 🕵`);
-  const result: { language: string; content: object }[] = [];
+  const result: { language: string; content: AppMessages }[] = [];
 
   for (const messageFile of messageDir) {
     logger.verbose(`Processing ${join(path, 'messages', messageFile)} ⚙️`);
     const [language] = messageFile.split('.');
     const file = await fs.readFile(join(path, 'messages', messageFile), 'utf8');
-    const content = yaml.safeLoad(file) as object;
+    const content = yaml.safeLoad(file) as AppMessages;
     result.push({ language, content });
   }
 

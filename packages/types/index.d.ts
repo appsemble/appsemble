@@ -927,6 +927,13 @@ export interface AppMember {
 }
 
 /**
+ * An object containing messages for translating apps.
+ */
+export interface AppMessages {
+  [key: string]: string;
+}
+
+/**
  * A representation of an OAuth2 provider in Appsemble.
  *
  * This interface holds the properties needed to render a redirect button on the login or profile
