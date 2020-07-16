@@ -3,8 +3,6 @@ name: Getting Started
 route: /
 ---
 
-import './index.css';
-
 # Getting Started
 
 Some of the content in the Appsemble documentation is of interest to a wide range of software
@@ -26,7 +24,7 @@ Check out the resources below for more information on how to develop apps using 
 
 ## System Admin
 
-As a system admin you might be interested in learning more about how Appsemble's infrastructure
+As a system admin you might be interested in learning more about how Appsemble’s infrastructure
 works or how Appsemble can be deployed on your own server.
 
 For more information, please refer to the links below.

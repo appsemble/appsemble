@@ -10,7 +10,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const { EnvironmentPlugin } = require('webpack');
-const merge = require('webpack-merge');
 
 const core = require('./core');
 const minify = require('./html-minifier.json');
@@ -25,7 +24,10 @@ module.exports = (env, argv) => {
   const production = mode === 'production';
   const studioEntry = path.resolve(__dirname, '../../packages/studio/src');
 
-  return merge.smart(core('studio', argv), {
+  const coreConfig = core('studio', argv);
+
+  return {
+    ...coreConfig,
     name: 'Appsemble Studio',
     entry: [studioEntry],
     output: {
@@ -33,6 +35,7 @@ module.exports = (env, argv) => {
       publicPath,
     },
     plugins: [
+      ...coreConfig.plugins,
       new EnvironmentPlugin({
         APPSEMBLE_VERSION: studioPkg.version,
       }),
@@ -55,5 +58,5 @@ module.exports = (env, argv) => {
       }),
       new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }),
     ],
-  });
+  };
 };

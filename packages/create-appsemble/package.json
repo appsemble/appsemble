@@ -24,8 +24,8 @@
   "dependencies": {
     "@appsemble/node-utils": "0.13.5",
     "fs-extra": "^9.0.1",
-    "inquirer": "^7.2.0",
-    "type-fest": "^0.15.1",
-    "yargs": "^15.3.1"
+    "inquirer": "^7.3.2",
+    "type-fest": "^0.16.0",
+    "yargs": "^15.4.1"
   }
 }
