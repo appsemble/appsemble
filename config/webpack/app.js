@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
-const merge = require('webpack-merge');
 
 const core = require('./core');
 const minify = require('./html-minifier.json');
@@ -18,7 +17,10 @@ module.exports = (env, argv) => {
   const production = mode === 'production';
   const appEntry = path.resolve(__dirname, '../../packages/app/src');
 
-  return merge.smart(core('app', argv), {
+  const coreConfig = core('app', argv);
+
+  return {
+    ...coreConfig,
     name: 'Appsemble App',
     entry: [appEntry],
     output: {
@@ -26,6 +28,7 @@ module.exports = (env, argv) => {
       publicPath,
     },
     plugins: [
+      ...coreConfig.plugins,
       new HtmlWebpackPlugin({
         template: path.join(appEntry, 'index.html'),
         filename: 'app.html',
@@ -55,5 +58,5 @@ module.exports = (env, argv) => {
         filename: production ? '_/[contentHash].css' : '_/app/[name].css',
       }),
     ],
-  });
+  };
 };

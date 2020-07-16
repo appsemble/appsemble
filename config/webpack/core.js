@@ -1,4 +1,3 @@
-const merge = require('webpack-merge');
 const path = require('path');
 
 const shared = require('./shared');
@@ -12,9 +11,14 @@ module.exports = (env, argv) => {
   const { mode, publicPath } = argv;
   const production = mode === 'production';
 
-  return merge.smart(shared(env, argv), {
+  const sharedConfig = shared(env, argv);
+
+  return {
+    ...sharedConfig,
     module: {
+      ...sharedConfig.module,
       rules: [
+        ...sharedConfig.module.rules,
         {
           test: /[\\/]messages\.tsx?$/,
           loader: 'babel-loader',
@@ -49,5 +53,5 @@ module.exports = (env, argv) => {
         },
       ],
     },
-  });
+  };
 };
