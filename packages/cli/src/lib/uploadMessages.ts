@@ -22,7 +22,7 @@ export default async function uploadMessages(path: string, appId: string): Promi
     logger.verbose(`Processing ${join(path, 'messages', messageFile)} ⚙️`);
     const [language] = messageFile.split('.');
     const file = await fs.readFile(join(path, 'messages', messageFile), 'utf8');
-    const content = yaml.safeLoad(file);
+    const content = yaml.safeLoad(file) as object;
     result.push({ language, content });
   }
 
