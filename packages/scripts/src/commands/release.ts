@@ -1,6 +1,7 @@
 import { getWorkspaces, logger } from '@appsemble/node-utils';
 import { readdir, readFile, readJson, writeFile, writeJson } from 'fs-extra';
 import globby from 'globby';
+import { mapValues } from 'lodash';
 import * as path from 'path';
 import * as semver from 'semver';
 import type { PackageJson } from 'type-fest';
@@ -31,32 +32,21 @@ async function updatePkg(dirname: string, version: string): Promise<void> {
 
   await writeJson(
     filepath,
-    Object.fromEntries(
-      Object.entries(pkg).map(([key, value]) => {
-        if (key === 'version') {
-          return [key, version];
-        }
-        if (
-          key === 'dependencies' ||
-          key === 'devDependencies' ||
-          key === 'optionalDependencies' ||
-          key === 'peerDependencies'
-        ) {
-          return [
-            key,
-            Object.fromEntries(
-              Object.entries(value).map(([dep, v]) => {
-                if (dep.startsWith('@appsemble/')) {
-                  return [dep, version];
-                }
-                return [dep, v];
-              }),
-            ),
-          ];
-        }
-        return [key, value];
-      }),
-    ),
+    mapValues(pkg, (value, key) => {
+      switch (key) {
+        case 'version':
+          return version;
+        case 'dependencies':
+        case 'devDependencies':
+        case 'optionalDependencies':
+        case 'peerDependencies':
+          return mapValues(value as PackageJson.Dependency, (v, dep) =>
+            dep.startsWith('@appsemble/') ? version : v,
+          );
+        default:
+          return value;
+      }
+    }),
     { spaces: 2 },
   );
 }
