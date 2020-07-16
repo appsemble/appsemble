@@ -122,7 +122,7 @@ export default function Editor(): ReactElement {
     let definition: AppDefinition;
     // Attempt to parse the YAML into a JSON object
     try {
-      definition = safeLoad(recipe);
+      definition = safeLoad(recipe) as AppDefinition;
     } catch (error) {
       push(formatMessage(messages.invalidYaml));
       setValid(false);
@@ -211,7 +211,7 @@ export default function Editor(): ReactElement {
     }
 
     const { id } = params;
-    const definition = safeLoad(recipe);
+    const definition = safeLoad(recipe) as AppDefinition;
 
     try {
       const formData = new FormData();
@@ -254,8 +254,8 @@ export default function Editor(): ReactElement {
 
   const onUpload = useCallback(async () => {
     if (valid) {
-      const newApp = safeLoad(recipe);
-      const originalApp = safeLoad(initialRecipe);
+      const newApp = safeLoad(recipe) as AppDefinition;
+      const originalApp = safeLoad(initialRecipe) as AppDefinition;
 
       if (!isEqual(newApp.resources, originalApp.resources)) {
         promptUpdateApp();
@@ -272,7 +272,7 @@ export default function Editor(): ReactElement {
         case '#editor':
           setRecipe(value);
           if (editorStep !== GuiEditorStep.YAML) {
-            const definition = safeLoad(value);
+            const definition = safeLoad(value) as AppDefinition;
             setApp({ ...app, yaml: value, definition });
           }
           break;

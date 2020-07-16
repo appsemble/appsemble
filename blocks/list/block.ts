@@ -76,7 +76,7 @@ declare module '@appsemble/sdk' {
      *
      * If defined, an indicator will show up to show that the list item has a click action.
      */
-    onClick: {};
+    onClick: never;
   }
 
   interface EventListeners {
@@ -85,6 +85,6 @@ declare module '@appsemble/sdk' {
      *
      * Compatible data that is received will be displayed. Must be a set of data.
      */
-    data: {};
+    data: never;
   }
 }

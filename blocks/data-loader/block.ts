@@ -7,7 +7,7 @@ declare module '@appsemble/sdk' {
      *
      * This also gets called during the initial load.
      */
-    onLoad: {};
+    onLoad: never;
   }
 
   interface Parameters {
@@ -25,7 +25,7 @@ declare module '@appsemble/sdk' {
      *
      * It can be triggered again by sending a `refresh` event.
      */
-    data: {};
+    data: never;
   }
 
   interface EventListeners {
@@ -33,6 +33,6 @@ declare module '@appsemble/sdk' {
      * When received, the `onLoad` action will be triggered using the parameters passed through this
      * event, which in turn triggers the `data` emit event.
      */
-    refresh: {};
+    refresh: never;
   }
 }

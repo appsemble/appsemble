@@ -10,7 +10,7 @@ interface Reply {
   /**
    * The author of the reply.
    *
-   * @default [{ prop: 'author' }]
+   * @default [{ prop: '$author' }, { prop: 'name' }]
    */
   author?: Remapper;
 
@@ -142,14 +142,14 @@ declare module '@appsemble/sdk' {
     /**
      * Action that gets dispatched when a user clicks on an avatar.
      */
-    onAvatarClick: any;
+    onAvatarClick: never;
 
     /**
      * Action that gets dispatched when the button is clicked.
      *
      * The button won't display if this is not defined.
      */
-    onButtonClick: any;
+    onButtonClick: never;
 
     /**
      * Action that gets dispatched when submitting a reply.
@@ -157,12 +157,12 @@ declare module '@appsemble/sdk' {
      * When submitting replies, the data will be structured
      * as an object containing `parentId` and `content`.
      */
-    onSubmitReply: any;
+    onSubmitReply: never;
 
     /**
      * Action to retrieve replies, dispatched on every feed item.
      */
-    onLoadReply: any;
+    onLoadReply: never;
   }
 
   interface EventListeners {
@@ -171,6 +171,6 @@ declare module '@appsemble/sdk' {
      *
      * Compatible data that is received will be displayed.
      */
-    data: {};
+    data: never;
   }
 }

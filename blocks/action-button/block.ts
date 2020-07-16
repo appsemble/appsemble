@@ -5,7 +5,7 @@ declare module '@appsemble/sdk' {
     /**
      * Action that gets dispatched when the button is clicked.
      */
-    onClick: { required: true };
+    onClick: never;
   }
 
   interface Parameters {

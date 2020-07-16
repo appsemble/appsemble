@@ -59,7 +59,7 @@ export default async function renderEmail(
     });
   });
   visit<YamlNode>(mdast, 'yaml', (node, index, parent: Parent) => {
-    ({ subject } = yaml.safeLoad(node.value));
+    ({ subject } = yaml.safeLoad(node.value) as Email);
     parent.children.splice(index, 1);
   });
 

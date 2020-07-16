@@ -73,6 +73,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',
     'react/react-in-jsx-scope': 'off',
+    'react/require-default-props': 'off',
     'simple-import-sort/sort': 'error',
     'sort-destructure-keys/sort-destructure-keys': 'error',
     'jsx-a11y/label-has-associated-control': 'off',

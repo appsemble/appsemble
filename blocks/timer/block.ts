@@ -12,6 +12,6 @@ declare module '@appsemble/sdk' {
     /**
      * The event to emit on an interval
      */
-    interval: {};
+    interval: never;
   }
 }

@@ -156,8 +156,6 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
       icon = 'user';
   }
 
-  createIcon({ parameters, utils });
-
   return (
     <article className="card mx-2 my-2">
       <div className="card-content">
@@ -222,16 +220,19 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
             {parameters.buttonLabel ?? 'Click'}
           </button>
         )}
-
         {actions.onLoadReply.type !== 'noop' && replies && (
           <Fragment>
             <div ref={replyContainer} className={styles.replies}>
               {replies.map((reply: any) => {
-                const author = utils.remap(parameters?.reply.author ?? [{ prop: 'author' }], reply);
+                const author = utils.remap(
+                  parameters?.reply.author ?? [{ prop: '$author' }, { prop: 'name' }],
+                  reply,
+                );
                 const replyContent = utils.remap(
                   parameters?.reply.content ?? [{ prop: 'content' }],
                   reply,
                 );
+
                 return (
                   <div key={reply.id} className="content">
                     <h6 className="is-marginless">
