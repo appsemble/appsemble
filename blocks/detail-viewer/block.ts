@@ -171,6 +171,6 @@ declare module '@appsemble/sdk' {
      *
      * Compatible data that is received will be displayed.
      */
-    data: {};
+    data: never;
   }
 }
