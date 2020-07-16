@@ -115,7 +115,7 @@ declare module '@appsemble/sdk' {
     /**
      * Action that gets dispatched when a marker is clicked.
      */
-    onMarkerClick: {};
+    onMarkerClick: never;
   }
 
   interface EventListeners {
@@ -124,7 +124,7 @@ declare module '@appsemble/sdk' {
      *
      * Compatible data that is received will be displayed. Must be a set of data.
      */
-    data: {};
+    data: never;
   }
 
   interface EventEmitters {
@@ -134,6 +134,6 @@ declare module '@appsemble/sdk' {
      * Will apply [OData filters](https://www.odata.org) to limit the range of items fetched. This
      * will be skipped if the move emit event is not defined.
      */
-    move: {};
+    move: never;
   }
 }

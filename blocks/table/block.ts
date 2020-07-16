@@ -37,18 +37,18 @@ declare module '@appsemble/sdk' {
      *
      * This does not trigger if the field has a different action specified.
      */
-    onClick: {};
+    onClick: never;
 
     /**
      * Custom action mapping.
      */
-    [key: string]: {};
+    [key: string]: never;
   }
 
   interface EventListeners {
     /**
      * Listener for data used to display data in the table.
      */
-    data: {};
+    data: never;
   }
 }
