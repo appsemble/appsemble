@@ -1,10 +1,13 @@
 export default {
-  '/apps/{appId}/translations': {
-    parameters: [{ $ref: '#/components/parameters/appId' }],
+  '/apps/{appId}/messages': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { name: 'merge', in: 'query', schema: { type: 'boolean' } },
+    ],
     get: {
       tags: ['language'],
       description: 'Get a list of all languages with messages.',
-      operationId: 'getTranslations',
+      operationId: 'getLanguages',
       responses: {
         200: {
           description: 'The list of supported languages',
@@ -23,8 +26,8 @@ export default {
     },
     post: {
       tags: ['language'],
-      description: 'Upload a translation for the given language.',
-      operationId: 'createTranslation',
+      description: 'Upload messages for the given language.',
+      operationId: 'createMessages',
       requestBody: {
         required: true,
         content: {
@@ -48,15 +51,15 @@ export default {
       security: [{ studio: [] }, {}],
     },
   },
-  '/apps/{appId}/translations/{language}': {
+  '/apps/{appId}/messages/{language}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/language' },
     ],
     get: {
       tags: ['language'],
-      description: 'Get the app’s translation for this language.',
-      operationId: 'getTranslation',
+      description: 'Get the app’s messages for this language.',
+      operationId: 'getMessages',
       responses: {
         200: {
           description: 'The assets associated with the app.',

@@ -1,6 +1,6 @@
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppTranslation, Member, Organization, User } from '../models';
+import { App, AppMessages, Member, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -9,7 +9,7 @@ let authorization: string;
 let app: App;
 let user: User;
 
-beforeAll(createTestSchema('templates'));
+beforeAll(createTestSchema('messages'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
@@ -40,59 +40,59 @@ afterEach(truncate);
 
 afterAll(closeTestSchema);
 
-describe('getTranslation', () => {
-  it('should return an existing language', async () => {
-    await request.post(`/api/apps/${app.id}/translations`, {
+describe('getMessages', () => {
+  it('should return the messages for an existing language', async () => {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-gb',
       content: { test: 'Test.' },
     });
 
-    const { data } = await request.get(`/api/apps/${app.id}/translations/en-GB`);
+    const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(data).toMatchObject({ test: 'Test.' });
   });
 
   it('should return a 404 if a language is not supported', async () => {
-    const { data } = await request.get(`/api/apps/${app.id}/translations/en-GB`);
+    const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(data).toMatchObject({ statusCode: 404, message: 'Language could not be found' });
   });
 });
 
-describe('createTranslation', () => {
+describe('createMessages', () => {
   it('should accept valid requests', async () => {
-    const { status } = await request.post(`/api/apps/${app.id}/translations`, {
+    const { status } = await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       content: { test: 'Test.' },
     });
-    const translation = await AppTranslation.findOne({ where: { AppId: app.id, language: 'en' } });
+    const translation = await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } });
 
     expect(translation.content).toMatchObject({ test: 'Test.' });
     expect(status).toBe(204);
   });
 });
 
-describe('getAppLanguages', () => {
+describe('getLanguages', () => {
   it('should return an empty array if no translations are available', async () => {
-    const { data } = await request.get(`/api/apps/${app.id}/translations`, {
+    const { data } = await request.get(`/api/apps/${app.id}/messages`, {
       headers: { authorization },
     });
     expect(data).toStrictEqual([]);
   });
 
   it('should return a list of available languages', async () => {
-    await request.post(`/api/apps/${app.id}/translations`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'nl',
       content: { test: 'Geslaagd met vliegende kleuren' },
     });
-    await request.post(`/api/apps/${app.id}/translations`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
       content: { test: 'Passed with flying colors' },
     });
-    await request.post(`/api/apps/${app.id}/translations`, {
+    await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-GB',
       content: { test: 'Passed with flying colours' },
     });
 
-    const { data } = await request.get(`/api/apps/${app.id}/translations`, {
+    const { data } = await request.get(`/api/apps/${app.id}/messages`, {
       headers: { authorization },
     });
 

@@ -8,12 +8,12 @@ export default {
 
   /**
    * Summary:
-   * - Add the AppTranslation table.
+   * - Add the AppMessages table.
    */
   async up(db) {
     const queryInterface = db.getQueryInterface();
-    logger.info('Adding new table AppTranslation');
-    await queryInterface.createTable('AppTranslation', {
+    logger.info('Adding new table AppMessages');
+    await queryInterface.createTable('AppMessages', {
       AppId: {
         primaryKey: true,
         type: DataTypes.INTEGER,
@@ -41,7 +41,7 @@ export default {
 
   async down(db) {
     const queryInterface = db.getQueryInterface();
-    logger.warn('Dropping table AppTranslation');
-    await queryInterface.dropTable('AppTranslation');
+    logger.warn('Dropping table AppMessages');
+    await queryInterface.dropTable('AppMessages');
   },
 } as Migration;

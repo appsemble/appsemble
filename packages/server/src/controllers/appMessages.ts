@@ -1,7 +1,7 @@
 import { validateLanguage } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
-import { App, AppTranslation } from '../models';
+import { App, AppMessages } from '../models';
 import type { KoaContext } from '../types';
 
 interface Params {
@@ -9,7 +9,7 @@ interface Params {
   language: string;
 }
 
-export async function getTranslation(ctx: KoaContext<Params>): Promise<void> {
+export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, language },
   } = ctx;
@@ -22,23 +22,21 @@ export async function getTranslation(ctx: KoaContext<Params>): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: [],
-    include: [
-      { model: AppTranslation, where: { language: language.toLowerCase() }, required: false },
-    ],
+    include: [{ model: AppMessages, where: { language: language.toLowerCase() }, required: false }],
   });
 
   if (!app) {
     throw Boom.notFound('App not found');
   }
 
-  if (!app.AppTranslations.length) {
+  if (!app.AppMessages.length) {
     throw Boom.notFound('Language could not be found');
   }
 
-  ctx.body = app.AppTranslations[0].content;
+  ctx.body = app.AppMessages[0].content;
 }
 
-export async function createTranslation(ctx: KoaContext<Params>): Promise<void> {
+export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
     request: {
@@ -58,22 +56,22 @@ export async function createTranslation(ctx: KoaContext<Params>): Promise<void> 
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 
-  await AppTranslation.upsert({ AppId: dbApp.id, language: language.toLowerCase(), content });
+  await AppMessages.upsert({ AppId: dbApp.id, language: language.toLowerCase(), content });
 }
 
-export async function getTranslations(ctx: KoaContext<Params>): Promise<void> {
+export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: [],
-    include: [{ model: AppTranslation, required: false }],
+    include: [{ model: AppMessages, required: false }],
   });
 
   if (!app) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = app.AppTranslations.map((message) => message.language).sort();
+  ctx.body = app.AppMessages.map((message) => message.language).sort();
 }

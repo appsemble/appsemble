@@ -12,8 +12,8 @@ import {
 
 import { App } from '.';
 
-@Table({ tableName: 'AppTranslation', paranoid: false })
-export default class AppTranslation extends Model<AppTranslation> {
+@Table({ tableName: 'AppMessages', paranoid: false })
+export default class AppMessages extends Model<AppMessages> {
   @PrimaryKey
   @ForeignKey(() => App)
   @Column

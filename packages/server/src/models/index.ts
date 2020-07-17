@@ -5,11 +5,11 @@ import { logSQL } from '../utils/sqlUtils';
 import App from './App';
 import AppBlockStyle from './AppBlockStyle';
 import AppMember from './AppMember';
+import AppMessages from './AppMessages';
 import AppOAuth2Authorization from './AppOAuth2Authorization';
 import AppOAuth2Secret from './AppOAuth2Secret';
 import AppRating from './AppRating';
 import AppSubscription from './AppSubscription';
-import AppTranslation from './AppTranslation';
 import Asset from './Asset';
 import BlockAsset from './BlockAsset';
 import BlockVersion from './BlockVersion';
@@ -47,7 +47,7 @@ export {
   AppOAuth2Secret,
   AppRating,
   AppSubscription,
-  AppTranslation,
+  AppMessages,
   Asset,
   BlockAsset,
   BlockVersion,
@@ -90,7 +90,7 @@ export function initDB({
       AppOAuth2Secret,
       AppRating,
       AppSubscription,
-      AppTranslation,
+      AppMessages,
       Asset,
       BlockAsset,
       BlockVersion,
