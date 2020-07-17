@@ -1,12 +1,23 @@
 import { getWorkspaces, logger } from '@appsemble/node-utils';
-import { readdir, readFile, readJson, writeFile, writeJson } from 'fs-extra';
+import { formatISO } from 'date-fns';
+import { ensureDir, readdir, readFile, readJson, remove, writeFile, writeJson } from 'fs-extra';
 import globby from 'globby';
-import { mapValues } from 'lodash';
+import { capitalize, mapValues } from 'lodash';
+import type { BlockContent, ListItem, Root } from 'mdast';
 import * as path from 'path';
+import remark from 'remark';
 import * as semver from 'semver';
 import type { PackageJson } from 'type-fest';
 import type { Argv } from 'yargs';
 
+import {
+  createHeading,
+  createLinkReference,
+  createList,
+  createListItem,
+  createRoot,
+  dumpMarkdown,
+} from '../lib/mdast';
 import readPackageJson from '../lib/readPackageJson';
 
 export const command = 'release <increment>';
@@ -14,6 +25,15 @@ export const description = 'Prepare files for a new release.';
 
 interface Args {
   increment: 'minor' | 'patch';
+}
+
+interface Changes {
+  added: ListItem[];
+  changed: ListItem[];
+  deprecated: ListItem[];
+  removed: ListItem[];
+  fixed: ListItem[];
+  security: ListItem[];
 }
 
 /**
@@ -69,6 +89,77 @@ async function replaceFile(
   await writeFile(filename, updated);
 }
 
+async function processChangesDir(dir: string, prefix: string): Promise<ListItem[]> {
+  await ensureDir(dir);
+  const filenames = await readdir(dir);
+  const absoluteFiles = filenames.map((f) => path.join(dir, f));
+  const lines = await Promise.all(absoluteFiles.map((f) => readFile(f, 'utf-8')));
+  return lines
+    .sort()
+    .map((line) => `${prefix}: ${line}`)
+    .map((line) => line.trim())
+    .map((line) => (line.endsWith('.') ? line : `${line}.`))
+    .map((line) => createListItem(remark().parse(line).children as BlockContent[]));
+}
+
+async function processChanges(dir: string): Promise<Changes> {
+  const changesDir = path.join(dir, 'changes');
+  const base = path.basename(dir);
+  const parent = path.basename(path.dirname(dir));
+  const prefix = parent === 'blocks' ? `Block(\`${base}\`)` : capitalize(base);
+  const result = {
+    added: await processChangesDir(path.join(changesDir, 'added'), prefix),
+    changed: await processChangesDir(path.join(changesDir, 'changed'), prefix),
+    deprecated: await processChangesDir(path.join(changesDir, 'deprecated'), prefix),
+    removed: await processChangesDir(path.join(changesDir, 'removed'), prefix),
+    fixed: await processChangesDir(path.join(changesDir, 'fixed'), prefix),
+    security: await processChangesDir(path.join(changesDir, 'security'), prefix),
+  };
+  await remove(changesDir);
+  return result;
+}
+
+async function updateChangelog(workspaces: string[], version: string): Promise<void> {
+  const changesByPackage = await Promise.all(
+    workspaces.map((workspace) => processChanges(workspace)),
+  );
+  const changelog = remark().parse(await readFile('CHANGELOG.md', 'utf-8')) as Root;
+  const changesByCategory = changesByPackage.reduce<Changes>(
+    (acc, change) => {
+      acc.added.push(...change.added);
+      acc.changed.push(...change.changed);
+      acc.deprecated.push(...change.deprecated);
+      acc.removed.push(...change.removed);
+      acc.fixed.push(...change.fixed);
+      acc.security.push(...change.security);
+      return acc;
+    },
+    { added: [], changed: [], deprecated: [], removed: [], fixed: [], security: [] },
+  );
+  const changesSection = [
+    createHeading(2, [
+      createLinkReference(version, [version]),
+      ' - ',
+      formatISO(new Date(), { representation: 'date' }),
+    ]),
+    ...Object.entries(changesByCategory)
+      .filter(([, changes]) => changes.length)
+      .flatMap(([category, listItems]: [string, ListItem[]]) => [
+        createHeading(3, [capitalize(category)]),
+        createList(listItems),
+      ]),
+  ];
+  changelog.children.find((child, index) => {
+    if (child.type === 'heading' && child.depth === 2) {
+      changelog.children.splice(index, 0, ...changesSection);
+      return true;
+    }
+    return undefined;
+  });
+  logger.info(await dumpMarkdown(createRoot(changesSection), 'CHANGELOG.md'));
+  await writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));
+}
+
 export function builder(yargs: Argv): Argv {
   return yargs.positional('increment', {
     description: 'Whether to increment the minor or patch version',
@@ -102,4 +193,5 @@ export async function handler({ increment }: Args): Promise<void> {
   await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
   await updatePkg(process.cwd(), version);
+  await updateChangelog(workspaces, version);
 }
