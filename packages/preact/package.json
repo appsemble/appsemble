@@ -2,6 +2,18 @@
   "name": "@appsemble/preact",
   "version": "0.13.5",
   "description": "Build your own blocks using Preact",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "front-end",
+    "frontend",
+    "low-code",
+    "lowcode",
+    "preact",
+    "sdk"
+  ],
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {

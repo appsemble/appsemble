@@ -3,6 +3,15 @@
   "version": "0.13.5",
   "private": true,
   "description": "Bootstrap an Appsemble project",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "cli",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
