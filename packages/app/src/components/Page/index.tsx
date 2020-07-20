@@ -1,10 +1,5 @@
 import { useLocationString, useMessages } from '@appsemble/react-components';
-import type {
-  AppDefinition,
-  BasicPageDefinition,
-  BlockDefinition,
-  PageDefinition,
-} from '@appsemble/types';
+import type { AppDefinition, PageDefinition } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -35,7 +30,6 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
   const { isLoggedIn, logout, role } = useUser();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
-  const [blocks, setBlocks] = useState<BlockDefinition[]>([]);
 
   const ee = useRef<EventEmitter>();
   if (!ee.current) {
@@ -122,15 +116,6 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
   }, []);
 
   useEffect(() => {
-    setBlocks([
-      ...(page.type === 'tabs' || page.type === 'flow'
-        ? page.subPages.map((f) => f.blocks).flat()
-        : []),
-      ...(!page.type || page.type === 'page' ? (page as BasicPageDefinition).blocks : []),
-    ]);
-  }, [page]);
-
-  useEffect(() => {
     applyBulmaThemes(definition, page);
 
     if (ee.current) {
@@ -156,7 +141,6 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
     case 'flow':
       component = (
         <FlowPage
-          blocks={blocks}
           definition={definition}
           ee={ee.current}
           page={page}
