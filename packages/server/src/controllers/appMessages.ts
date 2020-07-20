@@ -30,17 +30,18 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
   }
 
   if (!app.AppMessages.length) {
-    throw Boom.notFound('Language could not be found');
+    throw Boom.notFound(`Language “${language}” could not be found`);
   }
 
-  ctx.body = app.AppMessages[0].content;
+  const [appMessages] = app.AppMessages;
+  ctx.body = { language: appMessages.language, messages: appMessages.messages };
 }
 
 export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
     request: {
-      body: { content, language },
+      body: { language, messages },
     },
   } = ctx;
 
@@ -56,7 +57,30 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 
-  await AppMessages.upsert({ AppId: dbApp.id, language: language.toLowerCase(), content });
+  await AppMessages.upsert({ AppId: dbApp.id, language: language.toLowerCase(), messages });
+  ctx.body = { language: language.toLowerCase(), messages };
+}
+
+export async function deleteMessages(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, language },
+  } = ctx;
+
+  const dbApp = await App.findOne({
+    where: { id: appId },
+  });
+
+  if (!dbApp) {
+    throw Boom.notFound('App not found');
+  }
+
+  const affectedRows = await AppMessages.destroy({
+    where: { language: language.toLowerCase(), AppId: appId },
+  });
+
+  if (!affectedRows) {
+    throw Boom.notFound(`App does not have messages for “${language}”`);
+  }
 }
 
 export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {

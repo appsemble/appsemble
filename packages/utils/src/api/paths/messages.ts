@@ -33,19 +33,21 @@ export default {
         content: {
           'application/json': {
             schema: {
-              type: 'object',
-              required: ['language', 'content'],
-              properties: {
-                language: { type: 'string' },
-                content: { type: 'object', additionalProperties: { type: 'string' } },
-              },
+              $ref: '#/components/schemas/AppMessages',
             },
           },
         },
       },
       responses: {
-        204: {
+        201: {
           description: 'The translation was created.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/AppMessages',
+              },
+            },
+          },
         },
       },
       security: [{ studio: [] }, {}],
@@ -64,10 +66,22 @@ export default {
         200: {
           description: 'The assets associated with the app.',
           content: {
-            'application/x-yaml': {
-              schema: { type: 'string', format: 'binary' },
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/AppMessages',
+              },
             },
           },
+        },
+      },
+    },
+    delete: {
+      tags: ['language'],
+      description: 'Delete the app’s messages for this language.',
+      operationId: 'deleteMessages',
+      responses: {
+        204: {
+          description: 'The messages have successfully been deleted.',
         },
       },
     },

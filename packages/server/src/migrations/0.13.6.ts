@@ -30,7 +30,7 @@ export default {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      content: {
+      messages: {
         type: DataTypes.JSON,
         allowNull: true,
       },

@@ -44,29 +44,53 @@ describe('getMessages', () => {
   it('should return the messages for an existing language', async () => {
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-gb',
-      content: { test: 'Test.' },
+      messages: { test: 'Test.' },
     });
 
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
-    expect(data).toMatchObject({ test: 'Test.' });
+    expect(data).toMatchObject({ language: 'en-gb', messages: { test: 'Test.' } });
   });
 
   it('should return a 404 if a language is not supported', async () => {
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
-    expect(data).toMatchObject({ statusCode: 404, message: 'Language could not be found' });
+    expect(data).toMatchObject({ statusCode: 404, message: 'Language “en-GB” could not be found' });
   });
 });
 
 describe('createMessages', () => {
   it('should accept valid requests', async () => {
-    const { status } = await request.post(`/api/apps/${app.id}/messages`, {
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
-      content: { test: 'Test.' },
+      messages: { test: 'Test.' },
     });
     const translation = await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } });
 
-    expect(translation.content).toMatchObject({ test: 'Test.' });
-    expect(status).toBe(204);
+    expect(response).toMatchObject({
+      status: 201,
+      data: { language: 'en', messages: { test: 'Test.' } },
+    });
+    expect(translation.messages).toStrictEqual({ test: 'Test.' });
+  });
+});
+
+describe('deleteMessages', () => {
+  it('should delete existing messages', async () => {
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en',
+      messages: { test: 'Test.' },
+    });
+
+    const response = await request.delete(`/api/apps/${app.id}/messages/en`);
+
+    expect(response.status).toBe(204);
+  });
+
+  it('should return 404 when deleting non-existant messages', async () => {
+    const response = await request.delete(`/api/apps/${app.id}/messages/en`);
+
+    expect(response).toMatchObject({
+      data: { statusCode: 404, message: 'App does not have messages for “en”' },
+    });
   });
 });
 
@@ -81,15 +105,15 @@ describe('getLanguages', () => {
   it('should return a list of available languages', async () => {
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'nl',
-      content: { test: 'Geslaagd met vliegende kleuren' },
+      messages: { test: 'Geslaagd met vliegende kleuren' },
     });
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
-      content: { test: 'Passed with flying colors' },
+      messages: { test: 'Passed with flying colors' },
     });
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-GB',
-      content: { test: 'Passed with flying colours' },
+      messages: { test: 'Passed with flying colours' },
     });
 
     const { data } = await request.get(`/api/apps/${app.id}/messages`, {
