@@ -36,60 +36,50 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
     ee.current = new EventEmitter();
   }
 
-  const checkPagePermissions = useCallback(
-    (p: PageDefinition): boolean => {
+  const handlePagePermissions = useCallback(() => {
+    const checkPagePermissions = (p: PageDefinition): boolean => {
       const roles = p.roles || definition.roles || [];
       return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
-    },
-    [definition, role],
-  );
+    };
 
-  const handlePagePermissions = useCallback(() => {
     const permission = checkPagePermissions(page);
-    if (!permission) {
-      if (!isLoggedIn) {
-        history.replace(`/Login?${new URLSearchParams({ redirect })}`);
-        return;
-      }
-
-      // User is logged in but doesn’t have the right permissions
-      // Attempt to find a default page to redirect to
-      const defaultPagePermission = checkPagePermissions(
-        definition.pages.find((p) => p.name === definition.defaultPage),
-      );
-
-      if (defaultPagePermission) {
-        history.replace('/');
-      } else {
-        // Redirect to the first page that doesn’t have parameters.
-        const redirectPage = definition.pages.find(
-          (p) => p.parameters === undefined && checkPagePermissions(p),
-        );
-
-        // Show message that explains the app is inaccessible with the current permissions.
-        if (!redirectPage) {
-          push({
-            body: formatMessage(messages.permissionLogout),
-            color: 'danger',
-            dismissable: true,
-          });
-          logout();
-        } else {
-          history.replace(`/${normalize(redirectPage.name)}`);
-        }
-      }
+    if (permission) {
+      return;
     }
-  }, [
-    checkPagePermissions,
-    definition,
-    formatMessage,
-    history,
-    isLoggedIn,
-    logout,
-    page,
-    push,
-    redirect,
-  ]);
+
+    if (!isLoggedIn) {
+      history.replace(`/Login?${new URLSearchParams({ redirect })}`);
+      return;
+    }
+
+    // User is logged in but doesn’t have the right permissions
+    // Attempt to find a default page to redirect to
+    const defaultPagePermission = checkPagePermissions(
+      definition.pages.find((p) => p.name === definition.defaultPage),
+    );
+
+    if (defaultPagePermission) {
+      history.replace('/');
+      return;
+    }
+
+    // Redirect to the first page that doesn’t have parameters.
+    const redirectPage = definition.pages.find(
+      (p) => p.parameters === undefined && checkPagePermissions(p),
+    );
+
+    // Show message that explains the app is inaccessible with the current permissions.
+    if (!redirectPage) {
+      push({
+        body: formatMessage(messages.permissionLogout),
+        color: 'danger',
+        dismissable: true,
+      });
+      logout();
+    } else {
+      history.replace(`/${normalize(redirectPage.name)}`);
+    }
+  }, [definition, formatMessage, history, isLoggedIn, logout, page, push, redirect, role]);
 
   const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
