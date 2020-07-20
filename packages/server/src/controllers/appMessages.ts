@@ -1,10 +1,12 @@
-import { validateLanguage } from '@appsemble/utils';
+import type { AppMessages as AppMessagesInterface } from '@appsemble/types';
+import { Permission, validateLanguage } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
 import type { KoaContext } from '../types';
+import checkRole from '../utils/checkRole';
 
 interface Params {
   appId: string;
@@ -50,28 +52,32 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     !app.AppMessages.length ||
     (merge && !app.AppMessages.some((m) => m.language === language.toLowerCase()))
   ) {
-    throw Boom.notFound('Language could not be found');
+    throw Boom.notFound(`Language “${language}” could not be found`);
   }
 
-  const base = app.AppMessages.find((m) => m.language === baseLanguage.toLowerCase()) ?? {};
+  const base: AppMessagesInterface = app.AppMessages.find(
+    (m) => m.language === baseLanguage.toLowerCase(),
+  );
   const messages = app.AppMessages.find((m) => m.language === language.toLowerCase());
 
-  ctx.body = { ...base, ...messages };
+  ctx.body = { language: messages.language, messages: { ...base?.messages, ...messages.messages } };
 }
 
 export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
     request: {
-      body: { content, language },
+      body: { language, messages },
     },
   } = ctx;
 
-  const dbApp = await App.findOne({ where: { id: appId } });
+  const app = await App.findOne({ where: { id: appId } });
 
-  if (!dbApp) {
+  if (!app) {
     throw Boom.notFound('App not found');
   }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
 
   try {
     validateLanguage(language);
@@ -79,7 +85,32 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 
-  await AppMessages.upsert({ AppId: dbApp.id, language: language.toLowerCase(), content });
+  await AppMessages.upsert({ AppId: app.id, language: language.toLowerCase(), messages });
+  ctx.body = { language: language.toLowerCase(), messages };
+}
+
+export async function deleteMessages(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, language },
+  } = ctx;
+
+  const app = await App.findOne({
+    where: { id: appId },
+  });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
+
+  const affectedRows = await AppMessages.destroy({
+    where: { language: language.toLowerCase(), AppId: appId },
+  });
+
+  if (!affectedRows) {
+    throw Boom.notFound(`App does not have messages for “${language}”`);
+  }
 }
 
 export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {

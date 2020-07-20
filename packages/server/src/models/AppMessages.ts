@@ -1,3 +1,4 @@
+import type { AppMessages as AppMessagesType } from '@appsemble/types';
 import {
   BelongsTo,
   Column,
@@ -13,7 +14,7 @@ import {
 import { App } from '.';
 
 @Table({ tableName: 'AppMessages', paranoid: false })
-export default class AppMessages extends Model<AppMessages> {
+export default class AppMessages extends Model<AppMessages> implements AppMessagesType {
   @PrimaryKey
   @ForeignKey(() => App)
   @Column
@@ -27,7 +28,7 @@ export default class AppMessages extends Model<AppMessages> {
   language: string;
 
   @Column(DataType.JSON)
-  content: { [key: string]: string };
+  messages: { [messageId: string]: string };
 
   @CreatedAt
   created: Date;

@@ -750,7 +750,7 @@ export interface AppDefinition {
   /**
    * The default language of the app.
    *
-   * @default us
+   * @default 'en-US'
    */
   defaultLanguage?: string;
 
@@ -927,10 +927,18 @@ export interface AppMember {
 }
 
 /**
- * An object containing messages for translating apps.
+ * Translated messages for an app.
  */
 export interface AppMessages {
-  [key: string]: string;
+  /**
+   * The language represented by these messages.
+   */
+  language: string;
+
+  /**
+   * A mapping of message id to message content.
+   */
+  messages: { [messageId: string]: string };
 }
 
 /**

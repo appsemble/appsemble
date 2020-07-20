@@ -3,7 +3,7 @@ import type { AppMessages } from '@appsemble/types';
 import axios from 'axios';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
-import { join } from 'path';
+import { join, parse } from 'path';
 
 export default async function uploadMessages(path: string, appId: string): Promise<void> {
   if (!fs.existsSync(join(path, 'messages'))) {
@@ -21,7 +21,7 @@ export default async function uploadMessages(path: string, appId: string): Promi
 
   for (const messageFile of messageDir) {
     logger.verbose(`Processing ${join(path, 'messages', messageFile)} ⚙️`);
-    const [language] = messageFile.split('.');
+    const language = parse(messageFile).name;
     const file = await fs.readFile(join(path, 'messages', messageFile), 'utf8');
     const content = yaml.safeLoad(file) as AppMessages;
     result.push({ language, content });
