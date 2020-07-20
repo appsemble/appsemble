@@ -8,7 +8,7 @@ import styles from './index.css';
 import messages from './messages';
 
 export default function CMSRoot(): ReactElement {
-  const match = useRouteMatch();
+  const { url } = useRouteMatch();
   const { app } = useApp();
 
   return (
@@ -24,7 +24,7 @@ export default function CMSRoot(): ReactElement {
               .sort()
               .map((resource) => (
                 <li key={resource}>
-                  <Link to={`${match.url}/${resource}`}>{resource}</Link>
+                  <Link to={`${url}/${resource}`}>{resource}</Link>
                 </li>
               ))}
           </ul>

@@ -23,7 +23,7 @@ interface BlockCardProps {
  * Display a card that contains basic information of a block and a link to further documentation.
  */
 export default function BlockCard({ block, className }: BlockCardProps): ReactElement {
-  const match = useRouteMatch();
+  const { url } = useRouteMatch();
   const { formatMessage } = useIntl();
   const [org, ...name] = block.name.split('/');
 
@@ -61,7 +61,7 @@ export default function BlockCard({ block, className }: BlockCardProps): ReactEl
           </div>
         </div>
         <footer className="card-footer">
-          <Link className="card-footer-item" to={`${match.url}/${block.name}`}>
+          <Link className="card-footer-item" to={`${url}/${block.name}`}>
             <FormattedMessage {...messages.buttonDetails} />
           </Link>
         </footer>

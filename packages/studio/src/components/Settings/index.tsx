@@ -15,46 +15,42 @@ import messages from './messages';
 
 export default function Settings(): ReactElement {
   const collapsed = useToggle();
-  const match = useRouteMatch();
+  const { path, url } = useRouteMatch();
 
   return (
     <div className={styles.container}>
       <SideMenu isCollapsed={collapsed.enabled} toggleCollapse={collapsed.toggle}>
-        <SideNavLink
-          icon="user"
-          label={<FormattedMessage {...messages.user} />}
-          to={`${match.url}/user`}
-        >
-          <NavLink to={`${match.url}/social`}>
+        <SideNavLink icon="user" label={<FormattedMessage {...messages.user} />} to={`${url}/user`}>
+          <NavLink to={`${url}/social`}>
             <FormattedMessage {...messages.socialLogin} />
           </NavLink>
         </SideNavLink>
         <SideNavLink
           icon="briefcase"
           label={<FormattedMessage {...messages.organizations} />}
-          to={`${match.url}/organizations`}
+          to={`${url}/organizations`}
         />
         <SideNavLink
           icon="key"
           label={<FormattedMessage {...messages.clientCredentials} />}
-          to={`${match.url}/client-credentials`}
+          to={`${url}/client-credentials`}
         />
       </SideMenu>
       <Content className={styles.content} fullwidth padding>
         <Switch>
-          <Route exact path={`${match.path}/user`}>
+          <Route exact path={`${path}/user`}>
             <UserSettings />
           </Route>
-          <Route exact path={`${match.path}/social`}>
+          <Route exact path={`${path}/social`}>
             <OAuthSettings />
           </Route>
-          <Route exact path={`${match.path}/organizations`}>
+          <Route exact path={`${path}/organizations`}>
             <OrganizationsSettings />
           </Route>
-          <Route exact path={`${match.path}/client-credentials`}>
+          <Route exact path={`${path}/client-credentials`}>
             <ClientCredentials />
           </Route>
-          <Redirect to={`${match.path}/user`} />
+          <Redirect to={`${url}/user`} />
         </Switch>
       </Content>
     </div>

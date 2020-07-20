@@ -15,7 +15,7 @@ interface AppCardProps {
 
 export default function AppCard({ app }: AppCardProps): ReactElement {
   const { formatMessage } = useIntl();
-  const match = useRouteMatch();
+  const { url } = useRouteMatch();
 
   return (
     <div className={classNames('card', styles.appCard)}>
@@ -48,7 +48,7 @@ export default function AppCard({ app }: AppCardProps): ReactElement {
         >
           <FormattedMessage {...messages.view} />
         </a>
-        <Link className="card-footer-item" to={`${match.url}/${app.id}`}>
+        <Link className="card-footer-item" to={`${url}/${app.id}`}>
           <FormattedMessage {...messages.details} />
         </Link>
       </footer>

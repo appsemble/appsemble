@@ -44,9 +44,11 @@ interface BlockDetailsRoutesMatch {
  */
 export default function BlockDetails(): ReactElement {
   const { formatMessage } = useIntl();
-  const match = useRouteMatch<BlockDetailsRoutesMatch>();
+  const {
+    params: { blockName, organization, version: urlVersion },
+    url,
+  } = useRouteMatch<BlockDetailsRoutesMatch>();
   const history = useHistory();
-  const { blockName, organization, version: urlVersion } = match.params;
 
   const { data: blockVersions, error, loading } = useData<BlockManifest[]>(
     `/api/blocks/@${organization}/${blockName}/versions`,
@@ -54,9 +56,9 @@ export default function BlockDetails(): ReactElement {
 
   const onSelectedVersionChange = useCallback(
     async (_: ChangeEvent<HTMLSelectElement>, value: string) => {
-      history.push(match.url.replace(urlVersion, value));
+      history.push(url.replace(urlVersion, value));
     },
-    [history, match.url, urlVersion],
+    [history, url, urlVersion],
   );
 
   if (error) {
@@ -74,7 +76,7 @@ export default function BlockDetails(): ReactElement {
   const selectedBlockManifest = blockVersions.find((block) => block.version === urlVersion);
 
   if (!selectedBlockManifest) {
-    return <Redirect to={`${match.url}/${blockVersions[0].version}`} />;
+    return <Redirect to={`${url}/${blockVersions[0].version}`} />;
   }
 
   return (
@@ -155,7 +157,7 @@ export default function BlockDetails(): ReactElement {
               ([key, definition]: [string, Definition]) => (
                 <Fragment key={key}>
                   <Title level={5}>
-                    <a href={`${match.url}#${key}`} id={key}>
+                    <a href={`${url}#${key}`} id={key}>
                       {key}
                     </a>
                   </Title>
