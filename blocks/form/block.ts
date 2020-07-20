@@ -425,12 +425,12 @@ declare module '@appsemble/sdk' {
     /**
      * Action that gets dispatched when the form is submitted.
      */
-    onSubmit: {};
+    onSubmit: never;
 
     /**
      * A custom action that gets dispatched when checking form requirements.
      */
-    [key: string]: {};
+    [key: string]: never;
   }
 
   interface EventListeners {
@@ -440,7 +440,7 @@ declare module '@appsemble/sdk' {
      * Compatible data that is received will be displayed and mapped to the fields as defined in the
      * `fields` parameter.
      */
-    data: {};
+    data: never;
   }
 
   interface Parameters {

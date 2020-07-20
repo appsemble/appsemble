@@ -22,7 +22,7 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'AppEditor' });
   app = await App.create({
     path: 'test-app',
     vapidPublicKey: 'a',
@@ -42,10 +42,14 @@ afterAll(closeTestSchema);
 
 describe('getMessages', () => {
   it('should return the messages for an existing language', async () => {
-    await request.post(`/api/apps/${app.id}/messages`, {
-      language: 'en-gb',
-      messages: { test: 'Test.' },
-    });
+    await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'en-gb',
+        messages: { test: 'Test.' },
+      },
+      { headers: { authorization } },
+    );
 
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(data).toMatchObject({ language: 'en-gb', messages: { test: 'Test.' } });
@@ -55,14 +59,42 @@ describe('getMessages', () => {
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(data).toMatchObject({ statusCode: 404, message: 'Language “en-GB” could not be found' });
   });
+
+  it('should merge messages with the base language if merge is enabled', async () => {
+    await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'en',
+        messages: { test: 'Test.', bla: 'bla' },
+      },
+      { headers: { authorization } },
+    );
+
+    await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'en-gb',
+        messages: { bla: 'blah' },
+      },
+      { headers: { authorization } },
+    );
+
+    const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB?merge=true`);
+
+    expect(data).toMatchObject({ language: 'en-gb', messages: { test: 'Test.', bla: 'blah' } });
+  });
 });
 
 describe('createMessages', () => {
   it('should accept valid requests', async () => {
-    const response = await request.post(`/api/apps/${app.id}/messages`, {
-      language: 'en',
-      messages: { test: 'Test.' },
-    });
+    const response = await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'en',
+        messages: { test: 'Test.' },
+      },
+      { headers: { authorization } },
+    );
     const translation = await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } });
 
     expect(response).toMatchObject({
@@ -71,22 +103,46 @@ describe('createMessages', () => {
     });
     expect(translation.messages).toStrictEqual({ test: 'Test.' });
   });
+
+  it('should not accept invalid language tags', async () => {
+    const response = await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'english',
+        messages: { test: 'Test.' },
+      },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'Language “english” is invalid' },
+    });
+  });
 });
 
 describe('deleteMessages', () => {
   it('should delete existing messages', async () => {
-    await request.post(`/api/apps/${app.id}/messages`, {
-      language: 'en',
-      messages: { test: 'Test.' },
-    });
+    await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'en',
+        messages: { test: 'Test.' },
+      },
+      { headers: { authorization } },
+    );
 
-    const response = await request.delete(`/api/apps/${app.id}/messages/en`);
+    const response = await request.delete(`/api/apps/${app.id}/messages/en`, {
+      headers: { authorization },
+    });
 
     expect(response.status).toBe(204);
   });
 
   it('should return 404 when deleting non-existant messages', async () => {
-    const response = await request.delete(`/api/apps/${app.id}/messages/en`);
+    const response = await request.delete(`/api/apps/${app.id}/messages/en`, {
+      headers: { authorization },
+    });
 
     expect(response).toMatchObject({
       data: { statusCode: 404, message: 'App does not have messages for “en”' },
@@ -96,25 +152,35 @@ describe('deleteMessages', () => {
 
 describe('getLanguages', () => {
   it('should return an empty array if no translations are available', async () => {
-    const { data } = await request.get(`/api/apps/${app.id}/messages`, {
-      headers: { authorization },
-    });
+    const { data } = await request.get(`/api/apps/${app.id}/messages`);
     expect(data).toStrictEqual([]);
   });
 
   it('should return a list of available languages', async () => {
-    await request.post(`/api/apps/${app.id}/messages`, {
-      language: 'nl',
-      messages: { test: 'Geslaagd met vliegende kleuren' },
-    });
-    await request.post(`/api/apps/${app.id}/messages`, {
-      language: 'en',
-      messages: { test: 'Passed with flying colors' },
-    });
-    await request.post(`/api/apps/${app.id}/messages`, {
-      language: 'en-GB',
-      messages: { test: 'Passed with flying colours' },
-    });
+    await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'nl',
+        messages: { test: 'Geslaagd met vliegende kleuren' },
+      },
+      { headers: { authorization } },
+    );
+    await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'en',
+        messages: { test: 'Passed with flying colors' },
+      },
+      { headers: { authorization } },
+    );
+    await request.post(
+      `/api/apps/${app.id}/messages`,
+      {
+        language: 'en-GB',
+        messages: { test: 'Passed with flying colours' },
+      },
+      { headers: { authorization } },
+    );
 
     const { data } = await request.get(`/api/apps/${app.id}/messages`, {
       headers: { authorization },

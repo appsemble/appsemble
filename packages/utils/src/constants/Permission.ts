@@ -8,6 +8,7 @@ enum Permission {
   PublishBlocks,
   CreateApps,
   EditApps,
+  EditAppMessages,
   EditAppSettings,
   EditThemes,
   DeleteApps,

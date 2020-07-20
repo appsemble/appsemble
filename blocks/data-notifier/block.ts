@@ -48,20 +48,20 @@ declare module '@appsemble/sdk' {
     /**
      * Event that gets emitted when new data is available.
      */
-    data: {};
+    data: never;
   }
 
   interface EventListeners {
     /**
      * The event to listen on for new data.
      */
-    data: {};
+    data: never;
 
     /**
      * Set and emit the initial data.
      *
      * This is useful for example in combination with the `filter` block.
      */
-    seed: {};
+    seed: never;
   }
 }

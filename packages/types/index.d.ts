@@ -750,7 +750,7 @@ export interface AppDefinition {
   /**
    * The default language of the app.
    *
-   * @default us
+   * @default 'en-US'
    */
   defaultLanguage?: string;
 
@@ -938,7 +938,7 @@ export interface AppMessages {
   /**
    * A mapping of message id to message content.
    */
-  messages: { [key: string]: string };
+  messages: { [messageId: string]: string };
 }
 
 /**

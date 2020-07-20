@@ -6,6 +6,7 @@ const AppEditor = [
   Permission.EditApps,
   Permission.PushNotifications,
   Permission.ManageResources,
+  Permission.EditAppMessages,
 ];
 const Maintainer = [
   ...AppEditor,

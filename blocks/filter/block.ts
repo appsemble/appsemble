@@ -158,25 +158,25 @@ declare module '@appsemble/sdk' {
     /**
      * The action to dispatch to load data. Typically this is a `resource.query` action.
      */
-    onLoad: {};
+    onLoad: never;
   }
 
   interface EventEmitters {
     /**
      * This event is emitted when new data is available because of a user interaction with filters.
      */
-    filtered: {};
+    filtered: never;
 
     /**
      * This event is emitted when new data is available because of a refresh event.
      */
-    refreshed: {};
+    refreshed: never;
   }
 
   interface EventListeners {
     /**
      * Force reload data using the current filters.
      */
-    refresh: {};
+    refresh: never;
   }
 }

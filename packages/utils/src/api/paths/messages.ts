@@ -50,7 +50,7 @@ export default {
           },
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ studio: [] }],
     },
   },
   '/apps/{appId}/messages/{language}': {
@@ -64,7 +64,7 @@ export default {
       operationId: 'getMessages',
       responses: {
         200: {
-          description: 'The assets associated with the app.',
+          description: 'The app messages for the selected language.',
           content: {
             'application/json': {
               schema: {
@@ -84,6 +84,7 @@ export default {
           description: 'The messages have successfully been deleted.',
         },
       },
+      security: [{ studio: [] }],
     },
   },
 };

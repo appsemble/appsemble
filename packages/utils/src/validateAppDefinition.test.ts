@@ -498,17 +498,15 @@ describe('validateReferences', () => {
 });
 
 describe('validateLanguage', () => {
-  it('should pass on valid languages', () => {
-    const languages = ['en', 'en-US', 'en-us', 'en-Gb', 'zh-hans', 'az-Latn', 'en-US-x-twain'];
-    languages.forEach((lang) => expect(() => validateLanguage(lang)).not.toThrow());
+  const valid = ['en', 'en-US', 'en-us', 'en-Gb', 'zh-hans', 'az-Latn', 'en-US-x-twain'];
+  it.each(valid)('should pass on %p', (lang) => {
+    expect(() => validateLanguage(lang)).not.toThrow();
   });
 
-  it('should throw on invalid languages', () => {
-    const languages = ['blaaaaaaaaaaaaaaaa', 'dutch', 'jp'];
-    languages.forEach((lang) =>
-      expect(() => validateLanguage(lang)).toThrow(
-        new AppsembleValidationError(`Language code “${lang}” is invalid.`),
-      ),
+  const invalid = ['blaaaaaaaaaaaaaaaa', 'dutch', 'jp'];
+  it.each(invalid)('should throw on %p', (lang) => {
+    expect(() => validateLanguage(lang)).toThrow(
+      new AppsembleValidationError(`Language code “${lang}” is invalid.`),
     );
   });
 });

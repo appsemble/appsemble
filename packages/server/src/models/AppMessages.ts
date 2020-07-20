@@ -28,7 +28,7 @@ export default class AppMessages extends Model<AppMessages> implements AppMessag
   language: string;
 
   @Column(DataType.JSON)
-  messages: { [key: string]: string };
+  messages: { [messageId: string]: string };
 
   @CreatedAt
   created: Date;

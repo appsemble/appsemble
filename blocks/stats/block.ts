@@ -26,7 +26,7 @@ declare module '@appsemble/sdk' {
     /**
      * On what event to listen for incoming data to display.
      */
-    data: {};
+    data: never;
   }
 
   interface Parameters {
