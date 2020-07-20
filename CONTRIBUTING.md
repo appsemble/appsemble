@@ -30,8 +30,19 @@ yarn test path/to/file
 
 ## Changelog
 
-A changelog is kept following the [keep a changelog] format. Please update it for any notable
-changes.
+Every block and package has a `changes` directory. This directory contains the following folders:
+
+- `added`
+- `changed`
+- `deprecated`
+- `removed`
+- `fixed`
+- `security`
+
+A single line changelog entry should be placed in one of these folders for any significant change. A
+single imperative sentence is preferred. If the folder doesn’t exist, it should be created.
+
+The format is based on the [keep a changelog] format.
 
 ## DNS Mapping
 
