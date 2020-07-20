@@ -2,6 +2,15 @@
   "name": "@appsemble/cli",
   "version": "0.13.5",
   "description": "The CLI for developing with Appsemble apps and blocks",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "cli",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {

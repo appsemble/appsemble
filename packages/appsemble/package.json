@@ -2,6 +2,15 @@
   "name": "appsemble",
   "version": "0.13.5",
   "description": "A simple wrapper for @appsemble/cli",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "cli",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {

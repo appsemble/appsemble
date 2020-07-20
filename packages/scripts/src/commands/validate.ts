@@ -83,6 +83,20 @@ async function validate(
     'package.json',
     'Name should use the @appsemble scope',
   );
+  if (path.basename(path.dirname(dir)) !== 'blocks') {
+    ['app', 'apps', 'framework', 'low-code', 'lowcode'].forEach((keyword) => {
+      assert(
+        pkg.keywords.includes(keyword),
+        'package.json',
+        `Keywords should at least contain ${keyword}`,
+      );
+    });
+    assert(
+      pkg.keywords.every((keyword, i) => !i || pkg.keywords[i - 1].localeCompare(keyword) < 0),
+      'package.json',
+      'Keywords should be sorted alphabetically',
+    );
+  }
   assert(
     pkg.version === latestVersion,
     'package.json',
