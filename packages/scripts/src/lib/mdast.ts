@@ -13,7 +13,7 @@ import prettier from 'prettier';
 import remark from 'remark';
 
 /**
- * Ensure a node is valid by converting a string to a text noe.
+ * Ensure a node is valid by converting a string to a text node.
  *
  * @param value The node or string to ensure the type for.
  * @returns The original node or a text node.
