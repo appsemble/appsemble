@@ -109,6 +109,8 @@ bootstrap(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const showModal = fields.some((field) => field.name !== highlight);
+
     return (
       <Form
         className={classNames(`is-flex mb-1 ${styles.root}`, {
@@ -126,44 +128,50 @@ bootstrap(
             value={values[highlightedField.name]}
           />
         )}
-        <Button
-          className={classNames('mx-2 my-2', { 'is-primary': true })}
-          icon="filter"
-          loading={loading}
-          onClick={modal.enable}
-        />
-        <Modal
-          footer={
-            <Fragment>
-              <CardFooterButton onClick={resetFilter}>
-                {utils.remap(clearLabel, {})}
-              </CardFooterButton>
-              <CardFooterButton color="primary" type="submit">
-                {utils.remap(submitLabel, {})}
-              </CardFooterButton>
-            </Fragment>
-          }
-          isActive={modal.enabled}
-          onClose={modal.disable}
-          title={utils.remap(modalTitle, {})}
-        >
-          {fields.map(
-            (field) =>
-              field === highlightedField || (
-                <div className="field">
-                  {field.label && <label className="label">{utils.remap(field.label, {})}</label>}
-                  <div className="control">
-                    <FieldComponent
-                      field={field}
-                      loading={loading}
-                      onChange={onChange}
-                      value={values[field.name]}
-                    />
-                  </div>
-                </div>
-              ),
-          )}
-        </Modal>
+        {showModal && (
+          <Fragment>
+            <Button
+              className={classNames('mx-2 my-2', { 'is-primary': true })}
+              icon="filter"
+              loading={loading}
+              onClick={modal.enable}
+            />
+            <Modal
+              footer={
+                <Fragment>
+                  <CardFooterButton onClick={resetFilter}>
+                    {utils.remap(clearLabel, {})}
+                  </CardFooterButton>
+                  <CardFooterButton color="primary" type="submit">
+                    {utils.remap(submitLabel, {})}
+                  </CardFooterButton>
+                </Fragment>
+              }
+              isActive={modal.enabled}
+              onClose={modal.disable}
+              title={utils.remap(modalTitle, {})}
+            >
+              {fields.map(
+                (field) =>
+                  field === highlightedField || (
+                    <div className="field">
+                      {field.label && (
+                        <label className="label">{utils.remap(field.label, {})}</label>
+                      )}
+                      <div className="control">
+                        <FieldComponent
+                          field={field}
+                          loading={loading}
+                          onChange={onChange}
+                          value={values[field.name]}
+                        />
+                      </div>
+                    </div>
+                  ),
+              )}
+            </Modal>
+          </Fragment>
+        )}
       </Form>
     );
   },

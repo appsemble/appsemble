@@ -63,7 +63,7 @@ export default function Block({
   showDialog,
 }: BlockProps): ReactElement {
   const history = useHistory();
-  const match = useRouteMatch();
+  const { params, path } = useRouteMatch();
   const location = useLocation();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
@@ -146,7 +146,7 @@ export default function Block({
       showMessage: push,
     });
     const { theme: pageTheme } = definition.pages.find(
-      (page) => normalize(page.name) === match.path.slice(1).split('/')[0],
+      (page) => normalize(page.name) === path.slice(1).split('/')[0],
     );
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
     const [bulmaBase] = BULMA_URL.href.split('?');
@@ -196,7 +196,7 @@ export default function Block({
         parameters: block.parameters || {},
         data: data || location.state,
         events,
-        pageParameters: match.params,
+        pageParameters: params,
         theme,
         shadowRoot,
         utils,
@@ -215,8 +215,9 @@ export default function Block({
     initialized,
     location,
     manifest,
-    match,
     pageReady,
+    params,
+    path,
     prefix,
     push,
     pushNotifications,
@@ -226,7 +227,7 @@ export default function Block({
 
   const header = block.header ? (
     <h6 className={classNames('title is-6', styles.title)}>
-      {remap(block.header, { ...data, ...match.params })}
+      {remap(block.header, { ...data, ...params })}
     </h6>
   ) : null;
 

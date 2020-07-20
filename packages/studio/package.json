@@ -3,6 +3,14 @@
   "version": "0.13.5",
   "private": true,
   "description": "The frontend for managing Appsemble apps and organizations",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
