@@ -20,7 +20,7 @@ export default function ProtectedRoute({
   const redirect = useLocationString();
   const { userInfo } = useUser();
   const qs = useQuery();
-  const match = useRouteMatch();
+  const { url } = useRouteMatch();
 
   if (!userInfo) {
     const search = new URLSearchParams(qs);
@@ -30,7 +30,7 @@ export default function ProtectedRoute({
 
   if (permission) {
     if (!organization || !checkRole(organization.role, permission)) {
-      return <Redirect to={match.url} />;
+      return <Redirect to={url} />;
     }
   }
 

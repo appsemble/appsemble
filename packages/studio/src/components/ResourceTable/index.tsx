@@ -14,7 +14,7 @@ import type { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import React, { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
@@ -37,9 +37,7 @@ export interface RouteParams {
 export default function ResourceTable(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
-  const {
-    params: { id: appId, resourceName },
-  } = useRouteMatch<RouteParams>();
+  const { id: appId, resourceName } = useParams<RouteParams>();
   const push = useMessages();
 
   const modal = useToggle();

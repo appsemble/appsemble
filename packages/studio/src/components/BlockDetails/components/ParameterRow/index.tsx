@@ -40,7 +40,7 @@ export default function ParameterRow({
   recurse,
   value,
 }: ParameterRowProps): ReactElement {
-  const match = useRouteMatch();
+  const { url } = useRouteMatch();
 
   if (value.type === 'array' && recurse) {
     return (
@@ -85,15 +85,15 @@ export default function ParameterRow({
 
   if ('$ref' in value) {
     const refName = (value as any).$ref?.split('/').pop();
-    ref = <a href={`${match.url}#${refName}`}>{refName}</a>;
+    ref = <a href={`${url}#${refName}`}>{refName}</a>;
   } else if (value.type === 'array' && (value.items as any).$ref) {
     const refName = (value.items as any).$ref.split('/').pop();
-    ref = <a href={`${match.url}#${refName}`}>{refName}</a>;
+    ref = <a href={`${url}#${refName}`}>{refName}</a>;
   } else if (value.type === 'array' && (value.items as any).anyOf) {
     ref = (value.items as any).anyOf.map((any: OpenAPIV3.ReferenceObject) => {
       const refName = any.$ref.split('/').pop();
       return (
-        <a key={refName} href={`${match.url}#${refName}`}>
+        <a key={refName} href={`${url}#${refName}`}>
           {refName}
         </a>
       );
@@ -109,7 +109,7 @@ export default function ParameterRow({
             return <Fragment key={index}>{(any as any).type}</Fragment>;
           }
           return (
-            <a key={refName} href={`${match.url}#${refName}`}>
+            <a key={refName} href={`${url}#${refName}`}>
               {refName}
             </a>
           );
