@@ -5,9 +5,7 @@ export default {
       schema: {
         type: 'object',
         properties: {
-          organization: {
-            $ref: '#/components/schemas/Organization',
-          },
+          $ref: '#/components/schemas/Organization',
         },
       },
     },

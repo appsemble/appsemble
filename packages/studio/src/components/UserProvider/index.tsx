@@ -120,8 +120,8 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
         logout();
       }
     }, timeout);
-    refreshUserInfo().finally(() => {
-      fetchOrganizations();
+
+    Promise.all([refreshUserInfo(), fetchOrganizations()]).finally(() => {
       setInitialized(true);
     });
 

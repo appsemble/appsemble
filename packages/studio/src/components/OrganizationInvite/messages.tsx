@@ -23,5 +23,5 @@ export default defineMessages({
     'You are already part of the organization. If you wish to accept this invitation, please log into a different account.',
   logout: 'Logout',
   login: 'Login',
-  loginPrompt: 'Please log into an existing account or create one to responsd to this invitation.',
+  loginPrompt: 'Please log into an existing account or create one to respond to this invitation.',
 });

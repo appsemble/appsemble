@@ -1,8 +1,11 @@
 import {
   Button,
+  Content,
   Icon,
   Loader,
   Message,
+  Subtitle,
+  Title,
   useData,
   useLocationString,
   useMessages,
@@ -26,12 +29,11 @@ export default function OrganizationInvite(): ReactElement {
   const redirect = useLocationString();
 
   const [success, setSuccess] = useState(false);
-  const { data, error, loading } = useData<{
-    organization: Organization;
-  }>(`/api/invites/${qs.get('token')}`);
+  const { data: organization, error, loading } = useData<Organization>(
+    `/api/invites/${qs.get('token')}`,
+  );
   const [submitting, setSubmitting] = useState(false);
   const [joined, setJoined] = useState(false);
-  const { organization } = data ?? {};
 
   useEffect(() => {
     if (error && userInfo) {
@@ -82,142 +84,143 @@ export default function OrganizationInvite(): ReactElement {
     return <Loader />;
   }
 
-  if (
-    userInfo &&
-    !submitting &&
-    !success &&
-    organization &&
-    organizations.some((o) => o.id === organization.id)
-  ) {
+  if (error) {
     return (
-      <div className={`${styles.root} content`}>
-        <h2>
+      <div className={`px-4 py-4 has-text-centered ${styles.noInvite}`}>
+        <span>
+          <i className={`fas fa-exclamation-circle ${styles.noInviteIcon}`} />
+        </span>
+        <span>
           <FormattedMessage
-            {...messages.joining}
-            values={{ organization: organization.name || organization.id }}
+            {...messages.noInvite}
+            values={{
+              here: (
+                <Link to="/">
+                  <FormattedMessage {...messages.here} />
+                </Link>
+              ),
+            }}
           />
-        </h2>
-        <p>
-          <FormattedMessage {...messages.alreadyJoined} />
-        </p>
-        <div className="field">
-          <Button icon="sign-out-alt" onClick={logout}>
-            <FormattedMessage {...messages.logout} />
-          </Button>
-        </div>
+        </span>
       </div>
     );
   }
+
+  const title = (
+    <>
+      <Title className="pt-4" level={2}>
+        <FormattedMessage
+          {...messages.joining}
+          values={{ organization: organization.name || organization.id }}
+        />
+      </Title>
+      <Subtitle level={4}>@{organization.id}</Subtitle>
+    </>
+  );
 
   if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', redirect);
 
     return (
-      <div className={`${styles.root} content`}>
+      <Content className="has-text-centered">
+        {title}
         <p>
           <FormattedMessage {...messages.loginPrompt} />
         </p>
-        <div className="field">
-          <Link className="button" to={{ pathname: '/login', search: `?${search}` }}>
+        <div className="field is-grouped is-grouped-centered py-4">
+          <Link className="button is-primary" to={{ pathname: '/login', search: `?${search}` }}>
             <Icon icon="sign-in-alt" />
             <span>
               <FormattedMessage {...messages.login} />
             </span>
           </Link>
         </div>
-      </div>
+      </Content>
     );
   }
 
-  if (!success && organization?.id) {
+  if (success && joined) {
     return (
-      <div className={`${styles.root} content`}>
-        <h2>
-          <FormattedMessage
-            {...messages.joining}
-            values={{ organization: organization.name || organization.id }}
-          />
-        </h2>
-
-        <p>
-          <FormattedMessage {...messages.invitePrompt} />
-        </p>
-
-        <div className="field is-grouped">
-          <p className="control">
-            <Button color="success" disabled={submitting} onClick={onAcceptClick}>
-              <FormattedMessage {...messages.accept} />
-            </Button>
-          </p>
-          <p className="control">
-            <Button
-              className={styles.registerButton}
-              color="danger"
-              disabled={submitting}
-              onClick={onDeclineClick}
-            >
-              <FormattedMessage {...messages.decline} />
-            </Button>
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (success) {
-    return (
-      <Message className={styles.root} color={joined ? 'success' : 'info'}>
-        {joined ? (
-          <FormattedMessage
-            {...messages.successJoined}
-            values={{
-              organization: <strong>{organization.name || organization.id}</strong>,
-              makeApps: (
-                <Link to="/apps">
-                  <FormattedMessage {...messages.appSettings} />
-                </Link>
-              ),
-              viewOrganization: (
-                <Link to="/settings/organizations">
-                  <FormattedMessage {...messages.organizationSettings} />
-                </Link>
-              ),
-            }}
-          />
-        ) : (
-          <FormattedMessage
-            {...messages.successDeclined}
-            values={{
-              makeApps: (
-                <Link to="/apps">
-                  <FormattedMessage {...messages.here} />
-                </Link>
-              ),
-            }}
-          />
-        )}
+      <Message className={styles.root} color="success">
+        <FormattedMessage
+          {...messages.successJoined}
+          values={{
+            organization: <strong>{organization.name || organization.id}</strong>,
+            makeApps: (
+              <Link to="/apps">
+                <FormattedMessage {...messages.appSettings} />
+              </Link>
+            ),
+            viewOrganization: (
+              <Link to="/settings/organizations">
+                <FormattedMessage {...messages.organizationSettings} />
+              </Link>
+            ),
+          }}
+        />
       </Message>
     );
   }
 
-  return (
-    <div className={`px-4 py-4 has-text-centered ${styles.noInvite}`}>
-      <span>
-        <i className={`fas fa-exclamation-circle ${styles.noInviteIcon}`} />
-      </span>
-      <span>
+  if (success && !joined) {
+    return (
+      <Message className={styles.root} color="info">
         <FormattedMessage
-          {...messages.noInvite}
+          {...messages.successDeclined}
           values={{
-            here: (
-              <Link to="/">
+            makeApps: (
+              <Link to="/apps">
                 <FormattedMessage {...messages.here} />
               </Link>
             ),
           }}
         />
-      </span>
-    </div>
+      </Message>
+    );
+  }
+
+  if (organizations.some((org) => org.id === organization.id)) {
+    return (
+      <Content className="has-text-centered">
+        {title}
+        <p>
+          <FormattedMessage {...messages.alreadyJoined} />
+        </p>
+        <div className="field is-grouped is-grouped-centered py-4">
+          <p className="control">
+            <Button color="primary" icon="sign-out-alt" onClick={logout}>
+              <FormattedMessage {...messages.logout} />
+            </Button>
+          </p>
+        </div>
+      </Content>
+    );
+  }
+
+  return (
+    <Content className="has-text-centered">
+      {title}
+      <p>
+        <FormattedMessage {...messages.invitePrompt} />
+      </p>
+      <div className="field is-grouped is-grouped-centered py-4">
+        <p className="control">
+          <Button
+            className={styles.registerButton}
+            color="danger"
+            disabled={submitting}
+            onClick={onDeclineClick}
+          >
+            <FormattedMessage {...messages.decline} />
+          </Button>
+        </p>
+        <p className="control">
+          <Button color="success" disabled={submitting} onClick={onAcceptClick}>
+            <FormattedMessage {...messages.accept} />
+          </Button>
+        </p>
+      </div>
+    </Content>
   );
 }
