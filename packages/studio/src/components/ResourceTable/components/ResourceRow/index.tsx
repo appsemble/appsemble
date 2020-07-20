@@ -12,7 +12,7 @@ import axios from 'axios';
 import type { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import type { Resource, RouteParams } from '../..';
 import { useApp } from '../../../AppContext';
@@ -33,9 +33,7 @@ export default function ResourceRow({
   resource,
   schema,
 }: ResourceRowProps): ReactElement {
-  const {
-    params: { id: appId, resourceName },
-  } = useRouteMatch<RouteParams>();
+  const { id: appId, resourceName } = useParams<RouteParams>();
   const { app } = useApp();
   const [editingResource, setEditingResource] = useState<Resource>();
   const modal = useToggle();

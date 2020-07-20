@@ -5,17 +5,17 @@ import CMSRoot from '../CMSRoot';
 import ResourceTable from '../ResourceTable';
 
 export default function CMS(): ReactElement {
-  const match = useRouteMatch();
+  const { path, url } = useRouteMatch();
 
   return (
     <Switch>
-      <Route exact path={match.path}>
+      <Route exact path={path}>
         <CMSRoot />
       </Route>
-      <Route path={`${match.path}/:resourceName`}>
+      <Route path={`${path}/:resourceName`}>
         <ResourceTable />
       </Route>
-      <Redirect to={match.path} />
+      <Redirect to={url} />
     </Switch>
   );
 }

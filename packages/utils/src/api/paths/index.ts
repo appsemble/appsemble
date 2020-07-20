@@ -7,6 +7,7 @@ import blocks from './blocks';
 import emails from './emails';
 import health from './health';
 import invite from './invite';
+import translations from './messages';
 import oauth2ClientCredentials from './oauth2ClientCredentials';
 import oauth2Login from './oauth2Login';
 import oauth2Provider from './oauth2Provider';
@@ -31,5 +32,6 @@ export default {
   ...proxy,
   ...resources,
   ...templates,
+  ...translations,
   ...user,
 } as OpenAPIV3.PathsObject;

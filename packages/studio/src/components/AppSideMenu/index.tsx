@@ -22,7 +22,7 @@ export default function AppSideMenu(): ReactElement {
   const collapsed = useToggle();
   const { organizations } = useUser();
   const organization = organizations?.find((org) => org.id === app.OrganizationId);
-  const match = useRouteMatch();
+  const { url } = useRouteMatch();
 
   const editPermission = organization && checkRole(organization.role, Permission.EditApps);
   const pushNotificationPermission =
@@ -30,36 +30,31 @@ export default function AppSideMenu(): ReactElement {
 
   return (
     <SideMenu isCollapsed={collapsed.enabled} toggleCollapse={collapsed.toggle}>
-      <SideNavLink
-        exact
-        icon="info"
-        label={<FormattedMessage {...messages.details} />}
-        to={match.url}
-      />
+      <SideNavLink exact icon="info" label={<FormattedMessage {...messages.details} />} to={url} />
       {editPermission && (
         <>
           <SideNavLink
             icon="edit"
             label={<FormattedMessage {...messages.editor} />}
-            to={`${match.url}/edit`}
+            to={`${url}/edit`}
           />
 
           <SideNavLink
             icon="layer-group"
             label={<FormattedMessage {...messages.assets} />}
-            to={`${match.url}/assets`}
+            to={`${url}/assets`}
           />
 
           <SideNavLink
             icon="cubes"
             label={<FormattedMessage {...messages.resources} />}
-            to={`${match.url}/resources`}
+            to={`${url}/resources`}
           >
             {app.definition.resources &&
               Object.keys(app.definition.resources)
                 .sort()
                 .map((resource) => (
-                  <NavLink key={resource} to={`${match.url}/resources/${resource}`}>
+                  <NavLink key={resource} to={`${url}/resources/${resource}`}>
                     {resource}
                   </NavLink>
                 ))}
@@ -70,7 +65,7 @@ export default function AppSideMenu(): ReactElement {
         <SideNavLink
           icon="paper-plane"
           label={<FormattedMessage {...messages.notifications} />}
-          to={`${match.url}/notifications`}
+          to={`${url}/notifications`}
         />
       )}
       {editPermission && (
@@ -79,18 +74,18 @@ export default function AppSideMenu(): ReactElement {
             <SideNavLink
               icon="users"
               label={<FormattedMessage {...messages.roles} />}
-              to={`${match.url}/roles`}
+              to={`${url}/roles`}
             />
           )}
           <SideNavLink
             icon="cogs"
             label={<FormattedMessage {...messages.settings} />}
-            to={`${match.url}/settings`}
+            to={`${url}/settings`}
           />
           <SideNavLink
             icon="key"
             label={<FormattedMessage {...messages.secrets} />}
-            to={`${match.url}/secrets`}
+            to={`${url}/secrets`}
           />
         </>
       )}

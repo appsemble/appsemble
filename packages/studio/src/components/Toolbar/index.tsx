@@ -10,7 +10,7 @@ export default function Toolbar(): ReactElement {
   const { formatMessage } = useIntl();
 
   return (
-    <nav className={`navbar is-fixed-top is-dark ${styles.root}`}>
+    <nav className={`navbar is-fixed-top is-dark is-flex ${styles.root}`}>
       <div className="navbar-brand">
         <Link to="/">
           <header className="navbar-item">

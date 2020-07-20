@@ -37,11 +37,13 @@ interface AppValueContext {
 const Context = createContext<AppValueContext>(null);
 
 export default function AppContext(): ReactElement {
-  const match = useRouteMatch<{ id: string }>();
+  const {
+    params: { id },
+    path,
+    url,
+  } = useRouteMatch<{ id: string }>();
   const { organizations } = useUser();
-  const { data: app, error, loading, setData: setApp } = useData<App>(
-    `/api/apps/${match.params.id}`,
-  );
+  const { data: app, error, loading, setData: setApp } = useData<App>(`/api/apps/${id}`);
   const value = useMemo(() => ({ app, setApp }), [app, setApp]);
 
   if (error) {
@@ -68,27 +70,27 @@ export default function AppContext(): ReactElement {
         <AppSideMenu />
         <div className={`${styles.content} px-3 py-3`}>
           <Switch>
-            <Route exact path={match.path}>
+            <Route exact path={path}>
               <AppDetails />
             </Route>
             <ProtectedRoute
               exact
               organization={organization}
-              path={`${match.path}/edit`}
+              path={`${path}/edit`}
               permission={Permission.EditApps}
             >
               <Editor />
             </ProtectedRoute>
             <ProtectedRoute
               organization={organization}
-              path={`${match.path}/assets`}
+              path={`${path}/assets`}
               permission={Permission.EditApps}
             >
               <Assets />
             </ProtectedRoute>
             <ProtectedRoute
               organization={organization}
-              path={`${match.path}/resources`}
+              path={`${path}/resources`}
               permission={Permission.EditApps}
             >
               <CMS />
@@ -96,7 +98,7 @@ export default function AppContext(): ReactElement {
             <ProtectedRoute
               exact
               organization={organization}
-              path={`${match.path}/roles`}
+              path={`${path}/roles`}
               permission={Permission.EditApps}
             >
               <Roles />
@@ -104,7 +106,7 @@ export default function AppContext(): ReactElement {
             <ProtectedRoute
               exact
               organization={organization}
-              path={`${match.path}/settings`}
+              path={`${path}/settings`}
               permission={Permission.EditAppSettings}
             >
               <AppSettings />
@@ -112,7 +114,7 @@ export default function AppContext(): ReactElement {
             <ProtectedRoute
               exact
               organization={organization}
-              path={`${match.path}/notifications`}
+              path={`${path}/notifications`}
               permission={Permission.PushNotifications}
             >
               <Notifications />
@@ -120,12 +122,12 @@ export default function AppContext(): ReactElement {
             <ProtectedRoute
               exact
               organization={organization}
-              path={`${match.path}/secrets`}
+              path={`${path}/secrets`}
               permission={Permission.EditApps}
             >
               <AppSecrets />
             </ProtectedRoute>
-            <Redirect to={match.path} />
+            <Redirect to={url} />
           </Switch>
         </div>
       </div>
