@@ -7,6 +7,7 @@ import { URL } from 'url';
 
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
+import uploadMessages from './uploadMessages';
 
 interface CreateAppParams {
   /**
@@ -71,8 +72,9 @@ export default async function createApp({
   const { data } = await axios.post('/api/apps', formData);
 
   if (file.isDirectory()) {
-    // After uploading the app, upload block styles if they are available
+    // After uploading the app, upload block styles and messages if they are available
     await traverseBlockThemes(path, data.id);
+    await uploadMessages(path, data.id);
   }
 
   logger.info(`Successfully created app ${data.definition.name}! 🙌`);

@@ -12,5 +12,6 @@ import m10 from './0.13.1';
 import m11 from './0.13.2';
 import m12 from './0.13.3';
 import m13 from './0.13.5';
+import m14 from './0.13.6';
 
-export default [m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13] as Migration[];
+export default [m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14] as Migration[];

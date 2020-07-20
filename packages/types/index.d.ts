@@ -748,6 +748,13 @@ export interface AppDefinition {
   description?: string;
 
   /**
+   * The default language of the app.
+   *
+   * @default 'en-US'
+   */
+  defaultLanguage?: string;
+
+  /**
    * The security definition of the app.
    *
    * This determines user roles and login behavior.
@@ -917,6 +924,21 @@ export interface AppMember {
   name: string;
   primaryEmail: string;
   role: string;
+}
+
+/**
+ * Translated messages for an app.
+ */
+export interface AppMessages {
+  /**
+   * The language represented by these messages.
+   */
+  language: string;
+
+  /**
+   * A mapping of message id to message content.
+   */
+  messages: { [messageId: string]: string };
 }
 
 /**
