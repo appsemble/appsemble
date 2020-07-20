@@ -1,7 +1,5 @@
 import { validateLanguage } from '@appsemble/utils';
 import Boom from '@hapi/boom';
-import tags from 'language-tags';
-import { Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
 import type { KoaContext } from '../types';
@@ -14,7 +12,6 @@ interface Params {
 export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, language },
-    query: { merge },
   } = ctx;
 
   try {
@@ -23,23 +20,9 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 
-  const baseLanguage = tags(language)
-    .subtags()
-    .filter((sub) => sub.type() === 'language')?.[0]
-    ?.toString();
-
   const app = await App.findByPk(appId, {
     attributes: [],
-    include: [
-      {
-        model: AppMessages,
-        where:
-          merge && baseLanguage
-            ? { language: { [Op.or]: [baseLanguage.toLowerCase(), language.toLowerCase()] } }
-            : { language: language.toLowerCase() },
-        required: false,
-      },
-    ],
+    include: [{ model: AppMessages, where: { language: language.toLowerCase() }, required: false }],
   });
 
   if (!app) {
