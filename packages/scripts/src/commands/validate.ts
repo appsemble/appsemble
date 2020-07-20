@@ -1,7 +1,7 @@
 import { getWorkspaces, logger } from '@appsemble/node-utils';
 import type { Config } from '@jest/types';
 import { readJson } from 'fs-extra';
-import { difference, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 import path from 'path';
 import semver from 'semver';
 import type { PackageJson } from 'type-fest';
