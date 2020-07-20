@@ -1,5 +1,5 @@
 import { useLocationString, useMessages } from '@appsemble/react-components';
-import type { AppDefinition, PageDefinition } from '@appsemble/types';
+import type { PageDefinition } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -35,23 +35,6 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
   if (!ee.current) {
     ee.current = new EventEmitter();
   }
-
-  const createBulmaQueryString = useCallback(() => {
-    const params = { ...definition.theme, ...page.theme };
-    const queryStringParams = new URLSearchParams(params);
-    queryStringParams.sort();
-
-    return queryStringParams.toString();
-  }, [definition, page.theme]);
-
-  const applyBulmaThemes = useCallback(
-    (d: AppDefinition, p: PageDefinition) => {
-      const bulmaStyle = document.getElementById('bulma-style-app') as HTMLLinkElement;
-      const [bulmaUrl] = bulmaStyle.href.split('?');
-      bulmaStyle.href = d.theme || p.theme ? `${bulmaUrl}?${createBulmaQueryString()}` : bulmaUrl;
-    },
-    [createBulmaQueryString],
-  );
 
   const checkPagePermissions = useCallback(
     (p: PageDefinition): boolean => {
@@ -116,8 +99,15 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
   }, []);
 
   useEffect(() => {
-    applyBulmaThemes(definition, page);
+    const queryStringParams = new URLSearchParams({ ...definition.theme, ...page.theme });
+    const bulmaStyle = document.getElementById('bulma-style-app') as HTMLLinkElement;
+    const bulmaUrl = new URL(bulmaStyle.href);
+    queryStringParams.sort();
+    bulmaUrl.search = String(queryStringParams);
+    bulmaStyle.href = String(bulmaUrl);
+  }, [definition, page]);
 
+  useEffect(() => {
     if (ee.current) {
       ee.current.removeAllListeners();
       ee.current = null;
@@ -130,7 +120,7 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
         ee.current = null;
       }
     };
-  }, [applyBulmaThemes, definition, page]);
+  }, [definition, page]);
 
   if (definition.security) {
     handlePagePermissions();
