@@ -15,6 +15,7 @@ export default {
       operationId: 'getInvitation',
       responses: {
         200: {
+          description: 'An invite response',
           $ref: '#/components/responses/invite',
         },
       },

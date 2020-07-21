@@ -3,10 +3,7 @@ export default {
   content: {
     'application/json': {
       schema: {
-        type: 'object',
-        properties: {
-          $ref: '#/components/schemas/Organization',
-        },
+        $ref: '#/components/schemas/Organization',
       },
     },
   },
