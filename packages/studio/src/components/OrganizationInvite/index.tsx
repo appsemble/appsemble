@@ -35,12 +35,6 @@ export default function OrganizationInvite(): ReactElement {
   const [submitting, setSubmitting] = useState(false);
   const [joined, setJoined] = useState(false);
 
-  useEffect(() => {
-    if (error && userInfo) {
-      push({ body: formatMessage(messages.invalidInvite), timeout: 0, dismissable: true });
-    }
-  }, [error, formatMessage, push, userInfo]);
-
   const sendResponse = useCallback(
     async (response) => {
       setSubmitting(true);
