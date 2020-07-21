@@ -4,7 +4,6 @@ import type { DivIcon, Icon } from 'leaflet';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 import AvatarWrapper from '../AvatarWrapper';
 import createIcon from '../utils/createIcon';
 import styles from './index.css';
@@ -35,15 +34,10 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
   const [replies, setReplies] = useState<any[]>(null);
   const [valid, setValid] = useState(false);
   const [marker, setMarker] = useState<Icon | DivIcon>(null);
-  const hasCustomMarkers = Object.keys(parameters?.marker ?? {}).some((key) =>
-    ['size', 'anchor', 'asset', 'color', 'icon'].includes(key),
-  );
 
   useEffect(() => {
-    if (hasCustomMarkers) {
-      createIcon({ parameters, utils }).then(setMarker);
-    }
-  }, [hasCustomMarkers, parameters, utils]);
+    createIcon({ parameters, utils }).then(setMarker);
+  }, [parameters, utils]);
 
   useEffect(() => {
     const parentId = parameters.reply?.parentId ?? 'parentId';
@@ -196,12 +190,9 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
             ))}
           </div>
         )}
-        {(latitude && longitude) != null && ((hasCustomMarkers && marker) || !hasCustomMarkers) && (
+        {(latitude && longitude) != null && marker && (
           <Location
             className={styles.location}
-            iconHeight={40}
-            iconUrl={iconUrl}
-            iconWidth={40}
             latitude={latitude}
             longitude={longitude}
             mapOptions={{

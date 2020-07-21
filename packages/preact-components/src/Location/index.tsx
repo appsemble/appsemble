@@ -10,16 +10,12 @@ import {
   Map,
   MapOptions,
   Marker,
-  Point,
   TileLayer,
 } from 'leaflet';
 import { Component, createRef, h, VNode } from 'preact';
 
 export interface LocationProps {
   className?: string;
-  iconHeight: number;
-  iconUrl: string;
-  iconWidth: number;
   latitude: number;
   longitude: number;
   mapOptions?: MapOptions;
@@ -35,9 +31,6 @@ class Location extends Component<LocationProps & BlockProps> {
 
   componentDidMount(): void {
     const {
-      iconHeight,
-      iconUrl,
-      iconWidth,
       latitude,
       longitude,
       mapOptions,
@@ -56,12 +49,7 @@ class Location extends Component<LocationProps & BlockProps> {
       layers: [
         new TileLayer(tileLayer),
         new Marker([latitude, longitude], {
-          icon:
-            marker ||
-            new Icon({
-              iconUrl,
-              iconAnchor: new Point(iconWidth / 2, iconHeight),
-            }),
+          icon: marker,
         }),
       ],
       ...mapOptions,
