@@ -6,7 +6,6 @@ exports[`should render flow page 1`] = `
     Test Page
   </TitleBar>
   <FlowPage
-    blocks={Array []}
     definition={
       Object {
         "defaultPage": "Test Page",

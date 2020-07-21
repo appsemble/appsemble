@@ -3,6 +3,14 @@
   "version": "0.13.5",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
@@ -54,6 +62,7 @@
     "koas-spec-handler": "^0.3.0",
     "koas-status-code": "^0.3.0",
     "koas-swagger-ui": "^0.3.0",
+    "language-tags": "^1.0.5",
     "lodash": "^4.17.19",
     "mustache": "^4.0.1",
     "node-sass": "^4.14.1",

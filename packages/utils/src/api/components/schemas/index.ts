@@ -1,4 +1,5 @@
 import App from './App';
+import AppMessages from './AppMessages';
 import AppOAuth2Secret from './AppOAuth2Secret';
 import Asset from './Asset';
 import Block from './Block';
@@ -23,6 +24,7 @@ import UserEmail from './UserEmail';
 
 export default {
   App,
+  AppMessages,
   AppOAuth2Secret,
   Asset,
   Block,

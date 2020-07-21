@@ -2,6 +2,17 @@
   "name": "@appsemble/sdk",
   "version": "0.13.5",
   "description": "Build your own blocks",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "front-end",
+    "frontend",
+    "low-code",
+    "lowcode",
+    "sdk"
+  ],
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {

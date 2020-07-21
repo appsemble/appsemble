@@ -1,5 +1,6 @@
 import type { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
 import Ajv from 'ajv';
+import languageTags from 'language-tags';
 import type { Promisable } from 'type-fest';
 
 import getAppBlocks, { BlockMap } from './getAppBlocks';
@@ -217,6 +218,12 @@ export function validateReferences(definition: AppDefinition): void {
   });
 }
 
+export function validateLanguage(language: string): void {
+  if (!languageTags.check(language)) {
+    throw new AppsembleValidationError(`Language code “${language}” is invalid.`);
+  }
+}
+
 export function validateDefaultPage({ defaultPage, pages }: AppDefinition): void {
   const page = pages.find((p) => p.name === defaultPage);
 
@@ -241,6 +248,10 @@ export default async function validateAppDefinition(
 
   const blocks = getAppBlocks(definition);
   const blockVersions = await getBlockVersions(blocks);
+
+  if (definition.defaultLanguage) {
+    validateLanguage(definition.defaultLanguage);
+  }
 
   if (definition.security) {
     validateSecurity(definition);

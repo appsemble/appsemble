@@ -21,6 +21,7 @@ import {
 import {
   AppBlockStyle,
   AppMember,
+  AppMessages,
   AppOAuth2Secret,
   AppRating,
   AppSubscription,
@@ -109,6 +110,9 @@ export default class App extends Model<App> {
 
   @HasMany(() => AppSubscription)
   AppSubscriptions: AppSubscription[];
+
+  @HasMany(() => AppMessages)
+  AppMessages: AppMessages[];
 
   @HasMany(() => Asset)
   Assets: Asset[];

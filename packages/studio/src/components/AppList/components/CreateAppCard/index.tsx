@@ -33,7 +33,7 @@ export default function CreateAppCard(): ReactElement {
   const [selectedTemplate, setSelectedTemplate] = useState(0);
 
   const history = useHistory();
-  const match = useRouteMatch();
+  const { url } = useRouteMatch();
   const { organizations } = useOrganizations();
 
   const onCreate = useCallback(
@@ -48,9 +48,9 @@ export default function CreateAppCard(): ReactElement {
         resources: resources && includeResources,
         private: isPrivate,
       });
-      history.push(`${match.url}/${data.id}/edit`);
+      history.push(`${url}/${data.id}/edit`);
     },
-    [history, match.url, organizations, selectedTemplate, templates],
+    [history, url, organizations, selectedTemplate, templates],
   );
 
   const onKeyDown = (event: KeyboardEvent): void => {

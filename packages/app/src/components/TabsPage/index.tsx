@@ -14,19 +14,18 @@ export default function TabsPage({
   subPages,
   ...blockListProps
 }: TabsPageProps): ReactElement {
-  const match = useRouteMatch<{ subPage: string }>();
+  const {
+    params: { subPage },
+    path,
+    url,
+  } = useRouteMatch<{ subPage: string }>();
 
   return (
     <>
       <div className="tabs is-centered is-medium">
         <ul>
           {subPages.map(({ name }) => (
-            <li
-              key={name}
-              className={classNames({
-                'is-active': normalize(name) === match.params.subPage,
-              })}
-            >
+            <li key={name} className={classNames({ 'is-active': normalize(name) === subPage })}>
               <Link to={`${normalize(name)}`}>{name}</Link>
             </li>
           ))}
@@ -34,7 +33,7 @@ export default function TabsPage({
       </div>
       <Switch>
         {subPages.map(({ blocks, name }, index) => (
-          <Route key={name} exact path={`${match.path}/${normalize(name)}`}>
+          <Route key={name} exact path={`${path}/${normalize(name)}`}>
             <BlockList
               {...blockListProps}
               blocks={blocks}
@@ -43,7 +42,7 @@ export default function TabsPage({
           </Route>
         ))}
 
-        <Redirect to={`${match.url}/${normalize(subPages[0].name)}`} />
+        <Redirect to={`${url}/${normalize(subPages[0].name)}`} />
       </Switch>
     </>
   );

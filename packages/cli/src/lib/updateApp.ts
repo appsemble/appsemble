@@ -8,6 +8,7 @@ import { URL } from 'url';
 import type { UpdateAppArguments } from '../types';
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
+import uploadMessages from './uploadMessages';
 
 /**
  * Create a new App.
@@ -38,8 +39,9 @@ export default async function updateApp({
     const { data } = await axios.patch(`/api/apps/${appId}`, formData);
 
     if (file.isDirectory()) {
-      // After uploading the app, upload block styles if they are available
+      // After uploading the app, upload block styles and messages if they are available
       await traverseBlockThemes(path, data.id);
+      await uploadMessages(path, data.id);
     }
 
     const { host, protocol } = new URL(remote);

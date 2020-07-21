@@ -65,9 +65,9 @@ pages:
           onSubmit:
             type: resource.create
             resource: person
-          onSubmitSuccess:
-            to: Person List
-            type: link
+            onSuccess:
+              type: link
+              to: Person List
         parameters:
           fields:
             - label: First Name
