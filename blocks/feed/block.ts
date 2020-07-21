@@ -1,4 +1,5 @@
-import type { Remapper } from '@appsemble/sdk';
+import type { BulmaColor, Remapper } from '@appsemble/sdk';
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 interface Reply {
   /**
@@ -7,18 +8,45 @@ interface Reply {
   parentId?: string;
 
   /**
-   * The field that is used to fetch the name of the author.
+   * The author of the reply.
    *
    * @default [{ prop: '$author' }, { prop: 'name' }]
    */
   author?: Remapper;
 
   /**
-   * The field that is used to read the content of the reply.
+   * The content of the reply.
    *
    * @default [{ prop: 'content' }]
    */
   content?: Remapper;
+}
+
+/**
+ * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).
+ */
+interface FontAwesomeMarkerIcon {
+  /**
+   * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
+   */
+  icon?: IconName;
+
+  /**
+   * The color to apply to the icon.
+   *
+   * @default primary
+   */
+  color?: BulmaColor;
+}
+
+/**
+ * A marker based on an existing asset.
+ */
+interface AssetMarkerIcon {
+  /**
+   * The id of an asset to use.
+   */
+  asset: number;
 }
 
 declare module '@appsemble/sdk' {
@@ -83,7 +111,31 @@ declare module '@appsemble/sdk' {
        * The longitude of the marker.
        */
       longitude: Remapper;
-    };
+
+      /**
+       * The anchor X and Y offset used for positioning the image.
+       *
+       * By default, the center of the icon will be used to mark the location.
+       * For many icons, it may be desirable to customize this. For example, for a symmetric pin
+       * which has a width of 10, and a  height of 16, you’ll probably want to set this to `[5, 16]`
+       *
+       * The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
+       * treated in a special way, since they are often used to represent a location:
+       *
+       * - `map-marker`
+       * - `map-marker-alt`
+       * - `map-pin`
+       * - `thumbtrack`
+       */
+      anchor?: [number, number];
+
+      /**
+       * The height of marker icons in pixels.
+       *
+       * @default 28
+       */
+      size?: number;
+    } & (FontAwesomeMarkerIcon | AssetMarkerIcon);
   }
 
   interface Actions {
@@ -101,6 +153,9 @@ declare module '@appsemble/sdk' {
 
     /**
      * Action that gets dispatched when submitting a reply.
+     *
+     * When submitting replies, the data will be structured
+     * as an object containing `parentId` and `content`.
      */
     onSubmitReply: never;
 

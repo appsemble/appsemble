@@ -1,10 +1,11 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
+import type { DivIcon, Icon } from 'leaflet';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 import AvatarWrapper from '../AvatarWrapper';
+import createIcon from '../utils/createIcon';
 import styles from './index.css';
 
 export interface CardProps {
@@ -32,6 +33,11 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
   const [message, setMessage] = useState('');
   const [replies, setReplies] = useState<any[]>(null);
   const [valid, setValid] = useState(false);
+  const [marker, setMarker] = useState<Icon | DivIcon>(null);
+
+  useEffect(() => {
+    createIcon({ parameters, utils }).then(setMarker);
+  }, [parameters, utils]);
 
   useEffect(() => {
     const parentId = parameters.reply?.parentId ?? 'parentId';
@@ -95,7 +101,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
       try {
         const result = await actions.onSubmitReply.dispatch({
           parentId: content.id,
-          contentField: message,
+          content: message,
         });
 
         setMessage('');
@@ -184,18 +190,16 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
             ))}
           </div>
         )}
-        {(latitude && longitude) != null && (
+        {(latitude && longitude) != null && marker && (
           <Location
             className={styles.location}
-            iconHeight={40}
-            iconUrl={iconUrl}
-            iconWidth={40}
             latitude={latitude}
             longitude={longitude}
             mapOptions={{
               dragging: false,
               zoomControl: false,
             }}
+            marker={marker}
             theme={theme}
           />
         )}
@@ -207,8 +211,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
             {parameters.buttonLabel ?? 'Click'}
           </button>
         )}
-
-        {actions.onLoadReply.type !== 'noop' && (
+        {actions.onLoadReply.type !== 'noop' && replies && (
           <Fragment>
             <div ref={replyContainer} className={styles.replies}>
               {replies.map((reply: any) => {
