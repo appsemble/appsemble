@@ -1,27 +1,25 @@
 import { useMessages } from '@appsemble/react-components/src';
 import type { BootstrapParams } from '@appsemble/sdk';
 import type { AppDefinition, FlowPageDefinition } from '@appsemble/types';
-import React, {
-  ComponentPropsWithoutRef,
-  ReactElement,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import type { EventEmitter } from 'events';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import type { ShowDialogAction } from '../../types';
 import makeActions from '../../utils/makeActions';
 import BlockList from '../BlockList';
 import DotProgressBar from '../DotProgressBar';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 
-interface FlowPageProps extends ComponentPropsWithoutRef<typeof BlockList> {
+interface FlowPageProps {
   definition: AppDefinition;
+  ee: EventEmitter;
   page: FlowPageDefinition;
+  prefix: string;
+  showDialog: ShowDialogAction;
 }
 
 export default function FlowPage({
-  data: inputData,
   definition,
   ee,
   page,
@@ -30,7 +28,7 @@ export default function FlowPage({
 }: FlowPageProps): ReactElement {
   const history = useHistory();
   const [currentPage, setCurrentPage] = useState(0);
-  const [data, setData] = useState(inputData);
+  const [data, setData] = useState({});
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
 
