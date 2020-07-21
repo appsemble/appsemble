@@ -130,6 +130,7 @@ export default function FlowPage({
         data={data}
         ee={ee}
         flowActions={flowActions}
+        page={page}
         prefix={`${prefix}.subPages.${currentPage}.blocks`}
         showDialog={showDialog}
         transitions

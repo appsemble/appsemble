@@ -1,5 +1,5 @@
 import { Loader, useLocationString } from '@appsemble/react-components';
-import type { BlockDefinition, Security } from '@appsemble/types';
+import type { BlockDefinition, PageDefinition, Security } from '@appsemble/types';
 import { checkAppRole, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
@@ -20,6 +20,7 @@ interface BlockListProps {
   ee: EventEmitter;
   extraCreators?: ActionCreators;
   flowActions?: {};
+  page: PageDefinition;
   prefix: string;
   showDialog: ShowDialogAction;
   transitions?: boolean;
@@ -46,6 +47,7 @@ export default function BlockList({
   ee,
   extraCreators,
   flowActions,
+  page,
   prefix,
   showDialog,
   transitions,
@@ -113,6 +115,7 @@ export default function BlockList({
         ee={ee}
         extraCreators={extraCreators}
         flowActions={flowActions}
+        page={page}
         pageReady={pageReady}
         prefix={`${prefix}.${index}`}
         ready={ready}

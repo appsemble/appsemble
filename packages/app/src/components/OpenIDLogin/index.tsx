@@ -20,7 +20,7 @@ export default function OpenIDLogin(): ReactElement {
   };
 
   return (
-    <Content className={`is-flex ${styles.root}`}>
+    <Content className={`is-flex ${styles.root}`} main>
       <OAuth2LoginButton
         authorizationUrl={String(new URL('/connect/authorize', settings.apiUrl))}
         icon="user"

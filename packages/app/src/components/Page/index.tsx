@@ -4,7 +4,7 @@ import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import type { ShowDialogParams } from '../../types';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -14,20 +14,21 @@ import PageDialog from '../PageDialog';
 import TabsPage from '../TabsPage';
 import TitleBar from '../TitleBar';
 import { useUser } from '../UserProvider';
+import styles from './index.css';
 import messages from './messages';
 
-interface PageProps {
-  page: PageDefinition;
-  prefix: string;
-}
-
-export default function Page({ page, prefix }: PageProps): ReactElement {
+export default function Page(): ReactElement {
   const { definition } = useAppDefinition();
   const history = useHistory();
   const { formatMessage } = useIntl();
   const push = useMessages();
   const redirect = useLocationString();
   const { isLoggedIn, logout, role } = useUser();
+  const {
+    params: { pageId },
+    path,
+    url,
+  } = useRouteMatch<{ pageId: string }>();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
@@ -35,6 +36,10 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
   if (!ee.current) {
     ee.current = new EventEmitter();
   }
+
+  const index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
+  const page = index === -1 ? null : definition.pages[index];
+  const prefix = index === -1 ? null : `pages.${index}`;
 
   const handlePagePermissions = useCallback(() => {
     const checkPagePermissions = (p: PageDefinition): boolean => {
@@ -89,6 +94,9 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
   }, []);
 
   useEffect(() => {
+    if (!page) {
+      return;
+    }
     const queryStringParams = new URLSearchParams({ ...definition.theme, ...page.theme });
     const bulmaStyle = document.getElementById('bulma-style-app') as HTMLLinkElement;
     const bulmaUrl = new URL(bulmaStyle.href);
@@ -110,51 +118,54 @@ export default function Page({ page, prefix }: PageProps): ReactElement {
         ee.current = null;
       }
     };
-  }, [definition, page]);
+  }, [page]);
 
   if (definition.security) {
     handlePagePermissions();
   }
 
-  let component;
-  switch (page.type) {
-    case 'flow':
-      component = (
-        <FlowPage
-          definition={definition}
+  if (!page) {
+    return <Redirect to={`/${normalize(definition.defaultPage)}`} />;
+  }
+
+  return (
+    <main className={styles.root} data-path={prefix}>
+      <TitleBar>{page.name}</TitleBar>
+      {page.type === 'tabs' ? (
+        <TabsPage
           ee={ee.current}
           page={page}
           prefix={prefix}
           showDialog={showDialog}
-        />
-      );
-      break;
-    case 'tabs':
-      component = (
-        <TabsPage
-          ee={ee.current}
-          prefix={prefix}
-          showDialog={showDialog}
           subPages={page.subPages}
         />
-      );
-      break;
-    default:
-      component = (
-        <BlockList
-          blocks={page.blocks}
-          ee={ee.current}
-          prefix={`${prefix}.blocks`}
-          showDialog={showDialog}
-        />
-      );
-  }
-
-  return (
-    <>
-      <TitleBar>{page.name}</TitleBar>
-      {component}
-      <PageDialog dialog={dialog} ee={ee.current} showDialog={showDialog} />
-    </>
+      ) : (
+        // The switch is used to enforce an exact path.
+        <Switch>
+          <Route exact path={path}>
+            {page.type === 'flow' ? (
+              <FlowPage
+                definition={definition}
+                ee={ee.current}
+                page={page}
+                prefix={prefix}
+                showDialog={showDialog}
+              />
+            ) : (
+              <BlockList
+                blocks={page.blocks}
+                ee={ee.current}
+                page={page}
+                prefix={`${prefix}.blocks`}
+                showDialog={showDialog}
+              />
+            )}
+          </Route>
+          {/* Redirect from a matching sub URL to the actual URL */}
+          <Redirect to={url} />
+        </Switch>
+      )}
+      <PageDialog dialog={dialog} ee={ee.current} page={page} showDialog={showDialog} />
+    </main>
   );
 }

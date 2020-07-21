@@ -1,11 +1,11 @@
 import { useMessages } from '@appsemble/react-components';
-import type { BlockDefinition } from '@appsemble/types';
-import { baseTheme, normalize, normalizeBlockName, remap } from '@appsemble/utils';
+import type { BlockDefinition, PageDefinition } from '@appsemble/types';
+import { baseTheme, normalizeBlockName, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import type { ShowDialogAction } from '../../types';
 import type { ActionCreators } from '../../utils/actions';
@@ -38,6 +38,11 @@ interface BlockProps {
    */
   flowActions: any;
 
+  /**
+   * The page in which the block is rendered.
+   */
+  page: PageDefinition;
+
   showDialog: ShowDialogAction;
   ready(block: BlockDefinition): void;
   pageReady: Promise<void>;
@@ -57,13 +62,14 @@ export default function Block({
   ee,
   extraCreators,
   flowActions,
+  page,
   pageReady,
   prefix,
   ready,
   showDialog,
 }: BlockProps): ReactElement {
   const history = useHistory();
-  const { params, path } = useRouteMatch();
+  const params = useParams();
   const location = useLocation();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
@@ -145,15 +151,12 @@ export default function Block({
       ee,
       showMessage: push,
     });
-    const { theme: pageTheme } = definition.pages.find(
-      (page) => normalize(page.name) === path.slice(1).split('/')[0],
-    );
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
     const [bulmaBase] = BULMA_URL.href.split('?');
     const theme = {
       ...baseTheme,
       ...definition.theme,
-      ...pageTheme,
+      ...page.theme,
       ...block.theme,
     };
 
@@ -161,7 +164,7 @@ export default function Block({
     urlParams.sort();
 
     const bulmaUrl =
-      definition.theme || pageTheme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
+      definition.theme || page.theme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     const utils = {
       remap,
@@ -215,9 +218,9 @@ export default function Block({
     initialized,
     location,
     manifest,
+    page,
     pageReady,
     params,
-    path,
     prefix,
     push,
     pushNotifications,

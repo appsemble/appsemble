@@ -41,6 +41,11 @@ export default function TabsPage({
             />
           </Route>
         ))}
+        {/* Redirect from a matching sub URL to the actual URL */}
+        {subPages.map(({ name }) => {
+          const exactPath = `${path}/${normalize(name)}`;
+          return <Redirect key={exactPath} from={exactPath} to={exactPath} />;
+        })}
 
         <Redirect to={`${url}/${normalize(subPages[0].name)}`} />
       </Switch>

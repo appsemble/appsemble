@@ -1,4 +1,4 @@
-import { Checkbox, FormComponent, Loader, useMessages } from '@appsemble/react-components';
+import { Checkbox, Content, FormComponent, Loader, useMessages } from '@appsemble/react-components';
 import type { ResourceHooks, SubscriptionResponse } from '@appsemble/types';
 import axios from 'axios';
 import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
@@ -154,74 +154,72 @@ export default function AppSettings(): ReactElement {
   }
 
   return (
-    <>
+    <Content main padding>
       <TitleBar>
         <FormattedMessage {...messages.settings} />
       </TitleBar>
-      <div className={`${styles.root} px-3 py-3`}>
-        {(definition.notifications !== undefined || Object.keys(subscriptions).length > 0) && (
-          <>
-            <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
-              <div className={`${styles.setting} is-flex`}>
-                <p className={styles.settingDescription}>
-                  <FormattedMessage {...messages.suscribeDescription} />
-                </p>
-                <Checkbox
-                  className={styles.checkbox}
-                  help={<FormattedMessage {...messages.subscribe} />}
-                  name="subscribe"
-                  onChange={onSubscribeClick}
-                  switch
-                  value={!!subscription}
-                  wrapperClassName="is-flex"
-                />
-              </div>
-            </FormComponent>
+      {(definition.notifications !== undefined || Object.keys(subscriptions).length > 0) && (
+        <>
+          <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
+            <div className={`${styles.setting} is-flex`}>
+              <p className={styles.settingDescription}>
+                <FormattedMessage {...messages.suscribeDescription} />
+              </p>
+              <Checkbox
+                className={styles.checkbox}
+                help={<FormattedMessage {...messages.subscribe} />}
+                name="subscribe"
+                onChange={onSubscribeClick}
+                switch
+                value={!!subscription}
+                wrapperClassName="is-flex"
+              />
+            </div>
+          </FormComponent>
 
-            <FormComponent label={<FormattedMessage {...messages.subscriptions} />} required>
-              {Object.entries(subscriptions).map(([resourceType, resource]) => (
-                <FormComponent
-                  key={resourceType}
-                  label={
-                    <FormattedMessage
-                      {...messages.resourceSubscriptions}
-                      values={{ resource: resourceType }}
+          <FormComponent label={<FormattedMessage {...messages.subscriptions} />} required>
+            {Object.entries(subscriptions).map(([resourceType, resource]) => (
+              <FormComponent
+                key={resourceType}
+                label={
+                  <FormattedMessage
+                    {...messages.resourceSubscriptions}
+                    values={{ resource: resourceType }}
+                  />
+                }
+                required
+              >
+                {(Object.keys(resource) as (keyof SubscriptionState)[])
+                  .filter(
+                    (key) =>
+                      resource[key].notification.subscribe === 'all' ||
+                      resource[key].notification.subscribe === 'both',
+                  )
+                  .map((key) => (
+                    <Checkbox
+                      key={key}
+                      className={styles.subscribeCheckbox}
+                      disabled={!subscription || !resource.create}
+                      help={
+                        <FormattedMessage
+                          {...messages.subscriptionLabel}
+                          values={{
+                            resource: resourceType,
+                            actionVerb: <FormattedMessage {...messages[key]} />,
+                          }}
+                        />
+                      }
+                      name={`${resourceType}.${key}`}
+                      onChange={(_, value) => onSubscriptionChange(resourceType, key, value)}
+                      switch
+                      value={subscriptions[resourceType][key].subscribed}
                     />
-                  }
-                  required
-                >
-                  {(Object.keys(resource) as (keyof SubscriptionState)[])
-                    .filter(
-                      (key) =>
-                        resource[key].notification.subscribe === 'all' ||
-                        resource[key].notification.subscribe === 'both',
-                    )
-                    .map((key) => (
-                      <Checkbox
-                        key={key}
-                        className={styles.subscribeCheckbox}
-                        disabled={!subscription || !resource.create}
-                        help={
-                          <FormattedMessage
-                            {...messages.subscriptionLabel}
-                            values={{
-                              resource: resourceType,
-                              actionVerb: <FormattedMessage {...messages[key]} />,
-                            }}
-                          />
-                        }
-                        name={`${resourceType}.${key}`}
-                        onChange={(_, value) => onSubscriptionChange(resourceType, key, value)}
-                        switch
-                        value={subscriptions[resourceType][key].subscribed}
-                      />
-                    ))}
-                </FormComponent>
-              ))}
-            </FormComponent>
-          </>
-        )}
-      </div>
-    </>
+                  ))}
+              </FormComponent>
+            ))}
+          </FormComponent>
+        </>
+      )}
+    </Content>
   );
 }
