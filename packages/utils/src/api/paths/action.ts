@@ -34,13 +34,13 @@ function proxy(method: string, body?: boolean): OpenAPIV3.OperationObject {
 }
 
 export default {
-  '/apps/{appId}/proxy/{path}': {
+  '/apps/{appId}/action/{path}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {
         in: 'path',
         name: 'path',
-        description: 'The path to the request action to proxy.',
+        description: 'The path to the action to execute.',
         required: true,
         schema: { type: 'string' },
       },

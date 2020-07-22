@@ -1,5 +1,6 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
+import action from './action';
 import appOAuth2Secrets from './appOAuth2Secrets';
 import apps from './apps';
 import assets from './assets';
@@ -12,7 +13,6 @@ import oauth2ClientCredentials from './oauth2ClientCredentials';
 import oauth2Login from './oauth2Login';
 import oauth2Provider from './oauth2Provider';
 import organizations from './organizations';
-import proxy from './proxy';
 import resources from './resources';
 import templates from './templates';
 import user from './user';
@@ -29,7 +29,7 @@ export default {
   ...oauth2Login,
   ...oauth2Provider,
   ...organizations,
-  ...proxy,
+  ...action,
   ...resources,
   ...templates,
   ...translations,

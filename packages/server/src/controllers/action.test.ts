@@ -93,7 +93,7 @@ afterEach(truncate);
 afterAll(closeTestSchema);
 
 it('should handle if the app doesn’t exist', async () => {
-  const response = await request.get('/api/apps/1337/proxy/valid?data={}');
+  const response = await request.get('/api/apps/1337/action/valid?data={}');
   expect(response).toMatchObject({
     status: 404,
     data: {
@@ -105,7 +105,7 @@ it('should handle if the app doesn’t exist', async () => {
 });
 
 it('should handle if the path doesn’t point to an action', async () => {
-  const response = await request.get('/api/apps/1/proxy/invalid?data={}');
+  const response = await request.get('/api/apps/1/action/invalid?data={}');
   expect(response).toMatchObject({
     status: 400,
     data: {
@@ -117,7 +117,7 @@ it('should handle if the path doesn’t point to an action', async () => {
 });
 
 it('should proxy simple GET request actions', async () => {
-  const response = await request.get('/api/apps/1/proxy/pages.0.blocks.0.actions.get?data={}');
+  const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('GET');
   expect({ ...proxiedContext.headers }).toStrictEqual({
@@ -131,7 +131,7 @@ it('should proxy simple GET request actions', async () => {
 
 it('should proxy simple DELETE request actions', async () => {
   const response = await request.delete(
-    '/api/apps/1/proxy/pages.0.blocks.0.actions.delete?data={}',
+    '/api/apps/1/action/pages.0.blocks.0.actions.delete?data={}',
   );
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('DELETE');
@@ -145,7 +145,7 @@ it('should proxy simple DELETE request actions', async () => {
 });
 
 it('should proxy simple PATCH request actions', async () => {
-  const response = await request.patch('/api/apps/1/proxy/pages.0.blocks.0.actions.patch', {});
+  const response = await request.patch('/api/apps/1/action/pages.0.blocks.0.actions.patch', {});
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('PATCH');
   expect({ ...proxiedContext.headers }).toStrictEqual({
@@ -160,7 +160,7 @@ it('should proxy simple PATCH request actions', async () => {
 });
 
 it('should proxy simple POST request actions', async () => {
-  const response = await request.post('/api/apps/1/proxy/pages.0.blocks.0.actions.post', {});
+  const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.post', {});
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('POST');
   expect({ ...proxiedContext.headers }).toStrictEqual({
@@ -175,7 +175,7 @@ it('should proxy simple POST request actions', async () => {
 });
 
 it('should proxy simple PUT request actions', async () => {
-  const response = await request.put('/api/apps/1/proxy/pages.0.blocks.0.actions.put', {});
+  const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.put', {});
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('PUT');
   expect({ ...proxiedContext.headers }).toStrictEqual({
@@ -190,7 +190,7 @@ it('should proxy simple PUT request actions', async () => {
 });
 
 it('should throw if the method doesn’t match the action method', async () => {
-  const response = await request.put('/api/apps/1/proxy/pages.0.blocks.0.actions.post', {});
+  const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.post', {});
   expect(response).toMatchObject({
     status: 400,
     data: {
@@ -202,7 +202,7 @@ it('should throw if the method doesn’t match the action method', async () => {
 });
 
 it('should proxy request paths', async () => {
-  const response = await request.get('/api/apps/1/proxy/pages.0.blocks.0.actions.path?data={}');
+  const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.path?data={}');
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('GET');
   expect(proxiedContext.path).toBe('/pour');
@@ -211,7 +211,7 @@ it('should proxy request paths', async () => {
 
 it('should throw if the upstream response fails', async () => {
   const response = await request.get(
-    '/api/apps/1/proxy/pages.0.blocks.0.actions.invalidHost?data={}',
+    '/api/apps/1/action/pages.0.blocks.0.actions.invalidHost?data={}',
   );
   expect(response).toMatchObject({
     status: 502,
