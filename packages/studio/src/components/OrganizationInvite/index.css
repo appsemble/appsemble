@@ -6,10 +6,14 @@
 }
 
 .noInviteIcon {
+  height: auto;
+  margin: 0 auto;
+}
+
+.noInviteIcon > i {
   font-size: 6em;
 }
 
 .noInvite {
   display: grid;
-  margin: 0 auto;
 }
