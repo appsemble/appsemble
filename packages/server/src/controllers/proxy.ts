@@ -1,12 +1,14 @@
 import { logger } from '@appsemble/node-utils';
-import type { ActionDefinition } from '@appsemble/types';
-import { formatRequestAction } from '@appsemble/utils';
+import type { ActionDefinition, EmailActionDefinition } from '@appsemble/types';
+import { formatRequestAction, remap } from '@appsemble/utils';
 import * as Boom from '@hapi/boom';
 import axios from 'axios';
+import type { ParameterizedContext } from 'koa';
 import { get, pick } from 'lodash';
 
 import { App } from '../models';
-import type { KoaMiddleware } from '../types';
+import type { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
+import renderEmail from '../utils/email/renderEmail';
 import readPackageJson from '../utils/readPackageJson';
 
 interface Params {
@@ -26,60 +28,103 @@ const allowResponseHeaders = [
   'transfer-encoding',
 ];
 
+const supportedActions = ['email', 'request'];
+
+async function handleEmail(
+  {
+    mailer,
+    request: { body: data },
+    ...ctx
+  }: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
+  action: EmailActionDefinition,
+): Promise<void> {
+  const body = remap(action.body, data);
+  const to = remap(action.to, data);
+  const sub = remap(action.subject, data);
+
+  if (!to || !sub || !body) {
+    throw Boom.badRequest('Fields “to”, “subject”, and “body” must be a valid string');
+  }
+
+  const { html, subject, text } = await renderEmail(body, {}, sub);
+  await mailer.sendEmail(to, subject, html, text);
+
+  ctx.status = 204;
+}
+
+async function handleRequestProxy(
+  ctx: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
+  action: ActionDefinition,
+  useBody: boolean,
+): Promise<void> {
+  const {
+    method,
+    query,
+    request: { body },
+  } = ctx;
+
+  let data;
+  if (useBody) {
+    data = body;
+  } else {
+    try {
+      data = JSON.parse(query.data);
+    } catch (err) {
+      throw Boom.badRequest('data should be a JSON object');
+    }
+  }
+
+  const axiosConfig = formatRequestAction(action, data);
+
+  if (axiosConfig.method.toUpperCase() !== method) {
+    throw Boom.badRequest('Method does match the request action method');
+  }
+
+  if (useBody) {
+    axiosConfig.data = data;
+  }
+  axiosConfig.headers['user-agent'] = `AppsembleServer/${version}`;
+  axiosConfig.responseType = 'stream';
+  axiosConfig.validateStatus = () => true;
+
+  let response;
+  logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
+  try {
+    response = await axios(axiosConfig);
+  } catch (err) {
+    logger.error(err);
+    throw Boom.badGateway();
+  }
+
+  ctx.status = response.status;
+  ctx.set(pick(response.headers, allowResponseHeaders));
+  ctx.body = response.data;
+}
+
 function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
   return async (ctx) => {
     const {
-      method,
       params: { appId, path },
-      query,
-      request: { body },
     } = ctx;
-    let data;
-    if (useBody) {
-      data = body;
-    } else {
-      try {
-        data = JSON.parse(query.data);
-      } catch (err) {
-        throw Boom.badRequest('data should be a JSON object');
-      }
-    }
-
     const app = await App.findByPk(appId, { attributes: ['definition'] });
     if (!app) {
       throw Boom.notFound('App not found');
     }
 
-    const action = get(app.definition, path) as ActionDefinition;
-    if (action?.type !== 'request') {
+    const appAction = get(app.definition, path) as ActionDefinition;
+    const action = supportedActions.find((act) => act === appAction?.type);
+
+    if (!action) {
       throw Boom.badRequest('path does not point to a proxyable action');
     }
 
-    const axiosConfig = formatRequestAction(action, data);
-
-    if (axiosConfig.method.toUpperCase() !== method) {
-      throw Boom.badRequest('Method does match the request action method');
+    switch (action) {
+      case 'email':
+        return handleEmail(ctx, appAction as EmailActionDefinition);
+      case 'request':
+      default:
+        return handleRequestProxy(ctx, appAction, useBody);
     }
-
-    if (useBody) {
-      axiosConfig.data = data;
-    }
-    axiosConfig.headers['user-agent'] = `AppsembleServer/${version}`;
-    axiosConfig.responseType = 'stream';
-    axiosConfig.validateStatus = () => true;
-
-    let response;
-    logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
-    try {
-      response = await axios(axiosConfig);
-    } catch (err) {
-      logger.error(err);
-      throw Boom.badGateway();
-    }
-
-    ctx.status = response.status;
-    ctx.set(pick(response.headers, allowResponseHeaders));
-    ctx.body = response.data;
   };
 }
 

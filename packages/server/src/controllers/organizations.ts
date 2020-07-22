@@ -212,7 +212,7 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
     email,
   });
 
-  await mailer.sendEmail(
+  await mailer.sendTemplateEmail(
     { email, ...(invitedUser && { name: invitedUser.name }) },
     'organizationInvite',
     {
@@ -254,10 +254,14 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   const user = await User.findByPk(invite.UserId);
 
-  await mailer.sendEmail({ email, ...(user && { name: user.name }) }, 'organizationInvite', {
-    organization: organization.id,
-    url: `${host}/organization-invite?token=${invite.key}`,
-  });
+  await mailer.sendTemplateEmail(
+    { email, ...(user && { name: user.name }) },
+    'organizationInvite',
+    {
+      organization: organization.id,
+      url: `${host}/organization-invite?token=${invite.key}`,
+    },
+  );
 
   ctx.body = 204;
 }

@@ -9,8 +9,6 @@ import remarkStringify from 'remark-stringify';
 import unified from 'unified';
 import visit from 'unist-util-visit';
 
-import readAsset from '../readAsset';
-
 const remark = unified().use(remarkParse).use(frontmatter).use(remarkStringify).freeze();
 
 const rehype = unified().use(remarkRehype).use(rehypeDocument).use(rehypeStringify).freeze();
@@ -22,9 +20,9 @@ interface Email {
 }
 
 /**
- * Render a markdown email template.
+ * Render a markdown email.
  *
- * @param templateName The name of the template to render.
+ * @param template The body of the template to render.
  * @param values Values to pass to the template for rendering.
  *
  * @returns An object which consists of the following properties:
@@ -34,11 +32,11 @@ interface Email {
  * - `subject`: The subject of the email.
  */
 export default async function renderEmail(
-  templateName: string,
+  template: string,
   values: { [key: string]: string },
+  sub?: string,
 ): Promise<Email> {
-  const template = await readAsset(`email/${templateName}.md`, 'utf-8');
-  let subject;
+  let subject = sub;
   const mdast = await remark.parse(template);
 
   function replace(_match: string, key: string): string {
@@ -58,10 +56,13 @@ export default async function renderEmail(
       value: node.value.replace(/{{(\w+)}}/, replace),
     });
   });
-  visit<YamlNode>(mdast, 'yaml', (node, index, parent: Parent) => {
-    ({ subject } = yaml.safeLoad(node.value) as Email);
-    parent.children.splice(index, 1);
-  });
+
+  if (!sub) {
+    visit<YamlNode>(mdast, 'yaml', (node, index, parent: Parent) => {
+      ({ subject } = yaml.safeLoad(node.value) as Email);
+      parent.children.splice(index, 1);
+    });
+  }
 
   const text = await remark.stringify(mdast);
   const html = await rehype.stringify(await rehype.run(mdast, { stem: subject }));
