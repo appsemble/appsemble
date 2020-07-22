@@ -31,13 +31,13 @@ const allowResponseHeaders = [
 const supportedActions = ['email', 'request'];
 
 async function handleEmail(
-  {
-    mailer,
-    request: { body: data },
-    ...ctx
-  }: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
+  ctx: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
   action: EmailActionDefinition,
 ): Promise<void> {
+  const {
+    mailer,
+    request: { body: data },
+  } = ctx;
   const body = remap(action.body, data);
   const to = remap(action.to, data);
   const sub = remap(action.subject, data);
