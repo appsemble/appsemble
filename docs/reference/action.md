@@ -24,6 +24,16 @@ Below is an overview of each action that Appsemble supports. Depending on the ty
 additional parameters can be defined to alter its behavior. The name of the action is what should be
 used as the `type`.
 
+## `email`
+
+The email action can be used to send emails via the Appsemble server.
+
+| Parameter | Required | Description                                                                                                                                       |
+| --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| to        | true     | The address the email should be sent to. Can be either in the format of `test@example.com`, or `John Doe <test@example.com>`. Supports remappers. |
+| subject   | true     | The subject of the email. Supports remappers.                                                                                                     |
+| body      | true     | The body of the email. The content of the body is converted to HTML using the Markdown syntax. Supports remappers.                                |
+
 ## `link`
 
 The link action can be used to redirect the user to other pages or absolute URLs.
@@ -126,6 +136,11 @@ JSON.
 | serialize  |          | The method used to serialize the request data. Setting this to `formdata` will send the request as a `multipart/form-data` request. By default the data is serialized as an `application/json` request.                                           |
 | blobs      |          | An object containing a range of parameters used to upload files to the server.                                                                                                                                                                    |
 | blobs.type |          | The method used to upload files to the server. Supports `upload` to override the default behavior.                                                                                                                                                |
+
+## `throw`
+
+This action throws a new exception based on the data that is passed through. This can be used to
+create a custom error that ends up in the error action handler.
 
 ### Query templates
 
