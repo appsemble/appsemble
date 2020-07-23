@@ -36,8 +36,13 @@ async function handleEmail(
 ): Promise<void> {
   const {
     mailer,
+    method,
     request: { body: data },
   } = ctx;
+  if (method !== 'POST') {
+    throw Boom.methodNotAllowed('Method must be POST for email actions');
+  }
+
   const body = remap(action.body, data);
   const to = remap(action.to, data);
   const sub = remap(action.subject, data);

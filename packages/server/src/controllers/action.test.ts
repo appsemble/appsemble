@@ -1,5 +1,7 @@
+import type { EmailActionDefinition } from '@appsemble/types';
 import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
+import type { Transporter } from 'nodemailer';
 import { URL } from 'url';
 
 import { App, Organization } from '../models';
@@ -67,6 +69,12 @@ beforeEach(async () => {
                   method: 'put',
                   url: baseURL,
                 },
+                email: {
+                  type: 'email',
+                  to: 'test@example.com',
+                  subject: [{ static: 'Test title' }],
+                  body: [{ prop: 'body' }],
+                } as EmailActionDefinition,
                 path: {
                   type: 'request',
                   url: String(new URL('/pour?drink=coffee', baseURL)),
@@ -220,5 +228,42 @@ it('should throw if the upstream response fails', async () => {
       message: 'Bad Gateway',
       statusCode: 502,
     },
+  });
+});
+
+it('should send emails', async () => {
+  const spy = jest.spyOn(proxiedApp.context.mailer, 'sendEmail');
+
+  const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    body: 'Body',
+  });
+
+  expect(response.status).toBe(204);
+  expect(spy).toHaveBeenCalledWith({
+    to: 'Me <test@example.com>',
+    subject: 'Subject',
+    text: 'Body',
+    html: '<p>Body</p>',
+  });
+  spy.mockRestore();
+});
+
+it('should not send emails if parts of it are empty', async () => {
+  const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {});
+
+  expect(response).toMatchObject({
+    status: 400,
+    data: { message: 'Fields “to”, “subject”, and “body” must be a valid string' },
+  });
+});
+
+it('should only send emails if requests are POST', async () => {
+  const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+    body: 'Body',
+  });
+
+  expect(response).toMatchObject({
+    status: 405,
+    data: { message: 'Method must be POST for email actions' },
   });
 });
