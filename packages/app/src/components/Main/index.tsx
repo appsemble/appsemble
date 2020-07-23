@@ -1,5 +1,6 @@
+import { normalize } from '@appsemble/utils/src';
 import React, { ReactElement } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import AppSettings from '../AppSettings';
@@ -14,6 +15,7 @@ import Page from '../Page';
  */
 export default function Main(): ReactElement {
   const { definition } = useAppDefinition();
+  const { path } = useRouteMatch();
 
   if (definition == null) {
     return null;
@@ -21,18 +23,19 @@ export default function Main(): ReactElement {
 
   return (
     <Switch>
-      <Route exact path="/Settings" sensitive>
+      <Route exact path={`${path}/Settings`} sensitive>
         <AppSettings />
       </Route>
-      <Route exact path="/Login" sensitive>
+      <Route exact path={`${path}/Login`} sensitive>
         <Login />
       </Route>
-      <Route exact path="/Callback" sensitive>
+      <Route exact path={`${path}/Callback`} sensitive>
         <OpenIDCallback />
       </Route>
-      <Route path="/:pageId?">
+      <Route path={`${path}/:pageId`}>
         <Page />
       </Route>
+      <Redirect to={`${path}/${normalize(definition.defaultPage)}`} />
     </Switch>
   );
 }

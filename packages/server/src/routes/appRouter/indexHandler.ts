@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import qs from 'querystring';
 import { Op } from 'sequelize';
 
-import { AppOAuth2Secret, BlockAsset, BlockVersion } from '../../models';
+import { AppMessages, AppOAuth2Secret, BlockAsset, BlockVersion } from '../../models';
 import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';
 import getApp from '../../utils/getApp';
@@ -27,6 +27,10 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
       {
         attributes: ['icon', 'id', 'name'],
         model: AppOAuth2Secret,
+      },
+      {
+        attributes: ['language'],
+        model: AppMessages,
       },
     ],
   });
@@ -77,6 +81,7 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
       }),
     ),
     id: app.id,
+    languages: app.AppMessages.map(({ language }) => language),
     logins: app.AppOAuth2Secrets,
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,

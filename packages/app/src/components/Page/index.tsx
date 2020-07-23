@@ -26,7 +26,7 @@ export default function Page(): ReactElement {
     params: { pageId },
     path,
     url,
-  } = useRouteMatch<{ pageId: string }>();
+  } = useRouteMatch<{ lang: string; pageId: string }>();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
@@ -125,20 +125,20 @@ export default function Page(): ReactElement {
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
   if (!isLoggedIn) {
-    return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
+    return <Redirect to={`${url}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
   // page.
   const defaultPage = definition.pages.find((p) => p.name === definition.defaultPage);
   if (checkPagePermissions(defaultPage)) {
-    return <Redirect to={`/${normalize(defaultPage.name)}`} />;
+    return <Redirect to={`${url}/${normalize(defaultPage.name)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = definition.pages.find(checkPagePermissions);
   if (redirectPage) {
-    return <Redirect to={`/${normalize(redirectPage.name)}`} />;
+    return <Redirect to={`${url}/${normalize(redirectPage.name)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.

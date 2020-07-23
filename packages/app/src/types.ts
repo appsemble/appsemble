@@ -50,6 +50,7 @@ declare global {
       vapidPublicKey: string;
       id: number;
       definition: AppDefinition;
+      languages: string[];
       logins: Pick<AppOAuth2Secret, 'icon' | 'id' | 'name'>[];
       sentryDsn: string;
     };

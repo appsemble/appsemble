@@ -11,7 +11,7 @@
  * @param languages The languages to sort. For example `navigator.languages`.
  * @returns A sorted list of lower case languages in order of preference.
  */
-export function sortLocales(languages: string[]): string[] {
+export function sortLocales(languages: readonly string[]): string[] {
   const copy = languages.map((language) => language.toLowerCase());
   // Compare every language to the previous in the array. The first item is skipped, since there is
   // nothing to compare against.
@@ -34,7 +34,10 @@ export function sortLocales(languages: string[]): string[] {
  * @param choices A list of languages preferred by the user in order of preference.
  * @return The best match
  */
-export function detectLocale(languages: string[], choices: string[]): string | undefined {
+export function detectLocale(
+  languages: readonly string[],
+  choices: readonly string[],
+): string | undefined {
   const wantedLocales = sortLocales(choices);
 
   return wantedLocales.find((wanted) =>

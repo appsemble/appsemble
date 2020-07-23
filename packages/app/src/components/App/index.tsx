@@ -1,7 +1,6 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
-import { IntlProvider } from 'react-intl';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 
 import AppDefinitionProvider from '../AppDefinitionProvider';
 import ErrorFallback from '../ErrorFallback';
@@ -26,9 +25,9 @@ export default function App({ serviceWorkerRegistrationPromise }: AppProps): Rea
   return (
     <BrowserRouter>
       <Route path="/:lang?">
-        <IntlMessagesProvider>
-          <ErrorHandler fallback={ErrorFallback}>
-            <AppDefinitionProvider>
+        <AppDefinitionProvider>
+          <IntlMessagesProvider>
+            <ErrorHandler fallback={ErrorFallback}>
               <MessagesProvider>
                 <ServiceWorkerRegistrationProvider
                   serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
@@ -42,9 +41,9 @@ export default function App({ serviceWorkerRegistrationPromise }: AppProps): Rea
                   </UserProvider>
                 </ServiceWorkerRegistrationProvider>
               </MessagesProvider>
-            </AppDefinitionProvider>
-          </ErrorHandler>
-        </IntlMessagesProvider>
+            </ErrorHandler>
+          </IntlMessagesProvider>
+        </AppDefinitionProvider>
       </Route>
     </BrowserRouter>
   );

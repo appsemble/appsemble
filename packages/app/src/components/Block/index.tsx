@@ -1,5 +1,5 @@
 import { useMessages } from '@appsemble/react-components';
-import type { BlockDefinition, PageDefinition } from '@appsemble/types';
+import type { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
@@ -167,7 +167,11 @@ export default function Block({
       definition.theme || page.theme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     const utils = {
-      remap,
+      remap(mappers: Remapper, input: any) {
+        remap(mappers, input, {
+          messages,
+        });
+      },
       showMessage: push,
       addCleanup(fn: Function) {
         cleanups.current.push(fn);
