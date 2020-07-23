@@ -33,7 +33,7 @@ export default function OpenIDCallback(): ReactElement {
     if (isOk) {
       authorizationCodeLogin({
         code,
-        redirect_uri: `${window.location.origin}${window.location.pathname}`,
+        redirect_uri: `${window.location.origin}/Callback`,
       }).catch(() => {
         setError(true);
       });

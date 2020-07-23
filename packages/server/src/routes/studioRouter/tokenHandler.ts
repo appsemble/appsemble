@@ -4,6 +4,7 @@ import { isPast } from 'date-fns';
 import { verify } from 'jsonwebtoken';
 import querystring from 'querystring';
 import raw from 'raw-body';
+import { URL } from 'url';
 
 import {
   EmailAuthorization,
@@ -14,7 +15,6 @@ import {
 import type { KoaContext } from '../../types';
 import createJWTResponse from '../../utils/createJWTResponse';
 import getApp from '../../utils/getApp';
-import trimUrl from '../../utils/trimUrl';
 
 class GrantError extends Error {
   status: number;
@@ -75,10 +75,13 @@ export default async function tokenHandler(ctx: KoaContext): Promise<void> {
           code,
           redirect_uri: redirectUri,
         } = checkTokenRequestParameters(query, ['client_id', 'code', 'redirect_uri']);
-        if (!header.referer) {
-          throw new GrantError('invalid_request');
-        }
-        if (redirectUri !== trimUrl(header.referer)) {
+        try {
+          const referer = new URL(header.referer);
+          const redirect = new URL(redirectUri);
+          if (referer.origin !== redirect.origin) {
+            throw new GrantError('invalid_request');
+          }
+        } catch {
           throw new GrantError('invalid_request');
         }
         const match = clientId.match(/^app:(\d+)/);
