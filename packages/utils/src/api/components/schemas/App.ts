@@ -99,7 +99,7 @@ export default {
         },
         defaultLanguage: {
           type: 'string',
-          default: 'en',
+          default: 'en-US',
           minLength: 2,
           description: 'The default language for the app.',
         },
