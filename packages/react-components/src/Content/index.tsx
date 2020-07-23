@@ -20,6 +20,13 @@ interface ContentProps {
   fullwidth?: boolean;
 
   /**
+   * If true, consider this to be the main content on the page.
+   *
+   * The difference is that a `<main />` element will be rendered instead of a `<div />`.
+   */
+  main?: boolean;
+
+  /**
    * If true, add a padding of 12px.
    */
   padding?: boolean;
@@ -32,11 +39,16 @@ export default function Content({
   children,
   className,
   fullwidth,
+  main,
   padding,
 }: ContentProps): ReactElement {
+  const Component = main ? 'main' : 'div';
+
   return (
-    <div className={classNames(className, { [styles.center]: !fullwidth, 'px-3 py-3': padding })}>
+    <Component
+      className={classNames(className, { [styles.center]: !fullwidth, 'px-3 py-3': padding })}
+    >
       {children}
-    </div>
+    </Component>
   );
 }

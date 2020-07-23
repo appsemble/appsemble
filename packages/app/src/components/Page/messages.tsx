@@ -1,7 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  error: 'There was a problem loading this page. We’re sorry.',
-  permissionLogout:
-    'You have been logged because you don’t sufficient permissions to view this app. Please contact the app owner if you think this is a mistake.',
+  permissionError:
+    'Due to misconfigured permissions, you’re not able to view the app. If you think this is a mistake, please leave a message in the <a>Appsemble store page</a>.',
+  logout: 'Logout',
 });
