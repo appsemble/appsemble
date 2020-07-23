@@ -51,8 +51,7 @@ export async function handler({
   const directories = await fg(paths, { absolute: true, onlyDirectories: true });
 
   logger.info(`Creating ${directories.length} Apps for @${organizationId}`);
-  directories.reduce(async (acc, dir) => {
-    await acc;
+  for (const dir of directories) {
     await createApp({
       organizationId,
       path: dir,
@@ -60,5 +59,5 @@ export async function handler({
       remote,
       template,
     });
-  }, {});
+  }
 }

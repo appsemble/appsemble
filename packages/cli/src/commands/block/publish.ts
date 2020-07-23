@@ -45,9 +45,7 @@ export async function handler({
 
   const directories = await fg(paths, { absolute: true, onlyDirectories: true });
   logger.info(`Publishing ${directories.length} Blocks`);
-  await directories.reduce(async (acc, dir) => {
-    await acc;
-
+  for (const dir of directories) {
     const config = await getBlockConfig(dir);
 
     if (build) {
@@ -55,5 +53,5 @@ export async function handler({
     }
 
     await publish(config, ignoreConflict);
-  }, null as Promise<void>);
+  }
 }

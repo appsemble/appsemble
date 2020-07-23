@@ -1,7 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
 import { join } from 'path';
-import type { Promisable } from 'type-fest';
 
 import uploadAppBlockTheme from './uploadAppBlockTheme';
 
@@ -26,8 +25,7 @@ export default async function traverseBlockThemes(path: string, appId: number): 
 
   logger.info(`Traversing block themes for ${themeDir.length} organizations`);
 
-  await themeDir.reduce<Promisable<void>>(async (acc, org) => {
-    await acc;
+  for (const org of themeDir) {
     logger.info(`Traversing themes for organization ${org}`);
     const orgDir = (await fs.readdir(join(path, 'theme', org))).filter((sub) =>
       fs.lstatSync(join(path, 'theme', org, sub)).isDirectory(),
@@ -38,8 +36,7 @@ export default async function traverseBlockThemes(path: string, appId: number): 
       return;
     }
 
-    await orgDir.reduce<Promisable<void>>(async (accumulator, blockDir) => {
-      await accumulator;
+    for (const blockDir of orgDir) {
       const blockStyleDir = await fs.readdir(join(path, 'theme', org, blockDir));
       const indexCss = blockStyleDir.find((fname) => fname.toLowerCase() === 'index.css');
       if (!indexCss) {
@@ -48,6 +45,6 @@ export default async function traverseBlockThemes(path: string, appId: number): 
       }
 
       await uploadAppBlockTheme(join(path, 'theme', org, blockDir, indexCss), org, appId, blockDir);
-    }, null);
-  }, null);
+    }
+  }
 }

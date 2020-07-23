@@ -116,8 +116,7 @@ export async function handler({
   logger.info('Traversing directory for themes 🕵');
 
   const dir = await fs.readdir(path);
-  await dir.reduce(async (acc, subDir) => {
-    await acc;
+  for (const subDir of dir) {
     if (
       !subDir.startsWith('@') &&
       subDir.toLowerCase() !== 'core' &&
@@ -141,25 +140,24 @@ export async function handler({
     }
 
     // Subdirectory is an @organization directory
-    await styleDir
-      .filter((styleSub) => fs.lstatSync(join(path, subDir, styleSub)).isDirectory())
-      .reduce(async (accumulator, styleSubDir) => {
-        await accumulator;
-        const blockStyleDir = await fs.readdir(join(path, subDir, styleSubDir));
-        const subIndexCss = blockStyleDir.find((fname) => fname.toLowerCase() === 'index.css');
-        if (!subIndexCss) {
-          logger.warn(`No index.css found, skipping directory ${join(path, subDir, styleSubDir)}`);
-          return;
-        }
+    for (const styleSubDir of styleDir.filter((styleSub) =>
+      fs.lstatSync(join(path, subDir, styleSub)).isDirectory(),
+    )) {
+      const blockStyleDir = await fs.readdir(join(path, subDir, styleSubDir));
+      const subIndexCss = blockStyleDir.find((fname) => fname.toLowerCase() === 'index.css');
+      if (!subIndexCss) {
+        logger.warn(`No index.css found, skipping directory ${join(path, subDir, styleSubDir)}`);
+        return;
+      }
 
-        await handleUpload(
-          join(path, subDir, styleSubDir, subIndexCss),
-          organization,
-          'block',
-          `${subDir}/${styleSubDir}`,
-        );
-      }, null as Promise<void>);
-  }, null as Promise<void>);
+      await handleUpload(
+        join(path, subDir, styleSubDir, subIndexCss),
+        organization,
+        'block',
+        `${subDir}/${styleSubDir}`,
+      );
+    }
+  }
 
   logger.info('All done! 👋');
 }
