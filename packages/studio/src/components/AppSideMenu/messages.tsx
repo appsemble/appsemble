@@ -9,4 +9,5 @@ export default defineMessages({
   secrets: 'Secrets',
   notifications: 'Notifications',
   roles: 'Roles',
+  translations: 'Translations',
 });
