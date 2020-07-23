@@ -1,11 +1,15 @@
-import type { Remapper, Remappers } from '@appsemble/types';
+import type { AppMessages, Remapper, Remappers } from '@appsemble/types';
 import { parse, parseISO } from 'date-fns';
 import IntlMessageFormat from 'intl-messageformat';
 
 import mapValues from './mapValues';
 
+export interface RemapperContext {
+  messages: AppMessages;
+}
+
 type MapperImplementations = {
-  [F in keyof Remappers]: (args: Remappers[F], input: any) => any;
+  [F in keyof Remappers]: (args: Remappers[F], input: any, context: RemapperContext) => any;
 };
 
 /**
@@ -14,10 +18,10 @@ type MapperImplementations = {
  * All arguments are deferred from {@link @appsemble/sdk#Remappers}
  */
 const mapperImplementations: MapperImplementations = {
-  'object.from': (mappers, input) =>
+  'object.from': (mappers, input, context) =>
     // This ESLint rule needs to be disabled, because remap is called recursively.
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    Object.fromEntries(Object.entries(mappers).map(([key, mapper]) => [key, remap(mapper, input)])),
+    mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
   static: (input) => input,
 
@@ -38,19 +42,27 @@ const mapperImplementations: MapperImplementations = {
     return input;
   },
 
-  'string.format': ({ template, values }, input) => {
+  'string.format': ({ messageId, template, values }, input, context) => {
     try {
-      const msg = new IntlMessageFormat(template);
-      // This ESLint rule needs to be disabled, because remap is called recursively.
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      return msg.format(mapValues(values, (val) => remap(val, input)));
+      let msg = template;
+      if (messageId) {
+        const message = context.messages?.messages?.[messageId];
+        if (message) {
+          msg = message;
+        }
+      }
+      return new IntlMessageFormat(msg).format(
+        // This ESLint rule needs to be disabled, because remap is called recursively.
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        mapValues(values, (val) => remap(val, input, context)),
+      );
     } catch (error) {
       return error.message;
     }
   },
 };
 
-export default function remap(mappers: Remapper, input: any): any {
+export default function remap(mappers: Remapper, input: any, context: RemapperContext): any {
   if (typeof mappers === 'string' || mappers == null) {
     return mappers;
   }
@@ -60,6 +72,6 @@ export default function remap(mappers: Remapper, input: any): any {
       throw new Error(`Remapper has duplicate function definition: ${JSON.stringify(mapper)}`);
     }
     const [[name, args]] = entries;
-    return mapperImplementations[name](args, acc);
+    return mapperImplementations[name](args, acc, context);
   }, input);
 }
