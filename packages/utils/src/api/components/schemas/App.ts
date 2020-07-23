@@ -97,6 +97,12 @@ export default {
             This **must** match the name of a page defined for the app.
           `,
         },
+        defaultLanguage: {
+          type: 'string',
+          default: 'en',
+          minLength: 2,
+          description: 'The default language for the app.',
+        },
         resources: {
           $ref: '#/components/schemas/ResourceDefinition',
           description: 'Resource definitions that may be used by the app.',
