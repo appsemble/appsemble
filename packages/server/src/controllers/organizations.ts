@@ -144,7 +144,7 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   const organization = await Organization.findByPk(invite.OrganizationId, { raw: true });
 
-  ctx.body = { organization: { id: organization.id, name: organization.name } };
+  ctx.body = { id: organization.id, name: organization.name };
 }
 
 export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> {

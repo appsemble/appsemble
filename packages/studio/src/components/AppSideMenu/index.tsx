@@ -7,9 +7,9 @@ import { useRouteMatch } from 'react-router-dom';
 import checkRole from '../../utils/checkRole';
 import { useApp } from '../AppContext';
 import NavLink from '../NavLink';
-import { useOrganizations } from '../OrganizationsProvider';
 import SideMenu from '../SideMenu';
 import SideNavLink from '../SideNavLink';
+import { useUser } from '../UserProvider';
 import messages from './messages';
 
 export interface AppSideMenuState {
@@ -20,7 +20,7 @@ export default function AppSideMenu(): ReactElement {
   const { app } = useApp();
 
   const collapsed = useToggle();
-  const { organizations } = useOrganizations();
+  const { organizations } = useUser();
   const organization = organizations?.find((org) => org.id === app.OrganizationId);
   const { url } = useRouteMatch();
 

@@ -1,0 +1,4 @@
+.actionsCell :global(.control),
+.actionsCell :global(.field) {
+  display: inline;
+}

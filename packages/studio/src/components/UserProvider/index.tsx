@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import type { JwtPayload, TokenResponse, UserInfo } from '@appsemble/types';
+import type { JwtPayload, Organization, TokenResponse, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import React, {
@@ -13,8 +13,20 @@ import React, {
   useState,
 } from 'react';
 
+import type { Role } from '../../types';
+
 interface UserProviderProps {
   children: ReactNode;
+}
+
+/**
+ * The representation of an organization that the user is a member of.
+ */
+export interface UserOrganization extends Organization {
+  /**
+   * The user’s role within the organization.
+   */
+  role: Role;
 }
 
 interface UserContext {
@@ -22,6 +34,8 @@ interface UserContext {
   logout(): void;
   userInfo: UserInfo;
   refreshUserInfo(): Promise<void>;
+  organizations: UserOrganization[];
+  setOrganizations: (organizations: UserOrganization[]) => void;
 }
 
 const Context = createContext<UserContext>(null);
@@ -32,6 +46,7 @@ const REFRESH_BUFFER = 60e3;
 
 export default function UserProvider({ children }: UserProviderProps): ReactElement {
   const [userInfo, setUserInfo] = useState<UserInfo>();
+  const [organizations, setOrganizations] = useState<UserOrganization[]>();
   const [initialized, setInitialized] = useState(false);
   const [tokenResponse, setTokenResponse] = useState<Partial<TokenResponse>>({
     access_token: localStorage.access_token,
@@ -50,6 +65,11 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
     setUserInfo(data);
   }, []);
 
+  const fetchOrganizations = useCallback(async () => {
+    const { data } = await axios.get<UserOrganization[]>('/api/user/organizations');
+    setOrganizations(data);
+  }, []);
+
   const login = useCallback(
     (response: TokenResponse) => {
       setToken(response);
@@ -60,6 +80,7 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
 
   const logout = useCallback(() => {
     setUserInfo(null);
+    setOrganizations([]);
     delete axios.defaults.headers.authorization;
     delete localStorage.access_token;
     delete localStorage.refresh_token;
@@ -71,8 +92,10 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
       logout,
       userInfo,
       refreshUserInfo,
+      organizations,
+      setOrganizations,
     }),
-    [login, logout, userInfo, refreshUserInfo],
+    [login, logout, userInfo, refreshUserInfo, organizations],
   );
 
   useEffect(() => {
@@ -97,14 +120,15 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
         logout();
       }
     }, timeout);
-    refreshUserInfo().finally(() => {
+
+    Promise.all([refreshUserInfo(), fetchOrganizations()]).finally(() => {
       setInitialized(true);
     });
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [logout, refreshUserInfo, tokenResponse]);
+  }, [fetchOrganizations, logout, refreshUserInfo, tokenResponse]);
 
   if (!initialized) {
     return <Loader />;

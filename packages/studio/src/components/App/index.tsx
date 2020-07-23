@@ -17,7 +17,6 @@ import Login from '../Login';
 import OAuth2Callback from '../OAuth2Callback';
 import OpenIDLogin from '../OpenIDLogin';
 import OrganizationInvite from '../OrganizationInvite';
-import OrganizationsProvider from '../OrganizationsProvider';
 import ProtectedRoute from '../ProtectedRoute';
 import Register from '../Register';
 import ResetPassword from '../ResetPassword';
@@ -31,69 +30,67 @@ export default function App(): ReactElement {
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <BrowserRouter>
         <UserProvider>
-          <OrganizationsProvider>
-            <ErrorHandler fallback={ErrorFallback}>
-              <Confirmation>
-                <MessagesProvider>
-                  <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
-                  <Toolbar />
-                  <Switch>
-                    <Route exact path="/apps">
-                      <AppList />
-                    </Route>
-                    <Route exact path="/blocks">
-                      <BlockList />
-                    </Route>
-                    <Route exact path="/blocks/@:organization/:blockName/:version?">
-                      <BlockDetails />
-                    </Route>
-                    <ProtectedRoute path="/settings">
-                      <Settings />
-                    </ProtectedRoute>
-                    <ProtectedRoute exact path="/connect/authorize">
-                      <OpenIDLogin />
-                    </ProtectedRoute>
-                    <Route exact path="/connect/authorize/:id">
-                      <ForwardOAuth2Login />
-                    </Route>
-                    <Route path="/apps/:id(\d+)">
-                      <AppContext />
-                    </Route>
-                    <AnonymousRoute exact path="/edit-password">
-                      <EditPassword />
+          <ErrorHandler fallback={ErrorFallback}>
+            <Confirmation>
+              <MessagesProvider>
+                <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
+                <Toolbar />
+                <Switch>
+                  <Route exact path="/apps">
+                    <AppList />
+                  </Route>
+                  <Route exact path="/blocks">
+                    <BlockList />
+                  </Route>
+                  <Route exact path="/blocks/@:organization/:blockName/:version?">
+                    <BlockDetails />
+                  </Route>
+                  <ProtectedRoute path="/settings">
+                    <Settings />
+                  </ProtectedRoute>
+                  <ProtectedRoute exact path="/connect/authorize">
+                    <OpenIDLogin />
+                  </ProtectedRoute>
+                  <Route exact path="/connect/authorize/:id">
+                    <ForwardOAuth2Login />
+                  </Route>
+                  <Route path="/apps/:id(\d+)">
+                    <AppContext />
+                  </Route>
+                  <AnonymousRoute exact path="/edit-password">
+                    <EditPassword />
+                  </AnonymousRoute>
+                  <Route exact path="/organization-invite">
+                    <OrganizationInvite />
+                  </Route>
+                  <Route exact path="/verify">
+                    <VerifyEmail />
+                  </Route>
+                  <Route exact path="/callback">
+                    <OAuth2Callback />
+                  </Route>
+                  <AnonymousRoute exact path="/login">
+                    <Login />
+                  </AnonymousRoute>
+                  {settings.enableRegistration && (
+                    <AnonymousRoute exact path="/register">
+                      <Register />
                     </AnonymousRoute>
-                    <ProtectedRoute exact path="/organization-invite">
-                      <OrganizationInvite />
-                    </ProtectedRoute>
-                    <Route exact path="/verify">
-                      <VerifyEmail />
-                    </Route>
-                    <Route exact path="/callback">
-                      <OAuth2Callback />
-                    </Route>
-                    <AnonymousRoute exact path="/login">
-                      <Login />
-                    </AnonymousRoute>
-                    {settings.enableRegistration && (
-                      <AnonymousRoute exact path="/register">
-                        <Register />
-                      </AnonymousRoute>
-                    )}
-                    <Route exact path="/reset-password">
-                      <ResetPassword />
-                    </Route>
-                    <Route exact path="/edit-password">
-                      <EditPassword />
-                    </Route>
-                    <Route exact path="/verify">
-                      <VerifyEmail />
-                    </Route>
-                    <Redirect to="/apps" />
-                  </Switch>
-                </MessagesProvider>
-              </Confirmation>
-            </ErrorHandler>
-          </OrganizationsProvider>
+                  )}
+                  <Route exact path="/reset-password">
+                    <ResetPassword />
+                  </Route>
+                  <Route exact path="/edit-password">
+                    <EditPassword />
+                  </Route>
+                  <Route exact path="/verify">
+                    <VerifyEmail />
+                  </Route>
+                  <Redirect to="/apps" />
+                </Switch>
+              </MessagesProvider>
+            </Confirmation>
+          </ErrorHandler>
         </UserProvider>
       </BrowserRouter>
     </IntlProvider>

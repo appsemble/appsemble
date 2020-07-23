@@ -16,7 +16,7 @@ import React, { KeyboardEvent, ReactElement, useCallback, useState } from 'react
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import { useOrganizations } from '../../../OrganizationsProvider';
+import { useUser } from '../../../UserProvider';
 import styles from './index.css';
 import messages from './messages';
 
@@ -34,7 +34,7 @@ export default function CreateAppCard(): ReactElement {
 
   const history = useHistory();
   const { url } = useRouteMatch();
-  const { organizations } = useOrganizations();
+  const { organizations } = useUser();
 
   const onCreate = useCallback(
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
