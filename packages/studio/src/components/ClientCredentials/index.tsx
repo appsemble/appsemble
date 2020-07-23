@@ -105,6 +105,7 @@ export default function ClientCredentials(): ReactElement {
           description: '',
           expires: '',
           'blocks:write': false,
+          'messages:write': false,
           'organizations:styles:write': false,
           'apps:write': false,
         }}
@@ -161,6 +162,12 @@ export default function ClientCredentials(): ReactElement {
               help={<FormattedMessage {...messages['blocks:write']} />}
               label="blocks:write"
               name="blocks:write"
+            />
+            <SimpleInput<typeof Checkbox>
+              component={Checkbox}
+              help={<FormattedMessage {...messages['messages:write']} />}
+              label="messages:write"
+              name="messages:write"
             />
             <SimpleInput<typeof Checkbox>
               component={Checkbox}

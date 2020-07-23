@@ -11,6 +11,7 @@ export default {
       scopes: {
         'apps:write': 'Create and update apps',
         'blocks:write': 'Register and update blocks, and publish new block versions.',
+        'messages:write': 'Create and edit app messages.',
         'organizations:styles:write': 'Edit organization themes.',
         'resources:manage': 'Manage app resources on behalf of a user.',
       },

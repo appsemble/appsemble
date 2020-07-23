@@ -29,6 +29,7 @@ export default defineMessages({
   revoke: 'Revoke',
   unknownScope: 'This scope is not currently known. You may want to revoke this client.',
   'blocks:write': 'Publish blocks and block versions',
+  'messages:write': 'Create and edit app messages',
   'organizations:styles:write': 'Override existing organization styling',
   'apps:write': 'Create and modify apps',
 });

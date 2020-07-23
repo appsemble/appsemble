@@ -45,7 +45,7 @@ export async function handler({
   remote,
   template,
 }: CreateAppArguments): Promise<void> {
-  await authenticate(remote, 'apps:write', clientCredentials);
+  await authenticate(remote, 'apps:write messages:write', clientCredentials);
   const organizationId = organization.startsWith('@') ? organization.slice(1) : organization;
 
   const directories = await fg(paths, { absolute: true, onlyDirectories: true });

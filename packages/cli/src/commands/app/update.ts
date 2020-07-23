@@ -46,7 +46,7 @@ export async function handler({
   remote,
   template,
 }: CreateAppArguments): Promise<void> {
-  await authenticate(remote, 'apps:write', clientCredentials);
+  await authenticate(remote, 'apps:write messages:write', clientCredentials);
   logger.info(`Updating App ${appId}`);
   await updateApp({ appId, path, private: isPrivate, remote, template });
 }

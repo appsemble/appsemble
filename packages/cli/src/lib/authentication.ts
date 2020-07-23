@@ -111,7 +111,8 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
  * Login to the server using OAuth2 client credentials.
  *
  * @param {string} remote Host to fetch token from.
- * @param {string} scope The OAuth2 scope to request.
+ * @param {string} scope The OAuth2 scope to request. This may be space separated to request
+ * multiple scopes.
  * @param {string} inputCredentials Client credentials passed from the command line.
  */
 export async function authenticate(
