@@ -32,14 +32,14 @@ declare module '@appsemble/sdk' {
      *
      * @default 'An error occurred when fetching the data'
      */
-    errorMessage: Remapper;
+    errorMessage?: Remapper;
 
     /**
      * A message to display when the data to display is empty.
      *
      * @default 'No data is available'
      */
-    emptyMessage: Remapper;
+    emptyMessage?: Remapper;
 
     /**
      * A list of fields to display based on the name from the schema.
