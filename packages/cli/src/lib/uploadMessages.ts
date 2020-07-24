@@ -17,18 +17,18 @@ export default async function uploadMessages(path: string, appId: string): Promi
   }
 
   logger.info(`Traversing app messages for ${messageDir.length} languages 🕵`);
-  const result: { language: string; content: AppMessages }[] = [];
+  const result: AppMessages[] = [];
 
   for (const messageFile of messageDir) {
     logger.verbose(`Processing ${join(path, 'messages', messageFile)} ⚙️`);
     const language = parse(messageFile).name;
     const file = await fs.readFile(join(path, 'messages', messageFile), 'utf8');
-    const content = yaml.safeLoad(file) as AppMessages;
-    result.push({ language, content });
+    const messages = yaml.safeLoad(file);
+    result.push({ language, messages } as AppMessages);
   }
 
   for (const language of result) {
-    await axios.post(`/api/apps/${appId}/translations`, language);
+    await axios.post(`/api/apps/${appId}/messages`, language);
     logger.info(`Successfully uploaded messages for language “${language.language}” 🎉`);
   }
 }
