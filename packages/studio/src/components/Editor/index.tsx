@@ -63,7 +63,7 @@ export default function Editor(): ReactElement {
   const [dirty, setDirty] = useState(true);
   const [openApiDocument, setOpenApiDocument] = useState<OpenAPIV3.Document>();
 
-  const [editorStep, setEditorStep] = useState<GuiEditorStep>(GuiEditorStep.SELECT);
+  const [editorStep, setEditorStep] = useState<GuiEditorStep>(GuiEditorStep.YAML);
   const [monacoEditor, setMonacoEditor] = useState<editor.IStandaloneCodeEditor>();
   const [decorationList, setDecorationList] = useState<string[]>([]);
 
