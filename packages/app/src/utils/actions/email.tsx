@@ -13,7 +13,7 @@ export default function email({
 
     async dispatch(data: any) {
       const url = `${settings.apiUrl}/api/apps/${settings.id}/action/${prefix}`;
-      await axios.post(url, data);
+      await axios.post(url, data || {});
 
       return data;
     },
