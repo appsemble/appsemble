@@ -4,4 +4,5 @@ export default defineMessages({
   title: 'Translations',
   submit: 'Save',
   selectedLanguage: 'Selected language',
+  messages: 'Messages',
 });

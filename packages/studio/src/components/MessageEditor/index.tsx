@@ -1,5 +1,14 @@
-import { Button, Loader, Select, SimpleForm, Title, useData } from '@appsemble/react-components';
-import React, { ReactElement, useCallback, useState } from 'react';
+import {
+  Button,
+  Loader,
+  Select,
+  SimpleForm,
+  SimpleInput,
+  SimpleSubmit,
+  Title,
+  useData,
+} from '@appsemble/react-components';
+import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '../AppContext';
@@ -12,7 +21,27 @@ export default function MessageEditor(): ReactElement {
     `/api/apps/${app.id}/messages`,
   );
 
-  const [selectedLanguage, setSelectedLanguage] = useState<string>();
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(languages?.[0] ?? 'en');
+
+  const { data: appMessages, loading: loadingMessages } = useData<{
+    language: string;
+    messages: { [messageId: string]: string };
+  }>(`/api/apps/${app.id}/messages/${selectedLanguage}`);
+
+  const messageIds = app.definition.pages.map((_, index) => `appsemble:pages.${index}`);
+
+  const languageNames = useMemo(() => {
+    const langs = languages || [];
+    try {
+      const localNames = new Intl.DisplayNames(['en'], { type: 'language' });
+      return langs.map((lang) => {
+        const nativeNames = new Intl.DisplayNames([lang], { type: 'language' });
+        return { id: lang, localName: localNames.of(lang), nativeName: nativeNames.of(lang) };
+      });
+    } catch (error) {
+      return langs.map((lang) => ({ id: lang, localName: lang, nativeName: lang }));
+    }
+  }, [languages]);
 
   const onSubmit = useCallback((values: {}) => {}, []);
 
@@ -20,11 +49,9 @@ export default function MessageEditor(): ReactElement {
     setSelectedLanguage(lang);
   }, []);
 
-  if (loadingLanguages) {
+  if (loadingLanguages || loadingMessages) {
     return <Loader />;
   }
-
-  const localNames = new Intl.DisplayNames(['en'], { type: 'language' });
 
   return (
     <div>
@@ -36,20 +63,29 @@ export default function MessageEditor(): ReactElement {
         name="selectedLanguage"
         onChange={onSelectedLanguageChange}
       >
-        {languages.map((lang) => {
-          const nativeName = new Intl.DisplayNames([lang], { type: 'language' }).of(lang);
-          const localName = localNames.of(lang);
-          return (
-            <option key={lang} value={lang}>
-              {localName !== nativeName ? `${localName} (${nativeName})` : localName}
-            </option>
-          );
-        })}
+        {languageNames.map((lang) => (
+          <option key={lang.id} value={lang.id}>
+            {lang.localName !== lang.nativeName
+              ? `${lang.localName} (${lang.nativeName})`
+              : lang.localName}
+          </option>
+        ))}
       </Select>
+      <div className="is-grouped is-pulled-right">
+        <Button className="mr-2" color="danger" icon="minus" onClick={() => {}} type="button" />
+        <Button color="success" icon="plus" onClick={() => {}} type="button" />
+      </div>
+
+      <Title className="my-4" level={3}>
+        <FormattedMessage {...messages.messages} />
+      </Title>
       <SimpleForm defaultValues={{}} onSubmit={onSubmit}>
-        <Button color="primary" type="submit">
+        {messageIds.map((id) => (
+          <SimpleInput key={id} label={id} name={id} type="text" />
+        ))}
+        <SimpleSubmit>
           <FormattedMessage {...messages.submit} />
-        </Button>
+        </SimpleSubmit>
       </SimpleForm>
     </div>
   );
