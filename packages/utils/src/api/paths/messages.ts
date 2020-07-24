@@ -50,7 +50,7 @@ export default {
           },
         },
       },
-      security: [{ studio: [] }, { cli: ['messages:write'] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/apps/{appId}/messages/{language}': {
