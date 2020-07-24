@@ -24,12 +24,9 @@ interface Email {
  *
  * @param template The body of the template to render.
  * @param values Values to pass to the template for rendering.
- *
- * @returns An object which consists of the following properties:
- *
- * - `text`: The (markdown) text content of the email.
- * - `html`: The markdown content rendered to HTML.
- * - `subject`: The subject of the email.
+ * @param sub - The subject of the email to send. If omitted, this is extracted from the markdown
+ * email body.
+ * @returns An email object that may be sent.
  */
 export default async function renderEmail(
   template: string,
