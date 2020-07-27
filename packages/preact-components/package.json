@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact-components",
-  "version": "0.13.5",
+  "version": "0.13.6",
   "private": true,
   "description": "Reusable Preact components for internal use",
   "keywords": [
@@ -26,8 +26,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.13.5",
-    "@appsemble/sdk": "0.13.5",
+    "@appsemble/preact": "0.13.6",
+    "@appsemble/sdk": "0.13.6",
     "@fortawesome/fontawesome-common-types": "^0.2.30",
     "classnames": "^2.2.6",
     "leaflet": "~1.5.1"

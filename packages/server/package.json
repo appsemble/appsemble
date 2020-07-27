@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.13.5",
+  "version": "0.13.6",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -26,8 +26,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.13.5",
-    "@appsemble/utils": "0.13.5",
+    "@appsemble/node-utils": "0.13.6",
+    "@appsemble/utils": "0.13.6",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@hapi/boom": "^9.1.0",
     "@koa/cors": "^3.1.0",
@@ -92,7 +92,7 @@
     "yargs": "^15.4.1"
   },
   "devDependencies": {
-    "@appsemble/types": "0.13.5",
+    "@appsemble/types": "0.13.6",
     "@sinonjs/fake-timers": "^6.0.1",
     "axios-mock-adapter": "^1.18.1",
     "axios-test-instance": "^3.1.1",

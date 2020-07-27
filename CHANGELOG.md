@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.6] - 2020-07-27
+
+### Added
+
+- Block(`feed`): Add support for custom markers. Refer to the block documentation for more
+  information.
+- Block(`table`): Field label is now a remapper.
+- Block(`table`): The message for the empty state can now be configured using a remapper.
+- Block(`table`): The message for the error state can now be configured using a remapper.
+- App: Add `email` action. This action can be used to send emails based on what’s entered as its
+  `to`, `subject`, and `body` parameters.
+- Server: Add support for handling `email` actions from apps.
+
+### Changed
+
+- Block(`feed`): Move `longitude` and `latitude` into the `marker` object.
+- Block(`feed`): Replace remapping logic with remappers.
+
 ## [0.13.5] - 2020-07-15
 
 ### Added
