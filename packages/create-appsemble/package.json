@@ -33,7 +33,7 @@
   "dependencies": {
     "@appsemble/node-utils": "0.13.6",
     "fs-extra": "^9.0.1",
-    "inquirer": "^7.3.2",
+    "inquirer": "^7.3.3",
     "type-fest": "^0.16.0",
     "yargs": "^15.4.1"
   }
