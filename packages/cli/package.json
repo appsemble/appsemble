@@ -40,7 +40,7 @@
     "fast-glob": "^3.2.4",
     "form-data": "^3.0.0",
     "fs-extra": "^9.0.1",
-    "inquirer": "^7.3.2",
+    "inquirer": "^7.3.3",
     "js-yaml": "^3.14.0",
     "klaw": "^3.0.0",
     "postcss": "^7.0.32",
@@ -49,7 +49,7 @@
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^7.0.1",
     "type-fest": "^0.16.0",
-    "typescript": "^3.9.6",
+    "typescript": "^3.9.7",
     "typescript-json-schema": "^0.42.0",
     "yargs": "^15.4.1"
   },
