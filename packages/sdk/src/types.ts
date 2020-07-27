@@ -79,6 +79,7 @@ export type Action =
   | BaseAction<'dialog.error'>
   | BaseAction<'dialog.ok'>
   | BaseAction<'event'>
+  | BaseAction<'email'>
   | BaseAction<'flow.back'>
   | BaseAction<'flow.cancel'>
   | BaseAction<'flow.finish'>

@@ -1,3 +1,4 @@
+export * from './action';
 export * from './apps';
 export * from './appMembers';
 export * from './appRatings';
@@ -12,7 +13,6 @@ export * from './oauth2Provider';
 export * from './blocks';
 export * from './health';
 export * from './organizations';
-export * from './proxy';
 export * from './resources';
 export * from './templates';
 export * from './user';

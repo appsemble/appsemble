@@ -21,7 +21,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       const req = proxy
         ? {
             method: methodUpper,
-            url: `${settings.apiUrl}/api/apps/${settings.id}/proxy/${prefix}`,
+            url: `${settings.apiUrl}/api/apps/${settings.id}/action/${prefix}`,
           }
         : formatRequestAction(definition, data);
 

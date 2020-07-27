@@ -37,7 +37,7 @@ describe('sendEmail', () => {
     mailer.transport = ({
       sendMail: jest.fn().mockResolvedValue(null),
     } as Partial<Transporter>) as Transporter;
-    await mailer.sendEmail({ email: 'test@example.com', name: 'Me' }, 'resend', {
+    await mailer.sendTemplateEmail({ email: 'test@example.com', name: 'Me' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
@@ -52,7 +52,7 @@ describe('sendEmail', () => {
     mailer.transport = ({
       sendMail: jest.fn().mockResolvedValue(null),
     } as Partial<Transporter>) as Transporter;
-    await mailer.sendEmail({ email: 'test@example.com' }, 'resend', {
+    await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
@@ -65,7 +65,7 @@ describe('sendEmail', () => {
 
   it('should not send emails when smtp is not configured', async () => {
     expect(
-      await mailer.sendEmail({ email: 'test@example.com' }, 'resend', {
+      await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
         url: 'https://example.appsemble.app/verify?code=test',
       }),
     ).toBeUndefined();
