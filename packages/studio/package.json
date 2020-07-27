@@ -41,6 +41,7 @@
     "indent-string": "^4.0.0",
     "js-yaml": "^3.14.0",
     "jwt-decode": "^2.2.0",
+    "langmap": "^0.0.16",
     "lodash": "^4.17.19",
     "mime-types": "^2.1.27",
     "monaco-editor": "^0.20.0",

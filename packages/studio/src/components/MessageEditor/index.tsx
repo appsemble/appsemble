@@ -1,5 +1,6 @@
 import {
   Button,
+  CardFooterButton,
   Form,
   Loader,
   Modal,
@@ -10,51 +11,69 @@ import {
   Title,
   useConfirmation,
   useData,
+  useMessages,
   useToggle,
 } from '@appsemble/react-components';
+import type { AppMessages } from '@appsemble/types';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import langmap from 'langmap';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';
 import messages from './messages';
 
+// Exclude languages that aren’t accepted by our server and store language codes in lowercase.
+const bannedLanguages = ['ck-US', 'en-PI', 'en-UD', 'en@pirate', 'eo-EO', 'fb-LT', 'gx-GR'];
+const filteredLangmap = Object.fromEntries(
+  Object.entries(langmap)
+    .filter(([key]) => !bannedLanguages.includes(key))
+    .map(([key, entry]) => [key.toLowerCase(), entry]),
+);
+
 export default function MessageEditor(): ReactElement {
   const { app } = useApp();
+  const push = useMessages();
+  const { formatMessage } = useIntl();
 
-  const { data: languages, loading: loadingLanguages } = useData<string[]>(
+  const { data: languages, loading: loadingLanguages, setData: setLanguages } = useData<string[]>(
     `/api/apps/${app.id}/messages`,
   );
+  const {
+    disable: disableLoadingMessages,
+    enable: enableLoadingMessages,
+    enabled: loadingMessages,
+  } = useToggle(true);
+  const [appMessages, setAppMessages] = useState<AppMessages>();
 
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(languages?.[0] ?? 'en');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
   const { disable: disableIsAdding, enable: enableIsAdding, enabled: isAdding } = useToggle(false);
   const [addLanguage, setAddLanguage] = useState<string>();
 
-  const { data: appMessages, loading: loadingMessages } = useData<{
-    language: string;
-    messages: { [messageId: string]: string };
-  }>(`/api/apps/${app.id}/messages/${selectedLanguage}`);
-
   const messageIds = [
-    ...new Set([
-      ...Object.keys(appMessages?.messages ?? {}),
-      ...app.definition.pages.map((_, index) => `appsemble:pages.${index}`),
-    ]),
+    ...new Set([...app.definition.pages.map((_, index) => `appsemble:pages.${index}`)]),
   ];
 
-  const languageNames = useMemo(() => {
-    const langs = languages || [];
-    try {
-      const localNames = new Intl.DisplayNames(['en'], { type: 'language' });
-      return langs.map((lang) => {
-        const nativeNames = new Intl.DisplayNames([lang], { type: 'language' });
-        return { id: lang, localName: localNames.of(lang), nativeName: nativeNames.of(lang) };
-      });
-    } catch (error) {
-      return langs.map((lang) => ({ id: lang, localName: lang, nativeName: lang }));
+  useEffect(() => {
+    if (languages?.length) {
+      enableLoadingMessages();
+      const lang = selectedLanguage ?? languages[0];
+      axios
+        .get<AppMessages>(`/api/apps/${app.id}/messages/${lang}`)
+        .then((d) => {
+          setAppMessages(d.data);
+
+          if (!selectedLanguage) {
+            setSelectedLanguage(lang);
+          }
+        })
+        .catch(() => setAppMessages(null))
+        .finally(() => disableLoadingMessages());
+    } else {
+      disableLoadingMessages();
     }
-  }, [languages]);
+  }, [app, disableLoadingMessages, enableLoadingMessages, languages, selectedLanguage]);
 
   const onSubmit = useCallback(
     async (values: {}) => {
@@ -64,8 +83,9 @@ export default function MessageEditor(): ReactElement {
         messages: values,
       });
       setSubmitting(false);
+      push({ color: 'success', body: formatMessage(messages.uploadSuccess) });
     },
-    [app, selectedLanguage],
+    [app, formatMessage, push, selectedLanguage],
   );
 
   const onSelectedLanguageChange = useCallback((_, lang: string) => {
@@ -77,8 +97,7 @@ export default function MessageEditor(): ReactElement {
       <FormattedMessage
         {...messages.deleteTitle}
         values={{
-          language:
-            languageNames.find((l) => l.id === selectedLanguage)?.localName ?? selectedLanguage,
+          language: filteredLangmap[selectedLanguage]?.englishName ?? selectedLanguage,
         }}
       />
     ),
@@ -89,11 +108,18 @@ export default function MessageEditor(): ReactElement {
       setSubmitting(true);
       await axios.delete(`/api/apps/${app.id}/messages/${selectedLanguage}`);
       setSubmitting(false);
-      setSelectedLanguage(languages[0]);
+      const newLanguages = languages.filter((lang) => lang !== selectedLanguage);
+      setLanguages(newLanguages);
+      setSelectedLanguage(newLanguages[0]);
+      push({ color: 'info', body: formatMessage(messages.deleteSuccess) });
     },
   });
 
-  const onAddLanguage = useCallback(async () => {}, []);
+  const onAddLanguage = useCallback(async () => {
+    setLanguages([...languages, addLanguage]);
+    setSelectedLanguage(addLanguage);
+    disableIsAdding();
+  }, [addLanguage, disableIsAdding, languages, setLanguages]);
 
   const onAddLanguageChange = useCallback(
     (_: React.ChangeEvent<HTMLSelectElement>, value: string) => {
@@ -118,13 +144,16 @@ export default function MessageEditor(): ReactElement {
         onChange={onSelectedLanguageChange}
         value={selectedLanguage}
       >
-        {languageNames.map((lang) => (
-          <option key={lang.id} value={lang.id}>
-            {lang.localName !== lang.nativeName
-              ? `${lang.localName} (${lang.nativeName})`
-              : lang.localName}
-          </option>
-        ))}
+        {languages.map((lang) => {
+          const l = filteredLangmap[lang];
+          return (
+            <option key={lang} value={lang}>
+              {l.englishName !== l.nativeName
+                ? `${l.englishName} (${l.nativeName})`
+                : l.englishName}
+            </option>
+          );
+        })}
       </Select>
       <div className="is-pulled-right">
         <Button
@@ -144,30 +173,62 @@ export default function MessageEditor(): ReactElement {
         />
       </div>
 
-      <Title className="my-4" level={3}>
-        <FormattedMessage {...messages.messages} />
-      </Title>
-      <SimpleForm
-        defaultValues={Object.fromEntries(messageIds.map((id) => [id, appMessages.messages[id]]))}
-        onSubmit={onSubmit}
-      >
-        {messageIds.map((id) => (
-          <SimpleInput key={id} label={id} name={id} type="text" />
-        ))}
-        <SimpleSubmit disabled={submitting}>
-          <FormattedMessage {...messages.submit} />
-        </SimpleSubmit>
-      </SimpleForm>
+      {languages.length > 0 && (
+        <>
+          <Title className="my-4" level={3}>
+            <FormattedMessage {...messages.messages} />
+          </Title>
+          <SimpleForm
+            defaultValues={Object.fromEntries(
+              messageIds.map((id) => [id, appMessages?.messages[id]]),
+            )}
+            onSubmit={onSubmit}
+          >
+            {messageIds.map((id) => (
+              <SimpleInput key={id} label={id} name={id} type="text" />
+            ))}
+            <SimpleSubmit disabled={submitting}>
+              <FormattedMessage {...messages.submit} />
+            </SimpleSubmit>
+          </SimpleForm>
+        </>
+      )}
       <Modal
+        component={Form}
+        footer={
+          <>
+            <CardFooterButton onClick={disableIsAdding}>
+              <FormattedMessage {...messages.cancel} />
+            </CardFooterButton>
+            <CardFooterButton color="primary" disabled={!addLanguage} type="submit">
+              <FormattedMessage {...messages.add} />
+            </CardFooterButton>
+          </>
+        }
         isActive={isAdding}
         onClose={disableIsAdding}
+        onSubmit={onAddLanguage}
         title={<FormattedMessage {...messages.addLanguageTitle} />}
       >
-        <Form onSubmit={onAddLanguage}>
-          <Select label={messages.language} name="language" onChange={onAddLanguageChange}>
-            <option value="de">DE</option>
-          </Select>
-        </Form>
+        <Select
+          label={<FormattedMessage {...messages.language} />}
+          name="language"
+          onChange={onAddLanguageChange}
+          required
+        >
+          <option hidden> </option>
+          {Object.entries(filteredLangmap).map(([lang, names]) => {
+            const languageString =
+              names.englishName !== names.nativeName
+                ? `${names.englishName} (${names.nativeName})`
+                : names.englishName;
+            return (
+              <option key={lang} value={lang}>
+                {`${languageString} [${lang}]`}
+              </option>
+            );
+          })}
+        </Select>
       </Modal>
     </>
   );
