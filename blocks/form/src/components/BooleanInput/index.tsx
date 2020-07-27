@@ -1,4 +1,4 @@
-import { FormattedMessage } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { Checkbox } from '@appsemble/preact-components/src';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
@@ -18,7 +18,11 @@ export default function BooleanInput({
   onInput,
   value = false,
 }: BooleanInputProps): VNode {
+  const { utils } = useBlock();
   const { label, labelText, name, readOnly } = field;
+
+  const checkboxLabel = utils.remap(label, value);
+
   const required = isRequired(field);
 
   return (
@@ -27,9 +31,9 @@ export default function BooleanInput({
       className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
-      help={labelText ?? label ?? null}
+      help={utils.remap(labelText, value) ?? checkboxLabel ?? null}
       id={name}
-      label={label}
+      label={checkboxLabel}
       name={name}
       onChange={onInput}
       readOnly={readOnly}
