@@ -424,6 +424,23 @@ export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   title?: string;
 }
 
+export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
+  /**
+   * The recipient of the email.
+   */
+  to: Remapper;
+
+  /**
+   * The subject of the email.
+   */
+  subject: Remapper;
+
+  /**
+   * The body of the email.
+   */
+  body: Remapper;
+}
+
 export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
   /**
    * Where to link to.
@@ -565,6 +582,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
   | BaseActionDefinition<'flow.next'>
+  | BaseActionDefinition<'email'>
   | BaseActionDefinition<'noop'>
   | DialogActionDefinition
   | EventActionDefinition

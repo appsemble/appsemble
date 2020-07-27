@@ -54,7 +54,7 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   // will still be logged in, but will have to request a new verification email in order to verify
   // their account.
   mailer
-    .sendEmail({ email, name }, 'welcome', {
+    .sendTemplateEmail({ email, name }, 'welcome', {
       url: `${argv.host}/verify?token=${key}`,
     })
     .catch((error) => {
@@ -96,7 +96,7 @@ export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
   const record = await EmailAuthorization.findByPk(email, { raw: true });
   if (record && !record.verified) {
     const { key } = record;
-    await mailer.sendEmail(record, 'resend', {
+    await mailer.sendTemplateEmail(record, 'resend', {
       url: `${host}/verify?token=${key}`,
     });
   }
@@ -121,7 +121,7 @@ export async function requestResetPassword(ctx: KoaContext): Promise<void> {
     const { name } = user;
     const token = crypto.randomBytes(40).toString('hex');
     await ResetPasswordToken.create({ UserId: user.id, token });
-    await mailer.sendEmail({ email, name }, 'reset', {
+    await mailer.sendTemplateEmail({ email, name }, 'reset', {
       url: `${host}/edit-password?token=${token}`,
     });
   }

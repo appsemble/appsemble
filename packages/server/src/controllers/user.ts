@@ -138,7 +138,7 @@ export async function addEmail(ctx: KoaContext): Promise<void> {
   const key = crypto.randomBytes(40).toString('hex');
   await EmailAuthorization.create({ UserId: user.id, email, key });
 
-  await mailer.sendEmail({ email, name: dbUser.name }, 'emailAdded', {
+  await mailer.sendTemplateEmail({ email, name: dbUser.name }, 'emailAdded', {
     url: `${host}/verify?token=${key}`,
   });
 

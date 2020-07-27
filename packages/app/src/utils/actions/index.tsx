@@ -3,6 +3,7 @@ import type { ActionDefinition } from '@appsemble/types';
 
 import type { MakeActionParameters } from '../../types';
 import dialog from './dialog';
+import email from './email';
 import event from './event';
 import flow from './flow';
 import link from './link';
@@ -30,6 +31,7 @@ export default {
   request,
   dialog,
   event,
+  email,
   'flow.next': flow.next,
   'flow.finish': flow.finish,
   'flow.back': flow.back,

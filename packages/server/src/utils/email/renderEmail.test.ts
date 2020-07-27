@@ -37,7 +37,8 @@ it.each(fs.readdirSync(path.join(assetDir, 'email')).map((f) => path.parse(f).na
 
 describe.each(Object.entries(tests))('%s', (name, testValues) => {
   it.each(testValues)(`should render ${name} %#`, async (values) => {
-    const { html, text } = await renderEmail(name, values);
+    const template = fs.readFileSync(path.join(assetDir, 'email', `${name}.md`), 'utf8');
+    const { html, text } = await renderEmail(template, values);
     expect(text).toMatchSnapshot('text');
     expect(html).toMatchSnapshot('html');
   });

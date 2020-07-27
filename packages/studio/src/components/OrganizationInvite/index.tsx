@@ -179,15 +179,10 @@ export default function OrganizationInvite(): ReactElement {
         <FormattedMessage {...messages.invitePrompt} />
       </p>
       <div className="py-4">
-        <Button
-          className={styles.registerButton}
-          color="danger"
-          disabled={submitting}
-          onClick={onDeclineClick}
-        >
+        <Button className="mx-2" color="danger" disabled={submitting} onClick={onDeclineClick}>
           <FormattedMessage {...messages.decline} />
         </Button>
-        <Button color="success" disabled={submitting} onClick={onAcceptClick}>
+        <Button className="mx-2" color="success" disabled={submitting} onClick={onAcceptClick}>
           <FormattedMessage {...messages.accept} />
         </Button>
       </div>
