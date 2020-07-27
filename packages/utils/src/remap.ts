@@ -1,11 +1,18 @@
-import type { AppMessages, Remapper, Remappers } from '@appsemble/types';
+import type { Remapper, Remappers } from '@appsemble/types';
 import { parse, parseISO } from 'date-fns';
-import IntlMessageFormat from 'intl-messageformat';
+import type IntlMessageFormat from 'intl-messageformat';
 
 import mapValues from './mapValues';
 
+export interface IntlMessage {
+  id?: string;
+  defaultMessage?: string;
+}
+
+export type MessageGetter = (msg: IntlMessage) => IntlMessageFormat;
+
 export interface RemapperContext {
-  messages: AppMessages;
+  getMessage: (msg: IntlMessage) => IntlMessageFormat;
 }
 
 type MapperImplementations = {
@@ -44,17 +51,11 @@ const mapperImplementations: MapperImplementations = {
 
   'string.format': ({ messageId, template, values }, input, context) => {
     try {
-      let msg = template;
-      if (messageId) {
-        const message = context.messages?.messages?.[messageId];
-        if (message) {
-          msg = message;
-        }
-      }
-      return new IntlMessageFormat(msg).format(
+      const message = context.getMessage({ id: messageId, defaultMessage: template });
+      return message.format(
         // This ESLint rule needs to be disabled, because remap is called recursively.
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        mapValues(values, (val) => remap(val, input, context)),
+        values ? mapValues(values, (val) => remap(val, input, context)) : undefined,
       );
     } catch (error) {
       return error.message;

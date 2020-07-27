@@ -1,32 +1,50 @@
 import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
 import type { AppMessages } from '@appsemble/types';
-import { normalize } from '@appsemble/utils/src';
+import { IntlMessage, MessageGetter, normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
-import { IntlProvider } from 'react-intl';
-import { Redirect, useHistory, useParams } from 'react-router-dom';
+import memoizeIntlConstructor from 'intl-format-cache';
+import IntlMessageFormat from 'intl-messageformat';
+import React, {
+  createContext,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { detectLocale } from '../../utils/i18n';
 import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 
-interface Messages {
-  [id: string]: string;
-}
-
 interface IntlMessagesProviderProps {
   children: ReactNode;
 }
 
-export default function IntlMessagesProvider({
-  children,
-}: IntlMessagesProviderProps): ReactElement {
+const Context = createContext<MessageGetter>(null);
+
+const formatters = {
+  getNumberFormat: memoizeIntlConstructor(Intl.NumberFormat),
+  getDateTimeFormat: memoizeIntlConstructor(Intl.DateTimeFormat),
+  getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
+};
+
+export default function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const { definition } = useAppDefinition();
   const history = useHistory();
   const redirect = useLocationString();
 
-  const [messages, setMessages] = useState<Messages>();
+  const [messages, setMessages] = useState<AppMessages['messages']>();
+  const messageCache = useMemo(
+    () => new Map<string, IntlMessageFormat>(),
+    // Reset the message cache if the language is updated.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lang],
+  );
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -46,11 +64,23 @@ export default function IntlMessagesProvider({
 
     axios
       .get<AppMessages>(`${settings.apiUrl}/api/apps/${settings.id}/messages/${lang}`)
-      .catch(() => ({ data: { messages: { hello: 'world' } } }))
       .then(({ data }) => setMessages(data.messages))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [definition, history, lang, redirect]);
+
+  const getMessage = useCallback(
+    ({ defaultMessage, id }: IntlMessage) => {
+      const message = Object.hasOwnProperty.call(messages, id) ? messages[id] : defaultMessage;
+      let messageFormat = messageCache.get(message);
+      if (!messageFormat) {
+        messageFormat = new IntlMessageFormat(message, lang, undefined, { formatters });
+        messageCache.set(message, messageFormat);
+      }
+      return messageFormat;
+    },
+    [lang, messageCache, messages],
+  );
 
   if (loading) {
     return <Loader />;
@@ -64,9 +94,9 @@ export default function IntlMessagesProvider({
     );
   }
 
-  return (
-    <IntlProvider defaultLocale="en-US" locale="en-US" messages={messages}>
-      {children}
-    </IntlProvider>
-  );
+  return <Context.Provider value={getMessage}>{children}</Context.Provider>;
+}
+
+export function useAppMessages(): MessageGetter {
+  return useContext(Context);
 }

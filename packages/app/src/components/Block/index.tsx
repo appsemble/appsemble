@@ -15,6 +15,7 @@ import makeActions from '../../utils/makeActions';
 import prefixBlockURL from '../../utils/prefixBlockURL';
 import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
+import { useAppMessages } from '../AppMessagesProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './index.css';
 
@@ -73,6 +74,7 @@ export default function Block({
   const location = useLocation();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
+  const getMessage = useAppMessages();
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<Function[]>([]);
@@ -167,11 +169,7 @@ export default function Block({
       definition.theme || page.theme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     const utils = {
-      remap(mappers: Remapper, input: any) {
-        remap(mappers, input, {
-          messages,
-        });
-      },
+      remap: (mappers: Remapper, input: any) => remap(mappers, input, { getMessage }),
       showMessage: push,
       addCleanup(fn: Function) {
         cleanups.current.push(fn);
@@ -218,6 +216,7 @@ export default function Block({
     ee,
     extraCreators,
     flowActions,
+    getMessage,
     history,
     initialized,
     location,
@@ -234,7 +233,7 @@ export default function Block({
 
   const header = block.header ? (
     <h6 className={classNames('title is-6', styles.title)}>
-      {remap(block.header, { ...data, ...params })}
+      {remap(block.header, { ...data, ...params }, { getMessage })}
     </h6>
   ) : null;
 

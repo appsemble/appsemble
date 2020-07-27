@@ -1,10 +1,11 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
+import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Route } from 'react-router-dom';
 
 import AppDefinitionProvider from '../AppDefinitionProvider';
+import AppMessagesProvider from '../AppMessagesProvider';
 import ErrorFallback from '../ErrorFallback';
-import IntlMessagesProvider from '../IntlMessagesProvider';
 import Main from '../Main';
 import MenuProvider from '../MenuProvider';
 import Navigation from '../Navigation';
@@ -23,28 +24,30 @@ interface AppProps {
  */
 export default function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElement {
   return (
-    <BrowserRouter>
-      <Route path="/:lang?">
-        <AppDefinitionProvider>
-          <IntlMessagesProvider>
-            <ErrorHandler fallback={ErrorFallback}>
-              <MessagesProvider>
-                <ServiceWorkerRegistrationProvider
-                  serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
-                >
-                  <UserProvider>
-                    <MenuProvider>
-                      <PermissionRequest />
-                      <Main />
-                      <Navigation />
-                    </MenuProvider>
-                  </UserProvider>
-                </ServiceWorkerRegistrationProvider>
-              </MessagesProvider>
-            </ErrorHandler>
-          </IntlMessagesProvider>
-        </AppDefinitionProvider>
-      </Route>
-    </BrowserRouter>
+    <IntlProvider defaultLocale="en-US" locale="en-US">
+      <BrowserRouter>
+        <Route path="/:lang?">
+          <AppDefinitionProvider>
+            <MessagesProvider>
+              <AppMessagesProvider>
+                <ErrorHandler fallback={ErrorFallback}>
+                  <ServiceWorkerRegistrationProvider
+                    serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
+                  >
+                    <UserProvider>
+                      <MenuProvider>
+                        <PermissionRequest />
+                        <Main />
+                        <Navigation />
+                      </MenuProvider>
+                    </UserProvider>
+                  </ServiceWorkerRegistrationProvider>
+                </ErrorHandler>
+              </AppMessagesProvider>
+            </MessagesProvider>
+          </AppDefinitionProvider>
+        </Route>
+      </BrowserRouter>
+    </IntlProvider>
   );
 }
