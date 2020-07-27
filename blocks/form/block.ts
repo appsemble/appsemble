@@ -117,7 +117,7 @@ interface Choice {
   /**
    * The label used to display the option.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
    * The value to use when selecting the option.
@@ -135,7 +135,7 @@ interface AbstractField {
   /**
    * The label displayed next to the field.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
    * The name used when storing this field.
@@ -145,7 +145,7 @@ interface AbstractField {
   /**
    * The placeholder to display when the field is empty.
    */
-  placeholder?: string;
+  placeholder?: Remapper;
 
   /**
    * Whether the field should be read-only.
@@ -165,7 +165,7 @@ export interface BooleanField extends AbstractField {
   /**
    * The text to display next to the checkbox.
    */
-  labelText?: string;
+  labelText?: Remapper;
 
   /**
    * The type of the field.

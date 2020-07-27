@@ -1,3 +1,4 @@
+import { useBlock } from '@appsemble/preact';
 import { FormComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
@@ -17,8 +18,10 @@ export default function FileInput({
   onInput,
   value,
 }: FileInputProps): VNode {
+  const { utils } = useBlock();
   const { icon, label, name, repeated } = field;
   const required = isRequired(field);
+  const remappedLabel = utils.remap(label, value);
 
   const handleInput = useCallback(
     (event: h.JSX.TargetedEvent<HTMLInputElement>, val: string): void => {
@@ -29,17 +32,22 @@ export default function FileInput({
       } else {
         copy[index] = val;
       }
-      onInput(({ currentTarget: { name: field.name } } as any) as Event, copy);
+      onInput(({ currentTarget: { name } } as any) as Event, copy);
     },
-    [field, onInput, value],
+    [name, onInput, value],
   );
 
   return (
-    <FormComponent className="appsemble-file" iconLeft={icon} label={label} required={required}>
+    <FormComponent
+      className="appsemble-file"
+      iconLeft={icon}
+      label={remappedLabel}
+      required={required}
+    >
       {repeated ? (
         <div
           className={classNames('is-flex py-2 px-0', styles.repeatedContainer, {
-            'mt-5': !label,
+            'mt-5': !remappedLabel,
           })}
         >
           <FileEntry
