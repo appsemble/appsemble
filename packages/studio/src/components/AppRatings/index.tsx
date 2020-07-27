@@ -15,7 +15,6 @@ import { useApp } from '../AppContext';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
 import messages from './messages';
 
 export default function AppRatings(): ReactElement {
@@ -79,9 +78,7 @@ export default function AppRatings(): ReactElement {
             <span className="is-inline has-text-grey-light is-size-7">
               {new Date(rating.$updated).toLocaleString()}
             </span>
-            {rating.description && (
-              <blockquote className={styles.description}>{rating.description}</blockquote>
-            )}
+            {rating.description && <blockquote>{rating.description}</blockquote>}
           </div>
         ))}
       </div>
