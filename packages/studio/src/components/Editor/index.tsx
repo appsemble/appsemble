@@ -4,7 +4,6 @@ import {
   Loader,
   useBeforeUnload,
   useConfirmation,
-  useEventListener,
   useMessages,
 } from '@appsemble/react-components';
 import type { AppDefinition, BlockManifest } from '@appsemble/types';
