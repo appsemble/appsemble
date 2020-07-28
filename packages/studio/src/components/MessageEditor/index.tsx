@@ -59,24 +59,25 @@ export default function MessageEditor(): ReactElement {
   } = useToggle(false);
 
   useEffect(() => {
-    if (languages?.length) {
+    if (!selectedLanguage && languages?.length) {
+      setSelectedLanguage(languages[0]);
+    }
+  }, [languages, selectedLanguage]);
+
+  useEffect(() => {
+    if (selectedLanguage) {
       enableLoadingMessages();
-      const lang = selectedLanguage ?? languages[0];
       axios
-        .get<AppMessages>(`/api/apps/${app.id}/messages/${lang}`)
+        .get<AppMessages>(`/api/apps/${app.id}/messages/${selectedLanguage}`)
         .then((d) => {
           setAppMessages(d.data);
-
-          if (!selectedLanguage) {
-            setSelectedLanguage(lang);
-          }
         })
         .catch(() => setAppMessages(null))
         .finally(() => disableLoadingMessages());
     } else {
       disableLoadingMessages();
     }
-  }, [app, disableLoadingMessages, enableLoadingMessages, languages, selectedLanguage]);
+  }, [app, disableLoadingMessages, enableLoadingMessages, selectedLanguage]);
 
   const onSubmit = useCallback(
     async (values: {}) => {
@@ -113,8 +114,8 @@ export default function MessageEditor(): ReactElement {
       await axios.delete(`/api/apps/${app.id}/messages/${selectedLanguage}`);
       setSubmitting(false);
       const newLanguages = languages.filter((lang) => lang !== selectedLanguage);
-      setLanguages(newLanguages);
       setSelectedLanguage(newLanguages[0]);
+      setLanguages(newLanguages);
       push({ color: 'info', body: formatMessage(messages.deleteSuccess) });
     },
   });
