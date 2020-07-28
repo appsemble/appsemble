@@ -1,3 +1,4 @@
+import { useBlock } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
@@ -16,6 +17,7 @@ export default function StringInput({
   onInput,
   value = '',
 }: StringInputProps): VNode {
+  const { utils } = useBlock();
   const { format, icon, label, multiline, name, placeholder, readOnly, requirements = [] } = field;
   const maxLength = Math.max(
     ...requirements
@@ -43,7 +45,7 @@ export default function StringInput({
       minLength={Number.isFinite(minLength) ? minLength : undefined}
       name={name}
       onInput={(event) => onInput(event, (event.currentTarget as HTMLInputElement).value)}
-      placeholder={placeholder ?? label ?? name}
+      placeholder={utils.remap(placeholder, value) ?? utils.remap(label, value) ?? name}
       readOnly={readOnly}
       required={required}
       type={multiline ? 'textarea' : format || 'text'}

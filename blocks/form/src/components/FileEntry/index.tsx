@@ -1,4 +1,4 @@
-import { FormattedMessage } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
@@ -13,6 +13,7 @@ interface FileEntryProps extends InputProps<string | Blob, FileField> {
 
 export default function FileEntry({ field, name, onInput, value }: FileEntryProps): VNode {
   const url = useObjectURL(value);
+  const { utils } = useBlock();
 
   const onSelect = useCallback(
     async (event: h.JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
@@ -38,8 +39,6 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
     [name, onInput],
   );
 
-  const title = field.label ?? field.name;
-
   return (
     <div className={`appsemble-file file mr-3 ${styles.root}`}>
       <label className="file-label">
@@ -52,7 +51,11 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
         {url ? (
           <Fragment>
             <figure className="image is-relative">
-              <img alt={title} className={styles.image} src={url} />
+              <img
+                alt={utils.remap(field.label, value) ?? field.name}
+                className={styles.image}
+                src={url}
+              />
             </figure>
             <button
               className={`button is-small ${styles.removeButton}`}

@@ -1,4 +1,4 @@
-import { FormattedMessage } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
@@ -17,6 +17,7 @@ export default function NumberInput({
   onInput,
   value,
 }: NumberInputProps): VNode {
+  const { utils } = useBlock();
   const { name, label, type, placeholder, readOnly, icon, requirements = [] } = field;
   const required = isRequired(field);
   const max = Math.max(
@@ -62,7 +63,7 @@ export default function NumberInput({
             : (event.currentTarget as HTMLInputElement).valueAsNumber,
         );
       }}
-      placeholder={placeholder || label || name}
+      placeholder={utils.remap(placeholder, value) || utils.remap(label, value) || name}
       readOnly={readOnly}
       required={required}
       step={step}

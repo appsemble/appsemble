@@ -1,3 +1,4 @@
+import { useBlock } from '@appsemble/preact';
 import { Select } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
@@ -12,6 +13,8 @@ type EnumInputProps = InputProps<string, EnumField>;
  * Render a select box which offers choices a JSON schema enum.
  */
 export default function EnumInput({ disabled, field, onInput, value = '' }: EnumInputProps): VNode {
+  const { utils } = useBlock();
+
   const { enum: options, icon, label, name, placeholder } = field;
   const required = isRequired(field);
 
@@ -21,7 +24,7 @@ export default function EnumInput({ disabled, field, onInput, value = '' }: Enum
       disabled={disabled}
       iconLeft={icon}
       id={name}
-      label={label}
+      label={utils.remap(label, value)}
       name={name}
       onInput={onInput}
       required={required}
@@ -29,12 +32,12 @@ export default function EnumInput({ disabled, field, onInput, value = '' }: Enum
     >
       {(!required || !value) && (
         <option className={classNames({ [styles.hidden]: required })} value={null}>
-          {placeholder ?? ''}
+          {utils.remap(placeholder, {}) ?? ''}
         </option>
       )}
       {options.map((choice) => (
         <option key={choice.value} value={choice.value}>
-          {choice.label ?? choice.value}
+          {utils.remap(choice.label, value) ?? choice.value}
         </option>
       ))}
     </Select>
