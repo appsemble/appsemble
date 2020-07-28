@@ -1,6 +1,6 @@
-import { useMessages } from '@appsemble/react-components/src';
+import { useMessages } from '@appsemble/react-components';
 import type { BootstrapParams } from '@appsemble/sdk';
-import type { AppDefinition, FlowPageDefinition } from '@appsemble/types';
+import type { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
 import type { EventEmitter } from 'events';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -16,6 +16,7 @@ interface FlowPageProps {
   ee: EventEmitter;
   page: FlowPageDefinition;
   prefix: string;
+  remap: (remapper: Remapper, data: any) => any;
   showDialog: ShowDialogAction;
 }
 
@@ -24,6 +25,7 @@ export default function FlowPage({
   ee,
   page,
   prefix,
+  remap,
   showDialog,
 }: FlowPageProps): ReactElement {
   const history = useHistory();
@@ -106,6 +108,7 @@ export default function FlowPage({
         pushNotifications,
         ee,
         pageReady: null,
+        remap,
         showMessage,
       }),
     [
@@ -116,6 +119,7 @@ export default function FlowPage({
       page,
       prefix,
       pushNotifications,
+      remap,
       showDialog,
       showMessage,
     ],
@@ -132,6 +136,7 @@ export default function FlowPage({
         flowActions={flowActions}
         page={page}
         prefix={`${prefix}.subPages.${currentPage}.blocks`}
+        remap={remap}
         showDialog={showDialog}
         transitions
       />

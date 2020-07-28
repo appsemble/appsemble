@@ -1,11 +1,11 @@
 import type { BaseAction } from '@appsemble/sdk';
 import type { MessageActionDefinition } from '@appsemble/types';
-import { remap } from '@appsemble/utils';
 
 import type { MakeActionParameters } from '../../types';
 
 export default function message({
   definition,
+  remap,
   showMessage,
 }: MakeActionParameters<MessageActionDefinition>): BaseAction<'message'> {
   const { body, color = 'info', dismissable, timeout } = definition;

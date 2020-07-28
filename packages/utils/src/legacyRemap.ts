@@ -7,7 +7,7 @@ interface RemapperContext {
   };
 }
 
-type MapperFunction = (data: any) => any;
+export type MapperFunction = (data: any) => any;
 
 const property = '.';
 const filter = '|';

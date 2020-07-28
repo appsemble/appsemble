@@ -1,6 +1,6 @@
 import { useMessages } from '@appsemble/react-components';
 import type { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
-import { baseTheme, normalizeBlockName, remap } from '@appsemble/utils';
+import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
@@ -15,7 +15,6 @@ import makeActions from '../../utils/makeActions';
 import prefixBlockURL from '../../utils/prefixBlockURL';
 import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
-import { useAppMessages } from '../AppMessagesProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './index.css';
 
@@ -46,6 +45,7 @@ interface BlockProps {
 
   showDialog: ShowDialogAction;
   ready(block: BlockDefinition): void;
+  remap: (remapper: Remapper, data: any) => any;
   pageReady: Promise<void>;
   prefix: string;
 }
@@ -67,6 +67,7 @@ export default function Block({
   pageReady,
   prefix,
   ready,
+  remap,
   showDialog,
 }: BlockProps): ReactElement {
   const history = useHistory();
@@ -74,7 +75,6 @@ export default function Block({
   const location = useLocation();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
-  const getMessage = useAppMessages();
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<Function[]>([]);
@@ -151,6 +151,7 @@ export default function Block({
       pageReady,
       prefix,
       ee,
+      remap,
       showMessage: push,
     });
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
@@ -169,7 +170,7 @@ export default function Block({
       definition.theme || page.theme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     const utils = {
-      remap: (mappers: Remapper, input: any) => remap(mappers, input, { getMessage }),
+      remap,
       showMessage: push,
       addCleanup(fn: Function) {
         cleanups.current.push(fn);
@@ -216,7 +217,6 @@ export default function Block({
     ee,
     extraCreators,
     flowActions,
-    getMessage,
     history,
     initialized,
     location,
@@ -228,12 +228,13 @@ export default function Block({
     push,
     pushNotifications,
     ready,
+    remap,
     showDialog,
   ]);
 
   const header = block.header ? (
     <h6 className={classNames('title is-6', styles.title)}>
-      {remap(block.header, { ...data, ...params }, { getMessage })}
+      {remap(block.header, { ...data, ...params })}
     </h6>
   ) : null;
 

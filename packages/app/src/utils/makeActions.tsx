@@ -6,8 +6,8 @@ import type {
   AppDefinition,
   BlockDefinition,
   PageDefinition,
+  Remapper,
 } from '@appsemble/types';
-import { remap } from '@appsemble/utils';
 import type { EventEmitter } from 'events';
 import type { RouteComponentProps } from 'react-router-dom';
 
@@ -26,6 +26,7 @@ interface MakeActionsParams {
   pageReady: Promise<void>;
   prefix: string;
   ee: EventEmitter;
+  remap: (remapper: Remapper, data: any) => any;
   showMessage: ShowMessage;
 }
 
@@ -39,6 +40,7 @@ interface CreateActionParams {
   pageReady: Promise<void>;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
+  remap: (remapper: Remapper, data: any) => any;
   showDialog: ShowDialogAction;
   type: Action['type'];
   showMessage: ShowMessage;
@@ -54,6 +56,7 @@ function createAction({
   pageReady,
   prefix,
   pushNotifications,
+  remap,
   showDialog,
   showMessage,
   type,
@@ -69,6 +72,7 @@ function createAction({
     prefix,
     ee,
     pushNotifications,
+    remap,
     showMessage,
   });
 
@@ -84,6 +88,7 @@ function createAction({
       pageReady,
       prefix: `${prefix}.onSuccess`,
       pushNotifications,
+      remap,
       showDialog,
       type: actionDefinition.onSuccess.type,
       showMessage,
@@ -100,6 +105,7 @@ function createAction({
       pageReady,
       prefix: `${prefix}.onError`,
       pushNotifications,
+      remap,
       showDialog,
       type: actionDefinition.onError.type,
       showMessage,
@@ -147,6 +153,7 @@ export default function makeActions({
   pageReady,
   prefix,
   pushNotifications,
+  remap,
   showDialog,
   showMessage,
 }: MakeActionsParams): { [key: string]: Action } {
@@ -177,6 +184,7 @@ export default function makeActions({
         flowActions,
         showDialog,
         pageReady,
+        remap,
         showMessage,
       });
 
@@ -206,6 +214,7 @@ export default function makeActions({
           flowActions,
           showDialog,
           pageReady,
+          remap,
           showMessage,
         });
 

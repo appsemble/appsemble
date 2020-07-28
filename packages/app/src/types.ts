@@ -6,6 +6,7 @@ import type {
   AppOAuth2Secret,
   BlockDefinition,
   BlockManifest,
+  Remapper,
   UserInfo,
 } from '@appsemble/types';
 import type { EventEmitter } from 'events';
@@ -86,6 +87,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
+  remap: (remapper: Remapper, data: any) => any;
   showMessage: ShowMessage;
 }
 

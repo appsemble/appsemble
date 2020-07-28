@@ -1,5 +1,5 @@
 import { Loader, useLocationString } from '@appsemble/react-components';
-import type { BlockDefinition, PageDefinition, Security } from '@appsemble/types';
+import type { BlockDefinition, PageDefinition, Remapper, Security } from '@appsemble/types';
 import { checkAppRole, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
@@ -22,6 +22,7 @@ interface BlockListProps {
   flowActions?: {};
   page: PageDefinition;
   prefix: string;
+  remap: (remapper: Remapper, data: any) => any;
   showDialog: ShowDialogAction;
   transitions?: boolean;
 }
@@ -49,6 +50,7 @@ export default function BlockList({
   flowActions,
   page,
   prefix,
+  remap,
   showDialog,
   transitions,
 }: BlockListProps): ReactElement {
@@ -119,6 +121,7 @@ export default function BlockList({
         pageReady={pageReady}
         prefix={`${prefix}.${index}`}
         ready={ready}
+        remap={remap}
         showDialog={showDialog}
       />
     );
