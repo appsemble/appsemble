@@ -17,9 +17,10 @@ import {
 import type { AppMessages } from '@appsemble/types';
 import axios from 'axios';
 import langmap from 'langmap';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import getAppMessageIDs from '../../utils/getAppMessageIDs';
 import { useApp } from '../AppContext';
 import messages from './messages';
 
@@ -50,10 +51,11 @@ export default function MessageEditor(): ReactElement {
   const [submitting, setSubmitting] = useState(false);
   const { disable: disableIsAdding, enable: enableIsAdding, enabled: isAdding } = useToggle(false);
   const [addLanguage, setAddLanguage] = useState<string>();
-
-  const messageIds = [
-    ...new Set([...app.definition.pages.map((_, index) => `appsemble:pages.${index}`)]),
-  ];
+  const {
+    disable: disableShouldPrompt,
+    enable: enableShouldPrompt,
+    enabled: shouldPrompt,
+  } = useToggle(false);
 
   useEffect(() => {
     if (languages?.length) {
@@ -84,8 +86,9 @@ export default function MessageEditor(): ReactElement {
       });
       setSubmitting(false);
       push({ color: 'success', body: formatMessage(messages.uploadSuccess) });
+      disableShouldPrompt();
     },
-    [app, formatMessage, push, selectedLanguage],
+    [app.id, disableShouldPrompt, formatMessage, push, selectedLanguage],
   );
 
   const onSelectedLanguageChange = useCallback((_, lang: string) => {
@@ -118,8 +121,12 @@ export default function MessageEditor(): ReactElement {
   const onAddLanguage = useCallback(async () => {
     setLanguages([...languages, addLanguage]);
     setSelectedLanguage(addLanguage);
+    // Add the language with empty messages to ensure deleting it works
+    // as well as keeping it in the list of supported languages.
+    await axios.post(`/api/apps/${app.id}/messages`, { language: addLanguage, messages: {} });
     disableIsAdding();
-  }, [addLanguage, disableIsAdding, languages, setLanguages]);
+    enableShouldPrompt();
+  }, [addLanguage, app, disableIsAdding, enableShouldPrompt, languages, setLanguages]);
 
   const onAddLanguageChange = useCallback(
     (_: React.ChangeEvent<HTMLSelectElement>, value: string) => {
@@ -127,6 +134,12 @@ export default function MessageEditor(): ReactElement {
     },
     [setAddLanguage],
   );
+
+  const messageIds = useMemo(() => {
+    const { pages } = app.definition;
+    const { blocks } = app.definition.pages[0];
+    return getAppMessageIDs(pages, blocks, []);
+  }, [app.definition]);
 
   if (loadingLanguages || loadingMessages) {
     return <Loader />;
