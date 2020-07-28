@@ -138,8 +138,11 @@ export default function MessageEditor(): ReactElement {
 
   const messageIds = useMemo(() => {
     const { pages } = app.definition;
-    const { blocks } = app.definition.pages[0];
-    return getAppMessageIDs(pages, blocks, []);
+    const blocks = app.definition.pages.flatMap((p) => 'blocks' in p && p.blocks).filter(Boolean);
+    const actions = blocks
+      .flatMap((b) => 'actions' in b && Object.values(b.actions))
+      .filter(Boolean);
+    return getAppMessageIDs(pages, blocks, actions);
   }, [app.definition]);
 
   useBeforeUnload(() => shouldPrompt);
