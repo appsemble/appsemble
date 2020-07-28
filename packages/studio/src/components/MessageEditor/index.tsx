@@ -9,6 +9,7 @@ import {
   SimpleInput,
   SimpleSubmit,
   Title,
+  useBeforeUnload,
   useConfirmation,
   useData,
   useMessages,
@@ -140,6 +141,8 @@ export default function MessageEditor(): ReactElement {
     const { blocks } = app.definition.pages[0];
     return getAppMessageIDs(pages, blocks, []);
   }, [app.definition]);
+
+  useBeforeUnload(() => shouldPrompt);
 
   if (loadingLanguages || loadingMessages) {
     return <Loader />;

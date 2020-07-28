@@ -39,6 +39,7 @@ export { default as Stepper } from './Stepper';
 export { default as Subtitle } from './Subtitle';
 export { default as Tab } from './Tab';
 export { default as Tabs } from './Tabs';
+export { default as useBeforeUnload } from './useBeforeUnload';
 export { default as useClickOutside } from './useClickOutside';
 export { default as useCombinedRefs } from './useCombinedRefs';
 export { default as useEventListener } from './useEventListener';
