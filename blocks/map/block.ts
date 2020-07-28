@@ -98,7 +98,7 @@ declare module '@appsemble/sdk' {
      *
      * @default 'Couldn’t find your location. Are location services enabled?'
      */
-    locationError: Remapper;
+    locationError?: Remapper;
 
     /**
      * Custom icon configuration.
