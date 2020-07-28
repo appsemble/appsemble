@@ -8,6 +8,7 @@ import {
   SimpleForm,
   SimpleInput,
   SimpleSubmit,
+  TextArea,
   Title,
   useBeforeUnload,
   useConfirmation,
@@ -205,7 +206,13 @@ export default function MessageEditor(): ReactElement {
             onSubmit={onSubmit}
           >
             {messageIds.map((id) => (
-              <SimpleInput key={id} label={id} name={id} type="text" />
+              <SimpleInput<typeof TextArea>
+                key={id}
+                component={TextArea}
+                label={id}
+                name={id}
+                rows={2}
+              />
             ))}
             <SimpleSubmit disabled={submitting}>
               <FormattedMessage {...messages.submit} />
