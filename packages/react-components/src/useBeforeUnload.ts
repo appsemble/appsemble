@@ -2,10 +2,15 @@ import { useCallback } from 'react';
 
 import useEventListener from './useEventListener';
 
-export default function useBeforeUnload(shouldPrompt: () => boolean): void {
+/**
+ * Prompt for the user to be sure if they want to leave the page.
+ *
+ * @param shouldPrompt Whether the user should be prompted.
+ */
+export default function useBeforeUnload(shouldPrompt: boolean): void {
   const check = useCallback(
     (e: BeforeUnloadEvent) => {
-      if (shouldPrompt()) {
+      if (shouldPrompt) {
         e.preventDefault();
         e.returnValue = '';
         return;

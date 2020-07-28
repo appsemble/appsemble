@@ -190,7 +190,7 @@ export default function Editor(): ReactElement {
     }
   }, [recipe, editorStep, onSave, openApiDocument]);
 
-  useBeforeUnload(() => recipe !== initialRecipe);
+  useBeforeUnload(recipe !== initialRecipe);
 
   const uploadApp = useCallback(async () => {
     if (!valid) {
