@@ -1,7 +1,7 @@
 import type { Theme } from '@appsemble/types';
 
 import type { KoaContext } from '../../types';
-import getApp from '../../utils/getApp';
+import { getApp } from '../../utils/app';
 import serveIcon from '../serveIcon';
 
 interface Params {

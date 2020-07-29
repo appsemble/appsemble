@@ -1,5 +1,5 @@
-import { App, Organization } from '../models';
-import getApp from './getApp';
+import { App, AppMessages, Organization } from '../models';
+import { getApp, getRemapperContext } from './app';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
 let dbApp: App;
@@ -144,5 +144,41 @@ describe('getApp', () => {
       style: dbApp.style,
       vapidPublicKey: dbApp.vapidPublicKey,
     });
+  });
+});
+
+describe('getRemapperContext', () => {
+  it('should return a message getter with the app context', async () => {
+    await Organization.create({ id: 'test' });
+    const app = await App.create({
+      definition: '',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+      OrganizationId: 'test',
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: { bye: 'Doei', hello: 'Hallo', word: 'Woord' },
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl-nl',
+      messages: { bye: 'Dag', hello: 'Hoi' },
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl-nl-brabants',
+      messages: { bye: 'Houdoe' },
+    });
+
+    const context = await getRemapperContext(app, 'nl-nl-brabants');
+    const word = context.getMessage({ id: 'word' });
+    const hello = context.getMessage({ id: 'hello' });
+    const bye = context.getMessage({ id: 'bye' });
+
+    expect(word.format()).toBe('Woord');
+    expect(hello.format()).toBe('Hoi');
+    expect(bye.format()).toBe('Houdoe');
   });
 });

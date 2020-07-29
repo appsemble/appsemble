@@ -11,6 +11,7 @@ export { default as formatRequestAction } from './formatRequestAction';
 export { default as getAppBlocks } from './getAppBlocks';
 export type { BlockMap } from './getAppBlocks';
 export { default as mapValues } from './mapValues';
+export { default as objectCache } from './objectCache';
 export { default as remap } from './remap';
 export * from './remap';
 export {

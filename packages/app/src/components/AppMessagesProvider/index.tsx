@@ -1,6 +1,6 @@
 import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
 import type { AppMessages } from '@appsemble/types';
-import { IntlMessage, MessageGetter, normalize } from '@appsemble/utils';
+import { IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
 import axios from 'axios';
 import memoizeIntlConstructor from 'intl-format-cache';
 import IntlMessageFormat from 'intl-messageformat';
@@ -40,9 +40,7 @@ export default function AppMessagesProvider({ children }: IntlMessagesProviderPr
 
   const [messages, setMessages] = useState<AppMessages['messages']>();
   const messageCache = useMemo(
-    () => new Map<string, IntlMessageFormat>(),
-    // Reset the message cache if the language is updated.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    () => objectCache((message) => new IntlMessageFormat(message, lang, undefined, { formatters })),
     [lang],
   );
   const [error, setError] = useState(false);
@@ -72,14 +70,9 @@ export default function AppMessagesProvider({ children }: IntlMessagesProviderPr
   const getMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
       const message = Object.hasOwnProperty.call(messages, id) ? messages[id] : defaultMessage;
-      let messageFormat = messageCache.get(message);
-      if (!messageFormat) {
-        messageFormat = new IntlMessageFormat(message, lang, undefined, { formatters });
-        messageCache.set(message, messageFormat);
-      }
-      return messageFormat;
+      return messageCache(message);
     },
-    [lang, messageCache, messages],
+    [messageCache, messages],
   );
 
   if (loading) {

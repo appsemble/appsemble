@@ -8,6 +8,7 @@ import { get, pick } from 'lodash';
 
 import { App } from '../models';
 import type { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
+import { getRemapperContext } from '../utils/app';
 import renderEmail from '../utils/email/renderEmail';
 import readPackageJson from '../utils/readPackageJson';
 
@@ -32,6 +33,7 @@ const supportedActions = ['email', 'request'];
 
 async function handleEmail(
   ctx: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
+  app: App,
   action: EmailActionDefinition,
 ): Promise<void> {
   const {
@@ -43,9 +45,10 @@ async function handleEmail(
     throw Boom.methodNotAllowed('Method must be POST for email actions');
   }
 
-  const body = remap(action.body, data);
-  const to = remap(action.to, data);
-  const sub = remap(action.subject, data);
+  const context = await getRemapperContext(app, app.definition.defaultLanguage || 'en-us');
+  const to = remap(action.to, data, context);
+  const body = remap(action.body, data, context);
+  const sub = remap(action.subject, data, context);
 
   if (!to || !sub || !body) {
     throw Boom.badRequest('Fields “to”, “subject”, and “body” must be a valid string');
@@ -119,16 +122,13 @@ function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
     const appAction = get(app.definition, path) as ActionDefinition;
     const action = supportedActions.find((act) => act === appAction?.type);
 
-    if (!action) {
-      throw Boom.badRequest('path does not point to a proxyable action');
-    }
-
     switch (action) {
       case 'email':
-        return handleEmail(ctx, appAction as EmailActionDefinition);
+        return handleEmail(ctx, app, appAction as EmailActionDefinition);
       case 'request':
-      default:
         return handleRequestProxy(ctx, appAction, useBody);
+      default:
+        throw Boom.badRequest('path does not point to a proxyable action');
     }
   };
 }

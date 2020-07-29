@@ -5,8 +5,8 @@ import { Op } from 'sequelize';
 
 import { AppMessages, AppOAuth2Secret, BlockAsset, BlockVersion } from '../../models';
 import type { KoaContext } from '../../types';
+import { getApp } from '../../utils/app';
 import createSettings from '../../utils/createSettings';
-import getApp from '../../utils/getApp';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 import { bulmaURL, faURL } from '../../utils/styleURL';

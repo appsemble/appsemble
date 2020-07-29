@@ -533,9 +533,9 @@ async function processHooks(
       $updated: resource.updated,
     };
 
-    const title = data?.title ? remap(data.title, r) : resource.type;
+    const title = data?.title ? remap(data.title, r, null) : resource.type;
     const content = data?.content
-      ? remap(data.content, r)
+      ? remap(data.content, r, null)
       : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`;
 
     await sendSubscriptionNotifications(
