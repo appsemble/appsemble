@@ -48,6 +48,18 @@ const mapperImplementations: MapperImplementations = {
       return error.message;
     }
   },
+
+  'string.replace': (values, input) => {
+    let result = `${input}`;
+
+    for (const entry of Object.entries(values)) {
+      // The value in these key-value pairs are remappers.
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      result = result.replace(new RegExp(entry[0], 'gm'), remap(entry[1], input));
+    }
+
+    return result;
+  },
 };
 
 export default function remap(mappers: Remapper, input: any): any {

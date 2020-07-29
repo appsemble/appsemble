@@ -210,6 +210,13 @@ export interface Remappers {
       [key: string]: Remapper;
     };
   };
+
+  /**
+   * Match the content with the regex in the key, and replace it with its value.
+   */
+  'string.replace': {
+    [regex: string]: Remapper;
+  };
 }
 
 export type Remapper = RequireExactlyOne<Remappers>[] | string;
