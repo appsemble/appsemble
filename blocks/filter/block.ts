@@ -9,9 +9,9 @@ export interface EnumOption {
   value?: string;
 
   /**
-   *  User-facing label describing the option.
+   *  User facing label describing the option.
    */
-  label?: string;
+  label?: Remapper;
 }
 
 export interface ButtonOption {
@@ -23,7 +23,7 @@ export interface ButtonOption {
   /**
    *  User-facing label describing the option.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
    * An icon to render on the button.
@@ -45,7 +45,7 @@ export interface AbstractField<T extends string, D> {
   /**
    * The label displayed next to the field.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to

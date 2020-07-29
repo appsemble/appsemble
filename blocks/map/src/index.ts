@@ -29,7 +29,10 @@ attach((params) => {
   const locationMarker = new CircleMarker(null, {
     color: primaryColor,
   });
-  const { defaultLocation = [51.476852, 0] } = parameters;
+  const {
+    defaultLocation = [51.476852, 0],
+    locationError = 'Couldn’t find your location. Are location services enabled?',
+  } = parameters;
 
   const map = new Map(node, {
     attributionControl: false,
@@ -64,10 +67,7 @@ attach((params) => {
     .once('locationerror', (error) => {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
       if (error?.code === 1) {
-        utils.showMessage({
-          // XXX Implement i18n.
-          body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
-        });
+        utils.showMessage({ body: utils.remap(locationError, {}) });
       }
       // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
     })
