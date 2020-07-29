@@ -1,4 +1,5 @@
-import type { Remapper } from '@appsemble/types';
+import type { AppMessages, Remapper } from '@appsemble/types';
+import IntlMessageFormat from 'intl-messageformat';
 
 import remap from './remap';
 
@@ -7,6 +8,7 @@ interface TestCase {
   input: any;
   mappers: Remapper;
   expected: any;
+  messages?: AppMessages['messages'];
 }
 
 const cases: TestCase[] = [
@@ -128,6 +130,24 @@ const cases: TestCase[] = [
     expected: 'Date’s year: 1970',
   },
   {
+    description: 'format multilingual messages',
+    input: null,
+    mappers: [
+      {
+        'string.format': {
+          messageId: 'patty',
+          values: { type: [{ static: 'Krabby' }] },
+        },
+      },
+    ],
+    expected: 'Krabby Patty',
+    messages: {
+      patty: '{type} Patty',
+    },
+  },
+
+  // Mapper static
+  {
     description: 'return a static value',
     input: null,
     mappers: [{ static: 'Hello world' }],
@@ -136,10 +156,13 @@ const cases: TestCase[] = [
 ];
 
 const tests = cases.map(
-  ({ description, expected, input, mappers }) => [description, mappers, input, expected] as const,
+  ({ description, expected, input, mappers, messages }) =>
+    [description, mappers, messages, input, expected] as const,
 );
 
-it.each(tests)('should %s given %j', (_, mappers, input, expected) => {
-  const result = remap(mappers, input);
+it.each(tests)('should %s given %j', (_, mappers, messages, input, expected) => {
+  const result = remap(mappers, input, {
+    getMessage: ({ defaultMessage, id }) => new IntlMessageFormat(messages?.[id] ?? defaultMessage),
+  });
   expect(result).toStrictEqual(expected);
 });
