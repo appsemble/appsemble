@@ -94,6 +94,13 @@ declare module '@appsemble/sdk' {
     disableClustering?: boolean;
 
     /**
+     * The error message to display when the location couldn’t be determined.
+     *
+     * @default 'Couldn’t find your location. Are location services enabled?'
+     */
+    locationError?: Remapper;
+
+    /**
      * Custom icon configuration.
      */
     icons?: FontAwesomeMarkerIcon | AssetMarkerIcon;
