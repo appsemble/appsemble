@@ -215,7 +215,7 @@ export interface Remappers {
    * Match the content with the regex in the key, and replace it with its value.
    */
   'string.replace': {
-    [regex: string]: Remapper;
+    [regex: string]: string;
   };
 }
 
