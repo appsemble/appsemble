@@ -9,7 +9,7 @@ import type { StringField, StringRequirement } from '../../../block';
  */
 export default function validateString(field: StringField, value: string): StringRequirement {
   return field.requirements?.find((requirement) => {
-    if ('required' in requirement && value == null) {
+    if ('required' in requirement && !value) {
       return true;
     }
 
