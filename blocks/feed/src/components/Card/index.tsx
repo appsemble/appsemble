@@ -114,7 +114,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
         utils.showMessage([].concat(messages.replyError.format()).join(''));
       }
     },
-    [actions, content.id, message, messages.replyError, parameters, replies, utils, valid],
+    [actions, content, message, messages, parameters, replies, utils, valid],
   );
 
   const title = utils.remap(parameters.title, content);
