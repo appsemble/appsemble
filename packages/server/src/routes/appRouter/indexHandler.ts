@@ -1,6 +1,6 @@
 import type { BlockDefinition } from '@appsemble/types';
+import { iterApp } from '@appsemble/utils';
 import crypto from 'crypto';
-import { iterApp } from 'packages/utils/src/iterApp';
 import qs from 'querystring';
 import { Op } from 'sequelize';
 

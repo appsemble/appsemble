@@ -10,6 +10,7 @@ export { default as checkAppRole } from './checkAppRole';
 export { default as formatRequestAction } from './formatRequestAction';
 export { default as getAppBlocks } from './getAppBlocks';
 export type { BlockMap } from './getAppBlocks';
+export * from './iterApp';
 export { default as mapValues } from './mapValues';
 export { default as remap } from './remap';
 export {
