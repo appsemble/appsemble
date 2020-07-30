@@ -18,7 +18,14 @@ export default function GeoCoordinatesInput({
   field,
   onInput,
 }: GeoCoordinatesInputProps): VNode {
-  const { theme, utils } = useBlock();
+  const {
+    theme,
+    utils,
+    parameters: {
+      defaultLocation = [51.476852, 0],
+      locationError = 'Couldn’t find your location. Are location services enabled?',
+    },
+  } = useBlock();
   const ref = useRef<HTMLDivElement>();
   const [map, setMap] = useState<Map>(null);
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
@@ -74,25 +81,21 @@ export default function GeoCoordinatesInput({
 
   useEffect(() => {
     const m = new Map(ref.current, {
+      center: defaultLocation,
       attributionControl: false,
       layers: [new TileLayer(theme.tileLayer)],
     })
       .once('locationerror', (error) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
-        if (error.code && error.code === 1) {
-          utils.showMessage({
-            // XXX Implement i18n.
-            body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
-          });
-          m.setView([0, 0], 18);
+        if (error?.code === 1) {
+          utils.showMessage({ body: utils.remap(locationError, {}) });
         }
-
         // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
       })
       .locate({ watch: true, timeout: 10e3, maximumAge: 60e3 });
 
     setMap(m);
-  }, [theme, utils]);
+  }, [defaultLocation, locationError, theme, utils]);
 
   useEffect(() => {
     if (!map) {
