@@ -105,7 +105,7 @@ export default function BlockList({
     const content = (
       <Block
         // As long as blocks are in a static list, using the index as a key should be fine.
-        key={`${revision}-${index}`}
+        key={`${prefix}.${index}-${revision}`}
         block={block}
         className={classNames(styles[layout], {
           'is-hidden': isLoading,
