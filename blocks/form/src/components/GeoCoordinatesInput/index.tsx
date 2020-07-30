@@ -1,37 +1,81 @@
 import 'leaflet/dist/leaflet.css';
 
-import { BlockProps, withBlock } from '@appsemble/preact';
+import { BlockProps, useBlock, withBlock } from '@appsemble/preact';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 import { Component, createRef, h, VNode } from 'preact';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import type { GeoCoordinatesField, InputProps } from '../../../block';
 import styles from './index.css';
 
-type GeoCoordinatesInputProps = InputProps<{}, GeoCoordinatesField> & BlockProps;
+type GeoCoordinatesInputProps = InputProps<{}, GeoCoordinatesField>;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
  */
-class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
-  locationMarker = new CircleMarker(null, {
-    color: this.props.theme.primaryColor,
-  });
+export default function GeoCoordinatesInput({
+  disabled,
+  field,
+  onInput,
+}: GeoCoordinatesInputProps): VNode {
+  const { theme, utils } = useBlock();
+  const ref = useRef<HTMLDivElement>();
+  const [map, setMap] = useState<Map>(null);
+  const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
 
-  ref = createRef<HTMLDivElement>();
+  const onReset = useCallback((): void => {
+    if (!map) {
+      return;
+    }
 
-  map: Map;
+    map.setView(locationMarker.getLatLng(), 16);
+  }, [locationMarker, map]);
 
-  componentDidMount(): void {
-    const {
-      field,
-      onInput,
-      theme: { tileLayer },
-      utils,
-    } = this.props;
+  useEffect(() => {
+    if (!map) {
+      return undefined;
+    }
 
-    const map = new Map(this.ref.current, {
+    const marker = new CircleMarker(null, {
+      color: theme.primaryColor,
+    });
+
+    const onLocationFound = ({ latlng }: LocationEvent): void => {
+      if (!marker.getLatLng()) {
+        map.setView(latlng, 18);
+      }
+      marker.setLatLng(latlng).addTo(map);
+    };
+
+    map.on('locationfound', onLocationFound);
+
+    setLocationMarker(marker);
+
+    return () => map.off('locationfound', onLocationFound);
+  }, [theme, map]);
+
+  useEffect(() => {
+    if (!map) {
+      return undefined;
+    }
+
+    const onMove = (): void => {
+      const { lat, lng } = map.getCenter();
+      onInput(({ currentTarget: { name: field.name } } as any) as Event, {
+        latitude: lat,
+        longitude: lng,
+      });
+    };
+
+    map.on('move', onMove);
+
+    return () => map.off('move, onMove');
+  }, [field, map, onInput]);
+
+  useEffect(() => {
+    const m = new Map(ref.current, {
       attributionControl: false,
-      layers: [new TileLayer(tileLayer)],
+      layers: [new TileLayer(theme.tileLayer)],
     })
       .once('locationerror', (error) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
@@ -40,62 +84,44 @@ class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
             // XXX Implement i18n.
             body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
           });
-          map.setView([0, 0], 18);
+          m.setView([0, 0], 18);
         }
 
         // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
       })
-      .on('locationfound', ({ latlng }: LocationEvent) => {
-        if (!this.locationMarker.getLatLng()) {
-          map.setView(latlng, 18);
-        }
-        this.locationMarker.setLatLng(latlng).addTo(map);
-      })
-      .on('move', () => {
-        const { lat, lng } = map.getCenter();
-        onInput(({ currentTarget: { name: field.name } } as any) as Event, {
-          latitude: lat,
-          longitude: lng,
-        });
-      })
       .locate({ watch: true, timeout: 10e3, maximumAge: 60e3 });
-    this.map = map;
-  }
 
-  componentDidUpdate(): void {
-    const { disabled } = this.props;
-    if (disabled) {
-      this.map.dragging.disable();
-    } else {
-      this.map.dragging.enable();
+    setMap(m);
+  }, [theme, utils]);
+
+  useEffect(() => {
+    if (!map) {
+      return;
     }
-  }
 
-  onReset = (): void => {
-    this.map.setView(this.locationMarker.getLatLng(), 16);
-  };
+    if (disabled) {
+      map.dragging.disable();
+    } else {
+      map.dragging.enable();
+    }
+  }, [disabled, map]);
 
-  render(): VNode {
-    const { disabled } = this.props;
-    return (
-      <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
-        <div ref={this.ref} className={styles.map} />
-        <div className={styles.crossHairsOverlay}>
-          <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
-        </div>
-        <button
-          className={`button ${styles.resetButton}`}
-          disabled={disabled}
-          onClick={this.onReset}
-          type="button"
-        >
-          <span className={`icon ${styles.currentlocation}`}>
-            <i className="fas fa-crosshairs" />
-          </span>
-        </button>
+  return (
+    <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
+      <div ref={ref} className={styles.map} />
+      <div className={styles.crossHairsOverlay}>
+        <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
       </div>
-    );
-  }
+      <button
+        className={`button ${styles.resetButton}`}
+        disabled={disabled}
+        onClick={onReset}
+        type="button"
+      >
+        <span className={`icon ${styles.currentlocation}`}>
+          <i className="fas fa-crosshairs" />
+        </span>
+      </button>
+    </div>
+  );
 }
-
-export default withBlock(GeoCoordinatesInput);
