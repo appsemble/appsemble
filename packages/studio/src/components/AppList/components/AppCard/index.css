@@ -3,26 +3,21 @@
 }
 
 .appCard {
+  cursor: pointer;
   position: relative;
-  text-align: center;
+  text-align: left;
 }
 
 .appCardContent {
   padding-bottom: 65px;
 }
 
-.appDescription {
-  word-wrap: break-word;
-}
-
-.appCardFooter {
-  bottom: 0;
-  position: absolute;
-  width: 100%;
-}
-
 .rating {
-  bottom: 3.5em;
+  bottom: 1em;
+  left: 1em;
   position: absolute;
-  right: 1em;
+}
+
+.rating * {
+  color: hsl(48, 99%, 47%) !important;
 }
