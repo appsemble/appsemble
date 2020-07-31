@@ -1,3 +1,4 @@
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import React, {
   ChangeEvent,
@@ -9,6 +10,7 @@ import React, {
 } from 'react';
 
 import FormComponent from '../FormComponent';
+import Icon from '../Icon';
 
 type SelectProps = ComponentPropsWithoutRef<typeof FormComponent> &
   Omit<ComponentPropsWithoutRef<'select'>, 'onChange'> & {
@@ -36,6 +38,11 @@ type SelectProps = ComponentPropsWithoutRef<typeof FormComponent> &
      * A help message to render.
      */
     help?: ReactNode;
+
+    /**
+     * The icon of the select element.
+     */
+    icon?: IconName;
   };
 
 /**
@@ -53,6 +60,7 @@ export default forwardRef<HTMLSelectElement, SelectProps>(
       onChange,
       required,
       id = name,
+      icon,
       ...props
     },
     ref,
@@ -65,7 +73,13 @@ export default forwardRef<HTMLSelectElement, SelectProps>(
     );
 
     return (
-      <FormComponent className={className} id={id} label={label} required={required}>
+      <FormComponent
+        className={className}
+        iconLeft={icon}
+        id={id}
+        label={label}
+        required={required}
+      >
         <div className={classNames('select', { 'is-fullwidth': fullwidth, 'is-loading': loading })}>
           <select
             {...props}
@@ -77,6 +91,7 @@ export default forwardRef<HTMLSelectElement, SelectProps>(
             required={required}
           />
         </div>
+        {icon && <Icon className="is-left" icon={icon} />}
         {help && <div className="help">{help}</div>}
       </FormComponent>
     );

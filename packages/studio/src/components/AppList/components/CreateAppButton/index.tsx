@@ -1,4 +1,5 @@
 import {
+  Button,
   CardFooterButton,
   Checkbox,
   Message,
@@ -11,13 +12,11 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
-import classNames from 'classnames';
-import React, { KeyboardEvent, ReactElement, useCallback, useState } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { useUser } from '../../../UserProvider';
-import styles from './index.css';
 import messages from './messages';
 
 interface Template {
@@ -27,7 +26,7 @@ interface Template {
   resources: boolean;
 }
 
-export default function CreateAppCard(): ReactElement {
+export default function CreateAppButton({ className }: { className: string }): ReactElement {
   const modal = useToggle();
   const { data: templates } = useData<Template[]>('/api/templates');
   const [selectedTemplate, setSelectedTemplate] = useState(0);
@@ -53,29 +52,15 @@ export default function CreateAppCard(): ReactElement {
     [history, url, organizations, selectedTemplate, templates],
   );
 
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key === 'Escape') {
-      modal.disable();
-    }
-  };
-
   if (!templates?.length) {
     return null;
   }
 
   return (
-    <div className={styles.createAppCardContainer}>
-      <div
-        className={classNames('card', styles.createAppCard)}
-        onClick={modal.enable}
-        onKeyDown={onKeyDown}
-        role="button"
-        tabIndex={0}
-      >
-        <div className="card-content">
-          <FormattedMessage {...messages.createApp} />
-        </div>
-      </div>
+    <>
+      <Button className={className} onClick={modal.enable}>
+        <FormattedMessage {...messages.createApp} />
+      </Button>
       <Modal
         component={SimpleForm}
         defaultValues={{
@@ -99,7 +84,7 @@ export default function CreateAppCard(): ReactElement {
         isActive={modal.enabled}
         onClose={modal.disable}
         onSubmit={onCreate}
-        title={<FormattedMessage {...messages.createAppTitle} />}
+        title={<FormattedMessage {...messages.createApp} />}
       >
         <SimpleFormError>
           {({ error }) =>
@@ -164,6 +149,6 @@ export default function CreateAppCard(): ReactElement {
           />
         )}
       </Modal>
-    </div>
+    </>
   );
 }
