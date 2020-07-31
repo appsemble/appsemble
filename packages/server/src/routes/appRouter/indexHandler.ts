@@ -1,5 +1,4 @@
-import type { BlockDefinition } from '@appsemble/types';
-import { iterApp } from '@appsemble/utils';
+import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import crypto from 'crypto';
 import qs from 'querystring';
 import { Op } from 'sequelize';
@@ -42,14 +41,7 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
     return;
   }
 
-  const blocks: BlockDefinition[] = [];
-  iterApp(app.definition, {
-    onBlock(block) {
-      if (!blocks.some(({ type, version }) => type === block.type && version === block.version)) {
-        blocks.push(block);
-      }
-    },
-  });
+  const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
     include: [
