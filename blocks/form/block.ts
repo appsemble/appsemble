@@ -301,7 +301,7 @@ export interface GeoCoordinatesField extends AbstractField {
    *
    * @default [51.476852, 0]
    */
-  defaultLocation: [number, number];
+  defaultLocation?: [number, number];
 
   /**
    * The error message to display when the location couldn’t be determined.
