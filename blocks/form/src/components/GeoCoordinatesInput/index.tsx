@@ -16,7 +16,7 @@ type GeoCoordinatesInputProps = InputProps<{}, GeoCoordinatesField>;
 export default function GeoCoordinatesInput({
   disabled,
   field: {
-    defaultLocation = [51.476852, 0],
+    defaultLocation: [defaultLat = 51.476852, defaultLng = 0],
     name,
     locationError = 'Couldn’t find your location. Are location services enabled?',
   },
@@ -78,7 +78,7 @@ export default function GeoCoordinatesInput({
 
   useEffect(() => {
     const m = new Map(ref.current, {
-      center: defaultLocation,
+      center: [defaultLat, defaultLng],
       attributionControl: false,
       layers: [new TileLayer(theme.tileLayer)],
     })
@@ -92,7 +92,7 @@ export default function GeoCoordinatesInput({
       .locate({ watch: true, timeout: 10e3, maximumAge: 60e3 });
 
     setMap(m);
-  }, [defaultLocation, locationError, theme, utils]);
+  }, [defaultLat, defaultLng, locationError, theme, utils]);
 
   useEffect(() => {
     if (!map) {
