@@ -308,7 +308,7 @@ export interface GeoCoordinatesField extends AbstractField {
    *
    * @default 'Couldn’t find your location. Are location services enabled?'
    */
-  locationError: Remapper;
+  locationError?: Remapper;
 
   /**
    * The type of the field.
