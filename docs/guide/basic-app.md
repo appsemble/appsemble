@@ -85,7 +85,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 -   - name: Example Page A
 -     blocks:
 -       - type: action-button
--         version: 0.13.6
+-         version: 0.13.7
 -         parameters:
 -           icon: arrow-right
 -         actions:
@@ -96,7 +96,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 -   - name: Example Page B
 -     blocks:
 -       - type: action-button
--         version: 0.13.6
+-         version: 0.13.7
 -         parameters:
 -           icon: arrow-left
 -         actions:
@@ -106,7 +106,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 +   - name: People
 +     blocks:
 +       - type: table
-+         version: 0.13.6
++         version: 0.13.7
 +         events:
 +           listen:
 +             data: people
@@ -147,7 +147,7 @@ Let’s add such a `data-loader` block.
     - name: People
       blocks:
 +       - type: data-loader
-+         version: 0.13.6
++         version: 0.13.7
 +         actions:
 +           onLoad:
 +             type: resource.query
@@ -156,7 +156,7 @@ Let’s add such a `data-loader` block.
 +           emit:
 +             data: people
         - type: table
-          version: 0.13.6
+          version: 0.13.7
 ```
 
 When the app is saved, it will start off by showing a spinner. It then quickly turns into some
@@ -195,7 +195,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.query
@@ -204,7 +204,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.13.6
+        version: 0.13.7
         events:
           listen:
             data: people
@@ -226,7 +226,7 @@ Add a new page:
 +   - name: Register
 +     blocks:
 +       - type: form
-+         version: 0.13.6
++         version: 0.13.7
 +         actions:
 +           onSubmit:
 +             type: resource.create
@@ -285,7 +285,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.13.6
+        version: 0.13.7
         parameters:
           fields:
             - name: firstName
@@ -302,7 +302,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.query
@@ -311,7 +311,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.13.6
+        version: 0.13.7
         events:
           listen:
             data: people
@@ -337,7 +337,7 @@ Add a new page:
 +       - id
 +     blocks:
 +       - type: data-loader
-+         version: 0.13.6
++         version: 0.13.7
 +         actions:
 +           onLoad:
 +             type: resource.get
@@ -346,7 +346,7 @@ Add a new page:
 +           emit:
 +             data: person
 +       - type: detail-viewer
-+         version: 0.13.6
++         version: 0.13.7
 +         events:
 +           listen:
 +             data: person
@@ -409,7 +409,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.13.6
+        version: 0.13.7
         parameters:
           fields:
             - name: firstName
@@ -426,7 +426,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.query
@@ -435,7 +435,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.13.6
+        version: 0.13.7
         events:
           listen:
             data: people
@@ -451,7 +451,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.get
@@ -460,7 +460,7 @@ pages:
           emit:
             data: person
       - type: detail-viewer
-        version: 0.13.6
+        version: 0.13.7
         events:
           listen:
             data: person

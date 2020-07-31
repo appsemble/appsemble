@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.7] - 2020-07-31
+
+### Added
+
+- Block(`form`): Add support for remappers.
+- Block(`map`): Allow customizing the message for location errors.
+- Utils: Add `string.replace` remapper.
+
+### Changed
+
+- Block(`map`): Make the location error English by default.
+
+### Fixed
+
+- App: Fix prefix paths for `onSuccess` and `onError` actions.
+
 ## [0.13.6] - 2020-07-27
 
 ### Added
