@@ -1,8 +1,8 @@
 import 'leaflet/dist/leaflet.css';
 
-import { BlockProps, useBlock, withBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
-import { Component, createRef, h, VNode } from 'preact';
+import { h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import type { GeoCoordinatesField, InputProps } from '../../../block';
@@ -15,17 +15,14 @@ type GeoCoordinatesInputProps = InputProps<{}, GeoCoordinatesField>;
  */
 export default function GeoCoordinatesInput({
   disabled,
-  field,
+  field: {
+    defaultLocation = [51.476852, 0],
+    name,
+    locationError = 'Couldn’t find your location. Are location services enabled?',
+  },
   onInput,
 }: GeoCoordinatesInputProps): VNode {
-  const {
-    theme,
-    utils,
-    parameters: {
-      defaultLocation = [51.476852, 0],
-      locationError = 'Couldn’t find your location. Are location services enabled?',
-    },
-  } = useBlock();
+  const { theme, utils } = useBlock();
   const ref = useRef<HTMLDivElement>();
   const [map, setMap] = useState<Map>(null);
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
@@ -68,7 +65,7 @@ export default function GeoCoordinatesInput({
 
     const onMove = (): void => {
       const { lat, lng } = map.getCenter();
-      onInput(({ currentTarget: { name: field.name } } as any) as Event, {
+      onInput(({ currentTarget: { name } } as any) as Event, {
         latitude: lat,
         longitude: lng,
       });
@@ -77,7 +74,7 @@ export default function GeoCoordinatesInput({
     map.on('move', onMove);
 
     return () => map.off('move, onMove');
-  }, [field, map, onInput]);
+  }, [name, map, onInput]);
 
   useEffect(() => {
     const m = new Map(ref.current, {
