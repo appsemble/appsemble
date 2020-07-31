@@ -90,7 +90,7 @@ export default function AppList(): ReactElement {
     <>
       <HelmetIntl title={messages.title} />
       <Content className={styles.content} padding>
-        <div className={`is-flex ${styles.actions}`}>
+        <div className="is-flex">
           <Input
             iconLeft="search"
             name="search"
