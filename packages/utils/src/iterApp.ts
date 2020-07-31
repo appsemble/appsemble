@@ -21,9 +21,9 @@ interface IterCallbacks {
  *
  * If a callback returns true, the iteration is aborted.
  *
- * @param action - The action definition to iterate over.
- * @param callbacks - The callbacks to call if a sub definition is found.
- * @param prefix -The initial path prefix. This is mainly used for nested iteration.
+ * @param action The action definition to iterate over.
+ * @param callbacks The callbacks to call if a sub definition is found.
+ * @param prefix The initial path prefix. This is mainly used for nested iteration.
  * @returns True if any callback returns true, false otherwise.
  */
 export function iterAction(
@@ -48,9 +48,9 @@ export function iterAction(
  *
  * If a callback returns true, the iteration is aborted.
  *
- * @param block - The block definition to iterate over.
- * @param callbacks - The callbacks to call if a sub definition is found.
- * @param prefix -The initial path prefix. This is mainly used for nested iteration.
+ * @param block The block definition to iterate over.
+ * @param callbacks The callbacks to call if a sub definition is found.
+ * @param prefix The initial path prefix. This is mainly used for nested iteration.
  * @returns True if any callback returns true, false otherwise.
  */
 export function iterBlock(
@@ -76,9 +76,9 @@ export function iterBlock(
  *
  * If a callback returns true, the iteration is aborted.
  *
- * @param blockList - The block definition list to iterate over.
- * @param callbacks - The callbacks to call if a sub definition is found.
- * @param prefix -The initial path prefix. This is mainly used for nested iteration.
+ * @param blockList The block definition list to iterate over.
+ * @param callbacks The callbacks to call if a sub definition is found.
+ * @param prefix The initial path prefix. This is mainly used for nested iteration.
  * @returns True if any callback returns true, false otherwise.
  */
 export function iterBlockList(
@@ -98,9 +98,9 @@ export function iterBlockList(
  *
  * If a callback returns true, the iteration is aborted.
  *
- * @param page - The page definition to iterate over.
- * @param callbacks - The callbacks to call if a sub definition is found.
- * @param prefix -The initial path prefix. This is mainly used for nested iteration.
+ * @param page The page definition to iterate over.
+ * @param callbacks The callbacks to call if a sub definition is found.
+ * @param prefix The initial path prefix. This is mainly used for nested iteration.
  * @returns True if any callback returns true, false otherwise.
  */
 export function iterPage(
@@ -129,8 +129,8 @@ export function iterPage(
 /**
  * Iterate over an app definition and call each callback if relevant.
  *
- * @param app - The app definition to iterate over.
- * @param callbacks - The callbacks to call if a sub definition is found.
+ * @param app The app definition to iterate over.
+ * @param callbacks The callbacks to call if a sub definition is found.
  * @returns True if any callback returns true, false otherwise.
  */
 export function iterApp(app: AppDefinition, callbacks: IterCallbacks): boolean {
