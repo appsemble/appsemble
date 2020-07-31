@@ -48,7 +48,7 @@ export default function AppList(): ReactElement {
 
         case '$updated':
         case '$created':
-          sortedApps.sort((a, b) => new Date(a[name]).getDate() - new Date(b[name]).getDate());
+          sortedApps.sort((a, b) => a[name].localeCompare(b[name]));
           break;
 
         case 'name':
@@ -79,7 +79,7 @@ export default function AppList(): ReactElement {
   const filteredApps = apps.filter(
     (app) =>
       app.definition.name.toLowerCase().includes(filter.toLowerCase()) ||
-      app.OrganizationId.toLowerCase().includes(filter.toLowerCase()),
+      app.OrganizationId.toLowerCase().includes(filter.toLowerCase().replace(/@/g, '')),
   );
 
   const createOrganizations = organizations.filter((org) =>
