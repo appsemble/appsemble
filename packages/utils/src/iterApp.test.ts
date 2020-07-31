@@ -1,6 +1,11 @@
-import type { ActionDefinition, BlockDefinition, PageDefinition } from '@appsemble/types';
+import type {
+  ActionDefinition,
+  AppDefinition,
+  BlockDefinition,
+  PageDefinition,
+} from '@appsemble/types';
 
-import { iterAction, iterBlock, iterBlockList, iterPage } from './iterApp';
+import { iterAction, iterApp, iterBlock, iterBlockList, iterPage } from './iterApp';
 
 describe('iterAction', () => {
   it('should call the appropriate callbacks', () => {
@@ -283,5 +288,52 @@ describe('iterPage', () => {
     expect(onAction).toHaveBeenCalledWith(page.actions['flow.finish'], ['actions', 'flow.finish']);
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(result).toBe(false);
+  });
+});
+
+describe('iterApp', () => {
+  it('should iterate over the page of an app', () => {
+    const onPage = jest.fn();
+
+    const app: AppDefinition = {
+      name: 'App',
+      defaultPage: 'Page',
+      pages: [
+        {
+          name: 'Page',
+          blocks: [],
+        },
+      ],
+    };
+
+    const result = iterApp(app, { onPage });
+
+    expect(onPage).toHaveBeenCalledWith(app.pages[0], ['pages', 0]);
+    expect(result).toBe(false);
+  });
+
+  it('should abort iteration if a callback returns true', () => {
+    const onPage = jest.fn().mockReturnValue(true);
+
+    const app: AppDefinition = {
+      name: 'App',
+      defaultPage: 'Page 1',
+      pages: [
+        {
+          name: 'Page 1',
+          blocks: [],
+        },
+        {
+          name: 'Page 2',
+          blocks: [],
+        },
+      ],
+    };
+
+    const result = iterApp(app, { onPage });
+
+    expect(onPage).toHaveBeenCalledTimes(1);
+    expect(onPage).toHaveBeenCalledWith(app.pages[0], ['pages', 0]);
+    expect(result).toBe(true);
   });
 });
