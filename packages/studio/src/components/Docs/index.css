@@ -1,0 +1,30 @@
+.doc {
+  & :global(.is-pulled-right) + * {
+    display: none;
+    float: right;
+  }
+
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6 {
+    /* stylelint-disable-next-line selector-max-type */
+    & > a {
+      left: 1.3rem;
+      position: absolute;
+
+      /* stylelint-disable-next-line selector-max-compound-selectors, selector-max-type */
+      & > :global(.fas):global(.fa-link) {
+        opacity: 0;
+        transition: 300ms;
+      }
+    }
+
+    /* stylelint-disable-next-line selector-max-compound-selectors, selector-max-type */
+    &:hover > a > :global(.fas):global(.fa-link) {
+      opacity: 1;
+    }
+  }
+}

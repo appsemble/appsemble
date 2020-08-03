@@ -1,6 +1,5 @@
 ---
-showToc: true
-route: architecture
+icon: project-diagram
 ---
 
 # Architecture

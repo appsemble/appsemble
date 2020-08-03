@@ -1,11 +1,6 @@
----
-menu: Guide
-route: /guide/theming
----
-
 # Theming
 
-By default Appsemble provides a default style based on the [Bulma CSS framework](bulma). While this
+By default Appsemble provides a default style based on the [Bulma CSS framework][bulma]. While this
 is completely functional for end users, developers may be interested in further spicing up their
 applications by applying their own style and branding.
 
@@ -101,7 +96,7 @@ levels** and can be injected at **three different points** within applications.
 
 ### Hierarchy
 
-<span class="float-right"></span>
+<span class="is-pulled-right"></span>
 
 ```mermaid
 graph TD
@@ -229,8 +224,8 @@ can be combined to target specific blocks on specific pages.
 
 ### Applying themes for an organization
 
-Organization themes can be uploaded using the [CLI](cli). The command for uploading themes is as
-follows:
+Organization themes can be uploaded using the [CLI](https://www.npmjs.com/package/@appsemble/cli).
+The command for uploading themes is as follows:
 
 ```sh
 yarn appsemble theme upload [path-to-theme-css] --organization [organization-id] [--shared|--core|--block @organization/blockname]

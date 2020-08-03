@@ -1,8 +1,3 @@
----
-menu: Deployment
-route: /deployment/docker-compose
----
-
 # Docker Compose
 
 Appsemble is published as a Docker image. This makes it easy to deploy using Docker Compose. Copy

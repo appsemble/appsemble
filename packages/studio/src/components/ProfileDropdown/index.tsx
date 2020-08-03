@@ -57,17 +57,12 @@ export default function ProfileDropdown(): ReactElement {
           <FormattedMessage {...messages.blocks} />
         </span>
       </Link>
-      <a
-        className="dropdown-item"
-        href="https://appsemble.dev"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
+      <Link className="dropdown-item" to="/docs">
         <Icon icon="book" />
         <span>
           <FormattedMessage {...messages.documentation} />
         </span>
-      </a>
+      </Link>
       <hr className="dropdown-divider" />
       {userInfo ? (
         <Button

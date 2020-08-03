@@ -17,7 +17,7 @@ export default (
   components,
   externalDocs: {
     description: 'Appsemble developer documentation',
-    url: 'https://appsemble.dev',
+    url: `${host}/docs`,
   },
   info: {
     title: 'Appsemble',
