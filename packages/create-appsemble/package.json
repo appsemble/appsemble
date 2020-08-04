@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.13.6",
+  "version": "0.13.7",
   "private": true,
   "description": "Bootstrap an Appsemble project",
   "keywords": [
@@ -12,7 +12,7 @@
     "low-code",
     "lowcode"
   ],
-  "homepage": "https://appsemble.dev",
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.13.6",
+    "@appsemble/node-utils": "0.13.7",
     "fs-extra": "^9.0.1",
     "inquirer": "^7.3.3",
     "type-fest": "^0.16.0",

@@ -1,9 +1,3 @@
----
-menu: Guide
-name: DNS
-route: /guide/dns
----
-
 # DNS
 
 DNS stands for _Domain Name System_. This is what links a domain name to a website.

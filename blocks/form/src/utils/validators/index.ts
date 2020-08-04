@@ -7,19 +7,18 @@ import validateString from './validateString';
 export default {
   file: (field: FileField, value) => {
     const required = field.requirements?.find((requirement) => requirement.required && !value);
-    if (required) {
-      return required;
-    }
 
-    if (value === null) {
+    if (((field.repeated && !(value as File[])?.length) || value === null) && !required) {
       return undefined;
     }
 
     if (field.accept) {
       if (field.repeated) {
         return (
-          ((value as File[]).every((file) => field.accept.includes(file.type)) &&
-            (value as File[]).length) >= 1 && {}
+          !(
+            (value as File[]).some((file) => field.accept.includes(file.type)) &&
+            (value as File[]).length >= 1
+          ) && {}
         );
       }
 

@@ -99,8 +99,9 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
       }
 
       try {
+        const parentId = parameters.reply?.parentId ?? 'parentId';
         const result = await actions.onSubmitReply.dispatch({
-          parentId: content.id,
+          [parentId]: content.id,
           content: message,
         });
 
@@ -113,7 +114,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
         utils.showMessage([].concat(messages.replyError.format()).join(''));
       }
     },
-    [actions, content, message, messages, replies, utils, valid],
+    [actions, content, message, messages, parameters, replies, utils, valid],
   );
 
   const title = utils.remap(parameters.title, content);

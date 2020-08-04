@@ -100,12 +100,14 @@ export default function BlockList({
       (m) => m.name === normalizeBlockName(block.type) && m.version === block.version,
     );
 
+    const key = `${prefix}.${index}-${revision}`;
+
     const layout = manifest.layout || 'grow';
 
     const content = (
       <Block
         // As long as blocks are in a static list, using the index as a key should be fine.
-        key={`${revision}-${index}`}
+        key={key}
         block={block}
         className={classNames(styles[layout], {
           'is-hidden': isLoading,
@@ -130,7 +132,7 @@ export default function BlockList({
     return transitions ? (
       <CSSTransition
         // Since blocks are in a static list, using the index as a key should be fine.
-        key={`${revision}-${index}`}
+        key={key}
         classNames={{
           enter: styles.pageEnter,
           enterActive: styles.pageEnterActive,

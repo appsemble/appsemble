@@ -1,9 +1,3 @@
----
-name: Events
-menu: Development
-route: /guide/events
----
-
 # Events
 
 Events are a mechanism in Appsemble that can be used to make blocks on a page communicate with each
@@ -22,7 +16,7 @@ In an app definition this can be defined as follows, taking the `data-loader` bl
 ```yaml
 blocks:
   - type: data-loader
-    version: 0.13.6
+    version: 0.13.7
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -63,12 +57,12 @@ data-loader-->txt-to-json-->sum-->report
 ```
 
 More information about which kinds of events are supported by each block can be found in the
-[blocks documentation](../blocks/blocks).
+[blocks documentation](/blocks).
 
 ## Event action
 
 It is possible to emit your own events based on actions triggered from a block. This can be done by
-using an [event action](../reference/action#event).
+using an [event action](../reference/action.md#event).
 
 Any data received from the action will be passed to the event.
 
@@ -77,7 +71,7 @@ For example, let’s say we want an `action-button` to trigger the `data-loader`
 ```yaml
 blocks:
   - type: data-loader
-    version: 0.13.6
+    version: 0.13.7
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -88,7 +82,7 @@ blocks:
       listen:
         refresh: refreshExample
   - type: action-button
-    version: 0.13.6
+    version: 0.13.7
     parameters:
       icon: sync
     actions:

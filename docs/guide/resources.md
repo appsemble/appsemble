@@ -1,8 +1,3 @@
----
-menu: Guide
-route: /guide/resources
----
-
 # Resources
 
 Appsemble out of the box provides its own method of storing and retrieving data specific to apps. It
@@ -11,9 +6,9 @@ app is called a ´resource´.
 
 ## Defining resources
 
-Resources can be defined within an [app recipe](reference/app) within the `resources` property. Each
-object within `resources` is considered to be a Resource, named after the name it is given within
-`resources`.
+Resources can be defined within an [app recipe](../reference/app.md) within the `resources`
+property. Each object within `resources` is considered to be a Resource, named after the name it is
+given within `resources`.
 
 The shape of a resource is defined using [JSON Schema](https://json-schema.org/). This makes it
 possible for submitted data to be validated on types and required properties automatically.
@@ -61,13 +56,13 @@ The resource actions available are:
 - **resource.update**: Update an existing resource.
 - **resource.delete**: Delete an existing resource.
 - **resource.subscription.subscribe**: Subscribe to an existing resource to receive push
-  notifications. (See [notifications](notifications).)
+  notifications. (See [notifications](notifications.md).)
 - **resource.subscription.unsubscribe**: Unsubscribes from an existing resource subscription. (See
-  [notifications](notifications).)
+  [notifications](notifications.md).)
 - **resource.subscription.toggle**: Toggle between subscribing and unsubscribing to an existing
-  resource. (See [notifications](notifications).)
+  resource. (See [notifications](notifications.md).)
 - **resource.subscription.status**: Fetch the status of a resource subscription. (See
-  [notifications](notifications).)
+  [notifications](notifications.md).)
 
 ## External resources
 
@@ -130,7 +125,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.query

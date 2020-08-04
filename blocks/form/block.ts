@@ -117,7 +117,7 @@ interface Choice {
   /**
    * The label used to display the option.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
    * The value to use when selecting the option.
@@ -135,7 +135,7 @@ interface AbstractField {
   /**
    * The label displayed next to the field.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
    * The name used when storing this field.
@@ -145,7 +145,7 @@ interface AbstractField {
   /**
    * The placeholder to display when the field is empty.
    */
-  placeholder?: string;
+  placeholder?: Remapper;
 
   /**
    * Whether the field should be read-only.
@@ -165,7 +165,7 @@ export interface BooleanField extends AbstractField {
   /**
    * The text to display next to the checkbox.
    */
-  labelText?: string;
+  labelText?: Remapper;
 
   /**
    * The type of the field.
@@ -293,6 +293,22 @@ export interface GeoCoordinatesField extends AbstractField {
    * The default value of the field.
    */
   defaultValue?: object;
+
+  /**
+   * The location (latitude, longitude) to default to when the user’s location cannot be found.
+   *
+   * This can be used to set the location to something that is more relevant to the user.
+   *
+   * @default [51.476852, 0]
+   */
+  defaultLocation?: [number, number];
+
+  /**
+   * The error message to display when the location couldn’t be determined.
+   *
+   * @default 'Couldn’t find your location. Are location services enabled?'
+   */
+  locationError?: Remapper;
 
   /**
    * The type of the field.

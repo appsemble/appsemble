@@ -210,6 +210,13 @@ export interface Remappers {
       [key: string]: Remapper;
     };
   };
+
+  /**
+   * Match the content with the regex in the key, and replace it with its value.
+   */
+  'string.replace': {
+    [regex: string]: string;
+  };
 }
 
 export type Remapper = RequireExactlyOne<Remappers>[] | string;
@@ -708,11 +715,6 @@ export interface BasePageDefinition {
   parameters?: string[];
 
   /**
-   * A mapping of actions that can be fired by the page to action handlers.
-   */
-  actions?: { [key: string]: ActionDefinition };
-
-  /**
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
@@ -743,6 +745,16 @@ export interface BasicPageDefinition extends BasePageDefinition {
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
   subPages: SubPage[];
+
+  /**
+   * A mapping of actions that can be fired by the page to action handlers.
+   */
+  actions?: {
+    'flow.back'?: ActionDefinition;
+    'flow.cancel'?: ActionDefinition;
+    'flow.finish'?: ActionDefinition;
+    'flow.next'?: ActionDefinition;
+  };
 }
 
 export interface TabsPageDefinition extends BasePageDefinition {

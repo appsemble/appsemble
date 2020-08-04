@@ -1,8 +1,3 @@
----
-menu: Guide
-route: /guide/security
----
-
 # Security
 
 While some apps may be intended for use by anyone, some apps may be intended for a select few
@@ -24,7 +19,7 @@ definitions are required to restrict access to the app itself.
 
 ## Security Definition
 
-The security definition, as defined [here](../reference/app#security), can be used to define the
+The security definition, as defined [here](../reference/app.md#security), can be used to define the
 roles that are used within the app. The security definition also determines how the default role is
 assigned.
 
@@ -61,9 +56,9 @@ security:
 
 ### Root app roles
 
-By specifying the [`roles`](../reference/app#roles) property to the root of the app definition, each
-user must at least have one of these roles in order to view the app. Consequently, each page and
-block will use this property as its default implementation unless it is overridden by specifying
+By specifying the [`roles`](../reference/app.md#roles) property to the root of the app definition,
+each user must at least have one of these roles in order to view the app. Consequently, each page
+and block will use this property as its default implementation unless it is overridden by specifying
 another `roles` list at that level.
 
 ```yaml
@@ -82,8 +77,8 @@ roles:
 
 ### Page app roles
 
-By specifying the [`roles`](../reference/page#roles) property for a page, visiting the page requires
-the user to have at least one of the roles specified in this list.
+By specifying the [`roles`](../reference/page.md#roles) property for a page, visiting the page
+requires the user to have at least one of the roles specified in this list.
 
 If a visiting user is not logged in and tries to view the page, they will instead be prompted to log
 in.
@@ -153,7 +148,7 @@ pages:
 
 ### Resource roles
 
-As described in the [Appsemble resources](resources) page, it is possible to define and manage
+As described in the [Appsemble resources](resources.md) page, it is possible to define and manage
 various resources that can be used from within an app. By default the corresponding API endpoints
 are _not_ secured. They are able to be modified by anyone who knows the format of the resource as
 well as the specific endpoint being used. One exception to this is when the root of the app
