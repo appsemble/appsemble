@@ -3,7 +3,7 @@
   "version": "0.13.7",
   "private": true,
   "description": "A block that can be used to display various fields based on input data.",
-  "homepage": "https://appsemble.dev",
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",

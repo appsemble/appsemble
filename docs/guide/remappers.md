@@ -1,8 +1,3 @@
----
-menu: Remappers
-route: /guide/remappers
----
-
 # Remappers
 
 Remapper functions are objects that define how a value should be transformed. This can be useful for

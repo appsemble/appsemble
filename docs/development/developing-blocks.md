@@ -1,8 +1,3 @@
----
-menu: Development
-route: /development/developing-blocks
----
-
 # Developing Blocks
 
 ## Initialize the Project

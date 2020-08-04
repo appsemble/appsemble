@@ -1,8 +1,3 @@
----
-menu: Guide
-route: /guide/basic-app
----
-
 # Basic app
 
 Each app has a name, description, and a default page. Notice the name and description have the value
@@ -10,8 +5,8 @@ that was entered in the _“Create app”_ dialog.
 
 ## Empty app
 
-The newly created app has two pages. On each page, an [`action-button`](../blocks/action-button)
-block is rendered.
+The newly created app has two pages. On each page, an
+[`action-button`](/blocks/@appsemble/action-button) block is rendered.
 
 The icon on the button is specified in the block parameters. Because each block type has different
 functionalities, they also accept different types of parameters.
@@ -70,8 +65,8 @@ description: This is the best smith in town.
 The schema is used as a safety net for invalid data, but also for representation in some places.
 
 When the app is published with the `resources` property, a new “Resources” menu item appears to the
-side menu. This way resources can be managed in a generic way from within [Appsemble studio](studio)
-in an administrator-like fashion.
+side menu. This way resources can be managed in a generic way from within
+[Appsemble studio](studio.md) in an administrator-like fashion.
 
 ## Displaying data
 
@@ -486,9 +481,9 @@ If you got to this point, you have seen the basics of creating apps using Appsem
 complex apps require more features than creating and viewing resources. The following guides
 continue on the result of the app created in this guide:
 
-- [Resources](resources)
-- [Remappers](remappers)
-- [Security](security)
-- [Notifications](notifications)
-- [Theming](theming)
-- [DNS](dns)
+- [Resources](resources.md)
+- [Remappers](remappers.md)
+- [Security](security.md)
+- [Notifications](notifications.md)
+- [Theming](theming.md)
+- [DNS](dns.md)
