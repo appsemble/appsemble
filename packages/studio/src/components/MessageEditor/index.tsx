@@ -18,12 +18,13 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import type { AppMessages } from '@appsemble/types';
+import { iterApp } from '@appsemble/utils/src';
 import axios from 'axios';
 import langmap from 'langmap';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import getAppMessageIDs from '../../utils/getAppMessageIDs';
+import findMessageIds from '../../utils/findMessageIds';
 import { useApp } from '../AppContext';
 import styles from './index.css';
 import messages from './messages';
@@ -122,13 +123,20 @@ export default function MessageEditor(): ReactElement {
   );
 
   const messageIds = useMemo(() => {
-    const { pages } = app.definition;
-    // XXX: Replace with iter function to properly handle nested blocks
-    const blocks = app.definition.pages.flatMap((p) => 'blocks' in p && p.blocks).filter(Boolean);
-    const actions = blocks
-      .flatMap((b) => 'actions' in b && Object.values(b.actions))
-      .filter(Boolean);
-    return getAppMessageIDs(pages, blocks, actions);
+    const actions: string[] = [];
+    const pages: string[] = [];
+    iterApp(app.definition, {
+      onBlock(block) {
+        findMessageIds(block.parameters, (messageId) => actions.push(messageId));
+      },
+      onAction(action) {
+        findMessageIds(action.remap, (messageId) => actions.push(messageId));
+      },
+      onPage(_page, prefix) {
+        pages.push(prefix.join('.'));
+      },
+    });
+    return [...[...new Set(pages)].sort(), ...[...new Set(actions)].sort()];
   }, [app.definition]);
 
   if (loadingLanguages || loadingMessages) {
