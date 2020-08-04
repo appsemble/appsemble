@@ -66,6 +66,7 @@
     "@types/koa-static": "^4.0.1",
     "@types/koa-webpack": "^5.0.1",
     "@types/koa__cors": "^3.0.1",
+    "@types/langmap": "^0.0.0",
     "@types/language-tags": "^1.0.0",
     "@types/leaflet": "^1.5.17",
     "@types/marked": "^1.1.0",

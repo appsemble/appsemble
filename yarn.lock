@@ -1382,6 +1382,11 @@
   dependencies:
     "@types/koa" "*"
 
+"@types/langmap@^0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@types/langmap/-/langmap-0.0.0.tgz#37c9041045dd81d3c532056a06bb529b9c9d4dd9"
+  integrity sha512-+2ketH5k77Nk8j8u+kwopCewwyc4BJWf9T+t8AoP7w/BfnSUds3lcxI3qvudx6AI7PIUP1Bc7ePVUrosowdWdQ==
+
 "@types/language-tags@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.0.tgz#81829b5c50e324c0e6637264cd0d2754e7d7ba1a"
@@ -8975,6 +8980,11 @@ kuler@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/kuler/-/kuler-2.0.0.tgz#e2c570a3800388fb44407e851531c1d670b061b3"
   integrity sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==
+
+langmap@^0.0.16:
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/langmap/-/langmap-0.0.16.tgz#2fe3e98a531fec0fec546624ebe168c2855bab56"
+  integrity sha512-AtYvBK7BsDvWwnSfmO7CfgeUy7GUT1wK3QX8eKH/Ey/eXodqoHuAtvdQ82hmWD9QVFVKnuiNjym9fGY4qSJeLA==
 
 language-subtag-registry@~0.3.2:
   version "0.3.20"
