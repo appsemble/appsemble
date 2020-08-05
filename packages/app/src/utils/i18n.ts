@@ -40,7 +40,15 @@ export function detectLocale(
 ): string | undefined {
   const wantedLocales = sortLocales(choices);
 
-  return wantedLocales.find((wanted) =>
-    languages.find((supported) => wanted.startsWith(supported)),
+  let result: string;
+  wantedLocales.some((wanted) =>
+    languages.some((supported) => {
+      if (wanted.startsWith(supported)) {
+        result = supported;
+        return true;
+      }
+      return false;
+    }),
   );
+  return result;
 }
