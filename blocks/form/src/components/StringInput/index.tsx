@@ -32,6 +32,7 @@ export default function StringInput({
   );
 
   const required = isRequired(field);
+  const remappedLabel = utils.remap(label, value) ?? name;
 
   return (
     <Input
@@ -40,12 +41,12 @@ export default function StringInput({
       error={error}
       iconLeft={icon}
       id={name}
-      label={label}
+      label={remappedLabel}
       maxLength={Number.isFinite(maxLength) ? maxLength : undefined}
       minLength={Number.isFinite(minLength) ? minLength : undefined}
       name={name}
       onInput={(event) => onInput(event, (event.currentTarget as HTMLInputElement).value)}
-      placeholder={utils.remap(placeholder, value) ?? utils.remap(label, value) ?? name}
+      placeholder={utils.remap(placeholder, value) ?? remappedLabel}
       readOnly={readOnly}
       required={required}
       type={multiline ? 'textarea' : format || 'text'}
