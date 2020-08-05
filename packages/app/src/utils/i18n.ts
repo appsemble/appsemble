@@ -38,11 +38,12 @@ export function detectLocale(
   languages: readonly string[],
   choices: readonly string[],
 ): string | undefined {
+  const supportedLocales = sortLocales(languages);
   const wantedLocales = sortLocales(choices);
 
   let result: string;
   wantedLocales.some((wanted) =>
-    languages.some((supported) => {
+    supportedLocales.some((supported) => {
       if (wanted.startsWith(supported)) {
         result = supported;
         return true;
