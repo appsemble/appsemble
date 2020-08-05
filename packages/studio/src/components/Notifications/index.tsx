@@ -55,13 +55,13 @@ export default function Notifications(): ReactElement {
                   </Link>
                 ),
                 navigation: (
-                  <a
-                    href="https://appsemble.dev/reference/app#notification"
+                  <Link
                     rel="noopener noreferrer"
                     target="_blank"
+                    to="/docs/reference/app#notification"
                   >
                     <code>notifications</code>
-                  </a>
+                  </Link>
                 ),
               }}
             />

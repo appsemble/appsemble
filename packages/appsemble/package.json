@@ -1,6 +1,6 @@
 {
   "name": "appsemble",
-  "version": "0.13.6",
+  "version": "0.13.7",
   "description": "A simple wrapper for @appsemble/cli",
   "keywords": [
     "app",
@@ -11,7 +11,7 @@
     "low-code",
     "lowcode"
   ],
-  "homepage": "https://appsemble.dev",
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
@@ -29,6 +29,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/cli": "0.13.6"
+    "@appsemble/cli": "0.13.7"
   }
 }

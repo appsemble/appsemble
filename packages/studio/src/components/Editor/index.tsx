@@ -2,8 +2,8 @@ import RefParser from '@apidevtools/json-schema-ref-parser';
 import {
   Form,
   Loader,
+  useBeforeUnload,
   useConfirmation,
-  useEventListener,
   useMessages,
 } from '@appsemble/react-components';
 import type { AppDefinition, BlockManifest } from '@appsemble/types';
@@ -190,20 +190,7 @@ export default function Editor(): ReactElement {
     }
   }, [recipe, editorStep, onSave, openApiDocument]);
 
-  const checkSavePrompt = useCallback(
-    (e: BeforeUnloadEvent) => {
-      if (recipe !== initialRecipe) {
-        e.preventDefault();
-        e.returnValue = '';
-        return;
-      }
-
-      delete e.returnValue;
-    },
-    [initialRecipe, recipe],
-  );
-
-  useEventListener(window, 'beforeunload', checkSavePrompt);
+  useBeforeUnload(recipe !== initialRecipe);
 
   const uploadApp = useCallback(async () => {
     if (!valid) {

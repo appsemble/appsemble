@@ -113,4 +113,3 @@ CI will take care of the rest.
 [redux]: https://redux.js.org
 [rfc 2606]: https://tools.ietf.org/html/rfc2606
 [stylelint]: https://stylelint.io
-[appsemble.dev]: https://appsemble.dev

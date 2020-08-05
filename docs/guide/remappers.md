@@ -1,8 +1,3 @@
----
-menu: Remappers
-route: /guide/remappers
----
-
 # Remappers
 
 Remapper functions are objects that define how a value should be transformed. This can be useful for
@@ -86,6 +81,16 @@ Format a string using remapped input variables.
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `template` | The template string to format. This may use the [ICU message format](http://userguide.icu-project.org/formatparse/messages) synax. |
 | `values`   | A set of remappers to convert the input to usable values.                                                                          |
+
+### `string.replace`
+
+Replace parts of a string based on regex.
+
+### Parameters
+
+| Name                     | Description                                                                             |
+| ------------------------ | --------------------------------------------------------------------------------------- |
+| `[key containing regex]` | The regex to match with. The value will be what this regex will replace its match with. |
 
 ### `date.parse`
 

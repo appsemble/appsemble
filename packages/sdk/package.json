@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.13.6",
+  "version": "0.13.7",
   "description": "Build your own blocks",
   "keywords": [
     "app",
@@ -13,7 +13,7 @@
     "lowcode",
     "sdk"
   ],
-  "homepage": "https://appsemble.dev",
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",

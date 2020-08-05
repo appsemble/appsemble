@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.13.6",
+  "version": "0.13.7",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -11,7 +11,7 @@
     "low-code",
     "lowcode"
   ],
-  "homepage": "https://appsemble.dev",
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.13.6",
+    "@appsemble/node-utils": "0.13.7",
     "date-fns": "^2.15.0",
     "fs-extra": "^9.0.1",
     "globby": "^11.0.1",

@@ -153,6 +153,12 @@ const cases: TestCase[] = [
     mappers: [{ static: 'Hello world' }],
     expected: 'Hello world',
   },
+  {
+    description: 'apply regex replacements',
+    input: null,
+    mappers: [{ static: '1234 AA' }, { 'string.replace': { '\\s+': '' } }],
+    expected: '1234AA',
+  },
 ];
 
 const tests = cases.map(

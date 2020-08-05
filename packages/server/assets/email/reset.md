@@ -4,7 +4,7 @@ subject: Password reset
 
 `{{greeting}}`,
 
-A password reset has been requested for you account. Please click [here]({{url}}) to reset your
+A password reset has been requested for you account. Please click [here](/{{url}}) to reset your
 password.
 
 **Didn’t request this email?**

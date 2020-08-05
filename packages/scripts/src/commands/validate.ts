@@ -104,9 +104,9 @@ async function validate(
   );
   assert(typeof pkg.description === 'string', 'package.json', 'Description should be valid');
   assert(
-    pkg.homepage === 'https://appsemble.dev',
+    pkg.homepage === 'https://appsemble.app',
     'package.json',
-    'Homepage should be "https://appsemble.dev"',
+    'Homepage should be "https://appsemble.app"',
   );
   assert(
     pkg.bugs === 'https://gitlab.com/appsemble/appsemble/issues',

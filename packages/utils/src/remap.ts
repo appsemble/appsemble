@@ -61,6 +61,11 @@ const mapperImplementations: MapperImplementations = {
       return error.message;
     }
   },
+
+  'string.replace': (values, input) => {
+    const [[regex, replacer]] = Object.entries(values);
+    return String(input).replace(new RegExp(regex, 'gm'), replacer);
+  },
 };
 
 export default function remap(mappers: Remapper, input: any, context: RemapperContext): any {

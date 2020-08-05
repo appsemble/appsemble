@@ -99,13 +99,12 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const onChange = useCallback(
     (event: Event, value: any): void => {
       const { name } = event.currentTarget as HTMLInputElement;
-
       const invalid = validateField(event, value);
       const error = (invalid != null && remap(invalid.errorMessage, value)) || messages.error;
       setErrors({ ...errors, [name]: invalid && error });
       const newValues = {
         ...values,
-        [(event.currentTarget as HTMLInputElement).name]: value,
+        [name]: value,
       };
       const newValidity = { ...validity, [name]: !invalid };
       setValidity(newValidity);

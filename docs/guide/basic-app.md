@@ -1,8 +1,3 @@
----
-menu: Guide
-route: /guide/basic-app
----
-
 # Basic app
 
 Each app has a name, description, and a default page. Notice the name and description have the value
@@ -10,8 +5,8 @@ that was entered in the _“Create app”_ dialog.
 
 ## Empty app
 
-The newly created app has two pages. On each page, an [`action-button`](../blocks/action-button)
-block is rendered.
+The newly created app has two pages. On each page, an
+[`action-button`](/blocks/@appsemble/action-button) block is rendered.
 
 The icon on the button is specified in the block parameters. Because each block type has different
 functionalities, they also accept different types of parameters.
@@ -70,8 +65,8 @@ description: This is the best smith in town.
 The schema is used as a safety net for invalid data, but also for representation in some places.
 
 When the app is published with the `resources` property, a new “Resources” menu item appears to the
-side menu. This way resources can be managed in a generic way from within [Appsemble studio](studio)
-in an administrator-like fashion.
+side menu. This way resources can be managed in a generic way from within
+[Appsemble studio](studio.md) in an administrator-like fashion.
 
 ## Displaying data
 
@@ -85,7 +80,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 -   - name: Example Page A
 -     blocks:
 -       - type: action-button
--         version: 0.13.6
+-         version: 0.13.7
 -         parameters:
 -           icon: arrow-right
 -         actions:
@@ -96,7 +91,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 -   - name: Example Page B
 -     blocks:
 -       - type: action-button
--         version: 0.13.6
+-         version: 0.13.7
 -         parameters:
 -           icon: arrow-left
 -         actions:
@@ -106,7 +101,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 +   - name: People
 +     blocks:
 +       - type: table
-+         version: 0.13.6
++         version: 0.13.7
 +         events:
 +           listen:
 +             data: people
@@ -147,7 +142,7 @@ Let’s add such a `data-loader` block.
     - name: People
       blocks:
 +       - type: data-loader
-+         version: 0.13.6
++         version: 0.13.7
 +         actions:
 +           onLoad:
 +             type: resource.query
@@ -156,7 +151,7 @@ Let’s add such a `data-loader` block.
 +           emit:
 +             data: people
         - type: table
-          version: 0.13.6
+          version: 0.13.7
 ```
 
 When the app is saved, it will start off by showing a spinner. It then quickly turns into some
@@ -195,7 +190,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.query
@@ -204,7 +199,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.13.6
+        version: 0.13.7
         events:
           listen:
             data: people
@@ -226,7 +221,7 @@ Add a new page:
 +   - name: Register
 +     blocks:
 +       - type: form
-+         version: 0.13.6
++         version: 0.13.7
 +         actions:
 +           onSubmit:
 +             type: resource.create
@@ -285,7 +280,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.13.6
+        version: 0.13.7
         parameters:
           fields:
             - name: firstName
@@ -302,7 +297,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.query
@@ -311,7 +306,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.13.6
+        version: 0.13.7
         events:
           listen:
             data: people
@@ -337,7 +332,7 @@ Add a new page:
 +       - id
 +     blocks:
 +       - type: data-loader
-+         version: 0.13.6
++         version: 0.13.7
 +         actions:
 +           onLoad:
 +             type: resource.get
@@ -346,7 +341,7 @@ Add a new page:
 +           emit:
 +             data: person
 +       - type: detail-viewer
-+         version: 0.13.6
++         version: 0.13.7
 +         events:
 +           listen:
 +             data: person
@@ -409,7 +404,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.13.6
+        version: 0.13.7
         parameters:
           fields:
             - name: firstName
@@ -426,7 +421,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.query
@@ -435,7 +430,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.13.6
+        version: 0.13.7
         events:
           listen:
             data: people
@@ -451,7 +446,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.13.6
+        version: 0.13.7
         actions:
           onLoad:
             type: resource.get
@@ -460,7 +455,7 @@ pages:
           emit:
             data: person
       - type: detail-viewer
-        version: 0.13.6
+        version: 0.13.7
         events:
           listen:
             data: person
@@ -486,9 +481,9 @@ If you got to this point, you have seen the basics of creating apps using Appsem
 complex apps require more features than creating and viewing resources. The following guides
 continue on the result of the app created in this guide:
 
-- [Resources](resources)
-- [Remappers](remappers)
-- [Security](security)
-- [Notifications](notifications)
-- [Theming](theming)
-- [DNS](dns)
+- [Resources](resources.md)
+- [Remappers](remappers.md)
+- [Security](security.md)
+- [Notifications](notifications.md)
+- [Theming](theming.md)
+- [DNS](dns.md)

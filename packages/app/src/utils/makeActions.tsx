@@ -5,7 +5,7 @@ import type {
   ActionType,
   AppDefinition,
   BlockDefinition,
-  PageDefinition,
+  FlowPageDefinition,
   Remapper,
 } from '@appsemble/types';
 import type { EventEmitter } from 'events';
@@ -17,7 +17,7 @@ import actionCreators, { ActionCreator, ActionCreators } from './actions';
 interface MakeActionsParams {
   actions: { [action: string]: ActionType };
   definition: AppDefinition;
-  context: BlockDefinition | PageDefinition;
+  context: BlockDefinition | FlowPageDefinition;
   history: RouteComponentProps['history'];
   showDialog: ShowDialogAction;
   extraCreators: ActionCreators;
@@ -168,7 +168,7 @@ export default function makeActions({
         }
         type = 'noop';
       } else {
-        actionDefinition = context.actions[on];
+        actionDefinition = context.actions[on as keyof typeof context.actions];
         ({ type } = actionDefinition);
       }
 
@@ -198,7 +198,7 @@ export default function makeActions({
   if (actions?.$any) {
     anyActions = Object.keys(context.actions || {})
       .filter((key) => !actionMap[key])
-      .reduce<{ [key: string]: Action }>((acc, on) => {
+      .reduce<{ [key: string]: Action }>((acc, on: keyof typeof context.actions) => {
         const actionDefinition = context.actions[on];
         const { type } = actionDefinition;
 

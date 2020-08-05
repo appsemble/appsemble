@@ -11,6 +11,7 @@ const unified = require('unified');
 
 exports.plugins = [
   'remark-frontmatter',
+  ['remark-validate-links', { repository: 'https://gitlab.com/appsemble/appsemble.git' }],
   [
     'remark-retext',
     unified()

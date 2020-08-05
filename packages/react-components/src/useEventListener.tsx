@@ -37,7 +37,6 @@ function useEventListener(
 ): void {
   useEffect(() => {
     target.addEventListener(type, listener, options);
-
     return () => target.removeEventListener(type, listener, options);
   }, [listener, options, target, type]);
 }

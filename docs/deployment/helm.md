@@ -1,8 +1,3 @@
----
-menu: Deployment
-route: /deployment/helm
----
-
 # Helm
 
 ## Prerequisites

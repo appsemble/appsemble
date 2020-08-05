@@ -295,6 +295,22 @@ export interface GeoCoordinatesField extends AbstractField {
   defaultValue?: object;
 
   /**
+   * The location (latitude, longitude) to default to when the user’s location cannot be found.
+   *
+   * This can be used to set the location to something that is more relevant to the user.
+   *
+   * @default [51.476852, 0]
+   */
+  defaultLocation?: [number, number];
+
+  /**
+   * The error message to display when the location couldn’t be determined.
+   *
+   * @default 'Couldn’t find your location. Are location services enabled?'
+   */
+  locationError?: Remapper;
+
+  /**
    * The type of the field.
    */
   type: 'geocoordinates';

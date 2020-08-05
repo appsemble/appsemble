@@ -1,8 +1,3 @@
----
-menu: Guide
-route: /guide/oauth2
----
-
 # OAuth2
 
 Appsemble supports login using third party OAuth2 providers. Appsemble uses the authorization code
@@ -69,14 +64,14 @@ sequenceDiagram
   Appsemble Studio->>+Provider: User is redirected
   Provider->>-Appsemble Studio: User is returned with provider login code
   Note right of Provider: User approves login
-  rect hsl(30, 30%, 30%)
+  rect hsla(30, 30%, 30%, 0.5)
     Note over Appsemble Studio,Provider: This happens below the surface.
     Appsemble Studio-->>Provider: Get provider token and user info
     Provider-->>Appsemble Studio: Return provider token and user info
     Note right of Appsemble Studio: The logged in Appsemble account is linked<br/>if available, else a new account is created.
   end
   Appsemble Studio->>App: User is returned with Appsemble login code
-  rect hsl(30, 30%, 30%)
+  rect hsla(30, 30%, 30%, 0.5)
     Note over App,Appsemble Studio: This happens below the surface.
     App-->>Appsemble Studio: Get Appsemble token
     Appsemble Studio-->>App: Return Appsemble token

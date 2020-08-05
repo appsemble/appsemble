@@ -5,7 +5,7 @@
 ## Usage
 
 These are instructions for developing the Appsemble core platform. Production setup instructions can
-be found in the [server readme](server/README.md).
+be found in [here](docs/deployment/helm.md).
 
 A live deployment is made for each branch. Each deployment has their own subdomain of
 _appsemble.app_. The live preview for the master branch can be found on
@@ -65,7 +65,7 @@ yarn appsemble block publish blocks/*
 
 Any block that is found within the workspaces listed in `package.json` will be hot-reloaded. More
 information about block development and hot-reloading can be found
-[here](https://appsemble.dev/development/developing-blocks).
+[here](https://appsemble.app/docs/development/developing-blocks).
 
 ### App templates
 
