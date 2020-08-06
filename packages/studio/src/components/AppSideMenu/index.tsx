@@ -25,6 +25,8 @@ export default function AppSideMenu(): ReactElement {
   const { url } = useRouteMatch();
 
   const editPermission = organization && checkRole(organization.role, Permission.EditApps);
+  const editMessagePermission =
+    organization && checkRole(organization.role, Permission.EditAppMessages);
   const pushNotificationPermission =
     organization && checkRole(organization.role, Permission.PushNotifications);
 
@@ -60,6 +62,13 @@ export default function AppSideMenu(): ReactElement {
                 ))}
           </SideNavLink>
         </>
+      )}
+      {editMessagePermission && (
+        <SideNavLink
+          icon="language"
+          label={<FormattedMessage {...messages.translations} />}
+          to={`${url}/translations`}
+        />
       )}
       {pushNotificationPermission && (
         <SideNavLink

@@ -45,7 +45,7 @@ export default async function renderEmail(
 
   visit<Link>(mdast, 'link', (node) => {
     // eslint-disable-next-line no-param-reassign
-    node.url = node.url.replace(/{{(\w+)}}/, replace);
+    node.url = node.url.replace(/\/{{(\w+)}}/, replace);
   });
   visit<InlineCode>(mdast, 'inlineCode', (node, index, parent: Parent) => {
     parent.children.splice(index, 1, {

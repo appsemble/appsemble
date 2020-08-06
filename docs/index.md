@@ -1,6 +1,5 @@
 ---
-name: Getting Started
-route: /
+icon: home
 ---
 
 # Getting Started
@@ -19,8 +18,8 @@ complexity.
 
 Check out the resources below for more information on how to develop apps using Appsemble.
 
-- [App development guide](guide)
-- [Documentation on blocks](blocks)
+- [App development guide](guide/index.md)
+- [Documentation on blocks](/blocks)
 
 ## System Admin
 
@@ -29,8 +28,8 @@ works or how Appsemble can be deployed on your own server.
 
 For more information, please refer to the links below.
 
-- [Deployment using Docker Compose](deployment/docker-compose)
-- [Deployment using Helm](deployment/helm)
+- [Deployment using Docker Compose](deployment/docker-compose.md)
+- [Deployment using Helm](deployment/helm.md)
 
 ## Block Developer
 
@@ -39,8 +38,8 @@ order to create apps that do exactly what the user needs. Blocks can be freely d
 submitted to Appsemble for use within apps. Check out the links below for some resources on getting
 started.
 
-- [Tutorial on getting started with a new block](development/developing-blocks)
-- [Documentation on existing blocks](blocks)
+- [Tutorial on getting started with a new block](development/developing-blocks.md)
+- [Documentation on existing blocks](/blocks)
 
 ## Core Developer
 
@@ -49,6 +48,6 @@ database, authentication provider, and the app components used to display apps.
 
 See also:
 
-- [API documentation](https://appsemble.app/api/explorer)
+- [API documentation](/api/explorer)
 - [Source code on GitLab](https://gitlab.com/appsemble/appsemble)
 - [Contribution guidelines](https://gitlab.com/appsemble/appsemble/blob/master/CONTRIBUTING.md)

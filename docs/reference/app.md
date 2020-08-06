@@ -1,9 +1,3 @@
----
-menu: Reference
-name: App
-route: /reference/app
----
-
 # App
 
 The app definition is where it all starts for each Appsemble app. On its own an app does not do
@@ -43,7 +37,7 @@ immediately request for the permission upon opening the app.
 ## `pages`\*
 
 The list of pages. Each app must have at least one page. More information about the properties of a
-page can be found [here](page).
+page can be found [here](page.md).
 
 ## `defaultPage`\*
 
@@ -52,7 +46,7 @@ The default page of the app. The value must be equal to the name of one of the p
 ## `resources`
 
 The resources that are associated with this app. More information about resources and how they can
-be used can be found [here](../guide/resources).
+be used can be found [here](../guide/resources.md).
 
 ## `security`
 

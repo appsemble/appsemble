@@ -1,15 +1,10 @@
----
-menu: Reference
-name: Action
-route: /reference/action
----
-
 # Action
 
 Actions are behaviors that define what happens when certain events within blocks or pages trigger.
-Examples of such triggers are the `onLoad` action in the [data-loader block](../blocks/list) that
-gets called when the data-loader loads its initial data, and the `onSubmit` action in the
-[form block](../blocks/form) that gets triggered whenever the user presses the submit button.
+Examples of such triggers are the `onLoad` action in the
+[data-loader block](/blocks/@appsemble/list) that gets called when the data-loader loads its initial
+data, and the `onSubmit` action in the [form block](/blocks/@appsemble/form) that gets triggered
+whenever the user presses the submit button.
 
 The behavior of an action can be defined within the `actions` object in a block or page. An action
 always requires the property `type`, which is what is used to determine which action should be used
@@ -76,7 +71,7 @@ they have performed a certain action.
 
 | Parameter   | Required | Description                                                                                                                                               |
 | ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| body        | true     | The body of the message. Supports [Remappers](/guide/remappers).                                                                                          |
+| body        | true     | The body of the message. Supports [Remappers](../guide/remappers.md).                                                                                     |
 | color       |          | The Bulma color to apply to the message. Supported values are: `dark`, `primary`, `link`, `success`, `info`, `warning`, and `danger`. Defaults to `info`. |
 | dismissable |          | Boolean value indicating whether the user is able to dismiss the message manually. Defaults to `false`.                                                   |
 | timeout     |          | The time in milliseconds how long the message should be visible. Defaults to 5000 milliseconds.                                                           |
@@ -88,28 +83,30 @@ required.
 
 ## `flow.next`
 
-On [flow pages](page#subpages), proceed to the next page if it is present. Otherwise, the flow is
+On [flow pages](page.md#subpages), proceed to the next page if it is present. Otherwise, the flow is
 considered to be complete and [`flow.finish`](#flowfinish) will be called instead.
 
 ## `flow.back`
 
-On [flow pages](page#subpages), return to the previous page if it is present. If this is called on
-the first page, nothing happens.
+On [flow pages](page.md#subpages), return to the previous page if it is present. If this is called
+on the first page, nothing happens.
 
 ## `flow.finish`
 
-On [flow pages](page#subpages), triggers the [`onFlowFinish`](page#onflowfinish) action on the page.
+On [flow pages](page.md#subpages), triggers the [`onFlowFinish`](page.md#onflowfinish) action on the
+page.
 
 ## `flow.cancel`
 
-On [flow pages](page#subpages), triggers the [`onFlowCancel`](page#onflowfinish) action on the page.
+On [flow pages](page.md#subpages), triggers the [`onFlowCancel`](page.md#onflowfinish) action on the
+page.
 
 ## `resource`
 
 The resource actions simplify the usage of [request](#request) by providing it with defaults based
 on the resource definition. Resource actions are described in more detail
-[here](../guide/resources#resource-actions). All parameters that apply to request actions can also
-be used with resource actions.
+[here](../guide/resources.md#resource-actions). All parameters that apply to request actions can
+also be used with resource actions.
 
 | Parameter | Required | Description                      |
 | --------- | -------- | -------------------------------- |
@@ -120,7 +117,7 @@ be used with resource actions.
 Performs a web request. This can be used to call the Appsemble API or an external API in order to
 fetch data or send data. When sending `POST`, `PUT`, `DELETE` and `PATCH` calls the data that is
 currently available in the block gets passed through. An example of its usage is to send a `POST`
-request using the [form block](../blocks/form).
+request using the [form block](/blocks/@appsemble/form).
 
 If the content type of the request is `text/xml` or `application/xml`, the data will be converted to
 JSON.

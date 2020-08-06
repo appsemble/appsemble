@@ -1,9 +1,3 @@
----
-menu: Reference
-name: Page
-route: /reference/page
----
-
 # Page
 
 One of the most important components of an Appsemble app is its list of pages. Without pages, the
@@ -43,7 +37,8 @@ is divided into _subpages_, allowing for users to be guided through several step
 can be used to facilitate navigating through flow pages.
 
 Setting this value to `tabs` will result in the page displaying tabs at the top of the page. Each
-tab corresponds to a _subpage_ which can be linked to directly using the [link action](action#link).
+tab corresponds to a _subpage_ which can be linked to directly using the
+[link action](action.md#link).
 
 ## `blocks`\*
 
@@ -61,7 +56,7 @@ updated.
 correct roles, the block will not be visible.
 
 **blocks[].header**: A header to display above the block. This supports
-[remappers](/guide/remappers).
+[remappers](../guide/remappers.md).
 
 > Note: This field is not required if `type` is set to `flow`.
 
@@ -82,7 +77,7 @@ itself. Defaults to `left-menu` if navigation or App navigation are not set.
 Set to `bottom` to use a navigation pane at the bottom of the screen instead of the default side
 menu. Set to `hidden` to display no navigational menus at all.
 
-See also: [App](app#navigation)
+See also: [App](app.md#navigation)
 
 ## `hideFromMenu`
 
@@ -106,7 +101,7 @@ Users trying to visit a page without having the correct roles will be redirected
 that they are allowed to view. If there aren’t any accessible pages, the user will be logged out and
 instructed to contact the app owner to get permissions.
 
-See also: [App](app#security)
+See also: [App](app.md#security)
 
 ## Actions
 

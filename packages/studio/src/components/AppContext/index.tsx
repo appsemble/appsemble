@@ -12,6 +12,7 @@ import AppSideMenu from '../AppSideMenu';
 import Assets from '../Assets';
 import CMS from '../CMS';
 import Editor from '../Editor';
+import MessageEditor from '../MessageEditor';
 import Notifications from '../Notifications';
 import ProtectedRoute from '../ProtectedRoute';
 import Roles from '../Roles';
@@ -94,6 +95,14 @@ export default function AppContext(): ReactElement {
               permission={Permission.EditApps}
             >
               <CMS />
+            </ProtectedRoute>
+            <ProtectedRoute
+              exact
+              organization={organization}
+              path={`${path}/translations`}
+              permission={Permission.EditAppMessages}
+            >
+              <MessageEditor />
             </ProtectedRoute>
             <ProtectedRoute
               exact

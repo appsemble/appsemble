@@ -3,7 +3,7 @@
   "version": "0.13.7",
   "private": true,
   "description": "A block that renders some simple statistics in a friendly manner.",
-  "homepage": "https://appsemble.dev",
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",

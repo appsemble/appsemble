@@ -15,7 +15,7 @@ import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ChangeEvent, ReactElement, ReactText, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
@@ -148,9 +148,9 @@ export default function AppSettings(): ReactElement {
                 {...messages.domainDescription}
                 values={{
                   documentation: (
-                    <a href="https://appsemble.dev/dns" rel="noopener noreferrer" target="_blank">
+                    <Link rel="noopener noreferrer" target="_blank" to="/docs/dns">
                       <FormattedMessage {...messages.documentation} />
-                    </a>
+                    </Link>
                   ),
                 }}
               />

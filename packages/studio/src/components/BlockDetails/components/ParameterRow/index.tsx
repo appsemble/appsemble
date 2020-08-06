@@ -1,7 +1,7 @@
 import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import React, { Fragment, ReactElement } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
 
 interface ParameterRowProps {
@@ -128,9 +128,9 @@ export default function ParameterRow({
       </td>
       <td>
         {value.format === 'remapper' ? (
-          <a href="https://appsemble.dev/guide/remappers" rel="noopener noreferrer" target="_blank">
+          <Link rel="noopener noreferrer" target="_blank" to="/docs/guide/remappers">
             Remapper
-          </a>
+          </Link>
         ) : (
           value.enum?.length && (
             <Join separator=" | ">

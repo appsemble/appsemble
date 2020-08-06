@@ -1,4 +1,6 @@
-import type { ActionDefinition, AppDefinition, BlockDefinition } from '@appsemble/types';
+import type { AppDefinition, BlockDefinition } from '@appsemble/types';
+
+import { iterApp } from './iterApp';
 
 export interface BlockMap {
   [path: string]: BlockDefinition;
@@ -14,36 +16,11 @@ export interface BlockMap {
 export default function getAppBlocks(definition: AppDefinition): BlockMap {
   const blocks: BlockMap = {};
 
-  definition.pages.forEach((page, pageIndex) => {
-    const parseBlocks = (block: BlockDefinition, prefix: string): void => {
-      blocks[prefix] = block;
-      if (!block.actions) {
-        return;
-      }
-      Object.entries(block.actions).forEach(([actionKey, action]: [string, ActionDefinition]) => {
-        if (!('blocks' in action)) {
-          return;
-        }
-        action.blocks.forEach((subBlock, index) => {
-          parseBlocks(subBlock, `${prefix}.actions.${actionKey}.blocks.${index}`);
-        });
-      });
-    };
-
-    switch (page.type) {
-      case 'flow':
-      case 'tabs':
-        page.subPages.forEach((subPage, index) => {
-          subPage.blocks.forEach((block, blockIndex) => {
-            parseBlocks(block, `pages.${pageIndex}.subPages.${index}.blocks.${blockIndex}`);
-          });
-        });
-        break;
-      default:
-        page.blocks.forEach((block, index) =>
-          parseBlocks(block, `pages.${pageIndex}.blocks.${index}`),
-        );
-    }
+  iterApp(definition, {
+    onBlock(block, prefix) {
+      blocks[prefix.join('.')] = block;
+    },
   });
+
   return blocks;
 }
