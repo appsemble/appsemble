@@ -16,6 +16,7 @@ import {
   User,
 } from '../models';
 import type { KoaContext } from '../types';
+import { getRemapperContext } from '../utils/app';
 import checkRole from '../utils/checkRole';
 import sendNotification, { SendNotificationOptions } from '../utils/sendNotification';
 
@@ -533,9 +534,14 @@ async function processHooks(
       $updated: resource.updated,
     };
 
-    const title = data?.title ? remap(data.title, r, null) : resource.type;
+    const remapperContext = await getRemapperContext(
+      app,
+      app.definition.defaultLanguage || 'en-us',
+    );
+
+    const title = data?.title ? remap(data.title, r, remapperContext) : resource.type;
     const content = data?.content
-      ? remap(data.content, r, null)
+      ? remap(data.content, r, remapperContext)
       : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`;
 
     await sendSubscriptionNotifications(

@@ -114,7 +114,7 @@ function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
     const {
       params: { appId, path },
     } = ctx;
-    const app = await App.findByPk(appId, { attributes: ['definition'] });
+    const app = await App.findByPk(appId, { attributes: ['definition', 'id'] });
     if (!app) {
       throw Boom.notFound('App not found');
     }
