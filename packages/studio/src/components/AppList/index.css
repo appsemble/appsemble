@@ -1,17 +1,19 @@
+.createAppButton {
+  margin-left: auto;
+}
+
+.content {
+  max-width: 960px;
+}
+
 .appList {
   display: grid;
   grid-auto-rows: 1fr;
   grid-gap: 10px;
   /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   justify-content: center;
   margin: 0 auto;
-  max-width: 960px;
-}
-
-.filter {
-  margin: 10px auto;
-  max-width: 480px;
 }
 
 .navbarTitle,

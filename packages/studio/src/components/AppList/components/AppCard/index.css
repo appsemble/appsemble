@@ -2,27 +2,6 @@
   margin: auto;
 }
 
-.appCard {
-  position: relative;
-  text-align: center;
-}
-
-.appCardContent {
-  padding-bottom: 65px;
-}
-
-.appDescription {
-  word-wrap: break-word;
-}
-
-.appCardFooter {
-  bottom: 0;
-  position: absolute;
-  width: 100%;
-}
-
 .rating {
-  bottom: 3.5em;
-  position: absolute;
-  right: 1em;
+  left: -0.5em;
 }

@@ -29,7 +29,7 @@ export default function Rating({ className, count, onClick, value }: RatingProps
           onMouseLeave={resetRating}
           type="button"
         >
-          <i className="fas fa-star fa-2x" />
+          <i className={`fas fa-star fa-2x ${styles.starIcon}`} />
         </button>,
       );
       inactiveIcons.push(
@@ -41,12 +41,12 @@ export default function Rating({ className, count, onClick, value }: RatingProps
           onMouseLeave={resetRating}
           type="button"
         >
-          <i className="far fa-star fa-2x" />
+          <i className={`far fa-star fa-2x ${styles.starIcon}`} />
         </button>,
       );
     } else {
-      activeIcons.push(<Icon key={i} icon="star" prefix="fas" />);
-      inactiveIcons.push(<Icon key={i} icon="star" prefix="far" />);
+      activeIcons.push(<Icon key={i} className={styles.starIcon} icon="star" prefix="fas" />);
+      inactiveIcons.push(<Icon key={i} className={styles.starIcon} icon="star" prefix="far" />);
     }
   }
 

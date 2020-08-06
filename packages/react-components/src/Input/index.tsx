@@ -66,6 +66,7 @@ type InputProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children
 export default forwardRef<HTMLInputElement, InputProps>(
   (
     {
+      className,
       control,
       error,
       iconLeft,
@@ -100,6 +101,7 @@ export default forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <FormComponent
+        className={className}
         iconLeft={iconLeft}
         iconRight={!!control}
         id={id}

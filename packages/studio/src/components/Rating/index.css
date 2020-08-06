@@ -14,18 +14,12 @@
   overflow: hidden;
   position: relative;
   white-space: nowrap;
-  & * {
-    color: hsl(48, 99%, 47%) !important;
-  }
 }
 
 .starsInactive {
   left: 0;
   position: absolute;
   top: 0;
-  & * {
-    color: hsl(0, 0%, 50%) !important;
-  }
 }
 
 .starButton,
@@ -37,4 +31,8 @@
   cursor: pointer;
   outline: none;
   padding: 0;
+}
+
+.starIcon {
+  color: hsl(48, 99%, 47%) !important;
 }
