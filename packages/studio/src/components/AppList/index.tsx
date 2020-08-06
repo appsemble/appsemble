@@ -26,8 +26,7 @@ export default function AppList(): ReactElement {
   }, []);
 
   const onSortChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      const { value } = event.currentTarget;
+    ({ currentTarget: { value } }: ChangeEvent<HTMLSelectElement>) => {
       const sortedApps = [...apps];
 
       const [name, direction] = value.split('.');
@@ -89,14 +88,15 @@ export default function AppList(): ReactElement {
   return (
     <>
       <HelmetIntl title={messages.title} />
-      <Content className={styles.content} padding>
+      <Content className={styles.content} main padding>
         <div className="is-flex">
           <Input
+            className="mr-4 mb-0"
             iconLeft="search"
             name="search"
             onChange={onFilterChange}
             placeholder={formatMessage(messages.search)}
-            wrapperClassName="mr-4 mb-0"
+            type="search"
           />
           <Select className="mb-0" icon="sort" name="sort" onChange={onSortChange}>
             <option hidden>{formatMessage(messages.sort)}</option>

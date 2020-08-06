@@ -2,22 +2,6 @@
   margin: auto;
 }
 
-.appCard {
-  cursor: pointer;
-  position: relative;
-  text-align: left;
-}
-
-.appCardContent {
-  padding-bottom: 65px;
-}
-
 .rating {
-  bottom: 1em;
-  left: 1em;
-  position: absolute;
-}
-
-.rating * {
-  color: hsl(48, 99%, 47%) !important;
+  left: -0.5em;
 }

@@ -58,11 +58,6 @@ type InputProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children
       | 'url'
       | 'date'
       | 'datetime-local';
-
-    /**
-     * The class used for the wrapper component.
-     */
-    wrapperClassName?: string;
   };
 
 /**
@@ -71,6 +66,7 @@ type InputProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children
 export default forwardRef<HTMLInputElement, InputProps>(
   (
     {
+      className,
       control,
       error,
       iconLeft,
@@ -82,7 +78,6 @@ export default forwardRef<HTMLInputElement, InputProps>(
       required,
       type,
       value,
-      wrapperClassName,
       id = name,
       ...props
     },
@@ -106,7 +101,7 @@ export default forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <FormComponent
-        className={wrapperClassName}
+        className={className}
         iconLeft={iconLeft}
         iconRight={!!control}
         id={id}
