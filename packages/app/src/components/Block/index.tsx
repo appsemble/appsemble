@@ -1,6 +1,6 @@
 import { useMessages } from '@appsemble/react-components';
-import type { BlockDefinition, PageDefinition } from '@appsemble/types';
-import { baseTheme, normalizeBlockName, remap } from '@appsemble/utils';
+import type { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
+import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
@@ -45,6 +45,7 @@ interface BlockProps {
 
   showDialog: ShowDialogAction;
   ready(block: BlockDefinition): void;
+  remap: (remapper: Remapper, data: any) => any;
   pageReady: Promise<void>;
   prefix: string;
 }
@@ -66,6 +67,7 @@ export default function Block({
   pageReady,
   prefix,
   ready,
+  remap,
   showDialog,
 }: BlockProps): ReactElement {
   const history = useHistory();
@@ -149,6 +151,7 @@ export default function Block({
       pageReady,
       prefix,
       ee,
+      remap,
       showMessage: push,
     });
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
@@ -225,6 +228,7 @@ export default function Block({
     push,
     pushNotifications,
     ready,
+    remap,
     showDialog,
   ]);
 

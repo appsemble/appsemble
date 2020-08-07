@@ -200,9 +200,15 @@ export interface Remappers {
    */
   'string.format': {
     /**
-     * The template string to format.
+     * The message id pointing to the template string to format.
      */
-    template: string;
+    messageId?: string;
+
+    /**
+     * The template default string to format.
+     */
+    template?: string;
+
     /**
      * A set of remappers to convert the input to usable values.
      */

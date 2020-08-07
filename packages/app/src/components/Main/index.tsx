@@ -1,5 +1,6 @@
+import { normalize } from '@appsemble/utils/src';
 import React, { ReactElement } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import AppSettings from '../AppSettings';
@@ -19,20 +20,23 @@ export default function Main(): ReactElement {
     return null;
   }
 
+  // The `lang` parameter for the parent route is optional. It should be required for subroutes to
+  // prevent an infinite routing loop.
   return (
     <Switch>
-      <Route exact path="/Settings" sensitive>
+      <Route exact path="/:lang/Settings" sensitive>
         <AppSettings />
       </Route>
-      <Route exact path="/Login" sensitive>
+      <Route exact path="/:lang/Login" sensitive>
         <Login />
       </Route>
-      <Route exact path="/Callback" sensitive>
+      <Route exact path="/:lang/Callback" sensitive>
         <OpenIDCallback />
       </Route>
-      <Route path="/:pageId?">
+      <Route path="/:lang/:pageId">
         <Page />
       </Route>
+      <Redirect to={`/:lang/${normalize(definition.defaultPage)}`} />
     </Switch>
   );
 }

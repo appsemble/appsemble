@@ -1,6 +1,6 @@
 import { parseISO } from 'date-fns';
 
-export interface RemapperContext {
+interface RemapperContext {
   intl: {
     formatDate: (data: string) => string;
     formatTime: (data: string) => string;

@@ -1,6 +1,6 @@
 import { Button, Content, Message, useLocationString } from '@appsemble/react-components';
-import type { PageDefinition } from '@appsemble/types';
-import { checkAppRole, normalize } from '@appsemble/utils';
+import type { PageDefinition, Remapper } from '@appsemble/types';
+import { checkAppRole, normalize, remap } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -9,6 +9,7 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import type { ShowDialogParams } from '../../types';
 import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
+import { useAppMessages } from '../AppMessagesProvider';
 import BlockList from '../BlockList';
 import FlowPage from '../FlowPage';
 import PageDialog from '../PageDialog';
@@ -23,10 +24,11 @@ export default function Page(): ReactElement {
   const redirect = useLocationString();
   const { isLoggedIn, role } = useUser();
   const {
-    params: { pageId },
+    params: { lang, pageId },
     path,
     url,
-  } = useRouteMatch<{ pageId: string }>();
+  } = useRouteMatch<{ lang: string; pageId: string }>();
+  const getMessage = useAppMessages();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
@@ -38,6 +40,11 @@ export default function Page(): ReactElement {
   const index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
   const page = index === -1 ? null : definition.pages[index];
   const prefix = index === -1 ? null : `pages.${index}`;
+
+  const remapWithContext = useCallback(
+    (mappers: Remapper, input: any) => remap(mappers, input, { getMessage }),
+    [getMessage],
+  );
 
   const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
@@ -88,6 +95,7 @@ export default function Page(): ReactElement {
             ee={ee.current}
             page={page}
             prefix={prefix}
+            remap={remapWithContext}
             showDialog={showDialog}
             subPages={page.subPages}
           />
@@ -101,6 +109,7 @@ export default function Page(): ReactElement {
                   ee={ee.current}
                   page={page}
                   prefix={prefix}
+                  remap={remapWithContext}
                   showDialog={showDialog}
                 />
               ) : (
@@ -109,6 +118,7 @@ export default function Page(): ReactElement {
                   ee={ee.current}
                   page={page}
                   prefix={`${prefix}.blocks`}
+                  remap={remapWithContext}
                   showDialog={showDialog}
                 />
               )}
@@ -117,7 +127,13 @@ export default function Page(): ReactElement {
             <Redirect to={url} />
           </Switch>
         )}
-        <PageDialog dialog={dialog} ee={ee.current} page={page} showDialog={showDialog} />
+        <PageDialog
+          dialog={dialog}
+          ee={ee.current}
+          page={page}
+          remap={remapWithContext}
+          showDialog={showDialog}
+        />
       </main>
     );
   }
@@ -125,20 +141,20 @@ export default function Page(): ReactElement {
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
   if (!isLoggedIn) {
-    return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
+    return <Redirect to={`/${lang}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
   // page.
   const defaultPage = definition.pages.find((p) => p.name === definition.defaultPage);
   if (checkPagePermissions(defaultPage)) {
-    return <Redirect to={`/${normalize(defaultPage.name)}`} />;
+    return <Redirect to={`/${lang}/${normalize(defaultPage.name)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = definition.pages.find(checkPagePermissions);
   if (redirectPage) {
-    return <Redirect to={`/${normalize(redirectPage.name)}`} />;
+    return <Redirect to={`/${lang}/${normalize(redirectPage.name)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.

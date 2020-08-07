@@ -2,7 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import type { App } from '../../models';
-import * as getApp from '../../utils/getApp';
+import * as appUtils from '../../utils/app';
 import appRouter from '.';
 
 beforeAll(async () => {
@@ -10,7 +10,7 @@ beforeAll(async () => {
 });
 
 it('should serve a PWA manifest', async () => {
-  jest.spyOn(getApp, 'default').mockResolvedValue(({
+  jest.spyOn(appUtils, 'getApp').mockResolvedValue(({
     path: 'test-app',
     definition: {
       name: 'Test App',
@@ -45,7 +45,7 @@ it('should serve a PWA manifest', async () => {
 });
 
 it('should fallback to sane defaults', async () => {
-  jest.spyOn(getApp, 'default').mockResolvedValue(({
+  jest.spyOn(appUtils, 'getApp').mockResolvedValue(({
     path: 'test-app',
     definition: {
       name: 'Test App',

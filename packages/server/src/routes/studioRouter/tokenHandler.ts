@@ -13,8 +13,8 @@ import {
   User,
 } from '../../models';
 import type { KoaContext } from '../../types';
+import { getApp } from '../../utils/app';
 import createJWTResponse from '../../utils/createJWTResponse';
-import getApp from '../../utils/getApp';
 
 class GrantError extends Error {
   status: number;

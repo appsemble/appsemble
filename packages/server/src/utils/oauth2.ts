@@ -108,7 +108,7 @@ export async function getUserInfo(
     const { data } = await axios.get(userInfoUrl, {
       headers: { authorization: `Bearer ${accessToken}` },
     });
-    assign(remapper ? remap(remapper, data) : data);
+    assign(remapper ? remap(remapper, data, null) : data);
   }
 
   // Sub is very important. All other information is optional.

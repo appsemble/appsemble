@@ -6,6 +6,7 @@ import type {
   AppOAuth2Secret,
   BlockDefinition,
   BlockManifest,
+  Remapper,
   UserInfo,
 } from '@appsemble/types';
 import type { EventEmitter } from 'events';
@@ -50,6 +51,7 @@ declare global {
       vapidPublicKey: string;
       id: number;
       definition: AppDefinition;
+      languages: string[];
       logins: Pick<AppOAuth2Secret, 'icon' | 'id' | 'name'>[];
       sentryDsn: string;
     };
@@ -85,6 +87,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
+  remap: (remapper: Remapper, data: any) => any;
   showMessage: ShowMessage;
 }
 

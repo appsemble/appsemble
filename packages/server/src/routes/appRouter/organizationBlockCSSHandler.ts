@@ -2,7 +2,7 @@ import * as Boom from '@hapi/boom';
 
 import { Organization, OrganizationBlockStyle } from '../../models';
 import type { KoaContext } from '../../types';
-import getApp from '../../utils/getApp';
+import { getApp } from '../../utils/app';
 
 interface Params {
   name: string;
