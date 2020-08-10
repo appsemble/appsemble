@@ -1,3 +1,16 @@
+.root {
+  max-width: 960px;
+}
+
+.icon {
+  height: 192px;
+  width: 192px;
+}
+
+.appMeta {
+  flex: 1 1 auto;
+}
+
 .titleContainer {
   display: flex;
   justify-content: space-between;
@@ -6,4 +19,8 @@
 .title {
   align-items: center;
   display: flex;
+}
+
+.buttonContainer {
+  flex-flow: column;
 }

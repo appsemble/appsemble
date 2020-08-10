@@ -3,18 +3,19 @@ import {
   Content,
   Loader,
   Message,
-  Title,
   useData,
   useMessages,
 } from '@appsemble/react-components';
 import type { Rating } from '@appsemble/types';
 import React, { ReactElement } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';
+import HeaderControl from '../HeaderControl';
 import RateApp from '../RateApp';
-import StarRating from '../Rating';
+import StarRating from '../StarRating';
 import { useUser } from '../UserProvider';
+import styles from './index.css';
 import messages from './messages';
 
 export default function AppRatings(): ReactElement {
@@ -58,30 +59,33 @@ export default function AppRatings(): ReactElement {
   }
 
   return (
-    <Content className="ml-0 mt-2" padding>
-      <Title>
+    <>
+      <HeaderControl
+        control={userInfo && <RateApp app={app} className="mb-4" onRate={onRate} />}
+        level={3}
+      >
         <FormattedMessage {...messages.ratings} />
-      </Title>
-      {userInfo && <RateApp app={app} className="mb-4" onRate={onRate} />}
-      <div className="content">
+      </HeaderControl>
+      <div>
         {ratings.map((rating) => (
           <div key={rating.$created} className="mb-4">
-            <span className="is-block has-text-weight-bold">
+            <hr />
+            <div className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}
               {userInfo && rating.UserId === userInfo.sub && (
                 <span className="tag is-success ml-2">
                   <FormattedMessage {...messages.you} />
                 </span>
               )}
-            </span>
+            </div>
             <StarRating className="is-inline" value={rating.rating} />
-            <span className="is-inline has-text-grey-light is-size-7">
-              {new Date(rating.$updated).toLocaleString()}
+            <span className="is-inline has-text-grey-light is-size-7 ml-2">
+              <FormattedDate value={rating.$updated} />
             </span>
-            {rating.description && <blockquote>{rating.description}</blockquote>}
+            <p className={styles.description}>{rating.description}</p>
           </div>
         ))}
       </div>
-    </Content>
+    </>
   );
 }

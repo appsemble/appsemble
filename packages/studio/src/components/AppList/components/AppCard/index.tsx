@@ -4,7 +4,7 @@ import React, { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import Rating from '../../../Rating';
+import StarRating from '../../../StarRating';
 import styles from './index.css';
 import messages from './messages';
 
@@ -28,7 +28,7 @@ export default function AppCard({ app }: AppCardProps): ReactElement {
         <Subtitle className="mb-0" level={6}>
           @{app.OrganizationId}
         </Subtitle>
-        <Rating
+        <StarRating
           className={`pt-4 ${styles.rating}`}
           value={(app.rating && app.rating.average) || 0}
         />

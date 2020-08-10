@@ -11,6 +11,7 @@ import {
   Modal,
   SimpleForm,
   SimpleInput,
+  SimpleModalFooter,
   Table,
   Title,
   useConfirmation,
@@ -114,14 +115,11 @@ export default function ClientCredentials(): ReactElement {
               <FormattedMessage {...messages.close} />
             </CardFooterButton>
           ) : (
-            <>
-              <CardFooterButton onClick={resetModal}>
-                <FormattedMessage {...messages.cancel} />
-              </CardFooterButton>
-              <CardFooterButton color="primary" type="submit">
-                <FormattedMessage {...messages.submit} />
-              </CardFooterButton>
-            </>
+            <SimpleModalFooter
+              cancelLabel={<FormattedMessage {...messages.cancel} />}
+              onClose={resetModal}
+              submitLabel={<FormattedMessage {...messages.submit} />}
+            />
           )
         }
         isActive={modal.enabled}
@@ -148,7 +146,7 @@ export default function ClientCredentials(): ReactElement {
               name="description"
               required
             />
-            <SimpleInput<typeof Calendar>
+            <SimpleInput
               component={Calendar}
               displayMode="inline"
               help={<FormattedMessage {...messages.expiresHelp} />}
@@ -156,19 +154,19 @@ export default function ClientCredentials(): ReactElement {
               name="expires"
               type="date"
             />
-            <SimpleInput<typeof Checkbox>
+            <SimpleInput
               component={Checkbox}
               help={<FormattedMessage {...messages['blocks:write']} />}
               label="blocks:write"
               name="blocks:write"
             />
-            <SimpleInput<typeof Checkbox>
+            <SimpleInput
               component={Checkbox}
               help={<FormattedMessage {...messages['organizations:styles:write']} />}
               label="organizations:styles:write"
               name="organizations:styles:write"
             />
-            <SimpleInput<typeof Checkbox>
+            <SimpleInput
               component={Checkbox}
               help={<FormattedMessage {...messages['apps:write']} />}
               label="apps:write"

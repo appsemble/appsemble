@@ -76,7 +76,7 @@ export default function SimpleInput<C extends ComponentType = typeof Input>({
 
   useEffect(() => {
     if (!(name in formErrors)) {
-      const { validity } = ref.current;
+      const validity = ref?.current?.validity;
       setFormError(name, validity && !validity.valid);
     }
   }, [formErrors, name, setFormError]);
