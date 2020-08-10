@@ -57,7 +57,7 @@ export default tinyRouter([
     get: organizationBlockCSSHandler,
   },
   {
-    route: /^\.well-known\//,
+    route: /(^|\/)\.well-known(\/|$)/,
     any() {},
   },
   {

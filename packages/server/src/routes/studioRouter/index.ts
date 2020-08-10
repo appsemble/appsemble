@@ -20,7 +20,7 @@ export default tinyRouter([
     get: iconHandler,
   },
   {
-    route: /^\.well-known\//,
+    route: /(^|\/)\.well-known(\/|$)/,
     any() {},
   },
   {
