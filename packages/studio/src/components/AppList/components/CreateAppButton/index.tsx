@@ -1,6 +1,5 @@
 import {
   Button,
-  CardFooterButton,
   Checkbox,
   Message,
   Modal,
@@ -8,6 +7,7 @@ import {
   SimpleForm,
   SimpleFormError,
   SimpleInput,
+  SimpleModalFooter,
   useData,
   useToggle,
 } from '@appsemble/react-components';
@@ -72,14 +72,11 @@ export default function CreateAppButton({ className }: { className: string }): R
           selectedOrganization: 0,
         }}
         footer={
-          <>
-            <CardFooterButton onClick={modal.disable}>
-              <FormattedMessage {...messages.cancel} />
-            </CardFooterButton>
-            <CardFooterButton color="primary" type="submit">
-              <FormattedMessage {...messages.create} />
-            </CardFooterButton>
-          </>
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancel} />}
+            onClose={modal.disable}
+            submitLabel={<FormattedMessage {...messages.create} />}
+          />
         }
         isActive={modal.enabled}
         onClose={modal.disable}

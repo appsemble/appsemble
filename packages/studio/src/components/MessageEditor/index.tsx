@@ -1,6 +1,5 @@
 import {
   Button,
-  CardFooterButton,
   FormButtons,
   Loader,
   Modal,
@@ -9,6 +8,7 @@ import {
   SimpleForm,
   SimpleFormError,
   SimpleInput,
+  SimpleModalFooter,
   SimpleSubmit,
   TextArea,
   Title,
@@ -26,7 +26,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import findMessageIds from '../../utils/findMessageIds';
 import { useApp } from '../AppContext';
-import styles from './index.css';
 import messages from './messages';
 
 // Exclude languages that aren’t accepted by our server and store language codes in lowercase.
@@ -193,13 +192,7 @@ export default function MessageEditor(): ReactElement {
             </SimpleFormError>
             <SimpleBeforeUnload />
             {messageIds.map((id) => (
-              <SimpleInput<typeof TextArea>
-                key={id}
-                component={TextArea}
-                label={id}
-                name={id}
-                rows={2}
-              />
+              <SimpleInput key={id} component={TextArea} label={id} name={id} rows={2} />
             ))}
             <FormButtons>
               <SimpleSubmit disabled={submitting}>
@@ -213,14 +206,11 @@ export default function MessageEditor(): ReactElement {
         component={SimpleForm}
         defaultValues={{ language: undefined }}
         footer={
-          <>
-            <CardFooterButton onClick={modal.disable}>
-              <FormattedMessage {...messages.cancel} />
-            </CardFooterButton>
-            <SimpleSubmit className={`card-footer-item ${styles.footerSubmit}`} color="primary">
-              <FormattedMessage {...messages.add} />
-            </SimpleSubmit>
-          </>
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancel} />}
+            onClose={modal.disable}
+            submitLabel={<FormattedMessage {...messages.add} />}
+          />
         }
         isActive={modal.enabled}
         onClose={modal.disable}

@@ -31,6 +31,7 @@ export { default as SimpleBeforeUnload } from './SimpleBeforeUnload';
 export { default as SimpleForm } from './SimpleForm';
 export { default as SimpleFormError } from './SimpleFormError';
 export { default as SimpleInput } from './SimpleInput';
+export { default as SimpleModalFooter } from './SimpleModalFooter';
 export { default as SimpleSubmit } from './SimpleSubmit';
 export { default as Table } from './Table';
 export { default as TagsInput } from './TagsInput';
