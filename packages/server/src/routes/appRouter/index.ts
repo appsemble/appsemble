@@ -57,6 +57,10 @@ export default tinyRouter([
     get: organizationBlockCSSHandler,
   },
   {
+    route: /(^|\/)\.well-known(\/|$)/,
+    any() {},
+  },
+  {
     route: new RegExp(/^[^.]+$/),
     get: indexHandler,
   },

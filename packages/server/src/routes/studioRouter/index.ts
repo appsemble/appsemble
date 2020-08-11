@@ -20,6 +20,10 @@ export default tinyRouter([
     get: iconHandler,
   },
   {
+    route: /(^|\/)\.well-known(\/|$)/,
+    any() {},
+  },
+  {
     route: new RegExp(`^(/${partialNormalized.source})*`),
     get: indexHandler,
   },
