@@ -126,6 +126,7 @@ export default function MessageEditor(): ReactElement {
     const pages: string[] = [];
     iterApp(app.definition, {
       onBlock(block) {
+        findMessageIds(block.header, (messageId) => actions.push(messageId));
         findMessageIds(block.parameters, (messageId) => actions.push(messageId));
       },
       onAction(action) {
