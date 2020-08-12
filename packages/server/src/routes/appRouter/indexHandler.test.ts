@@ -1,8 +1,6 @@
 import { request, setTestApp } from 'axios-test-instance';
-import Koa from 'koa';
 
 import { App, BlockAsset, BlockVersion, Organization } from '../../models';
-import type { KoaContext } from '../../types';
 import createServer from '../../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
@@ -175,18 +173,19 @@ beforeAll(async () => {
     vapidPublicKey: '',
     vapidPrivateKey: '',
   });
-  const app = new Koa();
-  app.use((ctx: KoaContext, next) => {
-    Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
-    Object.defineProperty(ctx, 'hostname', { value: 'app.test.host.example' });
-    ctx.state.render = async (name, params) => {
-      templateName = name;
-      templateParams = params;
-      return '';
-    };
-    return next();
+  const server = await createServer({
+    argv: { host: 'http://host.example', secret: 'test' },
+    middleware(ctx, next) {
+      Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
+      Object.defineProperty(ctx, 'hostname', { value: 'app.test.host.example' });
+      ctx.state.render = async (name, params) => {
+        templateName = name;
+        templateParams = params;
+        return '';
+      };
+      return next();
+    },
   });
-  const server = await createServer({ app, argv: { host: 'http://host.example', secret: 'test' } });
   await setTestApp(server);
 });
 

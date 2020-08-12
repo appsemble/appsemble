@@ -32,25 +32,42 @@ import frontend from '../middleware/frontend';
 import tinyRouter from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
 import bulmaHandler from '../routes/bulmaHandler';
-import type { Argv } from '../types';
+import type { Argv, KoaMiddleware } from '../types';
 import authentication from './authentication';
 import convertToCsv from './convertToCsv';
 import Mailer from './email/Mailer';
 import readPackageJson from './readPackageJson';
 
 interface CreateServerOptions {
-  app?: Koa;
+  /**
+   * The CLI arguments processed by yargs.
+   */
   argv: Argv;
+
+  /**
+   * Additional middleware to inject before any other middleware.
+   *
+   * This is used for testing purposes.
+   */
+  middleware?: KoaMiddleware;
+
+  /**
+   * Webpack configurations to serve using Webpack dev server middleware.
+   */
   webpackConfigs?: Configuration[];
 }
 
 export default async function createServer({
-  app = new Koa(),
   argv = {},
+  middleware,
   webpackConfigs,
 }: CreateServerOptions): Promise<Koa> {
-  // eslint-disable-next-line no-param-reassign
+  const app = new Koa();
   app.keys = [argv.secret];
+  app.proxy = argv.proxy;
+  if (middleware) {
+    app.use(middleware);
+  }
   app.use(loggerMiddleware());
   app.use(boom());
   app.use(range);

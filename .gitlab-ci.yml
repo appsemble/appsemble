@@ -265,6 +265,7 @@ review:
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.organizations={appsemble}"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
+      --set "proxy=true"
       --set "sentrySecret=sentry"
     - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
   artifacts:
@@ -322,6 +323,7 @@ staging:
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.organizations={appsemble,amsterdam,10-second-move}"
+      --set "proxy=true"
       --set "sentrySecret=sentry"
 
 production:
@@ -353,6 +355,7 @@ production:
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
+      --set "proxy=true"
       --wait
 
 ###################################################################################################

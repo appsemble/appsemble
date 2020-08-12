@@ -109,6 +109,10 @@ export function builder(yargs: Argv): Argv {
       desc:
         'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
       required: true,
+    })
+    .option('proxy', {
+      desc: 'Trust proxy headers. This is used to detect the source IP for logging.',
+      default: false,
     });
 }
 
@@ -136,10 +140,12 @@ export async function handler(
 
   await addDBHooks(argv);
 
-  const app = new Koa();
   if (argv.sentryDsn) {
     Sentry.init({ dsn: argv.sentryDsn });
   }
+
+  const app = await createServer({ argv, webpackConfigs });
+
   app.on('error', (err, ctx) => {
     if (err instanceof (Koa as any).HttpError) {
       // It is thrown by `ctx.throw()`.
@@ -156,8 +162,7 @@ export async function handler(
     });
   });
 
-  const koa = await createServer({ app, argv, webpackConfigs });
-  const callback = koa.callback();
+  const callback = app.callback();
   const httpServer = argv.ssl
     ? https.createServer(
         {
