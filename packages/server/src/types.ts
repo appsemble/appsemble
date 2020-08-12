@@ -38,6 +38,7 @@ export interface Argv {
   gitlabClientSecret?: string;
   googleClientId?: string;
   googleClientSecret?: string;
+  proxy?: true;
   secret?: string;
   sentryDsn?: string;
   to?: string;

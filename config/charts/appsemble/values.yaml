@@ -46,6 +46,8 @@ secretSecret: appsemble
 
 migrateTo: {}
 
+proxy: false
+
 global:
   postgresql:
     postgresqlDatabase: appsemble
