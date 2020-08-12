@@ -111,7 +111,7 @@ export function builder(yargs: Argv): Argv {
       required: true,
     })
     .option('proxy', {
-      desc: 'Trust proxy headers. This is used to better detect the source IP while logging.',
+      desc: 'Trust proxy headers. This is used to detect the source IP for logging.',
       default: false,
     });
 }
