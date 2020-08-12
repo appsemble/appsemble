@@ -7,6 +7,7 @@ import React, {
   useContext,
   useState,
 } from 'react';
+import type { PromiseValue } from 'type-fest';
 
 import { CardFooterButton, Modal } from '..';
 
@@ -102,7 +103,7 @@ export default function Confirmation({ children }: ConfirmationProps): ReactElem
  */
 export function useConfirmation<T, A extends any[]>(
   options: ConfirmationOptions<T, A>,
-): (...args: A) => T extends PromiseLike<void> ? T : Promise<T> {
+): (...args: A) => Promise<PromiseValue<T>> {
   const confirm = useContext(Context);
 
   return useCallback((...args: A) => confirm(options, args), [confirm, options]);
