@@ -87,9 +87,10 @@ export default function Page(): ReactElement {
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
+    const msg = getMessage({ id: prefix, defaultMessage: page.name });
     return (
       <main className={styles.root} data-path={prefix}>
-        <TitleBar>{page.name}</TitleBar>
+        <TitleBar>{msg.format() as string}</TitleBar>
         {page.type === 'tabs' ? (
           <TabsPage
             ee={ee.current}
