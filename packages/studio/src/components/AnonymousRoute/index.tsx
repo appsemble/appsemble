@@ -10,7 +10,7 @@ import { useUser } from '../UserProvider';
  * If the user is logged in, the user is redirected to the URL specified in the `redirect` search
  * parameter, which defaults to `/apps`.
  */
-export default function AnonymousRoute(props: RouteProps): ReactElement {
+export function AnonymousRoute(props: RouteProps): ReactElement {
   const { userInfo } = useUser();
   const qs = useQuery();
 

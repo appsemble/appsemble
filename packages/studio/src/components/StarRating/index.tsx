@@ -40,7 +40,7 @@ export interface StarRatingProps {
 /**
  * Render a star rating component.
  */
-export default function StarRating({
+export function StarRating({
   className,
   count,
   name,
@@ -74,8 +74,8 @@ export default function StarRating({
     if (onChange) {
       activeIcons.push(
         <button
-          key={i}
           className={`icon ${styles.starButton} is-medium`}
+          key={i}
           name={name}
           onClick={onClick}
           onMouseEnter={onMouseEnter}
@@ -88,8 +88,8 @@ export default function StarRating({
       );
       inactiveIcons.push(
         <button
-          key={i}
           className={`icon ${styles.starButton} is-medium`}
+          key={i}
           name={name}
           onClick={onClick}
           onMouseEnter={onMouseEnter}
@@ -101,8 +101,8 @@ export default function StarRating({
         </button>,
       );
     } else {
-      activeIcons.push(<Icon key={i} className={styles.starIcon} icon="star" prefix="fas" />);
-      inactiveIcons.push(<Icon key={i} className={styles.starIcon} icon="star" prefix="far" />);
+      activeIcons.push(<Icon className={styles.starIcon} icon="star" key={i} prefix="fas" />);
+      inactiveIcons.push(<Icon className={styles.starIcon} icon="star" key={i} prefix="far" />);
     }
   }
 
@@ -110,6 +110,7 @@ export default function StarRating({
     <span className={classNames(styles.container, className)}>
       <div className={styles.wrapper}>
         <span className={styles.starsInactive}>{inactiveIcons}</span>
+        {/* eslint-disable-next-line react/forbid-dom-props */}
         <span className={styles.starsActive} style={{ width: `${localRating * 20}%` }}>
           {activeIcons}
         </span>

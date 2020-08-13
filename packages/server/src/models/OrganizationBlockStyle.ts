@@ -15,7 +15,7 @@ import {
 import { App, Organization } from '.';
 
 @Table({ tableName: 'OrganizationBlockStyle', paranoid: true })
-export default class OrganizationBlockStyle extends Model<OrganizationBlockStyle> {
+export class OrganizationBlockStyle extends Model<OrganizationBlockStyle> {
   @PrimaryKey
   @ForeignKey(() => Organization)
   @AllowNull(false)

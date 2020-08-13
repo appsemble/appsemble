@@ -1,10 +1,11 @@
+import os from 'os';
+import { Readable } from 'stream';
+import { URLSearchParams } from 'url';
+
 import { logger } from '@appsemble/node-utils';
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import FormData from 'form-data';
-import os from 'os';
-import { Readable } from 'stream';
-import { URLSearchParams } from 'url';
 
 import { configureAxios, formData, requestLogger, responseLogger } from './interceptors';
 
@@ -21,7 +22,7 @@ describe('formData', () => {
   it('should add headers for form-data requests', async () => {
     let headers;
     mock.onAny('/').reply((config) => {
-      headers = config.headers;
+      ({ headers } = config);
       return [200];
     });
     const form = new FormData();
@@ -35,7 +36,7 @@ describe('formData', () => {
   it('should not add headers to non form-data requests', async () => {
     let headers;
     mock.onAny('/').reply((config) => {
-      headers = config.headers;
+      ({ headers } = config);
       return [200];
     });
     await instance.post('/', {});

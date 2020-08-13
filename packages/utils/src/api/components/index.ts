@@ -1,17 +1,15 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
-import examples from './examples';
-import parameters from './parameters';
-import requestBodies from './requestBodies';
-import responses from './responses';
-import schemas from './schemas';
-import securitySchemes from './securitySchemes';
+import * as parameters from './parameters';
+import * as requestBodies from './requestBodies';
+import * as responses from './responses';
+import * as schemas from './schemas';
+import * as securitySchemes from './securitySchemes';
 
-export default {
-  examples,
+export const components: OpenAPIV3.ComponentsObject = {
   parameters,
   requestBodies,
   responses,
   schemas,
   securitySchemes,
-} as OpenAPIV3.ComponentsObject;
+};

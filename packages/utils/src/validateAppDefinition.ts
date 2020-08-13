@@ -3,21 +3,21 @@ import Ajv from 'ajv';
 import languageTags from 'language-tags';
 import type { Promisable } from 'type-fest';
 
-import getAppBlocks, { BlockMap } from './getAppBlocks';
+import { BlockMap, getAppBlocks } from './getAppBlocks';
 
 /**
  * Used for throwing known Appsemble validation errors.
  */
 export class AppsembleValidationError extends Error {
-  data?: any;
+  data?: unknown;
 
   /**
-   * @param {string} message The error message to show to the user.
-   * @param {any} data Additional data that can be passed to convey additional info about the error.
+   * @param message - The error message to show to the user.
+   * @param data - Additional data that can be passed to convey additional info about the error.
    */
-  constructor(message: string, data?: any) {
+  constructor(message: string, data?: unknown) {
     super(message);
-    this.name = 'AppsembleError';
+    this.name = 'AppsembleValidationError';
     this.data = data;
   }
 }
@@ -48,7 +48,7 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
       ajv.addFormat('remapper', () => true);
       ajv.addFormat('action', (property) => {
         actionParameters.add(property);
-        return block.actions && Object.prototype.hasOwnProperty.call(block.actions, property);
+        return block.actions && Object.hasOwnProperty.call(block.actions, property);
       });
       const validate = ajv.compile(version.parameters);
       const valid = validate(block.parameters || {});
@@ -79,7 +79,7 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
         if (!Object.keys(version.actions).includes(key)) {
           acc[`${loc}.actions.${key}`] = `Custom action “${key}” is unused`;
         }
-      } else if (!Object.prototype.hasOwnProperty.call(version.actions, key)) {
+      } else if (!Object.hasOwnProperty.call(version.actions, key)) {
         acc[`${loc}.actions.${key}`] = 'Unknown action type';
       }
     });
@@ -94,9 +94,9 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
 /**
  * Check if the security roles are valid.
  *
- * @param securityDefinition The security definition to use for checking the role.
- * @param role The role the user is checked against.
- * @param checkedRoles Array containing the roles already checked.
+ * @param securityDefinition - The security definition to use for checking the role.
+ * @param role - The role the user is checked against.
+ * @param checkedRoles - Array containing the roles already checked.
  */
 function validateSecurityRoles(
   securityDefinition: Security,
@@ -124,7 +124,7 @@ function validateSecurityRoles(
 /**
  * Validates security-related definitions within the app definition.
  *
- * @param definition The definition of the app
+ * @param definition - The definition of the app
  */
 export function validateSecurity(definition: AppDefinition): void {
   const { pages, roles, security } = definition;
@@ -146,7 +146,7 @@ export function validateSecurity(definition: AppDefinition): void {
   }
 
   pages.forEach((page) => {
-    if (page.roles && page.roles.length) {
+    if (page.roles?.length) {
       page.roles.forEach((role) => {
         if (!Object.keys(security.roles).includes(role)) {
           throw new AppsembleValidationError(
@@ -160,7 +160,7 @@ export function validateSecurity(definition: AppDefinition): void {
   const blocks = getAppBlocks(definition);
 
   Object.entries(blocks).forEach(([key, block]) => {
-    if (block.roles && block.roles.length) {
+    if (block.roles?.length) {
       block.roles.forEach((role) => {
         if (!Object.keys(security.roles).includes(role)) {
           throw new AppsembleValidationError(`Role ‘${role}’ in ${key} roles does not exist.`);
@@ -173,21 +173,18 @@ export function validateSecurity(definition: AppDefinition): void {
 /**
  * Validates the hooks in resource definition to ensure its properties are valid.
  *
- * @param {} definition The definition of the app
+ * @param {} definition - The definition of the app
  */
 export function validateHooks(definition: AppDefinition): void {
-  const filter = ['create', 'update', 'delete'];
+  const filter = new Set(['create', 'update', 'delete']);
   Object.entries(definition.resources).forEach(([resourceKey, resource]) => {
     Object.entries(resource)
-      .filter(([key]) => filter.includes(key))
+      .filter(([key]) => filter.has(key))
       .forEach(([actionKey, action]: [string, ResourceCall]) => {
         const { hooks } = action;
         if (hooks?.notification?.to) {
           hooks.notification.to.forEach((to) => {
-            if (
-              to !== '$author' &&
-              !Object.prototype.hasOwnProperty.call(definition.security.roles, to)
-            ) {
+            if (to !== '$author' && !Object.hasOwnProperty.call(definition.security.roles, to)) {
               throw new AppsembleValidationError(
                 `Role ‘${to}’ in resources.${resourceKey}.${actionKey}.hooks.notification.to does not exist.`,
               );
@@ -240,7 +237,7 @@ export function validateDefaultPage({ defaultPage, pages }: AppDefinition): void
   }
 }
 
-export default async function validateAppDefinition(
+export async function validateAppDefinition(
   definition: AppDefinition,
   getBlockVersions: (blockMap: BlockMap) => Promisable<BlockManifest[]>,
 ): Promise<void> {

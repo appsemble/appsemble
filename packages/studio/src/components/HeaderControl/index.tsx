@@ -13,7 +13,7 @@ interface HeaderControlProps extends ComponentPropsWithoutRef<typeof Title> {
 /**
  * A default header layout containing a title on the left and a button on the right.
  */
-export default function HeaderControl({ control, ...props }: HeaderControlProps): ReactElement {
+export function HeaderControl({ control, ...props }: HeaderControlProps): ReactElement {
   return (
     <header className={`is-flex mt-4 ${styles.root}`}>
       <Title className="is-marginless" {...props} />

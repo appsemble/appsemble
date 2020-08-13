@@ -3,7 +3,6 @@ import type {
   BaseMessage,
   HTTPMethods,
   LogAction,
-  Message,
   RequestLikeActionTypes,
   Theme,
 } from '@appsemble/sdk/src/types';

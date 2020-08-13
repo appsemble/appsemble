@@ -3,10 +3,10 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import getAppUrl from '../../../../utils/getAppUrl';
+import { getAppUrl } from '../../../../utils/getAppUrl';
 import { useApp } from '../../../AppContext';
 import { GuiEditorStep } from '../../../GUIEditor/types';
-import messages from './messages';
+import { messages } from './messages';
 
 interface EditorNavBarProps {
   dirty: boolean;
@@ -16,7 +16,7 @@ interface EditorNavBarProps {
   valid: boolean;
 }
 
-export default function EditorNavBar({
+export function EditorNavBar({
   dirty,
   editorStep,
   onUpload,
@@ -27,13 +27,13 @@ export default function EditorNavBar({
   const history = useHistory();
   const { app } = useApp();
 
-  const changeTab = useCallback((_, hash: string) => history.push({ hash }), [history]);
+  const changeTab = useCallback((event, hash: string) => history.push({ hash }), [history]);
 
   const switchEditor = useCallback(() => {
-    if (editorStep !== GuiEditorStep.YAML) {
-      setEditorStep(GuiEditorStep.YAML);
-    } else {
+    if (editorStep === GuiEditorStep.YAML) {
       setEditorStep(GuiEditorStep.SELECT);
+    } else {
+      setEditorStep(GuiEditorStep.YAML);
     }
   }, [setEditorStep, editorStep]);
 

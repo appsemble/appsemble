@@ -12,8 +12,7 @@ import React, {
   useRef,
 } from 'react';
 
-import FormComponent from '../FormComponent';
-import Icon from '../Icon';
+import { FormComponent, Icon } from '..';
 
 type CalendarProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
@@ -57,7 +56,7 @@ type CalendarProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'child
 /**
  * A Bulma styled form input element.
  */
-export default forwardRef<HTMLInputElement, CalendarProps>(
+export const Calendar = forwardRef<HTMLInputElement, CalendarProps>(
   (
     {
       control,
@@ -103,18 +102,18 @@ export default forwardRef<HTMLInputElement, CalendarProps>(
     return (
       <FormComponent
         iconLeft={iconLeft}
-        iconRight={!!control}
+        iconRight={Boolean(control)}
         id={id}
         label={label}
         required={required}
       >
         <input
           {...props}
-          ref={inputRef}
           defaultValue={value}
           id={id}
           maxLength={maxLength}
           name={name}
+          ref={inputRef}
           required={required}
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}

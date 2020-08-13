@@ -28,7 +28,7 @@ interface RadioGroupProps
   value: any;
 }
 
-export default function RadioGroup({
+export function RadioGroup({
   children,
   className,
   disabled,

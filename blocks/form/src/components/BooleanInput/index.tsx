@@ -4,14 +4,14 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import type { BooleanField, InputProps } from '../../../block';
-import isRequired from '../../utils/isRequired';
+import { isRequired } from '../../utils/isRequired';
 
 type BooleanInputProps = InputProps<boolean, BooleanField>;
 
 /**
  * An input element for a boolean value.
  */
-export default function BooleanInput({
+export function BooleanInput({
   disabled,
   error,
   field,
@@ -27,7 +27,7 @@ export default function BooleanInput({
 
   return (
     <Checkbox
-      checked={!!value}
+      checked={Boolean(value)}
       className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}

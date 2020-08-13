@@ -1,12 +1,12 @@
 import React, { ReactElement, useCallback } from 'react';
 
-import RecursiveJSONSchemaEditor from './components/RecursiveJSONSchemaEditor';
+import { RecursiveJSONSchemaEditor } from './components/RecursiveJSONSchemaEditor';
 import type { CommonJSONSchemaEditorProps } from './types';
 
 /**
  * Render a component for editing objects based on a JSON schema.
  */
-export default function JSONSchemaEditor({
+export function JSONSchemaEditor({
   disabled,
   name,
   onChange,

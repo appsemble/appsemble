@@ -15,18 +15,18 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
-import settings from '../../utils/settings';
-import HelmetIntl from '../HelmetIntl';
+import { enableRegistration, logins } from '../../utils/settings';
+import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface LoginFormValues {
   email: string;
   password: string;
 }
 
-export default function Login(): ReactElement {
+export function Login(): ReactElement {
   const location = useLocation();
   const { login } = useUser();
   const qs = useQuery();
@@ -79,7 +79,7 @@ export default function Login(): ReactElement {
         />
         <FormButtons>
           <div>
-            {settings.enableRegistration && (
+            {enableRegistration && (
               <Link
                 className="is-block"
                 to={{ pathname: '/register', search: location.search, hash: location.hash }}
@@ -97,15 +97,15 @@ export default function Login(): ReactElement {
         </FormButtons>
       </SimpleForm>
       <div className={`${styles.socialLogins} mt-5`}>
-        {settings.logins.map((provider) => (
+        {logins.map((provider) => (
           <OAuth2LoginButton
-            key={provider.authorizationUrl}
             authorizationUrl={provider.authorizationUrl}
             className="mr-2"
             clientId={provider.clientId}
             disabled={busy.enabled}
             icon={provider.icon}
             iconPrefix="fab"
+            key={provider.authorizationUrl}
             onClick={busy.enable}
             redirect={qs.get('redirect')}
             redirectUrl="/callback"

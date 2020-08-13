@@ -1,8 +1,7 @@
 import { ClassAttributes, h, JSX, PreactDOMAttributes, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import FormComponent, { FormComponentProps } from '../FormComponent';
-import Icon from '../Icon';
+import { FormComponent, FormComponentProps, Icon } from '..';
 
 type SelectProps = FormComponentProps &
   Omit<JSX.HTMLAttributes & PreactDOMAttributes & ClassAttributes<any>, 'label' | 'onInput'> & {
@@ -20,7 +19,7 @@ type SelectProps = FormComponentProps &
 /**
  * A Bulma styled form select element.
  */
-export default function Select({
+export function Select({
   iconLeft,
   label,
   name,

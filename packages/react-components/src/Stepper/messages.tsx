@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   back: 'Back',
   next: 'Next',
   finish: 'Save',

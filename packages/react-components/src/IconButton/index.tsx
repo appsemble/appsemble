@@ -21,7 +21,7 @@ interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
  *
  * The button type is set to `button` by default.
  */
-export default function IconButton({
+export function IconButton({
   className,
   icon,
   prefix = 'fas',

@@ -1,10 +1,10 @@
 import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import CMSRoot from '../CMSRoot';
-import ResourceTable from '../ResourceTable';
+import { CMSRoot } from '../CMSRoot';
+import { ResourceTable } from '../ResourceTable';
 
-export default function CMS(): ReactElement {
+export function CMS(): ReactElement {
   const { path, url } = useRouteMatch();
 
   return (

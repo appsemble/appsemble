@@ -1,17 +1,12 @@
 import React, { ComponentPropsWithoutRef, ReactChild, ReactElement } from 'react';
 
-import Button from '../Button';
-import { useSimpleForm } from '../SimpleForm';
+import { Button, useSimpleForm } from '..';
 
 interface SimpleSubmitProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onChange'> {
   children?: ReactChild;
 }
 
-export default function SimpleSubmit({
-  disabled,
-  name,
-  ...props
-}: SimpleSubmitProps): ReactElement {
+export function SimpleSubmit({ disabled, ...props }: SimpleSubmitProps): ReactElement {
   const { formErrors, pristine, submitting } = useSimpleForm();
 
   return (

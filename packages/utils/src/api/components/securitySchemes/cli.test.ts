@@ -1,6 +1,6 @@
 import { scopes } from '../../../constants';
-import securityScheme from './cli';
+import { cli } from './cli';
 
 it('should match the known scopes defined in utils', () => {
-  expect(Object.keys(securityScheme.flows.clientCredentials.scopes)).toStrictEqual(scopes);
+  expect(Object.keys(cli.flows.clientCredentials.scopes)).toStrictEqual(scopes);
 });

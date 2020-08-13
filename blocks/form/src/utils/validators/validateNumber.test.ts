@@ -1,6 +1,6 @@
 import type { NumberField } from 'blocks/form/block';
 
-import validateNumber from './validateNumber';
+import { validateNumber } from './validateNumber';
 
 describe('validateNumber', () => {
   it('should return the first requirement that does not validate', () => {
@@ -9,9 +9,8 @@ describe('validateNumber', () => {
       name: 'test',
       requirements: [{ required: true }, { max: 5 }],
     } as NumberField;
-    const value: any = null;
 
-    expect(validateNumber(field, value)).toStrictEqual(field.requirements[0]);
+    expect(validateNumber(field, null)).toStrictEqual(field.requirements[0]);
   });
 
   it('should should return undefined if it validates correctly', () => {
@@ -20,9 +19,8 @@ describe('validateNumber', () => {
       name: 'test',
       requirements: [{ required: true }],
     } as NumberField;
-    const value = 5;
 
-    expect(validateNumber(field, value)).toBeUndefined();
+    expect(validateNumber(field, 5)).toBeUndefined();
   });
 
   it('should validate min requirements', () => {

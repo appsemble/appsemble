@@ -16,10 +16,10 @@ import { useParams } from 'react-router-dom';
 
 import type { Resource, RouteParams } from '../..';
 import { useApp } from '../../../AppContext';
-import JSONSchemaEditor from '../../../JSONSchemaEditor';
-import ClonableCheckbox from '../ClonableCheckbox';
+import { JSONSchemaEditor } from '../../../JSONSchemaEditor';
+import { ClonableCheckbox } from '../ClonableCheckbox';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface ResourceRowProps {
   resource: Resource;
@@ -27,7 +27,7 @@ interface ResourceRowProps {
   onEdit: (resource: Resource) => void;
   schema: OpenAPIV3.SchemaObject;
 }
-export default function ResourceRow({
+export function ResourceRow({
   onDelete,
   onEdit,
   resource,
@@ -82,7 +82,7 @@ export default function ResourceRow({
     setEditingResource(null);
   }, [modal]);
 
-  const onEditChange = useCallback((_event: NamedEvent, value: any) => {
+  const onEditChange = useCallback((event: NamedEvent, value: Resource) => {
     setEditingResource(value);
   }, []);
 
@@ -118,7 +118,7 @@ export default function ResourceRow({
         <div className={styles.actionsCell}>
           <Button className="has-text-info" icon="pen" onClick={openEditModal} />
           <Button color="danger" icon="trash" inverted onClick={handleDeleteResource} />
-          {Object.prototype.hasOwnProperty.call(app, 'resources') && (
+          {Object.hasOwnProperty.call(app, 'resources') && (
             <ClonableCheckbox
               checked={resource.$clonable}
               id={`clonable${resource.id}`}
@@ -160,7 +160,7 @@ export default function ResourceRow({
       {Object.keys(schema?.properties ?? {})
         .filter((key) => key !== 'id')
         .map((key) => (
-          <td key={key} className={styles.contentCell}>
+          <td className={styles.contentCell} key={key}>
             {typeof resource[key] === 'string' ? resource[key] : JSON.stringify(resource[key])}
           </td>
         ))}

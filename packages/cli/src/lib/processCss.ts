@@ -1,4 +1,5 @@
-import fs from 'fs-extra';
+import { promises as fs } from 'fs';
+
 import postcss from 'postcss';
 import postcssImport from 'postcss-import';
 import postcssrc from 'postcss-load-config';
@@ -7,9 +8,11 @@ import postcssUrl from 'postcss-url';
 /**
  * Verifies and processes a CSS file using PostCSS.
  *
- * @param path Filepath of the CSS file
+ * @param path - Filepath of the CSS file
+ *
+ * @returns Processed CSS files concatenated into a single value.
  */
-export default async function processCss(path: string): Promise<string> {
+export async function processCss(path: string): Promise<string> {
   const data = await fs.readFile(path, 'utf8');
 
   const postcssConfig = await postcssrc();

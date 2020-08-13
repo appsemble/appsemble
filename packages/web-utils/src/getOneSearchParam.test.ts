@@ -1,4 +1,4 @@
-import getOneSearchParam from './getOneSearchParam';
+import { getOneSearchParam } from './getOneSearchParam';
 
 it('should return null if no values are available', () => {
   const qs = new URLSearchParams();

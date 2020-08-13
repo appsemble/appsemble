@@ -3,7 +3,7 @@ import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types
 import classNames from 'classnames';
 import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
-import Icon from '../Icon';
+import { Icon } from '..';
 
 interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   /**
@@ -37,7 +37,7 @@ interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
  *
  * The button type is set to `button` by default.
  */
-export default function Button({
+export function Button({
   children,
   className,
   color,

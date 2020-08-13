@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
  *
  * @returns A function to force update a functional React component.
  */
-export default function useForceUpdate(): () => void {
+export function useForceUpdate(): () => void {
   const [, updateState] = useState();
   return useCallback(() => updateState({}), []);
 }

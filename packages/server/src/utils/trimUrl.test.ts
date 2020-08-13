@@ -1,4 +1,4 @@
-import trimUrl from './trimUrl';
+import { trimUrl } from './trimUrl';
 
 it('should trim query parameters', () => {
   const result = trimUrl('https://example.com/path?query=parameter');

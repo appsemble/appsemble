@@ -1,12 +1,7 @@
 import makeServiceWorkerEnv from 'service-worker-mock';
 
-import onFetch from './onFetch';
+import { onFetch } from './onFetch';
 import * as utils from './utils';
-
-declare global {
-  // XXX Remove once https://github.com/DefinitelyTyped/DefinitelyTyped/pull/38267 gets merged.
-  function trigger(name: 'fetch', request: string | Request): Promise<void>;
-}
 
 jest.mock('./utils');
 

@@ -3,15 +3,15 @@ import type { BlockManifest } from '@appsemble/types';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import HelmetIntl from '../HelmetIntl';
-import BlockCard from './components/BlockCard';
+import { HelmetIntl } from '../HelmetIntl';
+import { BlockCard } from './components/BlockCard';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 /**
  * Display a list of cards representing the available blocks.
  */
-export default function BlockList(): ReactElement {
+export function BlockList(): ReactElement {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
   if (error) {
@@ -38,10 +38,10 @@ export default function BlockList(): ReactElement {
       <HelmetIntl title={messages.title} />
       <div className={`${styles.blockList} px-2 py-2`}>
         {appsembleBlocks.map((block) => (
-          <BlockCard key={block.name} block={block} className="mx-2 my-2" />
+          <BlockCard block={block} className="mx-2 my-2" key={block.name} />
         ))}
         {thirdPartyBlocks.map((block) => (
-          <BlockCard key={block.name} block={block} className="mx-2 my-2" />
+          <BlockCard block={block} className="mx-2 my-2" key={block.name} />
         ))}
       </div>
     </>

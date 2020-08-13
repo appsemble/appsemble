@@ -13,28 +13,34 @@ type Route = {
 
 /**
  * A tiny dynamic router middleware for GET requests.
+ *
+ * @param routes - The routes to serve.
+ *
+ * @returns Middleware that serves middleware matching the route regex.
  */
-export default (routes: Route[]): KoaMiddleware => async (ctx, next) => {
-  const { method, path } = ctx;
+export function tinyRouter(routes: Route[]): KoaMiddleware {
+  return (ctx, next) => {
+    const { method, path } = ctx;
 
-  let match: RegExpMatchArray;
-  const result = routes.find(({ route }) => {
-    if (typeof route === 'string') {
-      return path === route;
+    let match: RegExpMatchArray;
+    const result = routes.find(({ route }) => {
+      if (typeof route === 'string') {
+        return path === route;
+      }
+      match = path.match(route);
+      return match;
+    });
+    if (!result) {
+      return next();
     }
-    match = path.match(route);
-    return match;
-  });
-  if (!result) {
-    return next();
-  }
-  let m = method.toLowerCase();
-  if (!Object.prototype.hasOwnProperty.call(result, m)) {
-    if (!Object.prototype.hasOwnProperty.call(result, 'any')) {
-      throw Boom.methodNotAllowed();
+    let m = method.toLowerCase();
+    if (!Object.hasOwnProperty.call(result, m)) {
+      if (!Object.hasOwnProperty.call(result, 'any')) {
+        throw Boom.methodNotAllowed();
+      }
+      m = 'any';
     }
-    m = 'any';
-  }
-  ctx.params = match?.groups ? { ...match.groups } : null;
-  return result[m as HttpMethod](ctx, next);
-};
+    ctx.params = match?.groups ? { ...match.groups } : null;
+    return result[m as HttpMethod](ctx, next);
+  };
+}

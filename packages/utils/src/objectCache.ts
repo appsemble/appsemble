@@ -9,7 +9,7 @@
  *
  * @returns A getter funcion which returns the generated or memoized value.
  */
-export default function objectCache<T, K = string>(factory: (id: K) => T): (id: K) => T {
+export function objectCache<T, K = string>(factory: (id: K) => T): (id: K) => T {
   const cache = new Map<K, T>();
 
   return (id) => {

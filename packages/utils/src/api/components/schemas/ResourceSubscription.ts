@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const ResourceSubscription: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   properties: {
     create: { type: 'boolean' },

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 
-import CodeBlock from '../../CodeBlock';
-import Mermaid from '../../Mermaid';
+import { CodeBlock } from '../../CodeBlock';
+import { Mermaid } from '../../Mermaid';
 
 interface MDXCodeProps {
   /**
@@ -15,7 +15,7 @@ interface MDXCodeProps {
   className: string;
 }
 
-export default function MDXCode({ children, className }: MDXCodeProps): ReactElement {
+export function MDXCode({ children, className }: MDXCodeProps): ReactElement {
   const language = className?.replace(/^language-/, '');
 
   if (language === 'mermaid') {

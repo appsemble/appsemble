@@ -25,7 +25,7 @@ interface AuthenticationCheckers {
   studio: GetApiKeyUser<LoggedInUser>;
 }
 
-export default function authentication({ host, secret }: Argv): AuthenticationCheckers {
+export function authentication({ host, secret }: Argv): AuthenticationCheckers {
   return {
     async basic(email, password) {
       const { User: user } = await EmailAuthorization.findOne({
@@ -36,7 +36,7 @@ export default function authentication({ host, secret }: Argv): AuthenticationCh
       return isValidPassword ? user : null;
     },
 
-    async app(accessToken) {
+    app(accessToken) {
       const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
       // XXX use origin check when default app domains are implemented.
       const [prefix, id] = aud.split(':');
@@ -64,7 +64,7 @@ export default function authentication({ host, secret }: Argv): AuthenticationCh
       return [{ id: sub }, { scope }] as [LoggedInUser, Client];
     },
 
-    async studio(accessToken) {
+    studio(accessToken) {
       const { sub } = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
       return { id: sub };
     },

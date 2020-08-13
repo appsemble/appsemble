@@ -1,4 +1,6 @@
-const roles = {
+import type { OpenAPIV3 } from 'openapi-types';
+
+const roles: OpenAPIV3.ArraySchemaObject = {
   type: 'array',
   description: 'The list of roles that are allowed to use this call.',
   items: {
@@ -6,13 +8,13 @@ const roles = {
   },
 };
 
-const query = {
+const query: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The query parameters to use in the request.',
   additionalProperties: { type: 'string' },
 };
 
-const referenceAction = {
+const referenceAction: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   properties: {
     trigger: {
@@ -24,7 +26,7 @@ const referenceAction = {
   },
 };
 
-export default {
+export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   additionalProperties: {
     type: 'object',

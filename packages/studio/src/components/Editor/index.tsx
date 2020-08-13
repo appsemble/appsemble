@@ -24,15 +24,15 @@ import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'r
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
-import getAppUrl from '../../utils/getAppUrl';
+import { getAppUrl } from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
-import GUIEditor from '../GUIEditor';
+import { GUIEditor } from '../GUIEditor';
 import { GuiEditorStep } from '../GUIEditor/types';
-import HelmetIntl from '../HelmetIntl';
-import MonacoEditor from '../MonacoEditor';
-import EditorNavBar from './components/EditorNavBar';
+import { HelmetIntl } from '../HelmetIntl';
+import { MonacoEditor } from '../MonacoEditor';
+import { EditorNavBar } from './components/EditorNavBar';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
 
@@ -50,7 +50,7 @@ const monacoGuiOptions: Options = {
   readOnly: true,
 };
 
-export default function Editor(): ReactElement {
+export function Editor(): ReactElement {
   const { app, setApp } = useApp();
 
   const [appName, setAppName] = useState('');
@@ -123,7 +123,7 @@ export default function Editor(): ReactElement {
     // Attempt to parse the YAML into a JSON object
     try {
       definition = safeLoad(recipe) as AppDefinition;
-    } catch (error) {
+    } catch {
       push(formatMessage(messages.invalidYaml));
       setValid(false);
       setDirty(false);
@@ -133,7 +133,7 @@ export default function Editor(): ReactElement {
     try {
       validateStyle(style);
       validateStyle(sharedStyle);
-    } catch (error) {
+    } catch {
       push(formatMessage(messages.invalidStyle));
       setValid(false);
       setDirty(false);
@@ -213,10 +213,10 @@ export default function Editor(): ReactElement {
       setPath(data.path);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });
 
-      // update App State
+      // Update App State
       setApp(data);
-    } catch (e) {
-      if (e.response && e.response.status === 403) {
+    } catch (error) {
+      if (error.response && error.response.status === 403) {
         push(formatMessage(messages.forbidden));
       } else {
         push(formatMessage(messages.errorUpdate));
@@ -332,13 +332,13 @@ export default function Editor(): ReactElement {
           }
         >
           <MonacoEditor
-            ref={setMonacoEditor}
             decorationList={decorationList}
             language={language}
             onChange={onValueChange}
             onChangeDecorationList={setDecorationList}
             onSave={onSave}
             options={editorStep === GuiEditorStep.YAML ? monacoDefaultOptions : monacoGuiOptions}
+            ref={setMonacoEditor}
             value={value}
           />
         </div>
@@ -347,8 +347,8 @@ export default function Editor(): ReactElement {
       <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
         {path && (
           <iframe
-            ref={frame}
             className={styles.appFrame}
+            ref={frame}
             src={getAppUrl(app.OrganizationId, app.path)}
             title={formatMessage(messages.iframeTitle)}
           />

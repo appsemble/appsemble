@@ -1,4 +1,4 @@
-import dns, { DNSImplementation } from '.';
+import { dns, DNSImplementation } from '.';
 import * as kubernetes from './kubernetes';
 
 it('should invoke kubernetes if the kubernetes-ingress app domain strategy is used', async () => {
@@ -7,9 +7,9 @@ it('should invoke kubernetes if the kubernetes-ingress app domain strategy is us
     update: () => Promise.resolve(),
     remove: () => Promise.resolve(),
   };
-  jest.spyOn(kubernetes, 'default').mockResolvedValue(stubDNS);
+  jest.spyOn(kubernetes, 'kubernetes').mockResolvedValue(stubDNS);
   const result = await dns({ host: '', appDomainStrategy: 'kubernetes-ingress' });
-  expect(kubernetes.default).toHaveBeenCalledWith({
+  expect(kubernetes.kubernetes).toHaveBeenCalledWith({
     host: '',
     appDomainStrategy: 'kubernetes-ingress',
   });

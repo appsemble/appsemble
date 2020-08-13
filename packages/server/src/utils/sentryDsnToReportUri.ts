@@ -1,6 +1,6 @@
 import { URL } from 'url';
 
-export default function sentryDsnToReportUri(dsn: string): string {
+export function sentryDsnToReportUri(dsn: string): string {
   if (!dsn) {
     return null;
   }

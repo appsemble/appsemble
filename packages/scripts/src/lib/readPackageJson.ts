@@ -8,6 +8,6 @@ import type { PackageJson } from 'type-fest';
  *
  * @returns The contents of package.json
  */
-export default function readPackageJson(): PackageJson {
+export function readPackageJson(): PackageJson {
   return readJsonSync(require.resolve('../../package.json'));
 }

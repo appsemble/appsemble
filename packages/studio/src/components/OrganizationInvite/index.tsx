@@ -19,9 +19,9 @@ import { Link } from 'react-router-dom';
 import type { Organization } from '../../types';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function OrganizationInvite(): ReactElement {
+export function OrganizationInvite(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const qs = useQuery();
@@ -50,9 +50,9 @@ export default function OrganizationInvite(): ReactElement {
         if (response) {
           setOrganizations([...organizations, { ...organization, role: 'Member' }]);
         }
-      } catch (exception) {
-        if (exception?.response) {
-          const { status } = exception.response;
+      } catch (err) {
+        if (err?.response) {
+          const { status } = err.response;
           if (status === 404) {
             push(formatMessage(messages.invalidInvite));
           }

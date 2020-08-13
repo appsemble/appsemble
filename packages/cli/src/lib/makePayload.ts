@@ -1,20 +1,21 @@
-import { logger } from '@appsemble/node-utils';
-import FormData from 'form-data';
-import fs from 'fs-extra';
-import klaw from 'klaw';
+import { createReadStream, promises as fs } from 'fs';
 import path from 'path';
 import { inspect } from 'util';
 
+import { logger } from '@appsemble/node-utils';
+import FormData from 'form-data';
+import klaw from 'klaw';
+
 import type { BlockConfig } from '../types';
-import getBlockConfigFromTypeScript from './getBlockConfigFromTypeScript';
+import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
 /**
  * Configure the payload for a new block version upload.
  *
- * @param config The block configuration
+ * @param config - The block configuration
  * @returns The payload that should be sent to the version endpoint.
  */
-export default async function makePayload(config: BlockConfig): Promise<FormData> {
+export async function makePayload(config: BlockConfig): Promise<FormData> {
   const { dir, output } = config;
   const distPath = path.resolve(dir, output);
   const form = new FormData();
@@ -46,7 +47,7 @@ export default async function makePayload(config: BlockConfig): Promise<FormData
   if (icon) {
     const iconPath = path.join(dir, icon);
     logger.info(`Using icon: ${iconPath}`);
-    form.append('icon', fs.createReadStream(iconPath));
+    form.append('icon', createReadStream(iconPath));
   }
 
   return new Promise((resolve, reject) => {
@@ -58,7 +59,7 @@ export default async function makePayload(config: BlockConfig): Promise<FormData
         const relativePath = path.relative(distPath, file.path);
         const realPath = path.relative(process.cwd(), relativePath);
         logger.info(`Adding file: “${realPath}” as “${relativePath}”`);
-        form.append('files', fs.createReadStream(file.path), {
+        form.append('files', createReadStream(file.path), {
           filename: encodeURIComponent(relativePath),
         });
       })

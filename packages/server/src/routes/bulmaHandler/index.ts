@@ -16,22 +16,22 @@ const postCss = postcss([autoprefixer]);
 /**
  * Process SASS styles based on given parameters.
  *
- * @param {Object} params
- * @returns {string} SASS string containing the base Appsemble style augmented by user parameters.
+ * @param theme - The theme object to turn into a SASS file.
+ * @returns SASS string containing the base Appsemble style augmented by user parameters.
  */
-function processStyle(params: Theme): string {
+function processStyle(theme: Theme): string {
   return `
     @charset "utf-8";
     @import url(https://fonts.googleapis.com/css?display=swap&family=Libre+Franklin|Open+Sans);
     $family-sans-serif: 'Libre Franklin', sans-serif !default;
-    $primary: ${params.primaryColor || baseTheme.primaryColor};
-    $link: ${params.linkColor || baseTheme.linkColor};
-    $info: ${params.infoColor || baseTheme.infoColor};
-    $success: ${params.successColor || baseTheme.successColor};
-    $warning: ${params.warningColor || baseTheme.warningColor};
-    $danger: ${params.dangerColor || baseTheme.dangerColor};
-    $themeColor: ${params.themeColor || baseTheme.themeColor};
-    $splashColor: ${params.splashColor || baseTheme.splashColor};
+    $primary: ${theme.primaryColor || baseTheme.primaryColor};
+    $link: ${theme.linkColor || baseTheme.linkColor};
+    $info: ${theme.infoColor || baseTheme.infoColor};
+    $success: ${theme.successColor || baseTheme.successColor};
+    $warning: ${theme.warningColor || baseTheme.warningColor};
+    $danger: ${theme.dangerColor || baseTheme.dangerColor};
+    $themeColor: ${theme.themeColor || baseTheme.themeColor};
+    $splashColor: ${theme.splashColor || baseTheme.splashColor};
 
     @import "${functionPath}";
     $themeColor-invert: findColorInvert($themeColor);
@@ -65,9 +65,9 @@ function processStyle(params: Theme): string {
 /**
  * Serve the minified Bulma CSS.
  *
- * @param {Koa.Context} ctx The Koa context.
+ * @param ctx - The Koa context.
  */
-export default async function bulmaHandler(ctx: KoaContext): Promise<void> {
+export function bulmaHandler(ctx: KoaContext): void {
   const { css } = sass.renderSync({
     data: processStyle(ctx.query),
     outputStyle: 'compressed',

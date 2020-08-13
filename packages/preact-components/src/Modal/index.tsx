@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ComponentChildren, h, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import type { ElementType, Props } from '../types';
+import type { ElementType, Props } from '..';
 import styles from './index.css';
 
 interface ModalProps<T extends ElementType> {
@@ -60,7 +60,7 @@ interface ModalProps<T extends ElementType> {
 /**
  * Render an aria compliant modal overlay.
  */
-export default function Modal<T extends ElementType = 'div'>({
+export function Modal<T extends ElementType = 'div'>({
   cardClassName,
   children = null,
   className,
@@ -87,7 +87,7 @@ export default function Modal<T extends ElementType = 'div'>({
   useEffect(() => {
     if (isActive) {
       setOpen(true);
-      return undefined;
+      return;
     }
 
     // The timeout must match the CSS transition length.
@@ -113,6 +113,7 @@ export default function Modal<T extends ElementType = 'div'>({
         onKeyDown={closable ? onKeyDown : null}
         role="presentation"
       />
+      {/* eslint-disable-next-line jsdoc/no-bad-blocks */}
       {/* @ts-expect-error */}
       <Component className={classNames('modal-card', cardClassName)} {...props}>
         <div className="modal-card-head">

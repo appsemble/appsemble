@@ -2,7 +2,7 @@ import type { ActionType, App } from '@appsemble/types';
 import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback } from 'react';
 
-import ActionEditor from '../ActionEditor';
+import { ActionEditor } from '../ActionEditor';
 
 interface ActionsEditorProps {
   actions: { [action: string]: ActionType };
@@ -12,7 +12,7 @@ interface ActionsEditorProps {
   name: string;
 }
 
-export default function ActionsEditor({
+export function ActionsEditor({
   actions,
   app,
   name,
@@ -29,9 +29,9 @@ export default function ActionsEditor({
     <div>
       {Object.entries(value || actions).map(([actionName, actionValue]) => (
         <ActionEditor
-          key={actionName}
           actions={actions}
           app={app}
+          key={actionName}
           name={actionName}
           onChange={handleChange}
           value={value ? actionValue : value}

@@ -23,7 +23,7 @@ interface FormOutputProps
  * If the copy button is pressed, the value of the input is copied to the clipboard and the user is
  * notified of this.
  */
-export default function FormOutput({
+export function FormOutput({
   copyErrorMessage,
   copySuccessMessage,
   ...props
@@ -47,10 +47,10 @@ export default function FormOutput({
 
   return (
     <Input
-      ref={ref}
       control={<IconButton icon="copy" onClick={onClick} />}
       onChange={null}
       readOnly
+      ref={ref}
       // Hide the (Optional) label.
       required
       {...props}

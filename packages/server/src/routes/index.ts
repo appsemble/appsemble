@@ -1,2 +1,2 @@
-export { default as appRouter } from './appRouter';
-export { default as studioRouter } from './studioRouter';
+export { appRouter } from './appRouter';
+export { studioRouter } from './studioRouter';

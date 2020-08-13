@@ -1,6 +1,6 @@
 import { AppsembleError } from '@appsemble/node-utils/src';
 
-import convertToCsv from './convertToCsv';
+import { convertToCsv } from './convertToCsv';
 
 describe('convertToCsv', () => {
   it('should throw an error if input is null', () => {
@@ -8,6 +8,7 @@ describe('convertToCsv', () => {
 
     expect(() => convertToCsv(input as any)).toThrow(new AppsembleError('No data'));
   });
+
   it('should return an error if the input has no keys', () => {
     const input = {};
 

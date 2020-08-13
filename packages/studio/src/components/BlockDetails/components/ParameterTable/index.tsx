@@ -3,8 +3,8 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import type { Definition } from 'typescript-json-schema';
 
-import ParameterRow from '../ParameterRow';
-import messages from './messages';
+import { ParameterRow } from '../ParameterRow';
+import { messages } from './messages';
 
 interface ParameterTableProps {
   /**
@@ -16,7 +16,7 @@ interface ParameterTableProps {
 /**
  * Render out the parameters of a block in a table.
  */
-export default function ParameterTable({ parameters }: ParameterTableProps): ReactElement {
+export function ParameterTable({ parameters }: ParameterTableProps): ReactElement {
   return (
     <Table>
       <thead>

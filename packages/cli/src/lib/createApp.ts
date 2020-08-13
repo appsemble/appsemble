@@ -1,13 +1,14 @@
+import { promises as fs } from 'fs';
+import { URL } from 'url';
+
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import fs from 'fs-extra';
 import yaml from 'js-yaml';
-import { URL } from 'url';
 
-import traverseAppDirectory from './traverseAppDirectory';
-import traverseBlockThemes from './traverseBlockThemes';
-import uploadMessages from './uploadMessages';
+import { traverseAppDirectory } from './traverseAppDirectory';
+import { traverseBlockThemes } from './traverseBlockThemes';
+import { uploadMessages } from './uploadMessages';
 
 interface CreateAppParams {
   /**
@@ -38,8 +39,10 @@ interface CreateAppParams {
 
 /**
  * Create a new App.
+ *
+ * @param options - The options to use for creating an app.
  */
-export default async function createApp({
+export async function createApp({
   organizationId,
   path,
   private: isPrivate,

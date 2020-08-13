@@ -24,11 +24,11 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import type { OAuth2ClientCredentials } from '../../types';
-import HelmetIntl from '../HelmetIntl';
+import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function ClientCredentials(): ReactElement {
+export function ClientCredentials(): ReactElement {
   const { formatMessage } = useIntl();
   const { data: clients, error, loading, refresh, setData: setClients } = useData<
     OAuth2ClientCredentials[]
@@ -45,7 +45,7 @@ export default function ClientCredentials(): ReactElement {
   const registerClient = useCallback(
     async ({ description, expires, ...values }) => {
       const scopes = Object.entries(values)
-        .filter(([key, value]) => value && knownScopes.includes(key))
+        .filter(([key, value]) => value && (knownScopes as readonly string[]).includes(key))
         .map(([key]) => key);
       const { data } = await axios.post('/api/oauth2/client-credentials', {
         description,
@@ -215,8 +215,8 @@ export default function ClientCredentials(): ReactElement {
                   <Join separator=", ">
                     {client.scopes.map((scope) => (
                       <data
-                        key={scope}
                         className={styles.scope}
+                        key={scope}
                         title={formatMessage(
                           Object.hasOwnProperty.call(messages, scope)
                             ? messages[scope as keyof typeof messages]

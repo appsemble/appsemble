@@ -1,6 +1,8 @@
+import type { OpenAPIV3 } from 'openapi-types';
+
 import { partialNormalized, semver } from '../../../constants';
 
-export default {
+export const BlockVersion: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: `A version of a block definition
 

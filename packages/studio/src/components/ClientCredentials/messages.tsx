@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   title: 'OAuth2 client credentials',
   explanation: 'OAuth2 client credentials allow applications to perform actions on your behalf.',
   loadError: 'There was a problem loading your client credentials.',

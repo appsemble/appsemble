@@ -1,13 +1,18 @@
 import postcss from 'postcss';
 
-export class StyleValidationError extends Error {}
+export class StyleValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'StyleValidationError';
+  }
+}
 
-export default function validateStyle(css: postcss.ParserInput): string {
+export function validateStyle(css: postcss.ParserInput): string {
   if (!css) {
     return null;
   }
   try {
-    return postcss.parse(css).toString();
+    return String(postcss.parse(css));
   } catch (error) {
     throw new StyleValidationError(error);
   }

@@ -1,3 +1,3 @@
-export { default as MDXAnchor } from './MDXAnchor';
-export { default as MDXCode } from './MDXCode';
-export { default as MDXPre } from './MDXPre';
+export * from './MDXAnchor';
+export * from './MDXCode';
+export * from './MDXPre';

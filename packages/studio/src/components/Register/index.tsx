@@ -11,9 +11,9 @@ import axios, { AxiosError } from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import HelmetIntl from '../HelmetIntl';
+import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
-import messages from './messages';
+import { messages } from './messages';
 
 interface RegistrationFormValues {
   email: string;
@@ -21,7 +21,7 @@ interface RegistrationFormValues {
   password: string;
 }
 
-export default function Register(): ReactElement {
+export function Register(): ReactElement {
   const { login } = useUser();
   const register = useCallback(
     async (values: RegistrationFormValues) => {

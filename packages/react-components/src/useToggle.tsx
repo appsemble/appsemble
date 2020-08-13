@@ -28,9 +28,11 @@ export interface Toggle {
 /**
  * A hook for keeping track of a boolean state.
  *
- * @param initialState The initial value.
+ * @param initialState - The initial value.
+ *
+ * @returns The toggle state.
  */
-export default function useToggle(initialState = false): Toggle {
+export function useToggle(initialState = false): Toggle {
   const [enabled, setEnabled] = useState(initialState);
 
   const disable = useCallback(() => {

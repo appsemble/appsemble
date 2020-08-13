@@ -3,13 +3,13 @@ import { extension } from 'mime-types';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import download from '../../../../utils/download';
+import type { Asset } from '../..';
+import { download } from '../../../../utils/download';
 import { useApp } from '../../../AppContext';
-import type { Asset } from '../../index';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function AssetPreview({ asset }: { asset: Asset }): ReactElement {
+export function AssetPreview({ asset }: { asset: Asset }): ReactElement {
   const { app } = useApp();
 
   const downloadAsset = useCallback(async () => {

@@ -3,17 +3,17 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import ClientCredentials from '../ClientCredentials';
-import NavLink from '../NavLink';
-import OAuthSettings from '../OAuthSettings';
-import OrganizationsSettings from '../OrganizationsSettings';
-import SideMenu from '../SideMenu';
-import SideNavLink from '../SideNavLink';
-import UserSettings from '../UserSettings';
+import { ClientCredentials } from '../ClientCredentials';
+import { NavLink } from '../NavLink';
+import { OAuthSettings } from '../OAuthSettings';
+import { OrganizationsSettings } from '../OrganizationsSettings';
+import { SideMenu } from '../SideMenu';
+import { SideNavLink } from '../SideNavLink';
+import { UserSettings } from '../UserSettings';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function Settings(): ReactElement {
+export function Settings(): ReactElement {
   const collapsed = useToggle();
   const { path, url } = useRouteMatch();
 

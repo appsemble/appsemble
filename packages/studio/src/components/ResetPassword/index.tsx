@@ -11,14 +11,14 @@ import axios from 'axios';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import HelmetIntl from '../HelmetIntl';
-import messages from './messages';
+import { HelmetIntl } from '../HelmetIntl';
+import { messages } from './messages';
 
 interface FormValues {
   email: string;
 }
 
-export default function ResetPassword(): ReactElement {
+export function ResetPassword(): ReactElement {
   const [success, setSuccess] = useState(false);
 
   const submit = useCallback(async ({ email }: FormValues): Promise<void> => {

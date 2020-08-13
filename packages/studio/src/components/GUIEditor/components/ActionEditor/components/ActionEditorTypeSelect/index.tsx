@@ -3,14 +3,14 @@ import type { ActionDefinition } from '@appsemble/types';
 import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import { messages } from './messages';
 
 interface ActionEditorTypeSelectProps {
   onChange: (value: ActionDefinition['type']) => void;
   value: ActionDefinition['type'];
 }
 
-export default function ActionEditorTypeSelect({
+export function ActionEditorTypeSelect({
   onChange,
   value,
 }: ActionEditorTypeSelectProps): ReactElement {

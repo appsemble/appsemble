@@ -6,7 +6,7 @@ import { Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
+import { checkRole } from '../utils/checkRole';
 
 interface Params {
   appId: string;
@@ -21,7 +21,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
 
   try {
     validateLanguage(language);
-  } catch (e) {
+  } catch {
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 
@@ -81,7 +81,7 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
 
   try {
     validateLanguage(language);
-  } catch (e) {
+  } catch {
     throw Boom.badRequest(`Language “${language}” is invalid`);
   }
 

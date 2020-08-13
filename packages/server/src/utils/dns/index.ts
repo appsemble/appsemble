@@ -1,13 +1,14 @@
 import type { Argv } from '../../types';
-import kubernetes from './kubernetes';
+import { kubernetes } from './kubernetes';
 
 export interface DNSImplementation {
-  add(...domains: string[]): Promise<void>;
-  update(oldDomain: string, newDomain: string): Promise<void>;
-  remove(domain: string): Promise<void>;
+  add: (...domains: string[]) => Promise<void>;
+  update: (oldDomain: string, newDomain: string) => Promise<void>;
+  remove: (domain: string) => Promise<void>;
 }
 
-export default async function dns(argv: Argv): Promise<DNSImplementation> {
+// eslint-disable-next-line require-await
+export async function dns(argv: Argv): Promise<DNSImplementation> {
   if (!argv.appDomainStrategy) {
     return null;
   }

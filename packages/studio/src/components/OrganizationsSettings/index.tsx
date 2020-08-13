@@ -23,11 +23,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import type { Member, Role } from '../../types';
-import checkRole from '../../utils/checkRole';
-import HelmetIntl from '../HelmetIntl';
+import { checkRole } from '../../utils/checkRole';
+import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface Invite {
   email: string;
@@ -55,7 +55,7 @@ function calculateOrganizationId(
   return newValues;
 }
 
-export default function OrganizationsSettings(): ReactElement {
+export function OrganizationsSettings(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const {
@@ -106,8 +106,8 @@ export default function OrganizationsSettings(): ReactElement {
           }),
           color: 'success',
         });
-      } catch (exception) {
-        if (exception?.response?.status === 409) {
+      } catch (error) {
+        if (error?.response?.status === 409) {
           push(formatMessage(messages.createOrganizationConflict));
         } else {
           push(formatMessage(messages.createOrganizationError));
@@ -143,8 +143,8 @@ export default function OrganizationsSettings(): ReactElement {
           body: formatMessage(messages.inviteMemberSuccess, { email }),
           color: 'success',
         });
-      } catch (exception) {
-        switch (exception.response && exception.response.status) {
+      } catch (error) {
+        switch (error.response?.status) {
           case 404:
             push(formatMessage(messages.inviteMemberNotFound));
             break;
@@ -205,21 +205,13 @@ export default function OrganizationsSettings(): ReactElement {
             role,
           }),
         });
-      } catch (error) {
+      } catch {
         push({ body: formatMessage(messages.changeRoleError) });
         setSubmittingRole(null);
       }
     },
     [formatMessage, organizations, push, selectedOrganization],
   );
-
-  const onRemoveMemberClick = useCallback(async (memberId: string) => {
-    setRemovingMember(memberId);
-  }, []);
-
-  const onRemoveInviteClick = useCallback(async (invite: Invite) => {
-    setRemovingInvite(invite);
-  }, []);
 
   const onLeaveOrganization = useCallback(async () => {
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${userInfo.sub}`);
@@ -372,7 +364,7 @@ export default function OrganizationsSettings(): ReactElement {
         </SimpleForm>
       </Content>
 
-      {!!organizations.length && organization && (
+      {Boolean(organizations.length) && organization && (
         <>
           <hr />
           <Content>
@@ -475,7 +467,7 @@ export default function OrganizationsSettings(): ReactElement {
                             <Button
                               color="danger"
                               icon="sign-out-alt"
-                              onClick={() => onRemoveMemberClick(member.id)}
+                              onClick={() => setRemovingMember(member.id)}
                             />
                           </p>
                         )}
@@ -484,7 +476,7 @@ export default function OrganizationsSettings(): ReactElement {
                           <Button
                             color="danger"
                             icon="trash-alt"
-                            onClick={() => onRemoveMemberClick(member.id)}
+                            onClick={() => setRemovingMember(member.id)}
                             type="button"
                           />
                         </p>
@@ -508,7 +500,7 @@ export default function OrganizationsSettings(): ReactElement {
                           </Button>
                         </p>
                         <p className="control">
-                          <Button color="danger" onClick={() => onRemoveInviteClick(invite)}>
+                          <Button color="danger" onClick={() => setRemovingInvite(invite)}>
                             <Icon icon="trash-alt" size="small" />
                           </Button>
                         </p>
@@ -535,7 +527,7 @@ export default function OrganizationsSettings(): ReactElement {
             </CardFooterButton>
           </>
         }
-        isActive={!!removingInvite}
+        isActive={Boolean(removingInvite)}
         onClose={onCloseInviteDialog}
         title={<FormattedMessage {...messages.removeInviteWarningTitle} />}
       >
@@ -560,7 +552,7 @@ export default function OrganizationsSettings(): ReactElement {
             </CardFooterButton>
           </>
         }
-        isActive={!!removingMember}
+        isActive={Boolean(removingMember)}
         onClose={onCloseDeleteDialog}
         title={
           removingMember === userInfo.sub ? (

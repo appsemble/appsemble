@@ -23,7 +23,7 @@ interface MarkdownContentProps {
 /**
  * Render a Markdown document as HTML.
  */
-export default function MarkdownContent({
+export function MarkdownContent({
   className,
   content,
   sanitize = true,
@@ -32,7 +32,6 @@ export default function MarkdownContent({
   return content ? (
     <span
       className={classNames('content', className)}
-      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: marked(content, { sanitize, baseUrl: `${location.pathname}${location.search}` }),
       }}

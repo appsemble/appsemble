@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import type { EnumField, InputProps } from '../../../block';
-import isRequired from '../../utils/isRequired';
+import { isRequired } from '../../utils/isRequired';
 import styles from './index.css';
 
 type EnumInputProps = InputProps<string, EnumField>;
@@ -12,7 +12,7 @@ type EnumInputProps = InputProps<string, EnumField>;
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
-export default function EnumInput({ disabled, field, onInput, value = '' }: EnumInputProps): VNode {
+export function EnumInput({ disabled, field, onInput, value = '' }: EnumInputProps): VNode {
   const { utils } = useBlock();
 
   const { enum: options, icon, label, name, placeholder } = field;

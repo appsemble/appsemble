@@ -5,7 +5,7 @@ declare module '@appsemble/sdk' {
     /**
      * Valid action comment
      */
-    comment: {};
+    comment: never;
 
     /**
      * Unexpected comment
@@ -13,24 +13,24 @@ declare module '@appsemble/sdk' {
     /**
      * Expected comment
      */
-    duplicate: {};
+    duplicate: never;
 
     // Ignored line comment
-    line: {};
+    line: never;
   }
 
   interface EventEmitters {
     /**
      * Test event emitter.
      */
-    testEmit: {};
+    testEmit: never;
   }
 
   interface EventListeners {
     /**
      * Test event listener.
      */
-    testListener: {};
+    testListener: never;
   }
 
   // Comments are extracted by typescript-json-schema

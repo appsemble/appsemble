@@ -3,7 +3,7 @@ import type { BlockManifest } from '@appsemble/types';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import { messages } from './messages';
 
 interface EventTableProps {
   /**
@@ -15,7 +15,7 @@ interface EventTableProps {
 /**
  * Render a table listing the events that can be used for a block.
  */
-export default function EventTable({ manifest }: EventTableProps): ReactElement {
+export function EventTable({ manifest }: EventTableProps): ReactElement {
   return (
     <>
       {manifest.events.emit && (

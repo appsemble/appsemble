@@ -75,6 +75,7 @@ interface RegexRequirement extends BaseRequirement {
    * The flags to use for the regex.
    *
    * Supported values: `g`, `m`, `i`, `y`, `u`, `s`
+   *
    * @TJS-pattern ^[gimsuy]+$
    * @default 'g'
    */
@@ -240,7 +241,7 @@ export interface EnumField extends AbstractField {
  */
 export interface FileField extends AbstractField {
   /**
-   * 	The default value for the field.
+   * The default value for the field.
    */
   defaultValue?: any;
 

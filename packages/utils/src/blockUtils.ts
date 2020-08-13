@@ -7,7 +7,7 @@ const prefix = '@appsemble/';
 /**
  * Normalize a block name by prefixing it with `@appsemble` if necessary.
  *
- * @param name The input block name.
+ * @param name - The input block name.
  * @returns The normalized block name.
  */
 export function normalizeBlockName(name: string): string {
@@ -20,12 +20,12 @@ export function normalizeBlockName(name: string): string {
 /**
  * Return a block name without the organization prefix.
  *
- * @param name The input block name.
+ * @param name - The input block name.
  * @returns The prettified block name.
  */
 export function stripBlockName(name: string): string {
   if (name.startsWith(prefix)) {
-    return name.substr(prefix.length);
+    return name.slice(prefix.length);
   }
   return name;
 }
@@ -33,8 +33,8 @@ export function stripBlockName(name: string): string {
 /**
  * Filter blocks unique by their type and version.
  *
- * @param {Object[]} blocks Input blocks.
- * @returns {Object[]} Partial unique blocks. Only the type and version are returned.
+ * @param blocks - Input blocks.
+ * @returns Partial unique blocks. Only the type and version are returned.
  */
 export function filterBlocks(blocks: IdentifiableBlock[]): IdentifiableBlock[] {
   const visited = new Set();

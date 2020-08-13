@@ -1,21 +1,19 @@
-import { AppsembleError, logger } from '@appsemble/node-utils';
-import type FormData from 'form-data';
-import fs from 'fs-extra';
-import yaml from 'js-yaml';
+import { createReadStream, promises as fs, lstatSync } from 'fs';
 import { join } from 'path';
 
-import processCss from './processCss';
+import { AppsembleError, logger } from '@appsemble/node-utils';
+import type FormData from 'form-data';
+import yaml from 'js-yaml';
+
+import { processCss } from './processCss';
 
 /**
  * Traverses an app directory and appends the files it finds to the given FormData object.
  *
- * @param path The path of the app directory to traverse.
- * @param formData The FormData object to append the results into.
+ * @param path - The path of the app directory to traverse.
+ * @param formData - The FormData object to append the results into.
  */
-export default async function traverseAppDirectory(
-  path: string,
-  formData: FormData,
-): Promise<void> {
+export async function traverseAppDirectory(path: string, formData: FormData): Promise<void> {
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   const dir = await fs.readdir(path);
 
@@ -35,13 +33,13 @@ export default async function traverseAppDirectory(
   if (icon) {
     const iconPath = join(path, icon);
     logger.info(`Including icon ${iconPath}`);
-    formData.append('icon', fs.createReadStream(iconPath));
+    formData.append('icon', createReadStream(iconPath));
   }
 
   const theme = dir.find((entry) => entry.toLowerCase() === 'theme');
   if (theme) {
     const themeDir = (await fs.readdir(join(path, theme))).filter((sub) =>
-      fs.lstatSync(join(path, theme, sub)).isDirectory(),
+      lstatSync(join(path, theme, sub)).isDirectory(),
     );
 
     const core = themeDir.find((entry) => entry.toLowerCase() === 'core');

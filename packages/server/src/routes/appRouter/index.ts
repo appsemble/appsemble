@@ -1,19 +1,20 @@
 import { partialNormalized, partialSemver } from '@appsemble/utils';
+import Boom from '@hapi/boom';
 
-import tinyRouter from '../../middleware/tinyRouter';
-import blockAssetHandler from './blockAssetHandler';
-import blockCSSHandler from './blockCSSHandler';
-import cssHandler from './cssHandler';
-import iconHandler from './iconHandler';
-import indexHandler from './indexHandler';
-import manifestHandler from './manifestHandler';
-import organizationBlockCSSHandler from './organizationBlockCSSHandler';
-import organizationCSSHandler from './organizationCSSHandler';
-import robotsHandler from './robotsHandler';
+import { tinyRouter } from '../../middleware/tinyRouter';
+import { blockAssetHandler } from './blockAssetHandler';
+import { blockCSSHandler } from './blockCSSHandler';
+import { cssHandler } from './cssHandler';
+import { iconHandler } from './iconHandler';
+import { indexHandler } from './indexHandler';
+import { manifestHandler } from './manifestHandler';
+import { organizationBlockCSSHandler } from './organizationBlockCSSHandler';
+import { organizationCSSHandler } from './organizationCSSHandler';
+import { robotsHandler } from './robotsHandler';
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 
-export default tinyRouter([
+export const appRouter = tinyRouter([
   {
     route: '/manifest.json',
     get: manifestHandler,
@@ -58,7 +59,9 @@ export default tinyRouter([
   },
   {
     route: /(^|\/)\.well-known(\/|$)/,
-    any() {},
+    any() {
+      throw Boom.notFound();
+    },
   },
   {
     route: new RegExp(/^[^.]+$/),

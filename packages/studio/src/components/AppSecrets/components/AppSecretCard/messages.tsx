@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   nameLabel: 'Name',
   nameHelp: 'The name that will be displayed on the login button',
   iconLabel: 'Icon',

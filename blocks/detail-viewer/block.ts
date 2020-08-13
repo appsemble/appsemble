@@ -142,7 +142,7 @@ export interface RendererProps<F extends Field> extends Partial<BlockProps> {
   /**
    * The data that is passed through.
    */
-  data: any;
+  data: unknown;
 }
 
 declare module '@appsemble/sdk' {

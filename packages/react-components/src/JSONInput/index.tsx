@@ -10,15 +10,15 @@ import React, {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import TextArea from '../Textarea';
-import messages from './messages';
+import { TextArea } from '..';
+import { messages } from './messages';
 
 interface JSONInputProps extends ComponentPropsWithoutRef<typeof TextArea> {
   /**
    * This is called when he input has changed to match a new valid JSON value.
    *
-   * @param event The original event.
-   * @param value The new value.
+   * @param event - The original event.
+   * @param value - The new value.
    */
   onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: any) => void;
 
@@ -35,7 +35,7 @@ interface JSONInputProps extends ComponentPropsWithoutRef<typeof TextArea> {
  *
  * If the user enters invalid JSON, an error help message will be rendered.
  */
-export default forwardRef<HTMLTextAreaElement, JSONInputProps>(
+export const JSONInput = forwardRef<HTMLTextAreaElement, JSONInputProps>(
   ({ error, onChange, value, ...props }, ref): ReactElement => {
     const [oldValue, setOldValue] = useState(JSON.stringify(value, null, 2));
     const [parseError, setParseError] = useState(false);
@@ -45,7 +45,7 @@ export default forwardRef<HTMLTextAreaElement, JSONInputProps>(
         if (equal(value, JSON.parse(oldValue))) {
           return;
         }
-      } catch (err) {
+      } catch {
         return;
       }
       setOldValue(JSON.stringify(value, null, 2));
@@ -57,7 +57,7 @@ export default forwardRef<HTMLTextAreaElement, JSONInputProps>(
         setOldValue(val);
         try {
           val = v === '' ? null : JSON.parse(v);
-        } catch (err) {
+        } catch {
           setParseError(true);
           return;
         }
@@ -69,9 +69,9 @@ export default forwardRef<HTMLTextAreaElement, JSONInputProps>(
 
     return (
       <TextArea
-        ref={ref}
         error={parseError ? <FormattedMessage {...messages.error} /> : error}
         onChange={handleChange}
+        ref={ref}
         value={oldValue}
         {...props}
       />

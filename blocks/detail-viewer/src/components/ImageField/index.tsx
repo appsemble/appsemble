@@ -1,4 +1,3 @@
-/** @jsx h */
 import { useBlock } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
 import type { Remapper } from '@appsemble/sdk';
@@ -12,7 +11,7 @@ interface ImageFieldProps {
   src: string | Blob;
 }
 
-export default function ImageField({ label, name, src }: ImageFieldProps): VNode {
+export function ImageField({ label, name, src }: ImageFieldProps): VNode {
   const { parameters, utils } = useBlock();
   const obj = typeof src === 'string' && parameters?.fileBase ? src : utils.asset(src as string);
   const url = useObjectURL(obj);

@@ -1,5 +1,6 @@
-import Boom from '@hapi/boom';
 import { randomBytes } from 'crypto';
+
+import Boom from '@hapi/boom';
 import { isPast, parseISO } from 'date-fns';
 import { Op } from 'sequelize';
 

@@ -1,8 +1,9 @@
-import Boom from '@hapi/boom';
 import crypto from 'crypto';
+import { URL } from 'url';
+
+import Boom from '@hapi/boom';
 import { addMinutes } from 'date-fns';
 import { Op } from 'sequelize';
-import { URL } from 'url';
 
 import { App, EmailAuthorization, OAuth2AuthorizationCode, User } from '../models';
 import type { KoaContext } from '../types';

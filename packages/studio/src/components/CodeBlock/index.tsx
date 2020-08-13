@@ -16,7 +16,7 @@ interface CodeBlockProps {
 /**
  * Render a code block using syntax highlighting based on Monaco editor.
  */
-export default function CodeBlock({ code, language }: CodeBlockProps): ReactElement {
+export function CodeBlock({ code, language }: CodeBlockProps): ReactElement {
   const ref = useRef<HTMLPreElement>();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function CodeBlock({ code, language }: CodeBlockProps): ReactElem
   }, [language]);
 
   return (
-    <pre ref={ref} data-lang={language}>
+    <pre data-lang={language} ref={ref}>
       {code}
     </pre>
   );

@@ -3,7 +3,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { vol } from 'memfs';
 
-import kubernetes from './kubernetes';
+import { kubernetes } from './kubernetes';
 
 let backend: MockAdapter;
 jest.mock('fs');

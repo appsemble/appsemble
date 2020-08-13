@@ -1,7 +1,7 @@
 import type { AppMessages, Remapper } from '@appsemble/types';
-import IntlMessageFormat from 'intl-messageformat';
+import { IntlMessageFormat } from 'intl-messageformat';
 
-import remap from './remap';
+import { remap } from './remap';
 
 interface TestCase {
   description: string;
@@ -166,7 +166,7 @@ const tests = cases.map(
     [description, mappers, messages, input, expected] as const,
 );
 
-it.each(tests)('should %s given %j', (_, mappers, messages, input, expected) => {
+it.each(tests)('should %s given %j', (description, mappers, messages, input, expected) => {
   const result = remap(mappers, input, {
     getMessage: ({ defaultMessage, id }) => new IntlMessageFormat(messages?.[id] ?? defaultMessage),
   });

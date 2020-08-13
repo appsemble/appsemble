@@ -5,11 +5,11 @@ import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import JSONSchemaEditor from '../../../JSONSchemaEditor';
+import { JSONSchemaEditor } from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
-import ActionsEditor from '../ActionsEditor';
+import { ActionsEditor } from '../ActionsEditor';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface GUIEditorEditBlockProps {
   selectedBlock?: BlockManifest;
@@ -20,7 +20,7 @@ interface GUIEditorEditBlockProps {
   blockValue: BlockDefinition;
 }
 
-export default function GUIEditorEditBlock({
+export function GUIEditorEditBlock({
   app,
   blockValue,
   editLocation,

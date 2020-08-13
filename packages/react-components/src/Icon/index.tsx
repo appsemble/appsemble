@@ -17,7 +17,7 @@ const iconSizeMap: { [size in IconProps['size']]: IconProps['iconSize'] } = {
   large: '2x',
 };
 
-export default function Icon({
+export function Icon({
   className,
   icon,
   prefix = 'fas',

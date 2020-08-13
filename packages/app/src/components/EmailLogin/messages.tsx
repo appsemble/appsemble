@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   loginButton: 'Login',
   loginFailed: 'Login failed',
   passwordError: 'A password is required',

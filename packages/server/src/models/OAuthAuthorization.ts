@@ -14,7 +14,7 @@ import {
 import { User } from '.';
 
 @Table({ tableName: 'OAuthAuthorization' })
-export default class OAuthAuthorization extends Model<OAuthAuthorization> {
+export class OAuthAuthorization extends Model<OAuthAuthorization> {
   /**
    * The subject id of the user on the remote authorization server.
    */

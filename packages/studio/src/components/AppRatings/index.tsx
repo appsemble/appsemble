@@ -11,14 +11,14 @@ import React, { ReactElement } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';
-import HeaderControl from '../HeaderControl';
-import RateApp from '../RateApp';
-import StarRating from '../StarRating';
+import { HeaderControl } from '../HeaderControl';
+import { RateApp } from '../RateApp';
+import { StarRating } from '../StarRating';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function AppRatings(): ReactElement {
+export function AppRatings(): ReactElement {
   const { app } = useApp();
   const { data: ratings, error, loading, refresh, setData: setRatings } = useData<Rating[]>(
     `/api/apps/${app.id}/ratings`,
@@ -68,7 +68,7 @@ export default function AppRatings(): ReactElement {
       </HeaderControl>
       <div>
         {ratings.map((rating) => (
-          <div key={rating.$created} className="mb-4">
+          <div className="mb-4" key={rating.$created}>
             <hr />
             <div className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}

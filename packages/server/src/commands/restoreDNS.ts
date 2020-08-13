@@ -1,12 +1,13 @@
 import { URL } from 'url';
+
 import type { Argv } from 'yargs';
 
 import { initDB } from '../models';
 import type { Argv as Args } from '../types';
-import bulkDNSRestore from '../utils/bulkDNSRestore';
-import dns from '../utils/dns';
+import { bulkDNSRestore } from '../utils/bulkDNSRestore';
+import { dns } from '../utils/dns';
 import { handleDBError } from '../utils/sqlUtils';
-import databaseBuilder from './builder/database';
+import { databaseBuilder } from './builder/database';
 
 export const command = 'restore-dns';
 export const description = 'Restore the app DNS settings from the database in the host platform';
@@ -49,8 +50,8 @@ export async function handler(argv: Args): Promise<void> {
       ssl: argv.databaseSsl,
       uri: argv.databaseUrl,
     });
-  } catch (dbException) {
-    handleDBError(dbException);
+  } catch (error) {
+    handleDBError(error);
   }
 
   const dnsConfig = await dns(argv);

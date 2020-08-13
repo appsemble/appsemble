@@ -4,7 +4,7 @@ import React, { ReactElement } from 'react';
 import { Redirect, Route, RouteProps, useRouteMatch } from 'react-router-dom';
 
 import type { Organization } from '../../types';
-import checkRole from '../../utils/checkRole';
+import { checkRole } from '../../utils/checkRole';
 import { useUser } from '../UserProvider';
 
 interface ProtectedRouteProps extends RouteProps {
@@ -12,7 +12,7 @@ interface ProtectedRouteProps extends RouteProps {
   organization?: Organization;
 }
 
-export default function ProtectedRoute({
+export function ProtectedRoute({
   organization,
   permission,
   ...props

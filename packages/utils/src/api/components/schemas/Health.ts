@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const Health: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A health check status',
   readOnly: true,

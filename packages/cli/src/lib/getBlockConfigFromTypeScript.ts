@@ -1,6 +1,7 @@
+import path from 'path';
+
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import type { BlockManifest } from '@appsemble/types';
-import path from 'path';
 import {
   createProgram,
   findConfigFile,
@@ -29,8 +30,8 @@ import type { BlockConfig } from '../types';
 /**
  * Get the tsdoc comment for a TypeScript node.
  *
- * @param checker The type checker instance to use.
- * @param node The node for which to get the tsdoc.
+ * @param checker - The type checker instance to use.
+ * @param node - The node for which to get the tsdoc.
  * @returns The tsdoc comment as a string, if present.
  */
 function getNodeComments(checker: TypeChecker, node: TypeElement): string {
@@ -47,15 +48,13 @@ function getNodeComments(checker: TypeChecker, node: TypeElement): string {
       )
       .join('');
   }
-
-  return undefined;
 }
 
 /**
  * Get an axtions object based on a TypeScript interface node.
  *
- * @param iface The node to base the actions on.
- * @param checker The TypeScript type checker.
+ * @param iface - The node to base the actions on.
+ * @param checker - The TypeScript type checker.
  * @returns The action manifest to upload.
  */
 function processActions(
@@ -63,7 +62,7 @@ function processActions(
   checker: TypeChecker,
 ): BlockManifest['actions'] {
   if (!iface || !iface.members.length) {
-    return undefined;
+    return;
   }
 
   return Object.fromEntries(
@@ -87,9 +86,9 @@ function processActions(
 /**
  * Get an events object based on TypeScript interface nodes.
  *
- * @param eventListenernterface The node to base the event listeners on.
- * @param eventEmitterInterface The node to base the event emitters on.
- * @param checker The TypeScript type checker.
+ * @param eventListenerInterface - The node to base the event listeners on.
+ * @param eventEmitterInterface - The node to base the event emitters on.
+ * @param checker - The TypeScript type checker.
  * @returns The events manifest to upload.
  */
 function processEvents(
@@ -98,7 +97,7 @@ function processEvents(
   checker: TypeChecker,
 ): BlockManifest['events'] {
   if (!eventListenerInterface?.members.length && !eventEmitterInterface?.members.length) {
-    return undefined;
+    return;
   }
 
   const listen =
@@ -124,13 +123,13 @@ function processEvents(
 /**
  * Get the JSON schema for parameters based on a TypeScript program.
  *
- * @param program The TypeScript program from which to extract parameters.
- * @param sourceFile The source file from which to extract parameters.
+ * @param program - The TypeScript program from which to extract parameters.
+ * @param sourceFile - The source file from which to extract parameters.
  * @returns The JSON schema for the block parameters.
  */
 function processParameters(program: Program, sourceFile: SourceFile): Definition {
   if (!sourceFile) {
-    return undefined;
+    return;
   }
   const generator = buildGenerator(
     program,
@@ -153,7 +152,7 @@ function processParameters(program: Program, sourceFile: SourceFile): Definition
 /**
  * Get the TypeScript program for a given path.
  *
- * @param blockPath The path for which to get the TypeScript program.
+ * @param blockPath - The path for which to get the TypeScript program.
  * @returns The TypeScript program.
  */
 function getProgram(blockPath: string): Program {
@@ -179,7 +178,7 @@ function getProgram(blockPath: string): Program {
     undefined,
     tsConfigPath,
   );
-  // filter: 'rootDir' is expected to contain all source files.
+  // Filter: 'rootDir' is expected to contain all source files.
   const diagnostics = errors.filter(({ code }) => code !== 6059);
   if (diagnostics.length) {
     throw new AppsembleError(formatDiagnosticsWithColorAndContext(diagnostics, diagnosticHost));
@@ -207,9 +206,11 @@ function getProgram(blockPath: string): Program {
  *
  * Uses the .appsemblerc file and the type definitions of the block.
  *
- * @param blockConfig The block configuration
+ * @param blockConfig - The block configuration
+ *
+ * @returns The block configuration appended from the TypeScript project.
  */
-export default function getBlockConfigFromTypeScript(
+export function getBlockConfigFromTypeScript(
   blockConfig: BlockConfig,
 ): Pick<BlockManifest, 'actions' | 'events' | 'parameters'> {
   if ('actions' in blockConfig && 'events' in blockConfig && 'parameters' in blockConfig) {

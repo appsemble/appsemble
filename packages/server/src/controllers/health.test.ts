@@ -1,7 +1,7 @@
 import { request, setTestApp } from 'axios-test-instance';
 
 import { getDB } from '../models';
-import createServer from '../utils/createServer';
+import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 beforeAll(createTestSchema('health'));

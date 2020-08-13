@@ -1,7 +1,7 @@
 import type { Argv } from 'yargs';
 
-import AppsembleError from './AppsembleError';
-import handleError from './handleError';
+import { AppsembleError } from './AppsembleError';
+import { handleError } from './handleError';
 import { logger } from './logger';
 
 let yargs: Argv;
@@ -17,7 +17,7 @@ it('should show the help message if it is passed a yargs message', () => {
   handleError('Command foo not found', undefined, yargs);
   // eslint-disable-next-line no-console
   expect(console.error).toHaveBeenCalledWith('Command foo not found');
-  expect(yargs.showHelp).toHaveBeenCalled();
+  expect(yargs.showHelp).toHaveBeenCalledWith();
   expect(logger.error).not.toHaveBeenCalled();
   expect(process.exit).toHaveBeenCalledWith(1);
 });

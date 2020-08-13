@@ -9,8 +9,7 @@ import React, {
   useCallback,
 } from 'react';
 
-import FormComponent from '../FormComponent';
-import Icon from '../Icon';
+import { FormComponent, Icon } from '..';
 
 type SelectProps = ComponentPropsWithoutRef<typeof FormComponent> &
   Omit<ComponentPropsWithoutRef<'select'>, 'onChange'> & {
@@ -48,7 +47,7 @@ type SelectProps = ComponentPropsWithoutRef<typeof FormComponent> &
 /**
  * A Bulma styled form select element.
  */
-export default forwardRef<HTMLSelectElement, SelectProps>(
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
     {
       fullwidth = true,
@@ -83,11 +82,11 @@ export default forwardRef<HTMLSelectElement, SelectProps>(
         <div className={classNames('select', { 'is-fullwidth': fullwidth, 'is-loading': loading })}>
           <select
             {...props}
-            ref={ref}
             className={classNames({ 'is-fullwidth': fullwidth })}
             id={id}
             name={name}
             onChange={handleChange}
+            ref={ref}
             required={required}
           />
         </div>

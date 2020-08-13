@@ -9,7 +9,7 @@ interface NavLinkProps {
   to: string;
 }
 
-export default function NavLink({ children, className, exact, to }: NavLinkProps): ReactElement {
+export function NavLink({ children, className, exact, to }: NavLinkProps): ReactElement {
   const location = useLocation();
 
   return (

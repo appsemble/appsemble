@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 
 import type { KoaContext } from '../types';
-import readAsset from '../utils/readAsset';
+import { readAsset } from '../utils/readAsset';
 
 interface ServeIconOptions {
   background?: string;
@@ -11,7 +11,7 @@ interface ServeIconOptions {
   width: number;
 }
 
-export default async function serveIcon(
+export async function serveIcon(
   ctx: KoaContext,
   { background, format, height, icon, width }: ServeIconOptions,
 ): Promise<void> {

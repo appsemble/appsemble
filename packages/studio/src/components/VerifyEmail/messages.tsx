@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   requestFailed: 'Request failed. Token may be invalid.',
   requestSuccess: 'Your email was successfully verified! \nYou may now log into Appsemble.',
 });

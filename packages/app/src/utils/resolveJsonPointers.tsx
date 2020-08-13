@@ -27,8 +27,6 @@ function recurse(
   return result;
 }
 
-export default function resolveJsonPointers(object: {
-  [key: string]: any;
-}): { [key: string]: any } {
+export function resolveJsonPointers(object: { [key: string]: any }): { [key: string]: any } {
   return recurse(object, object);
 }

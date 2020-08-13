@@ -7,10 +7,12 @@ import type * as models from '../models';
 /**
  * Normalizes an app record for consistant return values.
  *
- * @param {Object} record The sequelize App model to normalize.
- * @param {string[]} omittedValues A list of fields to omit from the result.
+ * @param record - The sequelize App model to normalize.
+ * @param omittedValues - A list of fields to omit from the result.
+ *
+ * @returns An app resource that can be safely returned from the API.
  */
-export default function getAppFromRecord(
+export function getAppFromRecord(
   record: models.App,
   omittedValues: (keyof types.App)[] = [],
 ): Partial<types.App> {

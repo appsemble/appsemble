@@ -4,7 +4,8 @@ import { remapData } from '@appsemble/utils';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { ItemCell, ItemRow } from './components';
+import { ItemCell } from './components/ItemCell';
+import { ItemRow } from './components/ItemRow';
 import styles from './index.css';
 
 interface Item {
@@ -77,19 +78,19 @@ bootstrap(
         <tbody>
           {data.map((item, dataIndex) => (
             <ItemRow
-              key={item.id || dataIndex}
-              className={actions.onClick.type !== 'noop' ? styles.clickable : undefined}
+              className={actions.onClick.type === 'noop' ? undefined : styles.clickable}
               item={item}
+              key={item.id || dataIndex}
               onClick={onClick}
             >
               {fields.map((field) => {
                 const value = remapData(field.name, item);
                 return (
                   <ItemCell
-                    key={field.name}
                     className={onClick ? styles.clickable : undefined}
                     field={field}
                     item={item}
+                    key={field.name}
                     onClick={onClick}
                   >
                     {typeof value === 'string' ? value : JSON.stringify(value)}

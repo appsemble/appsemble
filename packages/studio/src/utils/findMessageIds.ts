@@ -1,9 +1,4 @@
-import type { Remapper } from '@appsemble/types';
-
-export default function findMessageIds(
-  obj: object | Remapper,
-  onMessage: (messageId: string) => void,
-): void {
+export function findMessageIds(obj: unknown, onMessage: (messageId: string) => void): void {
   if (!obj) {
     return;
   }

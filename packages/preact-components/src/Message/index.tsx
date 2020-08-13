@@ -24,7 +24,7 @@ interface MessageProps {
   header?: VNode;
 }
 
-export default function Message({ children, className, color, header }: MessageProps): VNode {
+export function Message({ children, className, color, header }: MessageProps): VNode {
   return (
     <div className={classNames('message', className, { [`is-${color}`]: color })}>
       {header && <h6 className="message-header">{header}</h6>}

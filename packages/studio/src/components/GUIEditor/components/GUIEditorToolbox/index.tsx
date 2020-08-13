@@ -5,16 +5,16 @@ import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import GUIEditorToolboxBlock from '../GUIEditorToolboxBlock';
+import { GUIEditorToolboxBlock } from '../GUIEditorToolboxBlock';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface GUIEditorToolboxProps {
   setSelectedBlock: (block: BlockManifest) => void;
   selectedBlock: BlockManifest;
 }
 
-export default function GUIEditorToolbox({
+export function GUIEditorToolbox({
   selectedBlock,
   setSelectedBlock,
 }: GUIEditorToolboxProps): ReactElement {

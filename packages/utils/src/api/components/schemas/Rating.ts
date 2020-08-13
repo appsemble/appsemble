@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const Rating: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A representation of an App rating.',
   additionalProperties: false,

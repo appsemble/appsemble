@@ -5,9 +5,11 @@ import { AppsembleError } from '@appsemble/node-utils';
  *
  * Implements https://tools.ietf.org/html/rfc4180
  *
- * @param body An object containing the data to be converted.
+ * @param body - An object containing the data to be converted.
+ *
+ * @returns The data serialized as CSV.
  */
-export default function convertToCsv(body: { [key: string]: any }): string {
+export function convertToCsv(body: any): string {
   const separator = ',';
   const lineEnd = '\r\n';
   const quote = '"';
@@ -27,7 +29,7 @@ export default function convertToCsv(body: { [key: string]: any }): string {
 
   const data = Array.isArray(body) ? body : [body];
 
-  const headers = [...new Set(data.map(Object.keys).flat())].sort();
+  const headers = [...new Set(data.flatMap((value) => Object.keys(value)))].sort();
 
   if (headers.length === 0) {
     throw new AppsembleError('No headers could be found');
@@ -40,19 +42,21 @@ export default function convertToCsv(body: { [key: string]: any }): string {
         return '';
       }
 
-      if ((value as any).toJSON instanceof Function) {
-        value = value.toJSON();
+      if ((value as Date).toJSON instanceof Function) {
+        value = (value as Date).toJSON();
       }
 
       if (typeof value !== 'string') {
         value = JSON.stringify(value);
       }
 
-      return escape(value);
+      return escape(value as string);
     });
 
-    return `${values.join(separator)}`;
+    return values.join(separator);
   });
 
-  return `${headers.map(escape).join(separator)}${lineEnd}${lines.join(lineEnd)}${lineEnd}`;
+  return `${headers.map((header) => escape(header)).join(separator)}${lineEnd}${lines.join(
+    lineEnd,
+  )}${lineEnd}`;
 }

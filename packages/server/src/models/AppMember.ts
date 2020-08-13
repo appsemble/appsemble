@@ -11,7 +11,7 @@ import {
 import { App, User } from '.';
 
 @Table({ tableName: 'AppMember' })
-export default class AppMember extends Model<AppMember> {
+export class AppMember extends Model<AppMember> {
   @AllowNull(false)
   @Column
   role: string;

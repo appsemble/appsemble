@@ -1,8 +1,7 @@
 import type { BulmaColor } from '@appsemble/sdk/src';
 import React, { MouseEventHandler, ReactElement, ReactNode } from 'react';
 
-import CardFooterButton from '../CardFooterButton';
-import { useSimpleForm } from '../SimpleForm';
+import { CardFooterButton, useSimpleForm } from '..';
 
 interface SimpleModalFooterProps {
   /**
@@ -31,7 +30,7 @@ interface SimpleModalFooterProps {
 /**
  * A footer for a modal when combining it with `<SimpleForm />`.
  */
-export default function SimpleModalFooter({
+export function SimpleModalFooter({
   cancelLabel,
   color = 'primary',
   onClose,

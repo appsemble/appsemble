@@ -11,7 +11,7 @@ export const semver = new RegExp(`^${partialSemver.source}$`);
 /**
  * A pattern for extracting a normalized string.
  */
-export const partialNormalized = /([a-z\d](?:(?!.*--)[a-z\d-]*[a-z\d])?)/;
+export const partialNormalized = /([\da-z](?:(?!.*--)[\da-z-]*[\da-z])?)/;
 
 /**
  * A pattern for exactly matching a lower case hyphen separated string.

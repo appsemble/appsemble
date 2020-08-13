@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const subscriptions: OpenAPIV3.ResponseObject = {
   description: 'A subscription response.',
   content: {
     'application/json': {

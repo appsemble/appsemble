@@ -2,6 +2,7 @@ import type { Promisable } from 'type-fest';
 
 import type { Action, Message, Theme } from './types';
 
+// eslint-disable-next-line no-duplicate-imports
 export * from './types';
 
 /**
@@ -97,11 +98,11 @@ export interface Utils {
   /**
    * Remap data based in a user defined remapper function.
    *
-   * @param remapper The user defined remapper function.
-   * @param data The data to remap.
+   * @param remapper - The user defined remapper function.
+   * @param data - The data to remap.
    * @returns The result of the remapped data.
    */
-  remap(remapper: Remapper, data: any): any;
+  remap: (remapper: Remapper, data: any) => any;
 
   /**
    * Show a bulma style message.
@@ -111,7 +112,7 @@ export interface Utils {
   /**
    * Get a URL serving an asset for the given asset id.
    *
-   * @param assetId The id of the asset whose URL to get.
+   * @param assetId - The id of the asset whose URL to get.
    * @returns The URL that matches the given asset id.
    */
   asset: (assetId: number | string) => string;
@@ -121,16 +122,16 @@ export interface Events {
   /**
    * Emit an Appsemble event.
    *
-   * @param type The type of event to emit.
-   * @param data Data to emit with the event.
+   * @param type - The type of event to emit.
+   * @param data - Data to emit with the event.
    */
   emit: { [K in keyof EventEmitters]: (data: any, error?: string) => void };
 
   /**
    * Remove an event listener for an Appsemble event.
    *
-   * @param type The type of event to listen remove the listener from.
-   * @param callback The callback to remove.
+   * @param type - The type of event to listen remove the listener from.
+   * @param callback - The callback to remove.
    * @returns Boolean indicating whether a listener is implemented or not.
    */
   off: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => boolean };
@@ -138,8 +139,8 @@ export interface Events {
   /**
    * Add an event listener for an Appsemble event.
    *
-   * @param type The type of event to listen on.
-   * @param callback A callback to register for the event.
+   * @param type - The type of event to listen on.
+   * @param callback - A callback to register for the event.
    * @returns Boolean indicating whether a listener is implemented or not.
    */
   on: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => boolean };
@@ -195,14 +196,8 @@ export interface BootstrapParams {
   utils: Utils;
 }
 
-/**
- * @private
- */
 export type BootstrapFunction = (params: BootstrapParams) => Promisable<void>;
 
-/**
- * @private
- */
 export interface AppsembleBootstrapEvent extends CustomEvent {
   detail: {
     fn: BootstrapFunction;
@@ -213,7 +208,7 @@ export interface AppsembleBootstrapEvent extends CustomEvent {
 /**
  * Register a boostrap function.
  *
- * @param fn The bootstrap function to register
+ * @param fn - The bootstrap function to register
  */
 export function bootstrap(fn: BootstrapFunction): void {
   const event = new CustomEvent('AppsembleBootstrap', {
@@ -233,8 +228,9 @@ export function bootstrap(fn: BootstrapFunction): void {
  * This convenience wrapper attaches nodes returned by the bootstrap function to the shadow root.
  * This means that the initialization function for a block simply has to return a node.
  *
- * @param fn The bootstrap function to register.
+ * @param fn - The bootstrap function to register.
  */
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 export function attach(fn: (params: BootstrapParams) => Promisable<HTMLElement | void>): void {
   bootstrap(
     async (params): Promise<void> => {
@@ -242,7 +238,7 @@ export function attach(fn: (params: BootstrapParams) => Promisable<HTMLElement |
 
       const node = await fn(params);
       if (node instanceof HTMLElement) {
-        shadowRoot.appendChild(node);
+        shadowRoot.append(node);
       }
     },
   );

@@ -3,9 +3,9 @@ import fg from 'fast-glob';
 import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
-import buildBlock from '../../lib/buildBlock';
-import getBlockConfig from '../../lib/getBlockConfig';
-import publish from '../../lib/publish';
+import { buildBlock } from '../../lib/buildBlock';
+import { getBlockConfig } from '../../lib/getBlockConfig';
+import { publish } from '../../lib/publish';
 import type { BaseArguments } from '../../types';
 
 interface BuildBlockArguments extends BaseArguments {

@@ -30,7 +30,7 @@ export interface ValuePickerProviderProps<T> extends ValuePickerContext<T> {
  * This allows to create customized components that work similar to HTML select boxes, such as radio
  * groups.
  */
-export default function ValuePickerProvider<T>({
+export function ValuePickerProvider<T>({
   children,
   name,
   onChange,
@@ -43,6 +43,8 @@ export default function ValuePickerProvider<T>({
 
 /**
  * Get the value of the value picker context
+ *
+ * @returns The context for the value picker provider.
  */
 export function useValuePicker<T>(): ValuePickerContext<T> {
   return useContext(Context) as ValuePickerContext<T>;

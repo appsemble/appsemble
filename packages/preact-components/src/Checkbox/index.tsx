@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ComponentChild, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import FormComponent from '../FormComponent';
+import { FormComponent } from '..';
 
 type CheckboxProps = Omit<typeof FormComponent, 'children'> &
   Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'label' | 'onChange'> & {
@@ -54,7 +54,7 @@ type CheckboxProps = Omit<typeof FormComponent, 'children'> &
 /**
  * A Bulma styled form select element.
  */
-export default function Checkbox({
+export function Checkbox({
   className,
   wrapperClassName,
   error,

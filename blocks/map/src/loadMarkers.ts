@@ -2,7 +2,7 @@ import type { BootstrapParams } from '@appsemble/sdk';
 import { LatLngBounds, LayerGroup, Map, Marker } from 'leaflet';
 
 import type { LatLngMapper } from './createGetters';
-import createIcon from './createIcon';
+import { createIcon } from './createIcon';
 
 export function makeFilter(fields: [string, string], bounds: LatLngBounds): string {
   const [lon, lat] = fields;
@@ -18,7 +18,7 @@ interface BlockMarker {
   id: number;
 }
 
-export default function loadMarkers(
+export function loadMarkers(
   markers: BlockMarker[],
   fetched: Set<number>,
   get: LatLngMapper,

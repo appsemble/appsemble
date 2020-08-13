@@ -5,7 +5,7 @@ import { h, VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import type { GeoCoordinatesField, RendererProps } from '../../../block';
-import createIcon from '../utils/createIcon';
+import { createIcon } from '../utils/createIcon';
 import styles from './index.css';
 
 /**
@@ -13,7 +13,7 @@ import styles from './index.css';
  *
  * https://schema.org/GeoCoordinates
  */
-export default function GeoCoordinatesRenderer({
+export function GeoCoordinatesRenderer({
   data,
   field,
   theme,

@@ -1,4 +1,4 @@
-export default {
+export const messages = {
   invalid: 'This value is invalid',
   emptyFileLabel: ' ',
   error: 'One of the requirements of this form is invalid.',

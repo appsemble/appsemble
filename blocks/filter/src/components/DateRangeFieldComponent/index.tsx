@@ -6,7 +6,7 @@ import { useCallback } from 'preact/hooks';
 import type { DateRangeField, FieldComponentProps } from '../../../block';
 import styles from './index.css';
 
-export default function DateRangeFieldComponent({
+export function DateRangeFieldComponent({
   className,
   field,
   loading,

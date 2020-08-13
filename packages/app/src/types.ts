@@ -1,3 +1,5 @@
+import type { EventEmitter } from 'events';
+
 import type { ShowMessage } from '@appsemble/react-components';
 import type { Action } from '@appsemble/sdk';
 import type {
@@ -9,7 +11,6 @@ import type {
   Remapper,
   UserInfo,
 } from '@appsemble/types';
-import type { EventEmitter } from 'events';
 import type { RouteComponentProps } from 'react-router-dom';
 import type { JsonValue } from 'type-fest';
 
@@ -19,11 +20,11 @@ declare module '@appsemble/sdk' {
   }
 
   interface EventEmitters {
-    [K: string]: {};
+    [K: string]: never;
   }
 
   interface EventListeners {
-    [K: string]: {};
+    [K: string]: never;
   }
 
   interface Parameters {
@@ -36,6 +37,14 @@ export interface User extends UserInfo {
 }
 
 declare global {
+  interface HTMLCollectionBase {
+    [Symbol.iterator]: () => Iterator<Element>;
+  }
+
+  interface StyleSheetList {
+    [Symbol.iterator]: () => Iterator<CSSStyleSheet>;
+  }
+
   interface Window {
     /**
      * This boolean indicates if Appsemble has loaded normally.
@@ -94,9 +103,9 @@ export interface MakeActionParameters<D extends ActionDefinition> {
 export type Permission = NotificationPermission | 'pending';
 
 export interface ServiceWorkerRegistrationContextType {
-  subscribe(): Promise<PushSubscription>;
-  unsubscribe(): Promise<boolean>;
+  subscribe: () => Promise<PushSubscription>;
+  unsubscribe: () => Promise<boolean>;
   permission: Permission;
   subscription: PushSubscription;
-  requestPermission(): Promise<NotificationPermission>;
+  requestPermission: () => Promise<NotificationPermission>;
 }

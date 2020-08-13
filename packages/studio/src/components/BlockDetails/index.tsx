@@ -9,18 +9,18 @@ import {
   useData,
 } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
-import React, { ChangeEvent, Fragment, ReactElement, useCallback } from 'react';
+import React, { Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
 
-import HelmetIntl from '../HelmetIntl';
-import ActionTable from './components/ActionTable';
-import EventTable from './components/EventTable';
-import ParameterTable from './components/ParameterTable';
-import TypeTable from './components/TypeTable';
+import { HelmetIntl } from '../HelmetIntl';
+import { ActionTable } from './components/ActionTable';
+import { EventTable } from './components/EventTable';
+import { ParameterTable } from './components/ParameterTable';
+import { TypeTable } from './components/TypeTable';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface BlockDetailsRoutesMatch {
   /**
@@ -42,7 +42,7 @@ interface BlockDetailsRoutesMatch {
 /**
  * Render documentation for blocks.
  */
-export default function BlockDetails(): ReactElement {
+export function BlockDetails(): ReactElement {
   const { formatMessage } = useIntl();
   const {
     params: { blockName, organization, version: urlVersion },
@@ -55,7 +55,7 @@ export default function BlockDetails(): ReactElement {
   );
 
   const onSelectedVersionChange = useCallback(
-    async (_: ChangeEvent<HTMLSelectElement>, value: string) => {
+    (event, value: string) => {
       history.push(url.replace(urlVersion, value));
     },
     [history, url, urlVersion],

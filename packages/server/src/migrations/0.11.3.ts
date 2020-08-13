@@ -1,31 +1,27 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Sequelize } from 'sequelize';
 
-import type { Migration } from '../utils/migrate';
+export const key = '0.11.3';
 
-export default {
-  key: '0.11.3',
+export async function up(db: Sequelize): Promise<void> {
+  const queryInterface = db.getQueryInterface();
+  await queryInterface.changeColumn('Asset', 'AppId', {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'App',
+      key: 'id',
+    },
+  });
+}
 
-  async up(db) {
-    const queryInterface = db.getQueryInterface();
-    await queryInterface.changeColumn('Asset', 'AppId', {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'App',
-        key: 'id',
-      },
-    });
-  },
-
-  async down(db) {
-    const queryInterface = db.getQueryInterface();
-    await queryInterface.changeColumn('Asset', 'AppId', {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'App',
-        key: 'id',
-      },
-    });
-  },
-} as Migration;
+export async function down(db: Sequelize): Promise<void> {
+  const queryInterface = db.getQueryInterface();
+  await queryInterface.changeColumn('Asset', 'AppId', {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'App',
+      key: 'id',
+    },
+  });
+}

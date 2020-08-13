@@ -21,7 +21,7 @@ interface TitleProps {
 /**
  * A bulma styled title element.
  */
-export default function Title({ children, className, level = 3 }: TitleProps): ReactElement {
+export function Title({ children, className, level = 3 }: TitleProps): ReactElement {
   const Component = `h${level}` as 'h1';
 
   return <Component className={classNames(`title is-${level}`, className)}>{children}</Component>;

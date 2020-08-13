@@ -1,10 +1,11 @@
+import querystring from 'querystring';
+import { URL } from 'url';
+
 import type { JwtPayload } from '@appsemble/types';
 import bcrypt from 'bcrypt';
 import { isPast } from 'date-fns';
 import { verify } from 'jsonwebtoken';
-import querystring from 'querystring';
 import raw from 'raw-body';
-import { URL } from 'url';
 
 import {
   EmailAuthorization,
@@ -14,7 +15,7 @@ import {
 } from '../../models';
 import type { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
-import createJWTResponse from '../../utils/createJWTResponse';
+import { createJWTResponse } from '../../utils/createJWTResponse';
 
 class GrantError extends Error {
   status: number;
@@ -30,6 +31,7 @@ class GrantError extends Error {
   ) {
     super(error);
     this.status = status;
+    this.name = 'GrantError';
   }
 }
 
@@ -52,8 +54,10 @@ function checkTokenRequestParameters(
  * Get an access token for a client.
  *
  * This handler is written to be complaitn with [rfc6749](https://tools.ietf.org/html/rfc6749).
+ *
+ * @param ctx - The Koa context.
  */
-export default async function tokenHandler(ctx: KoaContext): Promise<void> {
+export async function tokenHandler(ctx: KoaContext): Promise<void> {
   const { argv, header } = ctx;
   let aud: string;
   let refreshToken: boolean;
@@ -103,7 +107,7 @@ export default async function tokenHandler(ctx: KoaContext): Promise<void> {
         }
         aud = clientId;
         refreshToken = true;
-        scope = authorizationCode.scope;
+        ({ scope } = authorizationCode);
         sub = authorizationCode.UserId;
         break;
       }
@@ -113,7 +117,7 @@ export default async function tokenHandler(ctx: KoaContext): Promise<void> {
         if (!authorization) {
           throw new GrantError('invalid_client');
         }
-        const credentials = `${Buffer.from(authorization[1], 'base64')}`.match(/([^:]*):(.*)/);
+        const credentials = String(Buffer.from(authorization[1], 'base64')).match(/([^:]*):(.*)/);
         if (!credentials) {
           throw new GrantError('invalid_client');
         }
@@ -183,7 +187,7 @@ export default async function tokenHandler(ctx: KoaContext): Promise<void> {
           const payload = verify(token, argv.secret) as JwtPayload;
           ({ aud, scope, sub } = payload);
           refreshToken = true;
-        } catch (error) {
+        } catch {
           throw new GrantError('invalid_grant');
         }
         break;

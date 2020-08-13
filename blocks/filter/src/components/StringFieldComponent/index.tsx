@@ -4,7 +4,7 @@ import { useCallback } from 'preact/hooks';
 
 import type { FieldComponentProps, StringField } from '../../../block';
 
-export default function StringFieldComponent({
+export function StringFieldComponent({
   className,
   field,
   loading,

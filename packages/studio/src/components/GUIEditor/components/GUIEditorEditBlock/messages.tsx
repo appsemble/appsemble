@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   noParameters: '{name} has no editable parameters',
   noActions: '{name} has no linkable actions',
   parameters: 'Parameters',

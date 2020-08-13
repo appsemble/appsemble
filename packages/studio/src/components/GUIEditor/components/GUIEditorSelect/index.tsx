@@ -22,7 +22,7 @@ interface GUIEditorSelectProps {
   onChangeDecorationList: (value: string[]) => void;
 }
 
-export default function GUIEditorSelect({
+export function GUIEditorSelect({
   decorationList,
   monacoEditor,
   onChangeDecorationList,
@@ -37,7 +37,7 @@ export default function GUIEditorSelect({
       if (parents !== undefined) {
         parents.some((parent): string => {
           if (parent.name.includes('- type:') && position.lineNumber >= parent.line) {
-            // number 8 matches "- type: " length
+            // Number 8 matches "- type: " length
             blockName = parent.name.slice(8);
             if (blockName?.includes("'")) {
               blockName = blockName.replace(/'/g, '');
@@ -60,26 +60,24 @@ export default function GUIEditorSelect({
       let isTopParent = false;
 
       while (!isTopParent) {
-        if (lines.length !== topParentLine) {
-          if (
-            model.getLineFirstNonWhitespaceColumn(topParentLine) <=
-            model.getLineFirstNonWhitespaceColumn(topParentLine + 1)
-          ) {
-            topParentLine += 1;
-          } else if (
-            lines[topParentLine].includes('- type') ||
-            lines[topParentLine].includes('pages:') ||
-            (lines[topParentLine].includes('- name:') &&
-              lines[topParentLine + 1].includes('blocks:')) ||
-            lines[topParentLine].trim() === '' ||
-            model.getLineFirstNonWhitespaceColumn(topParentLine + 1) <= 3
-          ) {
-            isTopParent = true;
-          } else {
-            topParentLine += 1;
-          }
-        } else {
+        if (lines.length === topParentLine) {
           isTopParent = true;
+        } else if (
+          model.getLineFirstNonWhitespaceColumn(topParentLine) <=
+          model.getLineFirstNonWhitespaceColumn(topParentLine + 1)
+        ) {
+          topParentLine += 1;
+        } else if (
+          lines[topParentLine].includes('- type') ||
+          lines[topParentLine].includes('pages:') ||
+          (lines[topParentLine].includes('- name:') &&
+            lines[topParentLine + 1].includes('blocks:')) ||
+          lines[topParentLine].trim() === '' ||
+          model.getLineFirstNonWhitespaceColumn(topParentLine + 1) <= 3
+        ) {
+          isTopParent = true;
+        } else {
+          topParentLine += 1;
         }
       }
 
@@ -122,9 +120,9 @@ export default function GUIEditorSelect({
         const blockName = getBlockName(parents, position);
         const blockParentIndex = parents.findIndex((x) => x.name.includes(blockName));
         const editRange =
-          blockParentIndex !== -1
-            ? new Range(parents[blockParentIndex].line, 1, topParentLine + 1, 1)
-            : new Range(position.lineNumber, 0, position.lineNumber, 0);
+          blockParentIndex === -1
+            ? new Range(position.lineNumber, 0, position.lineNumber, 0)
+            : new Range(parents[blockParentIndex].line, 1, topParentLine + 1, 1);
 
         const pageParent = parents[parents.findIndex((x) => x.name.includes('pages:')) - 1];
         if (pageParent) {
@@ -143,7 +141,7 @@ export default function GUIEditorSelect({
           {
             range: editLocation.editRange,
             options: {
-              className: `${styles.selectionDecoration}`,
+              className: String(styles.selectionDecoration),
             },
           },
         ];

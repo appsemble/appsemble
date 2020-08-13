@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import type { BlockManifest } from '@appsemble/types';
 import {
   AppsembleValidationError,
@@ -10,7 +12,6 @@ import {
   validateStyle,
 } from '@appsemble/utils';
 import Boom from '@hapi/boom';
-import crypto from 'crypto';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
@@ -19,9 +20,9 @@ import * as webpush from 'web-push';
 
 import { App, AppBlockStyle, AppRating, BlockVersion, Member, Resource } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
-import getAppFromRecord from '../utils/getAppFromRecord';
-import readAsset from '../utils/readAsset';
+import { checkRole } from '../utils/checkRole';
+import { getAppFromRecord } from '../utils/getAppFromRecord';
+import { readAsset } from '../utils/readAsset';
 
 interface Params {
   appId: number;
@@ -125,7 +126,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       try {
         // The YAML should be valid YAML.
         jsYaml.safeLoad(yaml);
-      } catch (exception) {
+      } catch {
         throw Boom.badRequest('Provided YAML was invalid.');
       }
     }
@@ -250,7 +251,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
       try {
         // The YAML should be valid YAML.
         appFromYaml = jsYaml.safeLoad(yaml);
-      } catch (exception) {
+      } catch {
         throw Boom.badRequest('Provided YAML was invalid.');
       }
 
@@ -340,7 +341,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       try {
         // The YAML should be valid YAML.
         appFromYaml = jsYaml.safeLoad(yaml);
-      } catch (exception) {
+      } catch {
         throw Boom.badRequest('Provided YAML was invalid.');
       }
 
@@ -349,7 +350,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
 
-      result.yaml = (yaml.contents && yaml.contents.toString('utf8')) || yaml;
+      result.yaml = yaml.contents?.toString('utf8') || yaml;
     } else if (definition) {
       result.yaml = jsYaml.safeDump(definition);
     }
@@ -476,7 +477,7 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
       body: { style },
     },
   } = ctx;
-  const css = style.toString().trim();
+  const css = String(style).trim();
 
   try {
     validateStyle(css);
@@ -497,7 +498,7 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
 
     if (css.length) {
       await AppBlockStyle.upsert({
-        style: css.toString(),
+        style: css,
         AppId: app.id,
         block: `@${block.OrganizationId}/${block.name}`,
       });
@@ -508,11 +509,11 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
     }
 
     ctx.status = 204;
-  } catch (e) {
-    if (e instanceof StyleValidationError) {
+  } catch (error) {
+    if (error instanceof StyleValidationError) {
       throw Boom.badRequest('Provided CSS was invalid.');
     }
 
-    throw e;
+    throw error;
   }
 }

@@ -7,9 +7,9 @@ import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
 import { EditLocation, GuiEditorStep } from '../../types';
-import GUIEditorDelete from '../GUIEditorDelete';
+import { GUIEditorDelete } from '../GUIEditorDelete';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface GUIEditorNavBarProps {
   editorStep: GuiEditorStep;
@@ -19,7 +19,7 @@ interface GUIEditorNavBarProps {
   monacoEditor: editor.IStandaloneCodeEditor;
 }
 
-export default function GUIEditorNavBar({
+export function GUIEditorNavBar({
   app,
   editLocation,
   editorStep,

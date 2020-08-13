@@ -5,20 +5,20 @@ import React, { createContext, ReactElement, useContext, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import AppDetails from '../AppDetails';
-import AppSecrets from '../AppSecrets';
-import AppSettings from '../AppSettings';
-import AppSideMenu from '../AppSideMenu';
-import Assets from '../Assets';
-import CMS from '../CMS';
-import Editor from '../Editor';
-import MessageEditor from '../MessageEditor';
-import Notifications from '../Notifications';
-import ProtectedRoute from '../ProtectedRoute';
-import Roles from '../Roles';
+import { AppDetails } from '../AppDetails';
+import { AppSecrets } from '../AppSecrets';
+import { AppSettings } from '../AppSettings';
+import { AppSideMenu } from '../AppSideMenu';
+import { Assets } from '../Assets';
+import { CMS } from '../CMS';
+import { Editor } from '../Editor';
+import { MessageEditor } from '../MessageEditor';
+import { Notifications } from '../Notifications';
+import { ProtectedRoute } from '../ProtectedRoute';
+import { Roles } from '../Roles';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
@@ -37,7 +37,7 @@ interface AppValueContext {
 
 const Context = createContext<AppValueContext>(null);
 
-export default function AppContext(): ReactElement {
+export function AppContext(): ReactElement {
   const {
     params: { id },
     path,

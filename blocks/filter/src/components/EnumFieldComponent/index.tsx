@@ -5,7 +5,7 @@ import { useCallback } from 'preact/hooks';
 
 import type { EnumField, FieldComponentProps } from '../../../block';
 
-export default function EnumFieldComponent({
+export function EnumFieldComponent({
   className,
   field,
   loading,

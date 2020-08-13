@@ -7,12 +7,12 @@ import { useLocation } from 'react-router-dom';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useMenu } from '../MenuProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 /**
  * A toolbar button which can be used to open the side menu.
  */
-export default function SideMenuButton(): ReactElement {
+export function SideMenuButton(): ReactElement {
   const { definition } = useAppDefinition();
   const location = useLocation();
   const { formatMessage } = useIntl();

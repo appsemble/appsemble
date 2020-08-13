@@ -18,11 +18,7 @@ interface AsyncButtonProps extends ComponentPropsWithoutRef<typeof Button> {
  * A button which when clicked, goes into a loading state, performs an asynchronous action, and goes
  * out of the loading state when the action has finished.
  */
-export default function AsyncButton({
-  disabled,
-  onClick,
-  ...props
-}: AsyncButtonProps): ReactElement {
+export function AsyncButton({ disabled, onClick, ...props }: AsyncButtonProps): ReactElement {
   const [isBusy, setBusy] = useState(false);
 
   const handleClick = useCallback(

@@ -1,18 +1,19 @@
+import { URLSearchParams } from 'url';
+
 import { AppsembleError, basicAuth } from '@appsemble/node-utils';
 import type { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { decode } from 'jsonwebtoken';
-import { URLSearchParams } from 'url';
 
 /**
  * Fetch an access token as part of the authorization code OAuth2 flow.
  *
- * @param tokenUrl The URL from which to request the access token.
- * @param code The authorization code to exchange for an access token.
- * @param redirectUri The redirect URI used to get the authorization code.
- * @param clientId The OAuth2 client id.
- * @param clientSecret The OAuth2 client secret.
+ * @param tokenUrl - The URL from which to request the access token.
+ * @param code - The authorization code to exchange for an access token.
+ * @param redirectUri - The redirect URI used to get the authorization code.
+ * @param clientId - The OAuth2 client id.
+ * @param clientSecret - The OAuth2 client secret.
  * @returns The data from an access token response.
  */
 export async function getAccessToken(
@@ -52,11 +53,11 @@ export async function getAccessToken(
  * 2. If the information is still incomplete, extract information from the access token.
  * 3. If the information is still incomplete, fetch information from the userinfo endpoint.
  *
- * @param accessToken The access token from which to extract user data. or to request user info
- *                    with.
- * @param idToken The ID token from which to extract user data.
- * @param userInfoUrl The URL from which to request userinfo, if needed.
- * @param remapper An optional remapper to apply onto the response from the user infoendpoint.
+ * @param accessToken - The access token from which to extract user data. or to request user info
+ * with.
+ * @param idToken - The ID token from which to extract user data.
+ * @param userInfoUrl - The URL from which to request userinfo, if needed.
+ * @param remapper - An optional remapper to apply onto the response from the user infoendpoint.
  * @returns A user info object constructed from the access token, id token, and userinfo endpoint.
  */
 export async function getUserInfo(
@@ -89,7 +90,7 @@ export async function getUserInfo(
   if (idToken) {
     try {
       assign(decode(idToken) as UserInfo);
-    } catch (err) {
+    } catch {
       // No ID token was provided, or it was invalid.
       // Fall back to using the access token instead.
     }
@@ -98,7 +99,7 @@ export async function getUserInfo(
   if (shouldTryNext()) {
     try {
       assign(decode(accessToken) as UserInfo);
-    } catch (err) {
+    } catch {
       // No ID token was provided, or it was invalid.
       // Fall back to requesting user info instead.
     }
@@ -116,5 +117,5 @@ export async function getUserInfo(
     throw new AppsembleError('No subject could be found while logging in using OAuth2');
   }
 
-  return { email, email_verified: !!emailVerified, name, picture, profile, sub };
+  return { email, email_verified: Boolean(emailVerified), name, picture, profile, sub };
 }

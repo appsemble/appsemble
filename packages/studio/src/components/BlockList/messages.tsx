@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   title: 'Blocks',
   error: 'Something went wrong when fetching all blocks.',
   buttonDetails: 'View details',

@@ -7,7 +7,7 @@ interface HelmIntlProps {
   titleValues?: { [key: string]: string };
 }
 
-export default function HelmetIntl({ title, titleValues = {} }: HelmIntlProps): ReactElement {
+export function HelmetIntl({ title, titleValues = {} }: HelmIntlProps): ReactElement {
   const { formatMessage } = useIntl();
   return <Helmet title={formatMessage(title, titleValues)} />;
 }

@@ -10,9 +10,9 @@ import {
   ResourceSubscription,
   User,
 } from '../models';
-import createServer from '../utils/createServer';
+import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import testToken from '../utils/test/testToken';
+import { testToken } from '../utils/test/testToken';
 
 let authorization: string;
 let organization: Organization;

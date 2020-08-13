@@ -35,7 +35,7 @@ interface ContentProps {
 /**
  * An element to wrap content in a centered 480px max width element.
  */
-export default function Content({
+export function Content({
   children,
   className,
   fullwidth,

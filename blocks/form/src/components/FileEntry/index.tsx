@@ -4,14 +4,14 @@ import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import type { FileField, InputProps } from '../../../block';
-import resize from '../../utils/resize';
+import { resize } from '../../utils/resize';
 import styles from './index.css';
 
 interface FileEntryProps extends InputProps<string | Blob, FileField> {
   name: string;
 }
 
-export default function FileEntry({ field, name, onInput, value }: FileEntryProps): VNode {
+export function FileEntry({ field, name, onInput, value }: FileEntryProps): VNode {
   const url = useObjectURL(value);
   const { utils } = useBlock();
 
@@ -19,7 +19,7 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
     async (event: h.JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
       const { maxHeight, maxWidth, quality } = field;
       const { currentTarget } = event;
-      let file: Blob = currentTarget.files[0];
+      let file = currentTarget.files[0] as Blob;
       currentTarget.value = null;
 
       if (file?.type.match('image/*') && (maxWidth || maxHeight || quality)) {

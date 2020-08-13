@@ -1,10 +1,11 @@
 import type { BaseAction } from '@appsemble/sdk';
 
-export default function throwAction(): BaseAction<'throw'> {
+export function throwAction(): BaseAction<'throw'> {
   return {
     type: 'throw',
 
-    async dispatch(data: any) {
+    // eslint-disable-next-line require-await
+    async dispatch(data: unknown) {
       throw data;
     },
   };

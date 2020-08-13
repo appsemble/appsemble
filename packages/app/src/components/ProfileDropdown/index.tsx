@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function ProfileDropdown(): ReactElement {
+export function ProfileDropdown(): ReactElement {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();

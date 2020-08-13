@@ -3,7 +3,7 @@ import type { BlockManifest } from '@appsemble/types';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import { messages } from './messages';
 
 interface ActionTableProps {
   /**
@@ -15,7 +15,7 @@ interface ActionTableProps {
 /**
  * Render a table of all available actions for a block.
  */
-export default function ActionTable({ manifest }: ActionTableProps): ReactElement {
+export function ActionTable({ manifest }: ActionTableProps): ReactElement {
   return (
     <Table>
       <thead>

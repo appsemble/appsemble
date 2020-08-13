@@ -1,13 +1,14 @@
+import crypto from 'crypto';
+
 import { normalize, Permission } from '@appsemble/utils';
 import Boom from '@hapi/boom';
-import crypto from 'crypto';
 import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
 import { App, Resource } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
-import getAppFromRecord from '../utils/getAppFromRecord';
+import { checkRole } from '../utils/checkRole';
+import { getAppFromRecord } from '../utils/getAppFromRecord';
 
 export async function getAppTemplates(ctx: KoaContext): Promise<void> {
   const templates = await App.findAll({

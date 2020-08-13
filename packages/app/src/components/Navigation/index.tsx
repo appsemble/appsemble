@@ -4,8 +4,8 @@ import React, { ReactElement } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
-import BottomNavigation from '../BottomNavigation';
-import SideNavigation from '../SideNavigation';
+import { BottomNavigation } from '../BottomNavigation';
+import { SideNavigation } from '../SideNavigation';
 import { useUser } from '../UserProvider';
 
 /**
@@ -13,7 +13,7 @@ import { useUser } from '../UserProvider';
  *
  * Also handles filtering pages based on accessibility.
  */
-export default function Navigation(): ReactElement {
+export function Navigation(): ReactElement {
   const { definition } = useAppDefinition();
   const { role } = useUser();
   const location = useLocation();

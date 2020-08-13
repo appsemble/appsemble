@@ -3,7 +3,7 @@ import type { MessageActionDefinition } from '@appsemble/types';
 
 import type { MakeActionParameters } from '../../types';
 
-export default function message({
+export function message({
   definition,
   remap,
   showMessage,
@@ -12,6 +12,7 @@ export default function message({
 
   return {
     type: 'message',
+    // eslint-disable-next-line require-await
     async dispatch(data: any) {
       showMessage({ body: remap(body, data), color, dismissable, timeout });
       return data;

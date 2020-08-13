@@ -1,6 +1,6 @@
 import type { Argv } from 'yargs';
 
-export default function database(yargs: Argv): Argv {
+export function databaseBuilder(yargs: Argv): Argv {
   const production = process.env.NODE_ENV === 'production';
   return yargs
     .option('database-host', {

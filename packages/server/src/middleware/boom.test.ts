@@ -2,14 +2,14 @@ import Boom from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import boom from './boom';
+import { boomMiddleware } from './boom';
 
 describe('boomMiddleware', () => {
   let app: Koa;
 
   beforeEach(async () => {
     app = new Koa();
-    app.use(boom());
+    app.use(boomMiddleware());
     await setTestApp(app);
   });
 

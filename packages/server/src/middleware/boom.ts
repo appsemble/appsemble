@@ -2,8 +2,10 @@ import type { KoaMiddleware } from '../types';
 
 /**
  * Koa middleware for handling Boom errors.
+ *
+ * @returns Koa middleware that converts Boom errors into an HTTP response.
  */
-export default function boom(): KoaMiddleware {
+export function boomMiddleware(): KoaMiddleware {
   return async (ctx, next) => {
     try {
       await next();
