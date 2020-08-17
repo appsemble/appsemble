@@ -159,7 +159,7 @@ pack:
   stage: build
   needs: []
   script:
-    - yarn workspace @appsemble/sdk types
+    - yarn workspace @appsemble/types pack
     - yarn workspace @appsemble/sdk pack
     - yarn workspace @appsemble/preact pack
     - yarn workspace @appsemble/node-utils pack
