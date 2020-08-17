@@ -289,6 +289,45 @@ describe('iterPage', () => {
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(result).toBe(false);
   });
+
+  it('should call onAction and onBlockList for pages with actions and subpages', () => {
+    const onAction = jest.fn();
+    const onPage = jest.fn();
+    const onBlockList = jest.fn();
+
+    const page: PageDefinition = {
+      name: 'Page',
+      type: 'flow',
+      actions: {
+        'flow.finish': {
+          type: 'log',
+        },
+      },
+      subPages: [
+        {
+          name: 'Test Subpage 1',
+          blocks: [
+            {
+              type: 'list',
+              version: '1.2.3',
+              actions: {
+                onClick: {
+                  type: 'log',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = iterPage(page, { onAction, onPage, onBlockList });
+
+    expect(onAction).toHaveBeenCalledWith(page.actions['flow.finish'], ['actions', 'flow.finish']);
+    expect(onPage).toHaveBeenCalledWith(page, []);
+    expect(onBlockList).toHaveBeenCalledWith(page.subPages[0].blocks, ['subPages', 0, 'blocks']);
+    expect(result).toBe(false);
+  });
 });
 
 describe('iterApp', () => {

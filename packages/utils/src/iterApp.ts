@@ -113,14 +113,18 @@ export function iterPage(
   }
 
   if (page.type === 'flow' || page.type === 'tabs') {
+    let result = false;
     if ('actions' in page) {
-      return Object.entries(page.actions).some(([key, action]) =>
+      result = Object.entries(page.actions).some(([key, action]) =>
         iterAction(action, callbacks, [...prefix, 'actions', key]),
       );
     }
 
-    return page.subPages.some((subPage, index) =>
-      iterBlockList(subPage.blocks, callbacks, [...prefix, 'subPages', index, 'blocks']),
+    return (
+      result ||
+      page.subPages.some((subPage, index) =>
+        iterBlockList(subPage.blocks, callbacks, [...prefix, 'subPages', index, 'blocks']),
+      )
     );
   }
   return iterBlockList(page.blocks, callbacks, [...prefix, 'blocks']);
