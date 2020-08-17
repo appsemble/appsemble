@@ -1,11 +1,12 @@
+import crypto from 'crypto';
+
 import type { JwtPayload } from '@appsemble/types';
 import Boom from '@hapi/boom';
-import crypto from 'crypto';
 import { verify } from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
 import type { KoaContext } from '../types';
-import createJWTResponse from '../utils/createJWTResponse';
+import { createJWTResponse } from '../utils/createJWTResponse';
 
 export async function getUser(ctx: KoaContext): Promise<void> {
   const { user } = ctx;
@@ -186,13 +187,13 @@ export async function removeEmail(ctx: KoaContext): Promise<void> {
   ctx.status = 204;
 }
 
-export async function emailLogin(ctx: KoaContext): Promise<void> {
+export function emailLogin(ctx: KoaContext): void {
   const { argv, user } = ctx;
 
   ctx.body = createJWTResponse(user.id, argv);
 }
 
-export async function refreshToken(ctx: KoaContext): Promise<void> {
+export function refreshToken(ctx: KoaContext): void {
   const {
     argv,
     request: { body },

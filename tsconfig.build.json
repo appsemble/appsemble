@@ -11,8 +11,6 @@
     "lib": ["esnext"],
     "module": "es2020",
     "moduleResolution": "node",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,

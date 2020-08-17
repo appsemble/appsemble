@@ -1,5 +1,6 @@
-import { logger } from '@appsemble/node-utils';
 import { URL } from 'url';
+
+import { logger } from '@appsemble/node-utils';
 import webpush from 'web-push';
 
 import type { App, AppSubscription } from '../models';
@@ -10,7 +11,7 @@ export interface SendNotificationOptions {
   body: string;
 }
 
-export default async function sendNotification(
+export async function sendNotification(
   ctx: KoaContext,
   app: App,
   subscription: AppSubscription,

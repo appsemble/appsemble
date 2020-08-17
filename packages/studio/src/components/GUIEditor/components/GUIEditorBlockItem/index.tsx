@@ -10,7 +10,7 @@ interface GUIEditorBlockItemProps {
   value: BlockManifest;
 }
 
-export default function GUIEditorBlockItem({ value }: GUIEditorBlockItemProps): ReactElement {
+export function GUIEditorBlockItem({ value }: GUIEditorBlockItemProps): ReactElement {
   const { name, onChange, value: currentValue } = useValuePicker();
 
   const handleChange = useCallback((event) => onChange(event, value), [onChange, value]);

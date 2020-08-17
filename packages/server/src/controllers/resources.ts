@@ -1,8 +1,9 @@
+import crypto from 'crypto';
+
 import type { NotificationDefinition } from '@appsemble/types';
 import { checkAppRole, Permission, remap, SchemaValidationError, validate } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
-import crypto from 'crypto';
 import type { OpenAPIV3 } from 'openapi-types';
 import { FindOptions, Op, QueryOptions, WhereOptions } from 'sequelize';
 
@@ -17,8 +18,8 @@ import {
 } from '../models';
 import type { KoaContext } from '../types';
 import { getRemapperContext } from '../utils/app';
-import checkRole from '../utils/checkRole';
-import sendNotification, { SendNotificationOptions } from '../utils/sendNotification';
+import { checkRole } from '../utils/checkRole';
+import { sendNotification, SendNotificationOptions } from '../utils/sendNotification';
 
 interface Params {
   appId: number;
@@ -66,7 +67,7 @@ function generateQuery(
         ),
         getDB(),
       );
-    } catch (e) {
+    } catch {
       return {};
     }
   }
@@ -76,14 +77,18 @@ function generateQuery(
 
 /**
  * Iterates through all keys in an object and preprends matched keys with ´data.´
- * @param object Object to iterate through
- * @param keys Keys to match with
+ *
+ * @param object - Object to iterate through
+ * @param keys - Keys to match with
+ * @param hashes - The hashes to use for mapping the created and updated values.
+ *
+ * @returns A Sequelize query whose properties have been prefixed with `data.`.
  */
-const deepRename = (
+function deepRename(
   object: any,
   keys: string[],
   { createdHash, updatedHash }: GenerateQueryOptions,
-): FindOptions => {
+): FindOptions {
   if (!object) {
     return {};
   }
@@ -118,22 +123,26 @@ const deepRename = (
       delete obj[key];
     }
 
-    if (!!obj[key] && (obj[key] instanceof Object || Array.isArray(obj[key]))) {
+    if (obj[key] && (obj[key] instanceof Object || Array.isArray(obj[key]))) {
       obj[key] = deepRename(obj[key], keys, { updatedHash, createdHash });
     }
   });
 
   return obj;
-};
+}
 
 /**
  * Verifies whether or not the user has sufficient permissions to perform a resource call.
  * Will throw an 403 error if the user does not satisfy the requirements.
  *
- * @param ctx Koa context of the request
- * @param app App as fetched from the database.
+ * @param ctx - Koa context of the request
+ * @param app - App as fetched from the database.
  * This must include the app member and organization relationships.
- * @param resource The resource as fetched from the database.
+ * @param resource - The resource as fetched from the database.
+ * @param resourceType - The resource type to check the role for.
+ * @param action - The resource action to theck the role for.
+ *
+ * @returns Query options to filter the resource for the user context.
  */
 async function verifyAppRole(
   ctx: KoaContext,
@@ -143,17 +152,17 @@ async function verifyAppRole(
   action: 'create' | 'delete' | 'get' | 'query' | 'update',
 ): Promise<WhereOptions> {
   if (!app.definition.resources[resourceType] || !app.definition.resources[resourceType][action]) {
-    return undefined;
+    return;
   }
 
   const { user } = ctx;
   let { roles } = app.definition.resources[resourceType][action];
 
   if (!roles || !roles.length) {
-    if (app.definition.roles && app.definition.roles.length) {
-      roles = app.definition.roles;
+    if (app.definition.roles?.length) {
+      ({ roles } = app.definition);
     } else {
-      return undefined;
+      return;
     }
   }
 
@@ -161,7 +170,7 @@ async function verifyAppRole(
   const filteredRoles = roles.filter((r) => r !== '$author');
 
   if (!author && !filteredRoles.length) {
-    return undefined;
+    return;
   }
 
   if (!user && (filteredRoles.length || author)) {
@@ -173,7 +182,7 @@ async function verifyAppRole(
   }
 
   if (author && user && resource && user.id === resource.UserId) {
-    return undefined;
+    return;
   }
 
   const member = app.Users.find((u) => u.id === user.id);
@@ -181,7 +190,7 @@ async function verifyAppRole(
   let role: string;
 
   if (member) {
-    role = member.AppMember.role;
+    ({ role } = member.AppMember);
   } else {
     switch (policy) {
       case 'everyone':
@@ -207,7 +216,6 @@ async function verifyAppRole(
   if (!filteredRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
     throw Boom.forbidden('User does not have sufficient permissions.');
   }
-  return undefined;
 }
 
 async function sendSubscriptionNotifications(
@@ -322,7 +330,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   const userQuery = await verifyAppRole(ctx, app, null, resourceType, 'query');
 
   const keys = Object.keys(properties);
-  // the data is stored in the ´data´ column as json
+  // The data is stored in the ´data´ column as json
   const renamedQuery = deepRename(query, keys, { updatedHash, createdHash });
 
   try {
@@ -340,12 +348,12 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
       $clonable: resource.clonable,
       ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
     }));
-  } catch (e) {
+  } catch (error) {
     if (query) {
       throw Boom.badRequest('Unable to process this query');
     }
 
-    throw e;
+    throw error;
   }
 }
 
@@ -502,7 +510,7 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
   }
 
   const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
-  const result = { id: resourceId, update: false, delete: false } as any;
+  const result: any = { id: resourceId, update: false, delete: false };
 
   subscriptions.forEach(({ action }) => {
     result[action] = true;
@@ -519,11 +527,7 @@ async function processHooks(
 ): Promise<void> {
   const resourceDefinition = app.definition.resources[resource.type];
 
-  if (
-    resourceDefinition[action] &&
-    resourceDefinition[action].hooks &&
-    resourceDefinition[action].hooks.notification
-  ) {
+  if (resourceDefinition[action]?.hooks?.notification) {
     const { notification } = resourceDefinition[action].hooks;
     const { data } = notification;
 
@@ -539,10 +543,10 @@ async function processHooks(
       app.definition.defaultLanguage || 'en-us',
     );
 
-    const title = data?.title ? remap(data.title, r, remapperContext) : resource.type;
-    const content = data?.content
+    const title = (data?.title ? remap(data.title, r, remapperContext) : resource.type) as string;
+    const content = (data?.content
       ? remap(data.content, r, remapperContext)
-      : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`;
+      : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`) as string;
 
     await sendSubscriptionNotifications(
       ctx,
@@ -571,7 +575,7 @@ async function processReferenceHooks(
     Object.entries(app.definition.resources[resource.type].references || {}).map(
       async ([propertyName, reference]) => {
         if (!reference[action] || !reference[action].trigger || !reference[action].trigger.length) {
-          // do nothing
+          // Do nothing
           return;
         }
 
@@ -595,6 +599,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
     request: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       body: { id: _, ...resource },
     },
     user,
@@ -656,6 +661,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceId, resourceType },
     request: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       body: { $clonable: clonable = false, id: _, ...updatedResource },
     },
     user,

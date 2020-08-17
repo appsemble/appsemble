@@ -4,9 +4,9 @@ import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import ActionEditorTypeEditor from './components/ActionEditorTypeEditor';
-import ActionEditorTypeSelect from './components/ActionEditorTypeSelect';
-import messages from './messages';
+import { ActionEditorTypeEditor } from './components/ActionEditorTypeEditor';
+import { ActionEditorTypeSelect } from './components/ActionEditorTypeSelect';
+import { messages } from './messages';
 
 interface ActionEditorProps {
   actions: { [action: string]: ActionType };
@@ -16,7 +16,7 @@ interface ActionEditorProps {
   name: string;
 }
 
-export default function ActionEditor({
+export function ActionEditor({
   actions,
   app,
   name,
@@ -26,7 +26,7 @@ export default function ActionEditor({
   const [selectedActionType, setSelectedActionType] = useState(value?.type);
 
   const handleChange = useCallback(
-    (_event: NamedEvent, val) => {
+    (event, val) => {
       onChange({ currentTarget: { name } }, val);
     },
     [name, onChange],

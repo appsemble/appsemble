@@ -2,9 +2,9 @@ import { URL } from 'url';
 
 import { App } from '../models';
 import type { Argv } from '../types';
-import dns from './dns';
+import { dns } from './dns';
 
-export default async function addDBHooks(argv: Argv): Promise<void> {
+export async function addDBHooks(argv: Argv): Promise<void> {
   if (!argv.appDomainStrategy) {
     return;
   }

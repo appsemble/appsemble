@@ -4,16 +4,16 @@ import { Permission } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import checkRole from '../../utils/checkRole';
-import getAppUrl from '../../utils/getAppUrl';
+import { checkRole } from '../../utils/checkRole';
+import { getAppUrl } from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
-import AppRatings from '../AppRatings';
-import StarRating from '../StarRating';
+import { AppRatings } from '../AppRatings';
+import { StarRating } from '../StarRating';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function AppDetails(): ReactElement {
+export function AppDetails(): ReactElement {
   const { app } = useApp();
   const { data: organization, error, loading } = useData<Organization>(
     `/api/organizations/${app.OrganizationId}`,

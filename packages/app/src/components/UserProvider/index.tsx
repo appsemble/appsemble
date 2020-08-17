@@ -12,7 +12,7 @@ import React, {
   useState,
 } from 'react';
 
-import settings from '../../utils/settings';
+import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 
 interface JwtPayload {
@@ -76,10 +76,10 @@ const REFRESH_TOKEN = 'refresh_token';
 
 const Context = createContext<UserContext>(null);
 
-export default function UserProvider({ children }: UserProviderProps): ReactElement {
+export function UserProvider({ children }: UserProviderProps): ReactElement {
   const { definition } = useAppDefinition();
   // If there is no security definition, don’t even bother going into the loading state.
-  const [isLoading, setLoading] = useState(!!definition.security);
+  const [isLoading, setLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
   const [exp, setExp] = useState(null);
   const [authorization, setAuthorization] = useState<string>(null);
@@ -97,16 +97,16 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
   /**
    * Conveniently fetch an access token.
    *
-   * @param grantType The grant type to authenticate with
-   * @param params Additional parameters, which depend on the grant type.
+   * @param grantType - The grant type to authenticate with
+   * @param params - Additional parameters, which depend on the grant type.
    */
   const fetchToken = useCallback(async (grantType: string, params: { [key: string]: string }) => {
     const {
       data: { access_token: accessToken, refresh_token: rt },
     } = await axios.post<TokenResponse>(
-      `${settings.apiUrl}/oauth2/token`,
+      `${apiUrl}/oauth2/token`,
       new URLSearchParams({
-        client_id: `app:${settings.id}`,
+        client_id: `app:${appId}`,
         grant_type: grantType,
         scope: 'openid',
         ...params,
@@ -123,8 +123,8 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
   /**
    * Fetch an access token, the user info, and member role, or log out if any step fails.
    *
-   * @param grantType The grant type to authenticate with
-   * @param params Additional parameters, which depend on the grant type.
+   * @param grantType - The grant type to authenticate with
+   * @param params - Additional parameters, which depend on the grant type.
    */
   const login = useCallback(
     async <P extends {}>(grantType: string, params: P) => {
@@ -132,24 +132,22 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
         const [auth, { sub }] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
         const [{ data: userInfo }, role] = await Promise.all([
-          axios.get<UserInfo>(`${settings.apiUrl}/api/connect/userinfo`, config),
-          axios
-            .get<AppMember>(`${settings.apiUrl}/api/apps/${settings.id}/members/${sub}`, config)
-            .then(
-              ({ data }) => data.role,
-              (error) => {
-                const { policy, role: defaultRole } = definition.security.default;
-                if (
-                  policy === 'everyone' ||
-                  (policy === 'organization' &&
-                    // XXX Make it so we don’t rely on the error message.
-                    error.data.message === 'User is not a member of the organization.')
-                ) {
-                  return defaultRole;
-                }
-                throw error;
-              },
-            ),
+          axios.get<UserInfo>(`${apiUrl}/api/connect/userinfo`, config),
+          axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
+            ({ data }) => data.role,
+            (error) => {
+              const { policy, role: defaultRole } = definition.security.default;
+              if (
+                policy === 'everyone' ||
+                (policy === 'organization' &&
+                  // XXX Make it so we don’t rely on the error message.
+                  error.data.message === 'User is not a member of the organization.')
+              ) {
+                return defaultRole;
+              }
+              throw error;
+            },
+          ),
         ]);
         setState({
           isLoggedIn: true,
@@ -167,7 +165,7 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
   /**
    * Login using the discouraged password grant type.
    *
-   * @param credentials The username and password.
+   * @param credentials - The username and password.
    */
   const passwordLogin = useCallback(
     (credentials: PasswordLoginParams) => login('password', credentials),
@@ -177,7 +175,7 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
   /**
    * Login using an OAuth2 authorization code.
    *
-   * @param credentials The authorization code and redirect uri.
+   * @param credentials - The authorization code and redirect uri.
    */
   const authorizationCodeLogin = useCallback(
     (credentials: AuthorizationCodeLoginParams) => login('authorization_code', credentials),
@@ -206,10 +204,10 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
   useEffect(() => {
     // Don’t start the refresh token loop until an access token expiration is known.
     if (exp == null) {
-      return undefined;
+      return;
     }
 
-    // exp is in seconds
+    // `exp` is in seconds
     // 300 seconds equals 5 minutes
     // (exp - 300) * 1000 equals the expiration minus 5 minutes in milliseconds
     // Date.now() returns the date in milliseconds
@@ -226,7 +224,7 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
       try {
         // Fetch a new access token, but do keep the original role and user info.
         await fetchToken('refresh_token', { refresh_token: rt });
-      } catch (error) {
+      } catch {
         // If refreshing the session fails for any reason, log out the user.
         logout();
       }
@@ -239,12 +237,12 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
 
   useEffect(() => {
     if (!authorization) {
-      return undefined;
+      return;
     }
 
     const interceptor = axios.interceptors.request.use((config) => {
       // Only assign the authorization header to requests made to the Appsemble API.
-      if (new URL(axios.getUri(config)).origin === settings.apiUrl) {
+      if (new URL(axios.getUri(config)).origin === apiUrl) {
         Object.assign(config.headers, { authorization });
       }
       return config;

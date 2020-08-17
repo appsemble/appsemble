@@ -1,4 +1,4 @@
-import prefixBlockURL from './prefixBlockURL';
+import { prefixBlockURL } from './prefixBlockURL';
 
 it('should populate the API url with block properties', () => {
   const result = prefixBlockURL({ type: '@appsemble/test', version: '1.0.0' }, 'test.css');

@@ -5,6 +5,6 @@ import React, { ReactElement } from 'react';
  *
  * This is needed to prevent MDX from rendering a nested `<pre />` element for code blocks.
  */
-export default function MDXPre(props: any): ReactElement {
+export function MDXPre(props: unknown): ReactElement {
   return <div {...props} />;
 }

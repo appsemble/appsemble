@@ -19,8 +19,10 @@ let rootDB: Sequelize;
  * afterAll(closeTestSchema);
  * ```
  *
- * @param spec The name of the test case.
- * @param options Additional sequelize options.
+ * @param spec - The name of the test case.
+ * @param options - Additional sequelize options.
+ *
+ * @returns A function to pass into `beforeAll()`.
  */
 export function createTestSchema(spec: string, options: InitDBParams = {}): () => Promise<void> {
   return async () => {
@@ -31,11 +33,12 @@ export function createTestSchema(spec: string, options: InitDBParams = {}): () =
       retry: { max: 3 },
     });
 
+    // eslint-disable-next-line unicorn/prefer-string-slice
     dbName = rootDB
       .escape(`appsemble_test_${spec}_${new Date().toISOString()}`)
       .replace(/'/g, '')
       .replace(/\W+/g, '_')
-      .substring(0, 63)
+      .substr(0, 63)
       .toLowerCase();
 
     await rootDB.query(`CREATE DATABASE ${dbName}`);

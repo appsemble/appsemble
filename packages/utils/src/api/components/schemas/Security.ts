@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const Security: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'This describes how the app is secured.',
   required: ['default', 'roles'],

@@ -11,11 +11,10 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { User } from '.';
-import AppOAuth2Secret from './AppOAuth2Secret';
+import { AppOAuth2Secret, User } from '.';
 
 @Table({ tableName: 'AppOAuth2Authorization' })
-export default class AppOAuth2Authorization extends Model<AppOAuth2Authorization> {
+export class AppOAuth2Authorization extends Model<AppOAuth2Authorization> {
   /**
    * The subject id of the user on the remote authorization server.
    */

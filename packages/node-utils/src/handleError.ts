@@ -1,6 +1,6 @@
 import type { Argv } from 'yargs';
 
-import AppsembleError from './AppsembleError';
+import { AppsembleError } from './AppsembleError';
 import { logger } from './logger';
 
 /**
@@ -8,10 +8,11 @@ import { logger } from './logger';
  *
  * HTTP errors are formatted nicely. For other errors, the stack trace is logged.
  *
- * @param message Unused.
- * @param error The error that was thrown.
+ * @param message - Unused.
+ * @param error - The error that was thrown.
+ * @param yargs - The active yargs instance.
  */
-export default function handleError(message: string, error: Error, yargs: Argv): void {
+export function handleError(message: string, error: Error, yargs: Argv): void {
   if (typeof message === 'string') {
     yargs.showHelp();
     // eslint-disable-next-line no-console

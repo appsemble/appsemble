@@ -4,12 +4,12 @@ import axios from 'axios';
 import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import settings from '../../utils/settings';
+import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
-import TitleBar from '../TitleBar';
+import { TitleBar } from '../TitleBar';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface ResourceState {
   [resourceType: string]: SubscriptionState;
@@ -28,7 +28,7 @@ interface SubscriptionState {
  *
  * This configures all providers and sets up the global app structure.
  */
-export default function AppSettings(): ReactElement {
+export function AppSettings(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const [subscriptions, setSubscriptions] = useState<ResourceState>();
@@ -46,12 +46,8 @@ export default function AppSettings(): ReactElement {
         Object.keys(resource)
           .filter((key) => ['create', 'update', 'delete'].includes(key))
           .forEach((key: keyof SubscriptionState) => {
-            if (
-              resource[key].hooks &&
-              resource[key].hooks.notification &&
-              resource[key].hooks.notification.subscribe
-            ) {
-              if (!Object.prototype.hasOwnProperty.call(acc, resourceType)) {
+            if (resource[key].hooks?.notification?.subscribe) {
+              if (!Object.hasOwnProperty.call(acc, resourceType)) {
                 acc[resourceType] = {};
               }
               acc[resourceType][key] = { ...resource[key].hooks, subscribed: false };
@@ -66,17 +62,17 @@ export default function AppSettings(): ReactElement {
     if (subscription) {
       const { endpoint } = subscription;
       axios
-        .get<SubscriptionResponse>(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
+        .get<SubscriptionResponse>(`${apiUrl}/api/apps/${appId}/subscriptions`, {
           params: { endpoint },
         })
         .then(({ data }) => {
           Object.entries(data).forEach(([key, resource]) => {
-            if (!Object.prototype.hasOwnProperty.call(subs, key)) {
+            if (!Object.hasOwnProperty.call(subs, key)) {
               return;
             }
 
             Object.entries(resource).forEach(([action, value]) => {
-              if (!Object.prototype.hasOwnProperty.call(subs[key], action)) {
+              if (!Object.hasOwnProperty.call(subs[key], action)) {
                 return;
               }
 
@@ -118,7 +114,7 @@ export default function AppSettings(): ReactElement {
     try {
       await subscribe();
       push({ body: formatMessage(messages.subscribeSuccessful), color: 'success' });
-    } catch (error) {
+    } catch {
       push({ body: formatMessage(messages.subscribeError), color: 'danger' });
     }
   };
@@ -130,7 +126,7 @@ export default function AppSettings(): ReactElement {
   ): Promise<void> => {
     try {
       const { endpoint } = subscription;
-      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
+      await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource,
         action,
@@ -144,7 +140,7 @@ export default function AppSettings(): ReactElement {
           [action]: { ...subscriptions[resource][action], subscribed: value },
         },
       });
-    } catch (error) {
+    } catch {
       push({ body: formatMessage(messages.subscribeError), color: 'danger' });
     }
   };
@@ -171,7 +167,7 @@ export default function AppSettings(): ReactElement {
                 name="subscribe"
                 onChange={onSubscribeClick}
                 switch
-                value={!!subscription}
+                value={Boolean(subscription)}
                 wrapperClassName="is-flex"
               />
             </div>
@@ -197,7 +193,6 @@ export default function AppSettings(): ReactElement {
                   )
                   .map((key) => (
                     <Checkbox
-                      key={key}
                       className={styles.subscribeCheckbox}
                       disabled={!subscription || !resource.create}
                       help={
@@ -209,6 +204,7 @@ export default function AppSettings(): ReactElement {
                           }}
                         />
                       }
+                      key={key}
                       name={`${resourceType}.${key}`}
                       onChange={(_, value) => onSubscriptionChange(resourceType, key, value)}
                       switch

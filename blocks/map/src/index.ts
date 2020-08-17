@@ -7,8 +7,8 @@ import { attach } from '@appsemble/sdk';
 import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 
-import createGetters from './createGetters';
-import loadMarkers, { makeFilter } from './loadMarkers';
+import { createGetters } from './createGetters';
+import { loadMarkers, makeFilter } from './loadMarkers';
 
 attach((params) => {
   const {
@@ -19,7 +19,8 @@ attach((params) => {
     theme: { primaryColor, tileLayer },
     utils,
   } = params;
-  const node = shadowRoot.appendChild(document.createElement('div'));
+  const node = document.createElement('div');
+  shadowRoot.append(node);
   const fetched = new Set<number>();
 
   const get = createGetters(parameters);
@@ -62,7 +63,7 @@ attach((params) => {
     })
 
     /**
-     *  When a location error occurs because location is disabled, show a message to the user.
+     * When a location error occurs because location is disabled, show a message to the user.
      */
     .once('locationerror', (error) => {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError

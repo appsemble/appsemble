@@ -6,8 +6,8 @@ import React, { ReactElement, ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import type { EditLocation } from '../../types';
-import applyMonacoEdits from '../../utils/applyMonacoEdits';
-import messages from './messages';
+import { applyMonacoEdits } from '../../utils/applyMonacoEdits';
+import { messages } from './messages';
 
 interface GUIEditorDeleteProps {
   app: App;
@@ -16,7 +16,7 @@ interface GUIEditorDeleteProps {
   disabled: boolean;
 }
 
-export default function GUIEditorDelete({
+export function GUIEditorDelete({
   app,
   disabled,
   editLocation,
@@ -50,20 +50,24 @@ export default function GUIEditorDelete({
     if (blocksInPage === 1 && !subBlockSelected) {
       return [
         new Range(parents[parents.length - 2].line, 1, editRange.endLineNumber, 1),
-        <FormattedMessage {...messages.deletePageWarning} values={{ blockName, pageName }} />,
+        <FormattedMessage
+          key={null}
+          {...messages.deletePageWarning}
+          values={{ blockName, pageName }}
+        />,
       ];
     }
 
     if (subBlockSelected) {
       return [
         new Range(editRange.startLineNumber - 1, 1, editRange.endLineNumber, 1),
-        <FormattedMessage {...messages.deleteSubBlockWarning} values={{ blockName }} />,
+        <FormattedMessage key={null} {...messages.deleteSubBlockWarning} values={{ blockName }} />,
       ];
     }
 
     return [
       editRange,
-      <FormattedMessage {...messages.deleteWarning} values={{ blockName, pageName }} />,
+      <FormattedMessage key={null} {...messages.deleteWarning} values={{ blockName, pageName }} />,
     ];
   }, [app, editLocation]);
 

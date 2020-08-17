@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import type { Definition } from 'typescript-json-schema';
 
-import messages from './messages';
+import { messages } from './messages';
 
 interface TypeTableProps {
   /**
@@ -15,7 +15,7 @@ interface TypeTableProps {
 /**
  * Render a table describing the types definitions that are passed through.
  */
-export default function TypeTable({ definition }: TypeTableProps): ReactElement {
+export function TypeTable({ definition }: TypeTableProps): ReactElement {
   return (
     <Table>
       <thead>

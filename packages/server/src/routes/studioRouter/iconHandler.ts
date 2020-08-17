@@ -1,5 +1,5 @@
 import type { KoaContext } from '../../types';
-import serveIcon from '../serveIcon';
+import { serveIcon } from '../serveIcon';
 
 interface Params {
   format: string;
@@ -7,7 +7,7 @@ interface Params {
   width: string;
 }
 
-export default async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
+export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const { params } = ctx;
   const width = Number(params.width);
   const height = Number(params.height || params.width);

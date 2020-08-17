@@ -8,12 +8,12 @@ import { getDB, Meta } from '../models';
 export interface Migration {
   key: string;
 
-  up(db: Sequelize): Promisable<void>;
+  up: (db: Sequelize) => Promisable<void>;
 
-  down(db: Sequelize): Promisable<void>;
+  down: (db: Sequelize) => Promisable<void>;
 }
 
-export default async function migrate(toVersion: string, migrations: Migration[]): Promise<void> {
+export async function migrate(toVersion: string, migrations: Migration[]): Promise<void> {
   const db = getDB();
   await Meta.sync();
   const to = toVersion === 'next' ? migrations[migrations.length - 1].key : toVersion;

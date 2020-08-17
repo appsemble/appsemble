@@ -15,10 +15,10 @@ import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
 import type { ExtendedOAuth2State } from '../../types';
-import settings from '../../utils/settings';
+import { logins } from '../../utils/settings';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface OAuth2StudioCallbackProps {
   session: ExtendedOAuth2State;
@@ -29,11 +29,11 @@ interface OAuth2StudioCallbackProps {
  *
  * - If the user has logged in using a known account, they are logged in to Appsemble.
  * - If the user is already logged in, they are prompted to link the OAuth2 account to their
- *   Appsemble account.
+ * Appsemble account.
  * - If the user has logged in using an unknown account, they are prompted if they want to link the
- *   OAuth2 account to a new or an existing Appsemble account.
+ * OAuth2 account to a new or an existing Appsemble account.
  */
-export default function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): ReactElement {
+export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): ReactElement {
   const history = useHistory();
   const redirect = useLocationString();
   const qs = useQuery();
@@ -41,7 +41,7 @@ export default function OAuth2StudioCallback({ session }: OAuth2StudioCallbackPr
 
   const code = qs.get('code');
   const state = qs.get('state');
-  const provider = settings.logins.find((p) => p.authorizationUrl === session?.authorizationUrl);
+  const provider = logins.find((p) => p.authorizationUrl === session?.authorizationUrl);
 
   const [profile, setProfile] = useState(session?.userinfo);
   const [isLoading, setLoading] = useState(true);
@@ -76,7 +76,7 @@ export default function OAuth2StudioCallback({ session }: OAuth2StudioCallbackPr
         appendOAuth2State({ userinfo: data });
         setProfile(data);
         setLoading(false);
-      } catch (err) {
+      } catch {
         setError(messages.loginError);
         setLoading(false);
       }
@@ -84,11 +84,11 @@ export default function OAuth2StudioCallback({ session }: OAuth2StudioCallbackPr
 
     if (!session || state !== session.state) {
       setError(messages.invalidState);
-    } else if (!profile) {
-      connect();
-    } else {
+    } else if (profile) {
       // The user refreshed the page.
       setLoading(false);
+    } else {
+      connect();
     }
   }, [code, finalizeLogin, profile, session, state]);
 

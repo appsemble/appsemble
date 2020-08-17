@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   invalidState: 'The state parameter is invalid. Please try again.',
   registrationConflict:
     'The linked email address is already assigned to an existing Appsemble account. Please login and try again.',

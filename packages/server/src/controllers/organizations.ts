@@ -1,6 +1,7 @@
+import crypto from 'crypto';
+
 import { Permission, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
-import crypto from 'crypto';
 import { Op, UniqueConstraintError } from 'sequelize';
 
 import {
@@ -12,7 +13,7 @@ import {
   User,
 } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
+import { checkRole } from '../utils/checkRole';
 
 interface Params {
   blockId: string;
@@ -68,7 +69,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
   try {
     const organization = await Organization.create({ id, name }, { include: [User] });
 
-    // @ts-expect-error
+    // @ts-expect-error XXX Convert to a type safe expression.
     await organization.addUser(userId, { through: { role: 'Owner' } });
     await organization.reload();
 
@@ -367,7 +368,7 @@ export async function setOrganizationCoreStyle(ctx: KoaContext<Params>): Promise
       body: { style },
     },
   } = ctx;
-  const css = style.toString().trim();
+  const css = String(style).trim();
 
   try {
     validateStyle(css);
@@ -379,14 +380,14 @@ export async function setOrganizationCoreStyle(ctx: KoaContext<Params>): Promise
 
     await checkRole(ctx, organization.id, Permission.EditThemes);
 
-    organization.coreStyle = css.length ? css.toString() : null;
+    organization.coreStyle = css || null;
     await organization.save();
-  } catch (e) {
-    if (e instanceof StyleValidationError) {
+  } catch (error) {
+    if (error instanceof StyleValidationError) {
       throw Boom.badRequest('Provided CSS was invalid.');
     }
 
-    throw e;
+    throw error;
   }
 }
 
@@ -412,7 +413,7 @@ export async function setOrganizationSharedStyle(ctx: KoaContext<Params>): Promi
       body: { style },
     },
   } = ctx;
-  const css = style.toString().trim();
+  const css = String(style).trim();
 
   try {
     validateStyle(css);
@@ -424,14 +425,14 @@ export async function setOrganizationSharedStyle(ctx: KoaContext<Params>): Promi
 
     await checkRole(ctx, organization.id, Permission.EditThemes);
 
-    organization.sharedStyle = css.length ? css.toString() : null;
+    organization.sharedStyle = css || null;
     await organization.save();
-  } catch (e) {
-    if (e instanceof StyleValidationError) {
+  } catch (error) {
+    if (error instanceof StyleValidationError) {
       throw Boom.badRequest('Provided CSS was invalid.');
     }
 
-    throw e;
+    throw error;
   }
 }
 
@@ -459,7 +460,7 @@ export async function setOrganizationBlockStyle(ctx: KoaContext<Params>): Promis
       body: { style },
     },
   } = ctx;
-  const css = style.toString().trim();
+  const css = String(style).trim();
 
   try {
     validateStyle(css);
@@ -479,15 +480,15 @@ export async function setOrganizationBlockStyle(ctx: KoaContext<Params>): Promis
     }
 
     await OrganizationBlockStyle.upsert({
-      style: css.length ? css.toString() : null,
+      style: css || null,
       OrganizationId: organization.id,
       block: `@${block.OrganizationId}/${block.name}`,
     });
-  } catch (e) {
-    if (e instanceof StyleValidationError) {
+  } catch (error) {
+    if (error instanceof StyleValidationError) {
       throw Boom.badRequest('Provided CSS was invalid.');
     }
 
-    throw e;
+    throw error;
   }
 }

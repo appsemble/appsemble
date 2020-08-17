@@ -1,6 +1,7 @@
-import { Button } from '@appsemble/react-components';
 import { OAuth2LoginOptions, startOAuth2Login } from '@appsemble/web-utils';
 import React, { ComponentPropsWithoutRef, ReactElement, useCallback, useState } from 'react';
+
+import { Button } from '..';
 
 type OAuth2LoginButtonProps = ComponentPropsWithoutRef<typeof Button> & OAuth2LoginOptions;
 
@@ -10,7 +11,7 @@ type OAuth2LoginButtonProps = ComponentPropsWithoutRef<typeof Button> & OAuth2Lo
  * When the button is clicked, the user will be redirected to the authorization URL. The state and
  * authorization url will be stored in `sessionStorage`.
  */
-export default function OAuth2LoginButton({
+export function OAuth2LoginButton({
   authorizationUrl,
   clientId,
   onClick,

@@ -3,7 +3,7 @@ import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, RadioField } from '../../../block';
-import isRequired from '../../utils/isRequired';
+import { isRequired } from '../../utils/isRequired';
 import styles from './index.css';
 
 type RadioInputProps = InputProps<any, RadioField>;
@@ -11,13 +11,7 @@ type RadioInputProps = InputProps<any, RadioField>;
 /**
  * An input element for a radio button.
  */
-export default function RadioInput({
-  disabled,
-  error,
-  field,
-  onInput,
-  value,
-}: RadioInputProps): VNode {
+export function RadioInput({ disabled, error, field, onInput, value }: RadioInputProps): VNode {
   const { utils } = useBlock();
   const { label, name, options } = field;
   const required = isRequired(field);
@@ -34,7 +28,11 @@ export default function RadioInput({
       value={value}
     >
       {options.map((option) => (
-        <RadioButton value={option.value} wrapperClassName={styles.choice}>
+        <RadioButton
+          key={String(option.value)}
+          value={option.value}
+          wrapperClassName={styles.choice}
+        >
           {utils.remap(option.label, {}) ?? option.value}
         </RadioButton>
       ))}

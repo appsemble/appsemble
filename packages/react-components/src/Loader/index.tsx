@@ -8,7 +8,7 @@ interface LoaderProps {
   component?: ElementType;
 }
 
-export default function Loader({
+export function Loader({
   className,
   component: Component = 'div',
   ...props

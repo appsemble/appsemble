@@ -1,12 +1,13 @@
+import { existsSync, promises as fs } from 'fs';
+import { join, parse } from 'path';
+
 import { logger } from '@appsemble/node-utils';
 import type { AppMessages } from '@appsemble/types';
 import axios from 'axios';
-import fs from 'fs-extra';
 import yaml from 'js-yaml';
-import { join, parse } from 'path';
 
-export default async function uploadMessages(path: string, appId: string): Promise<void> {
-  if (!fs.existsSync(join(path, 'messages'))) {
+export async function uploadMessages(path: string, appId: string): Promise<void> {
+  if (!existsSync(join(path, 'messages'))) {
     return;
   }
 

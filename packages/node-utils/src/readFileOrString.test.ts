@@ -1,6 +1,6 @@
 import path from 'path';
 
-import readFileOrString from './readFileOrString';
+import { readFileOrString } from './readFileOrString';
 
 it('should return file content if it resolves to a file', async () => {
   const result = await readFileOrString(path.join(__dirname, '__fixtures__', 'hello.txt'));

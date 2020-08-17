@@ -1,7 +1,7 @@
 import type { Argv } from 'yargs';
 
-import readPackageJson from '../lib/readPackageJson';
-import serverImport from '../lib/serverImport';
+import { readPackageJson } from '../lib/readPackageJson';
+import { serverImport } from '../lib/serverImport';
 import type { BaseArguments } from '../types';
 
 export const command = 'migrate [to]';

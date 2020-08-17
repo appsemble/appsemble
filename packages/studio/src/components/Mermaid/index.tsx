@@ -15,7 +15,7 @@ interface MermaidProps {
 /**
  * Render a [mermaid](https://mermaid-js.github.io/) diagram.
  */
-export default function Mermaid({ graph }: MermaidProps): ReactElement {
+export function Mermaid({ graph }: MermaidProps): ReactElement {
   const ref = useRef<HTMLDivElement>();
 
   useEffect(() => {

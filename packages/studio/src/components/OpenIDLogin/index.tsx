@@ -13,14 +13,14 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../utils/oauth2Utils';
-import HelmetIntl from '../HelmetIntl';
+import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 /**
  * Handle login to apps using OAuth2.
  */
-export default function OpenIDLogin(): ReactElement {
+export function OpenIDLogin(): ReactElement {
   const qs = useQuery();
 
   const [appLoading, setAppLoading] = useState(true);
@@ -36,7 +36,7 @@ export default function OpenIDLogin(): ReactElement {
       .post('/api/oauth2/authorization-code', {
         appId: app.id,
         redirectUri: qs.get('redirect_uri'),
-        scope: Array.from(new Set(scopes)).join(' '),
+        scope: [...new Set(scopes)].join(' '),
       })
       .then(({ data }) => oauth2Redirect(qs, { code: data.code }))
       .catch(() => oauth2Redirect(qs, { error: 'server_error' }));
@@ -51,7 +51,7 @@ export default function OpenIDLogin(): ReactElement {
       if (!verifyOAuth2LoginRequest(qs, ['email', 'openid', 'profile', 'resources:manage'])) {
         return;
       }
-    } catch (err) {
+    } catch {
       setError(messages.missingRedirectUri);
       return;
     }

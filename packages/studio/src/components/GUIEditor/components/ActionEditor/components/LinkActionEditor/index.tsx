@@ -4,7 +4,7 @@ import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import { messages } from './messages';
 
 interface LinkActionEditorProps {
   app: App;
@@ -12,7 +12,7 @@ interface LinkActionEditorProps {
   onChange: (event: NamedEvent, value?: any) => void;
 }
 
-export default function LinkActionEditor({
+export function LinkActionEditor({
   app,
   onChange,
   value = {},

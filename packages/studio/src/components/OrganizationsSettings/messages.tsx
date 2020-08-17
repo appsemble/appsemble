@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   title: 'Settings · Organizations',
   changeRoleSuccess: 'Successfully changed role of {name} to {role}.',
   changeRoleError: 'Something went wrong when trying to change this member’s role.',

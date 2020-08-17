@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   createApp: 'Create new App',
   cancel: 'Cancel',
   create: 'Create',

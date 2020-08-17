@@ -1,13 +1,14 @@
-import Boom from '@hapi/boom';
 import crypto from 'crypto';
+
+import Boom from '@hapi/boom';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
 import type { KoaContext } from '../types';
-import createJWTResponse from '../utils/createJWTResponse';
+import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
+import { createJWTResponse } from '../utils/createJWTResponse';
 import type { Recipient } from '../utils/email/Mailer';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
-import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
-import trimUrl from '../utils/trimUrl';
+import { trimUrl } from '../utils/trimUrl';
 
 export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   const {

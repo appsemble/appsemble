@@ -5,6 +5,8 @@ COPY . .
 RUN yarn --frozen-lockfile
 RUN yarn build:app
 RUN yarn build:studio
+RUN yarn workspace @appsemble/types prepack
+RUN yarn workspace @appsemble/sdk prepack
 RUN yarn workspace @appsemble/utils prepack
 RUN yarn workspace @appsemble/node-utils prepack
 RUN yarn workspace @appsemble/server prepack

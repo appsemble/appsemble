@@ -5,19 +5,13 @@ import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import type { FileField, InputProps } from '../../../block';
-import isRequired from '../../utils/isRequired';
-import FileEntry from '../FileEntry';
+import { isRequired } from '../../utils/isRequired';
+import { FileEntry } from '../FileEntry';
 import styles from './index.css';
 
 type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
 
-export default function FileInput({
-  disabled,
-  error,
-  field,
-  onInput,
-  value,
-}: FileInputProps): VNode {
+export function FileInput({ disabled, error, field, onInput, value }: FileInputProps): VNode {
   const { utils } = useBlock();
   const { icon, label, name, repeated } = field;
   const required = isRequired(field);
@@ -32,7 +26,7 @@ export default function FileInput({
       } else {
         copy[index] = val;
       }
-      onInput(({ currentTarget: { name } } as any) as Event, copy);
+      onInput(({ currentTarget: { name } } as unknown) as Event, copy);
     },
     [name, onInput, value],
   );
@@ -60,10 +54,10 @@ export default function FileInput({
           />
           {(value as string[]).map((val, index) => (
             <FileEntry
-              // eslint-disable-next-line react/no-array-index-key
-              key={index}
               error={error}
               field={field}
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
               name={`${name}.${index}`}
               onInput={handleInput}
               value={val}

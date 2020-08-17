@@ -1,5 +1,5 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   error: 'An error has occurred.',
 });

@@ -1,6 +1,6 @@
 import type { KoaContext, KoaMiddleware } from '../types';
 
-export default function conditional(
+export function conditional(
   check: (ctx: KoaContext) => boolean,
   middleware: KoaMiddleware,
 ): KoaMiddleware {

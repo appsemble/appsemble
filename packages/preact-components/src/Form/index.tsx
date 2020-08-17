@@ -1,7 +1,7 @@
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Props } from '../types';
+import type { Props } from '..';
 
 interface FormProps extends Omit<Props<'form'>, 'noValidate'> {
   /**
@@ -13,7 +13,7 @@ interface FormProps extends Omit<Props<'form'>, 'noValidate'> {
 /**
  * A simple form wrapper that ensures `noValidate` is passed and `onSubmit` is used.
  */
-export default function Form({ onSubmit, ...props }: FormProps): VNode {
+export function Form({ onSubmit, ...props }: FormProps): VNode {
   const handleSubmit = useCallback(
     (event: Event) => {
       event.preventDefault();

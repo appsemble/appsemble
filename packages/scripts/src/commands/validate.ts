@@ -1,8 +1,9 @@
+import path from 'path';
+
 import { getWorkspaces, logger } from '@appsemble/node-utils';
 import type { Config } from '@jest/types';
 import { readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
-import path from 'path';
 import semver from 'semver';
 import type { PackageJson } from 'type-fest';
 
@@ -12,7 +13,7 @@ export const description = 'Validate all workspaces have a proper configuration'
 /**
  * A list of packages that are released without a scoped package name.
  */
-const unscopedPackageNames = ['appsemble', 'create-appsemble'];
+const unscopedPackageNames = new Set(['appsemble', 'create-appsemble']);
 
 /**
  * A representation of a yarn workspace.
@@ -57,9 +58,9 @@ interface Result {
 /**
  * Assert if a check fails or passes.
  *
- * @param assertion Whether the assertion passed.
- * @param filename On which file name the assertion applies.
- * @param message A description of the assertion that was run.
+ * @param assertion - Whether the assertion passed.
+ * @param filename - On which file name the assertion applies.
+ * @param message - A description of the assertion that was run.
  */
 type Assert = (assertion: boolean, filename: string, message: string) => void;
 
@@ -79,7 +80,7 @@ async function validate(
   );
   assert(
     pkgNameMatch?.groups.scope === 'appsemble' ||
-      unscopedPackageNames.includes(pkgNameMatch?.groups.name),
+      unscopedPackageNames.has(pkgNameMatch?.groups.name),
     'package.json',
     'Name should use the @appsemble scope',
   );

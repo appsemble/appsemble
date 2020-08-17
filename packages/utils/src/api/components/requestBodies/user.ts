@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const user: OpenAPIV3.RequestBodyObject = {
   description: 'A user profile',
   content: {
     'application/json': {

@@ -1,13 +1,13 @@
 {
   "name": "@appsemble/types",
   "version": "0.13.7",
-  "private": true,
   "description": "TypeScript definitions reused within Appsemble internally",
   "keywords": [
     "app",
     "apps",
     "appsemble",
     "framework",
+    "internal",
     "low-code",
     "lowcode"
   ],
@@ -21,7 +21,10 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
+  "main": "dist",
+  "types": "dist",
   "scripts": {
+    "prepack": "tsc -p tsconfig.build.json",
     "test": "jest"
   },
   "dependencies": {

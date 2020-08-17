@@ -1,1 +1,1 @@
-export default 'with-icon';
+export const string = 'with-icon';

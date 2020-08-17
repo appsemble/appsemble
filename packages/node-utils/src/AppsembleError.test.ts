@@ -1,7 +1,6 @@
-import AppsembleError from './AppsembleError';
+import { AppsembleError } from './AppsembleError';
 
 it('should define AppsembleError as its name', () => {
-  class InheritedError extends AppsembleError {}
-  const error = new InheritedError('message');
+  const error = new AppsembleError('message');
   expect(error.name).toBe('AppsembleError');
 });

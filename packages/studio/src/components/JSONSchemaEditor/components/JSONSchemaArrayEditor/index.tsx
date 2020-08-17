@@ -4,8 +4,8 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React, { MouseEvent, ReactElement, useCallback } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
-import JSONSchemaLabel from '../JSONSchemaLabel';
-import RecursiveJSONSchemaEditor from '../RecursiveJSONSchemaEditor';
+import { JSONSchemaLabel } from '../JSONSchemaLabel';
+import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import styles from './index.css';
 
 const defaults = {
@@ -18,7 +18,7 @@ const defaults = {
   string: '',
 };
 
-export default function JSONSchemaArrayEditor({
+export function JSONSchemaArrayEditor({
   disabled,
   name,
   prefix,

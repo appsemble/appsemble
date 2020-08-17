@@ -1,7 +1,8 @@
-import concat from 'concat-stream';
 import path from 'path';
 
-import makePayload from './makePayload';
+import concat from 'concat-stream';
+
+import { makePayload } from './makePayload';
 
 it('should create a form-data payload', async () => {
   const payload = await makePayload({
@@ -18,7 +19,7 @@ it('should create a form-data payload', async () => {
   const buffer = await new Promise((resolve) => {
     payload.pipe(concat(resolve));
   });
-  expect(buffer.toString()).toStrictEqual(`--${boundary}\r
+  expect(String(buffer)).toStrictEqual(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r
 \r
 {"onClick":{}}\r
@@ -42,7 +43,7 @@ Content-Disposition: form-data; name="version"\r
 Content-Disposition: form-data; name="files"; filename="block.js"\r
 Content-Type: application/javascript\r
 \r
-export default 'no-icon';
+export const string = 'no-icon';
 \r
 --${boundary}--\r
 `);
@@ -63,7 +64,7 @@ it('should include an icon if one is present', async () => {
   const buffer = await new Promise((resolve) => {
     payload.pipe(concat(resolve));
   });
-  expect(buffer.toString()).toStrictEqual(`--${boundary}\r
+  expect(String(buffer)).toStrictEqual(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r
 \r
 {}\r
@@ -94,7 +95,7 @@ Content-Type: image/svg+xml\r
 Content-Disposition: form-data; name="files"; filename="block.js"\r
 Content-Type: application/javascript\r
 \r
-export default 'with-icon';
+export const string = 'with-icon';
 \r
 --${boundary}--\r
 `);

@@ -1,13 +1,21 @@
+import { EOL } from 'os';
+import { inspect } from 'util';
+
 import axios, { AxiosError } from 'axios';
 import chalk from 'chalk';
-import highlight from 'cli-highlight';
+import { highlight } from 'cli-highlight';
 import type { TransformableInfo } from 'logform';
-import { EOL } from 'os';
-import util from 'util';
 import winston from 'winston';
 
 interface ConfigureLoggerParams {
+  /**
+   * The negative verbosity count.
+   */
   quiet?: number;
+
+  /**
+   * The verbosity count.
+   */
   verbose?: number;
 }
 
@@ -60,7 +68,7 @@ function toString(info: TransformableInfo): string {
   if (typeof info.message === 'string') {
     return info.message;
   }
-  return util.inspect(info.message, { colors: true });
+  return inspect(info.message, { colors: true });
 }
 
 /**
@@ -88,7 +96,7 @@ export const logger = winston.createLogger({
 /**
  * Set the logging level using a string or numeric value.
  *
- * @param verbosity
+ * @param level - The logger level to set.
  */
 export function setLogLevel(level: number | string = DEFAULT_LEVEL): void {
   logger.level = Number.isNaN(Number(level))
@@ -102,9 +110,7 @@ export function setLogLevel(level: number | string = DEFAULT_LEVEL): void {
  *
  * Use this in conjunction with `yargs`.
  *
- * @param {Object} argv
- * @param {number} argv.quiet The negative verbosity count.
- * @param {number} argv.verbose The verbosity count.
+ * @param argv - The processed command line arguments.
  */
 export function configureLogger({ quiet = 0, verbose = 0 }: ConfigureLoggerParams): void {
   process.on('warning', (warning) => {

@@ -9,7 +9,7 @@ interface OAuth2AppCallbackProps {
   session: ExtendedOAuth2State;
 }
 
-export default function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactElement {
+export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactElement {
   const qs = useQuery();
 
   useEffect(() => {

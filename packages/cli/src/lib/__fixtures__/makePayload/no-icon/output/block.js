@@ -1,1 +1,1 @@
-export default 'no-icon';
+export const string = 'no-icon';

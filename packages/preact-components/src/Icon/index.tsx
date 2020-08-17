@@ -12,7 +12,7 @@ interface IconProps {
 
 const iconSizeMap: { medium: 'lg'; large: '2x' } = { medium: 'lg', large: '2x' };
 
-export default function Icon({
+export function Icon({
   className,
   icon,
   prefix = 'fas',

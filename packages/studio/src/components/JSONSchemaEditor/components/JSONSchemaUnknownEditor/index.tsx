@@ -2,9 +2,9 @@ import { JSONInput, MarkdownContent } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
-import JSONSchemaLabel from '../JSONSchemaLabel';
+import { JSONSchemaLabel } from '../JSONSchemaLabel';
 
-export default function JSONSchemaUnknownEditor({
+export function JSONSchemaUnknownEditor({
   name,
   onChange,
   prefix,

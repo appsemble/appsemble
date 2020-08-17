@@ -1,3 +1,6 @@
+import path from 'path';
+import { URL } from 'url';
+
 import { loggerMiddleware } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
@@ -19,24 +22,22 @@ import koasSerializer from 'koas-serializer';
 import koasSpecHandler from 'koas-spec-handler';
 import koasStatusCode from 'koas-status-code';
 import koasSwaggerUI from 'koas-swagger-ui';
-import path from 'path';
 import raw from 'raw-body';
-import { URL } from 'url';
 import type { Configuration } from 'webpack';
 
 import * as operations from '../controllers';
-import appMapper from '../middleware/appMapper';
-import boom from '../middleware/boom';
-import conditional from '../middleware/conditional';
-import frontend from '../middleware/frontend';
-import tinyRouter from '../middleware/tinyRouter';
+import { appMapper } from '../middleware/appMapper';
+import { boomMiddleware } from '../middleware/boom';
+import { conditional } from '../middleware/conditional';
+import { frontend } from '../middleware/frontend';
+import { tinyRouter } from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
-import bulmaHandler from '../routes/bulmaHandler';
+import { bulmaHandler } from '../routes/bulmaHandler';
 import type { Argv, KoaMiddleware } from '../types';
-import authentication from './authentication';
-import convertToCsv from './convertToCsv';
-import Mailer from './email/Mailer';
-import readPackageJson from './readPackageJson';
+import { authentication } from './authentication';
+import { convertToCsv } from './convertToCsv';
+import { Mailer } from './email/Mailer';
+import { readPackageJson } from './readPackageJson';
 
 interface CreateServerOptions {
   /**
@@ -57,7 +58,7 @@ interface CreateServerOptions {
   webpackConfigs?: Configuration[];
 }
 
-export default async function createServer({
+export async function createServer({
   argv = {},
   middleware,
   webpackConfigs,
@@ -69,7 +70,7 @@ export default async function createServer({
     app.use(middleware);
   }
   app.use(loggerMiddleware());
-  app.use(boom());
+  app.use(boomMiddleware());
   app.use(range);
   Object.assign(app.context, { argv, mailer: new Mailer(argv) });
 

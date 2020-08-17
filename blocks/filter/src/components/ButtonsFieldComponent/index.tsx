@@ -6,7 +6,7 @@ import { h, VNode } from 'preact';
 import type { ButtonsField, FieldComponentProps } from '../../../block';
 import styles from './index.css';
 
-export default function ButtonsFieldComponent({
+export function ButtonsFieldComponent({
   className,
   field,
   highlight,
@@ -24,6 +24,7 @@ export default function ButtonsFieldComponent({
       value={value}
     >
       {field.options.map(({ icon, label, value: val }) => (
+        // eslint-disable-next-line react/jsx-key
         <ButtonOption
           activeClassName="is-primary is-selected"
           className={classNames(styles.button, { 'is-marginless': highlight })}

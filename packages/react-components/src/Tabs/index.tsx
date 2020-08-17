@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { ReactElement } from 'react';
 
-import ValuePickerProvider, { ValuePickerProviderProps } from '../ValuePickerProvider';
+import { ValuePickerProvider, ValuePickerProviderProps } from '..';
 
 interface TabsProps<T> extends ValuePickerProviderProps<T> {
   /**
@@ -20,12 +20,7 @@ interface TabsProps<T> extends ValuePickerProviderProps<T> {
  *
  * The children should be `<Tab />` components.
  */
-export default function Tabs<T>({
-  boxed,
-  children,
-  className,
-  ...props
-}: TabsProps<T>): ReactElement {
+export function Tabs<T>({ boxed, children, className, ...props }: TabsProps<T>): ReactElement {
   return (
     <div className={classNames('tabs', className, { 'is-boxed': boxed })}>
       <ul>

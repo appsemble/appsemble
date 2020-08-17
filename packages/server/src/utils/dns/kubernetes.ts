@@ -1,18 +1,16 @@
-import { logger } from '@appsemble/node-utils';
-import { normalize } from '@appsemble/utils';
-import axios from 'axios';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import https from 'https';
 import path from 'path';
 
-import type { Argv } from '../../types';
-import type { DNSImplementation } from '.';
+import { logger } from '@appsemble/node-utils';
+import { normalize } from '@appsemble/utils';
+import axios from 'axios';
 
-async function readK8sSecret(filename: string): Promise<string> {
-  return fs.promises.readFile(
-    path.join('/var/run/secrets/kubernetes.io/serviceaccount', filename),
-    'utf-8',
-  );
+import type { DNSImplementation } from '.';
+import type { Argv } from '../../types';
+
+function readK8sSecret(filename: string): Promise<string> {
+  return fs.readFile(path.join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf-8');
 }
 
 interface Rule {
@@ -40,13 +38,24 @@ interface Ingress {
   };
 }
 
+function formatTLS(domain: string): TLS {
+  return {
+    hosts: [domain],
+    secretName: `${normalize(domain)}-tls`,
+  };
+}
+
 /**
  * Configure a method to map domain names to a service by updating a single ingress.
  *
  * This method requires a role bound to the default service account, which allows Appsemble to
  * read and update a single ingress resource.
+ *
+ * @param argv - The parsed command line arguments.
+ *
+ * @returns A DNS implemenation basd on a Kubernetes ingress.
  */
-export default async function kubernetes({
+export async function kubernetes({
   host,
   ingressName,
   ingressServiceName,
@@ -87,33 +96,24 @@ export default async function kubernetes({
     };
   }
 
-  function formatTLS(domain: string): TLS {
-    return {
-      hosts: [domain],
-      secretName: `${normalize(domain)}-tls`,
-    };
-  }
-
   async function add(...domains: string[]): Promise<void> {
     domains.forEach((domain) => {
       logger.info(`Registering ingress rule for ${domain}`);
     });
     await axios.patch(
       url,
-      [].concat(
-        ...domains.map((domain) => [
-          {
-            op: 'add',
-            path: '/spec/rules/-',
-            value: formatRule(domain),
-          },
-          {
-            op: 'add',
-            path: '/spec/tls/-',
-            value: formatTLS(domain),
-          },
-        ]),
-      ),
+      domains.flatMap((domain) => [
+        {
+          op: 'add',
+          path: '/spec/rules/-',
+          value: formatRule(domain),
+        },
+        {
+          op: 'add',
+          path: '/spec/tls/-',
+          value: formatTLS(domain),
+        },
+      ]),
       config,
     );
   }

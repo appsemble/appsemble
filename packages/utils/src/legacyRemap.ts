@@ -25,6 +25,7 @@ interface Filters {
 }
 
 const filters: Filters = {
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   date: () => (object) => {
     let date;
     if (object instanceof Number) {
@@ -46,9 +47,9 @@ const filters: Filters = {
     }
     return date;
   },
-  get: (_context, name) => (object) => {
+  get: (context, name) => (object) => {
     if (object == null) {
-      return undefined;
+      return;
     }
     if (Array.isArray(object)) {
       const index = Number(name);
@@ -59,13 +60,14 @@ const filters: Filters = {
         return object[((index % length) + length) % length];
       }
     }
-    if (Object.prototype.hasOwnProperty.call(object, name)) {
+    if (Object.hasOwnProperty.call(object, name)) {
       return object[name];
     }
-    return undefined;
   },
-  lower: () => Function.call.bind(String.prototype.toLowerCase),
-  upper: () => Function.call.bind(String.prototype.toUpperCase),
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  lower: () => (value) => String(value).toLowerCase(),
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  upper: () => (value) => String(value).toUpperCase(),
 };
 
 /**
@@ -84,9 +86,9 @@ const filters: Filters = {
  *
  * Besides the shorthand syntax for the `get` filter, it is not yet possible to pass arguments.
  *
- * @param {string} mapperString The string which defines the filters that should be used.
- * @param {Object} context The context to which remapper functions have access.
- * @returns {Function} the resulting mapper function.
+ * @param mapperString - The string which defines the filters that should be used.
+ * @param context - The context to which remapper functions have access.
+ * @returns the resulting mapper function.
  */
 export function compileFilters(mapperString: string, context?: RemapperContext): MapperFunction {
   const { length } = mapperString;
@@ -139,9 +141,9 @@ export function compileFilters(mapperString: string, context?: RemapperContext):
  * { fooz: 'BAZ' }
  * ```
  *
- * @param mapperData An (optionally nested) object which defines what to output.
- * @param inputData The input data which should be mapped.
- * @param context The context to which remapper functions have access.
+ * @param mapperData - An (optionally nested) object which defines what to output.
+ * @param inputData - The input data which should be mapped.
+ * @param context - The context to which remapper functions have access.
  * @returns The resulting data as specified by the `mapperData` argument.
  */
 export function remapData(mapperData: any, inputData: any, context?: RemapperContext): any {

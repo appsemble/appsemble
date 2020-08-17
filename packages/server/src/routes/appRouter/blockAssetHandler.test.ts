@@ -1,12 +1,13 @@
-import { request, setTestApp } from 'axios-test-instance';
-import * as fs from 'fs';
-import Koa from 'koa';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 
-import boomMiddleware from '../../middleware/boom';
+import { request, setTestApp } from 'axios-test-instance';
+import Koa from 'koa';
+
+import { appRouter } from '.';
+import { boomMiddleware } from '../../middleware/boom';
 import { BlockAsset, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
-import appRouter from '.';
 
 beforeAll(createTestSchema('blockassethandler'));
 
@@ -22,7 +23,7 @@ it('should download a block asset', async () => {
   await Organization.create({ id: 'linux', name: 'Linux' });
   await BlockAsset.create({
     filename: 'tux.png',
-    content: await fs.promises.readFile(path.join(__dirname, '__fixtures__', 'tux.png')),
+    content: await fs.readFile(path.join(__dirname, '__fixtures__', 'tux.png')),
     mime: 'image/png',
     OrganizationId: 'linux',
     name: 'tux',

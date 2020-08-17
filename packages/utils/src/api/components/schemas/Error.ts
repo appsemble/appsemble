@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const Error: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The generic error object returned by any expected API errors.',
   readOnly: true,

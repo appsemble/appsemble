@@ -2,13 +2,13 @@ import { AppsembleError } from '@appsemble/node-utils';
 import semver from 'semver';
 import type { Argv } from 'yargs';
 
-import migrations from '../migrations';
+import { migrations } from '../migrations';
 import { initDB } from '../models';
 import type { Argv as Args } from '../types';
-import migrate from '../utils/migrate';
-import readPackageJson from '../utils/readPackageJson';
+import { migrate } from '../utils/migrate';
+import { readPackageJson } from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
-import databaseBuilder from './builder/database';
+import { databaseBuilder } from './builder/database';
 
 export const command = 'migrate [to]';
 export const description = 'Migrate the Appsemble database.';
@@ -36,8 +36,8 @@ export async function handler(argv: Args): Promise<void> {
       ssl: argv.databaseSsl,
       uri: argv.databaseUrl,
     });
-  } catch (dbException) {
-    handleDBError(dbException);
+  } catch (error) {
+    handleDBError(error);
   }
 
   await migrate(to, migrations);

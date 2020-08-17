@@ -1,10 +1,6 @@
 import axios from 'axios';
 
-export default async function download(
-  url: string,
-  filename: string,
-  accept?: string,
-): Promise<void> {
+export async function download(url: string, filename: string, accept?: string): Promise<void> {
   const { data, headers } = await axios.get(url, {
     responseType: 'blob',
     ...(accept != null && {

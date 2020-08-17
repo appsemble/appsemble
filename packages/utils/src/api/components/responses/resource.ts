@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const resource: OpenAPIV3.ResponseObject = {
   description: 'A resource response',
   content: {
     'application/json': {

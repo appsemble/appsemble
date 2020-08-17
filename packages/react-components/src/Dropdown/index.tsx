@@ -1,10 +1,7 @@
 import classNames from 'classnames';
 import React, { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
-import Button from '../Button';
-import Icon from '../Icon';
-import useClickOutside from '../useClickOutside';
-import useToggle from '../useToggle';
+import { Button, Icon, useClickOutside, useToggle } from '..';
 
 interface DropdownProps {
   /**
@@ -28,7 +25,7 @@ interface DropdownProps {
 /**
  * Render an aria compliant Bulma dropdown menu.
  */
-export default function Dropdown({ children, className, label }: DropdownProps): ReactElement {
+export function Dropdown({ children, className, label }: DropdownProps): ReactElement {
   const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
@@ -44,7 +41,7 @@ export default function Dropdown({ children, className, label }: DropdownProps):
   useClickOutside(ref, disable);
 
   return (
-    <div ref={ref} className={classNames('dropdown', className, { 'is-active': enabled })}>
+    <div className={classNames('dropdown', className, { 'is-active': enabled })} ref={ref}>
       <div className="dropdown-trigger">
         <Button aria-haspopup onClick={toggle} onKeyDown={onKeyDown}>
           {label}

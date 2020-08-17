@@ -7,15 +7,15 @@ import type { KoaContext } from '../types';
 /**
  * Check if the authenticated user has permission to perform an action within an organization.
  *
- * @param ctx The Koa context that should contain the authenticated user and the database.
- * @param organizationId The id of which to check if the user may persoem the action for.
- * @param permissions An array of required permissions or a single required permission.
+ * @param ctx - The Koa context that should contain the authenticated user and the database.
+ * @param organizationId - The id of which to check if the user may persoem the action for.
+ * @param permissions - An array of required permissions or a single required permission.
  */
-export default async function checkRole(
+export async function checkRole(
   ctx: KoaContext,
   organizationId: string,
   permissions: Permission | Permission[],
-): Promise<true> {
+): Promise<void> {
   const { user } = ctx;
   if (!user) {
     throw Boom.unauthorized();
@@ -36,6 +36,4 @@ export default async function checkRole(
   if (![].concat(permissions).every((p) => role.includes(p))) {
     throw Boom.forbidden('User does not have sufficient permissions.');
   }
-
-  return true;
 }

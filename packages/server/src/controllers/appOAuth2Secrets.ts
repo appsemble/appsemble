@@ -1,6 +1,7 @@
+import crypto from 'crypto';
+
 import { Permission } from '@appsemble/utils';
 import Boom from '@hapi/boom';
-import crypto from 'crypto';
 import { addMinutes } from 'date-fns';
 
 import {
@@ -12,9 +13,9 @@ import {
   User,
 } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
+import { checkRole } from '../utils/checkRole';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
-import trimUrl from '../utils/trimUrl';
+import { trimUrl } from '../utils/trimUrl';
 
 interface Params {
   appId: string;

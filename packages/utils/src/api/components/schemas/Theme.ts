@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const Theme: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A generic theme definition.',
   additionalProperties: false,

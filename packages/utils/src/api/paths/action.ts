@@ -33,7 +33,7 @@ function proxy(method: string, body?: boolean): OpenAPIV3.OperationObject {
   return operation;
 }
 
-export default {
+export const paths: OpenAPIV3.PathsObject = {
   '/apps/{appId}/action/{path}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },

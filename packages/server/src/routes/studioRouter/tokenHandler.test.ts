@@ -1,14 +1,15 @@
+import { URLSearchParams } from 'url';
+
 import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
 import type Koa from 'koa';
-import { URLSearchParams } from 'url';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
-import createServer from '../../utils/createServer';
+import { createServer } from '../../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
-import testToken from '../../utils/test/testToken';
+import { testToken } from '../../utils/test/testToken';
 
 let clock: InstalledClock;
 let server: Koa;
@@ -31,7 +32,7 @@ beforeEach(async () => {
 
 afterEach(truncate);
 
-afterEach(async () => {
+afterEach(() => {
   clock.uninstall();
 });
 
@@ -215,9 +216,9 @@ describe('authorization_code', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        access_token: expect.stringMatching(/[\w-]+\.[\w-]+\.[\w-]/),
+        access_token: expect.stringMatching(/(?:[\w-]+\.){2}[\w-]/),
         expires_in: 3600,
-        refresh_token: expect.stringMatching(/[\w-]+\.[\w-]+\.[\w-]/),
+        refresh_token: expect.stringMatching(/(?:[\w-]+\.){2}[\w-]/),
         token_type: 'bearer',
       },
     });
@@ -325,7 +326,7 @@ describe('client_credentials', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        access_token: expect.stringMatching(/^[\w-]+\.[\w-]+\.[\w-]+$/),
+        access_token: expect.stringMatching(/^(?:[\w-]+\.){2}[\w-]+$/),
         expires_in: 3600,
         token_type: 'bearer',
       },
@@ -366,9 +367,9 @@ describe('refresh_token', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        access_token: expect.stringMatching(/^[\w-]+\.[\w-]+\.[\w-]+$/),
+        access_token: expect.stringMatching(/^(?:[\w-]+\.){2}[\w-]+$/),
         expires_in: 3600,
-        refresh_token: expect.stringMatching(/^[\w-]+\.[\w-]+\.[\w-]+$/),
+        refresh_token: expect.stringMatching(/^(?:[\w-]+\.){2}[\w-]+$/),
         token_type: 'bearer',
       },
     });

@@ -10,8 +10,8 @@ import type { VFile } from 'vfile';
 
 import { BlockAsset, BlockVersion, getDB, transactional } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
-import readAsset from '../utils/readAsset';
+import { checkRole } from '../utils/checkRole';
+import { readAsset } from '../utils/readAsset';
 
 interface Params {
   blockId: string;

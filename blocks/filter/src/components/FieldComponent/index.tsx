@@ -9,13 +9,13 @@ import type {
   FieldComponentProps,
   StringField,
 } from '../../../block';
-import ButtonsFieldComponent from '../ButtonsFieldComponent';
-import DateFieldComponent from '../DateFieldComponent';
-import DateRangeFieldComponent from '../DateRangeFieldComponent';
-import EnumFieldComponent from '../EnumFieldComponent';
-import StringFieldComponent from '../StringFieldComponent';
+import { ButtonsFieldComponent } from '../ButtonsFieldComponent';
+import { DateFieldComponent } from '../DateFieldComponent';
+import { DateRangeFieldComponent } from '../DateRangeFieldComponent';
+import { EnumFieldComponent } from '../EnumFieldComponent';
+import { StringFieldComponent } from '../StringFieldComponent';
 
-export default function FieldComponent(props: FieldComponentProps<Field>): VNode {
+export function FieldComponent(props: FieldComponentProps<Field>): VNode {
   switch (props.field.type) {
     case 'buttons':
       return <ButtonsFieldComponent {...(props as FieldComponentProps<ButtonsField>)} />;

@@ -1,4 +1,8 @@
-const sharedProperties = {
+import type { OpenAPIV3 } from 'openapi-types';
+
+const sharedProperties: {
+  [property: string]: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject;
+} = {
   name: {
     type: 'string',
     maxLength: 50,
@@ -46,7 +50,7 @@ const sharedProperties = {
   },
 };
 
-export default {
+export const Page: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   oneOf: [
     {

@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import type { Promisable } from 'type-fest';
 
-import Form from '../Form';
+import { Form } from '..';
 
 interface SimpleFormProps<T>
   extends Omit<ComponentPropsWithoutRef<typeof Form>, 'onSubmit' | 'ref'> {
@@ -41,7 +41,7 @@ interface SimpleFormContext {
 
 const Context = createContext<SimpleFormContext>(null);
 
-export default function SimpleForm<T extends {}>({
+export function SimpleForm<T extends {}>({
   children,
   defaultValues,
   onSubmit,

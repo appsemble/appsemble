@@ -1,19 +1,22 @@
+import { promises as fs } from 'fs';
+import { URL } from 'url';
+
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import fs from 'fs-extra';
 import yaml from 'js-yaml';
-import { URL } from 'url';
 
 import type { UpdateAppArguments } from '../types';
-import traverseAppDirectory from './traverseAppDirectory';
-import traverseBlockThemes from './traverseBlockThemes';
-import uploadMessages from './uploadMessages';
+import { traverseAppDirectory } from './traverseAppDirectory';
+import { traverseBlockThemes } from './traverseBlockThemes';
+import { uploadMessages } from './uploadMessages';
 
 /**
  * Create a new App.
+ *
+ * @param argv - The command line options used for updating the app.
  */
-export default async function updateApp({
+export async function updateApp({
   appId,
   path,
   private: isPrivate,

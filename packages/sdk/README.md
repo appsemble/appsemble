@@ -17,8 +17,8 @@ import { bootstrap } from '@appsemble/sdk';
 
 bootstrap(({ shadowRoot }) => {
   const root = document.createElement('span');
-  root.innerText = 'Hello world!';
-  shadowRoot.appendChild(root);
+  root.textContent = 'Hello world!';
+  shadowRoot.append(root);
 });
 ```
 
@@ -29,7 +29,7 @@ import { attach } from '@appsemble/sdk';
 
 attach(() => {
   const root = document.createElement('span');
-  root.innerText = 'Hello world!';
+  root.textContent = 'Hello world!';
   return root;
 });
 ```

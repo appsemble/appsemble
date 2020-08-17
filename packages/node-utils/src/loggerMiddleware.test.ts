@@ -4,9 +4,14 @@ import chalk from 'chalk';
 import Koa from 'koa';
 
 import { logger } from './logger';
-import loggerMiddleware from './loggerMiddleware';
+import { loggerMiddleware } from './loggerMiddleware';
 
-class TestError extends Error {}
+class TestError extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = 'TestError';
+  }
+}
 
 let app: Koa;
 let clock: FakeTimers.InstalledClock;
@@ -35,7 +40,7 @@ beforeEach(async () => {
   await setTestApp(app);
 });
 
-afterEach(async () => {
+afterEach(() => {
   clock.uninstall();
 });
 
@@ -132,13 +137,16 @@ it('should log extremely long request lengths red', async () => {
 
 it('should log errors as internal server errors and rethrow', async () => {
   const spy = jest.fn();
+  const error = new Error('fail');
+  let context;
   app.on('error', spy);
-  app.use(() => {
+  app.use((ctx) => {
     clock.tick(86);
-    throw new Error('fail');
+    context = ctx;
+    throw error;
   });
   await request.get('/taco');
-  expect(spy).toHaveBeenCalled();
+  expect(spy).toHaveBeenCalledWith(error, context);
   expect(logger.log).toHaveBeenCalledWith(
     'error',
     `${chalk.bold('GET')} https://example.com:1337/taco ${chalk.red(

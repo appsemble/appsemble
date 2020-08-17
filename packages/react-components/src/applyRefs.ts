@@ -5,10 +5,10 @@ type MutableRef<T> = RefCallback<T> | MutableRefObject<T>;
 /**
  * Apply the given value to some react refs.
  *
- * @param value The value to set on the refs.
- * @param refs Any number of ref callbacks or ref objects.
+ * @param value - The value to set on the refs.
+ * @param refs - Any number of ref callbacks or ref objects.
  */
-export default function applyRefs<T>(value: T, ...refs: MutableRef<T>[]): void {
+export function applyRefs<T>(value: T, ...refs: MutableRef<T>[]): void {
   refs.forEach((ref) => {
     if (ref instanceof Function) {
       ref(value);

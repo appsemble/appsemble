@@ -6,7 +6,7 @@ import type { RendererProps, StringField } from '../../../block';
 /**
  * An element for a text type schema.
  */
-export default function StringRenderer({ data, field }: RendererProps<StringField>): VNode {
+export function StringRenderer({ data, field }: RendererProps<StringField>): VNode {
   const { utils } = useBlock();
 
   const label = utils.remap(field.label, data);

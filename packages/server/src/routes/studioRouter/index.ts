@@ -1,12 +1,12 @@
 import { partialNormalized } from '@appsemble/utils';
 
-import tinyRouter from '../../middleware/tinyRouter';
-import faviconHandler from './faviconHandler';
-import iconHandler from './iconHandler';
-import indexHandler from './indexHandler';
-import tokenHandler from './tokenHandler';
+import { tinyRouter } from '../../middleware/tinyRouter';
+import { faviconHandler } from './faviconHandler';
+import { iconHandler } from './iconHandler';
+import { indexHandler } from './indexHandler';
+import { tokenHandler } from './tokenHandler';
 
-export default tinyRouter([
+export const studioRouter = tinyRouter([
   {
     route: '/oauth2/token',
     post: tokenHandler,

@@ -1,8 +1,9 @@
+import type { EventEmitter } from 'events';
+
 import { useMessages } from '@appsemble/react-components';
 import type { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
-import type { EventEmitter } from 'events';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
@@ -10,17 +11,17 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import type { ShowDialogAction } from '../../types';
 import type { ActionCreators } from '../../utils/actions';
 import { callBootstrap } from '../../utils/bootstrapper';
-import injectCSS from '../../utils/injectCSS';
-import makeActions from '../../utils/makeActions';
-import prefixBlockURL from '../../utils/prefixBlockURL';
-import settings from '../../utils/settings';
+import { injectCSS } from '../../utils/injectCSS';
+import { makeActions } from '../../utils/makeActions';
+import { prefixBlockURL } from '../../utils/prefixBlockURL';
+import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './index.css';
 
-const FA_URL = Array.from(document.styleSheets, (sheet) => sheet.href).find((href) =>
-  href?.startsWith(`${window.location.origin}/fa/`),
-);
+const FA_URL = [...document.styleSheets]
+  .map((sheet) => sheet.href)
+  .find((href) => href?.startsWith(`${window.location.origin}/fa/`));
 
 interface BlockProps {
   data?: any;
@@ -44,7 +45,7 @@ interface BlockProps {
   page: PageDefinition;
 
   showDialog: ShowDialogAction;
-  ready(block: BlockDefinition): void;
+  ready: (block: BlockDefinition) => void;
   remap: (remapper: Remapper, data: any) => any;
   pageReady: Promise<void>;
   prefix: string;
@@ -56,7 +57,7 @@ interface BlockProps {
  * A shadow DOM is created for the block. All CSS files for each block definition are added to the
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
-export default function Block({
+export function Block({
   block,
   className,
   data,
@@ -77,7 +78,7 @@ export default function Block({
   const { blockManifests, definition } = useAppDefinition();
 
   const ref = useRef<HTMLDivElement>();
-  const cleanups = useRef<Function[]>([]);
+  const cleanups = useRef<(() => void)[]>([]);
   const [initialized, setInitialized] = useState(false);
   const pushNotifications = useServiceWorkerRegistration();
 
@@ -86,7 +87,7 @@ export default function Block({
 
   useEffect(
     () => () => {
-      cleanups.current.forEach(async (fn) => fn());
+      cleanups.current.forEach((fn) => fn());
     },
     [],
   );
@@ -172,11 +173,11 @@ export default function Block({
     const utils = {
       remap,
       showMessage: push,
-      addCleanup(fn: Function) {
+      addCleanup(fn: () => void) {
         cleanups.current.push(fn);
       },
       asset(id: string) {
-        return `${settings.apiUrl}/api/apps/${settings.id}/assets/${id}`;
+        return `${apiUrl}/api/apps/${appId}/assets/${id}`;
       },
     };
 
@@ -241,7 +242,7 @@ export default function Block({
   switch (manifest.layout) {
     case 'float':
       return createPortal(
-        <div ref={ref} className={className} data-block={blockName} data-path={prefix} />,
+        <div className={className} data-block={blockName} data-path={prefix} ref={ref} />,
         document.body,
       );
     case 'hidden':

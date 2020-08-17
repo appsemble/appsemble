@@ -6,30 +6,30 @@ type Options = boolean | AddEventListenerOptions;
 /**
  * Attach an event listener to an event target.
  *
- * @param target The target to add the event listener to.
- * @param type The type of the event listener to add
- * @param listener The event listener callback function.
- * @param options Additional event listener options.
+ * @param target - The target to add the event listener to.
+ * @param type - The type of the event listener to add
+ * @param listener - The event listener callback function.
+ * @param options - Additional event listener options.
  */
-function useEventListener<K extends keyof DocumentEventMap>(
+export function useEventListener<K extends keyof DocumentEventMap>(
   target: Document,
   type: K,
   listener: EventListener<DocumentEventMap[K]>,
   options?: Options,
 ): void;
-function useEventListener<T extends HTMLElement, K extends keyof HTMLElementEventMap>(
+export function useEventListener<T extends HTMLElement, K extends keyof HTMLElementEventMap>(
   target: T,
   type: K,
   listener: EventListener<HTMLElementEventMap[K]>,
   options?: Options,
 ): void;
-function useEventListener(
+export function useEventListener(
   target: EventTarget,
   type: string,
   listener: EventListener,
   options?: Options,
 ): void;
-function useEventListener(
+export function useEventListener(
   target: EventTarget,
   type: string,
   listener: EventListener,
@@ -40,5 +40,3 @@ function useEventListener(
     return () => target.removeEventListener(type, listener, options);
   }, [listener, options, target, type]);
 }
-
-export default useEventListener;

@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
 
-export default function JSONSchemaLabel({
+export function JSONSchemaLabel({
   name,
   prefix,
   schema,

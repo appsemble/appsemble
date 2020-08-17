@@ -6,10 +6,10 @@ import { URL } from 'url';
  * Ip addresses and localhost use the http://` protocol by default. Others use the `https://`
  * protocol by default. The path, search parameters, and hash are stripped.
  *
- * @param value The raw remote as specified by the CLI user.
+ * @param value - The raw remote as specified by the CLI user.
  * @returns The normalized URL.
  */
-export default function coerceRemote(value: string): string {
+export function coerceRemote(value: string): string {
   let url = value;
   if (!/^https?:\/\//.test(url)) {
     if (/^(\d+\.?){4}(\/|$|:)/.test(url)) {

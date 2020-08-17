@@ -23,8 +23,8 @@ interface MonacoEditorProps {
   /**
    * This is called whenever the value of the editor changes.
    *
-   * @param event The monaco change event.
-   * @param value The new value.
+   * @param event - The monaco change event.
+   * @param value - The new value.
    */
   onChange?: (event: editor.IModelContentChangedEvent, value: string) => void;
 
@@ -60,7 +60,7 @@ const emptyDecoration: editor.IModelDeltaDecoration[] = [
  * The forwarded ref might not trigger a rerender of the parent component. Instead of passing a ref
  * object, it is recommended to use a state setter function.
  */
-export default forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
+export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
   (
     {
       language,
@@ -86,7 +86,6 @@ export default forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
       }
 
       const ed = editor.create(node, options);
-      // eslint-disable-next-line no-bitwise
       ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
 
       const observer = new ResizeObserver(() => ed.layout());
@@ -131,7 +130,7 @@ export default forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
 
     useEffect(() => {
       if (!monaco || !onChange) {
-        return undefined;
+        return;
       }
       const model = monaco.getModel();
       const subscription = model.onDidChangeContent((event) => onChange(event, model.getValue()));
@@ -139,6 +138,6 @@ export default forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
       return () => subscription.dispose();
     }, [monaco, onChange]);
 
-    return <div ref={nodeRef} className={styles.editor} />;
+    return <div className={styles.editor} ref={nodeRef} />;
   },
 );

@@ -18,14 +18,14 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../../../AppContext';
-import messages from './messages';
+import { messages } from './messages';
 
 interface AppSecretCardProps {
   /**
    * Called when the provider has been updated succesfully.
    *
-   * @param newProvider The new provider values.
-   * @param oldProvider The old provider values to replace..
+   * @param newProvider - The new provider values.
+   * @param oldProvider - The old provider values to replace..
    */
   onUpdated: (newProvider: AppOAuth2Secret, oldProvider: AppOAuth2Secret) => void;
 
@@ -35,7 +35,7 @@ interface AppSecretCardProps {
   secret: AppOAuth2Secret;
 }
 
-export default function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactElement {
+export function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactElement {
   const editing = useToggle();
   const { app } = useApp();
   const { formatMessage } = useIntl();

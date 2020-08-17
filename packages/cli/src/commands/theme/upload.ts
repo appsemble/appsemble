@@ -1,12 +1,13 @@
+import { promises as fs, lstatSync } from 'fs';
+import { join } from 'path';
+
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import fs from 'fs-extra';
-import { join } from 'path';
 import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
-import processCss from '../../lib/processCss';
+import { processCss } from '../../lib/processCss';
 import type { BaseArguments } from '../../types';
 
 interface UploadThemeArguments extends BaseArguments {
@@ -104,7 +105,7 @@ export async function handler({
     // Path was not a directory, assume it's a file
     const type = determineType(shared, core, block);
     if (!type) {
-      throw Error(
+      throw new Error(
         'When uploading individual themes, at least one of the following options must be provided: shared / core / block.',
       );
     }
@@ -141,7 +142,7 @@ export async function handler({
 
     // Subdirectory is an @organization directory
     for (const styleSubDir of styleDir.filter((styleSub) =>
-      fs.lstatSync(join(path, subDir, styleSub)).isDirectory(),
+      lstatSync(join(path, subDir, styleSub)).isDirectory(),
     )) {
       const blockStyleDir = await fs.readdir(join(path, subDir, styleSubDir));
       const subIndexCss = blockStyleDir.find((fname) => fname.toLowerCase() === 'index.css');

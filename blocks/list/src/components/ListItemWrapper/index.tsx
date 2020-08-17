@@ -11,7 +11,7 @@ type ListItemWrapperProps = (
   item: Item;
 };
 
-export default function ListItemWrapper({
+export function ListItemWrapper({
   actions,
   children,
   item,

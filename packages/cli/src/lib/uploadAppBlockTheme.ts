@@ -2,17 +2,17 @@ import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
 
-import processCss from './processCss';
+import { processCss } from './processCss';
 
 /**
  * Uploads an app block theme
  *
- * @param filePath The path of the index.css file
- * @param organization The ID of the organization the block belongs to.
- * @param appId The ID of the app to upload the theme for.
- * @param block The name of the block.
+ * @param filePath - The path of the index.css file
+ * @param organization - The ID of the organization the block belongs to.
+ * @param appId - The ID of the app to upload the theme for.
+ * @param block - The name of the block.
  */
-export default async function uploadAppBlockTheme(
+export async function uploadAppBlockTheme(
   filePath: string,
   organization: string,
   appId: number,

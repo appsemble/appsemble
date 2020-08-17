@@ -2,17 +2,17 @@ import { Content, OAuth2LoginButton, useQuery, useToggle } from '@appsemble/reac
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import settings from '../../utils/settings';
+import { apiUrl, appId, logins } from '../../utils/settings';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function OpenIDLogin(): ReactElement {
+export function OpenIDLogin(): ReactElement {
   const qs = useQuery();
   const busy = useToggle();
 
   const buttonProps = {
     className: `is-fullwidth my-2 ${styles.button}`,
-    clientId: `app:${settings.id}`,
+    clientId: `app:${appId}`,
     onClick: busy.enable,
     redirectUrl: '/Callback',
     scope: 'email openid profile resources:manage',
@@ -22,17 +22,17 @@ export default function OpenIDLogin(): ReactElement {
   return (
     <Content className={`is-flex ${styles.root}`} main padding>
       <OAuth2LoginButton
-        authorizationUrl={String(new URL('/connect/authorize', settings.apiUrl))}
+        authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
         icon="user"
         {...buttonProps}
       >
         <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
       </OAuth2LoginButton>
-      {settings.logins?.map(({ icon, id, name }) => (
+      {logins?.map(({ icon, id, name }) => (
         <OAuth2LoginButton
-          key={id}
-          authorizationUrl={String(new URL(`/connect/authorize/${id}`, settings.apiUrl))}
+          authorizationUrl={String(new URL(`/connect/authorize/${id}`, apiUrl))}
           icon={icon}
+          key={id}
           {...buttonProps}
         >
           <FormattedMessage {...messages.loginWith} values={{ name }} />

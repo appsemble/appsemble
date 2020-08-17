@@ -1,20 +1,23 @@
-import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import crypto from 'crypto';
 import qs from 'querystring';
+
+import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { AppMessages, AppOAuth2Secret, BlockAsset, BlockVersion } from '../../models';
 import type { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
-import createSettings from '../../utils/createSettings';
-import makeCSP from '../../utils/makeCSP';
-import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
+import { createSettings } from '../../utils/createSettings';
+import { makeCSP } from '../../utils/makeCSP';
+import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
 import { bulmaURL, faURL } from '../../utils/styleURL';
 
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
+ *
+ * @param ctx - The Koa context.
  */
-export default async function indexHandler(ctx: KoaContext): Promise<void> {
+export async function indexHandler(ctx: KoaContext): Promise<void> {
   ctx.type = 'text/html';
   const {
     argv: { host, sentryDsn },
@@ -111,7 +114,7 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
     faURL,
     nonce,
     settings,
-    themeColor: (app.definition.theme && app.definition.theme.themeColor) || '#ffffff',
+    themeColor: app.definition.theme?.themeColor || '#ffffff',
   });
   ctx.set('Content-Security-Policy', makeCSP(csp));
 }

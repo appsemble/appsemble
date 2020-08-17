@@ -17,7 +17,7 @@ import {
 import { App } from '.';
 
 @Table({ tableName: 'AppOAuth2Secret' })
-export default class AppOAuth2Secret extends Model<AppOAuth2Secret> implements Interface {
+export class AppOAuth2Secret extends Model<AppOAuth2Secret> implements Interface {
   @PrimaryKey
   @AutoIncrement
   @Column

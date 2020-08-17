@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
  *
  * @returns The string representing the current location.
  */
-export default function useLocationString(): string {
+export function useLocationString(): string {
   const location = useLocation();
 
   return `${location.pathname}${location.search}${location.hash}`;

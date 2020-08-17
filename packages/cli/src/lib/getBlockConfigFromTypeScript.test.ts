@@ -1,14 +1,10 @@
-import { AppsembleError } from '@appsemble/node-utils';
 import path from 'path';
+
+import { AppsembleError } from '@appsemble/node-utils';
 import ts from 'typescript';
 
-import getBlockConfigFromTypeScript from './getBlockConfigFromTypeScript';
+import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
-/**
- * Get the path to a fixture for this file.
- *
- * @param filename The fixture filename to resolve.
- */
 function fixture(filename: string): string {
   return path.join(__dirname, '__fixtures__/getBlockConfigFromTypeScript', filename);
 }

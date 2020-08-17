@@ -18,7 +18,7 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler({ key }: ConfigGetArguments): Promise<void> {
   const { packageJson } = await readPkgUp({ normalize: false });
-  if (Object.prototype.hasOwnProperty.call(packageJson, 'appsembleServer')) {
+  if (Object.hasOwnProperty.call(packageJson, 'appsembleServer')) {
     // eslint-disable-next-line no-console
     console.log((packageJson as MonoRepoPackageJson).appsembleServer[key]);
   }

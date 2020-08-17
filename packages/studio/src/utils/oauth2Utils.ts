@@ -27,10 +27,10 @@ export function oauth2Redirect(qs: URLSearchParams, params: { [key: string]: str
  * - The response type is valid.
  * - THe scope is valid.
  *
- * @param qs The query parameters to check.
- * @param allowedScopes Scopes the client is allowed to request.
+ * @param qs - The query parameters to check.
+ * @param allowedScopes - Scopes the client is allowed to request.
  * @returns `true` is validation passes. Otherwise `false`, and the user will be redirected to the
- *    redirect URL.
+ * redirect URL.
  * @throws If the `redirect_uri` paremter is missing or malformed.
  */
 export function verifyOAuth2LoginRequest(qs: URLSearchParams, allowedScopes: string[]): boolean {

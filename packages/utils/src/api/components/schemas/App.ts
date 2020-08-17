@@ -1,6 +1,8 @@
+import type { OpenAPIV3 } from 'openapi-types';
+
 import { normalized } from '../../../constants';
 
-export default {
+export const App: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'An app recipe defines what an app will look like.',
   properties: {

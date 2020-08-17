@@ -24,19 +24,27 @@ import langmap from 'langmap';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import findMessageIds from '../../utils/findMessageIds';
+import { findMessageIds } from '../../utils/findMessageIds';
 import { useApp } from '../AppContext';
-import messages from './messages';
+import { messages } from './messages';
 
 // Exclude languages that aren’t accepted by our server and store language codes in lowercase.
-const bannedLanguages = ['ck-US', 'en-PI', 'en-UD', 'en@pirate', 'eo-EO', 'fb-LT', 'gx-GR'];
+const bannedLanguages = new Set([
+  'ck-US',
+  'en-PI',
+  'en-UD',
+  'en@pirate',
+  'eo-EO',
+  'fb-LT',
+  'gx-GR',
+]);
 const filteredLangmap = Object.fromEntries(
   Object.entries(langmap)
-    .filter(([key]) => !bannedLanguages.includes(key))
+    .filter(([key]) => !bannedLanguages.has(key))
     .map(([key, entry]) => [key.toLowerCase(), entry]),
 );
 
-export default function MessageEditor(): ReactElement {
+export function MessageEditor(): ReactElement {
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
@@ -156,12 +164,10 @@ export default function MessageEditor(): ReactElement {
         value={languageId}
       >
         {languages.map((lang) => {
-          const language = filteredLangmap[lang];
+          const { englishName, nativeName } = filteredLangmap[lang];
           return (
             <option key={lang} value={lang}>
-              {language.englishName !== language.nativeName
-                ? `${language.englishName} (${language.nativeName})`
-                : language.englishName}
+              {englishName === nativeName ? englishName : `${englishName} (${nativeName})`}
             </option>
           );
         })}
@@ -193,7 +199,7 @@ export default function MessageEditor(): ReactElement {
             </SimpleFormError>
             <SimpleBeforeUnload />
             {messageIds.map((id) => (
-              <SimpleInput key={id} component={TextArea} label={id} name={id} rows={2} />
+              <SimpleInput component={TextArea} key={id} label={id} name={id} rows={2} />
             ))}
             <FormButtons>
               <SimpleSubmit disabled={submitting}>
@@ -226,17 +232,11 @@ export default function MessageEditor(): ReactElement {
           required
         >
           <option hidden> </option>
-          {Object.entries(filteredLangmap).map(([lang, names]) => {
-            const languageString =
-              names.englishName !== names.nativeName
-                ? `${names.englishName} (${names.nativeName})`
-                : names.englishName;
-            return (
-              <option key={lang} value={lang}>
-                {`${languageString} [${lang}]`}
-              </option>
-            );
-          })}
+          {Object.entries(filteredLangmap).map(([lang, { englishName, nativeName }]) => (
+            <option key={lang} value={lang}>
+              {`${englishName}${englishName === nativeName ? '' : ` (${nativeName})`} [${lang}]`}
+            </option>
+          ))}
         </SimpleInput>
       </Modal>
     </>

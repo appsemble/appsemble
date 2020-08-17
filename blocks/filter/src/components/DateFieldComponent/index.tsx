@@ -4,7 +4,7 @@ import { useCallback } from 'preact/hooks';
 
 import type { DateField, FieldComponentProps } from '../../../block';
 
-export default function DateFieldComponent({
+export function DateFieldComponent({
   className,
   field,
   loading,

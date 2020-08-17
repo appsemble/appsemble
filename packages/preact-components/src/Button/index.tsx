@@ -3,8 +3,7 @@ import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types
 import classNames from 'classnames';
 import { Fragment, h, VNode } from 'preact';
 
-import Icon from '../Icon';
-import type { Props } from '../types';
+import { Icon, Props } from '..';
 
 interface ButtonProps extends Omit<Props<'button'>, 'loading'> {
   /**
@@ -38,7 +37,7 @@ interface ButtonProps extends Omit<Props<'button'>, 'loading'> {
  *
  * The button type is set to `button` by default.
  */
-export default function Button({
+export function Button({
   children,
   className,
   color,

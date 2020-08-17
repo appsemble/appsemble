@@ -1,5 +1,9 @@
 import { logger } from '@appsemble/node-utils';
-import type { ActionDefinition, EmailActionDefinition } from '@appsemble/types';
+import type {
+  ActionDefinition,
+  EmailActionDefinition,
+  RequestLikeActionDefinition,
+} from '@appsemble/types';
 import { formatRequestAction, remap } from '@appsemble/utils';
 import * as Boom from '@hapi/boom';
 import axios from 'axios';
@@ -9,8 +13,8 @@ import { get, pick } from 'lodash';
 import { App } from '../models';
 import type { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
 import { getRemapperContext } from '../utils/app';
-import renderEmail from '../utils/email/renderEmail';
-import readPackageJson from '../utils/readPackageJson';
+import { renderEmail } from '../utils/email/renderEmail';
+import { readPackageJson } from '../utils/readPackageJson';
 
 interface Params {
   appId: string;
@@ -46,9 +50,9 @@ async function handleEmail(
   }
 
   const context = await getRemapperContext(app, app.definition.defaultLanguage || 'en-us');
-  const to = remap(action.to, data, context);
-  const body = remap(action.body, data, context);
-  const sub = remap(action.subject, data, context);
+  const to = remap(action.to, data, context) as string;
+  const body = remap(action.body, data, context) as string;
+  const sub = remap(action.subject, data, context) as string;
 
   if (!to || !sub || !body) {
     throw Boom.badRequest('Fields “to”, “subject”, and “body” must be a valid string');
@@ -62,7 +66,7 @@ async function handleEmail(
 
 async function handleRequestProxy(
   ctx: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
-  action: ActionDefinition,
+  action: RequestLikeActionDefinition,
   useBody: boolean,
 ): Promise<void> {
   const {
@@ -77,7 +81,7 @@ async function handleRequestProxy(
   } else {
     try {
       data = JSON.parse(query.data);
-    } catch (err) {
+    } catch {
       throw Boom.badRequest('data should be a JSON object');
     }
   }
@@ -126,7 +130,7 @@ function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
       case 'email':
         return handleEmail(ctx, app, appAction as EmailActionDefinition);
       case 'request':
-        return handleRequestProxy(ctx, appAction, useBody);
+        return handleRequestProxy(ctx, appAction as RequestLikeActionDefinition, useBody);
       default:
         throw Boom.badRequest('path does not point to a proxyable action');
     }

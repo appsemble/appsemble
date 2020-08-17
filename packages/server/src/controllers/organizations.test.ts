@@ -10,9 +10,9 @@ import {
   OrganizationInvite,
   User,
 } from '../models';
-import createServer from '../utils/createServer';
+import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import testToken from '../utils/test/testToken';
+import { testToken } from '../utils/test/testToken';
 
 let authorization: string;
 let clientToken: string;
@@ -109,6 +109,7 @@ describe('createOrganization', () => {
       },
     });
   });
+
   it('should not create an organization with the same identifier', async () => {
     await request.post(
       '/api/organizations',

@@ -1,6 +1,6 @@
 import type { Field, FilterValues } from '../../block';
 
-export default function toOData(fields: Field[], values: FilterValues): string {
+export function toOData(fields: Field[], values: FilterValues): string {
   return fields
     .map((field) => {
       const value = values[field.name];

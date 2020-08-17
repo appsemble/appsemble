@@ -10,10 +10,9 @@ import React, {
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import Message from '../Message';
-import useForceUpdate from '../useForceUpdate';
+import { Message, useForceUpdate } from '..';
 import styles from './index.css';
-import msgs from './messages';
+import { messages } from './messages';
 
 export interface Msg extends BaseMessage {
   /**
@@ -42,14 +41,14 @@ interface UniqueMessage extends Msg {
 /**
  * Render messages that may be pushed using {@link useMessages}.
  */
-export default function MessagesProvider({ children }: MessagesProviderProps): ReactElement {
+export function MessagesProvider({ children }: MessagesProviderProps): ReactElement {
   const { formatMessage } = useIntl();
   const forceUpdate = useForceUpdate();
 
   // The counter is used as a key of messages.
   const counter = useRef(0);
   // Updating messages should not redefine the push callback.
-  const messages = useRef<UniqueMessage[]>([]);
+  const msgs = useRef<UniqueMessage[]>([]);
 
   const push = useCallback(
     (message: Msg | string) => {
@@ -59,14 +58,14 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
         typeof message === 'string' ? { id, body: message } : { id, ...message };
 
       const dismiss = (): void => {
-        const index = messages.current.indexOf(uniqueMessage);
+        const index = msgs.current.indexOf(uniqueMessage);
         if (index !== -1) {
-          messages.current.splice(index, 1);
+          msgs.current.splice(index, 1);
           forceUpdate();
         }
       };
       uniqueMessage.dismiss = dismiss;
-      messages.current.push(uniqueMessage);
+      msgs.current.push(uniqueMessage);
       // Since messages are in a ref, pushing a message won’t trigger a rerender.
       forceUpdate();
       const { dismissable, timeout = dismissable ? undefined : 5e3 } = uniqueMessage;
@@ -83,22 +82,22 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
       {children}
       <div className={`${styles.root} mx-3`}>
         <TransitionGroup>
-          {messages.current.map((message) => (
+          {msgs.current.map((message) => (
             <CSSTransition
-              key={message.id}
               classNames={{
                 enter: styles.messageEnter,
                 enterActive: styles.messageEnterActive,
                 exit: styles.messageExit,
                 exitActive: styles.messageExitActive,
               }}
+              key={message.id}
               timeout={300}
             >
               <Message className={styles.content} color={message.color || 'danger'}>
                 <span>{message?.body}</span>
                 {message.dismissable && (
                   <button
-                    aria-label={formatMessage(msgs.dismiss)}
+                    aria-label={formatMessage(messages.dismiss)}
                     className={`delete ${styles.deleteButton}`}
                     onClick={message.dismiss}
                     type="button"

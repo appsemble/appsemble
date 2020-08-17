@@ -5,8 +5,8 @@ import Boom from '@hapi/boom';
 
 import { App, AppSubscription, ResourceSubscription } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
-import sendNotification from '../utils/sendNotification';
+import { checkRole } from '../utils/checkRole';
+import { sendNotification } from '../utils/sendNotification';
 
 interface Params {
   appId: number;
@@ -173,15 +173,15 @@ export async function updateSubscription(ctx: KoaContext<Params>): Promise<void>
   }
 
   // Toggle subscription
-  if (!resourceSubscription) {
+  if (resourceSubscription) {
+    await resourceSubscription.destroy();
+  } else {
     await ResourceSubscription.create({
       AppSubscriptionId: appSubscription.id,
       type: resource,
       action,
       ...(resourceId && { ResourceId: resourceId }),
     });
-  } else {
-    await resourceSubscription.destroy();
   }
 }
 

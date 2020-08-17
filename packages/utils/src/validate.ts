@@ -8,10 +8,15 @@ const validator = new ZSchema({
 });
 
 export class SchemaValidationError extends Error {
-  data: { [key: string]: any };
+  constructor(message: string) {
+    super(message);
+    this.name = 'SchemaValidationError';
+  }
+
+  data: { [key: string]: unknown };
 }
 
-export default function validate(schema: OpenAPIV3.SchemaObject, data: any): Promise<void> {
+export function validate(schema: OpenAPIV3.SchemaObject, data: unknown): Promise<void> {
   return new Promise((resolve, reject) => {
     validator.validate(data, schema, (errors, valid) => {
       if (valid) {

@@ -1,6 +1,6 @@
 import type { AppDefinition } from '@appsemble/types';
 
-import getAppBlocks from './getAppBlocks';
+import { getAppBlocks } from './getAppBlocks';
 
 describe('getAppBlocks', () => {
   it('should create a mapping of blocks paths to the actual block', () => {

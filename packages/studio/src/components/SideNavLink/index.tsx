@@ -3,7 +3,7 @@ import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import React, { Children, ReactElement, ReactNode } from 'react';
 
-import NavLink from '../NavLink';
+import { NavLink } from '../NavLink';
 import { useSideMenu } from '../SideMenu';
 
 interface SideNavLinkProps {
@@ -40,13 +40,7 @@ interface SideNavLinkProps {
  *
  * This should be rendered as a child node of {@link SideMenu}.
  */
-export default function SideNavLink({
-  children,
-  exact,
-  icon,
-  label,
-  to,
-}: SideNavLinkProps): ReactElement {
+export function SideNavLink({ children, exact, icon, label, to }: SideNavLinkProps): ReactElement {
   const isCollapsed = useSideMenu();
 
   return (
@@ -57,6 +51,7 @@ export default function SideNavLink({
       </NavLink>
       {!isCollapsed && Children.count(children) ? (
         <ul>
+          {/* eslint-disable-next-line unicorn/no-fn-reference-in-iterator */}
           {Children.map(children, (child) => (
             <li>{child}</li>
           ))}

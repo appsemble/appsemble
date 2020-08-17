@@ -14,11 +14,11 @@ import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import settings from '../../utils/settings';
-import AsyncButton from '../AsyncButton';
-import HelmetIntl from '../HelmetIntl';
+import { logins } from '../../utils/settings';
+import { AsyncButton } from '../AsyncButton';
+import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface ConnectedAccount {
   authorizationUrl: string;
@@ -27,7 +27,7 @@ interface ConnectedAccount {
 /**
  * Managed OAuth2 accounts linked to the current user.
  */
-export default function OAuthSettings(): ReactElement {
+export function OAuthSettings(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const location = useLocationString();
@@ -41,7 +41,7 @@ export default function OAuthSettings(): ReactElement {
     async ({ authorizationUrl, name }: OAuth2Provider) => {
       try {
         await axios.delete('/api/oauth2/connected', { params: { authorizationUrl } });
-      } catch (err) {
+      } catch {
         push(formatMessage(messages.disconnectError, { name }));
         return;
       }
@@ -73,26 +73,26 @@ export default function OAuthSettings(): ReactElement {
         <Title>
           <FormattedMessage {...messages.header} />
         </Title>
-        {settings.logins.map((provider) =>
+        {logins.map((provider) =>
           accounts.some((account) => account.authorizationUrl === provider.authorizationUrl) ? (
             <AsyncButton
-              key={provider.authorizationUrl}
               className={`${styles.button} mb-4`}
               disabled={connecting.enabled}
               icon={provider.icon}
               iconPrefix="fab"
+              key={provider.authorizationUrl}
               onClick={() => disconnect(provider)}
             >
               <FormattedMessage {...messages.disconnectAccount} values={{ name: provider.name }} />
             </AsyncButton>
           ) : (
             <OAuth2LoginButton
-              key={provider.authorizationUrl}
               authorizationUrl={provider.authorizationUrl}
               className={`${styles.button} mb-4`}
               clientId={provider.clientId}
               disabled={connecting.enabled}
               icon={provider.icon}
+              key={provider.authorizationUrl}
               onClick={connecting.enable}
               redirect={location}
               redirectUrl="/callback"

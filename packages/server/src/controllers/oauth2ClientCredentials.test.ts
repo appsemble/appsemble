@@ -2,9 +2,9 @@ import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { OAuth2ClientCredentials, User } from '../models';
-import createServer from '../utils/createServer';
+import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import testToken from '../utils/test/testToken';
+import { testToken } from '../utils/test/testToken';
 
 let authorization: string;
 let clock: FakeTimers.InstalledClock;
@@ -27,7 +27,7 @@ beforeEach(async () => {
 
 afterEach(truncate);
 
-afterEach(async () => {
+afterEach(() => {
   clock.uninstall();
 });
 
@@ -46,9 +46,9 @@ describe('registerOAuth2ClientCredentials', () => {
         created: '2000-01-01T00:00:00.000Z',
         description: 'Test client',
         expires: '2345-01-02T03:04:05.000Z',
-        id: expect.stringMatching(/^[a-z\d]{32}$/),
+        id: expect.stringMatching(/^[\da-z]{32}$/),
         scopes: ['blocks:write', 'organizations:styles:write'],
-        secret: expect.stringMatching(/^[a-z\d]{64}$/),
+        secret: expect.stringMatching(/^[\da-z]{64}$/),
       },
     });
   });

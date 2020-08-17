@@ -7,7 +7,7 @@ import styles from './index.css';
 /**
  * Render all different authentication methods for an app.
  */
-export default function PermissionRequest(): ReactElement {
+export function PermissionRequest(): ReactElement {
   const { definition } = useAppDefinition();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
 

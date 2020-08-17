@@ -57,7 +57,7 @@ const Context = createContext(null);
 /**
  * A provider for the {@link useConfirmation} hook.
  */
-export default function Confirmation({ children }: ConfirmationProps): ReactElement {
+export function Confirmation({ children }: ConfirmationProps): ReactElement {
   const [options, setOptions] = useState<DeferredConfirmationOptions>(null);
   const [isActive, setActive] = useState(false);
 
@@ -97,9 +97,11 @@ export default function Confirmation({ children }: ConfirmationProps): ReactElem
 }
 
 /**
+ * A hook to easily create a configmration dialog.
  *
+ * @param options - The configuration options for the modal.
  *
- * @param options The configuration options for the modal.
+ * @returns A function which triggers the confirmation dialog when called.
  */
 export function useConfirmation<T, A extends any[]>(
   options: ConfirmationOptions<T, A>,

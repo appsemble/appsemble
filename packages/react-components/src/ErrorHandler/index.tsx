@@ -13,7 +13,7 @@ interface ErrorHandlerState {
 /**
  * Capture renderer errors using Sentry.
  */
-export default class ErrorHandler extends Component<ErrorHandlerProps, ErrorHandlerState> {
+export class ErrorHandler extends Component<ErrorHandlerProps, ErrorHandlerState> {
   state: ErrorHandlerState = {
     error: false,
   };

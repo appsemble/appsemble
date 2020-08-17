@@ -4,9 +4,10 @@ import { formatRequestAction, remapData, validate } from '@appsemble/utils';
 import axios, { Method } from 'axios';
 
 import type { MakeActionParameters } from '../../types';
-import settings from '../settings';
-import uploadBlobs from '../uploadBlobs';
-import xmlToJson from '../xmlToJson';
+import type { RecursiveValue } from '../extractBlobs';
+import { apiUrl, appId } from '../settings';
+import { uploadBlobs } from '../uploadBlobs';
+import { xmlToJson } from '../xmlToJson';
 
 export function requestLikeAction<T extends RequestLikeActionTypes>({
   definition,
@@ -21,7 +22,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       const req = proxy
         ? {
             method: methodUpper,
-            url: `${settings.apiUrl}/api/apps/${settings.id}/action/${prefix}`,
+            url: `${apiUrl}/api/apps/${appId}/action/${prefix}`,
           }
         : formatRequestAction(definition, data);
 
@@ -55,7 +56,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
         } else {
           switch (blobs.type) {
             case 'upload': {
-              body = await uploadBlobs(data, blobs);
+              body = await uploadBlobs(data as RecursiveValue, blobs);
               break;
             }
             default:
@@ -89,7 +90,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
   };
 }
 
-export default function request(
+export function request(
   args: MakeActionParameters<RequestLikeActionDefinition<'request'>>,
 ): RequestAction {
   return requestLikeAction(args);

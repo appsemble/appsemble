@@ -3,9 +3,9 @@ import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
 import { App, AppBlockStyle, AppRating, BlockVersion, Member, Organization, User } from '../models';
-import createServer from '../utils/createServer';
+import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import testToken from '../utils/test/testToken';
+import { testToken } from '../utils/test/testToken';
 
 let authorization: string;
 let organizationId: string;
@@ -676,7 +676,7 @@ pages:
 
   it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
     await App.bulkCreate(
-      Array.from(new Array(11), (_, index) => ({
+      Array.from({ length: 11 }, (_, index) => ({
         path: index ? `test-app-${index}` : 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: `a${index}`,

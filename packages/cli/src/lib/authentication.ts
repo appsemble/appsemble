@@ -1,7 +1,8 @@
+import { URL, URLSearchParams } from 'url';
+
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import inquirer from 'inquirer';
-import { URL, URLSearchParams } from 'url';
 
 import type { BaseArguments } from '../types';
 
@@ -18,7 +19,7 @@ function getService(remote: string): string {
 async function getKeytar(): Promise<typeof import('keytar')> {
   try {
     return await import('keytar');
-  } catch (error) {
+  } catch {
     throw new AppsembleError(
       'Couldn’t find module keytar. Either install libsecret and reinstall @appsemble/cli, or pass --client-credentials on the command line.',
     );
@@ -110,13 +111,13 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
 /**
  * Login to the server using OAuth2 client credentials.
  *
- * @param {string} remote Host to fetch token from.
- * @param {string} scope The OAuth2 scope to request. This may be space separated to request
+ * @param remote - Host to fetch token from.
+ * @param scope - The OAuth2 scope to request. This may be space separated to request
  * multiple scopes.
- * @param {string} inputCredentials Client credentials passed from the command line.
+ * @param inputCredentials - Client credentials passed from the command line.
  */
 export async function authenticate(
-  remote = axios.defaults.baseURL,
+  remote: string,
   scope: string,
   inputCredentials: string,
 ): Promise<void> {

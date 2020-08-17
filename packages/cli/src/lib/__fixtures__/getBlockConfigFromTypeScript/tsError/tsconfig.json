@@ -2,6 +2,7 @@
   "extends": "../../../../../../../tsconfig",
   "compilerOptions": {
     "lib": ["dom", "esnext"],
+    "noUnusedLocals": true,
     "types": []
   }
 }

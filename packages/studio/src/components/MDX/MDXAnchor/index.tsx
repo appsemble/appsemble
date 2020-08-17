@@ -16,7 +16,7 @@ interface MDXAnchorProps {
 /**
  * Render a markdown link element.
  */
-export default function MDXAnchor({ children, href }: MDXAnchorProps): ReactElement {
+export function MDXAnchor({ children, href }: MDXAnchorProps): ReactElement {
   if (/^https?:\/\//.test(href)) {
     return (
       <a href={href} rel="noopener noreferrer" target="_blank">

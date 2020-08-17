@@ -84,10 +84,10 @@ attach(
     return (
       <div className={`message mx-3 my-3 is-${color}`}>
         <div
+          className={`message-body is-clipped is-flex py-0 ${styles.messageBody} ${styles.hidden}`}
           ref={(node) => {
             messageBody = node;
           }}
-          className={`message-body is-clipped is-flex py-0 ${styles.messageBody} ${styles.hidden}`}
         >
           <span
             ref={(node) => {

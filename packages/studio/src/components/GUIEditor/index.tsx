@@ -3,16 +3,15 @@ import type { App, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import indentString from 'indent-string';
 import yaml from 'js-yaml';
-import type { editor } from 'monaco-editor';
-import { Range } from 'monaco-editor';
+import { editor, Range } from 'monaco-editor';
 import React, { ReactElement, useCallback, useState } from 'react';
 
-import GUIEditorEditBlock from './components/GUIEditorEditBlock';
-import GUIEditorNavBar from './components/GUIEditorNavBar';
-import GUIEditorSelect from './components/GUIEditorSelect';
-import GUIEditorToolbox from './components/GUIEditorToolbox';
+import { GUIEditorEditBlock } from './components/GUIEditorEditBlock';
+import { GUIEditorNavBar } from './components/GUIEditorNavBar';
+import { GUIEditorSelect } from './components/GUIEditorSelect';
+import { GUIEditorToolbox } from './components/GUIEditorToolbox';
 import { EditLocation, GuiEditorStep } from './types';
-import applyMonacoEdits from './utils/applyMonacoEdits';
+import { applyMonacoEdits } from './utils/applyMonacoEdits';
 
 interface GUIEditorProps {
   app: App;
@@ -26,7 +25,7 @@ interface GUIEditorProps {
   decorationList: string[];
   onChangeDecorationList: (value: string[]) => void;
 }
-export default function GUIEditor({
+export function GUIEditor({
   app,
   decorationList,
   editorStep,
@@ -34,14 +33,14 @@ export default function GUIEditor({
   onChangeDecorationList,
   onChangeEditorStep,
 }: GUIEditorProps): ReactElement {
-  const [selectedBlock, setSelectedBlock] = useState<BlockManifest>(undefined);
-  const [editLocation, setEditLocation] = useState<EditLocation>(undefined);
-  const [editedBlockValues, setEditedBlockValues] = useState<BlockDefinition>(undefined);
+  const [selectedBlock, setSelectedBlock] = useState<BlockManifest>();
+  const [editLocation, setEditLocation] = useState<EditLocation>();
+  const [editedBlockValues, setEditedBlockValues] = useState<BlockDefinition>();
 
   const onCancel = useCallback((): void => {
     onChangeEditorStep(GuiEditorStep.SELECT);
     setSelectedBlock(null);
-    setEditedBlockValues(undefined);
+    setEditedBlockValues(null);
   }, [onChangeEditorStep]);
 
   const save = useCallback(

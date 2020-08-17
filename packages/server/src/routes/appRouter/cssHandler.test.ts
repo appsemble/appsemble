@@ -1,10 +1,10 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import boomMiddleware from '../../middleware/boom';
+import { appRouter } from '.';
+import { boomMiddleware } from '../../middleware/boom';
 import { App, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
-import appRouter from '.';
 
 beforeAll(createTestSchema('csshandler'));
 

@@ -8,6 +8,6 @@ export interface LoaderProps {
   component?: string | ComponentType<{ className: string }>;
 }
 
-export default function Loader({ className, component: Component = 'div' }: LoaderProps): VNode {
+export function Loader({ className, component: Component = 'div' }: LoaderProps): VNode {
   return <Component className={classNames(styles.loader, className)} />;
 }

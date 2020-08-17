@@ -22,22 +22,22 @@ interface Email {
 /**
  * Render a markdown email.
  *
- * @param template The body of the template to render.
- * @param values Values to pass to the template for rendering.
+ * @param template - The body of the template to render.
+ * @param values - Values to pass to the template for rendering.
  * @param sub - The subject of the email to send. If omitted, this is extracted from the markdown
  * email body.
  * @returns An email object that may be sent.
  */
-export default async function renderEmail(
+export async function renderEmail(
   template: string,
   values: { [key: string]: string },
   sub?: string,
 ): Promise<Email> {
   let subject = sub;
-  const mdast = await remark.parse(template);
+  const mdast = remark.parse(template);
 
   function replace(_match: string, key: string): string {
-    if (Object.prototype.hasOwnProperty.call(values, key)) {
+    if (Object.hasOwnProperty.call(values, key)) {
       return values[key];
     }
     throw new Error(`Unknown template value: ${key}`);
@@ -61,7 +61,8 @@ export default async function renderEmail(
     });
   }
 
-  const text = await remark.stringify(mdast);
-  const html = await rehype.stringify(await rehype.run(mdast, { stem: subject }));
+  const text = remark.stringify(mdast);
+  const hast = await rehype.run(mdast, { stem: subject });
+  const html = rehype.stringify(hast);
   return { html, subject, text };
 }

@@ -9,10 +9,10 @@ import {
   Organization,
   User,
 } from '../models';
-import createServer from '../utils/createServer';
+import { createServer } from '../utils/createServer';
 import * as oauth2 from '../utils/oauth2';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import testToken from '../utils/test/testToken';
+import { testToken } from '../utils/test/testToken';
 
 let app: App;
 let authorization: string;

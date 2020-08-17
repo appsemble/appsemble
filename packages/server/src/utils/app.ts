@@ -1,9 +1,10 @@
+import { URL } from 'url';
+
 import { objectCache, RemapperContext } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
-import IntlMessageFormat from 'intl-messageformat';
+import { IntlMessageFormat } from 'intl-messageformat';
 import { FindOptions, Op } from 'sequelize';
-import { URL } from 'url';
 
 import { App, AppMessages } from '../models';
 import type { KoaContext } from '../types';
@@ -17,13 +18,13 @@ const formatters = {
 /**
  * Get an app from the database based on the Koa context and URL.
  *
- * @param ctx The Koa context.
- * @param queryOptions Additional Sequelize query options. `where` will be overwritten.
- * @param url The URL to find the app for. This defaults to the context request origin.
+ * @param ctx - The Koa context.
+ * @param queryOptions - Additional Sequelize query options. `where` will be overwritten.
+ * @param url - The URL to find the app for. This defaults to the context request origin.
  *
  * @returns The app matching the url.
  */
-export async function getApp(
+export function getApp(
   { argv, origin }: Pick<KoaContext, 'argv' | 'origin'>,
   queryOptions: FindOptions,
   url = origin,
@@ -32,7 +33,9 @@ export async function getApp(
   const { hostname } = new URL(url);
 
   if (hostname.endsWith(`.${platformHost}`)) {
-    const subdomain = hostname.substring(0, hostname.length - platformHost.length - 1).split('.');
+    const subdomain = hostname
+      .slice(0, Math.max(0, hostname.length - platformHost.length - 1))
+      .split('.');
     if (subdomain.length !== 2) {
       throw Boom.notFound();
     }

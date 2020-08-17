@@ -5,9 +5,9 @@ import { Fragment, h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import type { FilterValue, FilterValues } from '../block';
-import FieldComponent from './components/FieldComponent';
+import { FieldComponent } from './components/FieldComponent';
 import styles from './index.css';
-import toOData from './utils/toOData';
+import { toOData } from './utils/toOData';
 
 bootstrap(
   ({

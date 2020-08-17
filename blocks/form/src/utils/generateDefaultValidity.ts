@@ -2,9 +2,9 @@ import type { Parameters } from '@appsemble/sdk';
 
 import type { RequiredRequirement } from '../../block';
 
-export default function generateDefaultValidity(
+export function generateDefaultValidity(
   parameters: Parameters,
-  data: any,
+  data: unknown,
 ): { [field: string]: boolean } {
   return parameters.fields.reduce<{ [field: string]: boolean }>(
     (acc, { defaultValue, name, readOnly, type, ...field }) => {
@@ -19,7 +19,7 @@ export default function generateDefaultValidity(
       }
       if (readOnly) {
         if (required) {
-          valid = !!data[name];
+          valid = Boolean((data as { [key: string]: unknown })[name]);
         } else {
           valid = true;
         }

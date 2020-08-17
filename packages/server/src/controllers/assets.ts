@@ -3,7 +3,7 @@ import Boom from '@hapi/boom';
 
 import { App, Asset } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
+import { checkRole } from '../utils/checkRole';
 
 interface Params {
   appId: string;

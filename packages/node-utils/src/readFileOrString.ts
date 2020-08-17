@@ -1,14 +1,14 @@
-import fs from 'fs';
+import { promises as fs } from 'fs';
 
 /**
  * If the string represents an existing path, read the file. Otherwise, return the string itself.
  *
- * @param string The string to handle.
+ * @param string - The string to handle.
  * @returns The handled string.
  */
-export default async function readFileOrString(string: string | Buffer): Promise<string | Buffer> {
+export async function readFileOrString(string: string | Buffer): Promise<string | Buffer> {
   try {
-    return await fs.promises.readFile(string);
+    return await fs.readFile(string);
   } catch (err) {
     if (err.code === 'ENOENT') {
       return string;

@@ -10,8 +10,12 @@ import React, {
   useState,
 } from 'react';
 
-import resolveJsonPointers from '../../utils/resolveJsonPointers';
-import settings from '../../utils/settings';
+import { resolveJsonPointers } from '../../utils/resolveJsonPointers';
+import {
+  apiUrl,
+  blockManifests as initialBlockManifests,
+  definition as initialDefinition,
+} from '../../utils/settings';
 
 interface AppDefinitionContext {
   blockManifests: BlockManifest[];
@@ -26,23 +30,21 @@ interface AppDefinitionProviderProps {
 function replaceStyle(id: string, style: string): void {
   const oldNode = document.getElementById(id);
   const newNode = document.createElement('style');
-  newNode.appendChild(document.createTextNode(style));
+  newNode.append(document.createTextNode(style));
   newNode.id = id;
 
   if (oldNode) {
     document.head.replaceChild(newNode, oldNode);
   } else {
-    document.head.appendChild(newNode);
+    document.head.append(newNode);
   }
 }
 
 const Context = createContext<AppDefinitionContext>(null);
 
-export default function AppDefinitionProvider({
-  children,
-}: AppDefinitionProviderProps): ReactElement {
-  const [blockManifests, setBlockManifests] = useState(settings.blockManifests);
-  const [definition, setDefinition] = useState(settings.definition);
+export function AppDefinitionProvider({ children }: AppDefinitionProviderProps): ReactElement {
+  const [blockManifests, setBlockManifests] = useState(initialBlockManifests);
+  const [definition, setDefinition] = useState(initialDefinition);
   const [revision, setRevision] = useState(0);
 
   const value = useMemo(() => ({ blockManifests, definition, revision }), [
@@ -53,7 +55,7 @@ export default function AppDefinitionProvider({
 
   const onMessage = useCallback(
     ({ data, origin }: MessageEvent) => {
-      if (origin === settings.apiUrl && data?.type === 'editor/EDIT_SUCCESS') {
+      if (origin === apiUrl && data?.type === 'editor/EDIT_SUCCESS') {
         replaceStyle('appsemble-style-core', data.style);
         replaceStyle('appsemble-style-shared', data.sharedStyle);
         setBlockManifests(data.blockManifests);

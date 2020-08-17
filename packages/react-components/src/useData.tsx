@@ -40,12 +40,14 @@ const initialState: AxiosState<any> = { data: null, loading: true, error: null }
  *
  * Whenever the URL is changed, new data is loaded.
  *
- * @param url The URL from which to fetch data.
+ * @param url - The URL from which to fetch data.
+ *
+ * @returns A state which holds the Axios data and some utility functions.
  */
-export default function useData<T>(url: string): UseAxiosResult<T> {
+export function useData<T>(url: string): UseAxiosResult<T> {
   const [state, setState] = useState<AxiosState<T>>(initialState);
 
-  const [refresher, setRefresher] = useState<object>();
+  const [refresher, setRefresher] = useState<{ [key: string]: unknown }>();
 
   const refresh = useCallback(() => setRefresher({}), []);
 

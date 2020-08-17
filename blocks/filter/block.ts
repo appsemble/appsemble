@@ -9,7 +9,7 @@ export interface EnumOption {
   value?: string;
 
   /**
-   *  User facing label describing the option.
+   * User facing label describing the option.
    */
   label?: Remapper;
 }
@@ -21,7 +21,7 @@ export interface ButtonOption {
   value: string;
 
   /**
-   *  User-facing label describing the option.
+   * User-facing label describing the option.
    */
   label?: Remapper;
 

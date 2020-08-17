@@ -5,14 +5,14 @@ interface MenuProviderProps {
   children: ReactNode;
 }
 
-const MenuProviderContext = createContext<Toggle>(null);
+const Context = createContext<Toggle>(null);
 
 export function useMenu(): Toggle {
-  return useContext(MenuProviderContext);
+  return useContext(Context);
 }
 
-export default function MenuProvider({ children }: MenuProviderProps): ReactElement {
+export function MenuProvider({ children }: MenuProviderProps): ReactElement {
   const value = useToggle();
 
-  return <MenuProviderContext.Provider value={value}>{children}</MenuProviderContext.Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 }

@@ -9,11 +9,7 @@ interface ClonableCheckboxProps {
   onChange: () => void;
 }
 
-export default function ClonableCheckbox({
-  checked,
-  id,
-  onChange,
-}: ClonableCheckboxProps): ReactElement {
+export function ClonableCheckbox({ checked, id, onChange }: ClonableCheckboxProps): ReactElement {
   const { disable, enable, enabled } = useToggle();
   const handleChange = useCallback(() => {
     enable();
@@ -31,6 +27,7 @@ export default function ClonableCheckbox({
         onChange={handleChange}
         type="checkbox"
       />
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label className={styles.label} htmlFor={id} />
     </div>
   );

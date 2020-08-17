@@ -4,7 +4,7 @@ import React, { Children, createContext, ReactChild, ReactElement, useContext } 
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface SideMenuProps {
   children: ReactChild[];
@@ -14,7 +14,7 @@ interface SideMenuProps {
 
 const Context = createContext<boolean>(false);
 
-export default function SideMenu({
+export function SideMenu({
   children = [],
   isCollapsed,
   toggleCollapse,
@@ -24,6 +24,7 @@ export default function SideMenu({
       <aside className={classNames('menu', styles.sideMenu)}>
         <ul className="menu-list">
           <Context.Provider value={isCollapsed}>
+            {/* eslint-disable-next-line unicorn/no-fn-reference-in-iterator */}
             {Children.map(children, (item, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <li key={index}>{item}</li>

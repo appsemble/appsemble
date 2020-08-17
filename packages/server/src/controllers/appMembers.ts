@@ -3,7 +3,7 @@ import Boom from '@hapi/boom';
 
 import { App, AppMember, Organization, User } from '../models';
 import type { KoaContext } from '../types';
-import checkRole from '../utils/checkRole';
+import { checkRole } from '../utils/checkRole';
 
 interface Params {
   appId: string;
@@ -101,7 +101,7 @@ export async function setAppMember(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('User with this ID doesn’t exist.');
   }
 
-  if (!Object.prototype.hasOwnProperty.call(app.definition.security.roles, role)) {
+  if (!Object.hasOwnProperty.call(app.definition.security.roles, role)) {
     throw Boom.badRequest(`Role ‘${role}’ is not defined.`);
   }
 

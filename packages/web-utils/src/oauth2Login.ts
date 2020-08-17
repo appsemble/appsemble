@@ -1,6 +1,6 @@
 import type { OAuth2Provider } from '@appsemble/types';
 
-import randomString from './randomString';
+import { randomString } from './randomString';
 
 /**
  * The key in `sessionStorage` where the current state is stored.
@@ -45,13 +45,13 @@ export interface OAuth2LoginOptions
 /**
  * Initiate the login process using OAuth2.
  *
- * @param options OAuth2 login options.
- * @param data Additional data to store in `sessionStorage`. This data will be available after the
- *             user has been redirected back.
+ * @param options - OAuth2 login options.
+ * @param data - Additional data to store in `sessionStorage`. This data will be available after the
+ * user has been redirected back.
  */
 export function startOAuth2Login(
   { authorizationUrl, clientId, redirect, redirectUrl, scope }: OAuth2LoginOptions,
-  data?: object,
+  data?: { [key: string]: unknown },
 ): void {
   const url = new URL(authorizationUrl);
   const state = randomString();
@@ -69,11 +69,13 @@ export function startOAuth2Login(
 
 /**
  * Load the state as it is stored in `sessionStorage`.
+ *
+ * @returns The OAuth2 state as it is stored in `sessionStorage`.
  */
 export function loadOAuth2State<T extends OAuth2State = OAuth2State>(): T {
   try {
     return JSON.parse(sessionStorage.getItem(storageKey));
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -81,9 +83,9 @@ export function loadOAuth2State<T extends OAuth2State = OAuth2State>(): T {
 /**
  * Append additional data in the oauth2 state in `sessionStorage`.
  *
- * @param extras The extra data to store.
+ * @param extras - The extra data to store.
  */
-export function appendOAuth2State(extras: object): void {
+export function appendOAuth2State(extras: { [key: string]: unknown }): void {
   const session = loadOAuth2State();
   if (session) {
     sessionStorage.setItem(storageKey, JSON.stringify({ ...extras, ...session }));

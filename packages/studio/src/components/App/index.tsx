@@ -5,30 +5,30 @@ import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
-import settings from '../../utils/settings';
-import AnonymousRoute from '../AnonymousRoute';
-import AppContext from '../AppContext';
-import AppList from '../AppList';
-import BlockDetails from '../BlockDetails';
-import BlockList from '../BlockList';
-import Docs from '../Docs';
-import EditPassword from '../EditPassword';
-import ErrorFallback from '../ErrorFallback';
-import ForwardOAuth2Login from '../ForwardOAuth2Login';
-import Login from '../Login';
+import { enableRegistration } from '../../utils/settings';
+import { AnonymousRoute } from '../AnonymousRoute';
+import { AppContext } from '../AppContext';
+import { AppList } from '../AppList';
+import { BlockDetails } from '../BlockDetails';
+import { BlockList } from '../BlockList';
+import { Docs } from '../Docs';
+import { EditPassword } from '../EditPassword';
+import { ErrorFallback } from '../ErrorFallback';
+import { ForwardOAuth2Login } from '../ForwardOAuth2Login';
+import { Login } from '../Login';
 import { MDXAnchor, MDXCode, MDXPre } from '../MDX';
-import OAuth2Callback from '../OAuth2Callback';
-import OpenIDLogin from '../OpenIDLogin';
-import OrganizationInvite from '../OrganizationInvite';
-import ProtectedRoute from '../ProtectedRoute';
-import Register from '../Register';
-import ResetPassword from '../ResetPassword';
-import Settings from '../Settings';
-import Toolbar from '../Toolbar';
-import UserProvider from '../UserProvider';
-import VerifyEmail from '../VerifyEmail';
+import { OAuth2Callback } from '../OAuth2Callback';
+import { OpenIDLogin } from '../OpenIDLogin';
+import { OrganizationInvite } from '../OrganizationInvite';
+import { ProtectedRoute } from '../ProtectedRoute';
+import { Register } from '../Register';
+import { ResetPassword } from '../ResetPassword';
+import { Settings } from '../Settings';
+import { Toolbar } from '../Toolbar';
+import { UserProvider } from '../UserProvider';
+import { VerifyEmail } from '../VerifyEmail';
 
-export default function App(): ReactElement {
+export function App(): ReactElement {
   return (
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <MDXProvider
@@ -82,7 +82,7 @@ export default function App(): ReactElement {
                     <AnonymousRoute exact path="/login">
                       <Login />
                     </AnonymousRoute>
-                    {settings.enableRegistration && (
+                    {enableRegistration && (
                       <AnonymousRoute exact path="/register">
                         <Register />
                       </AnonymousRoute>

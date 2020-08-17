@@ -1,14 +1,15 @@
+import crypto from 'crypto';
+
 import { logger } from '@appsemble/node-utils';
 import Boom from '@hapi/boom';
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models';
 import type { KoaContext } from '../types';
-import createJWTResponse from '../utils/createJWTResponse';
+import { createJWTResponse } from '../utils/createJWTResponse';
 
-async function mayRegister({ argv }: KoaContext): Promise<void> {
+function mayRegister({ argv }: KoaContext): void {
   if (argv.disableRegistration) {
     throw Boom.forbidden('Registration is disabled');
   }
@@ -36,18 +37,18 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
       );
       await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
     });
-  } catch (e) {
-    if (e instanceof UniqueConstraintError) {
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) {
       throw Boom.conflict('User with this email address already exists.');
     }
 
-    if (e instanceof DatabaseError) {
+    if (error instanceof DatabaseError) {
       // XXX: Postgres throws a generic transaction aborted error
       // if there is a way to read the internal error, replace this code.
       throw Boom.conflict('User with this email address already exists.');
     }
 
-    throw e;
+    throw error;
   }
 
   // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
@@ -57,7 +58,7 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
     .sendTemplateEmail({ email, name }, 'welcome', {
       url: `${argv.host}/verify?token=${key}`,
     })
-    .catch((error) => {
+    .catch((error: Error) => {
       logger.error(error);
     });
 

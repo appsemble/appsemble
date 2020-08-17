@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import Loader from '.';
+import { Loader } from '.';
 
 describe('Loader', () => {
   it('should match its snapshot', () => {

@@ -3,14 +3,14 @@ import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, StringField } from '../../../block';
-import isRequired from '../../utils/isRequired';
+import { isRequired } from '../../utils/isRequired';
 
 type StringInputProps = InputProps<string, StringField>;
 
 /**
  * An input element for a text type schema.
  */
-export default function StringInput({
+export function StringInput({
   disabled,
   error,
   field,

@@ -1,25 +1,26 @@
+import { EventEmitter } from 'events';
+
 import { Button, Content, Message, useLocationString } from '@appsemble/react-components';
 import type { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, normalize, remap } from '@appsemble/utils';
-import { EventEmitter } from 'events';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import type { ShowDialogParams } from '../../types';
-import settings from '../../utils/settings';
+import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
-import BlockList from '../BlockList';
-import FlowPage from '../FlowPage';
-import PageDialog from '../PageDialog';
-import TabsPage from '../TabsPage';
-import TitleBar from '../TitleBar';
+import { BlockList } from '../BlockList';
+import { FlowPage } from '../FlowPage';
+import { PageDialog } from '../PageDialog';
+import { TabsPage } from '../TabsPage';
+import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function Page(): ReactElement {
+export function Page(): ReactElement {
   const { definition } = useAppDefinition();
   const redirect = useLocationString();
   const { isLoggedIn, role } = useUser();
@@ -153,7 +154,7 @@ export default function Page(): ReactElement {
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
-  const redirectPage = definition.pages.find(checkPagePermissions);
+  const redirectPage = definition.pages.find((p) => checkPagePermissions(p));
   if (redirectPage) {
     return <Redirect to={`/${lang}/${normalize(redirectPage.name)}`} />;
   }
@@ -167,11 +168,7 @@ export default function Page(): ReactElement {
             {...messages.permissionError}
             values={{
               a: (text: string) => (
-                <a
-                  href={`${settings.apiUrl}/apps/${settings.id}`}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
+                <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
                   {text}
                 </a>
               ),

@@ -18,12 +18,12 @@ import { extension } from 'mime-types';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import download from '../../utils/download';
+import { download } from '../../utils/download';
 import { useApp } from '../AppContext';
-import HelmetIntl from '../HelmetIntl';
-import AssetPreview from './components/AssetPreview';
+import { HelmetIntl } from '../HelmetIntl';
+import { AssetPreview } from './components/AssetPreview';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 export interface Asset {
   id: string;
@@ -31,7 +31,7 @@ export interface Asset {
   filename: string;
 }
 
-export default function Assets(): ReactElement {
+export function Assets(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const push = useMessages();
@@ -94,7 +94,7 @@ export default function Assets(): ReactElement {
           assets: selectedAssets.sort().join(', '),
         }),
       );
-      setAssets(assets.filter((asset) => !selectedAssets.includes(`${asset.id}`)));
+      setAssets(assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
       setSelectedAssets([]);
     },
   });
@@ -111,7 +111,7 @@ export default function Assets(): ReactElement {
         const mime = extension(asset.mime);
 
         await download(`/api/apps/${app.id}/assets/${id}`, filename || mime ? `${id}.${mime}` : id);
-      } catch (e) {
+      } catch {
         push(formatMessage(messages.downloadError));
       }
     },
@@ -122,10 +122,10 @@ export default function Assets(): ReactElement {
     (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
       const id = event.currentTarget.name.replace(/^asset/, '');
 
-      if (!checked) {
-        setSelectedAssets(selectedAssets.filter((a) => a !== id));
-      } else {
+      if (checked) {
         setSelectedAssets([...selectedAssets, id]);
+      } else {
+        setSelectedAssets(selectedAssets.filter((a) => a !== id));
       }
     },
     [selectedAssets],

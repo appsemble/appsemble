@@ -1,4 +1,4 @@
-export default {
+export const baseTheme = {
   primaryColor: '#5291ff',
   linkColor: '#3273dc',
   infoColor: '#209cee',

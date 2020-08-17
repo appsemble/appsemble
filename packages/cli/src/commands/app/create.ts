@@ -3,7 +3,7 @@ import fg from 'fast-glob';
 import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
-import createApp from '../../lib/createApp';
+import { createApp } from '../../lib/createApp';
 import type { BaseArguments } from '../../types';
 
 interface CreateAppArguments extends BaseArguments {

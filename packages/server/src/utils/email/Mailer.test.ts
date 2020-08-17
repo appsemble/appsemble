@@ -1,6 +1,6 @@
 import type { Transporter } from 'nodemailer';
 
-import Mailer from './Mailer';
+import { Mailer } from './Mailer';
 
 let mailer: Mailer;
 
@@ -15,18 +15,14 @@ describe('verify', () => {
 
   it('should succeed if the transport verification succeeds', async () => {
     mailer.transport = ({
-      async verify() {
-        return true as const;
-      },
+      verify: () => Promise.resolve(true as const),
     } as Partial<Transporter>) as Transporter;
     expect(await mailer.verify()).toBeUndefined();
   });
 
   it('should fail if the transport verification fails', async () => {
     mailer.transport = ({
-      async verify() {
-        throw new Error('fail');
-      },
+      verify: () => Promise.reject(new Error('fail')),
     } as Partial<Transporter>) as Transporter;
     await expect(mailer.verify()).rejects.toThrow(new Error('fail'));
   });
