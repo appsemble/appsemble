@@ -1,4 +1,3 @@
-import type { Remapper } from '@appsemble/sdk';
 import type { BaseRequirement, Field, FileField } from 'blocks/form/block';
 
 import validateNumber from './validateNumber';
@@ -38,8 +37,4 @@ export default {
   enum: () => undefined,
 } as { [name: string]: Validator };
 
-type Validator = (
-  field: Field,
-  value: any,
-  remap: (remapper: Remapper, data: any) => any,
-) => BaseRequirement;
+type Validator = (field: Field, value: any) => BaseRequirement;
