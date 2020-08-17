@@ -1,5 +1,7 @@
 const path = require('path');
 
+// Adding this to package.json causes yarn to fail in production mode.
+// eslint-disable-next-line import/no-extraneous-dependencies
 const studioPkg = require('@appsemble/studio/package.json');
 const faPkg = require('@fortawesome/fontawesome-free/package.json');
 const bulmaPkg = require('bulma/package.json');
