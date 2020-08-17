@@ -836,21 +836,6 @@ export interface AppDefinition {
   theme?: Partial<Theme>;
 }
 
-/**
- * The rating for an app.
- */
-interface Rating {
-  /**
-   * The number of people who rated the app.
-   */
-  count: number;
-
-  /**
-   * THe average app rating.
-   */
-  average: number;
-}
-
 export interface App {
   /**
    * The unique identifier for the app.
@@ -882,7 +867,17 @@ export interface App {
   /**
    * An app rating.
    */
-  rating?: Rating;
+  rating?: {
+    /**
+     * The number of people who rated the app.
+     */
+    count: number;
+
+    /**
+     * THe average app rating.
+     */
+    average: number;
+  };
 
   /**
    * Whether the app has clonable resources.
