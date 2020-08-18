@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.8] - 2020-08-18
+
+### Added
+
+- Block(`filter`): Add support for remappers.
+- Block(`form`): Add support for remappers.
+- Block(`map`): Add support for remappers.
+- Block(`markdown`): Add support for remappers.
+- App: Add translatable app messages.
+- App: Add `string.replace` remapper.
+- Studio: Add translations page to studio for translating app messages.
+
 ## [0.13.7] - 2020-07-31
 
 ### Added
