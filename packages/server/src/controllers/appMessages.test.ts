@@ -60,6 +60,22 @@ describe('getMessages', () => {
     expect(data).toMatchObject({ statusCode: 404, message: 'Language “en-GB” could not be found' });
   });
 
+  it('should return a 200 if a language is not supported, but is the default language', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        defaultLanguage: 'nl-nl',
+      },
+    });
+    const response = await request.get(`/api/apps/${app.id}/messages/nl-nl`);
+    expect(response).toMatchObject({ status: 200, data: { language: 'nl-nl', messages: {} } });
+  });
+
+  it('should return a 200 if a en-us is not supported and is default language unset', async () => {
+    const response = await request.get(`/api/apps/${app.id}/messages/en-us`);
+    expect(response).toMatchObject({ status: 200, data: { language: 'en-us', messages: {} } });
+  });
+
   it('should merge messages with the base language if merge is enabled', async () => {
     await request.post(
       `/api/apps/${app.id}/messages`,
@@ -151,9 +167,20 @@ describe('deleteMessages', () => {
 });
 
 describe('getLanguages', () => {
-  it('should return an empty array if no translations are available', async () => {
+  it('should return a the default app language if no translations are available', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        defaultLanguage: 'nl-nl',
+      },
+    });
     const { data } = await request.get(`/api/apps/${app.id}/messages`);
-    expect(data).toStrictEqual([]);
+    expect(data).toStrictEqual(['nl-nl']);
+  });
+
+  it('should fallback to the default value of defaultLanguage', async () => {
+    const { data } = await request.get(`/api/apps/${app.id}/messages`);
+    expect(data).toStrictEqual(['en-us']);
   });
 
   it('should return a list of available languages', async () => {
@@ -186,6 +213,6 @@ describe('getLanguages', () => {
       headers: { authorization },
     });
 
-    expect(data).toStrictEqual(['en', 'en-gb', 'nl']);
+    expect(data).toStrictEqual(['en', 'en-gb', 'en-us', 'nl']);
   });
 });

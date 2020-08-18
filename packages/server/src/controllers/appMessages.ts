@@ -31,7 +31,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     ?.toString();
 
   const app = await App.findByPk(appId, {
-    attributes: [],
+    attributes: ['definition'],
     include: [
       {
         model: AppMessages,
@@ -52,7 +52,11 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     !app.AppMessages.length ||
     (merge && !app.AppMessages.some((m) => m.language === language.toLowerCase()))
   ) {
-    throw Boom.notFound(`Language “${language}” could not be found`);
+    if (language !== (app.definition.defaultLanguage || 'en-us')) {
+      throw Boom.notFound(`Language “${language}” could not be found`);
+    }
+    ctx.body = { language, messages: {} };
+    return;
   }
 
   const base: AppMessagesInterface = app.AppMessages.find(
@@ -119,7 +123,7 @@ export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: [],
+    attributes: ['definition'],
     include: [{ model: AppMessages, required: false }],
   });
 
@@ -127,5 +131,10 @@ export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = app.AppMessages.map((message) => message.language).sort();
+  ctx.body = [
+    ...new Set([
+      ...app.AppMessages.map((message) => message.language),
+      app.definition.defaultLanguage || 'en-us',
+    ]),
+  ].sort();
 }
