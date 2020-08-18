@@ -13,7 +13,7 @@ const id = Symbol('id');
 
 declare module 'axios' {
   interface AxiosRequestConfig {
-    [id]: number;
+    [id]?: number;
   }
 }
 
