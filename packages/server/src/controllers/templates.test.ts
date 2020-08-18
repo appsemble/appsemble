@@ -1,7 +1,7 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Member, Organization, Resource, User } from '../models';
+import { App, AppMessages, Member, Organization, Resource, User } from '../models';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -51,6 +51,11 @@ beforeEach(async () => {
   });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
+  await AppMessages.create({
+    AppId: t2.id,
+    language: 'nl-nl',
+    messages: { test: 'Dit is een testbericht' },
+  });
 
   templates = [t1, t2];
 });
@@ -141,6 +146,29 @@ describe('createTemplateApp', () => {
     const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } });
 
     expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
+  });
+
+  it('should copy app message when cloning an app', async () => {
+    const [, template] = templates;
+    const response = await request.post<App>(
+      '/api/templates',
+      {
+        templateId: template.id,
+        name: 'Test app',
+        description: 'This is a test app',
+        organizationId: 'testorganization',
+        resources: true,
+      },
+      { headers: { authorization } },
+    );
+
+    const { id } = response.data;
+    const { data: messages } = await request.get<AppMessages>(`/api/apps/${id}/messages/nl-nl`);
+
+    expect(messages).toStrictEqual({
+      language: 'nl-nl',
+      messages: { test: 'Dit is een testbericht' },
+    });
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {

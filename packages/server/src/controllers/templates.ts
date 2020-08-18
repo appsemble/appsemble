@@ -5,7 +5,7 @@ import Boom from '@hapi/boom';
 import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
-import { App, Resource } from '../models';
+import { App, AppMessages, Resource } from '../models';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/getAppFromRecord';
@@ -37,7 +37,10 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
 
   const template = await App.findOne({
     where: { id: templateId },
-    include: [{ model: Resource, where: { clonable: true }, required: false }],
+    include: [
+      { model: Resource, where: { clonable: true }, required: false },
+      { model: AppMessages, required: false },
+    ],
   });
 
   await checkRole(ctx, organizationId, Permission.CreateApps);
@@ -66,6 +69,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
       ...(resources && {
         Resources: [].concat(template.Resources.map(({ data, type }) => ({ type, data }))),
       }),
+      AppMessages: [].concat(template.AppMessages),
     };
 
     for (let i = 1; i < 11; i += 1) {
@@ -82,7 +86,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
       result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
     }
 
-    const record = await App.create(result, { include: [Resource] });
+    const record = await App.create(result, { include: [Resource, AppMessages] });
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
