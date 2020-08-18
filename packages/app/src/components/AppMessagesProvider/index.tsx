@@ -47,7 +47,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || 'en';
+    const defaultLanguage = definition.defaultLanguage || 'en-us';
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       const detected = detectLocale(languages, navigator.languages) || defaultLanguage;
       if (/^[A-Z]/.exec(lang) || definition.pages.find((page) => lang === normalize(page.name))) {
