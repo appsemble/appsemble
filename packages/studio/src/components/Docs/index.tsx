@@ -38,7 +38,7 @@ export function Docs(): ReactElement {
   const collapsed = useToggle();
 
   return (
-    <div className="is-flex">
+    <div className={`${styles.container} is-flex`}>
       <SideMenu isCollapsed={collapsed.enabled} toggleCollapse={collapsed.toggle}>
         {docs
           .filter(({ path }) => path.endsWith('/'))
