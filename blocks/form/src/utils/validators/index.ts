@@ -32,6 +32,7 @@ export const validators: { [name: string]: Validator } = {
   number: validateNumber,
   integer: validateNumber,
   boolean: () => {},
+  radio: () => {},
   enum: () => {},
 };
 
