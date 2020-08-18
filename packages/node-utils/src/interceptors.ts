@@ -1,11 +1,21 @@
 import os from 'os';
-import { Stream } from 'stream';
-import { URLSearchParams } from 'url';
 
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { highlight } from 'cli-highlight';
 import FormData from 'form-data';
 
 import { logger } from './logger';
+
+/**
+ * This is used to set a request id, so the request and response can be matched in the logs.
+ */
+const id = Symbol('id');
+
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    [id]: number;
+  }
+}
 
 /**
  * An {@link axios} request interceptor to add support for {@link form-data}.
@@ -27,16 +37,14 @@ export function formData(config: AxiosRequestConfig): AxiosRequestConfig {
  * @returns The original config.
  */
 export function requestLogger(config: AxiosRequestConfig): AxiosRequestConfig {
-  logger.info(`Start ${config.method.toUpperCase()} ${axios.getUri(config)}`);
-  if (config.data) {
-    if (config.data instanceof URLSearchParams) {
-      logger.silly(`Request body: ${config.data}`);
-    } else if (config.data instanceof Stream) {
-      logger.silly('Request body: Stream');
-    } else {
-      logger.silly(`Request body: ${JSON.stringify(config.data)}`);
-    }
-  }
+  const time = new Date().getTime();
+  logger.verbose(
+    `> ${time} ${highlight(`${config.method.toUpperCase()} ${axios.getUri(config)} HTTP/1.1`, {
+      language: 'http',
+    })}`,
+  );
+  // eslint-disable-next-line no-param-reassign
+  config[id] = time;
   return config;
 }
 
@@ -47,12 +55,11 @@ export function requestLogger(config: AxiosRequestConfig): AxiosRequestConfig {
  * @returns The original response.
  */
 export function responseLogger(response: AxiosResponse): AxiosResponse {
-  logger.info(`Success ${response.config.method.toUpperCase()} ${axios.getUri(response.config)}`);
-  if (response.data instanceof Stream) {
-    logger.silly('Response body: Stream');
-  } else {
-    logger.silly(`Response body: ${JSON.stringify(response.data)}`);
-  }
+  logger.verbose(
+    `< ${response.config[id]} ${highlight(`HTTP/1.1 ${response.status} ${response.statusText}`, {
+      language: 'http',
+    })}`,
+  );
   return response;
 }
 

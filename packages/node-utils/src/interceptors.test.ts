@@ -1,16 +1,29 @@
 import os from 'os';
-import { Readable } from 'stream';
-import { URLSearchParams } from 'url';
 
 import { logger } from '@appsemble/node-utils';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { highlight } from 'cli-highlight';
 import FormData from 'form-data';
 
 import { configureAxios, formData, requestLogger, responseLogger } from './interceptors';
 
+function h(content: string): string {
+  return highlight(content, { language: 'http' });
+}
+
 let instance: AxiosInstance;
 let mock: MockAdapter;
+let clock: InstalledClock;
+
+beforeEach(() => {
+  clock = install();
+});
+
+afterEach(() => {
+  clock.uninstall();
+});
 
 describe('formData', () => {
   beforeAll(() => {
@@ -53,36 +66,9 @@ describe('requestLogger', () => {
   });
 
   it('should log requests', async () => {
-    jest.spyOn(logger, 'info');
-    jest.spyOn(logger, 'silly');
+    jest.spyOn(logger, 'verbose');
     await instance.get('/');
-    expect(logger.info).toHaveBeenCalledWith('Start GET /');
-    expect(logger.silly).not.toHaveBeenCalled();
-  });
-
-  it('should log request bodies', async () => {
-    jest.spyOn(logger, 'info');
-    jest.spyOn(logger, 'silly');
-    await instance.post('/', {});
-    expect(logger.info).toHaveBeenCalledWith('Start POST /');
-    expect(logger.silly).toHaveBeenCalledWith('Request body: {}');
-  });
-
-  it('should url search params', async () => {
-    jest.spyOn(logger, 'info');
-    jest.spyOn(logger, 'silly');
-    await instance.post('/', new URLSearchParams({ foo: 'bar' }));
-    expect(logger.info).toHaveBeenCalledWith('Start POST /');
-    expect(logger.silly).toHaveBeenCalledWith('Request body: foo=bar');
-  });
-
-  it('should log streams', async () => {
-    jest.spyOn(logger, 'info');
-    jest.spyOn(logger, 'silly');
-    const stream = new Readable();
-    await instance.post('/', stream);
-    expect(logger.info).toHaveBeenCalledWith('Start POST /');
-    expect(logger.silly).toHaveBeenCalledWith('Request body: Stream');
+    expect(logger.verbose).toHaveBeenCalledWith(`> 0 ${h('GET / HTTP/1.1')}`);
   });
 });
 
@@ -91,15 +77,13 @@ describe('responseLogger', () => {
     instance = axios.create();
     instance.interceptors.response.use(responseLogger);
     mock = new MockAdapter(instance);
+    mock.onAny().reply(200);
   });
 
   it('should log responses', async () => {
-    jest.spyOn(logger, 'info');
-    jest.spyOn(logger, 'silly');
-    mock.onGet('/').reply(200, {});
+    jest.spyOn(logger, 'verbose');
     await instance.get('/');
-    expect(logger.info).toHaveBeenCalledWith('Success GET /');
-    expect(logger.silly).toHaveBeenCalledWith('Response body: {}');
+    expect(logger.verbose).toHaveBeenCalledWith(expect.any(String));
   });
 });
 
@@ -119,6 +103,7 @@ describe('configureAxios', () => {
   });
 
   it('should apply all interceptors', () => {
+    configureAxios('TestClient', '1.2.3');
     expect(axios.interceptors.request.use).toHaveBeenCalledWith(formData);
     expect(axios.interceptors.request.use).toHaveBeenCalledWith(requestLogger);
     expect(axios.interceptors.response.use).toHaveBeenCalledWith(responseLogger);
