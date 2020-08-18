@@ -1,8 +1,9 @@
 import { useToggle } from '@appsemble/react-components/src';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import React, { FunctionComponent, ReactElement } from 'react';
-import { NavLink, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
+import { NavLink } from '../NavLink';
 import { SideMenu } from '../SideMenu';
 import { SideNavLink } from '../SideNavLink';
 import styles from './index.css';
@@ -37,7 +38,7 @@ export function Docs(): ReactElement {
   const collapsed = useToggle();
 
   return (
-    <div className="is-flex">
+    <div className={`${styles.container} is-flex`}>
       <SideMenu isCollapsed={collapsed.enabled} toggleCollapse={collapsed.toggle}>
         {docs
           .filter(({ path }) => path.endsWith('/'))

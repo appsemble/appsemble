@@ -1,3 +1,7 @@
+.container {
+  height: 100%;
+}
+
 .doc {
   & :global(.is-pulled-right) + * {
     display: none;
