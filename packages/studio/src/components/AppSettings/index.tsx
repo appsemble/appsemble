@@ -3,17 +3,20 @@ import {
   Checkbox,
   Content,
   FileUpload,
-  Form,
   FormButtons,
-  Input,
   Message,
+  SimpleForm,
+  SimpleFormError,
+  SimpleInput,
+  SimpleSubmit,
   useConfirmation,
   useMessages,
   useObjectURL,
 } from '@appsemble/react-components';
+import type { App } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ChangeEvent, ReactElement, ReactText, useCallback, useState } from 'react';
+import React, { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -22,53 +25,43 @@ import { useApp } from '../AppContext';
 import styles from './index.css';
 import { messages } from './messages';
 
+/**
+ * Render the app settings view.
+ */
 export function AppSettings(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const [icon, setIcon] = useState<File>();
-  const [inputs, setInputs] = useState(app);
+  const [newPath, setNewPath] = useState(app.path);
 
   const push = useMessages();
   const iconUrl = useObjectURL(icon || app.iconUrl);
   const history = useHistory();
 
-  const onSubmit = async (): Promise<void> => {
+  // This is needed, because the app domain may be null.
+  const defaultValues = useMemo(() => ({ ...app, domain: app.domain ?? '' }), [app]);
+
+  const onSubmit = async (values: App): Promise<void> => {
     const data = new FormData();
-
-    if (app.domain !== inputs.domain) {
-      data.set('domain', inputs.domain);
-    }
-
-    if (app.path !== inputs.path) {
-      data.set('path', inputs.path);
-    }
-
-    if (app.private !== inputs.private) {
-      data.set('private', String(inputs.private));
-    }
-
+    data.set('domain', values.domain);
+    data.set('path', values.path);
+    data.set('private', String(values.private));
     if (icon) {
       data.set('icon', icon);
     }
 
-    try {
-      await axios.patch(`/api/apps/${app.id}`, data);
-      push({ color: 'success', body: formatMessage(messages.updateSuccess) });
-    } catch {
-      push({ color: 'danger', body: formatMessage(messages.updateError) });
-    }
+    await axios.patch(`/api/apps/${app.id}`, data);
+    push({ color: 'success', body: formatMessage(messages.updateSuccess) });
   };
-
-  const onChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
-      event.persist();
-      setInputs((val) => ({ ...val, [event.currentTarget.name]: value }));
-    },
-    [],
-  );
 
   const onIconChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setIcon(e.currentTarget.files[0]);
+  }, []);
+
+  const processPath = useCallback((value: string) => {
+    const p = normalize(value);
+    setNewPath(p);
+    return p;
   }, []);
 
   const onDelete = useConfirmation({
@@ -97,7 +90,7 @@ export function AppSettings(): ReactElement {
   return (
     <>
       <Content>
-        <Form onSubmit={onSubmit}>
+        <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
           <FileUpload
             accept="image/jpeg, image/png, image/tiff, image/webp"
             fileButtonLabel={<FormattedMessage {...messages.icon} />}
@@ -112,37 +105,36 @@ export function AppSettings(): ReactElement {
               </figure>
             }
           />
+          <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
           <div className="mb-3">
-            <Checkbox
+            <SimpleInput
               className="is-marginless"
+              component={Checkbox}
               help={<FormattedMessage {...messages.private} />}
               label={<FormattedMessage {...messages.privateLabel} />}
               name="private"
-              onChange={onChange}
-              value={inputs.private}
               wrapperClassName="mb-0"
             />
             <p className="help">
               <FormattedMessage {...messages.privateDescription} />
             </p>
           </div>
-          <Input
+          <SimpleInput
             help={
               <>
                 <FormattedMessage {...messages.pathDescription} />
                 <br />
-                {getAppUrl(app.OrganizationId, inputs.path)}
+                {getAppUrl(app.OrganizationId, newPath)}
               </>
             }
             label={<FormattedMessage {...messages.path} />}
             maxLength={30}
             name="path"
-            onChange={onChange}
             placeholder={normalize(app.definition.name)}
+            preprocess={processPath}
             required
-            value={inputs.path}
           />
-          <Input
+          <SimpleInput
             help={
               <FormattedMessage
                 {...messages.domainDescription}
@@ -157,16 +149,14 @@ export function AppSettings(): ReactElement {
             }
             label={<FormattedMessage {...messages.domain} />}
             name="domain"
-            onChange={onChange}
             type="url"
-            value={inputs.domain}
           />
           <FormButtons>
-            <Button color="primary" type="submit">
+            <SimpleSubmit color="primary" type="submit">
               <FormattedMessage {...messages.saveChanges} />
-            </Button>
+            </SimpleSubmit>
           </FormButtons>
-        </Form>
+        </SimpleForm>
       </Content>
       <hr />
       <Content>
