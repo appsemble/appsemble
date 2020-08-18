@@ -1,37 +1,14 @@
 import type { Parameters } from '@appsemble/sdk';
 
-import type { RequiredRequirement } from '../../block';
+import { validators } from './validators';
 
 export function generateDefaultValidity(
   parameters: Parameters,
-  data: unknown,
+  data: any,
 ): { [field: string]: boolean } {
-  return parameters.fields.reduce<{ [field: string]: boolean }>(
-    (acc, { defaultValue, name, readOnly, type, ...field }) => {
-      const required = Boolean(
-        'requirements' in field &&
-          field.requirements.find((req) => (req as RequiredRequirement).required),
-      );
-
-      let valid = !required;
-      if (required) {
-        valid = defaultValue !== undefined;
-      }
-      if (readOnly) {
-        if (required) {
-          valid = Boolean((data as { [key: string]: unknown })[name]);
-        } else {
-          valid = true;
-        }
-      }
-
-      if (type === 'boolean') {
-        valid = true;
-      }
-
-      acc[name] = valid;
-      return acc;
-    },
-    {},
-  );
+  return parameters.fields.reduce<{ [field: string]: boolean }>((acc, field) => {
+    const valid = validators[field.type](field, data[field.name]);
+    acc[field.name] = valid === undefined;
+    return acc;
+  }, {});
 }

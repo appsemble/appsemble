@@ -1,4 +1,3 @@
-import type { Remapper } from '@appsemble/sdk';
 import type { BaseRequirement, Field, FileField } from 'blocks/form/block';
 
 import { validateNumber } from './validateNumber';
@@ -33,12 +32,12 @@ export const validators: { [name: string]: Validator } = {
   number: validateNumber,
   integer: validateNumber,
   boolean: () => {},
+  radio: () => {},
   enum: () => {},
 };
 
 type Validator = (
   field: Field,
   value: unknown,
-  remap: (remapper: Remapper, data: unknown) => unknown,
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 ) => BaseRequirement | void;

@@ -50,12 +50,12 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       const field = fields.find((f) => f.name === name);
 
       if (Object.hasOwnProperty.call(validators, field.type)) {
-        return validators[field.type](field, value, remap) as BaseRequirement;
+        return validators[field.type](field, value) as BaseRequirement;
       }
 
       return null;
     },
-    [parameters, remap],
+    [parameters],
   );
 
   const validateForm = useCallback(
@@ -86,7 +86,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       const newValidity = Object.fromEntries(
         parameters.fields.map((field) => [
           field.name,
-          !validators[field.type](field, newValues[field.name], remap),
+          !validators[field.type](field, newValues[field.name]),
         ]),
       );
       setValues(newValues);
