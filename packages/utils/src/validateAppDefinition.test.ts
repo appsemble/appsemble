@@ -499,11 +499,13 @@ describe('validateReferences', () => {
 
 describe('validateLanguage', () => {
   const valid = ['en', 'en-US', 'en-us', 'en-Gb', 'zh-hans', 'az-Latn', 'en-US-x-twain'];
+
   it.each(valid)('should pass on %p', (lang) => {
     expect(() => validateLanguage(lang)).not.toThrow();
   });
 
   const invalid = ['blaaaaaaaaaaaaaaaa', 'dutch', 'jp'];
+
   it.each(invalid)('should throw on %p', (lang) => {
     expect(() => validateLanguage(lang)).toThrow(
       new AppsembleValidationError(`Language code “${lang}” is invalid.`),

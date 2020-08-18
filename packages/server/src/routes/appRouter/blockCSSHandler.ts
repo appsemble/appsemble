@@ -8,7 +8,7 @@ interface Params {
   name: string;
 }
 
-export default async function blockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
+export async function blockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { name },
   } = ctx;

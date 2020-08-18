@@ -1,5 +1,5 @@
 import { App, Organization } from '../models';
-import bulkDNSRestore from './bulkDNSRestore';
+import { bulkDNSRestore } from './bulkDNSRestore';
 import type { DNSImplementation } from './dns';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
@@ -23,7 +23,7 @@ afterAll(closeTestSchema);
 
 it('should add DNS settings for all apps', async () => {
   await Promise.all(
-    Array.from(Array(7), async (_, index) => {
+    Array.from({ length: 7 }, async (_, index) => {
       await App.create({
         domain: `app${index}.example.com`,
         path: `path${index}`,
@@ -62,7 +62,7 @@ it('should add DNS settings for all apps', async () => {
 
 it('should skip the last bulk of apps if it is empty', async () => {
   await Promise.all(
-    Array.from(Array(4), async (_, index) => {
+    Array.from({ length: 4 }, async (_, index) => {
       await App.create({
         domain: `app${index}.example.com`,
         path: `path${index}`,

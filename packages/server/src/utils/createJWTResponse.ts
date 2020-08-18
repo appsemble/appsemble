@@ -4,9 +4,25 @@ import { sign } from 'jsonwebtoken';
 import type { Argv } from '../types';
 
 interface Options {
+  /**
+   * The audience for which the token is intended, such as an OAuth2 client id. This defaults to the
+   * host variable.
+   */
   aud?: string;
+
+  /**
+   * In how much time the token will expire, in seconds.
+   */
   expires?: number;
+
+  /**
+   * If explicitly set to `false`, not refresh token will be generated.
+   */
   refreshToken?: boolean;
+
+  /**
+   * The scope to set on the access token and refresh token.
+   */
   scope?: string;
 }
 
@@ -15,18 +31,13 @@ interface Options {
  *
  * @see https://www.iana.org/assignments/jwt/jwt.xhtml
  *
- * @param sub The id of the user that is authenticated using the token.
- * @param argv CLI arguments passed to the server.
- * @param argv.host The URL on which Appsemble is hosted. This is used for both the JWT audience and
- *   the JWT issuer.
- * @param argv.secret The secret that is used to sign the token.
- * @param options
- * @param options.aud The audience for which the token is intended, such as an OAuth2 client id.
- *   This defaults to the host variable.
- * @param options.expires In how much time the token will expire, in seconds.
- * @param options.refreshToken If explicitly set to `false`, not refresh token will be generated.
+ * @param sub - The id of the user that is authenticated using the token.
+ * @param argv - CLI arguments passed to the server.
+ * @param options - The options for creating the JWS response.
+ *
+ * @returns A JWT based OAuth2 response body.
  */
-export default function createJWTResponse(
+export function createJWTResponse(
   sub: string,
   { host, secret }: Argv,
   { aud = host, expires = 3600, refreshToken = true, scope }: Options = {},

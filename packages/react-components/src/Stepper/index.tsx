@@ -1,4 +1,3 @@
-import { Button, Form, FormButtons } from '@appsemble/react-components';
 import React, {
   Children,
   createContext,
@@ -10,7 +9,8 @@ import React, {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import { Button, Form, FormButtons } from '..';
+import { messages } from './messages';
 
 const Context = createContext<StepperProps>(null);
 
@@ -20,7 +20,7 @@ interface StepperProps {
   onCancel: () => void;
 }
 
-export default function Stepper({ children, onCancel, onFinish }: StepperProps): ReactElement {
+export function Stepper({ children, onCancel, onFinish }: StepperProps): ReactElement {
   const [step, setStep] = useState(0);
   const childArray = Children.toArray(children);
 

@@ -1,24 +1,22 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Sequelize } from 'sequelize';
 
-import type { Migration } from '../utils/migrate';
+export const key = '0.12.6';
 
-export default {
-  key: '0.12.6',
+/**
+ * Summary:
+ * - Add an icon column for block versions
+ *
+ * @param db - The sequelize Database.
+ */
+export async function up(db: Sequelize): Promise<void> {
+  const queryInterface = db.getQueryInterface();
+  await queryInterface.addColumn('BlockVersion', 'icon', {
+    type: DataTypes.BLOB,
+    allowNull: true,
+  });
+}
 
-  /**
-   * Summary:
-   * - Add an icon column for block versions
-   */
-  async up(db) {
-    const queryInterface = db.getQueryInterface();
-    await queryInterface.addColumn('BlockVersion', 'icon', {
-      type: DataTypes.BLOB,
-      allowNull: true,
-    });
-  },
-
-  async down(db) {
-    const queryInterface = db.getQueryInterface();
-    await queryInterface.removeColumn('BlockVersion', 'icon');
-  },
-} as Migration;
+export async function down(db: Sequelize): Promise<void> {
+  const queryInterface = db.getQueryInterface();
+  await queryInterface.removeColumn('BlockVersion', 'icon');
+}

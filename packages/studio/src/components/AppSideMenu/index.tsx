@@ -4,19 +4,19 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import checkRole from '../../utils/checkRole';
+import { checkRole } from '../../utils/checkRole';
 import { useApp } from '../AppContext';
-import NavLink from '../NavLink';
-import SideMenu from '../SideMenu';
-import SideNavLink from '../SideNavLink';
+import { NavLink } from '../NavLink';
+import { SideMenu } from '../SideMenu';
+import { SideNavLink } from '../SideNavLink';
 import { useUser } from '../UserProvider';
-import messages from './messages';
+import { messages } from './messages';
 
 export interface AppSideMenuState {
   isCollapsed: boolean;
 }
 
-export default function AppSideMenu(): ReactElement {
+export function AppSideMenu(): ReactElement {
   const { app } = useApp();
 
   const collapsed = useToggle();

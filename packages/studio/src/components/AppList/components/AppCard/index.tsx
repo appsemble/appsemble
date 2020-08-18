@@ -4,15 +4,15 @@ import React, { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import StarRating from '../../../StarRating';
+import { StarRating } from '../../../StarRating';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface AppCardProps {
   app: App;
 }
 
-export default function AppCard({ app }: AppCardProps): ReactElement {
+export function AppCard({ app }: AppCardProps): ReactElement {
   const { formatMessage } = useIntl();
   const { url } = useRouteMatch();
 
@@ -28,10 +28,7 @@ export default function AppCard({ app }: AppCardProps): ReactElement {
         <Subtitle className="mb-0" level={6}>
           @{app.OrganizationId}
         </Subtitle>
-        <StarRating
-          className={`pt-4 ${styles.rating}`}
-          value={(app.rating && app.rating.average) || 0}
-        />
+        <StarRating className={`pt-4 ${styles.rating}`} value={app.rating?.average || 0} />
       </div>
     </Link>
   );

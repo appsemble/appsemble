@@ -2,15 +2,15 @@ import '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Actions {
-    testAction: {};
+    testAction: never;
   }
 
   interface EventEmitters {
-    testEmit: {};
+    testEmit: never;
   }
 
   interface EventListeners {
-    testListener: {};
+    testListener: never;
   }
 
   interface Parameters {

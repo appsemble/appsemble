@@ -24,7 +24,7 @@ afterEach(() => {
 });
 
 describe('bootstrap', () => {
-  it('should dispatch the AppsembleBoostrap event', async () => {
+  it('should dispatch the AppsembleBoostrap event', () => {
     function fn(): void {}
     bootstrap(fn);
     expect(document.currentScript.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));
@@ -36,33 +36,33 @@ describe('bootstrap', () => {
 describe('attach', () => {
   it('should attach the returned value', async () => {
     const shadowRoot = {
-      appendChild: jest.fn(),
+      append: jest.fn(),
     };
     const element = document.createElement('div');
-    const fn = jest.fn(() => element);
+    const fn = jest.fn().mockReturnValue(element);
     attach(fn);
     await event.detail.fn({ shadowRoot });
-    expect(shadowRoot.appendChild).toHaveBeenCalledWith(element);
+    expect(shadowRoot.append).toHaveBeenCalledWith(element);
   });
 
   it('should attach an asynchronously returned value', async () => {
     const shadowRoot = {
-      appendChild: jest.fn(),
+      append: jest.fn(),
     };
     const element = document.createElement('div');
-    const fn = jest.fn(async () => element);
+    const fn = jest.fn().mockResolvedValue(element);
     attach(fn);
     await event.detail.fn({ shadowRoot });
-    expect(shadowRoot.appendChild).toHaveBeenCalledWith(element);
+    expect(shadowRoot.append).toHaveBeenCalledWith(element);
   });
 
   it('should not attach a returned value if it’s not a DOM node', async () => {
     const shadowRoot = {
-      appendChild: jest.fn(),
+      append: jest.fn(),
     };
-    const fn = jest.fn(() => {});
+    const fn = jest.fn();
     attach(fn);
     await event.detail.fn({ shadowRoot });
-    expect(shadowRoot.appendChild).not.toHaveBeenCalled();
+    expect(shadowRoot.append).not.toHaveBeenCalled();
   });
 });

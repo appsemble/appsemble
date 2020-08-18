@@ -10,9 +10,9 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useUser } from '../UserProvider';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function EmailLogin(): ReactElement {
+export function EmailLogin(): ReactElement {
   const { passwordLogin } = useUser();
 
   return (

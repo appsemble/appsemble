@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
-import Button from '../Button';
+import { Button } from '..';
 import styles from './index.css';
 
-export default function CardFooterButton({
+export function CardFooterButton({
   className,
   color = 'white',
   ...props

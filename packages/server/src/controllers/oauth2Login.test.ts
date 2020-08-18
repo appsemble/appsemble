@@ -5,9 +5,9 @@ import { sign } from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, User } from '../models';
 import type { Argv } from '../types';
-import createServer from '../utils/createServer';
+import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import testToken from '../utils/test/testToken';
+import { testToken } from '../utils/test/testToken';
 
 let argv: Argv;
 const mock = new MockAdapter(axios);
@@ -25,6 +25,7 @@ afterEach(() => {
 });
 
 afterEach(truncate);
+
 afterAll(closeTestSchema);
 
 describe('registerOAuth2Connection', () => {

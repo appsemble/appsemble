@@ -1,4 +1,4 @@
-import Permission from './Permission';
+import { Permission } from './Permission';
 
 const Member = [Permission.ViewApps];
 const AppEditor = [

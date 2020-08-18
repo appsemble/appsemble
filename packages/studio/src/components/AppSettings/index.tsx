@@ -17,12 +17,12 @@ import React, { ChangeEvent, ReactElement, ReactText, useCallback, useState } fr
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
-import getAppUrl from '../../utils/getAppUrl';
+import { getAppUrl } from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function AppSettings(): ReactElement {
+export function AppSettings(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const [icon, setIcon] = useState<File>();
@@ -54,7 +54,7 @@ export default function AppSettings(): ReactElement {
     try {
       await axios.patch(`/api/apps/${app.id}`, data);
       push({ color: 'success', body: formatMessage(messages.updateSuccess) });
-    } catch (ex) {
+    } catch {
       push({ color: 'danger', body: formatMessage(messages.updateError) });
     }
   };
@@ -88,7 +88,7 @@ export default function AppSettings(): ReactElement {
           color: 'info',
         });
         history.push('/apps');
-      } catch (e) {
+      } catch {
         push(formatMessage(messages.errorDelete));
       }
     },

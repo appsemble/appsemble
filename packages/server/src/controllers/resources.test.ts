@@ -3,10 +3,10 @@ import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
 
 import { App, AppMember, AppSubscription, Member, Organization, Resource, User } from '../models';
-import createServer from '../utils/createServer';
-import createWaitableMock, { EnhancedMock } from '../utils/test/createWaitableMock';
+import { createServer } from '../utils/createServer';
+import { createWaitableMock, EnhancedMock } from '../utils/test/createWaitableMock';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import testToken from '../utils/test/testToken';
+import { testToken } from '../utils/test/testToken';
 
 let authorization: string;
 let organizationId: string;
@@ -128,7 +128,7 @@ afterEach(() => {
   clock.uninstall();
 });
 
-afterAll(async () => {
+afterAll(() => {
   webpush.sendNotification = originalSendNotification;
 });
 

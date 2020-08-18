@@ -5,9 +5,9 @@ import { FormattedMessage } from 'react-intl';
 
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function VerifyEmail(): ReactElement {
+export function VerifyEmail(): ReactElement {
   const [submitting, setSubmitting] = useState(true);
   const [success, setSuccess] = useState(false);
   const qs = useQuery();
@@ -20,7 +20,7 @@ export default function VerifyEmail(): ReactElement {
         await axios.post('/api/email/verify', { token });
         setSuccess(true);
         await refreshUserInfo();
-      } catch (error) {
+      } catch {
         setSuccess(false);
       } finally {
         setSubmitting(false);

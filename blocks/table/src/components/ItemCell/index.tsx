@@ -9,13 +9,7 @@ type ItemCellProps = {
   onClick: (item: any) => void;
 } & h.JSX.HTMLAttributes<HTMLTableCellElement>;
 
-export default function ItemCell({
-  children,
-  className,
-  field,
-  item,
-  onClick,
-}: ItemCellProps): VNode {
+export function ItemCell({ children, className, field, item, onClick }: ItemCellProps): VNode {
   const onCellClick = useCallback(
     (event: Event) => {
       if (field.onClick === undefined) {

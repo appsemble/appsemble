@@ -3,9 +3,9 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
-import JSONSchemaLabel from '../JSONSchemaLabel';
+import { JSONSchemaLabel } from '../JSONSchemaLabel';
 
-export default function JSONSchemaStringEditor({
+export function JSONSchemaStringEditor({
   disabled,
   name,
   onChange,

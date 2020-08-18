@@ -1,11 +1,12 @@
+import { URL } from 'url';
+
 import type { EmailActionDefinition } from '@appsemble/types';
 import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
-import { URL } from 'url';
 
 import { App, Organization } from '../models';
-import createServer from '../utils/createServer';
-import readPackageJson from '../utils/readPackageJson';
+import { createServer } from '../utils/createServer';
+import { readPackageJson } from '../utils/readPackageJson';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 const { version } = readPackageJson();
@@ -68,7 +69,7 @@ describe('handleRequestProxy', () => {
   let proxiedRequest: AxiosTestInstance;
 
   beforeEach(async () => {
-    proxiedApp = new Koa().use(async (ctx) => {
+    proxiedApp = new Koa().use((ctx) => {
       ctx.body = { message: 'I’m a teapot' };
       ctx.status = 418;
       proxiedContext = ctx;

@@ -1,4 +1,4 @@
-import sentryDsnToReportUri from './sentryDsnToReportUri';
+import { sentryDsnToReportUri } from './sentryDsnToReportUri';
 
 describe('sentryDsnToReportUri', () => {
   it('should be able to convert hosted sentry DSNs', () => {

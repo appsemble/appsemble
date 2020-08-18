@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   profile: 'Public profile',
   title: 'Settings · Profile',
   loadEmailError: 'There was a problem loading your registered email addresses.',

@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   joining: 'Joining {organization}',
   invitePrompt: 'Would you like to join this organization?',
   accept: 'Accept',

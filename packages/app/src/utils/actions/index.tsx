@@ -2,18 +2,18 @@ import type { Action } from '@appsemble/sdk';
 import type { ActionDefinition } from '@appsemble/types';
 
 import type { MakeActionParameters } from '../../types';
-import dialog from './dialog';
-import email from './email';
-import event from './event';
-import flow from './flow';
-import link from './link';
-import log from './log';
-import message from './message';
-import noop from './noop';
-import request from './request';
-import resource from './resource';
-import staticAction from './static';
-import throwAction from './throwAction';
+import { dialog } from './dialog';
+import { email } from './email';
+import { event } from './event';
+import * as flow from './flow';
+import { link } from './link';
+import { log } from './log';
+import { message } from './message';
+import { noop } from './noop';
+import { request } from './request';
+import * as resource from './resource';
+import { staticAction } from './static';
+import { throwAction } from './throwAction';
 
 // XXX fix type, this requires a generic mapping key to type.
 export type ActionCreator = (args: MakeActionParameters<ActionDefinition>) => Action;
@@ -22,7 +22,7 @@ export type ActionCreators = {
   [K in Action['type']]?: ActionCreator;
 };
 
-export default {
+export const actionCreators = {
   link,
   log,
   message,

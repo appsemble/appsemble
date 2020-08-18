@@ -16,7 +16,7 @@ import {
 import { App, Member, OrganizationBlockStyle, OrganizationInvite, User } from '.';
 
 @Table({ tableName: 'Organization', paranoid: true })
-export default class Organization extends Model<Organization> {
+export class Organization extends Model<Organization> {
   @PrimaryKey
   @Column
   id: string;

@@ -12,8 +12,8 @@ import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import RatingField from '../RatingField';
-import messages from './messages';
+import { RatingField } from '../RatingField';
+import { messages } from './messages';
 
 interface RateAppProps {
   app: App;
@@ -21,7 +21,7 @@ interface RateAppProps {
   onRate: (rate: Rating) => void;
 }
 
-export default function RateApp({ app, onRate }: RateAppProps): ReactElement {
+export function RateApp({ app, onRate }: RateAppProps): ReactElement {
   const modal = useToggle();
   const { formatMessage } = useIntl();
 
@@ -56,7 +56,7 @@ export default function RateApp({ app, onRate }: RateAppProps): ReactElement {
         title={<FormattedMessage {...messages.rateApp} />}
       >
         <SimpleInput
-          // @ts-expect-error
+          // @ts-expect-error XXX This shouldn’t be needed.
           component={RatingField}
           label={<FormattedMessage {...messages.rating} />}
           name="rating"

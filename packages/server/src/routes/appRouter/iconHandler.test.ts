@@ -1,14 +1,15 @@
-import { request, setTestApp } from 'axios-test-instance';
-import fs from 'fs';
-import Koa from 'koa';
+import { promises as fs } from 'fs';
 import path from 'path';
 
+import { request, setTestApp } from 'axios-test-instance';
+import Koa from 'koa';
+
+import { appRouter } from '.';
 import type { App } from '../../models';
 import * as appUtils from '../../utils/app';
-import appRouter from '.';
 
 function readIcon(): Promise<Buffer> {
-  return fs.promises.readFile(path.join(__dirname, '__fixtures__', 'tux.png'));
+  return fs.readFile(path.join(__dirname, '__fixtures__', 'tux.png'));
 }
 
 beforeAll(async () => {

@@ -11,8 +11,10 @@ interface Params {
 
 /**
  * Serve a block asset.
+ *
+ * @param ctx - The Koa context.
  */
-export default async function blockAssetHandler(ctx: KoaContext<Params>): Promise<void> {
+export async function blockAssetHandler(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { filename, name, version },
   } = ctx;

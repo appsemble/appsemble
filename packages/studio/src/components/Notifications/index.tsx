@@ -13,10 +13,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
-import HelmetIntl from '../HelmetIntl';
-import messages from './messages';
+import { HelmetIntl } from '../HelmetIntl';
+import { messages } from './messages';
 
-export default function Notifications(): ReactElement {
+export function Notifications(): ReactElement {
   const { app } = useApp();
 
   const { formatMessage } = useIntl();
@@ -26,7 +26,7 @@ export default function Notifications(): ReactElement {
       try {
         await axios.post(`/api/apps/${app.id}/broadcast`, { title, body });
         push({ body: formatMessage(messages.submitSuccess), color: 'success' });
-      } catch (error) {
+      } catch {
         push({ body: formatMessage(messages.submitError), color: 'danger' });
       }
     },

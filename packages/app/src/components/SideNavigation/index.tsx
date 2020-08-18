@@ -4,7 +4,7 @@ import { normalize } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import SideMenu from '../SideMenu';
+import { SideMenu } from '../SideMenu';
 import styles from './index.css';
 
 interface SideNavigationProps {
@@ -14,7 +14,7 @@ interface SideNavigationProps {
 /**
  * The app navigation that is displayed in the side menu.
  */
-export default function SideNavigation({ pages }: SideNavigationProps): ReactElement {
+export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   return (
     <SideMenu>
       <nav>

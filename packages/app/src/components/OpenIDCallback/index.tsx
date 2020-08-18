@@ -8,12 +8,12 @@ import { Link, Redirect } from 'react-router-dom';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 /**
  * Handle the OAuth2 callback.
  */
-export default function OpenIDCallback(): ReactElement {
+export function OpenIDCallback(): ReactElement {
   const query = useQuery();
   const code = query.get('code');
   const errorMessage = query.get('error');

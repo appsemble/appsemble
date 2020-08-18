@@ -1,7 +1,8 @@
+import { inspect } from 'util';
+
 import { logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
 import readPkgUp from 'read-pkg-up';
-import { inspect } from 'util';
 import type { Argv } from 'yargs';
 
 import type { BaseArguments, MonoRepoPackageJson } from '../../types';
@@ -26,13 +27,13 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler({ key, value }: ConfigSetArguments): Promise<void> {
   const { packageJson, path } = await readPkgUp({ normalize: false });
-  if (!Object.prototype.hasOwnProperty.call(packageJson, 'appsembleServer')) {
+  if (!Object.hasOwnProperty.call(packageJson, 'appsembleServer')) {
     packageJson.appsembleServer = {};
   }
   let parsed;
   try {
     parsed = JSON.parse(value);
-  } catch (err) {
+  } catch {
     parsed = value;
   }
   (packageJson as MonoRepoPackageJson).appsembleServer[key] = parsed;

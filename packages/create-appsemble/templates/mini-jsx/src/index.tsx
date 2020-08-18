@@ -12,7 +12,7 @@ attach(({ events, parameters: { fields }, utils: { remap } }) => {
 
   events.on.data((data, error) => {
     while (wrapper.lastElementChild) {
-      wrapper.removeChild(wrapper.lastElementChild);
+      wrapper.lastElementChild.remove();
     }
 
     if (error) {

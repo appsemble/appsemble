@@ -1,8 +1,8 @@
 import { useEventListener } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React, {
-  KeyboardEvent as ReactKeyboardEvent,
   ReactElement,
+  KeyboardEvent as ReactKeyboardEvent,
   ReactNode,
   useCallback,
   useEffect,
@@ -19,7 +19,7 @@ interface SideMenuProps {
 /**
  * A side menu whose open state is managed by the state hook.
  */
-export default function SideMenu({ children }: SideMenuProps): ReactElement {
+export function SideMenu({ children }: SideMenuProps): ReactElement {
   const history = useHistory();
   const { disable: closeMenu, enabled: isOpen } = useMenu();
 

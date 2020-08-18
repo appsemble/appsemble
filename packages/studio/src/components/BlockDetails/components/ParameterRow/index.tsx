@@ -34,12 +34,7 @@ interface ParameterRowProps {
  * Multiple rows are returned if `recurse` is set to true and if the parameter is an object or an
  * array.
  */
-export default function ParameterRow({
-  name,
-  parent,
-  recurse,
-  value,
-}: ParameterRowProps): ReactElement {
+export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps): ReactElement {
   const { url } = useRouteMatch();
 
   if (value.type === 'array' && recurse) {
@@ -93,7 +88,7 @@ export default function ParameterRow({
     ref = (value.items as any).anyOf.map((any: OpenAPIV3.ReferenceObject) => {
       const refName = any.$ref.split('/').pop();
       return (
-        <a key={refName} href={`${url}#${refName}`}>
+        <a href={`${url}#${refName}`} key={refName}>
           {refName}
         </a>
       );
@@ -109,7 +104,7 @@ export default function ParameterRow({
             return <Fragment key={index}>{(any as any).type}</Fragment>;
           }
           return (
-            <a key={refName} href={`${url}#${refName}`}>
+            <a href={`${url}#${refName}`} key={refName}>
               {refName}
             </a>
           );

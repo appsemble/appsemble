@@ -2,7 +2,7 @@ import type { Theme } from '@appsemble/types';
 
 import type { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
-import serveIcon from '../serveIcon';
+import { serveIcon } from '../serveIcon';
 
 interface Params {
   format: string;
@@ -10,7 +10,7 @@ interface Params {
   width: string;
 }
 
-export default async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
+export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const { params } = ctx;
   const app = await getApp(ctx, {
     attributes: ['definition', 'icon'],

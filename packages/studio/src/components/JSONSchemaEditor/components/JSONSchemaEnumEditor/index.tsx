@@ -4,10 +4,10 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
-import JSONSchemaLabel from '../JSONSchemaLabel';
-import messages from './messages';
+import { JSONSchemaLabel } from '../JSONSchemaLabel';
+import { messages } from './messages';
 
-export default function JSONSchemaEnumEditor({
+export function JSONSchemaEnumEditor({
   disabled,
   name,
   onChange,

@@ -1,17 +1,14 @@
 import { RefObject, useCallback } from 'react';
 
-import useEventListener from './useEventListener';
+import { useEventListener } from '.';
 
 /**
  * Run a function when the user clicks outside of an element.
  *
- * @param ref A ref for the HTML element.
- * @param handler The function to run.
+ * @param ref - A ref for the HTML element.
+ * @param handler - The function to run.
  */
-export default function useClickOutside(
-  ref: RefObject<Element>,
-  handler: (event: Event) => void,
-): void {
+export function useClickOutside(ref: RefObject<Element>, handler: (event: Event) => void): void {
   const listener = useCallback(
     (event: Event): void => {
       // Do nothing if clicking ref's element or descendent elements

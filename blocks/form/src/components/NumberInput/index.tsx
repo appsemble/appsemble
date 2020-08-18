@@ -3,20 +3,14 @@ import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, NumberField } from '../../../block';
-import isRequired from '../../utils/isRequired';
+import { isRequired } from '../../utils/isRequired';
 
 type NumberInputProps = InputProps<number, NumberField>;
 
 /**
  * An input element for a number type schema.
  */
-export default function NumberInput({
-  disabled,
-  error,
-  field,
-  onInput,
-  value,
-}: NumberInputProps): VNode {
+export function NumberInput({ disabled, error, field, onInput, value }: NumberInputProps): VNode {
   const { utils } = useBlock();
   const { name, label, type, placeholder, readOnly, icon, requirements = [] } = field;
   const required = isRequired(field);

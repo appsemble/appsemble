@@ -1,7 +1,7 @@
 /**
  * A permission a user may have within an organization because of their given role.
  */
-enum Permission {
+export enum Permission {
   ViewApps,
   ManageRoles,
   ManageMembers,
@@ -16,5 +16,3 @@ enum Permission {
   ManageResources,
   InviteMember,
 }
-
-export default Permission;

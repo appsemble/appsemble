@@ -5,7 +5,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 interface BlockCardProps {
   /**
@@ -22,13 +22,13 @@ interface BlockCardProps {
 /**
  * Display a card that contains basic information of a block and a link to further documentation.
  */
-export default function BlockCard({ block, className }: BlockCardProps): ReactElement {
+export function BlockCard({ block, className }: BlockCardProps): ReactElement {
   const { url } = useRouteMatch();
   const { formatMessage } = useIntl();
   const [org, ...name] = block.name.split('/');
 
   return (
-    <div key={block.name} className={`card ${className}`}>
+    <div className={`card ${className}`} key={block.name}>
       <header className="card-header">
         <div className="card-header-title">
           <article className="media">

@@ -1,11 +1,10 @@
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
-import Button from '../Button';
-import type { Props } from '../types';
+import { Button, Props } from '..';
 import styles from './index.css';
 
-export default function CardFooterButton({
+export function CardFooterButton({
   className,
   color = 'white',
   ...props

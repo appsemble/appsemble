@@ -1,3 +1,5 @@
+import type { EventEmitter } from 'events';
+
 import type { ShowMessage } from '@appsemble/react-components';
 import type { Action } from '@appsemble/sdk';
 import type {
@@ -8,11 +10,10 @@ import type {
   FlowPageDefinition,
   Remapper,
 } from '@appsemble/types';
-import type { EventEmitter } from 'events';
 import type { RouteComponentProps } from 'react-router-dom';
 
 import type { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
-import actionCreators, { ActionCreator, ActionCreators } from './actions';
+import { ActionCreator, ActionCreators, actionCreators } from './actions';
 
 interface MakeActionsParams {
   actions: { [action: string]: ActionType };
@@ -142,7 +143,7 @@ function createAction({
   return action;
 }
 
-export default function makeActions({
+export function makeActions({
   actions,
   context,
   definition,

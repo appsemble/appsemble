@@ -1,23 +1,23 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
+import { studioRouter } from '.';
 import type { KoaContext } from '../../types';
-import studioRouter from '.';
 
 let app: Koa;
 let templateName: string;
-let templateData: object;
+let templateData: { [key: string]: unknown };
 
 jest.mock('crypto');
 
 beforeAll(async () => {
   app = new Koa();
   app.context.argv = { host: 'https://app.example:9999' };
-  app.use(async (ctx: KoaContext, next) => {
-    ctx.state.render = async (template, data) => {
+  app.use((ctx: KoaContext, next) => {
+    ctx.state.render = (template, data) => {
       templateName = template;
       templateData = data;
-      return '<!doctype html>';
+      return Promise.resolve('<!doctype html>');
     };
     return next();
   });

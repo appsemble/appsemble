@@ -10,8 +10,7 @@ import React, {
   useCallback,
 } from 'react';
 
-import FormComponent from '../FormComponent';
-import Icon from '../Icon';
+import { FormComponent, Icon } from '..';
 import styles from './index.css';
 
 type TextAreaProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
@@ -42,7 +41,7 @@ type TextAreaProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'child
 /**
  * A Bulma styled textarea element.
  */
-export default forwardRef<HTMLTextAreaElement, TextAreaProps>(
+export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
     {
       control,
@@ -70,19 +69,19 @@ export default forwardRef<HTMLTextAreaElement, TextAreaProps>(
     return (
       <FormComponent
         iconLeft={iconLeft}
-        iconRight={!!control}
+        iconRight={Boolean(control)}
         id={id}
         label={label}
         required={required}
       >
         <textarea
           {...props}
-          ref={ref}
           className={classNames('textarea', { 'is-danger': error })}
           id={id}
           maxLength={maxLength}
           name={name}
           onChange={handleChange}
+          ref={ref}
           required={required}
           value={value}
         />
@@ -94,7 +93,7 @@ export default forwardRef<HTMLTextAreaElement, TextAreaProps>(
           </p>
           {maxLength ? (
             <span className={`help ml-1 ${styles.counter}`}>
-              {value == null ? 0 : `${value}`.length} / {maxLength}
+              {value == null ? 0 : String(value).length} / {maxLength}
             </span>
           ) : null}
         </div>

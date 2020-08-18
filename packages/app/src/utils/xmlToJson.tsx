@@ -16,9 +16,9 @@ function parseFromString(value: string, schema: OpenAPIV3.SchemaObject): JsonVal
       return null;
     }
     case 'integer':
-      return parseInt(value, 10);
+      return Number.parseInt(value);
     case 'number':
-      return parseFloat(value);
+      return Number.parseFloat(value);
     default:
       return value;
   }
@@ -38,7 +38,7 @@ function processNode(
 ): JsonValue {
   const xmlObject = schema.xml;
   if (schema.type === 'object') {
-    const child = Array.from(parent.children).filter(matchNode(xmlObject, name))[index];
+    const child = [...parent.children].filter(matchNode(xmlObject, name))[index];
     return Object.fromEntries(
       Object.entries(schema.properties).map(([key, childSchema]) => [
         key,
@@ -47,10 +47,10 @@ function processNode(
     );
   }
   if (schema.type === 'array') {
-    const childNodes = Array.from(parent.children);
+    const childNodes = [...parent.children];
     const itemSchema = schema.items as OpenAPIV3.SchemaObject;
     const wrapper = xmlObject?.wrapped ? childNodes.find(matchNode(xmlObject, name)) : parent;
-    return Array.from(wrapper.children)
+    return [...wrapper.children]
       .filter(matchNode(itemSchema.xml, name))
       .map((_, i) => processNode(wrapper, itemSchema, name, i));
   }
@@ -62,16 +62,16 @@ function processNode(
       schema,
     );
   }
-  const node = Array.from(parent.children).filter(matchNode(xmlObject, name))[index];
+  const node = [...parent.children].filter(matchNode(xmlObject, name))[index];
   if (!node) {
     return null;
   }
   return parseFromString(node.textContent, schema);
 }
 
-export default function xmlToJson(xml: string, schema: OpenAPIV3.SchemaObject): JsonValue {
+export function xmlToJson(xml: string, schema: OpenAPIV3.SchemaObject): JsonValue {
   const doc = parser.parseFromString(xml, 'application/xml');
-  const errorNode = doc.getElementsByTagName('parsererror')[0];
+  const [errorNode] = doc.getElementsByTagName('parsererror');
   if (errorNode) {
     throw new Error(errorNode.textContent);
   }

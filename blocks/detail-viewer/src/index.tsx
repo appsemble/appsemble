@@ -3,9 +3,9 @@ import { Loader } from '@appsemble/preact-components';
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import FileRenderer from './components/FileRenderer';
-import GeoCoordinatesRenderer from './components/GeoCoordinatesRenderer';
-import StringRenderer from './components/StringRenderer';
+import { FileRenderer } from './components/FileRenderer';
+import { GeoCoordinatesRenderer } from './components/GeoCoordinatesRenderer';
+import { StringRenderer } from './components/StringRenderer';
 import styles from './index.css';
 
 const renderers = {
@@ -39,10 +39,10 @@ bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
 
         return (
           <Comp
-            key={field.name || field.label || `${field.type}.${index}`}
             data={data}
-            // @ts-expect-error
+            // @ts-expect-error XXX This should be fine
             field={field}
+            key={field.name || field.label || `${field.type}.${index}`}
             theme={theme}
           />
         );

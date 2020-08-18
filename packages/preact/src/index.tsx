@@ -1,4 +1,4 @@
-import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
+import { BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
 import IntlMessageFormat from 'intl-messageformat';
 import { ComponentType, createContext, Fragment, h, render, VNode } from 'preact';
 import { useContext } from 'preact/hooks';
@@ -16,6 +16,11 @@ const Context = createContext<BlockProps>(null);
 
 /**
  * Mount a Preact component returned by a bootstrap function in the shadow DOM of a block.
+ *
+ * @param Component - The Preact component to mount.
+ * @param messages - Translatable messages to serve (deprecated).
+ *
+ * @returns A promise which gets resolved if the component calls `ready()`.
  */
 export function mount(
   Component: ComponentType<BlockProps>,
@@ -55,8 +60,14 @@ export function bootstrap(
 
 /**
  * A HOC which passes the Appsemble block values to he wrapped Preact component.
+ *
+ * @deprecated Use `useBlock()` instead.
+ *
+ * @param Component - The Preact componen to wrap.
+ *
+ * @returns The wrapper component.
  */
-export function withBlock<P extends object>(
+export function withBlock<P extends {}>(
   Component: ComponentType<Omit<BlockProps, keyof P> & P>,
 ): ComponentType<P> {
   return (props: P) => (
@@ -75,7 +86,7 @@ export interface FormattedMessageProps {
 
 export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {
   const { messages } = useBlock();
-  if (!Object.prototype.hasOwnProperty.call(messages, id)) {
+  if (!Object.hasOwnProperty.call(messages, id)) {
     return <Fragment>Untranslated message ID: {id}</Fragment>;
   }
   const formattedMessage = messages[id].format(values);

@@ -9,7 +9,7 @@ export interface CardProps {
   children: ComponentChildren;
 }
 
-export default function AvatarWrapper({ action, children, onAvatarClick }: CardProps): VNode {
+export function AvatarWrapper({ action, children, onAvatarClick }: CardProps): VNode {
   return action.type === 'link' ? (
     <a
       className={`media-left px-0 py-0 ${styles.avatar}`}

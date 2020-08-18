@@ -3,12 +3,14 @@
  *
  * Derived from https://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
  *
- * @param file The input glob to resize
- * @param maxWidth The maximum width of the output
- * @param maxHeight The maximum height of the output
- * @param quality The resize quality.
+ * @param file - The input glob to resize
+ * @param maxWidth - The maximum width of the output
+ * @param maxHeight - The maximum height of the output
+ * @param quality - The resize quality.
+ *
+ * @returns The resized image.
  */
-export default async function resize(
+export async function resize(
   file: Blob,
   maxWidth: number,
   maxHeight: number,

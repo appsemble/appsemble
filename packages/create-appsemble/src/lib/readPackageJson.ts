@@ -8,6 +8,6 @@ import type { PackageJson } from 'type-fest';
  *
  * @returns The contents of package.json
  */
-export default function readPackageJson(): Promise<PackageJson> {
+export function readPackageJson(): Promise<PackageJson> {
   return readJson(require.resolve('../../package.json'));
 }

@@ -1,8 +1,8 @@
 import { Portal } from '@appsemble/react-components';
 import React, { ReactChild, ReactElement } from 'react';
 
-import ProfileDropdown from '../ProfileDropdown';
-import SideMenuButton from '../SideMenuButton';
+import { ProfileDropdown } from '../ProfileDropdown';
+import { SideMenuButton } from '../SideMenuButton';
 import styles from './index.css';
 
 interface TitleBarProps {
@@ -14,7 +14,7 @@ interface TitleBarProps {
  *
  * This displays the app name,
  */
-export default function TitleBar({ children }: TitleBarProps): ReactElement {
+export function TitleBar({ children }: TitleBarProps): ReactElement {
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className={`is-flex ${styles.container}`}>

@@ -8,7 +8,7 @@ type ButtonWrapperProps = Omit<
   action: Action;
 };
 
-export default function ButtonWrapper({ action, children, ...props }: ButtonWrapperProps): VNode {
+export function ButtonWrapper({ action, children, ...props }: ButtonWrapperProps): VNode {
   return action.type === 'link' ? (
     <a href={(action as LinkAction).href()} {...(props as h.JSX.HTMLAttributes<HTMLAnchorElement>)}>
       {children}

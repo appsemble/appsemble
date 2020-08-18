@@ -1,7 +1,7 @@
 import { FormComponent } from '@appsemble/react-components';
 import React, { ComponentPropsWithoutRef, forwardRef, ReactElement } from 'react';
 
-import StarRating from '../StarRating';
+import { StarRating } from '../StarRating';
 
 type RatingFieldProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   ComponentPropsWithoutRef<typeof StarRating>;
@@ -11,10 +11,11 @@ type RatingFieldProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'ch
  *
  * This makes the star rating compatible with our form layouts.
  */
-export default forwardRef<any, RatingFieldProps>(
-  ({ count, name, onChange, value, ...props }, _ref): ReactElement => (
+export const RatingField = forwardRef<never, RatingFieldProps>(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ({ count, name, onChange, value, ...props }, ref): ReactElement => (
     <FormComponent id={name} {...props}>
-      <StarRating name={name} onChange={onChange} value={value} />
+      <StarRating count={count} name={name} onChange={onChange} value={value} />
     </FormComponent>
   ),
 );

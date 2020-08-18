@@ -5,9 +5,9 @@ import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } fr
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';
-import HelmetIntl from '../HelmetIntl';
+import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
-import messages from './messages';
+import { messages } from './messages';
 
 export interface Member {
   id: string;
@@ -16,7 +16,7 @@ export interface Member {
   role: string;
 }
 
-export default function Roles(): ReactElement {
+export function Roles(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const { userInfo } = useUser();
@@ -68,11 +68,11 @@ export default function Roles(): ReactElement {
             role,
           }),
         });
-      } catch (error) {
+      } catch {
         push({ body: formatMessage(messages.changeRoleError) });
       }
 
-      setSubmittingMemberRoleId(undefined);
+      setSubmittingMemberRoleId(null);
     },
     [app, formatMessage, push],
   );

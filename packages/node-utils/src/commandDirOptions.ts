@@ -1,4 +1,5 @@
 import path from 'path';
+
 import type { RequireDirectoryOptions } from 'yargs';
 
 /**
@@ -8,9 +9,11 @@ import type { RequireDirectoryOptions } from 'yargs';
  *
  * The extension is set correctly for JavaScript and TypeScript files automatically.
  *
- * @param filename The filename for which to get command dir options.
+ * @param filename - The filename for which to get command dir options.
+ *
+ * @returns Options that work for JavaScript as well as TypeScript.
  */
-export default function commandDirOptions(filename: string): [string, RequireDirectoryOptions] {
+export function commandDirOptions(filename: string): [string, RequireDirectoryOptions] {
   const { dir, ext, name } = path.parse(filename);
   return [path.join(dir, name), { extensions: [ext.slice(1)] }];
 }

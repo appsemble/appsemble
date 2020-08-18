@@ -4,8 +4,8 @@ import type { DivIcon, Icon } from 'leaflet';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import AvatarWrapper from '../AvatarWrapper';
-import createIcon from '../utils/createIcon';
+import { AvatarWrapper } from '../AvatarWrapper';
+import { createIcon } from '../utils/createIcon';
 import styles from './index.css';
 
 export interface CardProps {
@@ -21,17 +21,17 @@ export interface CardProps {
   /**
    * Update function that can be called to update a single resource
    */
-  onUpdate: (data: any) => void;
+  onUpdate: (data: unknown) => void;
 }
 
 /**
  * A single card in the feed.
  */
-export default function Card({ content, onUpdate }: CardProps): VNode {
+export function Card({ content, onUpdate }: CardProps): VNode {
   const replyContainer = useRef<HTMLDivElement>();
   const { actions, messages, parameters, theme, utils } = useBlock();
   const [message, setMessage] = useState('');
-  const [replies, setReplies] = useState<any[]>(null);
+  const [replies, setReplies] = useState<unknown[]>(null);
   const [valid, setValid] = useState(false);
   const [marker, setMarker] = useState<Icon | DivIcon>(null);
 
@@ -42,19 +42,19 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
   useEffect(() => {
     const parentId = parameters.reply?.parentId ?? 'parentId';
 
-    if (replies !== null) {
+    if (replies != null) {
       return;
     }
 
-    if (actions.onLoadReply.type !== 'noop') {
+    if (actions.onLoadReply.type === 'noop') {
+      setReplies([]);
+    } else {
       // Dispatch loading replies if it’s defined.
       actions.onLoadReply
         .dispatch({
           $filter: `${parentId} eq '${content.id}'`,
         })
         .then(setReplies);
-    } else {
-      setReplies([]);
     }
   }, [actions, content, parameters, replies, setReplies]);
 
@@ -110,7 +110,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
 
         // Scroll to the bottom of the reply container
         replyContainer.current.scrollTop = replyContainer.current.scrollHeight;
-      } catch (e) {
+      } catch {
         utils.showMessage([].concat(messages.replyError.format()).join(''));
       }
     },
@@ -125,7 +125,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
   const latitude = utils.remap(parameters.marker.latitude, content);
   const longitude = utils.remap(parameters.marker.longitude, content);
 
-  if (parameters.pictureBase && parameters.pictureBase.endsWith('/')) {
+  if (parameters.pictureBase?.endsWith('/')) {
     parameters.pictureBase = parameters.pictureBase.slice(0, -1);
   }
 
@@ -175,17 +175,17 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
             <img
               alt={title || subtitle || heading || description}
               className={styles.image}
-              src={`${picture ? `${utils.asset(picture)}` : ''}`}
+              src={picture ? utils.asset(picture) : ''}
             />
           </figure>
         )}
         {content?.fotos && content?.fotos.length > 1 && (
           <div className={`${styles.images} px-1 py-1`}>
             {content?.fotos.map((p) => (
-              <figure key={p} className={`image is-64x64 mx-1 my-1 ${styles.figure}`}>
+              <figure className={`image is-64x64 mx-1 my-1 ${styles.figure}`} key={p}>
                 <img
                   alt={title || subtitle || heading || description}
-                  src={`${p ? `${utils.asset(p)}` : ''}`}
+                  src={p ? utils.asset(p) : ''}
                 />
               </figure>
             ))}
@@ -214,7 +214,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
         )}
         {actions.onLoadReply.type !== 'noop' && replies && (
           <Fragment>
-            <div ref={replyContainer} className={styles.replies}>
+            <div className={styles.replies} ref={replyContainer}>
               {replies.map((reply: any) => {
                 const author = utils.remap(
                   parameters?.reply.author ?? [{ prop: '$author' }, { prop: 'name' }],
@@ -226,7 +226,7 @@ export default function Card({ content, onUpdate }: CardProps): VNode {
                 );
 
                 return (
-                  <div key={reply.id} className="content">
+                  <div className="content" key={reply.id}>
                     <h6 className="is-marginless">
                       {author || <FormattedMessage id="anonymous" />}
                     </h6>

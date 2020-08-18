@@ -3,7 +3,7 @@ import type { DialogActionDefinition } from '@appsemble/types';
 
 import type { MakeActionParameters } from '../../types';
 
-export default function dialog({
+export function dialog({
   definition,
   prefix,
   showDialog,
@@ -16,6 +16,7 @@ export default function dialog({
           actionCreators: {
             'dialog.error': () => ({
               type: 'dialog.error',
+              // eslint-disable-next-line require-await
               async dispatch(error) {
                 reject(error);
                 close();
@@ -23,6 +24,7 @@ export default function dialog({
             }),
             'dialog.ok': () => ({
               type: 'dialog.ok',
+              // eslint-disable-next-line require-await
               async dispatch(result) {
                 resolve(result);
                 close();
@@ -33,7 +35,7 @@ export default function dialog({
           closable: definition.closable,
           data,
           close() {
-            reject();
+            reject(new Error('closed'));
             close();
           },
           fullscreen: definition.fullscreen,

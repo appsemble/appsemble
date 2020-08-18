@@ -2,9 +2,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import Button from '../Button';
-import type { Props } from '../types';
-import { useValuePicker } from '../ValuePickerProvider';
+import { Button, Props, useValuePicker } from '..';
 
 interface ButtonOptionProps extends Omit<Props<typeof Button>, 'value'> {
   activeClassName: string;
@@ -14,7 +12,7 @@ interface ButtonOptionProps extends Omit<Props<typeof Button>, 'value'> {
   value: unknown;
 }
 
-export default function ButtonOption({
+export function ButtonOption({
   activeClassName,
   className,
   multiple,

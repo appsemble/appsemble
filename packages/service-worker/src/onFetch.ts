@@ -5,10 +5,9 @@ import { cacheFirst, requestFirst } from './utils';
 /**
  * Map all requests to a caching behaviour based on the HTTP method and URL.
  *
- * @param request The request map.
- * @returns The matching HTTP response.
+ * @param event - The request map.
  */
-export default function onFetch(event: FetchEvent): void {
+export function onFetch(event: FetchEvent): void {
   const { request } = event;
 
   // Pass through any non GET requests.
@@ -34,7 +33,7 @@ export default function onFetch(event: FetchEvent): void {
   }
 
   // Block version requests are immutable and should be cached.
-  if (/^\/api\/blocks\/@[0-9a-z-]+\/[0-9a-z-]+\/versions\//.test(pathname)) {
+  if (/^\/api\/blocks\/@(?:[\da-z-]+\/){2}versions\//.test(pathname)) {
     event.respondWith(cacheFirst(request));
     return;
   }

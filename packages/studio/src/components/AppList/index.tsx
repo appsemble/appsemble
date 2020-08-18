@@ -5,15 +5,15 @@ import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import checkRole from '../../utils/checkRole';
-import HelmetIntl from '../HelmetIntl';
+import { checkRole } from '../../utils/checkRole';
+import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
-import AppCard from './components/AppCard';
-import CreateAppButton from './components/CreateAppButton';
+import { AppCard } from './components/AppCard';
+import { CreateAppButton } from './components/CreateAppButton';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function AppList(): ReactElement {
+export function AppList(): ReactElement {
   const [filter, setFilter] = useState('');
   const { formatMessage } = useIntl();
   const { organizations, userInfo } = useUser();
@@ -136,9 +136,9 @@ export default function AppList(): ReactElement {
           )}
         </div>
 
-        <div className={`${styles.appList}`}>
+        <div className={styles.appList}>
           {filteredApps.map((app) => (
-            <AppCard key={app.id} app={app} />
+            <AppCard app={app} key={app.id} />
           ))}
         </div>
         {userInfo && createOrganizations.length === 0 && apps.length === 0 && (

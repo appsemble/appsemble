@@ -4,11 +4,11 @@ import React, { ReactElement } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
-import EmailLogin from '../EmailLogin';
-import OpenIDLogin from '../OpenIDLogin';
+import { EmailLogin } from '../EmailLogin';
+import { OpenIDLogin } from '../OpenIDLogin';
 import { useUser } from '../UserProvider';
 
-export default function Login(): ReactElement {
+export function Login(): ReactElement {
   const { definition } = useAppDefinition();
   const { isLoggedIn } = useUser();
   const qs = useQuery();

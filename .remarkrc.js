@@ -1,6 +1,7 @@
-const dictionary = require('dictionary-en');
 const fs = require('fs');
 const path = require('path');
+
+const dictionary = require('dictionary-en');
 const english = require('retext-english');
 const quotes = require('retext-quotes');
 const repeatedWords = require('retext-repeated-words');
@@ -9,20 +10,22 @@ const syntaxURLs = require('retext-syntax-urls');
 const usage = require('retext-usage');
 const unified = require('unified');
 
-exports.plugins = [
-  'remark-frontmatter',
-  ['remark-validate-links', { repository: 'https://gitlab.com/appsemble/appsemble.git' }],
-  [
-    'remark-retext',
-    unified()
-      .use(english)
-      .use(syntaxURLs)
-      .use(spell, {
-        dictionary,
-        personal: fs.readFileSync(path.join(__dirname, 'config/retext/personal.dic')),
-      })
-      .use(repeatedWords)
-      .use(quotes)
-      .use(usage),
+module.exports = {
+  plugins: [
+    'remark-frontmatter',
+    ['remark-validate-links', { repository: 'https://gitlab.com/appsemble/appsemble.git' }],
+    [
+      'remark-retext',
+      unified()
+        .use(english)
+        .use(syntaxURLs)
+        .use(spell, {
+          dictionary,
+          personal: fs.readFileSync(path.join(__dirname, 'config/retext/personal.dic')),
+        })
+        .use(repeatedWords)
+        .use(quotes)
+        .use(usage),
+    ],
   ],
-];
+};

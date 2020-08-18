@@ -2,14 +2,14 @@ import classNames from 'classnames';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import TitleBar from '../TitleBar';
+import { TitleBar } from '../TitleBar';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 /**
  * Capture renderer errors using Sentry.
  */
-export default function ErrorFallback(): ReactElement {
+export function ErrorFallback(): ReactElement {
   return (
     <>
       <TitleBar>

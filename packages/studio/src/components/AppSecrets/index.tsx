@@ -12,9 +12,9 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '../AppContext';
-import HelmetIntl from '../HelmetIntl';
-import AppSecretCard from './components/AppSecretCard';
-import messages from './messages';
+import { HelmetIntl } from '../HelmetIntl';
+import { AppSecretCard } from './components/AppSecretCard';
+import { messages } from './messages';
 
 const initialSecret: AppOAuth2Secret = {
   authorizationUrl: '',
@@ -27,7 +27,7 @@ const initialSecret: AppOAuth2Secret = {
   remapper: undefined,
 };
 
-export default function AppSecrets(): ReactElement {
+export function AppSecrets(): ReactElement {
   const { app } = useApp();
 
   const { data: secrets, error, loading, setData: setSecrets } = useData<AppOAuth2Secret[]>(

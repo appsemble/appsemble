@@ -1,9 +1,10 @@
 import type * as fs from 'fs';
+
 import type { ParameterizedContext } from 'koa';
 import type * as compose from 'koa-compose';
 
 import type { User } from './models';
-import type Mailer from './utils/email/Mailer';
+import type { Mailer } from './utils/email/Mailer';
 
 export interface Argv {
   appDomainStrategy?: string;
@@ -47,10 +48,10 @@ export interface Argv {
 export interface AppsembleState {
   fs: typeof fs;
 
-  render: (template: string, params: object) => Promise<string>;
+  render: (template: string, params: { [key: string]: unknown }) => Promise<string>;
 }
 
-export interface AppsembleContext<P extends {} = {}> {
+export interface AppsembleContext<P = unknown> {
   /**
    * The parsed command line parameters.
    */
@@ -69,9 +70,6 @@ export interface AppsembleContext<P extends {} = {}> {
   user: Pick<User, 'id'>;
 }
 
-export type KoaContext<P extends {} = {}> = ParameterizedContext<
-  AppsembleState,
-  AppsembleContext<P>
->;
+export type KoaContext<P = unknown> = ParameterizedContext<AppsembleState, AppsembleContext<P>>;
 
-export type KoaMiddleware<P extends {} = {}> = compose.Middleware<KoaContext<P>>;
+export type KoaMiddleware<P = unknown> = compose.Middleware<KoaContext<P>>;

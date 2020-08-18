@@ -5,14 +5,14 @@ import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import type { Item } from '../../../block';
-import ListItemWrapper from '../ListItemWrapper';
+import { ListItemWrapper } from '../ListItemWrapper';
 import styles from './index.css';
 
 interface ListItemProps {
   item: Item;
 }
 
-export default function ListItem({ item }: ListItemProps): VNode {
+export function ListItem({ item }: ListItemProps): VNode {
   const {
     actions,
     parameters: { fields, header, icon, image },
@@ -57,7 +57,7 @@ export default function ListItem({ item }: ListItemProps): VNode {
           }
 
           return (
-            <span className={`${styles.itemField} mr-1 is-inline-block`}>
+            <span className={`${styles.itemField} mr-1 is-inline-block`} key={field.label}>
               {field.icon && <Icon icon={field.icon} />}
               {field.label && (
                 <span>

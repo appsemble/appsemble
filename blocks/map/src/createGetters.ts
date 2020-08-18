@@ -6,7 +6,7 @@ export interface LatLngMapper {
   lng: (data: any) => any;
 }
 
-export default function createGetters(params: Parameters): LatLngMapper {
+export function createGetters(params: Parameters): LatLngMapper {
   return {
     lat:
       params.latitude == null

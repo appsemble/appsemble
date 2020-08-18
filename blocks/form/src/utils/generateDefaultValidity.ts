@@ -1,8 +1,8 @@
 import type { Parameters } from '@appsemble/sdk';
 
-import validators from './validators';
+import { validators } from './validators';
 
-export default function generateDefaultValidity(
+export function generateDefaultValidity(
   parameters: Parameters,
   data: any,
 ): { [field: string]: boolean } {

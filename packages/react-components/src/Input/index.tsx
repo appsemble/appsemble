@@ -11,8 +11,7 @@ import React, {
   useCallback,
 } from 'react';
 
-import FormComponent from '../FormComponent';
-import Icon from '../Icon';
+import { FormComponent, Icon } from '..';
 import styles from './index.css';
 
 type InputProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
@@ -63,7 +62,7 @@ type InputProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children
 /**
  * A Bulma styled form input element.
  */
-export default forwardRef<HTMLInputElement, InputProps>(
+export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     {
       className,
@@ -103,19 +102,19 @@ export default forwardRef<HTMLInputElement, InputProps>(
       <FormComponent
         className={className}
         iconLeft={iconLeft}
-        iconRight={!!control}
+        iconRight={Boolean(control)}
         id={id}
         label={label}
         required={required}
       >
         <input
           {...props}
-          ref={ref}
           className={classNames('input', { 'is-danger': error })}
           id={id}
           maxLength={maxLength}
           name={name}
           onChange={handleChange}
+          ref={ref}
           required={required}
           type={type}
           value={
@@ -132,7 +131,7 @@ export default forwardRef<HTMLInputElement, InputProps>(
           </span>
           {maxLength ? (
             <span className={`help ml-1 ${styles.counter}`}>
-              {value == null ? 0 : `${value}`.length} / {maxLength}
+              {value == null ? 0 : String(value).length} / {maxLength}
             </span>
           ) : null}
         </div>

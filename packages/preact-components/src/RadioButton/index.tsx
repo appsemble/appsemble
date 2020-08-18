@@ -12,11 +12,7 @@ type RadioButtonProps = Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'onChange'>
 /**
  * A Bulma styled form select element.
  */
-export default function RadioButton({
-  children,
-  wrapperClassName,
-  ...props
-}: RadioButtonProps): VNode {
+export function RadioButton({ children, wrapperClassName, ...props }: RadioButtonProps): VNode {
   const { id } = props;
   return (
     <div className={wrapperClassName}>

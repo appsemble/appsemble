@@ -4,8 +4,8 @@ import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import GUIEditorBlockItem from '../GUIEditorBlockItem';
-import messages from './messages';
+import { GUIEditorBlockItem } from '../GUIEditorBlockItem';
+import { messages } from './messages';
 
 interface GUIEditorToolboxBlockProps {
   blocks: BlockManifest[];
@@ -14,7 +14,7 @@ interface GUIEditorToolboxBlockProps {
   value: BlockManifest;
 }
 
-export default function GUIEditorToolboxBlock({
+export function GUIEditorToolboxBlock({
   blocks,
   name,
   onChange,
@@ -49,7 +49,7 @@ export default function GUIEditorToolboxBlock({
       />
       <ValuePickerProvider name={name} onChange={onChange} value={value}>
         {filterBlocks.map((block) => (
-          <GUIEditorBlockItem value={block} />
+          <GUIEditorBlockItem key={block.name} value={block} />
         ))}
       </ValuePickerProvider>
     </div>

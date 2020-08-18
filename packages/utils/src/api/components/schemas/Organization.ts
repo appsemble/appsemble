@@ -1,6 +1,8 @@
+import type { OpenAPIV3 } from 'openapi-types';
+
 import { normalized } from '../../../constants';
 
-export default {
+export const Organization: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'An organization groups a set of users, apps, themes, and permissions together',
   required: ['id'],

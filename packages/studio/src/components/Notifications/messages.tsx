@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   title: 'Notifications',
   appDefinition: 'app definition',
   titleLabel: 'Title',

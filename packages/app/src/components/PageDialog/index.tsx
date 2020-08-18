@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import type { ShowDialogParams } from '../../types';
-import BlockList from '../BlockList';
+import { BlockList } from '../BlockList';
 import styles from './index.css';
 
 interface PageDialogProps
@@ -14,12 +14,12 @@ interface PageDialogProps
 /**
  * The dialog component to render on a page when the `dialog` action is dispatched.
  */
-export default function PageDialog({ dialog = null, ...props }: PageDialogProps): ReactElement {
+export function PageDialog({ dialog = null, ...props }: PageDialogProps): ReactElement {
   return (
     <Modal
       cardClassName={classNames({ [styles.fullscreen]: dialog?.fullscreen })}
-      closable={!!dialog?.closable}
-      isActive={!!dialog}
+      closable={Boolean(dialog?.closable)}
+      isActive={Boolean(dialog)}
       onClose={dialog?.close}
       title={dialog?.title}
     >

@@ -1,6 +1,6 @@
 import type { StringField } from 'blocks/form/block';
 
-import validateString from './validateString';
+import { validateString } from './validateString';
 
 describe('validateString', () => {
   it('should return the first requirement that does not validate', () => {
@@ -9,9 +9,8 @@ describe('validateString', () => {
       name: 'test',
       requirements: [{ required: true }, { minLength: 1 }],
     } as StringField;
-    const value: any = null;
 
-    expect(validateString(field, value)).toStrictEqual(field.requirements[0]);
+    expect(validateString(field, null)).toStrictEqual(field.requirements[0]);
   });
 
   it('should should return undefined if it validates correctly', () => {
@@ -20,9 +19,8 @@ describe('validateString', () => {
       name: 'test',
       requirements: [{ required: true }, { minLength: 1 }],
     } as StringField;
-    const value = 'hello';
 
-    expect(validateString(field, value)).toBeUndefined();
+    expect(validateString(field, 'hello')).toBeUndefined();
   });
 
   it('should validate minLength requirements', () => {

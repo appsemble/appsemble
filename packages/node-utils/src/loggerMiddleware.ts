@@ -15,9 +15,11 @@ function rangeFormat<T>(value: number, map: RangeMap<T>): T {
 
 /**
  * Koa middleware for logging requests using the Appsemble logger.
+ *
+ * @returns Koa middleware for logging requests using the Appsemble logger.
  */
-export default function loggerMiddleware(): compose.Middleware<ParameterizedContext<{}, {}>> {
-  return async (ctx, next) => {
+export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
+  return (ctx, next) => {
     const { href, res } = ctx;
     const start = Date.now();
     const method = chalk.bold(ctx.method);

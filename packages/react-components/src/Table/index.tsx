@@ -41,7 +41,7 @@ interface TableProps {
 /**
  * A bulma table in a table-wrapper container with sane defaults.
  */
-export default function Table({
+export function Table({
   bordered,
   children,
   className,

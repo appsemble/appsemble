@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const paths: OpenAPIV3.PathsObject = {
   '/oauth2/connect/register': {
     post: {
       operationId: 'registerOAuth2Connection',

@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const paths: OpenAPIV3.PathsObject = {
   '/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {

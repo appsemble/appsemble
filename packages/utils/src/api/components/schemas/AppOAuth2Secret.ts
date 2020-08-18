@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const AppOAuth2Secret: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'Settings for login in apps using third party OAuth2 providers',
   required: ['authorizationUrl', 'clientId', 'clientSecret', 'icon', 'name', 'scope', 'tokenUrl'],
@@ -46,6 +48,8 @@ export default {
     remapper: {
       type: 'array',
       description: 'A remapper to apply on retrieved user information from the user info endpoint.',
+      // @ts-expect-error Items aren’t required.
+      items: {},
     },
   },
 };

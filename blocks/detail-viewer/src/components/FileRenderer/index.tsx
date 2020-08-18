@@ -3,13 +3,13 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import type { FileField, RendererProps } from '../../../block';
-import ImageField from '../ImageField';
+import { ImageField } from '../ImageField';
 import styles from './index.css';
 
 /**
  * Renders a file as an image.
  */
-export default function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
+export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
   const { utils } = useBlock();
   const value = utils.remap(field.name, data);
 

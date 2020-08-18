@@ -11,7 +11,7 @@ import {
 import { AppSubscription, Resource } from '.';
 
 @Table({ tableName: 'ResourceSubscription' })
-export default class ResourceSubscription extends Model<ResourceSubscription> {
+export class ResourceSubscription extends Model<ResourceSubscription> {
   @ForeignKey(() => Resource)
   @Column
   ResourceId: number;

@@ -30,10 +30,10 @@ export interface UserOrganization extends Organization {
 }
 
 interface UserContext {
-  login(tokenResponse: TokenResponse): void;
-  logout(): void;
+  login: (tokenResponse: TokenResponse) => void;
+  logout: () => void;
   userInfo: UserInfo;
-  refreshUserInfo(): Promise<void>;
+  refreshUserInfo: () => Promise<void>;
   organizations: UserOrganization[];
   setOrganizations: (organizations: UserOrganization[]) => void;
 }
@@ -44,7 +44,7 @@ const Context = createContext<UserContext>(null);
 // plenty of time for the refresh token request to finish.
 const REFRESH_BUFFER = 60e3;
 
-export default function UserProvider({ children }: UserProviderProps): ReactElement {
+export function UserProvider({ children }: UserProviderProps): ReactElement {
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [organizations, setOrganizations] = useState<UserOrganization[]>();
   const [initialized, setInitialized] = useState(false);
@@ -102,7 +102,7 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
       logout();
       setInitialized(true);
-      return undefined;
+      return;
     }
 
     axios.defaults.headers.authorization = `Bearer ${tokenResponse.access_token}`;
@@ -116,7 +116,7 @@ export default function UserProvider({ children }: UserProviderProps): ReactElem
         });
         setTokenResponse(data);
         refreshUserInfo();
-      } catch (err) {
+      } catch {
         logout();
       }
     }, timeout);

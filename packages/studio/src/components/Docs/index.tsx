@@ -3,8 +3,8 @@ import type { IconName } from '@fortawesome/fontawesome-common-types';
 import React, { FunctionComponent, ReactElement } from 'react';
 import { NavLink, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import SideMenu from '../SideMenu';
-import SideNavLink from '../SideNavLink';
+import { SideMenu } from '../SideMenu';
+import { SideNavLink } from '../SideNavLink';
 import styles from './index.css';
 
 interface MDXModule {
@@ -32,7 +32,7 @@ const docs = context
   })
   .sort((a, b) => a.path.localeCompare(b.path));
 
-export default function Docs(): ReactElement {
+export function Docs(): ReactElement {
   const { url } = useRouteMatch();
   const collapsed = useToggle();
 
@@ -43,9 +43,9 @@ export default function Docs(): ReactElement {
           .filter(({ path }) => path.endsWith('/'))
           .map(({ icon, path, title }) => (
             <SideNavLink
-              key={path}
               exact
               icon={icon}
+              key={path}
               label={title}
               to={path === '/' ? url : `${url}/${path}`}
             >
@@ -62,7 +62,7 @@ export default function Docs(): ReactElement {
       <main className={`container content px-6 py-4 ${styles.doc}`}>
         <Switch>
           {docs.map(({ Component, path }) => (
-            <Route key={path} exact path={path === '/' ? url : `${url}/${path}`}>
+            <Route exact key={path} path={path === '/' ? url : `${url}/${path}`}>
               <Component />
             </Route>
           ))}

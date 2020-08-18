@@ -1,4 +1,4 @@
-import onFetch from './onFetch';
+import { onFetch } from './onFetch';
 
 declare const self: ServiceWorkerGlobalScope;
 

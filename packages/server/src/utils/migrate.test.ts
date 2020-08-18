@@ -1,7 +1,7 @@
 import { AppsembleError } from '@appsemble/node-utils';
 
 import { getDB, Meta } from '../models';
-import migrate, { Migration } from './migrate';
+import { migrate, Migration } from './migrate';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
 let m000: Migration;
@@ -14,7 +14,7 @@ let migrations: Migration[];
 
 beforeAll(createTestSchema('migrate'));
 
-beforeEach(async () => {
+beforeEach(() => {
   m000 = { key: '0.0.0', up: jest.fn(), down: jest.fn() };
   m001 = { key: '0.0.1', up: jest.fn(), down: jest.fn() };
   m002 = { key: '0.0.2', up: jest.fn(), down: jest.fn() };

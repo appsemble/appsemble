@@ -2,7 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
-import updateApp from '../../lib/updateApp';
+import { updateApp } from '../../lib/updateApp';
 import type { BaseArguments } from '../../types';
 
 interface CreateAppArguments extends BaseArguments {

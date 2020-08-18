@@ -1,4 +1,6 @@
-export default {
+import type { OpenAPIV3 } from 'openapi-types';
+
+export const AppMessages: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The response object of an messages create call.',
   required: ['language', 'messages'],

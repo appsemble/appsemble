@@ -12,11 +12,12 @@ import {
   Table,
   Unique,
 } from 'sequelize-typescript';
+import type { Definition } from 'typescript-json-schema';
 
 import { BlockAsset, Organization } from '.';
 
 @Table({ tableName: 'BlockVersion', updatedAt: false })
-export default class BlockVersion extends Model<BlockVersion> {
+export class BlockVersion extends Model<BlockVersion> {
   @PrimaryKey
   @ForeignKey(() => Organization)
   @AllowNull(false)
@@ -48,7 +49,7 @@ export default class BlockVersion extends Model<BlockVersion> {
   longDescription: string;
 
   @Column(DataType.JSON)
-  parameters: object;
+  parameters: Definition;
 
   @Column(DataType.JSON)
   resources: any;

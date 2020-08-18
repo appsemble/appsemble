@@ -36,13 +36,13 @@
     "cli-highlight": "^2.1.4",
     "fast-glob": "^3.2.4",
     "form-data": "^3.0.0",
+    "koa": "^2.13.0",
     "winston": "^3.3.3",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^6.0.1",
     "axios-mock-adapter": "^1.18.2",
-    "axios-test-instance": "^3.1.1",
-    "koa": "^2.13.0"
+    "axios-test-instance": "^3.1.1"
   }
 }

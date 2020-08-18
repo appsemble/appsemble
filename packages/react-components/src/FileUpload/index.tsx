@@ -1,7 +1,7 @@
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import React, { ChangeEvent, ReactElement, ReactNode } from 'react';
 
-import { FormComponent, Icon } from '../index';
+import { FormComponent, Icon } from '..';
 
 interface FileUploadProps {
   id?: string;
@@ -19,7 +19,7 @@ interface FileUploadProps {
   required?: boolean;
 }
 
-export default function FileUpload({
+export function FileUpload({
   name,
   id = name,
   accept,

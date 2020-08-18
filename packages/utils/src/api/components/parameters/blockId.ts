@@ -1,6 +1,8 @@
+import type { OpenAPIV3 } from 'openapi-types';
+
 import { normalized } from '../../../constants';
 
-export default {
+export const blockId: OpenAPIV3.ParameterObject = {
   name: 'blockId',
   in: 'path',
   description:

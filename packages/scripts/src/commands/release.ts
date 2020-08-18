@@ -1,10 +1,11 @@
+import * as path from 'path';
+
 import { getWorkspaces, logger } from '@appsemble/node-utils';
 import { formatISO } from 'date-fns';
 import { ensureDir, readdir, readFile, readJson, remove, writeFile, writeJson } from 'fs-extra';
 import globby from 'globby';
 import { capitalize, mapValues } from 'lodash';
 import type { BlockContent, ListItem, Root } from 'mdast';
-import * as path from 'path';
 import remark from 'remark';
 import * as semver from 'semver';
 import type { PackageJson } from 'type-fest';
@@ -18,7 +19,7 @@ import {
   createRoot,
   dumpMarkdown,
 } from '../lib/mdast';
-import readPackageJson from '../lib/readPackageJson';
+import { readPackageJson } from '../lib/readPackageJson';
 
 export const command = 'release <increment>';
 export const description = 'Prepare files for a new release.';
@@ -39,8 +40,8 @@ interface Changes {
 /**
  * Update `package.json` in a directory.
  *
- * @param dirname The directory whose `package.json` to update.
- * @param version The new version to set.
+ * @param dirname - The directory whose `package.json` to update.
+ * @param version - The new version to set.
  */
 async function updatePkg(dirname: string, version: string): Promise<void> {
   const filepath = path.join(dirname, 'package.json');
@@ -74,9 +75,9 @@ async function updatePkg(dirname: string, version: string): Promise<void> {
 /**
  * Replace content of a file.
  *
- * @param filename The filename of the file to replace.
- * @param oldVersion The content to replace.
- * @param newVersion The content to replace the old content with.
+ * @param filename - The filename of the file to replace.
+ * @param oldVersion - The content to replace.
+ * @param newVersion - The content to replace the old content with.
  */
 async function replaceFile(
   filename: string,
@@ -154,7 +155,6 @@ async function updateChangelog(workspaces: string[], version: string): Promise<v
       changelog.children.splice(index, 0, ...changesSection);
       return true;
     }
-    return undefined;
   });
   logger.info(await dumpMarkdown(createRoot(changesSection), 'CHANGELOG.md'));
   await writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));

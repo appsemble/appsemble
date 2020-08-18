@@ -23,7 +23,7 @@ interface SubtitleProps {
 /**
  * A bulma styled subtitle element.
  */
-export default function Subtitle({ children, className, level = 5 }: SubtitleProps): ReactElement {
+export function Subtitle({ children, className, level = 5 }: SubtitleProps): ReactElement {
   const Component = `h${level}` as 'h1';
 
   return (

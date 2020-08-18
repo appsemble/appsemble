@@ -9,8 +9,7 @@ import React, {
   useRef,
 } from 'react';
 
-import Input from '../Input';
-import { useSimpleForm } from '../SimpleForm';
+import { Input, useSimpleForm } from '..';
 
 type ValidityMessages = {
   [_ in keyof Omit<ValidityState, 'valid'>]?: ReactNode;
@@ -43,8 +42,8 @@ type FooProps<C extends ComponentType> = Omit<
 > &
   SimpleInputProps<C>;
 
-export default function SimpleInput<C extends ComponentType = typeof Input>({
-  // @ts-expect-error
+export function SimpleInput<C extends ComponentType = typeof Input>({
+  // @ts-expect-error TypeScript disallows assigning a default value that matches a non-default type
   component: Component = Input,
   disabled,
   name,
@@ -82,13 +81,13 @@ export default function SimpleInput<C extends ComponentType = typeof Input>({
   }, [formErrors, name, setFormError]);
 
   return (
-    // @ts-expect-error
+    // @ts-expect-error XXX This shouldn’t be necessary.
     <Component
-      ref={ref}
       disabled={disabled || submitting}
       error={!pristine && formErrors[name]}
       name={name}
       onChange={internalOnChange}
+      ref={ref}
       value={values[name]}
       {...props}
     />

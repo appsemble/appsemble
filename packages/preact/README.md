@@ -12,9 +12,9 @@ npm install @appsemble/preact preact
 
 ```tsx
 import { bootstrap } from '@appsemble/preact';
-import React from 'react';
+import { h, VNode } from 'preact';
 
-function MyBlock({ actions }) {
+function MyBlock({ actions }): VNode {
   return (
     <button onClick={actions.onClick.dispatch} type="button">
       Hello world!

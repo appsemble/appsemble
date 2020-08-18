@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-import { configureLogger, handleError, logger } from '@appsemble/node-utils';
 import path from 'path';
+
+import { configureLogger, handleError, logger } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
-async function main(): Promise<any> {
+function main(): any {
   return yargs
     .option('verbose', {
       alias: 'v',
@@ -26,5 +27,9 @@ async function main(): Promise<any> {
 }
 
 if (module === require.main) {
-  main().catch((error) => logger.error(error));
+  try {
+    main();
+  } catch (error) {
+    logger.error(error);
+  }
 }

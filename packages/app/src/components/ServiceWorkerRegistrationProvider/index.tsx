@@ -12,20 +12,20 @@ import React, {
 } from 'react';
 
 import type { Permission, ServiceWorkerRegistrationContextType } from '../../types';
-import settings from '../../utils/settings';
+import { apiUrl, appId, vapidPublicKey } from '../../utils/settings';
 
 interface ServiceWorkerRegistrationProviderProps {
   children: ReactNode;
   serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
 }
 
-const ServiceWorkerRegistrationContext = createContext<ServiceWorkerRegistrationContextType>(null);
+const Context = createContext<ServiceWorkerRegistrationContextType>(null);
 
 export function useServiceWorkerRegistration(): ServiceWorkerRegistrationContextType {
-  return useContext(ServiceWorkerRegistrationContext);
+  return useContext(Context);
 }
 
-export default function ServiceWorkerRegistrationProvider({
+export function ServiceWorkerRegistrationProvider({
   children,
   serviceWorkerRegistrationPromise,
 }: ServiceWorkerRegistrationProviderProps): ReactElement {
@@ -62,7 +62,6 @@ export default function ServiceWorkerRegistrationProvider({
     let sub = await registration?.pushManager?.getSubscription();
 
     if (!sub) {
-      const { id, vapidPublicKey } = settings;
       const options = {
         applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
         userVisibleOnly: true,
@@ -70,7 +69,7 @@ export default function ServiceWorkerRegistrationProvider({
 
       sub = await registration?.pushManager?.subscribe(options);
       const { endpoint, keys } = sub.toJSON();
-      await axios.post(`${settings.apiUrl}/api/apps/${id}/subscriptions`, { endpoint, keys });
+      await axios.post(`${apiUrl}/api/apps/${appId}/subscriptions`, { endpoint, keys });
     }
 
     setSubscription(sub);
@@ -82,7 +81,7 @@ export default function ServiceWorkerRegistrationProvider({
     if (!subscription) {
       return false;
     }
-    const result = subscription.unsubscribe();
+    const result = await subscription.unsubscribe();
     setSubscription(null);
     return result;
   }, [subscription]);
@@ -98,9 +97,5 @@ export default function ServiceWorkerRegistrationProvider({
     [permission, requestPermission, subscribe, subscription, unsubscribe],
   );
 
-  return (
-    <ServiceWorkerRegistrationContext.Provider value={value}>
-      {children}
-    </ServiceWorkerRegistrationContext.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 }

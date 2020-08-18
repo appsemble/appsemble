@@ -3,8 +3,8 @@ import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import LinkActionEditor from '../LinkActionEditor';
-import messages from './messages';
+import { LinkActionEditor } from '../LinkActionEditor';
+import { messages } from './messages';
 
 interface ActionEditorTypeEditorProps {
   selectedActionType: ActionDefinition['type'];
@@ -13,7 +13,7 @@ interface ActionEditorTypeEditorProps {
   value: any;
 }
 
-export default function ActionEditorTypeEditor({
+export function ActionEditorTypeEditor({
   app,
   onChange,
   selectedActionType,

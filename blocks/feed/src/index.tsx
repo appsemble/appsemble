@@ -3,7 +3,7 @@ import { Loader } from '@appsemble/preact-components';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import Card from './components/Card';
+import { Card } from './components/Card';
 import styles from './index.css';
 
 const messages = {
@@ -55,7 +55,7 @@ bootstrap(({ events, ready }) => {
   return (
     <div className={styles.root}>
       {data.map((content) => (
-        <Card key={content.id} content={content} onUpdate={onUpdate} />
+        <Card content={content} key={content.id} onUpdate={onUpdate} />
       ))}
     </div>
   );

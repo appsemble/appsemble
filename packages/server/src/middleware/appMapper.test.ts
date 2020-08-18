@@ -2,7 +2,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import type { KoaContext, KoaMiddleware } from '../types';
-import appMapper from './appMapper';
+import { appMapper } from './appMapper';
 
 let platformMiddleware: KoaMiddleware;
 let appMiddleware: KoaMiddleware;

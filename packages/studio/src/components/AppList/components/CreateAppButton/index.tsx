@@ -17,7 +17,7 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { useUser } from '../../../UserProvider';
-import messages from './messages';
+import { messages } from './messages';
 
 interface Template {
   id: number;
@@ -26,7 +26,7 @@ interface Template {
   resources: boolean;
 }
 
-export default function CreateAppButton({ className }: { className: string }): ReactElement {
+export function CreateAppButton({ className }: { className: string }): ReactElement {
   const modal = useToggle();
   const { data: templates } = useData<Template[]>('/api/templates');
   const [selectedTemplate, setSelectedTemplate] = useState(0);

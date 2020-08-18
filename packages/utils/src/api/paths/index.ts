@@ -1,23 +1,21 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { paths as action } from './action';
+import { paths as appOAuth2Secrets } from './appOAuth2Secrets';
+import { paths as apps } from './apps';
+import { paths as assets } from './assets';
+import { paths as blocks } from './blocks';
+import { paths as emails } from './emails';
+import { paths as health } from './health';
+import { paths as invite } from './invite';
+import { paths as translations } from './messages';
+import { paths as oauth2ClientCredentials } from './oauth2ClientCredentials';
+import { paths as oauth2Login } from './oauth2Login';
+import { paths as oauth2Provider } from './oauth2Provider';
+import { paths as organizations } from './organizations';
+import { paths as resources } from './resources';
+import { paths as templates } from './templates';
+import { paths as user } from './user';
 
-import action from './action';
-import appOAuth2Secrets from './appOAuth2Secrets';
-import apps from './apps';
-import assets from './assets';
-import blocks from './blocks';
-import emails from './emails';
-import health from './health';
-import invite from './invite';
-import translations from './messages';
-import oauth2ClientCredentials from './oauth2ClientCredentials';
-import oauth2Login from './oauth2Login';
-import oauth2Provider from './oauth2Provider';
-import organizations from './organizations';
-import resources from './resources';
-import templates from './templates';
-import user from './user';
-
-export default {
+export const paths = {
   ...appOAuth2Secrets,
   ...apps,
   ...assets,
@@ -34,4 +32,4 @@ export default {
   ...templates,
   ...translations,
   ...user,
-} as OpenAPIV3.PathsObject;
+};

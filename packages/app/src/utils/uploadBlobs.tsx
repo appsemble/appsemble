@@ -1,12 +1,12 @@
 import type { BlobUploadType } from '@appsemble/types';
 import axios, { AxiosResponse } from 'axios';
 
-import extractBlobs, { RecursiveValue } from './extractBlobs';
+import { extractBlobs, RecursiveValue } from './extractBlobs';
 
 type IdResponse = AxiosResponse<{ id: string } | string>;
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default async function uploadBlobs(
+export async function uploadBlobs(
   data: RecursiveValue,
   { method, serialize, url }: BlobUploadType,
 ) {
@@ -29,7 +29,7 @@ export default async function uploadBlobs(
               });
 
               const id = responseData instanceof Object ? responseData.id : responseData;
-              return [file, `${id}`];
+              return [file, String(id)];
             },
           ),
         ),
@@ -50,7 +50,7 @@ export default async function uploadBlobs(
               });
               const id = responseData instanceof Object ? responseData.id : responseData;
 
-              return [file, `${id}`];
+              return [file, String(id)];
             },
           ),
         ),

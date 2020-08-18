@@ -15,7 +15,7 @@ import {
 import { Organization, User } from '.';
 
 @Table({ tableName: 'OrganizationInvite' })
-export default class OrganizationInvite extends Model<OrganizationInvite> {
+export class OrganizationInvite extends Model<OrganizationInvite> {
   @PrimaryKey
   @AllowNull(false)
   @Column

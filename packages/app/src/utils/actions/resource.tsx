@@ -22,26 +22,26 @@ import type {
 import axios from 'axios';
 
 import type { MakeActionParameters, ServiceWorkerRegistrationContextType } from '../../types';
-import settings from '../settings';
+import { apiUrl, appId } from '../settings';
 import { requestLikeAction } from './request';
 
 function getBlobs(resource: ResourceDefinition): BlobUploadType {
   const { blobs } = resource;
   const type = blobs?.type || 'upload';
   const method = blobs?.method || 'post';
-  const url = blobs?.url ?? `${settings.apiUrl}/api/apps/${settings.id}/assets`;
+  const url = blobs?.url ?? `${apiUrl}/api/apps/${appId}/assets`;
 
   return { type, method, url, serialize: blobs?.serialize ? blobs.serialize : null };
 }
 
-function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceGetAction {
+export function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceGetAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.get?.method || 'GET';
   const url =
     resource?.get?.url ??
     resource?.url ??
-    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -61,14 +61,16 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
   };
 }
 
-function query(args: MakeActionParameters<ResourceQueryActionDefinition>): ResourceQueryAction {
+export function query(
+  args: MakeActionParameters<ResourceQueryActionDefinition>,
+): ResourceQueryAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.query?.method || 'GET';
   const url =
     resource?.query?.url ??
     resource?.url ??
-    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
   return {
     ...requestLikeAction({
@@ -87,14 +89,16 @@ function query(args: MakeActionParameters<ResourceQueryActionDefinition>): Resou
   };
 }
 
-function create(args: MakeActionParameters<ResourceCreateActionDefinition>): ResourceCreateAction {
+export function create(
+  args: MakeActionParameters<ResourceCreateActionDefinition>,
+): ResourceCreateAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.create?.method || 'POST';
   const url =
     resource?.create?.url ||
     resource.url ||
-    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
   return {
     ...requestLikeAction({
@@ -113,14 +117,16 @@ function create(args: MakeActionParameters<ResourceCreateActionDefinition>): Res
   };
 }
 
-function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): ResourceUpdateAction {
+export function update(
+  args: MakeActionParameters<ResourceUpdateActionDefinition>,
+): ResourceUpdateAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.update?.method || 'PUT';
   const url =
     resource?.update?.url ||
     resource.url ||
-    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -140,14 +146,16 @@ function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): Res
   };
 }
 
-function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): ResourceDeleteAction {
+export function remove(
+  args: MakeActionParameters<ResourceDeleteActionDefinition>,
+): ResourceDeleteAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.update?.method || 'POST';
   const url =
     resource?.update?.url ||
     resource.url ||
-    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -168,7 +176,7 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
   };
 }
 
-async function getSubscription(
+export async function getSubscription(
   pushNotifications: ServiceWorkerRegistrationContextType,
 ): Promise<PushSubscription> {
   const { permission, requestPermission, subscribe: sub } = pushNotifications;
@@ -177,20 +185,20 @@ async function getSubscription(
   if (!subscription && permission === 'default') {
     const newPermission = await requestPermission();
     if (newPermission !== 'granted') {
-      throw Error('Unable to subscribe. Permission was denied.');
+      throw new Error('Unable to subscribe. Permission was denied.');
     }
 
     subscription = await sub();
   } else if (permission === 'granted' && !subscription) {
     subscription = await sub();
   } else if (permission === 'denied') {
-    throw Error('Unable to subscribe. Permission was denied.');
+    throw new Error('Unable to subscribe. Permission was denied.');
   }
 
   return subscription;
 }
 
-function subscribe({
+export function subscribe({
   app,
   definition,
   pushNotifications,
@@ -203,7 +211,7 @@ function subscribe({
   return {
     dispatch: async (data) => {
       const { endpoint } = await getSubscription(pushNotifications);
-      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
+      await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
@@ -217,7 +225,7 @@ function subscribe({
   };
 }
 
-function unsubscribe({
+export function unsubscribe({
   app,
   definition,
   pushNotifications,
@@ -230,7 +238,7 @@ function unsubscribe({
   return {
     dispatch: async (data) => {
       const { endpoint } = await getSubscription(pushNotifications);
-      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
+      await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
@@ -244,7 +252,7 @@ function unsubscribe({
   };
 }
 
-function toggleSubscribe({
+export function toggleSubscribe({
   app,
   definition,
   pushNotifications,
@@ -257,7 +265,7 @@ function toggleSubscribe({
   return {
     dispatch: async (data) => {
       const { endpoint } = await getSubscription(pushNotifications);
-      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
+      await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
@@ -270,7 +278,7 @@ function toggleSubscribe({
   };
 }
 
-function subscriptionStatus({
+export function subscriptionStatus({
   app,
   definition,
   pushNotifications,
@@ -285,8 +293,8 @@ function subscriptionStatus({
       const { endpoint } = await getSubscription(pushNotifications);
       const { data } = await axios.get(
         d?.[id]
-          ? `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}/${d[id]}/subscriptions`
-          : `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}/subscriptions`,
+          ? `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/${d[id]}/subscriptions`
+          : `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/subscriptions`,
         {
           params: { endpoint },
         },
@@ -297,15 +305,3 @@ function subscriptionStatus({
     type: 'resource.subscription.status',
   };
 }
-
-export default {
-  get,
-  query,
-  create,
-  update,
-  remove,
-  subscribe,
-  unsubscribe,
-  toggleSubscribe,
-  subscriptionStatus,
-};

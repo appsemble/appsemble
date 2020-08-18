@@ -5,16 +5,16 @@ import { h, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
 import type { Button as ButtonType } from '../../../block';
-import ButtonWrapper from '../ButtonWrapper';
+import { ButtonWrapper } from '../ButtonWrapper';
 
 interface ButtonProps {
   action: Action;
   button: ButtonType;
-  data: any;
+  data: unknown;
   utils: Utils;
 }
 
-export default function Button({ action, button, data, utils }: ButtonProps): VNode {
+export function Button({ action, button, data, utils }: ButtonProps): VNode {
   const onButtonClick = useCallback(
     (event: Event) => {
       event.preventDefault();

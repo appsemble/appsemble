@@ -4,17 +4,16 @@ import type { NamedEvent } from '@appsemble/web-utils';
 import BulmaTagsInput, { BulmaTagsInputOptions } from '@creativebulma/bulma-tagsinput';
 import React, { ComponentPropsWithoutRef, forwardRef, useEffect, useRef } from 'react';
 
-import Input from '../Input';
-import useCombinedRefs from '../useCombinedRefs';
+import { Input, useCombinedRefs } from '..';
 
 type TagsInputProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'onChange' | 'value'> &
   Pick<BulmaTagsInputOptions, 'delimiter'> & {
-    onChange(event: NamedEvent<HTMLInputElement>, value: string[]): void;
+    onChange: (event: NamedEvent<HTMLInputElement>, value: string[]) => void;
 
     value?: string[];
   };
 
-export default forwardRef<HTMLInputElement, TagsInputProps>(
+export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
   ({ delimiter, onChange, ...props }, ref) => {
     const innerRef = useRef<HTMLInputElement>();
     const bulmaInputRef = useRef<BulmaTagsInput>();
@@ -32,11 +31,11 @@ export default forwardRef<HTMLInputElement, TagsInputProps>(
       const element = innerRef.current;
       const bulmaInput = bulmaInputRef.current;
       if (!bulmaInput) {
-        return undefined;
+        return;
       }
 
       const onEvent = (): void =>
-        onChange({ target: element, currentTarget: element }, bulmaInput.items as string[]);
+        onChange({ target: element, currentTarget: element } as any, bulmaInput.items as string[]);
       bulmaInput.on('after.remove', onEvent);
       bulmaInput.on('after.add', onEvent);
       bulmaInput.on('after.flush', onEvent);
@@ -48,6 +47,6 @@ export default forwardRef<HTMLInputElement, TagsInputProps>(
       };
     }, [onChange]);
 
-    return <Input ref={mergedRef} onChange={null} {...props} />;
+    return <Input onChange={null} ref={mergedRef} {...props} />;
   },
 );

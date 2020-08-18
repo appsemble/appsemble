@@ -1,4 +1,4 @@
-import validate, { SchemaValidationError } from './validate';
+import { SchemaValidationError, validate } from './validate';
 
 describe('validate', () => {
   it('should validate data against a JSON schema', async () => {

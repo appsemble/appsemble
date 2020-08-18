@@ -1,6 +1,8 @@
+import type { OpenAPIV3 } from 'openapi-types';
+
 import { scopes } from '../../../constants';
 
-export default {
+export const OAuth2ClientCredentials: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'OAuth2 client credentials',
   required: ['description', 'scopes'],
@@ -29,6 +31,7 @@ export default {
       type: 'array',
       description: 'The scopes that have been granted to the client.',
       items: {
+        // @ts-expect-error This is valid.
         enum: scopes,
       },
     },

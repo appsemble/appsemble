@@ -7,10 +7,11 @@ import type { DNSImplementation } from './dns';
 /**
  * Add DNS entries for all apps in the database in chunks
  *
- * @param dnsConfig The DNS configuration instance to use.
- * @param chunkSize How many apps to register per DNS add request.
+ * @param hostname - The hostname of the Appsemble server.
+ * @param dnsConfig - The DNS configuration instance to use.
+ * @param chunkSize - How many apps to register per DNS add request.
  */
-export default async function bulkDNSRestore(
+export async function bulkDNSRestore(
   hostname: string,
   dnsConfig: DNSImplementation,
   chunkSize: number,

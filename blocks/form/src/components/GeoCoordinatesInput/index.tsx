@@ -8,12 +8,12 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import type { GeoCoordinatesField, InputProps } from '../../../block';
 import styles from './index.css';
 
-type GeoCoordinatesInputProps = InputProps<{}, GeoCoordinatesField>;
+type GeoCoordinatesInputProps = InputProps<{ [key: string]: number }, GeoCoordinatesField>;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
  */
-export default function GeoCoordinatesInput({
+export function GeoCoordinatesInput({
   disabled,
   field: {
     defaultLocation: [defaultLat = 51.476852, defaultLng = 0],
@@ -37,7 +37,7 @@ export default function GeoCoordinatesInput({
 
   useEffect(() => {
     if (!map) {
-      return undefined;
+      return;
     }
 
     const marker = new CircleMarker(null, {
@@ -60,12 +60,12 @@ export default function GeoCoordinatesInput({
 
   useEffect(() => {
     if (!map) {
-      return undefined;
+      return;
     }
 
     const onMove = (): void => {
       const { lat, lng } = map.getCenter();
-      onInput(({ currentTarget: { name } } as any) as Event, {
+      onInput(({ currentTarget: { name } } as unknown) as Event, {
         latitude: lat,
         longitude: lng,
       });
@@ -108,7 +108,7 @@ export default function GeoCoordinatesInput({
 
   return (
     <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
-      <div ref={ref} className={styles.map} />
+      <div className={styles.map} ref={ref} />
       <div className={styles.crossHairsOverlay}>
         <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
       </div>

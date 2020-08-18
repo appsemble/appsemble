@@ -8,16 +8,16 @@ interface DotProgressBarProps {
   active: number;
 }
 
-export default function DotProgressBar({ active, amount }: DotProgressBarProps): ReactElement {
+export function DotProgressBar({ active, amount }: DotProgressBarProps): ReactElement {
   return (
     <div className={styles.dotContainer}>
-      {Array.from(Array(amount), (_, index) => (
+      {Array.from({ length: amount }, (_, index) => (
         <div
-          key={index}
           className={classNames('is-inline-block mx-1', styles.dot, {
             [styles.previous]: index < active,
             [styles.active]: index === active,
           })}
+          key={index}
         />
       ))}
     </div>

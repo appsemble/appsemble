@@ -3,7 +3,7 @@ import type { AppMessages } from '@appsemble/types';
 import { IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
 import axios from 'axios';
 import memoizeIntlConstructor from 'intl-format-cache';
-import IntlMessageFormat from 'intl-messageformat';
+import { IntlMessageFormat } from 'intl-messageformat';
 import React, {
   createContext,
   ReactElement,
@@ -17,7 +17,7 @@ import React, {
 import { useHistory, useParams } from 'react-router-dom';
 
 import { detectLocale } from '../../utils/i18n';
-import settings from '../../utils/settings';
+import { apiUrl, appId, languages } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 
 interface IntlMessagesProviderProps {
@@ -32,7 +32,7 @@ const formatters = {
   getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
 };
 
-export default function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
+export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const { definition } = useAppDefinition();
   const history = useHistory();
@@ -48,8 +48,8 @@ export default function AppMessagesProvider({ children }: IntlMessagesProviderPr
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || 'en';
-    if (lang !== defaultLanguage && !settings.languages.includes(lang)) {
-      const detected = detectLocale(settings.languages, navigator.languages) || defaultLanguage;
+    if (lang !== defaultLanguage && !languages.includes(lang)) {
+      const detected = detectLocale(languages, navigator.languages) || defaultLanguage;
       if (/^[A-Z]/.exec(lang) || definition.pages.find((page) => lang === normalize(page.name))) {
         // Someone got linked to a page without a language tag. Redirect them to the same page, but
         // with language set. This is especially important for the OAuth2 callback URL.
@@ -61,7 +61,7 @@ export default function AppMessagesProvider({ children }: IntlMessagesProviderPr
     }
 
     axios
-      .get<AppMessages>(`${settings.apiUrl}/api/apps/${settings.id}/messages/${lang}`)
+      .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
       .then(({ data }) => setMessages(data.messages))
       .catch(() => setError(true))
       .finally(() => setLoading(false));

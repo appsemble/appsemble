@@ -1,14 +1,16 @@
 export interface EnhancedMock extends jest.Mock {
-  waitToHaveBeenCalled: (t: number) => Promise<any>;
+  waitToHaveBeenCalled: (t: number) => Promise<void>;
 }
 
 /**
  * Creates a mock function that can be awaited to be called X amount of times.
  *
  * Taken from https://github.com/facebook/jest/issues/7432#issuecomment-443536177
+ *
+ * @returns A mock which is resolved when it is called.
  */
-export default function createWaitableMock(): EnhancedMock {
-  let resolve: (value?: any) => void;
+export function createWaitableMock(): EnhancedMock {
+  let resolve: () => void;
   let times: number;
   let calledCount = 0;
   const mock = jest.fn() as EnhancedMock;

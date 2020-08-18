@@ -4,21 +4,21 @@ import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import type { Item } from '../block';
-import ListItem from './components/ListItem';
+import { ListItem } from './components/ListItem';
 
 const messages = {
   error: 'An error occurred when fetching the data.',
   noData: 'There is no data available.',
 };
 
-export default bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
+bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     if (blockData != null) {
-      const newData = base != null ? blockData[base] : blockData;
+      const newData = base == null ? blockData : blockData[base];
 
       if (Array.isArray(newData)) {
         setData(newData);
@@ -32,10 +32,10 @@ export default bootstrap(({ data: blockData, events, parameters: { base }, ready
       if (err) {
         setError(true);
       } else {
-        if (base != null) {
-          setData(d[base]);
-        } else {
+        if (base == null) {
           setData(d);
+        } else {
+          setData(d[base]);
         }
         setError(false);
       }

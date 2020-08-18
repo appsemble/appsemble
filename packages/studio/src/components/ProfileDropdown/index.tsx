@@ -5,9 +5,9 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { useUser } from '../UserProvider';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function ProfileDropdown(): ReactElement {
+export function ProfileDropdown(): ReactElement {
   const { formatMessage } = useIntl();
   const { logout, userInfo } = useUser();
   const location = useLocation();

@@ -27,7 +27,7 @@ import {
 } from '.';
 
 @Table({ tableName: 'User', paranoid: true })
-export default class User extends Model<User> {
+export class User extends Model<User> {
   @PrimaryKey
   @IsUUID(4)
   @Default(DataType.UUIDV4)

@@ -1,4 +1,4 @@
-import extractBlobs, { placeholder } from './extractBlobs';
+import { extractBlobs, placeholder } from './extractBlobs';
 
 describe('extractBlobs', () => {
   it('should extract files from an object', () => {

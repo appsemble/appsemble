@@ -1,4 +1,4 @@
-import basicAuth from './basicAuth';
+import { basicAuth } from './basicAuth';
 
 it('should serialize credentials', () => {
   const result = basicAuth('me', 'password1');

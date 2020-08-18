@@ -1,14 +1,15 @@
+import type { EventEmitter } from 'events';
+
 import { useMessages } from '@appsemble/react-components';
 import type { BootstrapParams } from '@appsemble/sdk';
 import type { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
-import type { EventEmitter } from 'events';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import type { ShowDialogAction } from '../../types';
-import makeActions from '../../utils/makeActions';
-import BlockList from '../BlockList';
-import DotProgressBar from '../DotProgressBar';
+import { makeActions } from '../../utils/makeActions';
+import { BlockList } from '../BlockList';
+import { DotProgressBar } from '../DotProgressBar';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 
 interface FlowPageProps {
@@ -20,7 +21,7 @@ interface FlowPageProps {
   showDialog: ShowDialogAction;
 }
 
-export default function FlowPage({
+export function FlowPage({
   definition,
   ee,
   page,
@@ -34,6 +35,8 @@ export default function FlowPage({
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
 
+  // XXX Something weird is going on here.
+  // eslint-disable-next-line prefer-const
   let actions: BootstrapParams['actions'];
 
   const finish = useCallback(
@@ -46,6 +49,7 @@ export default function FlowPage({
   );
 
   const next = useCallback(
+    // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
       const { subPages } = page;
 
@@ -62,6 +66,7 @@ export default function FlowPage({
   );
 
   const back = useCallback(
+    // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
       if (currentPage <= 0) {
         // Don't do anything if a previous page does not exist
@@ -129,11 +134,11 @@ export default function FlowPage({
     <>
       <DotProgressBar active={currentPage} amount={page.subPages.length} />
       <BlockList
-        key={currentPage}
         blocks={page.subPages[currentPage].blocks}
         data={data}
         ee={ee}
         flowActions={flowActions}
+        key={currentPage}
         page={page}
         prefix={`${prefix}.subPages.${currentPage}.blocks`}
         remap={remap}

@@ -2,7 +2,7 @@ import type { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from
 import type { BlockManifest } from '@appsemble/types';
 import type { Promisable } from 'type-fest';
 
-import prefixBlockURL from './prefixBlockURL';
+import { prefixBlockURL } from './prefixBlockURL';
 
 const bootstrappers = new Map<string, BootstrapFunction>();
 const resolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
@@ -11,9 +11,9 @@ const loadedBlocks = new Set<string>();
 /**
  * Register a bootstrap function for a block.
  *
- * @param scriptNode The script node on which to register the bootstrap function.
- * @param event the event that was used to register the bootstrap function.
- * @param blockDefId The id of the block definition for which a boostrap function is being
+ * @param scriptNode - The script node on which to register the bootstrap function.
+ * @param event - the event that was used to register the bootstrap function.
+ * @param blockDefId - The id of the block definition for which a boostrap function is being
  * registered.
  */
 export function register(
@@ -33,7 +33,7 @@ export function register(
     );
   }
   if (!(fn instanceof Function)) {
-    throw new Error(
+    throw new TypeError(
       'No function was passed to bootstrap(). It takes a function as its first argument.',
     );
   }
@@ -62,8 +62,8 @@ function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
 /**
  * Call the bootstrap function for a block definition
  *
- * @param blockDef The block definition whose bootstrap function to call.
- * @param params any named parameters that will be passed to the block boostrap function.
+ * @param manifest - The block manifest whose bootstrap function to call.
+ * @param params - any named parameters that will be passed to the block boostrap function.
  */
 export async function callBootstrap(
   manifest: BlockManifest,
@@ -80,7 +80,7 @@ export async function callBootstrap(
           event.preventDefault();
           register(script, event, manifest.name);
         });
-        document.head.appendChild(script);
+        document.head.append(script);
       });
     loadedBlocks.add(manifest.name);
   }

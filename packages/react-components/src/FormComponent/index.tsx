@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
+import { messages } from './messages';
 
 export interface FormComponentProps {
   children: ReactNode;
@@ -39,7 +39,7 @@ export interface FormComponentProps {
 /**
  * A wrapper for creating consistent form components.
  */
-export default function FormComponent({
+export function FormComponent({
   children,
   className,
   iconLeft,

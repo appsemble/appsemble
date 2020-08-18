@@ -1,9 +1,9 @@
-import resolveJsonPointers from './resolveJsonPointers';
+import { resolveJsonPointers } from './resolveJsonPointers';
 
 interface Fixture {
   name: string;
-  actual: any;
-  expected: any;
+  actual: unknown;
+  expected: unknown;
 }
 
 const fixtures: Fixture[] = [

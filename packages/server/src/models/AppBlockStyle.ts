@@ -14,7 +14,7 @@ import {
 import { App } from '.';
 
 @Table({ tableName: 'AppBlockStyle' })
-export default class AppBlockStyle extends Model<AppBlockStyle> {
+export class AppBlockStyle extends Model<AppBlockStyle> {
   @PrimaryKey
   @AllowNull(false)
   @ForeignKey(() => App)

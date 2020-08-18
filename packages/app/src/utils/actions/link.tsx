@@ -12,7 +12,7 @@ import type { MakeActionParameters } from '../../types';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
-export default function link({
+export function link({
   definition: { to, parameters = {}, remap = '' },
   app: { pages },
   history,
@@ -28,7 +28,7 @@ export default function link({
     const subPage =
       toPage.type !== 'page' && toSub ? toPage.subPages.find(({ name }) => name === toSub) : null;
 
-    if (toPage == null || (toSub && subPage === null)) {
+    if (toPage == null || (toSub && subPage == null)) {
       throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);
     }
 
@@ -39,18 +39,20 @@ export default function link({
         return data;
       }
 
-      return `/${[
+      return [
+        '',
         normalize(toPage.name),
         ...(toPage.parameters || []).map((name) =>
           Object.hasOwnProperty.call(mappers, name) ? mappers[name](data) : data[name],
         ),
         ...(subPage ? [normalize(subPage.name)] : []),
-      ].join('/')}`;
+      ].join('/');
     };
   }
 
   return {
     type: 'link',
+    // eslint-disable-next-line require-await
     async dispatch(data = {}) {
       const target = href(data);
 

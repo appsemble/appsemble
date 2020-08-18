@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   deleteWarningTitle: 'Delete warning',
   deleteWarning: 'Are you sure you want to delete {blockName} from {pageName}?',
   deleteSubBlockWarning: 'Are you sure you want to delete subblock {blockName}?',

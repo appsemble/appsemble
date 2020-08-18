@@ -1,7 +1,7 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
-  blocked: 'Notifications have been blocked. Please update your site settings and try again.',
+export const messages = defineMessages({
+  blocked: 'Notifications have been blocked. Please update your site and try again.',
   settings: 'Settings',
   subscribe: 'Subscribe',
   suscribeDescription:

@@ -6,9 +6,9 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import messages from './messages';
+import { messages } from './messages';
 
-export default function ForwardOAuth2Login(): ReactElement {
+export function ForwardOAuth2Login(): ReactElement {
   const { id } = useParams<{ id: string }>();
   const qs = useQuery();
   const location = useLocationString();

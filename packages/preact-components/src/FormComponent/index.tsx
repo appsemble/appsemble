@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ComponentChildren, h, VNode } from 'preact';
 
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
 export interface FormComponentProps {
   children: ComponentChildren;
@@ -37,7 +37,7 @@ export interface FormComponentProps {
 /**
  * A wrapper for creating consistent form components.
  */
-export default function FormComponent({
+export function FormComponent({
   children,
   className,
   iconLeft,

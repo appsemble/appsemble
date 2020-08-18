@@ -1,6 +1,6 @@
 import type { editor } from 'monaco-editor';
 
-export default function applyMonacoEdits(
+export function applyMonacoEdits(
   ed: editor.IStandaloneCodeEditor,
   edits: editor.IIdentifiedSingleEditOperation[],
 ): void {

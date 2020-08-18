@@ -3,11 +3,11 @@ import { FormattedMessage } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
-import HelmetIntl from '../HelmetIntl';
+import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
-import messages from './messages';
+import { messages } from './messages';
 
-export default function CMSRoot(): ReactElement {
+export function CMSRoot(): ReactElement {
   const { url } = useRouteMatch();
   const { app } = useApp();
 

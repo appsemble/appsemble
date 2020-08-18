@@ -2,15 +2,17 @@ import crypto from 'crypto';
 import { URL } from 'url';
 
 import type { KoaContext } from '../../types';
-import createSettings from '../../utils/createSettings';
-import makeCSP from '../../utils/makeCSP';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
-import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
+import { createSettings } from '../../utils/createSettings';
+import { makeCSP } from '../../utils/makeCSP';
+import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
 
 /**
  * Serve `index.html` for editor related routes.
+ *
+ * @param ctx - The Koa context.
  */
-export default async function indexHandler(ctx: KoaContext): Promise<void> {
+export async function indexHandler(ctx: KoaContext): Promise<void> {
   const {
     argv: { disableRegistration, githubClientId, gitlabClientId, googleClientId, host, sentryDsn },
     state: { render },

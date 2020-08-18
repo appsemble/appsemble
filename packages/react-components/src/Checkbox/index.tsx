@@ -8,7 +8,7 @@ import React, {
   useCallback,
 } from 'react';
 
-import FormComponent from '../FormComponent';
+import { FormComponent } from '..';
 
 type CheckboxProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
@@ -55,7 +55,7 @@ type CheckboxProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'child
 /**
  * A Bulma styled form select element.
  */
-export default forwardRef<HTMLInputElement, CheckboxProps>(
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     {
       className,
@@ -84,7 +84,6 @@ export default forwardRef<HTMLInputElement, CheckboxProps>(
       <FormComponent className={wrapperClassName} id={id} label={label} required>
         <input
           {...props}
-          ref={ref}
           checked={value}
           className={classNames(
             isSwitch ? 'switch' : 'is-checkradio',
@@ -94,6 +93,7 @@ export default forwardRef<HTMLInputElement, CheckboxProps>(
           id={id}
           name={name}
           onChange={handleChange}
+          ref={ref}
           type="checkbox"
         />
         <label className={classNames({ 'is-danger': error })} htmlFor={id}>

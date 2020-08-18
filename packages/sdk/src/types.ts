@@ -28,7 +28,7 @@ export interface BaseAction<T extends string> {
   /**
    * A function which can be called to dispatch the action.
    */
-  dispatch: (data?: any) => Promise<any>;
+  dispatch: (data?: any) => Promise<unknown>;
 }
 
 export type RequestLikeActionTypes =
@@ -43,7 +43,7 @@ export interface LinkAction extends BaseAction<'link'> {
   /**
    * Get the link that the action would link to if the given data was passed.
    */
-  href: (data?: any) => string;
+  href: (data?: unknown) => string;
 }
 
 export interface LogAction extends BaseAction<'log'> {

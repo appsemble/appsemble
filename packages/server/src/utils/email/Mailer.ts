@@ -3,8 +3,8 @@ import nodemailer, { Transporter } from 'nodemailer';
 import type { Options } from 'nodemailer/lib/smtp-connection';
 
 import type { Argv } from '../../types';
-import readAsset from '../readAsset';
-import renderEmail from './renderEmail';
+import { readAsset } from '../readAsset';
+import { renderEmail } from './renderEmail';
 
 export interface Recipient {
   /**
@@ -21,11 +21,11 @@ export interface Recipient {
 /**
  * A class to simplify sending emails.
  */
-export default class Mailer {
+export class Mailer {
   transport: Transporter;
 
   /**
-   * @param {Object} argv The CLI arguments passed to the Appsemble server.
+   * @param argv - The CLI arguments passed to the Appsemble server.
    */
   constructor({ smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser }: Argv) {
     if (smtpHost) {
@@ -59,17 +59,17 @@ export default class Mailer {
   /**
    * Send an email using the configured SMTP transport.
    *
-   * @param to The email
-   * @param templateName The name of the Markdown email template to send
-   * @param values A key/value pair of values to use for rendering the email.
+   * @param to - The email
+   * @param templateName - The name of the Markdown email template to send
+   * @param values - A key/value pair of values to use for rendering the email.
    */
   async sendTemplateEmail(
     to: Recipient,
     templateName: string,
     values: { [key: string]: string },
   ): Promise<void> {
-    const template = await readAsset(`email/${templateName}.md`, 'utf-8');
-    const { html, subject, text } = await renderEmail(template.toString(), {
+    const template = (await readAsset(`email/${templateName}.md`, 'utf-8')) as string;
+    const { html, subject, text } = await renderEmail(template, {
       ...values,
       greeting: to.name ? `Hello ${to.name}` : 'Hello',
     });
@@ -80,10 +80,10 @@ export default class Mailer {
   /**
    * Send an email using the configured SMTP transport.
    *
-   * @param to The email address of the recipient
-   * @param subject The subject of the email
-   * @param html The HTML content of the email
-   * @param text The plain-text content of the email
+   * @param to - The email address of the recipient
+   * @param subject - The subject of the email
+   * @param html - The HTML content of the email
+   * @param text - The plain-text content of the email
    */
   async sendEmail(to: string, subject: string, html: string, text: string): Promise<void> {
     if (!this.transport) {

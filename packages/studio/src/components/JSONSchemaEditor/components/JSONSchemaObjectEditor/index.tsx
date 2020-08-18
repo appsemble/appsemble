@@ -3,11 +3,11 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement, useCallback } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
-import JSONSchemaLabel from '../JSONSchemaLabel';
-import RecursiveJSONSchemaEditor from '../RecursiveJSONSchemaEditor';
+import { JSONSchemaLabel } from '../JSONSchemaLabel';
+import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import styles from './index.css';
 
-export default function JSONSchemaObjectEditor({
+export function JSONSchemaObjectEditor({
   disabled,
   name,
   onChange,
@@ -31,8 +31,8 @@ export default function JSONSchemaObjectEditor({
       </Title>
       {Object.entries(schema?.properties ?? {}).map(([propName, subSchema]) => (
         <RecursiveJSONSchemaEditor
-          key={propName}
           disabled={disabled}
+          key={propName}
           name={name ? `${name}.${propName}` : propName}
           onChange={onPropertyChange}
           prefix={prefix}

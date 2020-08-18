@@ -1,4 +1,4 @@
-import commandDirOptions from './commandDirOptions';
+import { commandDirOptions } from './commandDirOptions';
 
 it('should handle ts files', () => {
   const [dir, options] = commandDirOptions('/usr/lib/node_modules/example/module.ts');

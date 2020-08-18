@@ -1,21 +1,22 @@
+import http from 'http';
+import https from 'https';
+
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
-import http from 'http';
-import https from 'https';
 import Koa from 'koa';
 import type { Configuration } from 'webpack';
 import type { Argv } from 'yargs';
 
-import migrations from '../migrations';
+import { migrations } from '../migrations';
 import { initDB } from '../models';
 import type { Argv as Args } from '../types';
-import addDBHooks from '../utils/addDBHooks';
-import createServer from '../utils/createServer';
-import migrate from '../utils/migrate';
-import readPackageJson from '../utils/readPackageJson';
+import { addDBHooks } from '../utils/addDBHooks';
+import { createServer } from '../utils/createServer';
+import { migrate } from '../utils/migrate';
+import { readPackageJson } from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
-import databaseBuilder from './builder/database';
+import { databaseBuilder } from './builder/database';
 
 interface AdditionalArguments {
   webpackConfigs?: Configuration[];
@@ -130,8 +131,8 @@ export async function handler(
       ssl: argv.databaseSsl,
       uri: argv.databaseUrl,
     });
-  } catch (dbException) {
-    handleDBError(dbException);
+  } catch (error) {
+    handleDBError(error);
   }
 
   if (argv.migrateTo) {
@@ -156,7 +157,7 @@ export async function handler(
       scope.setTag('ip', ctx.ip);
       scope.setTag('level', 'error');
       scope.setTag('method', ctx.method);
-      scope.setTag('url', `${ctx.URL}`);
+      scope.setTag('url', String(ctx.URL));
       scope.setTag('User-Agent', ctx.headers['user-agent']);
       Sentry.captureException(err);
     });

@@ -1,10 +1,10 @@
 /**
  * Inject CSS into a root node using using a `link` tag.
  *
- * @param parent The parent node to insert the CSS into. I.e. a shadow root.
- * @param url The URL of the stylesheet to insert.
+ * @param parent - The parent node to insert the CSS into. I.e. a shadow root.
+ * @param url - The URL of the stylesheet to insert.
  */
-export default async function injectCSS(parent: Node, url?: string): Promise<void> {
+export async function injectCSS(parent: Node, url?: string): Promise<void> {
   await new Promise((resolve) => {
     if (!url) {
       resolve();
@@ -19,6 +19,7 @@ export default async function injectCSS(parent: Node, url?: string): Promise<voi
     });
     link.href = url;
     link.rel = 'stylesheet';
+    // eslint-disable-next-line unicorn/prefer-node-append
     parent.appendChild(link);
   });
 }

@@ -2,30 +2,30 @@ import type { Options, Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 
 import { logSQL } from '../utils/sqlUtils';
-import App from './App';
-import AppBlockStyle from './AppBlockStyle';
-import AppMember from './AppMember';
-import AppMessages from './AppMessages';
-import AppOAuth2Authorization from './AppOAuth2Authorization';
-import AppOAuth2Secret from './AppOAuth2Secret';
-import AppRating from './AppRating';
-import AppSubscription from './AppSubscription';
-import Asset from './Asset';
-import BlockAsset from './BlockAsset';
-import BlockVersion from './BlockVersion';
-import EmailAuthorization from './EmailAuthorization';
-import Member from './Member';
-import Meta from './Meta';
-import OAuth2AuthorizationCode from './OAuth2AuthorizationCode';
-import OAuth2ClientCredentials from './OAuth2ClientCredentials';
-import OAuthAuthorization from './OAuthAuthorization';
-import Organization from './Organization';
-import OrganizationBlockStyle from './OrganizationBlockStyle';
-import OrganizationInvite from './OrganizationInvite';
-import ResetPasswordToken from './ResetPasswordToken';
-import Resource from './Resource';
-import ResourceSubscription from './ResourceSubscription';
-import User from './User';
+import { App } from './App';
+import { AppBlockStyle } from './AppBlockStyle';
+import { AppMember } from './AppMember';
+import { AppMessages } from './AppMessages';
+import { AppOAuth2Authorization } from './AppOAuth2Authorization';
+import { AppOAuth2Secret } from './AppOAuth2Secret';
+import { AppRating } from './AppRating';
+import { AppSubscription } from './AppSubscription';
+import { Asset } from './Asset';
+import { BlockAsset } from './BlockAsset';
+import { BlockVersion } from './BlockVersion';
+import { EmailAuthorization } from './EmailAuthorization';
+import { Member } from './Member';
+import { Meta } from './Meta';
+import { OAuth2AuthorizationCode } from './OAuth2AuthorizationCode';
+import { OAuth2ClientCredentials } from './OAuth2ClientCredentials';
+import { OAuthAuthorization } from './OAuthAuthorization';
+import { Organization } from './Organization';
+import { OrganizationBlockStyle } from './OrganizationBlockStyle';
+import { OrganizationInvite } from './OrganizationInvite';
+import { ResetPasswordToken } from './ResetPasswordToken';
+import { Resource } from './Resource';
+import { ResourceSubscription } from './ResourceSubscription';
+import { User } from './User';
 
 let db: Sequelize;
 
@@ -134,7 +134,8 @@ export function initDB({
 
 export function getDB(): Sequelize {
   if (!db) {
-    throw new Error('The database hasn’t ben initialized yet. Call initDB() first.');
+    return;
+    // Throw new Error('The database hasn’t been initialized yet. Call initDB() first.');
   }
   return db;
 }
@@ -144,10 +145,10 @@ export function getDB(): Sequelize {
  *
  * If the callback function fails, the transaction will be rolled back.
  *
- * @param callback The function that will be called with a transaction.
+ * @param callback - The function that will be called with a transaction.
+ *
+ * @returns The result of the callback function.
  */
-export async function transactional<T>(
-  callback: (transaction: Transaction) => Promise<T>,
-): Promise<T> {
+export function transactional<T>(callback: (transaction: Transaction) => Promise<T>): Promise<T> {
   return getDB().transaction(callback);
 }

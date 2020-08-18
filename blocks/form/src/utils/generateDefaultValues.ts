@@ -1,6 +1,6 @@
 import type { Parameters } from '@appsemble/sdk';
 
-export default function generateDefaultValues(parameters: Parameters): { [field: string]: any } {
+export function generateDefaultValues(parameters: Parameters): { [field: string]: any } {
   return parameters.fields.reduce((acc, field) => {
     if ('defaultValue' in field) {
       acc[field.name] = field.defaultValue;

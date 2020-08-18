@@ -1,8 +1,9 @@
-import bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 
+import bcrypt from 'bcrypt';
+
 import { EmailAuthorization, OAuth2ClientCredentials, User } from '../../models';
-import createJWTResponse from '../createJWTResponse';
+import { createJWTResponse } from '../createJWTResponse';
 
 const password = bcrypt.hashSync('testpassword', 10);
 
@@ -13,7 +14,7 @@ interface TestTokenResult {
   clientToken?: string;
 }
 
-export default async function testToken(
+export async function testToken(
   scope?: string,
   email = 'test@example.com',
 ): Promise<TestTokenResult> {

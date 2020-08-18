@@ -1,5 +1,6 @@
-const yaml = require('js-yaml');
 const path = require('path');
+
+const yaml = require('js-yaml');
 const autolink = require('remark-autolink-headings');
 const frontmatter = require('remark-frontmatter');
 const slug = require('remark-slug');
@@ -97,7 +98,7 @@ module.exports = (env, argv) => {
           ],
         },
         {
-          test: /[\\/]messages\.tsx?$/,
+          test: /[/\\]messages\.tsx?$/,
           loader: 'babel-loader',
           options: {
             plugins: ['babel-plugin-react-intl-auto'],

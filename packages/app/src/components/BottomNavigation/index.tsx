@@ -13,12 +13,12 @@ interface BottomNavigationProps {
 /**
  * The app navigation that is displayed at the bottom of the app.
  */
-export default function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
+export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
   return (
     <nav className="bottom-nav mb-0">
       <ul className={`${styles.list} is-flex`}>
         {pages.map((page) => (
-          <li key={page.name} className="bottom-nav-item">
+          <li className="bottom-nav-item" key={page.name}>
             <NavLink
               activeClassName="is-active"
               className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"

@@ -1,9 +1,10 @@
+import path from 'path';
+
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
-import path from 'path';
 import type { PackageJson } from 'type-fest';
 
-import readPackageJson from '../lib/readPackageJson';
+import { readPackageJson } from '../lib/readPackageJson';
 
 export const command = 'block';
 export const description = 'Bootstrap a new Appsemble block.';

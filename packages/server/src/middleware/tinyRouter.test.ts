@@ -3,7 +3,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import type { KoaContext } from '../types';
-import tinyRouter from './tinyRouter';
+import { tinyRouter } from './tinyRouter';
 
 let app: Koa;
 let context: KoaContext;
@@ -49,7 +49,7 @@ it('should throw method not allowed if a URL is matched, but not for the given m
   expect(error.output.statusCode).toBe(405);
 });
 
-it('should fall back to the any handler if it exists ', async () => {
+it('should fall back to the any handler if it exists', async () => {
   const any = jest.fn();
   app.use(
     tinyRouter([
@@ -60,7 +60,7 @@ it('should fall back to the any handler if it exists ', async () => {
     ]),
   );
   await request.post('/');
-  expect(any).toHaveBeenCalled();
+  expect(any).toHaveBeenCalledWith(context, expect.any(Function));
 });
 
 it('should pick method specific middleware over any', async () => {
@@ -77,7 +77,7 @@ it('should pick method specific middleware over any', async () => {
   );
   await request.get('/');
   expect(any).not.toHaveBeenCalled();
-  expect(get).toHaveBeenCalled();
+  expect(get).toHaveBeenCalledWith(context, expect.any(Function));
 });
 
 it('should not call next if there are matching routes', async () => {
@@ -100,5 +100,5 @@ it('should call next if there are no matching routes', async () => {
   app.use(tinyRouter([]));
   app.use(middleware);
   await request.get('/');
-  expect(middleware).toHaveBeenCalled();
+  expect(middleware).toHaveBeenCalledWith(context, expect.any(Function));
 });

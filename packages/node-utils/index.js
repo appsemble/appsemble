@@ -1,7 +1,7 @@
 try {
-  // eslint-disable-next-line global-require, import/no-unresolved
+  // eslint-disable-next-line import/no-unresolved, node/global-require
   module.exports = require('./dist');
-} catch (error) {
-  // eslint-disable-next-line global-require
+} catch {
+  // eslint-disable-next-line node/global-require
   module.exports = require('./src');
 }

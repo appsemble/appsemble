@@ -1,7 +1,7 @@
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, BlockAsset, BlockVersion, Organization } from '../../models';
-import createServer from '../../utils/createServer';
+import { createServer } from '../../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
 let templateName: string;
@@ -178,6 +178,7 @@ beforeAll(async () => {
     middleware(ctx, next) {
       Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
       Object.defineProperty(ctx, 'hostname', { value: 'app.test.host.example' });
+      // eslint-disable-next-line require-await
       ctx.state.render = async (name, params) => {
         templateName = name;
         templateParams = params;

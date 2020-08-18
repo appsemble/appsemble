@@ -10,23 +10,22 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import type { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import React, { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import download from '../../utils/download';
+import { download } from '../../utils/download';
 import { useApp } from '../AppContext';
-import HelmetIntl from '../HelmetIntl';
-import JSONSchemaEditor from '../JSONSchemaEditor';
-import ResourceRow from './components/ResourceRow';
-import messages from './messages';
+import { HelmetIntl } from '../HelmetIntl';
+import { JSONSchemaEditor } from '../JSONSchemaEditor';
+import { ResourceRow } from './components/ResourceRow';
+import { messages } from './messages';
 
 export interface Resource {
   id: number;
   $clonable: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface RouteParams {
@@ -34,7 +33,7 @@ export interface RouteParams {
   resourceName: string;
 }
 
-export default function ResourceTable(): ReactElement {
+export function ResourceTable(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const { id: appId, resourceName } = useParams<RouteParams>();
@@ -64,13 +63,13 @@ export default function ResourceTable(): ReactElement {
   );
 
   const onDeleteResource = useCallback(
-    async (id: number) => {
+    (id: number) => {
       setResources(resources.filter((resource) => resource.id !== id));
     },
     [resources, setResources],
   );
 
-  const onChange = useCallback((_event: NamedEvent, value: any) => {
+  const onChange = useCallback((event, value: Resource) => {
     setCreatingResource(value);
   }, []);
 
@@ -91,7 +90,7 @@ export default function ResourceTable(): ReactElement {
           body: formatMessage(messages.createSuccess, { id: data.id }),
           color: 'primary',
         });
-      } catch (e) {
+      } catch {
         push(formatMessage(messages.createError));
       }
     },
@@ -124,7 +123,7 @@ export default function ResourceTable(): ReactElement {
   }
 
   if (!loading && resources === undefined) {
-    if (!Object.prototype.hasOwnProperty.call(app.definition.resources, resourceName)) {
+    if (!Object.hasOwnProperty.call(app.definition.resources, resourceName)) {
       return (
         <>
           <HelmetIntl

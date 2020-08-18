@@ -5,18 +5,18 @@ import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import type { BaseRequirement } from '../block';
-import BooleanInput from './components/BooleanInput';
-import EnumInput from './components/EnumInput';
-import FileInput from './components/FileInput';
-import GeoCoordinatesInput from './components/GeoCoordinatesInput';
-import NumberInput from './components/NumberInput';
-import RadioInput from './components/RadioInput';
-import StringInput from './components/StringInput';
+import { BooleanInput } from './components/BooleanInput';
+import { EnumInput } from './components/EnumInput';
+import { FileInput } from './components/FileInput';
+import { GeoCoordinatesInput } from './components/GeoCoordinatesInput';
+import { NumberInput } from './components/NumberInput';
+import { RadioInput } from './components/RadioInput';
+import { StringInput } from './components/StringInput';
 import styles from './index.css';
-import messages from './messages';
-import generateDefaultValidity from './utils/generateDefaultValidity';
-import generateDefaultValues from './utils/generateDefaultValues';
-import validators from './utils/validators';
+import { messages } from './messages';
+import { generateDefaultValidity } from './utils/generateDefaultValidity';
+import { generateDefaultValues } from './utils/generateDefaultValues';
+import { validators } from './utils/validators';
 
 const inputs = {
   enum: EnumInput,
@@ -41,16 +41,16 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
     ...defaultValues,
     ...data,
   });
-  const ref = useRef<object>({});
+  const ref = useRef<unknown>({});
 
   const validateField = useCallback(
-    (event: Event, value: any): BaseRequirement => {
+    (event: Event, value: unknown): BaseRequirement => {
       const { fields } = parameters;
       const { name } = event.currentTarget as HTMLInputElement;
       const field = fields.find((f) => f.name === name);
 
-      if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
-        return validators[field.type](field, value);
+      if (Object.hasOwnProperty.call(validators, field.type)) {
+        return validators[field.type](field, value) as BaseRequirement;
       }
 
       return null;
@@ -59,7 +59,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   );
 
   const validateForm = useCallback(
-    async (v: any, currentValidity: { [field: string]: boolean }, lock: object) => {
+    async (v: unknown, currentValidity: { [field: string]: boolean }, lock: object) => {
       const requirements = parameters.requirements || [];
       let e = null;
 
@@ -97,7 +97,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   );
 
   const onChange = useCallback(
-    (event: Event, value: any): void => {
+    (event: Event, value: unknown): void => {
       const { name } = event.currentTarget as HTMLInputElement;
       const invalid = validateField(event, value);
       const error = (invalid != null && remap(invalid.errorMessage, value)) || messages.error;
@@ -138,7 +138,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   );
 
   const receiveData = useCallback(
-    (d: any) => {
+    (d: { [key: string]: unknown }) => {
       setDisabled(false);
       setValues({ ...defaultValues, ...d });
     },
@@ -162,17 +162,17 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
         const Comp = inputs[field.type];
         return (
           <Comp
-            // @ts-expect-error
-            key={field.name}
-            // @ts-expect-error
+            // @ts-expect-error XXX This shouldn’t be necessary
             disabled={disabled}
-            // @ts-expect-error
+            // @ts-expect-error XXX This shouldn’t be necessary
             error={errors[field.name]}
-            // @ts-expect-error
+            // @ts-expect-error XXX This shouldn’t be necessary
             field={field}
-            // @ts-expect-error
+            // @ts-expect-error XXX This shouldn’t be necessary
+            key={field.name}
+            // @ts-expect-error XXX This shouldn’t be necessary
             onInput={onChange}
-            // @ts-expect-error
+            // @ts-expect-error XXX This shouldn’t be necessary
             value={values[field.name]}
           />
         );

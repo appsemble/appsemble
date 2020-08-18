@@ -2,8 +2,7 @@ import classNames from 'classnames';
 import { ComponentChild, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import FormComponent, { FormComponentProps } from '../FormComponent';
-import Icon from '../Icon';
+import { FormComponent, FormComponentProps, Icon } from '..';
 
 type InputEventHandler<T> = (event: Event, value: T) => void;
 
@@ -101,7 +100,7 @@ export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps
 /**
  * A Bulma styled form input element.
  */
-export default function Input({
+export function Input({
   className,
   disabled,
   error,
@@ -148,8 +147,8 @@ export default function Input({
         name={name}
         onInput={handleInput}
         required={required}
-        type={type !== 'textarea' ? type : undefined}
-        value={`${value}`}
+        type={type === 'textarea' ? undefined : type}
+        value={String(value)}
         {...props}
       />
       {iconLeft && <Icon className="is-left" icon={iconLeft} />}

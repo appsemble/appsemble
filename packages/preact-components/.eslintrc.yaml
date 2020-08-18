@@ -1,0 +1,11 @@
+extends:
+  - remcohaszing/preact
+rules:
+  react/jsx-no-bind:
+    - error
+    - allowArrowFunctions: true
+  react/jsx-sort-props:
+    - error
+    - ignoreCase: true
+  react/prop-types: off
+  react/sort-comp: off

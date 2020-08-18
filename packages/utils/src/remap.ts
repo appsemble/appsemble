@@ -1,8 +1,8 @@
 import type { Remapper, Remappers } from '@appsemble/types';
 import { parse, parseISO } from 'date-fns';
-import type IntlMessageFormat from 'intl-messageformat';
+import type { IntlMessageFormat } from 'intl-messageformat';
 
-import mapValues from './mapValues';
+import { mapValues } from './mapValues';
 
 export interface IntlMessage {
   id?: string;
@@ -16,7 +16,7 @@ export interface RemapperContext {
 }
 
 type MapperImplementations = {
-  [F in keyof Remappers]: (args: Remappers[F], input: any, context: RemapperContext) => any;
+  [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: RemapperContext) => unknown;
 };
 
 /**
@@ -32,19 +32,20 @@ const mapperImplementations: MapperImplementations = {
 
   static: (input) => input,
 
-  prop: (prop, obj) =>
+  prop: (prop, obj: { [key: string]: unknown }) =>
     String(prop)
       .split('.')
       .reduce((acc, p) => acc?.[p] ?? null, obj),
 
-  'date.parse': (format, input) => (format ? parse(input, format, new Date()) : parseISO(input)),
+  'date.parse': (format, input: string) =>
+    format ? parse(input, format, new Date()) : parseISO(input),
 
   'string.case': (stringCase, input) => {
     if (stringCase === 'lower') {
-      return `${input}`.toLowerCase();
+      return String(input).toLowerCase();
     }
     if (stringCase === 'upper') {
-      return `${input}`.toUpperCase();
+      return String(input).toUpperCase();
     }
     return input;
   },
@@ -68,12 +69,12 @@ const mapperImplementations: MapperImplementations = {
   },
 };
 
-export default function remap(mappers: Remapper, input: any, context: RemapperContext): any {
+export function remap(mappers: Remapper, input: unknown, context: RemapperContext): unknown {
   if (typeof mappers === 'string' || mappers == null) {
     return mappers;
   }
   return mappers.reduce((acc, mapper) => {
-    const entries = Object.entries(mapper) as [[keyof MapperImplementations, any]];
+    const entries = Object.entries(mapper) as [[keyof MapperImplementations, unknown]];
     if (entries.length !== 1) {
       throw new Error(`Remapper has duplicate function definition: ${JSON.stringify(mapper)}`);
     }

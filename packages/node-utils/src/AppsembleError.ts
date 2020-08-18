@@ -4,9 +4,9 @@
  * This is used when the normal control flow needs to be aborted, but for reasons known. When an
  * instance of `AppsembleError` is thrown, the message will be logged, but not the stack trace.
  */
-export default class AppsembleError extends Error {
+export class AppsembleError extends Error {
   /**
-   * @param message The error message to show to the user.
+   * @param message - The error message to show to the user.
    */
   constructor(message: string) {
     super(message);

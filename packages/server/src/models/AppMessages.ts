@@ -14,7 +14,7 @@ import {
 import { App } from '.';
 
 @Table({ tableName: 'AppMessages', paranoid: false })
-export default class AppMessages extends Model<AppMessages> implements AppMessagesType {
+export class AppMessages extends Model<AppMessages> implements AppMessagesType {
   @PrimaryKey
   @ForeignKey(() => App)
   @Column

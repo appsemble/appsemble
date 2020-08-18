@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
-export default defineMessages({
+export const messages = defineMessages({
   blocks: 'Blocks',
   documentation: 'Documentation',
   logoutButton: 'Logout',
