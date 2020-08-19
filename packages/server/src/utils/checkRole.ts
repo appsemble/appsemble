@@ -1,5 +1,5 @@
 import { Permission, roles } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { forbidden, unauthorized } from '@hapi/boom';
 
 import { Member } from '../models';
 import type { KoaContext } from '../types';
@@ -18,7 +18,7 @@ export async function checkRole(
 ): Promise<void> {
   const { user } = ctx;
   if (!user) {
-    throw Boom.unauthorized();
+    throw unauthorized();
   }
 
   const member = await Member.findOne({
@@ -28,12 +28,12 @@ export async function checkRole(
   });
 
   if (!member) {
-    throw Boom.forbidden('User is not part of this organization.');
+    throw forbidden('User is not part of this organization.');
   }
 
   const role = roles[member.role];
 
   if (![].concat(permissions).every((p) => role.includes(p))) {
-    throw Boom.forbidden('User does not have sufficient permissions.');
+    throw forbidden('User does not have sufficient permissions.');
   }
 }

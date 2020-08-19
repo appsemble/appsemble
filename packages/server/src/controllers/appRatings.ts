@@ -1,4 +1,4 @@
-import Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import { App, AppRating, User } from '../models';
 import type { KoaContext } from '../types';
@@ -36,7 +36,7 @@ export async function submitAppRating(ctx: KoaContext<Params>): Promise<void> {
   const user = await User.findByPk(UserId);
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   const [result] = await AppRating.upsert(

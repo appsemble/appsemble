@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 
-import Boom from '@hapi/boom';
+import { badRequest, notFound } from '@hapi/boom';
 import { isPast, parseISO } from 'date-fns';
 import { Op } from 'sequelize';
 
@@ -21,7 +21,7 @@ export async function registerOAuth2ClientCredentials(ctx: KoaContext): Promise<
   if (body.expires) {
     expires = parseISO(body.expires);
     if (isPast(expires)) {
-      throw Boom.badRequest('These credentials have already expired');
+      throw badRequest('These credentials have already expired');
     }
   }
   const scopes = body.scopes.sort().join(' ');
@@ -79,6 +79,6 @@ export async function deleteOAuth2ClientCredentials(ctx: KoaContext<Params>): Pr
   });
 
   if (!affectedRows) {
-    throw Boom.notFound('No client credentials found for the given client id');
+    throw notFound('No client credentials found for the given client id');
   }
 }

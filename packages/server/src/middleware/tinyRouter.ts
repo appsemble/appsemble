@@ -1,4 +1,4 @@
-import Boom from '@hapi/boom';
+import { methodNotAllowed } from '@hapi/boom';
 
 import type { KoaMiddleware } from '../types';
 
@@ -36,7 +36,7 @@ export function tinyRouter(routes: Route[]): KoaMiddleware {
     let m = method.toLowerCase();
     if (!Object.hasOwnProperty.call(result, m)) {
       if (!Object.hasOwnProperty.call(result, 'any')) {
-        throw Boom.methodNotAllowed();
+        throw methodNotAllowed();
       }
       m = 'any';
     }

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-import Boom from '@hapi/boom';
+import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
 import type { KoaContext } from '../types';
@@ -20,7 +20,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   } = ctx;
   const referer = trimUrl(headers.referer);
   if (!referer) {
-    throw Boom.badRequest('The referer header is invalid');
+    throw badRequest('The referer header is invalid');
   }
 
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
@@ -39,7 +39,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   }
 
   if (!clientId || !clientSecret) {
-    throw Boom.notImplemented('Unknown authorization URL');
+    throw notImplemented('Unknown authorization URL');
   }
 
   // Exchange the authorization code for an access token and refresh token.
@@ -94,13 +94,13 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
 
   if (!preset) {
-    throw Boom.notImplemented('Unknown authorization URL');
+    throw notImplemented('Unknown authorization URL');
   }
 
   const authorization = await OAuthAuthorization.findOne({ where: { code, authorizationUrl } });
 
   if (!authorization) {
-    throw Boom.notFound('No pending OAuth2 authorization found for given state');
+    throw notFound('No pending OAuth2 authorization found for given state');
   }
 
   // The user is already logged in to Appsemble.
@@ -113,7 +113,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
 
     // The authorization is already linked to another account, so we disallow linking it again.
     else if (authorization.UserId !== user.id) {
-      throw Boom.forbidden('This OAuth2 authorization is already linked to an account.');
+      throw forbidden('This OAuth2 authorization is already linked to an account.');
     }
   }
   // The user is not yet logged in, so they are trying to register a new account using this OAuth2
@@ -139,9 +139,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
         });
         if (emailAuthorization) {
           if (emailAuthorization.UserId !== user.id) {
-            throw Boom.conflict(
-              'This email address has already been linked to an existing account.',
-            );
+            throw conflict('This email address has already been linked to an existing account.');
           }
         } else {
           const verified = Boolean(userInfo.email_verified);
@@ -180,6 +178,6 @@ export async function unlinkConnectedAccount(ctx: KoaContext): Promise<void> {
   const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
 
   if (!rows) {
-    throw Boom.notFound('OAuth2 account to unlink not found');
+    throw notFound('OAuth2 account to unlink not found');
   }
 }

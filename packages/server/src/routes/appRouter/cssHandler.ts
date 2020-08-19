@@ -1,4 +1,4 @@
-import * as Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import type { KoaMiddleware } from '../../types';
 import { getApp } from '../../utils/app';
@@ -8,7 +8,7 @@ export function cssHandler(type: 'style' | 'sharedStyle'): KoaMiddleware {
     const app = await getApp(ctx, { attributes: [type], raw: true });
 
     if (!app) {
-      throw Boom.notFound();
+      throw notFound();
     }
 
     ctx.body = app[type];

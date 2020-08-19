@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import type { BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { badRequest, conflict, notFound } from '@hapi/boom';
 import * as fileType from 'file-type';
 import isSvg from 'is-svg';
 import semver from 'semver';
@@ -41,7 +41,7 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!blockVersion) {
-    throw Boom.notFound('Block definition not found');
+    throw notFound('Block definition not found');
   }
 
   const {
@@ -121,7 +121,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
   if (data.actions) {
     Object.keys(data.actions).forEach((key) => {
       if (!actionKeyRegex.test(key) && key !== '$any') {
-        throw Boom.badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
+        throw badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
       }
     });
   }
@@ -136,7 +136,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
 
   // If there is a previous version and it has a higher semver, throw an error.
   if (blockVersion && semver.gte(blockVersion.version, version)) {
-    throw Boom.conflict(
+    throw conflict(
       `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
     );
   }
@@ -189,7 +189,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
     });
   } catch (err) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
-      throw Boom.conflict(`Block “${name}@${data.version}” already exists`);
+      throw conflict(`Block “${name}@${data.version}” already exists`);
     }
     throw err;
   }
@@ -216,7 +216,7 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!version) {
-    throw Boom.notFound('Block version not found');
+    throw notFound('Block version not found');
   }
 
   const files = await BlockAsset.findAll({
@@ -257,7 +257,7 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (blockVersions.length === 0) {
-    throw Boom.notFound('Block not found.');
+    throw notFound('Block not found.');
   }
 
   ctx.body = blockVersions.map((blockVersion) => ({
@@ -279,7 +279,7 @@ export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!version) {
-    throw Boom.notFound('Block version not found');
+    throw notFound('Block version not found');
   }
 
   const icon = version.icon || ((await readAsset('appsemble.svg')) as Buffer);

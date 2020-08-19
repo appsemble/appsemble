@@ -1,5 +1,5 @@
 import { Permission } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import { App, Asset } from '../models';
 import type { KoaContext } from '../types';
@@ -21,7 +21,7 @@ export async function getAssets(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   ctx.body = app.Assets.map((asset) => ({
@@ -41,13 +41,13 @@ export async function getAssetById(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   const [asset] = app.Assets;
 
   if (!asset) {
-    throw Boom.notFound('Asset not found');
+    throw notFound('Asset not found');
   }
 
   ctx.set('Content-Type', asset.mime || 'application/octet-stream');
@@ -64,7 +64,7 @@ export async function createAsset(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId);
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   const asset = await Asset.create(
@@ -87,13 +87,13 @@ export async function deleteAsset(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   const [asset] = app.Assets;
 
   if (!asset) {
-    throw Boom.notFound('Asset not found');
+    throw notFound('Asset not found');
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageResources);

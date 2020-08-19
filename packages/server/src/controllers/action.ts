@@ -5,7 +5,7 @@ import type {
   RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { formatRequestAction, remap } from '@appsemble/utils';
-import * as Boom from '@hapi/boom';
+import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
 import type { ParameterizedContext } from 'koa';
 import { get, pick } from 'lodash';
@@ -46,7 +46,7 @@ async function handleEmail(
     request: { body: data },
   } = ctx;
   if (method !== 'POST') {
-    throw Boom.methodNotAllowed('Method must be POST for email actions');
+    throw methodNotAllowed('Method must be POST for email actions');
   }
 
   const context = await getRemapperContext(app, app.definition.defaultLanguage || 'en-us');
@@ -55,7 +55,7 @@ async function handleEmail(
   const sub = remap(action.subject, data, context) as string;
 
   if (!to || !sub || !body) {
-    throw Boom.badRequest('Fields “to”, “subject”, and “body” must be a valid string');
+    throw badRequest('Fields “to”, “subject”, and “body” must be a valid string');
   }
 
   const { html, subject, text } = await renderEmail(body, {}, sub);
@@ -82,14 +82,14 @@ async function handleRequestProxy(
     try {
       data = JSON.parse(query.data);
     } catch {
-      throw Boom.badRequest('data should be a JSON object');
+      throw badRequest('data should be a JSON object');
     }
   }
 
   const axiosConfig = formatRequestAction(action, data);
 
   if (axiosConfig.method.toUpperCase() !== method) {
-    throw Boom.badRequest('Method does match the request action method');
+    throw badRequest('Method does match the request action method');
   }
 
   if (useBody) {
@@ -105,7 +105,7 @@ async function handleRequestProxy(
     response = await axios(axiosConfig);
   } catch (err) {
     logger.error(err);
-    throw Boom.badGateway();
+    throw badGateway();
   }
 
   ctx.status = response.status;
@@ -120,7 +120,7 @@ function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
     } = ctx;
     const app = await App.findByPk(appId, { attributes: ['definition', 'id'] });
     if (!app) {
-      throw Boom.notFound('App not found');
+      throw notFound('App not found');
     }
 
     const appAction = get(app.definition, path) as ActionDefinition;
@@ -132,7 +132,7 @@ function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
       case 'request':
         return handleRequestProxy(ctx, appAction as RequestLikeActionDefinition, useBody);
       default:
-        throw Boom.badRequest('path does not point to a proxyable action');
+        throw badRequest('path does not point to a proxyable action');
     }
   };
 }

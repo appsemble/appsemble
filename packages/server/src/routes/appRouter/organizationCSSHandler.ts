@@ -1,4 +1,4 @@
-import * as Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import { Organization } from '../../models';
 import type { KoaMiddleware } from '../../types';
@@ -12,7 +12,7 @@ export function organizationCSSHandler(type: 'coreStyle' | 'sharedStyle'): KoaMi
     });
 
     if (!app) {
-      throw Boom.notFound();
+      throw notFound();
     }
 
     ctx.body = app.Organization[type];

@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import Boom from '@hapi/boom';
+import { serverUnavailable } from '@hapi/boom';
 
 import { getDB } from '../models';
 import type { KoaContext } from '../types';
@@ -18,6 +18,6 @@ export async function checkHealth(ctx: KoaContext): Promise<void> {
 
   ctx.body = status;
   if (!Object.values(status).every(Boolean)) {
-    throw Boom.serverUnavailable('API unhealthy', status);
+    throw serverUnavailable('API unhealthy', status);
   }
 }

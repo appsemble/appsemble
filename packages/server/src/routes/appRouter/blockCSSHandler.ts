@@ -1,4 +1,4 @@
-import * as Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import { AppBlockStyle } from '../../models';
 import type { KoaContext } from '../../types';
@@ -26,7 +26,7 @@ export async function blockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound();
+    throw notFound();
   }
 
   const [style] = app.AppBlockStyles;
