@@ -1,7 +1,7 @@
 import { URL } from 'url';
 
 import { objectCache, RemapperContext } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { FindOptions, Op } from 'sequelize';
@@ -37,7 +37,7 @@ export function getApp(
       .slice(0, Math.max(0, hostname.length - platformHost.length - 1))
       .split('.');
     if (subdomain.length !== 2) {
-      throw Boom.notFound();
+      throw notFound();
     }
     return App.findOne({
       ...queryOptions,

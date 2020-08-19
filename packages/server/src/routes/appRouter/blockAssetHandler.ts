@@ -1,4 +1,4 @@
-import Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import { BlockAsset } from '../../models';
 import type { KoaContext } from '../../types';
@@ -27,7 +27,7 @@ export async function blockAssetHandler(ctx: KoaContext<Params>): Promise<void> 
   });
 
   if (!blockAsset) {
-    throw Boom.notFound('Block asset not found');
+    throw notFound('Block asset not found');
   }
 
   ctx.body = blockAsset.content;

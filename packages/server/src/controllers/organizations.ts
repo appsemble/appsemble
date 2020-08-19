@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import { Permission, StyleValidationError, validateStyle } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
 import { Op, UniqueConstraintError } from 'sequelize';
 
 import {
@@ -30,7 +30,7 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId);
   if (!organization) {
-    throw Boom.notFound('Organization not found.');
+    throw notFound('Organization not found.');
   }
 
   ctx.body = {
@@ -63,7 +63,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
   });
 
   if (!user.primaryEmail || !user.EmailAuthorizations[0].verified) {
-    throw Boom.forbidden('Email not verified.');
+    throw forbidden('Email not verified.');
   }
 
   try {
@@ -86,7 +86,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
     };
   } catch (error) {
     if (error instanceof UniqueConstraintError) {
-      throw Boom.conflict(`Another organization with the name “${name}” already exists`);
+      throw conflict(`Another organization with the name “${name}” already exists`);
     }
 
     throw error;
@@ -102,7 +102,7 @@ export async function getMembers(ctx: KoaContext<Params>): Promise<void> {
     include: [User],
   });
   if (!organization) {
-    throw Boom.notFound('Organization not found.');
+    throw notFound('Organization not found.');
   }
 
   ctx.body = organization.Users.map((user) => ({
@@ -122,7 +122,7 @@ export async function getInvites(ctx: KoaContext<Params>): Promise<void> {
     include: [OrganizationInvite],
   });
   if (!organization) {
-    throw Boom.notFound('Organization not found.');
+    throw notFound('Organization not found.');
   }
 
   ctx.body = organization.OrganizationInvites.map((invite) => ({
@@ -140,7 +140,7 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!invite) {
-    throw Boom.notFound('This token does not exist.');
+    throw notFound('This token does not exist.');
   }
 
   const organization = await Organization.findByPk(invite.OrganizationId, { raw: true });
@@ -160,13 +160,13 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
   const invite = await OrganizationInvite.findOne({ where: { key: token } });
 
   if (!invite) {
-    throw Boom.notFound('This token is invalid.');
+    throw notFound('This token is invalid.');
   }
 
   const organization = await Organization.findByPk(invite.OrganizationId);
 
   if (organizationId !== organization.id) {
-    throw Boom.notAcceptable('Organization IDs does not match');
+    throw notAcceptable('Organization IDs does not match');
   }
 
   if (response) {
@@ -189,20 +189,20 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization) {
-    throw Boom.notFound('Organization not found.');
+    throw notFound('Organization not found.');
   }
 
   const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
   const invitedUser = dbEmail ? dbEmail.User : null;
 
   if (!(await organization.$has('User', user.id))) {
-    throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
+    throw forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
   await checkRole(ctx, organization.id, Permission.InviteMember);
 
   if (invitedUser && (await organization.$has('User', invitedUser))) {
-    throw Boom.conflict('User is already in this organization or has already been invited.');
+    throw conflict('User is already in this organization or has already been invited.');
   }
 
   const key = crypto.randomBytes(20).toString('hex');
@@ -243,14 +243,14 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
     include: [OrganizationInvite],
   });
   if (!organization) {
-    throw Boom.notFound('Organization not found.');
+    throw notFound('Organization not found.');
   }
 
   await checkRole(ctx, organization.id, Permission.InviteMember);
 
   const invite = await organization.OrganizationInvites.find((i) => i.email === email);
   if (!invite) {
-    throw Boom.notFound('This person was not invited previously.');
+    throw notFound('This person was not invited previously.');
   }
 
   const user = await User.findByPk(invite.UserId);
@@ -276,7 +276,7 @@ export async function removeInvite(ctx: KoaContext): Promise<void> {
 
   const invite = await OrganizationInvite.findOne({ where: { email } });
   if (!invite) {
-    throw Boom.notFound('This invite does not exist.');
+    throw notFound('This invite does not exist.');
   }
 
   await checkRole(ctx, invite.OrganizationId, Permission.InviteMember);
@@ -292,11 +292,11 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
-    throw Boom.notFound('User is not part of this organization.');
+    throw notFound('User is not part of this organization.');
   }
 
   if (!organization.Users.some((u) => u.id === memberId)) {
-    throw Boom.notFound('This member is not part of this organization.');
+    throw notFound('This member is not part of this organization.');
   }
 
   if (memberId !== user.id) {
@@ -304,7 +304,7 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   if (memberId === user.id && organization.Users.length <= 1) {
-    throw Boom.notAcceptable(
+    throw notAcceptable(
       'Not allowed to remove yourself from an organization if you’re the only member left.',
     );
   }
@@ -323,18 +323,18 @@ export async function setRole(ctx: KoaContext<Params>): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
-    throw Boom.notFound('User is not part of this organization.');
+    throw notFound('User is not part of this organization.');
   }
 
   if (user.id === memberId) {
-    throw Boom.badRequest('Not allowed to change your own rule.');
+    throw badRequest('Not allowed to change your own rule.');
   }
 
   await checkRole(ctx, organization.id, Permission.ManageRoles);
 
   const member = organization.Users.find((m) => m.id === memberId);
   if (!member) {
-    throw Boom.notFound('This member is not part of this organization.');
+    throw notFound('This member is not part of this organization.');
   }
 
   await member.Member.update({ role });
@@ -353,7 +353,7 @@ export async function getOrganizationCoreStyle(ctx: KoaContext<Params>): Promise
   const organization = await Organization.findByPk(organizationId, { raw: true });
 
   if (!organization) {
-    throw Boom.notFound('Organization not found.');
+    throw notFound('Organization not found.');
   }
 
   ctx.body = organization.coreStyle || '';
@@ -375,7 +375,7 @@ export async function setOrganizationCoreStyle(ctx: KoaContext<Params>): Promise
 
     const organization = await Organization.findByPk(organizationId);
     if (!organization) {
-      throw Boom.notFound('Organization not found.');
+      throw notFound('Organization not found.');
     }
 
     await checkRole(ctx, organization.id, Permission.EditThemes);
@@ -384,7 +384,7 @@ export async function setOrganizationCoreStyle(ctx: KoaContext<Params>): Promise
     await organization.save();
   } catch (error) {
     if (error instanceof StyleValidationError) {
-      throw Boom.badRequest('Provided CSS was invalid.');
+      throw badRequest('Provided CSS was invalid.');
     }
 
     throw error;
@@ -398,7 +398,7 @@ export async function getOrganizationSharedStyle(ctx: KoaContext<Params>): Promi
   const organization = await Organization.findByPk(organizationId, { raw: true });
 
   if (!organization) {
-    throw Boom.notFound('Organization not found.');
+    throw notFound('Organization not found.');
   }
 
   ctx.body = organization.sharedStyle || '';
@@ -420,7 +420,7 @@ export async function setOrganizationSharedStyle(ctx: KoaContext<Params>): Promi
 
     const organization = await Organization.findByPk(organizationId);
     if (!organization) {
-      throw Boom.notFound('Organization not found.');
+      throw notFound('Organization not found.');
     }
 
     await checkRole(ctx, organization.id, Permission.EditThemes);
@@ -429,7 +429,7 @@ export async function setOrganizationSharedStyle(ctx: KoaContext<Params>): Promi
     await organization.save();
   } catch (error) {
     if (error instanceof StyleValidationError) {
-      throw Boom.badRequest('Provided CSS was invalid.');
+      throw badRequest('Provided CSS was invalid.');
     }
 
     throw error;
@@ -467,7 +467,7 @@ export async function setOrganizationBlockStyle(ctx: KoaContext<Params>): Promis
 
     const organization = await Organization.findByPk(organizationId);
     if (!organization) {
-      throw Boom.notFound('Organization not found.');
+      throw notFound('Organization not found.');
     }
 
     await checkRole(ctx, organization.id, Permission.EditThemes);
@@ -476,7 +476,7 @@ export async function setOrganizationBlockStyle(ctx: KoaContext<Params>): Promis
       where: { name: blockId, OrganizationId: blockOrganizationId },
     });
     if (!block) {
-      throw Boom.notFound('Block not found.');
+      throw notFound('Block not found.');
     }
 
     await OrganizationBlockStyle.upsert({
@@ -486,7 +486,7 @@ export async function setOrganizationBlockStyle(ctx: KoaContext<Params>): Promis
     });
   } catch (error) {
     if (error instanceof StyleValidationError) {
-      throw Boom.badRequest('Provided CSS was invalid.');
+      throw badRequest('Provided CSS was invalid.');
     }
 
     throw error;

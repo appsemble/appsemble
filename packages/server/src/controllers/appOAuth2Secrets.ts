@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import { Permission } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
 
 import {
@@ -33,7 +33,7 @@ export async function createAppOAuth2Secret(ctx: KoaContext<Params>): Promise<vo
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
@@ -50,7 +50,7 @@ export async function getAppOAuth2Secrets(ctx: KoaContext<Params>): Promise<void
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
@@ -73,11 +73,11 @@ export async function getAppOAuth2Secret(ctx: KoaContext<Params>): Promise<void>
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   if (!app.AppOAuth2Secrets?.length) {
-    throw Boom.notFound('OAuth2 secret not found');
+    throw notFound('OAuth2 secret not found');
   }
 
   [ctx.body] = app.AppOAuth2Secrets;
@@ -107,11 +107,11 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   if (!app.AppOAuth2Secrets?.length) {
-    throw Boom.notFound('OAuth2 secret not found');
+    throw notFound('OAuth2 secret not found');
   }
 
   const [secret] = app.AppOAuth2Secrets;

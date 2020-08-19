@@ -4,7 +4,7 @@ import { URL } from 'url';
 import { loggerMiddleware } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
-import Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
 import isIp from 'is-ip';
 import Koa from 'koa';
@@ -115,7 +115,7 @@ export async function createServer({
       ]),
       ({ hostname }, next) => {
         if (new URL(argv.host).hostname === hostname || isIp(hostname)) {
-          throw Boom.notFound('URL not found');
+          throw notFound('URL not found');
         }
         return next();
       },

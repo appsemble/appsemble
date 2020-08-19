@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import type { SubscriptionResponse } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import { App, AppSubscription, ResourceSubscription } from '../models';
 import type { KoaContext } from '../types';
@@ -32,13 +32,13 @@ export async function getSubscription(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   const [appSubscription] = app.AppSubscriptions;
 
   if (!appSubscription) {
-    throw Boom.notFound('Subscription not found');
+    throw notFound('Subscription not found');
   }
 
   const resources: SubscriptionResponse = {};
@@ -87,7 +87,7 @@ export async function addSubscription(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId, { include: [AppSubscription] });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   await AppSubscription.create({
@@ -132,13 +132,13 @@ export async function updateSubscription(ctx: KoaContext<Params>): Promise<void>
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   const [appSubscription] = app.AppSubscriptions;
 
   if (!appSubscription) {
-    throw Boom.notFound('Subscription not found');
+    throw notFound('Subscription not found');
   }
 
   if (user?.id && !appSubscription.UserId) {
@@ -198,7 +198,7 @@ export async function broadcast(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.PushNotifications);

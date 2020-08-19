@@ -1,5 +1,5 @@
 import { Permission } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { badRequest, notFound } from '@hapi/boom';
 
 import { App, AppMember, Organization, User } from '../models';
 import type { KoaContext } from '../types';
@@ -17,7 +17,7 @@ export async function getAppMembers(ctx: KoaContext<Params>): Promise<void> {
 
   const app = await App.findByPk(appId, { include: [User] });
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   ctx.body = app.Users.map((user) => ({
@@ -37,11 +37,11 @@ export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
     include: [{ model: User, where: { id: memberId }, required: false }, Organization],
   });
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   if (app.definition.security === undefined) {
-    throw Boom.notFound('App does not have a security definition.');
+    throw notFound('App does not have a security definition.');
   }
 
   const { policy, role: defaultRole } = app.definition.security.default;
@@ -49,7 +49,7 @@ export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
   const user = await User.findByPk(memberId);
 
   if (!user) {
-    throw Boom.notFound('User does not exist.');
+    throw notFound('User does not exist.');
   }
 
   const member = app.Users.find((u) => u.id === memberId);
@@ -63,14 +63,14 @@ export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
     const isOrganizationMember = await app.Organization.$has('User', memberId);
 
     if (!isOrganizationMember) {
-      throw Boom.notFound('User is not a member of the organization.');
+      throw notFound('User is not a member of the organization.');
     }
 
     role = defaultRole;
   }
 
   if (!member && policy === 'invite') {
-    throw Boom.notFound('User is not a member of the app.');
+    throw notFound('User is not a member of the app.');
   }
 
   ctx.body = {
@@ -91,18 +91,18 @@ export async function setAppMember(ctx: KoaContext<Params>): Promise<void> {
 
   const app = await App.findByPk(appId, { include: [User] });
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.EditApps);
 
   const user = await User.findByPk(memberId);
   if (!user) {
-    throw Boom.notFound('User with this ID doesn’t exist.');
+    throw notFound('User with this ID doesn’t exist.');
   }
 
   if (!Object.hasOwnProperty.call(app.definition.security.roles, role)) {
-    throw Boom.badRequest(`Role ‘${role}’ is not defined.`);
+    throw badRequest(`Role ‘${role}’ is not defined.`);
   }
 
   const [member] = await app.$get('Users', { where: { id: memberId } });

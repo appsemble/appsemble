@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import { logger } from '@appsemble/node-utils';
-import Boom from '@hapi/boom';
+import { conflict, forbidden, notFound } from '@hapi/boom';
 import bcrypt from 'bcrypt';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
@@ -11,7 +11,7 @@ import { createJWTResponse } from '../utils/createJWTResponse';
 
 function mayRegister({ argv }: KoaContext): void {
   if (argv.disableRegistration) {
-    throw Boom.forbidden('Registration is disabled');
+    throw forbidden('Registration is disabled');
   }
 }
 
@@ -39,13 +39,13 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
     });
   } catch (error) {
     if (error instanceof UniqueConstraintError) {
-      throw Boom.conflict('User with this email address already exists.');
+      throw conflict('User with this email address already exists.');
     }
 
     if (error instanceof DatabaseError) {
       // XXX: Postgres throws a generic transaction aborted error
       // if there is a way to read the internal error, replace this code.
-      throw Boom.conflict('User with this email address already exists.');
+      throw conflict('User with this email address already exists.');
     }
 
     throw error;
@@ -75,7 +75,7 @@ export async function verifyEmail(ctx: KoaContext): Promise<void> {
   const email = await EmailAuthorization.findOne({ where: { key: token } });
 
   if (!email) {
-    throw Boom.notFound('Unable to verify this token.');
+    throw notFound('Unable to verify this token.');
   }
 
   email.verified = true;
@@ -140,7 +140,7 @@ export async function resetPassword(ctx: KoaContext): Promise<void> {
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 
   if (!tokenRecord) {
-    throw Boom.notFound(`Unknown password reset token: ${token}`);
+    throw notFound(`Unknown password reset token: ${token}`);
   }
 
   const password = await bcrypt.hash(ctx.request.body.password, 10);

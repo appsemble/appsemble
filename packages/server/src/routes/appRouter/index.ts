@@ -1,5 +1,5 @@
 import { partialNormalized, partialSemver } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import { tinyRouter } from '../../middleware/tinyRouter';
 import { blockAssetHandler } from './blockAssetHandler';
@@ -60,7 +60,7 @@ export const appRouter = tinyRouter([
   {
     route: /(^|\/)\.well-known(\/|$)/,
     any() {
-      throw Boom.notFound();
+      throw notFound();
     },
   },
   {

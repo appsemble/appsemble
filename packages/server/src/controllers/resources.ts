@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 import type { NotificationDefinition } from '@appsemble/types';
 import { checkAppRole, Permission, remap, SchemaValidationError, validate } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { badRequest, forbidden, notFound, unauthorized } from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import type { OpenAPIV3 } from 'openapi-types';
 import { FindOptions, Op, QueryOptions, WhereOptions } from 'sequelize';
@@ -29,19 +29,19 @@ interface Params {
 
 function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.SchemaObject {
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   if (!app.definition.resources) {
-    throw Boom.notFound('App does not have any resources defined');
+    throw notFound('App does not have any resources defined');
   }
 
   if (!app.definition.resources[resourceType]) {
-    throw Boom.notFound(`App does not have resources called ${resourceType}`);
+    throw notFound(`App does not have resources called ${resourceType}`);
   }
 
   if (!app.definition.resources[resourceType].schema) {
-    throw Boom.notFound(`App does not have a schema for resources called ${resourceType}`);
+    throw notFound(`App does not have a schema for resources called ${resourceType}`);
   }
 
   return app.definition.resources[resourceType].schema;
@@ -174,7 +174,7 @@ async function verifyAppRole(
   }
 
   if (!user && (filteredRoles.length || author)) {
-    throw Boom.unauthorized('User is not logged in');
+    throw unauthorized('User is not logged in');
   }
 
   if (author && user && action === 'query') {
@@ -199,14 +199,14 @@ async function verifyAppRole(
 
       case 'organization':
         if (!(await app.Organization.$has('User', user.id))) {
-          throw Boom.forbidden('User is not a member of the organization.');
+          throw forbidden('User is not a member of the organization.');
         }
 
         role = defaultRole;
         break;
 
       case 'invite':
-        throw Boom.forbidden('User is not a member of the app.');
+        throw forbidden('User is not a member of the app.');
 
       default:
         role = null;
@@ -214,7 +214,7 @@ async function verifyAppRole(
   }
 
   if (!filteredRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
-    throw Boom.forbidden('User does not have sufficient permissions.');
+    throw forbidden('User does not have sufficient permissions.');
   }
 }
 
@@ -350,7 +350,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     }));
   } catch (error) {
     if (query) {
-      throw Boom.badRequest('Unable to process this query');
+      throw badRequest('Unable to process this query');
     }
 
     throw error;
@@ -385,7 +385,7 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!resource) {
-    throw Boom.notFound('Resource not found');
+    throw notFound('Resource not found');
   }
 
   await verifyAppRole(ctx, app, resource, resourceType, 'get');
@@ -434,17 +434,17 @@ export async function getResourceTypeSubscription(ctx: KoaContext<Params>): Prom
   verifyResourceDefinition(app, resourceType);
 
   if (!app.Resources.length) {
-    throw Boom.notFound('Resource not found.');
+    throw notFound('Resource not found.');
   }
 
   if (!app.AppSubscriptions.length) {
-    throw Boom.notFound('User is not subscribed to this app.');
+    throw notFound('User is not subscribed to this app.');
   }
 
   const [appSubscription] = app.AppSubscriptions;
 
   if (!appSubscription) {
-    throw Boom.notFound('Subscription not found');
+    throw notFound('Subscription not found');
   }
 
   ctx.body = appSubscription.ResourceSubscriptions.reduce(
@@ -506,7 +506,7 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
   verifyResourceDefinition(app, resourceType);
 
   if (!app.Resources.length) {
-    throw Boom.notFound('Resource not found.');
+    throw notFound('Resource not found.');
   }
 
   const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
@@ -633,7 +633,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
       throw err;
     }
 
-    const boom = Boom.badRequest(err.message);
+    const boom = badRequest(err.message);
     (boom.output.payload as any).data = err.data;
     throw boom;
   }
@@ -689,7 +689,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!resource) {
-    throw Boom.notFound('Resource not found');
+    throw notFound('Resource not found');
   }
 
   await verifyAppRole(ctx, app, resource, resourceType, action);
@@ -703,7 +703,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
       throw err;
     }
 
-    const boom = Boom.badRequest(err.message);
+    const boom = badRequest(err.message);
     (boom.output.payload as any).data = err.data;
     throw boom;
   }
@@ -757,7 +757,7 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!resource) {
-    throw Boom.notFound('Resource not found');
+    throw notFound('Resource not found');
   }
 
   await verifyAppRole(ctx, app, resource, resourceType, action);

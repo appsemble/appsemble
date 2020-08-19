@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import type { JwtPayload } from '@appsemble/types';
-import Boom from '@hapi/boom';
+import { conflict, notAcceptable, notFound } from '@hapi/boom';
 import { verify } from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
@@ -80,11 +80,11 @@ export async function updateUser(ctx: KoaContext): Promise<void> {
     });
 
     if (!emailAuth) {
-      throw Boom.notFound('No matching email could be found.');
+      throw notFound('No matching email could be found.');
     }
 
     if (!emailAuth.verified) {
-      throw Boom.notAcceptable('This email address has not been verified.');
+      throw notAcceptable('This email address has not been verified.');
     }
   }
 
@@ -124,7 +124,7 @@ export async function addEmail(ctx: KoaContext): Promise<void> {
   });
 
   if (dbEmail) {
-    throw Boom.conflict('This email has already been registered.');
+    throw conflict('This email has already been registered.');
   }
 
   const dbUser = await User.findOne({
@@ -173,13 +173,11 @@ export async function removeEmail(ctx: KoaContext): Promise<void> {
   const dbEmail = await EmailAuthorization.findOne({ where: { email, UserId: user.id } });
 
   if (!dbEmail) {
-    throw Boom.notFound('This email address is not associated with your account.');
+    throw notFound('This email address is not associated with your account.');
   }
 
   if (dbUser.EmailAuthorizations.length === 1 && !dbUser.OAuthAuthorizations.length) {
-    throw Boom.notAcceptable(
-      'Deleting this email results in the inability to access this account.',
-    );
+    throw notAcceptable('Deleting this email results in the inability to access this account.');
   }
 
   await dbEmail.destroy();

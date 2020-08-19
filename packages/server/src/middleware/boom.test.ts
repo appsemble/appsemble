@@ -1,4 +1,4 @@
-import Boom from '@hapi/boom';
+import { notFound, unauthorized } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
@@ -15,7 +15,7 @@ describe('boomMiddleware', () => {
 
   it('should catch boom errors', async () => {
     app.use(() => {
-      throw Boom.notFound('Error not found', "It's nowhere to be seen!");
+      throw notFound('Error not found', "It's nowhere to be seen!");
     });
 
     const response = await request.get('/');
@@ -50,9 +50,7 @@ describe('boomMiddleware', () => {
 
   it('should set Koa headers correctly', async () => {
     app.use(() => {
-      throw Boom.unauthorized('Not authorized!', [
-        'Basic realm="Access to test data", charset="UTF-8"',
-      ]);
+      throw unauthorized('Not authorized!', ['Basic realm="Access to test data", charset="UTF-8"']);
     });
 
     const response = await request.get('/');
