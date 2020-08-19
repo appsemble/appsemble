@@ -20,6 +20,6 @@
     "@appsemble/preact-components": "0.13.8",
     "@appsemble/sdk": "0.13.8",
     "leaflet": "~1.5.1",
-    "preact": "^10.4.6"
+    "preact": "^10.4.7"
   }
 }
