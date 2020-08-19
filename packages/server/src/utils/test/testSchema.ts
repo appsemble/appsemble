@@ -27,7 +27,7 @@ let rootDB: Sequelize;
 export function createTestSchema(spec: string, options: InitDBParams = {}): () => Promise<void> {
   return async () => {
     const database =
-      process.env.DATABASE_URL || 'postgres://admin:password@localhost:5432/appsemble';
+      process.env.DATABASE_URL || 'postgres://admin:password@localhost:54321/appsemble';
     rootDB = new Sequelize(database, {
       logging: false,
       retry: { max: 3 },
