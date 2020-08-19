@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { TitleBar } from '../TitleBar';
 import { AppSubscriptions } from './AppSubscriptions';
+import { LanguagePreference } from './LanguagePreference';
 import { messages } from './messages';
 
 /**
@@ -18,6 +19,7 @@ export function AppSettings(): ReactElement {
       <Title level={2}>
         <FormattedMessage {...messages.settings} />
       </Title>
+      <LanguagePreference />
       <AppSubscriptions />
     </Content>
   );
