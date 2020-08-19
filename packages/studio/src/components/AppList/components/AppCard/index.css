@@ -5,3 +5,8 @@
 .rating {
   left: -0.5em;
 }
+
+.logo {
+  height: 128px;
+  object-fit: contain;
+}
