@@ -21,7 +21,11 @@ export function AppCard({ app }: AppCardProps): ReactElement {
       <div className="card-content">
         <div className="media">
           <figure className={`image is-128x128 ${styles.image}`}>
-            <img alt={formatMessage(messages.icon)} src={`/api/apps/${app.id}/icon`} />
+            <img
+              alt={formatMessage(messages.icon)}
+              className={styles.logo}
+              src={`/api/apps/${app.id}/icon`}
+            />
           </figure>
         </div>
         <Title level={4}>{app.definition.name}</Title>
