@@ -110,5 +110,11 @@ module.exports = {
         'node/no-unpublished-import': 'off',
       },
     },
+    {
+      files: ['packages/create-appsemble/templates/**'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+      },
+    },
   ],
 };
