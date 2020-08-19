@@ -148,7 +148,7 @@ export async function handler(
   const app = await createServer({ argv, webpackConfigs });
 
   app.on('error', (err, ctx) => {
-    if (err instanceof (Koa as any).HttpError) {
+    if (err instanceof Koa.HttpError) {
       // It is thrown by `ctx.throw()`.
       return;
     }
