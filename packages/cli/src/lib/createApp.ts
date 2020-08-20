@@ -80,8 +80,8 @@ export async function createApp({
     await uploadMessages(path, data.id);
   }
 
-  logger.info(`Successfully created app ${data.definition.name}! 🙌`);
   const { host, protocol } = new URL(remote);
-  logger.info(`View app: ${protocol}//${data.path}.${organizationId}.${host}`);
-  logger.info(`Edit app: ${remote}apps/${data.id}/edit`);
+  logger.info(`Successfully created app ${data.definition.name}! 🙌`);
+  logger.info(`App URL: ${protocol}//${data.path}.${organizationId}.${host}`);
+  logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 }

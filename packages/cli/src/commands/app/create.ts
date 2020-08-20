@@ -52,6 +52,7 @@ export async function handler({
 
   logger.info(`Creating ${directories.length} Apps for @${organizationId}`);
   for (const dir of directories) {
+    logger.info('');
     await createApp({
       organizationId,
       path: dir,
