@@ -49,7 +49,9 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || 'en-us';
     if (lang !== defaultLanguage && !languages.includes(lang)) {
-      const detected = detectLocale(languages, navigator.languages) || defaultLanguage;
+      const preferredLanguage = localStorage.getItem('preferredLanguage');
+      const detected =
+        preferredLanguage || detectLocale(languages, navigator.languages) || defaultLanguage;
       if (/^[A-Z]/.exec(lang) || definition.pages.find((page) => lang === normalize(page.name))) {
         // Someone got linked to a page without a language tag. Redirect them to the same page, but
         // with language set. This is especially important for the OAuth2 callback URL.
