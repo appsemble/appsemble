@@ -1,8 +1,8 @@
-import { existsSync, promises as fs, lstatSync } from 'fs';
 import { join } from 'path';
 
 import { logger } from '@appsemble/node-utils';
 
+import { opendirSafe } from '../utils/fs';
 import { uploadAppBlockTheme } from './uploadAppBlockTheme';
 
 /**
@@ -12,40 +12,35 @@ import { uploadAppBlockTheme } from './uploadAppBlockTheme';
  * @param appId - The ID of the app.
  */
 export async function traverseBlockThemes(path: string, appId: number): Promise<void> {
-  if (!existsSync(join(path, 'theme'))) {
-    return;
-  }
-
-  const themeDir = (await fs.readdir(join(path, 'theme'))).filter(
-    (sub) => lstatSync(join(path, 'theme', sub)).isDirectory() && sub.startsWith('@'),
-  );
-
-  if (themeDir.length === 0) {
-    return;
-  }
-
-  logger.info(`Traversing block themes for ${themeDir.length} organizations`);
-
-  for (const org of themeDir) {
-    logger.info(`Traversing themes for organization ${org}`);
-    const orgDir = (await fs.readdir(join(path, 'theme', org))).filter((sub) =>
-      lstatSync(join(path, 'theme', org, sub)).isDirectory(),
-    );
-
-    if (!orgDir.length) {
-      logger.warn(`No subdirectories found in ${join(path, 'theme', ...orgDir)}, skipping`);
-      return;
-    }
-
-    for (const blockDir of orgDir) {
-      const blockStyleDir = await fs.readdir(join(path, 'theme', org, blockDir));
-      const indexCss = blockStyleDir.find((fname) => fname.toLowerCase() === 'index.css');
-      if (!indexCss) {
-        logger.warn(`No index.css found, skipping directory ${join(path, 'theme', org, blockDir)}`);
+  logger.verbose(`Searching themes in ${path}`);
+  await opendirSafe(
+    join(path, 'theme'),
+    async (orgDir, orgStats) => {
+      const organizationId = orgStats.name.toLowerCase();
+      if (organizationId === 'core' || organizationId === 'shared') {
         return;
       }
-
-      await uploadAppBlockTheme(join(path, 'theme', org, blockDir, indexCss), org, appId, blockDir);
-    }
-  }
+      if (!organizationId.startsWith('@')) {
+        logger.warn('Block theme directories should be named “@organizationId/blockId”');
+        return;
+      }
+      if (!orgStats.isDirectory()) {
+        logger.warn(`Expected ${orgDir} to be a directory`);
+        return;
+      }
+      await opendirSafe(orgDir, async (blockThemeDir, blockThemeStats) => {
+        if (!blockThemeStats.isDirectory()) {
+          logger.warn(`Expected ${orgDir} to be a directory`);
+          return;
+        }
+        await uploadAppBlockTheme(
+          join(blockThemeDir, 'index.css'),
+          organizationId,
+          appId,
+          blockThemeStats.name.toLowerCase(),
+        );
+      });
+    },
+    { allowMissing: true },
+  );
 }
