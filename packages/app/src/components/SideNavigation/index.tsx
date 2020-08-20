@@ -2,10 +2,12 @@ import { Icon } from '@appsemble/react-components';
 import type { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { NavLink } from 'react-router-dom';
 
 import { SideMenu } from '../SideMenu';
 import styles from './index.css';
+import { messages } from './messages';
 
 interface SideNavigationProps {
   pages: PageDefinition[];
@@ -27,6 +29,14 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
               </NavLink>
             </li>
           ))}
+          <li>
+            <NavLink activeClassName={styles.active} to="/Settings">
+              <Icon className={styles.icon} icon="wrench" />
+              <span>
+                <FormattedMessage {...messages.settings} />
+              </span>
+            </NavLink>
+          </li>
         </ul>
       </nav>
     </SideMenu>
