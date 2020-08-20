@@ -11,7 +11,7 @@ import {
   validateAppDefinition,
   validateStyle,
 } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { badRequest, conflict, notFound } from '@hapi/boom';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
@@ -61,25 +61,23 @@ async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
 
 function handleAppValidationError(error: Error, app: Partial<App>): never {
   if (error instanceof UniqueConstraintError) {
-    throw Boom.conflict(
-      `Another app with path “@${app.OrganizationId}/${app.path}” already exists`,
-    );
+    throw conflict(`Another app with path “@${app.OrganizationId}/${app.path}” already exists`);
   }
 
   if (error instanceof AppsembleValidationError) {
-    throw Boom.badRequest('Appsemble definition is invalid.', error.data || error.message);
+    throw badRequest('Appsemble definition is invalid.', error.data || error.message);
   }
 
   if (error instanceof StyleValidationError) {
-    throw Boom.badRequest('Provided CSS was invalid.');
+    throw badRequest('Provided CSS was invalid.');
   }
 
   if (error.message === 'Expected file ´style´ to be css') {
-    throw Boom.badRequest(error.message);
+    throw badRequest(error.message);
   }
 
   if (error.message === 'Expected file ´sharedStyle´ to be css') {
-    throw Boom.badRequest(error.message);
+    throw badRequest(error.message);
   }
 
   throw error;
@@ -127,7 +125,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
         // The YAML should be valid YAML.
         jsYaml.safeLoad(yaml);
       } catch {
-        throw Boom.badRequest('Provided YAML was invalid.');
+        throw badRequest('Provided YAML was invalid.');
       }
     }
 
@@ -179,7 +177,7 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   ctx.body = getAppFromRecord(app);
@@ -252,12 +250,12 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
         // The YAML should be valid YAML.
         appFromYaml = jsYaml.safeLoad(yaml);
       } catch {
-        throw Boom.badRequest('Provided YAML was invalid.');
+        throw badRequest('Provided YAML was invalid.');
       }
 
       // The YAML should be the same when converted to JSON.
       if (!isEqual(appFromYaml, definition)) {
-        throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
+        throw badRequest('Provided YAML was not equal to definition when converted.');
       }
     } else {
       result.yaml = jsYaml.safeDump(definition);
@@ -268,7 +266,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
     const dbApp = await App.findOne({ where: { id: appId } });
 
     if (!dbApp) {
-      throw Boom.notFound('App not found');
+      throw notFound('App not found');
     }
 
     await checkRole(ctx, dbApp.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
@@ -342,12 +340,12 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         // The YAML should be valid YAML.
         appFromYaml = jsYaml.safeLoad(yaml);
       } catch {
-        throw Boom.badRequest('Provided YAML was invalid.');
+        throw badRequest('Provided YAML was invalid.');
       }
 
       // The YAML should be the same when converted to JSON.
       if (!isEqual(appFromYaml, definition)) {
-        throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
+        throw badRequest('Provided YAML was not equal to definition when converted.');
       }
 
       result.yaml = yaml.contents?.toString('utf8') || yaml;
@@ -358,7 +356,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     const dbApp = await App.findOne({ where: { id: appId } });
 
     if (!dbApp) {
-      throw Boom.notFound('App not found');
+      throw notFound('App not found');
     }
 
     const checkPermissions: Permission[] = [];
@@ -394,7 +392,7 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId);
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.DeleteApps);
@@ -410,7 +408,7 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   const icon = app.icon || (await readAsset('appsemble.svg'));
@@ -429,7 +427,7 @@ export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   ctx.body = app.style || '';
@@ -445,7 +443,7 @@ export async function getAppSharedStyle(ctx: KoaContext<Params>): Promise<void> 
   const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   ctx.body = app.sharedStyle || '';
@@ -484,14 +482,14 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
 
     const app = await App.findByPk(appId);
     if (!app) {
-      throw Boom.notFound('App not found.');
+      throw notFound('App not found.');
     }
 
     const block = await BlockVersion.findOne({
       where: { name: blockId, OrganizationId: organizationId },
     });
     if (!block) {
-      throw Boom.notFound('Block not found.');
+      throw notFound('Block not found.');
     }
 
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
@@ -511,7 +509,7 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
     ctx.status = 204;
   } catch (error) {
     if (error instanceof StyleValidationError) {
-      throw Boom.badRequest('Provided CSS was invalid.');
+      throw badRequest('Provided CSS was invalid.');
     }
 
     throw error;

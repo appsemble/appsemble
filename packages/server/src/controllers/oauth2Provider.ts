@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { URL } from 'url';
 
-import Boom from '@hapi/boom';
+import { forbidden, notFound } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
 import { Op } from 'sequelize';
 
@@ -35,7 +35,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
 
   if (!user) {
     // The authenticated user may have been deleted.
-    throw Boom.forbidden();
+    throw forbidden();
   }
 
   const picture = user.primaryEmail
@@ -66,13 +66,13 @@ export async function createAuthorizationCode(ctx: KoaContext<Params>): Promise<
   const app = await App.findByPk(appId, { attributes: ['domain', 'path', 'OrganizationId'] });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   const appHost = `${app.path}.${app.OrganizationId}.${new URL(host).hostname}`;
   const redirectHost = new URL(redirectUri).hostname;
   if (redirectHost !== appHost && redirectHost !== app.domain) {
-    throw Boom.forbidden('Invalid redirectUri');
+    throw forbidden('Invalid redirectUri');
   }
 
   const { code } = await OAuth2AuthorizationCode.create({

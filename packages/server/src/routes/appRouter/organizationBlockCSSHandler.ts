@@ -1,4 +1,4 @@
-import * as Boom from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 
 import { Organization, OrganizationBlockStyle } from '../../models';
 import type { KoaContext } from '../../types';
@@ -32,7 +32,7 @@ export async function organizationBlockCSSHandler(ctx: KoaContext<Params>): Prom
   });
 
   if (!app) {
-    throw Boom.notFound();
+    throw notFound();
   }
 
   const org = app.Organization;

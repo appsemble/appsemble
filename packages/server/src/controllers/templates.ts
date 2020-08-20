@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import { normalize, Permission } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { conflict, notFound } from '@hapi/boom';
 import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
@@ -46,7 +46,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
   await checkRole(ctx, organizationId, Permission.CreateApps);
 
   if (!template) {
-    throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
+    throw notFound(`Template with ID ${templateId} does not exist.`);
   }
 
   if (!template.template && template.private) {
@@ -92,7 +92,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
     ctx.status = 201;
   } catch (error) {
     if (error instanceof UniqueConstraintError) {
-      throw Boom.conflict(`Another app with path “${path}” already exists`);
+      throw conflict(`Another app with path “${path}” already exists`);
     }
 
     throw error;

@@ -1,6 +1,6 @@
 import type { AppMessages as AppMessagesInterface } from '@appsemble/types';
 import { Permission, validateLanguage } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { badRequest, notFound } from '@hapi/boom';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 
@@ -22,7 +22,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
   try {
     validateLanguage(language);
   } catch {
-    throw Boom.badRequest(`Language “${language}” is invalid`);
+    throw badRequest(`Language “${language}” is invalid`);
   }
 
   const baseLanguage = tags(language)
@@ -45,7 +45,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   if (
@@ -53,7 +53,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     (merge && !app.AppMessages.some((m) => m.language === language.toLowerCase()))
   ) {
     if (language !== (app.definition.defaultLanguage || 'en-us')) {
-      throw Boom.notFound(`Language “${language}” could not be found`);
+      throw notFound(`Language “${language}” could not be found`);
     }
     ctx.body = { language, messages: {} };
     return;
@@ -78,7 +78,7 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findOne({ where: { id: appId } });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
@@ -86,7 +86,7 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
   try {
     validateLanguage(language);
   } catch {
-    throw Boom.badRequest(`Language “${language}” is invalid`);
+    throw badRequest(`Language “${language}” is invalid`);
   }
 
   await AppMessages.upsert({ AppId: app.id, language: language.toLowerCase(), messages });
@@ -103,7 +103,7 @@ export async function deleteMessages(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
@@ -113,7 +113,7 @@ export async function deleteMessages(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!affectedRows) {
-    throw Boom.notFound(`App does not have messages for “${language}”`);
+    throw notFound(`App does not have messages for “${language}”`);
   }
 }
 
@@ -128,7 +128,7 @@ export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw Boom.notFound('App not found');
+    throw notFound('App not found');
   }
 
   ctx.body = [
