@@ -1,19 +1,27 @@
 import { Select } from '@appsemble/react-components';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { definition, languages } from '../../../utils/settings';
 import { messages } from './messages';
 
 export function LanguagePreference(): ReactElement {
+  const history = useHistory();
+  const route = useRouteMatch();
+
   const [preferredLanguage, setPreferredLanguage] = useState(
     localStorage.getItem('preferredLanguage') ?? definition.defaultLanguage ?? 'en-us',
   );
 
-  const onLanguageChange = useCallback((_, language: string) => {
-    setPreferredLanguage(language);
-    localStorage.setItem('preferredLanguage', language);
-  }, []);
+  const onLanguageChange = useCallback(
+    (_, language: string) => {
+      history.replace(route.url.replace(preferredLanguage, language));
+      setPreferredLanguage(language);
+      localStorage.setItem('preferredLanguage', language);
+    },
+    [history, preferredLanguage, route.url],
+  );
 
   const langMap = useMemo(() => {
     const displayNames = new Intl.DisplayNames([preferredLanguage], { type: 'language' });

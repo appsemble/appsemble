@@ -36,7 +36,7 @@ export function AppSubscriptions(): ReactElement {
   } = useServiceWorkerRegistration();
 
   useEffect(() => {
-    const subs = Object.entries(definition.resources).reduce<ResourceState>(
+    const subs = Object.entries(definition.resources || {}).reduce<ResourceState>(
       (acc, [resourceType, resource]) => {
         Object.keys(resource)
           .filter((key) => ['create', 'update', 'delete'].includes(key))
