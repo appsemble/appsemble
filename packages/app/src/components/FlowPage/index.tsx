@@ -30,7 +30,7 @@ export function FlowPage({
   showDialog,
 }: FlowPageProps): ReactElement {
   const history = useHistory();
-  const route = useRouteMatch();
+  const route = useRouteMatch<{ lang: string }>();
   const [currentPage, setCurrentPage] = useState(0);
   const [data, setData] = useState({});
   const pushNotifications = useServiceWorkerRegistration();
