@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.10] - 2020-08-21
+
+### Fixed
+
+- Server: Fix migration for version 0.13.9.
+
 ## [0.13.9] - 2020-08-21
 
 ### Added
