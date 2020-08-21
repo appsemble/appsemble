@@ -21,6 +21,7 @@ export const paths: OpenAPIV3.PathsObject = {
           'application/json': {
             schema: {
               type: 'object',
+              required: ['refresh_token'],
               properties: {
                 refresh_token: {
                   type: 'string',

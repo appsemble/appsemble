@@ -196,7 +196,7 @@ export function refreshToken(ctx: KoaContext): void {
     argv,
     request: { body },
   } = ctx;
-  const { sub } = verify(body.token, argv.secret, { audience: argv.host }) as JwtPayload;
+  const { sub } = verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload;
 
   ctx.body = createJWTResponse(sub, argv);
 }
