@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.9] - 2020-08-21
+
+### Added
+
+- App: Add support for setting language preferences in the settings page of apps.
+- Cli: Add support for uploading app screenshots.
+- Server: Add support for uploading and serving app screenshots.
+- Studio: Display app screenshots in the app detail view.
+
+### Changed
+
+- App: Add link to settings page to side menu.
+
+### Fixed
+
+- App: Fix various issues with page routing.
+
 ## [0.13.8] - 2020-08-18
 
 ### Added
