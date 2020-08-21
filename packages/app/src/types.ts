@@ -11,7 +11,7 @@ import type {
   Remapper,
   UserInfo,
 } from '@appsemble/types';
-import type { RouteComponentProps } from 'react-router-dom';
+import type { match as Match, RouteComponentProps } from 'react-router-dom';
 import type { JsonValue } from 'type-fest';
 
 declare module '@appsemble/sdk' {
@@ -37,14 +37,6 @@ export interface User extends UserInfo {
 }
 
 declare global {
-  interface HTMLCollectionBase {
-    [Symbol.iterator]: () => Iterator<Element>;
-  }
-
-  interface StyleSheetList {
-    [Symbol.iterator]: () => Iterator<CSSStyleSheet>;
-  }
-
   interface Window {
     /**
      * This boolean indicates if Appsemble has loaded normally.
@@ -92,6 +84,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   definition: D;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
+  route: Match<{ lang: string }>;
   showDialog: ShowDialogAction;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;

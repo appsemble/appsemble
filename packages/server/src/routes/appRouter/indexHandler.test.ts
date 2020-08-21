@@ -246,7 +246,7 @@ it('should render the index page', async () => {
     ],
     id: 1,
     vapidPublicKey: '',
-    languages: [],
+    languages: ['en-us'],
     logins: [],
     definition: {
       pages: [

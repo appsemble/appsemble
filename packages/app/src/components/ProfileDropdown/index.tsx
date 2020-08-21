@@ -13,10 +13,9 @@ export function ProfileDropdown(): ReactElement {
   const { definition } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
 
-  const showSettings = definition.notifications !== undefined;
   const showLogin = definition.security;
 
-  if (!showSettings && !showLogin) {
+  if (!showLogin) {
     return null;
   }
 
@@ -41,23 +40,23 @@ export function ProfileDropdown(): ReactElement {
         </figure>
       }
     >
-      {showSettings && (
-        <Link className="dropdown-item" to="/Settings">
-          <Icon icon="wrench" />
-          <span>
-            <FormattedMessage {...messages.settings} />
-          </span>
-        </Link>
-      )}
-      {showSettings && showLogin && <hr className="dropdown-divider" />}
+      <Link className="dropdown-item" to="/Settings">
+        <Icon icon="wrench" />
+        <span>
+          <FormattedMessage {...messages.settings} />
+        </span>
+      </Link>
       {showLogin && (
-        <Button
-          className={`dropdown-item pl-5 ${styles.logoutButton}`}
-          icon="sign-out-alt"
-          onClick={logout}
-        >
-          <FormattedMessage {...messages.logoutButton} />
-        </Button>
+        <>
+          <hr className="dropdown-divider" />
+          <Button
+            className={`dropdown-item pl-5 ${styles.logoutButton}`}
+            icon="sign-out-alt"
+            onClick={logout}
+          >
+            <FormattedMessage {...messages.logoutButton} />
+          </Button>
+        </>
       )}
     </Dropdown>
   );

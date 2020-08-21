@@ -33,6 +33,7 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
             <BlockList
               {...blockListProps}
               blocks={blocks}
+              key={prefix}
               prefix={`${prefix}.subPages.${index}.blocks`}
             />
           </Route>

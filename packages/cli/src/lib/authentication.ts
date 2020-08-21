@@ -62,15 +62,17 @@ async function getClientCredentials(remote: string, inputCredentials: string): P
 
 export async function login({ clientCredentials, remote }: BaseArguments): Promise<void> {
   const { setPassword } = await getKeytar();
+  const url = new URL('/settings/client-credentials', remote);
   let credentials = clientCredentials;
   if (credentials) {
     if (!validate(clientCredentials)) {
       throw new AppsembleError(
-        `Invalid client credentials. Client credentials can be registered on ${remote}/settings/client-credentials`,
+        `Invalid client credentials. Client credentials can be registered on ${url}`,
       );
     }
     credentials = clientCredentials;
   } else {
+    logger.info(`Client credentials can be registered on ${url}`);
     ({ credentials } = await inquirer.prompt([
       {
         name: 'credentials',

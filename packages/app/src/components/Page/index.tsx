@@ -104,7 +104,7 @@ export function Page(): ReactElement {
         ) : (
           // The switch is used to enforce an exact path.
           <Switch>
-            <Route exact path={path}>
+            <Route exact path={`${path}${(page.parameters || []).map((param) => `/:${param}`)}`}>
               {page.type === 'flow' ? (
                 <FlowPage
                   definition={definition}
@@ -118,6 +118,7 @@ export function Page(): ReactElement {
                 <BlockList
                   blocks={page.blocks}
                   ee={ee.current}
+                  key={prefix}
                   page={page}
                   prefix={`${prefix}.blocks`}
                   remap={remapWithContext}
@@ -126,7 +127,7 @@ export function Page(): ReactElement {
               )}
             </Route>
             {/* Redirect from a matching sub URL to the actual URL */}
-            <Redirect to={url} />
+            {!page.parameters && <Redirect to={url} />}
           </Switch>
         )}
         <PageDialog

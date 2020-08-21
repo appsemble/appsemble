@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.build",
   "compilerOptions": {
     "jsxFactory": "h",
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "dist",
     "rootDir": "src"
   }

@@ -10,7 +10,7 @@ import type {
   FlowPageDefinition,
   Remapper,
 } from '@appsemble/types';
-import type { RouteComponentProps } from 'react-router-dom';
+import type { match as Match, RouteComponentProps } from 'react-router-dom';
 
 import type { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
 import { ActionCreator, ActionCreators, actionCreators } from './actions';
@@ -20,6 +20,7 @@ interface MakeActionsParams {
   definition: AppDefinition;
   context: BlockDefinition | FlowPageDefinition;
   history: RouteComponentProps['history'];
+  route: Match<{ lang: string }>;
   showDialog: ShowDialogAction;
   extraCreators: ActionCreators;
   flowActions: FlowActions;
@@ -38,6 +39,7 @@ interface CreateActionParams {
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
+  route: Match<{ lang: string }>;
   pageReady: Promise<void>;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
@@ -58,6 +60,7 @@ function createAction({
   prefix,
   pushNotifications,
   remap,
+  route,
   showDialog,
   showMessage,
   type,
@@ -75,6 +78,7 @@ function createAction({
     pushNotifications,
     remap,
     showMessage,
+    route,
   });
 
   const onSuccess =
@@ -86,6 +90,7 @@ function createAction({
       extraCreators,
       flowActions,
       history,
+      route,
       pageReady,
       prefix: `${prefix}.onSuccess`,
       pushNotifications,
@@ -103,6 +108,7 @@ function createAction({
       extraCreators,
       flowActions,
       history,
+      route,
       pageReady,
       prefix: `${prefix}.onError`,
       pushNotifications,
@@ -155,6 +161,7 @@ export function makeActions({
   prefix,
   pushNotifications,
   remap,
+  route,
   showDialog,
   showMessage,
 }: MakeActionsParams): { [key: string]: Action } {
@@ -179,6 +186,7 @@ export function makeActions({
         ee,
         extraCreators,
         history,
+        route,
         type,
         prefix: `${prefix}.actions.${on}`,
         pushNotifications,
@@ -209,6 +217,7 @@ export function makeActions({
           ee,
           extraCreators,
           history,
+          route,
           type,
           prefix: `${prefix}.actions.${on}`,
           pushNotifications,

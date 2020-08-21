@@ -6,7 +6,7 @@ import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 
 import type { ShowDialogAction } from '../../types';
 import type { ActionCreators } from '../../utils/actions';
@@ -74,6 +74,7 @@ export function Block({
   const history = useHistory();
   const params = useParams();
   const location = useLocation();
+  const route = useRouteMatch<{ lang: string }>();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
 
@@ -150,6 +151,7 @@ export function Block({
       flowActions,
       pushNotifications,
       pageReady,
+      route,
       prefix,
       ee,
       remap,
@@ -230,6 +232,7 @@ export function Block({
     pushNotifications,
     ready,
     remap,
+    route,
     showDialog,
   ]);
 

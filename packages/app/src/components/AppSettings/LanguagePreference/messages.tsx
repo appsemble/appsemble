@@ -1,5 +1,5 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  settings: 'Settings',
+  preferredLanguage: 'Preferred language for this app',
 });
