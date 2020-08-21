@@ -306,7 +306,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
-      await AppScreenshot.destroy({ where: { AppId: appId } });
+      await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
       if (screenshots?.length) {
         logger.verbose(`Saving ${screenshots.length} screenshots`);
         dbApp.AppScreenshots = await AppScreenshot.bulkCreate(
@@ -336,6 +336,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         icon,
         path,
         private: isPrivate,
+        screenshots,
         sharedStyle,
         style,
         template,
@@ -427,7 +428,21 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
     await checkRole(ctx, dbApp.OrganizationId, checkPermissions);
 
-    await dbApp.update(result, { where: { id: appId } });
+    await transactional(async (transaction) => {
+      await dbApp.update(result, { where: { id: appId }, transaction });
+      if (screenshots?.length) {
+        await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
+        logger.verbose(`Saving ${screenshots.length} screenshots`);
+        dbApp.AppScreenshots = await AppScreenshot.bulkCreate(
+          screenshots.map((screenshot: VFile) => ({
+            screenshot: screenshot.contents,
+            AppId: dbApp.id,
+          })),
+          // These queries provide huge logs.
+          { transaction, logging: false },
+        );
+      }
+    });
 
     ctx.body = getAppFromRecord(dbApp);
   } catch (error) {
