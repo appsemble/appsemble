@@ -11,7 +11,7 @@ import type {
   Remapper,
   UserInfo,
 } from '@appsemble/types';
-import type { RouteComponentProps } from 'react-router-dom';
+import type { match as Match, RouteComponentProps } from 'react-router-dom';
 import type { JsonValue } from 'type-fest';
 
 declare module '@appsemble/sdk' {
@@ -92,7 +92,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   definition: D;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
-  route: RouteComponentProps<{ lang: string }>['match'];
+  route: Match<{ lang: string }>;
   showDialog: ShowDialogAction;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;

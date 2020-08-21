@@ -104,10 +104,7 @@ export function Page(): ReactElement {
         ) : (
           // The switch is used to enforce an exact path.
           <Switch>
-            <Route
-              exact
-              path={`${path}${[].concat((page.parameters || []).map((param) => `/:${param}`))}`}
-            >
+            <Route exact path={`${path}${(page.parameters || []).map((param) => `/:${param}`)}`}>
               {page.type === 'flow' ? (
                 <FlowPage
                   definition={definition}

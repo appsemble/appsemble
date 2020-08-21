@@ -10,7 +10,7 @@ import type {
   FlowPageDefinition,
   Remapper,
 } from '@appsemble/types';
-import type { RouteComponentProps } from 'react-router-dom';
+import type { match as Match, RouteComponentProps } from 'react-router-dom';
 
 import type { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
 import { ActionCreator, ActionCreators, actionCreators } from './actions';
@@ -20,7 +20,7 @@ interface MakeActionsParams {
   definition: AppDefinition;
   context: BlockDefinition | FlowPageDefinition;
   history: RouteComponentProps['history'];
-  route: RouteComponentProps<{ lang: string }>['match'];
+  route: Match<{ lang: string }>;
   showDialog: ShowDialogAction;
   extraCreators: ActionCreators;
   flowActions: FlowActions;
@@ -39,7 +39,7 @@ interface CreateActionParams {
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
-  route: RouteComponentProps<{ lang: string }>['match'];
+  route: Match<{ lang: string }>;
   pageReady: Promise<void>;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;

@@ -33,8 +33,7 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
             <BlockList
               {...blockListProps}
               blocks={blocks}
-              // eslint-disable-next-line react/no-array-index-key
-              key={`${prefix}.subPages.${index}.blocks`}
+              key={prefix}
               prefix={`${prefix}.subPages.${index}.blocks`}
             />
           </Route>
