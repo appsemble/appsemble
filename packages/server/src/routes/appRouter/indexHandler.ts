@@ -84,7 +84,12 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
       }),
     ),
     id: app.id,
-    languages: app.AppMessages.map(({ language }) => language),
+    languages: [
+      ...new Set([
+        ...app.AppMessages.map(({ language }) => language),
+        app.definition.defaultLanguage || 'en-us',
+      ]),
+    ].sort(),
     logins: app.AppOAuth2Secrets,
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,

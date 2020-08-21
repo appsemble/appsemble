@@ -14,3 +14,4 @@ export * from './mapValues';
 export * from './objectCache';
 export * from './remap';
 export * from './validateAppDefinition';
+export * from './langmap';

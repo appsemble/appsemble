@@ -18,31 +18,15 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import type { AppMessages } from '@appsemble/types';
+import { getLanguageDisplayName, langmap } from '@appsemble/utils';
 import { iterApp } from '@appsemble/utils/src';
 import axios from 'axios';
-import langmap from 'langmap';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { findMessageIds } from '../../utils/findMessageIds';
 import { useApp } from '../AppContext';
 import { messages } from './messages';
-
-// Exclude languages that aren’t accepted by our server and store language codes in lowercase.
-const bannedLanguages = new Set([
-  'ck-US',
-  'en-PI',
-  'en-UD',
-  'en@pirate',
-  'eo-EO',
-  'fb-LT',
-  'gx-GR',
-]);
-const filteredLangmap = Object.fromEntries(
-  Object.entries(langmap)
-    .filter(([key]) => !bannedLanguages.has(key))
-    .map(([key, entry]) => [key.toLowerCase(), entry]),
-);
 
 export function MessageEditor(): ReactElement {
   const { app } = useApp();
@@ -98,7 +82,7 @@ export function MessageEditor(): ReactElement {
       <FormattedMessage
         {...messages.deleteTitle}
         values={{
-          language: filteredLangmap[languageId]?.englishName ?? languageId,
+          language: langmap[languageId]?.englishName ?? languageId,
         }}
       />
     ),
@@ -163,14 +147,11 @@ export function MessageEditor(): ReactElement {
         onChange={onSelectedLanguageChange}
         value={languageId}
       >
-        {languages.map((lang) => {
-          const { englishName, nativeName } = filteredLangmap[lang];
-          return (
-            <option key={lang} value={lang}>
-              {englishName === nativeName ? englishName : `${englishName} (${nativeName})`}
-            </option>
-          );
-        })}
+        {languages.map((lang) => (
+          <option key={lang} value={lang}>
+            {getLanguageDisplayName(lang)}
+          </option>
+        ))}
       </Select>
       <div className="is-pulled-right">
         <Button
@@ -232,7 +213,7 @@ export function MessageEditor(): ReactElement {
           required
         >
           <option hidden> </option>
-          {Object.entries(filteredLangmap).map(([lang, { englishName, nativeName }]) => (
+          {Object.entries(langmap).map(([lang, { englishName, nativeName }]) => (
             <option key={lang} value={lang}>
               {`${englishName}${englishName === nativeName ? '' : ` (${nativeName})`} [${lang}]`}
             </option>
