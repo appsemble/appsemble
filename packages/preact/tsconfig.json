@@ -2,6 +2,6 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "jsxFactory": "h",
-    "lib": ["dom", "esnext"]
+    "lib": ["dom", "dom.iterable", "esnext"]
   }
 }
