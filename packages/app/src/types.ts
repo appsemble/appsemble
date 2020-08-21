@@ -92,6 +92,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   definition: D;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
+  route: RouteComponentProps<{ lang: string }>['match'];
   showDialog: ShowDialogAction;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;

@@ -4,7 +4,7 @@ import { useMessages } from '@appsemble/react-components';
 import type { BootstrapParams } from '@appsemble/sdk';
 import type { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import type { ShowDialogAction } from '../../types';
 import { makeActions } from '../../utils/makeActions';
@@ -30,6 +30,7 @@ export function FlowPage({
   showDialog,
 }: FlowPageProps): ReactElement {
   const history = useHistory();
+  const route = useRouteMatch();
   const [currentPage, setCurrentPage] = useState(0);
   const [data, setData] = useState({});
   const pushNotifications = useServiceWorkerRegistration();
@@ -114,6 +115,7 @@ export function FlowPage({
         ee,
         pageReady: null,
         remap,
+        route,
         showMessage,
       }),
     [
@@ -125,6 +127,7 @@ export function FlowPage({
       prefix,
       pushNotifications,
       remap,
+      route,
       showDialog,
       showMessage,
     ],

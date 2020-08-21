@@ -16,6 +16,7 @@ export function link({
   definition: { to, parameters = {}, remap = '' },
   app: { pages },
   history,
+  route,
 }: MakeActionParameters<LinkActionDefinition>): LinkAction {
   let href: (data: any) => string;
 
@@ -59,7 +60,7 @@ export function link({
       if (urlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
       } else {
-        history.push(target, data);
+        history.push(`/${route.params.lang}${target}`, data);
       }
 
       return data;
