@@ -159,17 +159,19 @@ export function AppDetails(): ReactElement {
           )}
         </div>
       </div>
-      <div className={`mx-4 ${styles.screenshots}`}>
-        {app.screenshotUrls.map((url) => (
-          <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-            <img
-              alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-              className={styles.screenshot}
-              src={url}
-            />
-          </figure>
-        ))}
-      </div>
+      {app.screenshotUrls.length ? (
+        <div className={`my-4 ${styles.screenshots}`}>
+          {app.screenshotUrls.map((url) => (
+            <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
+              <img
+                alt={formatMessage(messages.screenshot, { app: app.definition.name })}
+                className={styles.screenshot}
+                src={url}
+              />
+            </figure>
+          ))}
+        </div>
+      ) : null}
       <AppRatings />
     </Content>
   );
