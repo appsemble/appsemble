@@ -51,13 +51,24 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
                 },
+                screenshots: {
+                  type: 'array',
+                  description: 'Screenshots to showcase in the store',
+                  items: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
               },
             },
             encoding: {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
-                contentType: 'image/png,image/jpg,image/tiff,image/webp',
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
+              },
+              screenshots: {
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
               },
             },
           },
@@ -175,13 +186,21 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
                 },
+                screenshots: {
+                  type: 'array',
+                  description: 'Screenshots to showcase in the store',
+                  items: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
               },
             },
             encoding: {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
-                contentType: 'image/png,image/jpg,image/tiff,image/webp',
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
               },
             },
           },
@@ -218,7 +237,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The icon of the app that matches the given id.',
           content: {
             'image/png': {},
-            'image/jpg': {},
+            'image/jpeg': {},
             'image/tiff': {},
             'image/webp': {},
           },
@@ -495,6 +514,22 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       security: [{ studio: [] }],
+    },
+  },
+  '/apps/{appId}/screenshots/{screenshotId}': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/screenshotId' },
+    ],
+    get: {
+      tags: ['app'],
+      description: 'Get a screenshot of an app.',
+      operationId: 'getAppScreenshot',
+      responses: {
+        200: {
+          description: 'The app screenshot',
+        },
+      },
     },
   },
   '/apps/{appId}/style/core': {

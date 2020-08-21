@@ -1,14 +1,26 @@
+import { createReadStream, promises as fs } from 'fs';
+import { join } from 'path';
+
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
-import { App, AppBlockStyle, AppRating, BlockVersion, Member, Organization, User } from '../models';
+import {
+  App,
+  AppBlockStyle,
+  AppRating,
+  AppScreenshot,
+  BlockVersion,
+  Member,
+  Organization,
+  User,
+} from '../models';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
 
 let authorization: string;
-let organizationId: string;
+let organization: Organization;
 let clock: FakeTimers.InstalledClock;
 let user: User;
 
@@ -23,11 +35,11 @@ beforeEach(async () => {
   clock = FakeTimers.install();
 
   ({ authorization, user } = await testToken());
-  ({ id: organizationId } = await Organization.create({
+  organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
-  }));
-  await Member.create({ OrganizationId: organizationId, UserId: user.id, role: 'Owner' });
+  });
+  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 
@@ -70,7 +82,7 @@ describe('queryApps', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -80,7 +92,7 @@ describe('queryApps', () => {
         definition: { name: 'Another App', defaultPage: 'Another Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -123,7 +135,7 @@ describe('queryApps', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -134,7 +146,7 @@ describe('queryApps', () => {
         definition: { name: 'Another App', defaultPage: 'Another Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -165,7 +177,7 @@ describe('queryApps', () => {
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
     await AppRating.create({
       AppId: appA.id,
@@ -185,7 +197,7 @@ describe('queryApps', () => {
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     const appC = await await App.create({
@@ -193,7 +205,7 @@ describe('queryApps', () => {
       definition: { name: 'Another App', defaultPage: 'Another Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
     await AppRating.create({
       AppId: appC.id,
@@ -234,7 +246,7 @@ describe('getAppById', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -251,7 +263,7 @@ describe('getAppById', () => {
         path: 'test-app',
         iconUrl: `/api/apps/${appA.id}/icon`,
         definition: appA.definition,
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
         yaml: `name: Test App
 defaultPage: Test Page
 `,
@@ -268,7 +280,7 @@ describe('queryMyApps', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -340,7 +352,7 @@ describe('queryMyApps', () => {
 describe('createApp', () => {
   it('should create an app', async () => {
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -388,7 +400,7 @@ describe('createApp', () => {
             },
           ],
         },
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
         yaml: `name: Test App
 defaultPage: Test Page
 pages:
@@ -397,6 +409,7 @@ pages:
       - type: test
         version: 0.0.0
 `,
+        screenshotUrls: [],
       },
     });
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
@@ -405,6 +418,61 @@ pages:
       rating: {
         average: null,
         count: 0,
+      },
+    });
+  });
+
+  it('should accept screenshots', async () => {
+    const form = new FormData();
+    form.append('OrganizationId', organization.id);
+    form.append(
+      'definition',
+      JSON.stringify({
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+      }),
+    );
+    form.append('screenshots', createReadStream(join(__dirname, '__fixtures__', 'standing.png')));
+    const createdResponse = await request.post('/api/apps', form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
+
+    expect(createdResponse).toMatchObject({
+      status: 201,
+      data: {
+        id: expect.any(Number),
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+        domain: null,
+        private: true,
+        path: 'test-app',
+        iconUrl: expect.stringMatching(/\/api\/apps\/\d+\/icon/),
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
+        OrganizationId: organization.id,
+        yaml: `name: Test App
+defaultPage: Test Page
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 0.0.0
+`,
+        screenshotUrls: ['/api/apps/1/screenshots/1'],
       },
     });
   });
@@ -427,7 +495,7 @@ pages:
     });
   });
 
-  it('should not allow apps to be created without an organizationId', async () => {
+  it('should not allow apps to be created without an organization.id', async () => {
     const form = new FormData();
     form.append(
       'definition',
@@ -504,7 +572,7 @@ pages:
 
   it('should not allow to create an app using non-existent blocks', async () => {
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -542,7 +610,7 @@ pages:
 
   it('should not allow to create an app using non-existent block versions', async () => {
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -580,7 +648,7 @@ pages:
 
   it('should not allow to create an app using invalid block parameters', async () => {
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -621,7 +689,7 @@ pages:
 
   it('should handle app path conflicts on create', async () => {
     const formA = new FormData();
-    formA.append('OrganizationId', organizationId);
+    formA.append('OrganizationId', organization.id);
     formA.append(
       'definition',
       JSON.stringify({
@@ -638,7 +706,7 @@ pages:
     await request.post('/api/apps', formA, { headers: { ...formA.getHeaders(), authorization } });
 
     const formB = new FormData();
-    formB.append('OrganizationId', organizationId);
+    formB.append('OrganizationId', organization.id);
     formB.append(
       'definition',
       JSON.stringify({
@@ -681,12 +749,12 @@ pages:
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: `a${index}`,
         vapidPrivateKey: `b${index}`,
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       })),
     );
 
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -714,7 +782,7 @@ pages:
 
   it('should allow stylesheets to be included when creating an app', async () => {
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -750,7 +818,7 @@ pages:
 
   it('should not allow invalid core stylesheets when creating an app', async () => {
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -777,7 +845,7 @@ pages:
 
   it('should not allow invalid shared stylesheets when creating an app', async () => {
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -842,7 +910,7 @@ describe('updateApp', () => {
         path: 'test-app',
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -876,7 +944,7 @@ describe('updateApp', () => {
         private: true,
         path: 'test-app',
         iconUrl: `/api/apps/${appA.id}/icon`,
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
         definition: {
           name: 'Foobar',
           defaultPage: appA.definition.defaultPage,
@@ -906,7 +974,7 @@ pages:
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -957,7 +1025,7 @@ pages:
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1008,7 +1076,7 @@ pages:
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1052,7 +1120,7 @@ pages:
         private: false,
         path: 'test-app',
         iconUrl: `/api/apps/${appA.id}/icon`,
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
         definition: {
           name: 'Foobar',
           defaultPage: appA.definition.defaultPage,
@@ -1075,7 +1143,7 @@ pages:
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1101,7 +1169,7 @@ pages:
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1127,7 +1195,7 @@ pages:
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1227,7 +1295,7 @@ pages:
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1248,7 +1316,7 @@ pages:
 describe('deleteApp', () => {
   it('should delete an app', async () => {
     const form = new FormData();
-    form.append('OrganizationId', organizationId);
+    form.append('OrganizationId', organization.id);
     form.append(
       'definition',
       JSON.stringify({
@@ -1293,14 +1361,14 @@ describe('deleteApp', () => {
   });
 
   it('should not delete apps from other organizations', async () => {
-    const organization = await Organization.create({ id: 'testorganizationb' });
+    const organizationB = await Organization.create({ id: 'testorganizationb' });
     const app = await App.create(
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
+        OrganizationId: organizationB.id,
       },
       { raw: true },
     );
@@ -1322,7 +1390,7 @@ describe('patchApp', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1368,7 +1436,7 @@ describe('patchApp', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1431,7 +1499,7 @@ describe('patchApp', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1487,6 +1555,49 @@ describe('patchApp', () => {
   });
 });
 
+describe('getAppScreenshots', () => {
+  it('should throw a 404 if the app doesn’t exist', async () => {
+    const response = await request.get('/api/apps/1/screenshots/1');
+    expect(response).toMatchObject({
+      status: 404,
+      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
+    });
+  });
+
+  it('should throw a 404 if the screenshot doesn’t exist', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const response = await request.get(`/api/apps/${app.id}/screenshots/1`);
+    expect(response).toMatchObject({
+      status: 404,
+      data: { error: 'Not Found', message: 'Screenshot not found', statusCode: 404 },
+    });
+  });
+
+  it('should return the screenshot', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'standing.png'));
+    const screenshot = await AppScreenshot.create({
+      AppId: app.id,
+      screenshot: buffer,
+    });
+    const response = await request.get(`/api/apps/${app.id}/screenshots/${screenshot.id}`, {
+      responseType: 'arraybuffer',
+    });
+    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response.data).toStrictEqual(buffer);
+  });
+});
+
 describe('setAppBlockStyle', () => {
   it('should validate and update css when updating an app’s block style', async () => {
     await BlockVersion.create({
@@ -1506,7 +1617,7 @@ describe('setAppBlockStyle', () => {
         },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1540,7 +1651,7 @@ describe('setAppBlockStyle', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1596,7 +1707,7 @@ describe('setAppBlockStyle', () => {
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     const form = new FormData();
@@ -1651,7 +1762,7 @@ describe('setAppBlockStyle', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1686,7 +1797,7 @@ describe('setAppBlockStyle', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organizationId,
+        OrganizationId: organization.id,
       },
       { raw: true },
     );
@@ -1704,7 +1815,7 @@ describe('setAppBlockStyle', () => {
 
   it('should not allow to update an app using non-existent blocks', async () => {
     const form = new FormData();
-    form.append('organizationId', organizationId);
+    form.append('organization.id', organization.id);
     form.append(
       'definition',
       JSON.stringify({

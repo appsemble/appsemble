@@ -24,6 +24,7 @@ import {
   AppMessages,
   AppOAuth2Secret,
   AppRating,
+  AppScreenshot,
   AppSubscription,
   Asset,
   Organization,
@@ -125,6 +126,9 @@ export class App extends Model<App> {
 
   @HasMany(() => AppRating)
   AppRatings: AppRating[];
+
+  @HasMany(() => AppScreenshot)
+  AppScreenshots: AppScreenshot[];
 
   ResourceCount: number;
 

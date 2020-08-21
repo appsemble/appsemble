@@ -126,5 +126,10 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
         },
       },
     },
+    screenshotUrls: {
+      type: 'array',
+      description: 'A list of URLs referencing app screenshots',
+      items: { type: 'string' },
+    },
   },
 };
