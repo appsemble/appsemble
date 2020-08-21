@@ -65,10 +65,10 @@ export const paths: OpenAPIV3.PathsObject = {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
-                contentType: 'image/png,image/jpg,image/tiff,image/webp',
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
               },
               screenshots: {
-                contentType: 'image/png,image/jpg,image/tiff,image/webp',
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
               },
             },
           },
@@ -200,7 +200,7 @@ export const paths: OpenAPIV3.PathsObject = {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
-                contentType: 'image/png,image/jpg,image/tiff,image/webp',
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
               },
             },
           },
@@ -237,7 +237,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The icon of the app that matches the given id.',
           content: {
             'image/png': {},
-            'image/jpg': {},
+            'image/jpeg': {},
             'image/tiff': {},
             'image/webp': {},
           },
