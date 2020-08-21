@@ -37,14 +37,6 @@ export interface User extends UserInfo {
 }
 
 declare global {
-  interface HTMLCollectionBase {
-    [Symbol.iterator]: () => Iterator<Element>;
-  }
-
-  interface StyleSheetList {
-    [Symbol.iterator]: () => Iterator<CSSStyleSheet>;
-  }
-
   interface Window {
     /**
      * This boolean indicates if Appsemble has loaded normally.

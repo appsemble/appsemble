@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build",
   "compilerOptions": {
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "dist",
     "rootDir": "src"
   }
