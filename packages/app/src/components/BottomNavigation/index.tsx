@@ -14,7 +14,7 @@ interface BottomNavigationProps {
  * The app navigation that is displayed at the bottom of the app.
  */
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
-  const route = useRouteMatch();
+  const { url } = useRouteMatch();
 
   return (
     <nav className="bottom-nav mb-0">
@@ -24,7 +24,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
             <NavLink
               activeClassName="is-active"
               className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
-              to={`${route.url}/${normalize(page.name)}`}
+              to={`${url}/${normalize(page.name)}`}
             >
               {page.icon ? (
                 <Icon className="mb-1" icon={page.icon} iconSize="3x" size="large" />
