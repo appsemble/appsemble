@@ -44,6 +44,7 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
         return opendirSafe(
           filepath,
           (screenshotPath, screenshotStat) => {
+            logger.info(`Adding screenshot ${filepath} 🖼️`);
             if (!screenshotStat.isFile()) {
               throw new AppsembleError(`Expected ${filepath} to be an image file`);
             }
