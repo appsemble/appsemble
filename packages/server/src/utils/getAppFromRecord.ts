@@ -16,10 +16,10 @@ export function getAppFromRecord(
   record: models.App,
   omittedValues: (keyof types.App)[] = [],
 ): Partial<types.App> {
-  const result = {
+  const result: types.App = {
     id: record.id,
-    $created: record.created,
-    $updated: record.updated,
+    $created: record.created.toISOString(),
+    $updated: record.updated.toISOString(),
     domain: record.domain || null,
     path: record.path,
     private: Boolean(record.private),
@@ -35,6 +35,9 @@ export function getAppFromRecord(
     ...(record.get('ResourceCount') &&
       record.template && { resources: record.get('ResourceCount') > 0 }),
     OrganizationId: record.OrganizationId,
+    screenshotUrls: record.AppScreenshots?.map(
+      ({ id }) => `/api/apps/${record.id}/screenshots/${id}`,
+    ),
   };
 
   return omit(result, omittedValues);

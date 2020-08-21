@@ -40,6 +40,18 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
         formData.append('icon', createReadStream(filepath));
         return;
 
+      case 'screenshots':
+        return opendirSafe(
+          filepath,
+          (screenshotPath, screenshotStat) => {
+            if (!screenshotStat.isFile()) {
+              throw new AppsembleError(`Expected ${filepath} to be an image file`);
+            }
+            formData.append('screenshots', createReadStream(screenshotPath));
+          },
+          { allowMissing: true },
+        );
+
       case 'theme':
         return opendirSafe(filepath, async (themeDir, themeStat) => {
           const name = themeStat.name.toLowerCase();

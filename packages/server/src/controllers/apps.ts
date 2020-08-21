@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { logger } from '@appsemble/node-utils';
 import type { BlockManifest } from '@appsemble/types';
 import {
   AppsembleValidationError,
@@ -12,13 +13,24 @@ import {
   validateStyle,
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
+import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
+import type { VFile } from 'vfile';
 import * as webpush from 'web-push';
 
-import { App, AppBlockStyle, AppRating, BlockVersion, Member, Resource } from '../models';
+import {
+  App,
+  AppBlockStyle,
+  AppRating,
+  AppScreenshot,
+  BlockVersion,
+  Member,
+  Resource,
+  transactional,
+} from '../models';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/getAppFromRecord';
@@ -28,6 +40,7 @@ interface Params {
   appId: number;
   blockId: string;
   organizationId: string;
+  screenshotId: number;
 }
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
@@ -92,6 +105,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
         domain,
         icon,
         private: isPrivate = true,
+        screenshots,
         sharedStyle,
         style,
         template = false,
@@ -146,7 +160,21 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
     }
 
-    const record = await App.create(result);
+    let record: App;
+    await transactional(async (transaction) => {
+      record = await App.create(result, { transaction });
+      logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
+      record.AppScreenshots = screenshots?.length
+        ? await AppScreenshot.bulkCreate(
+            screenshots.map((screenshot: VFile) => ({
+              screenshot: screenshot.contents,
+              AppId: record.id,
+            })),
+            // These queries provide huge logs.
+            { transaction, logging: false },
+          )
+        : [];
+    });
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
@@ -179,6 +207,11 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
   if (!app) {
     throw notFound('App not found');
   }
+
+  app.AppScreenshots = await AppScreenshot.findAll({
+    attributes: ['id'],
+    where: { AppId: app.id },
+  });
 
   ctx.body = getAppFromRecord(app);
 }
@@ -228,11 +261,11 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
     request: {
-      body: { definition, domain, path, sharedStyle, style, yaml },
+      body: { definition, domain, path, screenshots, sharedStyle, style, yaml },
     },
   } = ctx;
 
-  let result;
+  let result: Partial<App>;
 
   try {
     result = {
@@ -263,14 +296,29 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
 
     await validateAppDefinition(definition, getBlockVersions);
 
-    const dbApp = await App.findOne({ where: { id: appId } });
+    const dbApp = await App.findByPk(appId);
 
     if (!dbApp) {
       throw notFound('App not found');
     }
 
     await checkRole(ctx, dbApp.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
-    await dbApp.update(result, { where: { id: appId } });
+
+    await transactional(async (transaction) => {
+      await dbApp.update(result, { where: { id: appId }, transaction });
+      await AppScreenshot.destroy({ where: { AppId: appId } });
+      if (screenshots?.length) {
+        logger.verbose(`Saving ${screenshots.length} screenshots`);
+        dbApp.AppScreenshots = await AppScreenshot.bulkCreate(
+          screenshots.map((screenshot: VFile) => ({
+            screenshot: screenshot.contents,
+            AppId: dbApp.id,
+          })),
+          // These queries provide huge logs.
+          { transaction, logging: false },
+        );
+      }
+    });
 
     ctx.body = getAppFromRecord(dbApp);
   } catch (error) {
@@ -353,7 +401,10 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       result.yaml = jsYaml.safeDump(definition);
     }
 
-    const dbApp = await App.findOne({ where: { id: appId } });
+    const dbApp = await App.findOne({
+      where: { id: appId },
+      include: [{ model: AppScreenshot, attributes: ['id'] }],
+    });
 
     if (!dbApp) {
       throw notFound('App not found');
@@ -417,6 +468,37 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = icon;
   // Type svg resolves to text/xml instead of image/svg+xml.
   ctx.type = metadata.format === 'svg' ? 'image/svg+xml' : metadata.format;
+}
+
+export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, screenshotId },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: [],
+    include: [
+      {
+        attributes: ['screenshot'],
+        model: AppScreenshot,
+        required: false,
+        where: { id: screenshotId },
+      },
+    ],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppScreenshots?.length) {
+    throw notFound('Screenshot not found');
+  }
+
+  const [{ screenshot }] = app.AppScreenshots;
+
+  const { mime } = await fromBuffer(screenshot);
+  ctx.body = screenshot;
+  ctx.type = mime;
 }
 
 export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {

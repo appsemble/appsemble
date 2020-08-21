@@ -885,6 +885,11 @@ export interface App {
   resources?: boolean;
 
   /**
+   * A list of URLs to app screenshots
+   */
+  screenshotUrls?: string[];
+
+  /**
    * An app icon url
    */
   iconUrl?: string;
