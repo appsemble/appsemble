@@ -24,7 +24,7 @@ export async function up(db: Sequelize): Promise<void> {
         model: 'App',
       },
     },
-    id: { type: DataTypes.NUMBER, primaryKey: true, allowNull: false },
+    id: { type: DataTypes.INTEGER, primaryKey: true, allowNull: false },
     screenshot: { type: DataTypes.BLOB, allowNull: false },
     created: { type: DataTypes.DATE, allowNull: false },
     updated: { type: DataTypes.DATE, allowNull: false },
