@@ -9,7 +9,7 @@ import { messages } from './messages';
 
 export function LanguagePreference(): ReactElement {
   const history = useHistory();
-  const route = useRouteMatch();
+  const { url } = useRouteMatch();
 
   const [preferredLanguage, setPreferredLanguage] = useState(
     localStorage.getItem('preferredLanguage') ?? definition.defaultLanguage ?? 'en-us',
@@ -17,11 +17,11 @@ export function LanguagePreference(): ReactElement {
 
   const onLanguageChange = useCallback(
     (_, language: string) => {
-      history.replace(route.url.replace(preferredLanguage, language));
+      history.replace(url.replace(preferredLanguage, language));
       setPreferredLanguage(language);
       localStorage.setItem('preferredLanguage', language);
     },
-    [history, preferredLanguage, route.url],
+    [history, preferredLanguage, url],
   );
 
   return (
