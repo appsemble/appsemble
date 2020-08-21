@@ -159,7 +159,7 @@ export function AppDetails(): ReactElement {
           )}
         </div>
       </div>
-      <div className={styles.screenshots}>
+      <div className={`mx-4 ${styles.screenshots}`}>
         {app.screenshotUrls.map((url) => (
           <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
             <img
