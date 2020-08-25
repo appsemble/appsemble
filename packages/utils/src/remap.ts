@@ -60,8 +60,6 @@ const mapperImplementations: MapperImplementations = {
       );
     } catch (error) {
       if (messageId) {
-        // eslint-disable-next-line no-console
-        console.error(`Message: ${messageId}`, error);
         return `{${messageId}}`;
       }
 
