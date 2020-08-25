@@ -194,8 +194,6 @@ export function Block({
               .map((url) => prefixBlockURL(block, url)),
             '/shared.css',
             `/${manifest.name}.css`,
-            '/organization/shared.css',
-            `/organization/${manifest.name}.css`,
           ].map((url) => injectCSS(shadowRoot, url)),
         );
       }

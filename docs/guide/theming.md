@@ -91,8 +91,7 @@ Appsemble. These may also be used for styling.
 ## Custom Styling
 
 Custom styling is supported using a hierarchical model by allowing developers to upload CSS which
-gets injected during the runtime of an application. Stylesheets can be uploaded at **three different
-levels** and can be injected at **three different points** within applications.
+gets injected during the runtime of an application.
 
 ### Hierarchy
 
@@ -102,31 +101,8 @@ levels** and can be injected at **three different points** within applications.
 graph TD
     A(App Block) --> B(App Core);
     B --> C(App Shared)
-    C --> D(Organization Block)
-    D --> E(Organization Core)
-    E --> F(Organization Shared)
-    F --> G(Server Block)
-    G --> H(Server Core)
-    H --> I(Server Shared)
-    I --> J["Default Style (Bulma CSS)"]
+    C --> D["Default Style (Bulma CSS)"]
 ```
-
-Applications can be styled at a **server** level, **organization** level as well as the
-**app-specific** level. Within each level, styling can be further specified for **core** modules,
-**block** modules and **shared** modules.
-
-#### Levels
-
-**Server**-level styling gets applied to every application hosted on the Appsemble server. This is
-useful for quickly applying style changes without having to re-deploy the server.
-
-**Organization**-level styling gets applied to every application that belongs to a specific
-organization. This is useful for applying unified styling across every application within an
-organization, such as for supplying basic color themes and icons.
-
-**App**-level styling gets applied to one specific application. This is primarily used for any
-styling that is directly related to one specific application without influencing any other
-applications. App-level styling overrides any styling applied at organization and server levels.
 
 #### Modules
 
@@ -221,26 +197,6 @@ can be combined to target specific blocks on specific pages.
   background-color: blue;
 }
 ```
-
-### Applying themes for an organization
-
-Organization themes can be uploaded using the [CLI](https://www.npmjs.com/package/@appsemble/cli).
-The command for uploading themes is as follows:
-
-```sh
-yarn appsemble theme upload [path-to-theme-css] --organization [organization-id] [--shared|--core|--block @organization/blockname]
-```
-
-More detailed information about the meaning of each parameter can be found using the following
-command:
-
-```sh
-yarn appsemble theme upload --help
-```
-
-### Applying themes for server
-
-Not yet implemented. <!-- XXX -->
 
 [bulma]: https://bulma.io/
 [hex]: https://htmlcolorcodes.com/
