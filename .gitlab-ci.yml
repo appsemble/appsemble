@@ -263,7 +263,6 @@ review:
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
-      --set "provision.account.organizations={appsemble}"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "proxy=true"
       --set "sentrySecret=sentry"
@@ -321,7 +320,6 @@ staging:
       --set "provision.account.id=43376671-1c98-4657-809e-d45292a3f39e"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
-      --set "provision.account.organizations={appsemble,amsterdam,10-second-move}"
       --set "proxy=true"
       --set "sentrySecret=sentry"
 
@@ -374,6 +372,7 @@ provision review:
     name: review/provision/$CI_COMMIT_REF_SLUG
   script:
     - yarn appsemble config set remote "$(cat environment-url.txt)"
+    - yarn appsemble organization create appsemble --name Appsemble
     - yarn appsemble block publish blocks/*
     - yarn appsemble app create --template --organization appsemble apps/*
 
@@ -389,6 +388,7 @@ provision staging:
     name: staging/provision
   script:
     - yarn appsemble config set remote https://staging.appsemble.review
+    - yarn appsemble organization create appsemble --name Appsemble
     - yarn appsemble block publish blocks/*
     - yarn appsemble app create --organization appsemble --template apps/*
 

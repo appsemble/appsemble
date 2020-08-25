@@ -29,6 +29,6 @@ export const messages = defineMessages({
   revoke: 'Revoke',
   unknownScope: 'This scope is not currently known. You may want to revoke this client.',
   'blocks:write': 'Publish blocks and block versions',
-  'organizations:styles:write': 'Override existing organization styling',
+  'organizations:write': 'Create and manage organizations',
   'apps:write': 'Create and modify apps',
 });

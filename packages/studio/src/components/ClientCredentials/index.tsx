@@ -106,7 +106,7 @@ export function ClientCredentials(): ReactElement {
           description: '',
           expires: '',
           'blocks:write': false,
-          'organizations:styles:write': false,
+          'organizations:write': false,
           'apps:write': false,
         }}
         footer={
@@ -162,9 +162,9 @@ export function ClientCredentials(): ReactElement {
             />
             <SimpleInput
               component={Checkbox}
-              help={<FormattedMessage {...messages['organizations:styles:write']} />}
-              label="organizations:styles:write"
-              name="organizations:styles:write"
+              help={<FormattedMessage {...messages['organizations:write']} />}
+              label="organizations:write"
+              name="organizations:write"
             />
             <SimpleInput
               component={Checkbox}

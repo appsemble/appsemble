@@ -38,7 +38,7 @@ describe('registerOAuth2ClientCredentials', () => {
     const response = await request.post('/api/oauth2/client-credentials', {
       description: 'Test client',
       expires: '2345-01-02T03:04:05Z',
-      scopes: ['organizations:styles:write', 'blocks:write'],
+      scopes: ['organizations:write', 'blocks:write'],
     });
     expect(response).toMatchObject({
       status: 201,
@@ -47,7 +47,7 @@ describe('registerOAuth2ClientCredentials', () => {
         description: 'Test client',
         expires: '2345-01-02T03:04:05.000Z',
         id: expect.stringMatching(/^[\da-z]{32}$/),
-        scopes: ['blocks:write', 'organizations:styles:write'],
+        scopes: ['blocks:write', 'organizations:write'],
         secret: expect.stringMatching(/^[\da-z]{64}$/),
       },
     });
@@ -57,7 +57,7 @@ describe('registerOAuth2ClientCredentials', () => {
     const response = await request.post('/api/oauth2/client-credentials', {
       description: 'Test client',
       expires: '1999-01-02T03:04:05Z',
-      scopes: ['organizations:styles:write', 'blocks:write'],
+      scopes: ['organizations:write', 'blocks:write'],
     });
     expect(response).toMatchObject({
       status: 400,
@@ -85,7 +85,7 @@ describe('listOAuth2ClientCredentials', () => {
       description: 'Other user’s test client',
       expires: new Date('2000-02-02T00:00:00Z'),
       id: 'barId',
-      scopes: 'organizations:styles:write',
+      scopes: 'organizations:write',
       secret: 'barSecret',
       UserId: otherUser.id,
     });
@@ -118,7 +118,7 @@ describe('listOAuth2ClientCredentials', () => {
       description: 'Test client',
       expires: new Date('1999-01-01T00:00:00Z'),
       id: 'expiredId',
-      scopes: 'organizations:styles:write',
+      scopes: 'organizations:write',
       secret: 'expiredSecret',
       UserId: user.id,
     });

@@ -14,7 +14,7 @@ export const cli: OpenAPIV3.OAuth2SecurityScheme = {
       scopes: {
         'apps:write': 'Create and update apps',
         'blocks:write': 'Register and update blocks, and publish new block versions.',
-        'organizations:styles:write': 'Edit organization themes.',
+        'organizations:write': 'Create and manage organizations.',
         'resources:manage': 'Manage app resources on behalf of a user.',
       },
     },
