@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 
@@ -143,7 +143,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
           }
         } else {
           const verified = Boolean(userInfo.email_verified);
-          const key = verified ? null : crypto.randomBytes(40).toString('hex');
+          const key = verified ? null : randomBytes(40).toString('hex');
           await EmailAuthorization.create(
             { UserId: user.id, email: userInfo.email, key, verified },
             { transaction },

@@ -1,4 +1,4 @@
-import path from 'path';
+import { relative } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import type { BlockManifest } from '@appsemble/types';
@@ -167,9 +167,7 @@ function getProgram(blockPath: string): Program {
     throw new AppsembleError(formatDiagnostic(error, diagnosticHost));
   }
   if (!config.files || !config.include) {
-    config.files = sys
-      .readDirectory(blockPath, ['.ts', '.tsx'])
-      .map((f) => path.relative(blockPath, f));
+    config.files = sys.readDirectory(blockPath, ['.ts', '.tsx']).map((f) => relative(blockPath, f));
   }
   const { errors, fileNames, options } = parseJsonConfigFileContent(
     config,
@@ -226,7 +224,7 @@ export function getBlockConfigFromTypeScript(
   let parametersSourceFile: SourceFile;
 
   program.getSourceFiles().forEach((sourceFile) => {
-    const fileName = path.relative(process.cwd(), sourceFile.fileName);
+    const fileName = relative(process.cwd(), sourceFile.fileName);
     // Filter TypeScript default libs
     if (program.isSourceFileDefaultLibrary(sourceFile)) {
       logger.silly(`Skipping metadata extraction from: ${fileName}`);

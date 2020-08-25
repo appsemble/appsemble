@@ -1,6 +1,6 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
-import chalk from 'chalk';
+import { bold, cyan, green, red, white, yellow } from 'chalk';
 import Koa from 'koa';
 
 import { logger } from './logger';
@@ -47,7 +47,7 @@ afterEach(() => {
 it('should log requests', async () => {
   await request.get('/pizza');
   expect(logger.info).toHaveBeenCalledWith(
-    `${chalk.bold('GET')} https://example.com:1337/pizza — ${chalk.white('127.0.0.1')}`,
+    `${bold('GET')} https://example.com:1337/pizza — ${white('127.0.0.1')}`,
   );
 });
 
@@ -59,9 +59,7 @@ it('should log success responses as info', async () => {
   await request.get('/fries');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.green('200 OK')} ${chalk.green(
-      '1ms',
-    )}`,
+    `${bold('GET')} https://example.com:1337/fries ${green('200 OK')} ${green('1ms')}`,
   );
 });
 
@@ -73,9 +71,7 @@ it('should log redirect responses as info', async () => {
   await request.get('/fries');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.cyan(
-      '302 Found → /',
-    )} ${chalk.green('33ms')}`,
+    `${bold('GET')} https://example.com:1337/fries ${cyan('302 Found → /')} ${green('33ms')}`,
   );
 });
 
@@ -87,9 +83,7 @@ it('should log bad responses as warn', async () => {
   await request.get('/burrito');
   expect(logger.log).toHaveBeenCalledWith(
     'warn',
-    `${chalk.bold('GET')} https://example.com:1337/burrito ${chalk.yellow(
-      '400 Bad Request',
-    )} ${chalk.green('3ms')}`,
+    `${bold('GET')} https://example.com:1337/burrito ${yellow('400 Bad Request')} ${green('3ms')}`,
   );
 });
 
@@ -101,9 +95,9 @@ it('should log error responses as error', async () => {
   await request.get('/wrap');
   expect(logger.log).toHaveBeenCalledWith(
     'error',
-    `${chalk.bold('GET')} https://example.com:1337/wrap ${chalk.red(
-      '503 Service Unavailable',
-    )} ${chalk.green('53ms')}`,
+    `${bold('GET')} https://example.com:1337/wrap ${red('503 Service Unavailable')} ${green(
+      '53ms',
+    )}`,
   );
 });
 
@@ -115,9 +109,7 @@ it('should log long request lengths yellow', async () => {
   await request.get('/banana');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/banana ${chalk.green('200 OK')} ${chalk.yellow(
-      '400ms',
-    )}`,
+    `${bold('GET')} https://example.com:1337/banana ${green('200 OK')} ${yellow('400ms')}`,
   );
 });
 
@@ -129,9 +121,7 @@ it('should log extremely long request lengths red', async () => {
   await request.get('/pepperoni');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/pepperoni ${chalk.green('200 OK')} ${chalk.red(
-      '1337ms',
-    )}`,
+    `${bold('GET')} https://example.com:1337/pepperoni ${green('200 OK')} ${red('1337ms')}`,
   );
 });
 
@@ -149,9 +139,9 @@ it('should log errors as internal server errors and rethrow', async () => {
   expect(spy).toHaveBeenCalledWith(error, context);
   expect(logger.log).toHaveBeenCalledWith(
     'error',
-    `${chalk.bold('GET')} https://example.com:1337/taco ${chalk.red(
-      '500 Internal Server Error',
-    )} ${chalk.green('86ms')}`,
+    `${bold('GET')} https://example.com:1337/taco ${red('500 Internal Server Error')} ${green(
+      '86ms',
+    )}`,
   );
 });
 
@@ -164,9 +154,7 @@ it('should append the response length if it is defined', async () => {
   await request.get('/fries');
   expect(logger.log).toHaveBeenCalledWith(
     'info',
-    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.green('200 OK')} ${chalk.green(
-      '1ms',
-    )}`,
+    `${bold('GET')} https://example.com:1337/fries ${green('200 OK')} ${green('1ms')}`,
   );
 });
 
@@ -178,8 +166,8 @@ it('should log handled errors correctly', async () => {
   await request.get('potatoes');
   expect(logger.log).toHaveBeenCalledWith(
     'warn',
-    `${chalk.bold('GET')} https://example.com:1337/potatoes ${chalk.yellow(
-      '400 Bad Request',
-    )} ${chalk.green('15ms')}`,
+    `${bold('GET')} https://example.com:1337/potatoes ${yellow('400 Bad Request')} ${green(
+      '15ms',
+    )}`,
   );
 });

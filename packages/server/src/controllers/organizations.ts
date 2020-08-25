@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
@@ -198,7 +198,7 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
     throw conflict('User is already in this organization or has already been invited.');
   }
 
-  const key = crypto.randomBytes(20).toString('hex');
+  const key = randomBytes(20).toString('hex');
   await OrganizationInvite.create({
     OrganizationId: organization.id,
     UserId: invitedUser ? invitedUser.id : null,

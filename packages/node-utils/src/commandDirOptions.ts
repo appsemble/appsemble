@@ -1,4 +1,4 @@
-import path from 'path';
+import { join, parse } from 'path';
 
 import type { RequireDirectoryOptions } from 'yargs';
 
@@ -14,6 +14,6 @@ import type { RequireDirectoryOptions } from 'yargs';
  * @returns Options that work for JavaScript as well as TypeScript.
  */
 export function commandDirOptions(filename: string): [string, RequireDirectoryOptions] {
-  const { dir, ext, name } = path.parse(filename);
-  return [path.join(dir, name), { extensions: [ext.slice(1)] }];
+  const { dir, ext, name } = parse(filename);
+  return [join(dir, name), { extensions: [ext.slice(1)] }];
 }

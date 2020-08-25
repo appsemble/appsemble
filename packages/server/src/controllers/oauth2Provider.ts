@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { URL } from 'url';
 
 import { forbidden, notFound } from '@hapi/boom';
@@ -39,8 +39,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
   }
 
   const picture = user.primaryEmail
-    ? `https://www.gravatar.com/avatar/${crypto
-        .createHash('md5')
+    ? `https://www.gravatar.com/avatar/${createHash('md5')
         .update(user.primaryEmail.toLowerCase())
         .digest('hex')}?s=128&d=mp`
     : null;
@@ -77,7 +76,7 @@ export async function createAuthorizationCode(ctx: KoaContext<Params>): Promise<
 
   const { code } = await OAuth2AuthorizationCode.create({
     AppId: appId,
-    code: crypto.randomBytes(12).toString('hex'),
+    code: randomBytes(12).toString('hex'),
     expires: addMinutes(new Date(), 10),
     redirectUri,
     scope,

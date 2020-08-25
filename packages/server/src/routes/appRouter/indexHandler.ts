@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import qs from 'querystring';
+import { randomBytes } from 'crypto';
+import { URLSearchParams } from 'url';
 
 import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import { Op } from 'sequelize';
@@ -69,7 +69,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
       }),
     },
   });
-  const nonce = crypto.randomBytes(16).toString('base64');
+  const nonce = randomBytes(16).toString('base64');
   const reportUri = sentryDsnToReportUri(sentryDsn);
   const [settingsHash, settings] = createSettings({
     apiUrl: host,
@@ -115,7 +115,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
 
   ctx.body = await render('app.html', {
     app,
-    bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
+    bulmaURL: `${bulmaURL}?${new URLSearchParams(app.definition.theme)}`,
     faURL,
     nonce,
     settings,

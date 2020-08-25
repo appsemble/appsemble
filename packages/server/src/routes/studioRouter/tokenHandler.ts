@@ -2,7 +2,7 @@ import querystring from 'querystring';
 import { URL } from 'url';
 
 import type { JwtPayload } from '@appsemble/types';
-import bcrypt from 'bcrypt';
+import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import { verify } from 'jsonwebtoken';
 import raw from 'raw-body';
@@ -170,7 +170,7 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         if (!emailAuth) {
           throw new GrantError('invalid_grant');
         }
-        const isValidPassword = await bcrypt.compare(password, emailAuth.User.password);
+        const isValidPassword = await compare(password, emailAuth.User.password);
         if (!isValidPassword) {
           throw new GrantError('invalid_grant');
         }

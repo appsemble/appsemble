@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
@@ -140,7 +140,7 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
     return OAuth2AuthorizationCode.create(
       {
         AppId: app.id,
-        code: crypto.randomBytes(10).toString('hex'),
+        code: randomBytes(10).toString('hex'),
         expires: addMinutes(new Date(), 10),
         redirectUri,
         scope,

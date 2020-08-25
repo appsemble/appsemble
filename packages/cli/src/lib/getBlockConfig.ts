@@ -1,10 +1,11 @@
-import path from 'path';
+import { existsSync, promises as fs } from 'fs';
+import { join } from 'path';
 import { inspect } from 'util';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import chalk from 'chalk';
+import { cyan, green, underline } from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
-import fs from 'fs-extra';
+import { readJSON } from 'fs-extra';
 
 import type { BlockConfig } from '../types';
 
@@ -22,17 +23,17 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
   }
   const { config, filepath } = found;
   logger.info(`Found configuration file: ${filepath}`);
-  const pkg = await fs.readJSON(path.join(dir, 'package.json'));
+  const pkg = await readJSON(join(dir, 'package.json'));
   if (!pkg.private) {
     logger.warn(
-      `It is ${chalk.underline.yellow('highly recommended')} to set “${chalk.green(
-        '"private"',
-      )}: ${chalk.cyan('true')}” in package.json`,
+      `It is ${underline.yellow('highly recommended')} to set “${green('"private"')}: ${cyan(
+        'true',
+      )}” in package.json`,
     );
   }
   let longDescription: string;
-  if (await fs.pathExists(path.join(dir, 'README.md'))) {
-    longDescription = await fs.readFile(path.join(dir, 'README.md'), 'utf8');
+  if (existsSync(join(dir, 'README.md'))) {
+    longDescription = await fs.readFile(join(dir, 'README.md'), 'utf8');
   }
 
   const result = {

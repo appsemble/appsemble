@@ -1,4 +1,4 @@
-import path from 'path';
+import { dirname } from 'path';
 import { URL } from 'url';
 
 import { loggerMiddleware } from '@appsemble/node-utils';
@@ -81,7 +81,7 @@ export async function createServer({
   app.use(
     mount(
       `/fa/${faPkg.version}`,
-      serve(path.dirname(require.resolve('@fortawesome/fontawesome-free/package.json'))),
+      serve(dirname(require.resolve('@fortawesome/fontawesome-free/package.json'))),
     ),
   );
 

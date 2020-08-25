@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import path from 'path';
+import { join } from 'path';
 
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
@@ -9,7 +9,7 @@ import type { App } from '../../models';
 import * as appUtils from '../../utils/app';
 
 function readIcon(): Promise<Buffer> {
-  return fs.readFile(path.join(__dirname, '__fixtures__', 'tux.png'));
+  return fs.readFile(join(__dirname, '__fixtures__', 'tux.png'));
 }
 
 beforeAll(async () => {

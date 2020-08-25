@@ -1,5 +1,5 @@
 import { request, setTestApp } from 'axios-test-instance';
-import bcrypt from 'bcrypt';
+import { compare } from 'bcrypt';
 
 import { EmailAuthorization, ResetPasswordToken, User } from '../models';
 import { createServer } from '../utils/createServer';
@@ -30,7 +30,7 @@ describe('registerEmail', () => {
     const user = await User.findByPk(email.UserId);
 
     expect(user.password).not.toBe('password');
-    expect(bcrypt.compareSync(data.password, user.password)).toBe(true);
+    expect(await compare(data.password, user.password)).toBe(true);
   });
 
   it('should accept a display name', async () => {
@@ -116,7 +116,7 @@ describe('requestResetPassword', () => {
 
     expect(responseA).toMatchObject({ status: 204 });
     expect(responseB).toMatchObject({ status: 204 });
-    expect(bcrypt.compareSync('newPassword', user.password)).toBe(true);
+    expect(await compare('newPassword', user.password)).toBe(true);
 
     // Sequelize throws errors when trying to load in null objects.
     await expect(token.reload()).rejects.toThrow(

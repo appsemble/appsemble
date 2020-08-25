@@ -1,4 +1,6 @@
-const actual = jest.requireActual<typeof import('crypto')>('crypto');
+type Crypto = typeof import('crypto');
+
+const actual = jest.requireActual<Crypto>('crypto');
 
 /**
  * This mock ensures {@link crypto#randomBytes} always returns a predictable result.
@@ -6,4 +8,4 @@ const actual = jest.requireActual<typeof import('crypto')>('crypto');
 export = {
   ...actual,
   randomBytes: (size: number) => Buffer.alloc(size),
-} as typeof actual;
+} as Crypto;

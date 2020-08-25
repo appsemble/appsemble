@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import path from 'path';
+import { extname, join } from 'path';
 
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import { cosmiconfig } from 'cosmiconfig';
@@ -33,8 +33,8 @@ export async function main(argv: string[]): Promise<void> {
       description: `OAuth2 client credentials formatted as "client_id:client_secret". This may also be defined in the ${CREDENTIALS_ENV_VAR} environment variable.`,
     })
     .middleware([configureLogger, initAxios])
-    .commandDir(path.join(__dirname, 'commands'), {
-      extensions: [path.extname(__filename).slice(1)],
+    .commandDir(join(__dirname, 'commands'), {
+      extensions: [extname(__filename).slice(1)],
     })
     .demandCommand(1)
     .fail(handleError)

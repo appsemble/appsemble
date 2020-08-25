@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const { readFileSync } = require('fs');
+const { join } = require('path');
 
 const dictionary = require('dictionary-en');
 const english = require('retext-english');
@@ -21,7 +21,7 @@ module.exports = {
         .use(syntaxURLs)
         .use(spell, {
           dictionary,
-          personal: fs.readFileSync(path.join(__dirname, 'config/retext/personal.dic')),
+          personal: readFileSync(join(__dirname, 'config/retext/personal.dic')),
         })
         .use(repeatedWords)
         .use(quotes)

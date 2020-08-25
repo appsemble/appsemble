@@ -1,7 +1,8 @@
-import path from 'path';
+import { promises as fs } from 'fs';
+import { join, resolve } from 'path';
 
-import fs from 'fs-extra';
-import inquirer from 'inquirer';
+import { copy, outputJson, readJson } from 'fs-extra';
+import { prompt } from 'inquirer';
 import type { PackageJson } from 'type-fest';
 
 import { readPackageJson } from '../lib/readPackageJson';
@@ -10,9 +11,9 @@ export const command = 'block';
 export const description = 'Bootstrap a new Appsemble block.';
 
 export async function handler(): Promise<void> {
-  const templateDir = path.resolve(__dirname, '../../templates');
+  const templateDir = resolve(__dirname, '../../templates');
   const choices = await fs.readdir(templateDir);
-  const answers = await inquirer.prompt([
+  const answers = await prompt([
     { name: 'organization', message: 'For which organization is the block?' },
     { name: 'name', message: 'What should be the name of the block?' },
     {
@@ -23,15 +24,15 @@ export async function handler(): Promise<void> {
     },
   ]);
   const { version } = await readPackageJson();
-  const outputPath = path.join(process.cwd(), 'blocks', answers.name);
-  const inputPath = path.join(templateDir, answers.type);
-  const pkgPath = path.join(inputPath, 'package.json');
-  const inputPkg: PackageJson = await fs.readJson(pkgPath);
+  const outputPath = join(process.cwd(), 'blocks', answers.name);
+  const inputPath = join(templateDir, answers.type);
+  const pkgPath = join(inputPath, 'package.json');
+  const inputPkg: PackageJson = await readJson(pkgPath);
   const outputPkg = {
     name: `@${answers.organization}/${answers.name}`,
     version,
     ...inputPkg,
   };
-  await fs.copy(inputPath, outputPath, { filter: (src) => src !== pkgPath });
-  await fs.outputJson(path.join(outputPath, 'package.json'), outputPkg, { spaces: 2 });
+  await copy(inputPath, outputPath, { filter: (src) => src !== pkgPath });
+  await outputJson(join(outputPath, 'package.json'), outputPkg, { spaces: 2 });
 }

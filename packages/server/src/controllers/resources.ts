@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 
 import type { NotificationDefinition } from '@appsemble/types';
 import { checkAppRole, Permission, remap, SchemaValidationError, validate } from '@appsemble/utils';
@@ -307,8 +307,8 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     user,
   } = ctx;
 
-  const updatedHash = `updated${crypto.randomBytes(5).toString('hex')}`;
-  const createdHash = `created${crypto.randomBytes(5).toString('hex')}`;
+  const updatedHash = `updated${randomBytes(5).toString('hex')}`;
+  const createdHash = `created${randomBytes(5).toString('hex')}`;
 
   const query = generateQuery(ctx, { updatedHash, createdHash });
 

@@ -1,4 +1,4 @@
-import path from 'path';
+import { basename, dirname, join, relative } from 'path';
 
 import { getWorkspaces, logger } from '@appsemble/node-utils';
 import type { Config } from '@jest/types';
@@ -74,7 +74,7 @@ async function validate(
    */
   const pkgNameMatch = pkg.name.match(/^(@(?<scope>[a-z-]+)\/)?(?<name>[a-z-]+)$/);
   assert(
-    path.basename(dir) === pkgNameMatch?.groups.name,
+    basename(dir) === pkgNameMatch?.groups.name,
     '',
     'Base directory should match package name',
   );
@@ -84,7 +84,7 @@ async function validate(
     'package.json',
     'Name should use the @appsemble scope',
   );
-  if (path.basename(path.dirname(dir)) !== 'blocks') {
+  if (basename(dirname(dir)) !== 'blocks') {
     ['app', 'apps', 'framework', 'low-code', 'lowcode'].forEach((keyword) => {
       assert(
         pkg.keywords.includes(keyword),
@@ -125,9 +125,9 @@ async function validate(
     'Repository url should be "https://gitlab.com/appsemble/appsemble.git"',
   );
   assert(
-    (pkg?.repository as any)?.directory === path.relative(process.cwd(), dir),
+    (pkg?.repository as any)?.directory === relative(process.cwd(), dir),
     'package.json',
-    `Repository directory should be "${path.relative(process.cwd(), dir)}"`,
+    `Repository directory should be "${relative(process.cwd(), dir)}"`,
   );
   assert(
     pkg.license === 'LGPL-3.0-or-later',
@@ -153,7 +153,7 @@ async function validate(
   /**
    * Validate tsconfig.json
    */
-  const tsConfig = await readJson(path.join(dir, 'tsconfig.json')).catch(() => null);
+  const tsConfig = await readJson(join(dir, 'tsconfig.json')).catch(() => null);
   assert(tsConfig, 'tsconfig.json', 'The workspace should have a TypeScrip configuration');
   if (tsConfig) {
     assert(
@@ -171,7 +171,7 @@ async function validate(
   /**
    * Validate tsconfig.build.json
    */
-  const tsConfigBuild = await readJson(path.join(dir, 'tsconfig.build.json')).catch(() => null);
+  const tsConfigBuild = await readJson(join(dir, 'tsconfig.build.json')).catch(() => null);
   if (!pkg.private) {
     assert(tsConfigBuild, 'tsconfig.build.json', 'Public projects should have tsconfig.build.json');
   }
@@ -196,7 +196,7 @@ async function validate(
   /**
    * Validate jest.config.js
    */
-  const jestConfig: Config.InitialOptions = await import(path.join(dir, 'jest.config')).catch(
+  const jestConfig: Config.InitialOptions = await import(join(dir, 'jest.config')).catch(
     () => null,
   );
   assert(Boolean(jestConfig), 'jest.config.js', 'Projects should have a Jest configuration');
@@ -222,7 +222,7 @@ export async function handler(): Promise<void> {
   const allWorkspaces: Workspace[] = await Promise.all(
     paths.map(async (dir) => ({
       dir,
-      pkg: await readJson(path.join(dir, 'package.json')),
+      pkg: await readJson(join(dir, 'package.json')),
     })),
   );
 
@@ -247,10 +247,10 @@ export async function handler(): Promise<void> {
   const invalid = results.filter(({ pass }) => !pass);
 
   valid.forEach(({ filename, message, workspace: { dir } }) => {
-    logger.info(`✔️  ${path.relative(process.cwd(), path.join(dir, filename))}: ${message}`);
+    logger.info(`✔️  ${relative(process.cwd(), join(dir, filename))}: ${message}`);
   });
   invalid.forEach(({ filename, message, workspace: { dir } }) => {
-    logger.error(`❌ ${path.relative(process.cwd(), path.join(dir, filename))}: ${message}`);
+    logger.error(`❌ ${relative(process.cwd(), join(dir, filename))}: ${message}`);
     process.exitCode = 1;
   });
 }

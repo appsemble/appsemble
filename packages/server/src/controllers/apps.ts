@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 
 import { logger } from '@appsemble/node-utils';
 import type { BlockManifest } from '@appsemble/types';
@@ -19,7 +19,7 @@ import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import type { VFile } from 'vfile';
-import * as webpush from 'web-push';
+import { generateVAPIDKeys } from 'web-push';
 
 import {
   App,
@@ -118,7 +118,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
 
   try {
     const path = normalize(definition.name);
-    const keys = webpush.generateVAPIDKeys();
+    const keys = generateVAPIDKeys();
 
     result = {
       definition,
@@ -157,7 +157,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
 
     if (!result.path) {
       // Fallback if a suitable ID could not be found after trying for a while
-      result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
+      result.path = `${path}-${randomBytes(5).toString('hex')}`;
     }
 
     let record: App;

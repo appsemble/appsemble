@@ -1,4 +1,4 @@
-import path from 'path';
+import { join } from 'path';
 
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
@@ -24,7 +24,7 @@ function main(): void {
       type: 'count',
     })
     .middleware([configureLogger])
-    .commandDir(path.join(__dirname, 'commands'), { extensions: ['ts'] })
+    .commandDir(join(__dirname, 'commands'), { extensions: ['ts'] })
     .demandCommand(1)
     .fail(handleError)
     .help()

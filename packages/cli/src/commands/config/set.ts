@@ -1,7 +1,7 @@
 import { inspect } from 'util';
 
 import { logger } from '@appsemble/node-utils';
-import fs from 'fs-extra';
+import { writeJson } from 'fs-extra';
 import readPkgUp from 'read-pkg-up';
 import type { Argv } from 'yargs';
 
@@ -37,7 +37,7 @@ export async function handler({ key, value }: ConfigSetArguments): Promise<void>
     parsed = value;
   }
   (packageJson as MonoRepoPackageJson).appsembleServer[key] = parsed;
-  await fs.writeJson(path, packageJson, { spaces: 2 });
+  await writeJson(path, packageJson, { spaces: 2 });
   logger.info(
     `Set option appsembleServer.${key} to ${inspect(parsed, { colors: true })} in ${path}`,
   );
