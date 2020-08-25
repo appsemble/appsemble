@@ -59,9 +59,13 @@ const mapperImplementations: MapperImplementations = {
         values ? mapValues(values, (val) => remap(val, input, context)) : undefined,
       );
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(`Message: ${messageId}`, error);
-      return `{${messageId}}`;
+      if (messageId) {
+        // eslint-disable-next-line no-console
+        console.error(`Message: ${messageId}`, error);
+        return `{${messageId}}`;
+      }
+
+      return error.message;
     }
   },
 
