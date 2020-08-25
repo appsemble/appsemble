@@ -4,6 +4,6 @@
 export const scopes = [
   'apps:write',
   'blocks:write',
-  'organizations:styles:write',
+  'organizations:write',
   'resources:manage',
 ] as const;

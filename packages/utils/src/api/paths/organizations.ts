@@ -22,7 +22,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/organization',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['organizations:write'] }],
     },
   },
   '/organizations/{organizationId}': {
@@ -337,7 +337,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The shared style has been updated succesfully.',
         },
       },
-      security: [{ cli: ['organizations:styles:write'] }],
+      security: [{ cli: ['organizations:write'] }],
     },
   },
   '/organizations/{organizationId}/style/core': {
@@ -381,7 +381,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The shared style has been updated succesfully.',
         },
       },
-      security: [{ cli: ['organizations:styles:write'] }],
+      security: [{ cli: ['organizations:write'] }],
     },
   },
   '/organizations/{organizationId}/style/block/@{blockOrganizationId}/{blockId}': {
@@ -433,7 +433,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The block style has been updated succesfully.',
         },
       },
-      security: [{ cli: ['organizations:styles:write'] }],
+      security: [{ cli: ['organizations:write'] }],
     },
   },
 };

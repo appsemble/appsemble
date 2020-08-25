@@ -99,7 +99,7 @@ export async function handler({
   shared,
 }: UploadThemeArguments): Promise<void> {
   const themeDir = await fs.stat(path);
-  await authenticate(remote, 'organizations:styles:write', clientCredentials);
+  await authenticate(remote, 'organizations:write', clientCredentials);
 
   if (themeDir.isFile()) {
     // Path was not a directory, assume it's a file

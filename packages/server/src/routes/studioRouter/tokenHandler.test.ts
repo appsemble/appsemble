@@ -306,7 +306,7 @@ describe('client_credentials', () => {
   it('should handle unauthorized client scopes', async () => {
     const response = await request.post(
       '/oauth2/token',
-      'grant_type=client_credentials&scope=blocks:write organizations:styles:write',
+      'grant_type=client_credentials&scope=blocks:write organizations:write',
       { headers: { authorization: basicAuth('testClientId', 'testClientSecret') } },
     );
     expect(response).toMatchObject({

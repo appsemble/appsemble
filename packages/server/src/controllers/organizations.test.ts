@@ -27,7 +27,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  ({ authorization, clientToken, user } = await testToken('organizations:styles:write'));
+  ({ authorization, clientToken, user } = await testToken('organizations:write'));
   organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',

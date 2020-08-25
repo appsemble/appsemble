@@ -53,21 +53,6 @@ spec:
                   NOW(),
                   UserId
                 );
-                {{ range .Values.provision.account.organizations }}
-                  INSERT INTO "Organization" (id, name, created, updated) VALUES (
-                    {{ . | squote }},
-                    {{ . | squote }},
-                    NOW(),
-                    NOW()
-                  );
-                  INSERT INTO "Member" (created, updated, "UserId", "OrganizationId", role) VALUES (
-                    NOW(),
-                    NOW(),
-                    UserId,
-                    {{ . | squote }},
-                    'Owner'
-                  );
-                {{ end }}
               END $$$$
           env:
             - name: PGHOST
