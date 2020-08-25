@@ -5,4 +5,5 @@
   flex-flow: row;
   height: 7.5em;
   overflow-x: auto;
+  overflow-y: hidden;
 }
