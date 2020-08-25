@@ -59,6 +59,10 @@ const mapperImplementations: MapperImplementations = {
         values ? mapValues(values, (val) => remap(val, input, context)) : undefined,
       );
     } catch (error) {
+      if (messageId) {
+        return `{${messageId}}`;
+      }
+
       return error.message;
     }
   },
