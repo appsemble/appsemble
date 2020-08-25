@@ -7,6 +7,6 @@
 }
 
 .logo {
-  height: 128px;
+  height: 128px !important;
   object-fit: contain;
 }
