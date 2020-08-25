@@ -49,7 +49,7 @@ spec:
                   {{ $clientCredentials._0 | squote }},
                   {{ $clientCredentials._1 | squote }},
                   'Used for provisioning the review environment',
-                  'apps:write blocks:write',
+                  'apps:write blocks:write organizations:write',
                   NOW(),
                   UserId
                 );
