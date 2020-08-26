@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import nodemailer, { Transporter } from 'nodemailer';
+import { createTransport, Transporter } from 'nodemailer';
 import type { Options } from 'nodemailer/lib/smtp-connection';
 
 import type { Argv } from '../../types';
@@ -30,7 +30,7 @@ export class Mailer {
   constructor({ smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser }: Argv) {
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
-      this.transport = nodemailer.createTransport(
+      this.transport = createTransport(
         {
           port: smtpPort || smtpSecure ? 465 : 587,
           pool: true,

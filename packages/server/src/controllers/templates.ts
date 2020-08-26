@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 
 import { normalize, Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
@@ -83,7 +83,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
 
     if (!result.path) {
       // Fallback if a suitable ID could not be found after trying for a while
-      result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
+      result.path = `${path}-${randomBytes(5).toString('hex')}`;
     }
 
     const record = await App.create(result, { include: [Resource, AppMessages] });

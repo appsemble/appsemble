@@ -1,4 +1,4 @@
-const path = require('path');
+const { join, resolve } = require('path');
 
 // Adding this to package.json causes yarn to fail in production mode.
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -22,7 +22,7 @@ const publicPath = '/';
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const studioEntry = path.resolve(__dirname, '../../packages/studio/src');
+  const studioEntry = resolve(__dirname, '../../packages/studio/src');
 
   const coreConfig = core('studio', argv);
 
@@ -40,7 +40,7 @@ module.exports = (env, argv) => {
         APPSEMBLE_VERSION: studioPkg.version,
       }),
       new HtmlWebpackPlugin({
-        template: path.join(studioEntry, 'index.html'),
+        template: join(studioEntry, 'index.html'),
         templateParameters: {
           bulmaURL: `/bulma/${bulmaPkg.version}/bulma.min.css`,
           faURL: `/fa/${faPkg.version}/css/all.min.css`,

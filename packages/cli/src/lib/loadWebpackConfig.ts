@@ -1,4 +1,4 @@
-import path from 'path';
+import { resolve } from 'path';
 
 import { logger } from '@appsemble/node-utils';
 import type { Configuration } from 'webpack';
@@ -23,7 +23,7 @@ export async function loadWebpackConfig(
   mode?: 'development' | 'production',
   outputPath?: string,
 ): Promise<Configuration> {
-  const configPath = require.resolve(path.resolve(block.dir, block.webpack));
+  const configPath = require.resolve(resolve(block.dir, block.webpack));
   logger.info(`Using webpack config from ${configPath}`);
   const publicPath = `/api/blocks/${block.name}/versions/${block.version}`;
   let config = await import(configPath);

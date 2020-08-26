@@ -1,6 +1,6 @@
 import type { JwtPayload } from '@appsemble/types';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import { compare } from 'bcrypt';
+import { verify } from 'jsonwebtoken';
 import type { GetApiKeyUser } from 'koas-security/lib/apiKeySecurityCheck';
 import type { GetHttpUser } from 'koas-security/lib/httpSecurityCheck';
 import type { GetOAuth2User } from 'koas-security/lib/oauth2SecurityCheck';
@@ -32,12 +32,12 @@ export function authentication({ host, secret }: Argv): AuthenticationCheckers {
         include: [User],
         where: { email },
       });
-      const isValidPassword = await bcrypt.compare(password, user.password);
+      const isValidPassword = await compare(password, user.password);
       return isValidPassword ? user : null;
     },
 
     app(accessToken) {
-      const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
+      const { aud, scope, sub } = verify(accessToken, secret) as JwtPayload;
       // XXX use origin check when default app domains are implemented.
       const [prefix, id] = aud.split(':');
       if (prefix !== 'app') {
@@ -48,7 +48,7 @@ export function authentication({ host, secret }: Argv): AuthenticationCheckers {
     },
 
     async cli(accessToken) {
-      const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
+      const { aud, scope, sub } = verify(accessToken, secret) as JwtPayload;
       const credentials = await OAuth2ClientCredentials.findOne({
         attributes: [],
         raw: true,
@@ -65,7 +65,7 @@ export function authentication({ host, secret }: Argv): AuthenticationCheckers {
     },
 
     studio(accessToken) {
-      const { sub } = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
+      const { sub } = verify(accessToken, secret, { audience: host }) as JwtPayload;
       return { id: sub };
     },
   };

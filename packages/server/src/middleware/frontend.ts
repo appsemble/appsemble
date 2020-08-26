@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import path from 'path';
+import { join, resolve } from 'path';
 
 import compose from 'koa-compose';
 import serve from 'koa-static';
@@ -10,12 +10,12 @@ import type { KoaContext, KoaMiddleware } from '../types';
 
 export async function frontend(webpackConfigs: Configuration[]): Promise<KoaMiddleware> {
   if (process.env.NODE_ENV === 'production') {
-    const distDir = path.resolve(__dirname, '../../../../dist');
+    const distDir = resolve(__dirname, '../../../../dist');
     return compose([
       serve(distDir, { immutable: true, maxage: 365 * 24 * 60 * 60 * 1e3 }),
       async (ctx: KoaContext, next) => {
         ctx.state.render = async (filename, data) => {
-          const template = await fs.readFile(path.join(distDir, filename), 'utf8');
+          const template = await fs.readFile(join(distDir, filename), 'utf8');
           return mustache.render(template, data);
         };
         await next();

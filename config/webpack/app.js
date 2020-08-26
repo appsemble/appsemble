@@ -1,4 +1,4 @@
-const path = require('path');
+const { join, resolve } = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -16,7 +16,7 @@ const publicPath = '/';
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const appEntry = path.resolve(__dirname, '../../packages/app/src');
+  const appEntry = resolve(__dirname, '../../packages/app/src');
 
   const coreConfig = core('app', argv);
 
@@ -31,12 +31,12 @@ module.exports = (env, argv) => {
     plugins: [
       ...coreConfig.plugins,
       new HtmlWebpackPlugin({
-        template: path.join(appEntry, 'index.html'),
+        template: join(appEntry, 'index.html'),
         filename: 'app.html',
         minify,
       }),
       new HtmlWebpackPlugin({
-        template: path.join(appEntry, 'error.html'),
+        template: join(appEntry, 'error.html'),
         filename: 'error.html',
         minify,
         chunks: [],

@@ -1,4 +1,4 @@
-import path from 'path';
+import { join } from 'path';
 
 import { AppsembleError } from '@appsemble/node-utils';
 import ts from 'typescript';
@@ -6,7 +6,7 @@ import ts from 'typescript';
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
 function fixture(filename: string): string {
-  return path.join(__dirname, '__fixtures__/getBlockConfigFromTypeScript', filename);
+  return join(__dirname, '__fixtures__/getBlockConfigFromTypeScript', filename);
 }
 
 beforeEach(() => {

@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 import { URL } from 'url';
 
 import type { KoaContext } from '../../types';
@@ -45,7 +45,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
       scope: googlePreset.scope,
     });
   }
-  const nonce = crypto.randomBytes(16).toString('base64');
+  const nonce = randomBytes(16).toString('base64');
   const reportUri = sentryDsnToReportUri(sentryDsn);
   const [settingsHash, settings] = createSettings({
     enableRegistration: !disableRegistration,

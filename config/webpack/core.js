@@ -1,4 +1,4 @@
-const path = require('path');
+const { join, relative, resolve } = require('path');
 
 const yaml = require('js-yaml');
 const autolink = require('remark-autolink-headings');
@@ -68,13 +68,13 @@ module.exports = (env, argv) => {
                         return;
                       }
                       // Resolve the link from the directory containing the file.
-                      const resolved = path.resolve(vfile.dirname, chunks[0]);
+                      const resolved = resolve(vfile.dirname, chunks[0]);
                       // Resolve the path relative to the CWD. This works, because the directory
                       // containing the docs and the URL prefix are the same. Otherwise, this would
                       // need to be replaced as well.
-                      const relative = path.relative(vfile.cwd, resolved);
+                      const rel = relative(vfile.cwd, resolved);
                       // Strip the `.md` extension and `index` filename.
-                      const stripped = relative.replace(/(\/?index)?\.mdx?$/, '');
+                      const stripped = rel.replace(/(\/?index)?\.mdx?$/, '');
                       // Make the URL absolute, so no weird routing happens at runtime.
                       const prefixed = `/${stripped}`;
                       chunks[0] = prefixed;
@@ -128,12 +128,7 @@ module.exports = (env, argv) => {
           loader: 'ts-loader',
           options: {
             transpileOnly: true,
-            configFile: path.join(
-              path.resolve(__dirname, '../..'),
-              'packages',
-              env,
-              'tsconfig.json',
-            ),
+            configFile: join(resolve(__dirname, '../..'), 'packages', env, 'tsconfig.json'),
           },
         },
         {

@@ -2,7 +2,7 @@ import { URL, URLSearchParams } from 'url';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
-import inquirer from 'inquirer';
+import { prompt } from 'inquirer';
 
 import type { BaseArguments } from '../types';
 
@@ -48,7 +48,7 @@ async function getClientCredentials(remote: string, inputCredentials: string): P
   if (choices.length === 1) {
     [choice] = choices;
   } else {
-    ({ choice } = await inquirer.prompt([
+    ({ choice } = await prompt([
       {
         name: 'choice',
         message: 'Select client id to use',
@@ -73,7 +73,7 @@ export async function login({ clientCredentials, remote }: BaseArguments): Promi
     credentials = clientCredentials;
   } else {
     logger.info(`Client credentials can be registered on ${url}`);
-    ({ credentials } = await inquirer.prompt([
+    ({ credentials } = await prompt([
       {
         name: 'credentials',
         type: 'password',
@@ -94,7 +94,7 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
     logger.warn('No client credentials are currently in use.');
     return;
   }
-  const { clientIds } = await inquirer.prompt<{ clientIds: string[] }>([
+  const { clientIds } = await prompt<{ clientIds: string[] }>([
     {
       name: 'clientIds',
       message: 'Select client ids to delete',

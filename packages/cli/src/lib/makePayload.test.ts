@@ -1,4 +1,4 @@
-import path from 'path';
+import { join } from 'path';
 
 import concat from 'concat-stream';
 
@@ -10,7 +10,7 @@ it('should create a form-data payload', async () => {
     name: '@org/block',
     output: 'output',
     version: '1.2.3',
-    dir: path.join(__dirname, '__fixtures__', 'makePayload', 'no-icon'),
+    dir: join(__dirname, '__fixtures__', 'makePayload', 'no-icon'),
     parameters: { type: 'object' },
     actions: { onClick: {} },
     events: { listen: { test: {} } },
@@ -55,7 +55,7 @@ it('should include an icon if one is present', async () => {
     name: '@org/block',
     output: 'output',
     version: '1.2.3',
-    dir: path.join(__dirname, '__fixtures__', 'makePayload', 'with-icon'),
+    dir: join(__dirname, '__fixtures__', 'makePayload', 'with-icon'),
     parameters: {},
     actions: {},
     events: {},

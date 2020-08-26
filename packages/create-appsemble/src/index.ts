@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import path from 'path';
+import { extname, join } from 'path';
 
 import { configureLogger, handleError, logger } from '@appsemble/node-utils';
 import yargs from 'yargs';
@@ -17,8 +17,8 @@ function main(): any {
       type: 'count',
     })
     .middleware([configureLogger])
-    .commandDir(path.join(__dirname, 'commands'), {
-      extensions: [path.extname(__filename).slice(1)],
+    .commandDir(join(__dirname, 'commands'), {
+      extensions: [extname(__filename).slice(1)],
     })
     .demandCommand(1)
     .fail(handleError)

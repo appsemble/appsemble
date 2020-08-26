@@ -1,8 +1,9 @@
-import * as path from 'path';
+import { promises as fs } from 'fs';
+import { basename, dirname, join } from 'path';
 
 import { getWorkspaces, logger } from '@appsemble/node-utils';
 import { formatISO } from 'date-fns';
-import { ensureDir, readdir, readFile, readJson, remove, writeFile, writeJson } from 'fs-extra';
+import { readJson, remove, writeJson } from 'fs-extra';
 import globby from 'globby';
 import { capitalize, mapValues } from 'lodash';
 import type { BlockContent, ListItem, Root } from 'mdast';
@@ -40,11 +41,11 @@ interface Changes {
 /**
  * Update `package.json` in a directory.
  *
- * @param dirname - The directory whose `package.json` to update.
+ * @param dir - The directory whose `package.json` to update.
  * @param version - The new version to set.
  */
-async function updatePkg(dirname: string, version: string): Promise<void> {
-  const filepath = path.join(dirname, 'package.json');
+async function updatePkg(dir: string, version: string): Promise<void> {
+  const filepath = join(dir, 'package.json');
   logger.info(`Updating ${filepath}`);
   const pkg: PackageJson = await readJson(filepath);
   if (pkg.name?.startsWith('@types/')) {
@@ -85,16 +86,16 @@ async function replaceFile(
   newVersion: string,
 ): Promise<void> {
   logger.info(`Updating ${filename}`);
-  const content = await readFile(filename, 'utf-8');
+  const content = await fs.readFile(filename, 'utf-8');
   const updated = content.split(oldVersion).join(newVersion);
-  await writeFile(filename, updated);
+  await fs.writeFile(filename, updated);
 }
 
 async function processChangesDir(dir: string, prefix: string): Promise<ListItem[]> {
-  await ensureDir(dir);
-  const filenames = await readdir(dir);
-  const absoluteFiles = filenames.map((f) => path.join(dir, f));
-  const lines = await Promise.all(absoluteFiles.map((f) => readFile(f, 'utf-8')));
+  await fs.mkdir(dir, { recursive: true });
+  const filenames = await fs.readdir(dir);
+  const absoluteFiles = filenames.map((f) => join(dir, f));
+  const lines = await Promise.all(absoluteFiles.map((f) => fs.readFile(f, 'utf-8')));
   return lines
     .sort()
     .map((line) => `${prefix}: ${line}`)
@@ -104,17 +105,17 @@ async function processChangesDir(dir: string, prefix: string): Promise<ListItem[
 }
 
 async function processChanges(dir: string): Promise<Changes> {
-  const changesDir = path.join(dir, 'changes');
-  const base = path.basename(dir);
-  const parent = path.basename(path.dirname(dir));
+  const changesDir = join(dir, 'changes');
+  const base = basename(dir);
+  const parent = basename(dirname(dir));
   const prefix = parent === 'blocks' ? `Block(\`${base}\`)` : capitalize(base);
   const result = {
-    added: await processChangesDir(path.join(changesDir, 'added'), prefix),
-    changed: await processChangesDir(path.join(changesDir, 'changed'), prefix),
-    deprecated: await processChangesDir(path.join(changesDir, 'deprecated'), prefix),
-    removed: await processChangesDir(path.join(changesDir, 'removed'), prefix),
-    fixed: await processChangesDir(path.join(changesDir, 'fixed'), prefix),
-    security: await processChangesDir(path.join(changesDir, 'security'), prefix),
+    added: await processChangesDir(join(changesDir, 'added'), prefix),
+    changed: await processChangesDir(join(changesDir, 'changed'), prefix),
+    deprecated: await processChangesDir(join(changesDir, 'deprecated'), prefix),
+    removed: await processChangesDir(join(changesDir, 'removed'), prefix),
+    fixed: await processChangesDir(join(changesDir, 'fixed'), prefix),
+    security: await processChangesDir(join(changesDir, 'security'), prefix),
   };
   await remove(changesDir);
   return result;
@@ -124,7 +125,7 @@ async function updateChangelog(workspaces: string[], version: string): Promise<v
   const changesByPackage = await Promise.all(
     workspaces.map((workspace) => processChanges(workspace)),
   );
-  const changelog = remark().parse(await readFile('CHANGELOG.md', 'utf-8')) as Root;
+  const changelog = remark().parse(await fs.readFile('CHANGELOG.md', 'utf-8')) as Root;
   const changesByCategory = changesByPackage.reduce<Changes>(
     (acc, change) => {
       acc.added.push(...change.added);
@@ -157,7 +158,7 @@ async function updateChangelog(workspaces: string[], version: string): Promise<v
     }
   });
   logger.info(await dumpMarkdown(createRoot(changesSection), 'CHANGELOG.md'));
-  await writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));
+  await fs.writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));
 }
 
 export function builder(yargs: Argv): Argv {
@@ -186,10 +187,8 @@ export async function handler({ increment }: Args): Promise<void> {
     { absolute: true, gitignore: true },
   );
   const templateDir = 'packages/create-appsemble/templates';
-  const templates = await readdir(templateDir);
-  await Promise.all(
-    templates.map((t) => updatePkg(path.join(process.cwd(), templateDir, t), version)),
-  );
+  const templates = await fs.readdir(templateDir);
+  await Promise.all(templates.map((t) => updatePkg(join(process.cwd(), templateDir, t), version)));
   await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
   await updatePkg(process.cwd(), version);

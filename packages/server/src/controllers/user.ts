@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 
 import type { JwtPayload } from '@appsemble/types';
 import { conflict, notAcceptable, notFound } from '@hapi/boom';
@@ -136,7 +136,7 @@ export async function addEmail(ctx: KoaContext): Promise<void> {
     ],
   });
 
-  const key = crypto.randomBytes(40).toString('hex');
+  const key = randomBytes(40).toString('hex');
   await EmailAuthorization.create({ UserId: user.id, email, key });
 
   await mailer.sendTemplateEmail({ email, name: dbUser.name }, 'emailAdded', {

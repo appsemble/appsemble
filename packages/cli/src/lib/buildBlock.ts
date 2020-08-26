@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { join } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import webpack, { Stats } from 'webpack';
@@ -14,7 +14,7 @@ import { loadWebpackConfig } from './loadWebpackConfig';
  * @returns The Webpack stats object.
  */
 export async function buildBlock(config: BlockConfig): Promise<Stats> {
-  const conf = await loadWebpackConfig(config, 'production', path.join(config.dir, config.output));
+  const conf = await loadWebpackConfig(config, 'production', join(config.dir, config.output));
 
   logger.info(`Building ${config.name}@${config.version} 🔨`);
 

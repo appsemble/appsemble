@@ -1,8 +1,8 @@
-import crypto from 'crypto';
+import { randomBytes } from 'crypto';
 
 import { logger } from '@appsemble/node-utils';
 import { conflict, forbidden, notFound } from '@hapi/boom';
-import bcrypt from 'bcrypt';
+import { hash } from 'bcrypt';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models';
@@ -25,8 +25,8 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
     },
   } = ctx;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const key = crypto.randomBytes(40).toString('hex');
+  const hashedPassword = await hash(password, 10);
+  const key = randomBytes(40).toString('hex');
   let user: User;
 
   try {
@@ -120,7 +120,7 @@ export async function requestResetPassword(ctx: KoaContext): Promise<void> {
     const user = await User.findByPk(emailRecord.UserId);
 
     const { name } = user;
-    const token = crypto.randomBytes(40).toString('hex');
+    const token = randomBytes(40).toString('hex');
     await ResetPasswordToken.create({ UserId: user.id, token });
     await mailer.sendTemplateEmail({ email, name }, 'reset', {
       url: `${host}/edit-password?token=${token}`,
@@ -143,7 +143,7 @@ export async function resetPassword(ctx: KoaContext): Promise<void> {
     throw notFound(`Unknown password reset token: ${token}`);
   }
 
-  const password = await bcrypt.hash(ctx.request.body.password, 10);
+  const password = await hash(ctx.request.body.password, 10);
   const user = await User.findByPk(tokenRecord.UserId);
 
   await user.update({ password });

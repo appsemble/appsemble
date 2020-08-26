@@ -1,9 +1,9 @@
-import path from 'path';
+import { join } from 'path';
 
 import { readFileOrString } from './readFileOrString';
 
 it('should return file content if it resolves to a file', async () => {
-  const result = await readFileOrString(path.join(__dirname, '__fixtures__', 'hello.txt'));
+  const result = await readFileOrString(join(__dirname, '__fixtures__', 'hello.txt'));
   expect(Buffer.from('Hello world!\n').equals(result as Buffer)).toBe(true);
 });
 

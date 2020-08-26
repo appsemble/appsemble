@@ -1,4 +1,4 @@
-const path = require('path');
+const { join } = require('path');
 
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -11,7 +11,7 @@ const shared = require('./shared');
  */
 module.exports = ({ dir, name }, argv) => {
   const [, blockName] = name.split('/');
-  const srcPath = path.join(dir, 'src');
+  const srcPath = join(dir, 'src');
   const production = argv.mode === 'production';
 
   const sharedConfig = shared(blockName, argv);
@@ -31,7 +31,7 @@ module.exports = ({ dir, name }, argv) => {
           loader: 'ts-loader',
           options: {
             transpileOnly: true,
-            configFile: path.join(dir, 'tsconfig.json'),
+            configFile: join(dir, 'tsconfig.json'),
           },
         },
         {

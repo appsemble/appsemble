@@ -1,5 +1,5 @@
 import { createReadStream, promises as fs } from 'fs';
-import path from 'path';
+import { join } from 'path';
 
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
@@ -39,10 +39,10 @@ describe('getBlock', () => {
     formData.append('name', '@xkcd/test');
     formData.append('description', 'foo');
     formData.append('version', '1.32.9');
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'standing.png',
     });
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'testblock.js',
     });
 
@@ -70,7 +70,7 @@ describe('queryBlocks', () => {
     formDataA.append('name', '@xkcd/apple');
     formDataA.append('version', '0.0.0');
     formDataA.append('description', 'I’ve got an apple.');
-    formDataA.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formDataA.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'standing.png',
     });
 
@@ -82,7 +82,7 @@ describe('queryBlocks', () => {
     formDataB.append('name', '@xkcd/pen');
     formDataB.append('version', '0.0.0');
     formDataB.append('description', 'I’ve got a pen.');
-    formDataB.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formDataB.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'standing.png',
     });
 
@@ -100,10 +100,10 @@ describe('publishBlock', () => {
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');
     formData.append('version', '1.32.9');
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filename: encodeURIComponent('build/standing.png'),
     });
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: encodeURIComponent('build/testblock.js'),
     });
 
@@ -133,10 +133,10 @@ describe('publishBlock', () => {
     formData.append('name', '@xkcd/standing');
     formData.append('actions', JSON.stringify({ $any: {}, $foo: {} }));
     formData.append('version', '1.32.9');
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'standing.png',
     });
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'testblock.js',
     });
     const response = await request.post('/api/blocks', formData, {
@@ -154,10 +154,10 @@ describe('publishBlock', () => {
     formData.append('name', '@xkcd/standing');
     formData.append('description', 'This block has been uploaded for the purpose of unit testing.');
     formData.append('version', '1.32.9');
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'standing.png',
     });
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'testblock.js',
     });
 
@@ -172,10 +172,10 @@ describe('publishBlock', () => {
       'This block has been uploaded for the purpose of unit testing.',
     );
     formData2.append('version', '1.32.9');
-    formData2.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData2.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'standing.png',
     });
-    formData2.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData2.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'testblock.js',
     });
 
@@ -221,10 +221,10 @@ describe('getBlockVersion', () => {
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');
     formData.append('version', '1.32.9');
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'standing.png',
     });
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'testblock.js',
     });
 
@@ -257,10 +257,10 @@ describe('getBlockVersions', () => {
     formData.append('name', '@xkcd/standing');
     formData.append('description', 'Version 1.32.9!');
     formData.append('version', '1.32.9');
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'standing.png',
     });
-    formData.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formData.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'testblock.js',
     });
     await request.post('/api/blocks', formData, {
@@ -298,7 +298,7 @@ describe('getBlockVersions', () => {
     formDataA.append('name', '@xkcd/standing');
     formDataA.append('description', 'Version 1.4.0!');
     formDataA.append('version', '1.4.0');
-    formDataA.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formDataA.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'testblock.js',
     });
     await request.post('/api/blocks', formDataA, {
@@ -309,7 +309,7 @@ describe('getBlockVersions', () => {
     formDataB.append('name', '@xkcd/standing');
     formDataB.append('description', 'Version 1.32.9!');
     formDataB.append('version', '1.32.9');
-    formDataB.append('files', createReadStream(path.join(__dirname, '__fixtures__/standing.png')), {
+    formDataB.append('files', createReadStream(join(__dirname, '__fixtures__/standing.png')), {
       filepath: 'testblock.js',
     });
     await request.post('/api/blocks', formDataB, {
@@ -348,7 +348,7 @@ describe('getBlockVersions', () => {
 
 describe('getBlockIcon', () => {
   it('should serve the block icon', async () => {
-    const icon = await fs.readFile(path.join(__dirname, '__fixtures__/testpattern.png'));
+    const icon = await fs.readFile(join(__dirname, '__fixtures__/testpattern.png'));
     const formData = new FormData();
     formData.append('name', '@xkcd/test');
     formData.append('description', 'foo');

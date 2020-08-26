@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
-import https from 'https';
-import path from 'path';
+import { Agent } from 'https';
+import { join } from 'path';
 
 import { logger } from '@appsemble/node-utils';
 import { normalize } from '@appsemble/utils';
@@ -10,7 +10,7 @@ import type { DNSImplementation } from '.';
 import type { Argv } from '../../types';
 
 function readK8sSecret(filename: string): Promise<string> {
-  return fs.readFile(path.join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf-8');
+  return fs.readFile(join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf-8');
 }
 
 interface Rule {
@@ -71,7 +71,7 @@ export async function kubernetes({
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json-patch+json',
   };
-  const httpsAgent = new https.Agent({ ca });
+  const httpsAgent = new Agent({ ca });
   const config = { headers, httpsAgent };
   const {
     data: { info },
