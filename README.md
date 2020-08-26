@@ -100,21 +100,6 @@ Multiple test databases are created at runtime.
 DATABASE_URL=postgres://admin:password@localhost:5432 yarn test
 ```
 
-### Documentation
-
-The Appsemble documentation can be built using `docz`. The documentation can be previewed by running
-the following command.
-
-```sh
-yarn docz dev
-```
-
-The documentation can be compiled by running the following command.
-
-```sh
-yarn docz build
-```
-
 ### Building
 
 The resulting Docker image can be built using the Docker CLI.
