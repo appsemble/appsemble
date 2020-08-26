@@ -8,8 +8,6 @@ import { cssHandler } from './cssHandler';
 import { iconHandler } from './iconHandler';
 import { indexHandler } from './indexHandler';
 import { manifestHandler } from './manifestHandler';
-import { organizationBlockCSSHandler } from './organizationBlockCSSHandler';
-import { organizationCSSHandler } from './organizationCSSHandler';
 import { robotsHandler } from './robotsHandler';
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
@@ -38,24 +36,12 @@ export const appRouter = tinyRouter([
     get: cssHandler('style'),
   },
   {
-    route: '/organization/core.css',
-    get: organizationCSSHandler('coreStyle'),
-  },
-  {
     route: '/shared.css',
     get: cssHandler('sharedStyle'),
   },
   {
-    route: '/organization/shared.css',
-    get: organizationCSSHandler('sharedStyle'),
-  },
-  {
     route: new RegExp(`^/${blockName}\\.css`),
     get: blockCSSHandler,
-  },
-  {
-    route: new RegExp(`^/organization/${blockName}\\.css`),
-    get: organizationBlockCSSHandler,
   },
   {
     route: /(^|\/)\.well-known(\/|$)/,

@@ -1,4 +1,4 @@
-import { Icon } from '@appsemble/react-components/src';
+import { Icon } from '@appsemble/react-components';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import React, { Children, ReactElement, ReactNode } from 'react';

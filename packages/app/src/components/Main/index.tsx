@@ -1,4 +1,4 @@
-import { normalize } from '@appsemble/utils/src';
+import { normalize } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 

@@ -96,20 +96,6 @@ it('should cache block version asset requests', async () => {
   expect(utils.requestFirst).not.toHaveBeenCalled();
 });
 
-it('should try to request organization styles', async () => {
-  const request = new Request('/organization/core.css');
-  await trigger('fetch', request);
-  expect(utils.cacheFirst).not.toHaveBeenCalled();
-  expect(utils.requestFirst).toHaveBeenCalledWith(request);
-});
-
-it('should try to request organization block styles', async () => {
-  const request = new Request('/organization/@foo/bar.css');
-  await trigger('fetch', request);
-  expect(utils.cacheFirst).not.toHaveBeenCalled();
-  expect(utils.requestFirst).toHaveBeenCalledWith(request);
-});
-
 it('should try to request app specific styles', async () => {
   const request = new Request('/core.css');
   await trigger('fetch', request);

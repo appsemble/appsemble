@@ -18,8 +18,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import type { AppMessages } from '@appsemble/types';
-import { getLanguageDisplayName, langmap } from '@appsemble/utils';
-import { iterApp } from '@appsemble/utils/src';
+import { getLanguageDisplayName, iterApp, langmap } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

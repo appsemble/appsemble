@@ -6,6 +6,7 @@ import * as m7 from './0.12.4';
 import * as m8 from './0.12.6';
 import * as m9 from './0.13.0';
 import * as m10 from './0.13.1';
+import * as m16 from './0.13.10';
 import * as m11 from './0.13.2';
 import * as m12 from './0.13.3';
 import * as m13 from './0.13.5';
@@ -31,4 +32,5 @@ export const migrations: Migration[] = [
   m13,
   m14,
   m15,
+  m16,
 ];

@@ -21,7 +21,6 @@ import { OAuth2AuthorizationCode } from './OAuth2AuthorizationCode';
 import { OAuth2ClientCredentials } from './OAuth2ClientCredentials';
 import { OAuthAuthorization } from './OAuthAuthorization';
 import { Organization } from './Organization';
-import { OrganizationBlockStyle } from './OrganizationBlockStyle';
 import { OrganizationInvite } from './OrganizationInvite';
 import { ResetPasswordToken } from './ResetPasswordToken';
 import { Resource } from './Resource';
@@ -60,7 +59,6 @@ export {
   OAuth2ClientCredentials,
   OAuthAuthorization,
   Organization,
-  OrganizationBlockStyle,
   OrganizationInvite,
   ResetPasswordToken,
   Resource,
@@ -104,7 +102,6 @@ export function initDB({
       OAuth2ClientCredentials,
       OAuthAuthorization,
       Organization,
-      OrganizationBlockStyle,
       OrganizationInvite,
       ResetPasswordToken,
       Resource,

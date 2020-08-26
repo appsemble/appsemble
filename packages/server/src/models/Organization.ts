@@ -2,7 +2,6 @@ import {
   BelongsToMany,
   Column,
   CreatedAt,
-  DataType,
   DeletedAt,
   ForeignKey,
   HasMany,
@@ -13,7 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, Member, OrganizationBlockStyle, OrganizationInvite, User } from '.';
+import { App, Member, OrganizationInvite, User } from '.';
 
 @Table({ tableName: 'Organization', paranoid: true })
 export class Organization extends Model<Organization> {
@@ -23,15 +22,6 @@ export class Organization extends Model<Organization> {
 
   @Column
   name: string;
-
-  @Column(DataType.TEXT)
-  coreStyle: string;
-
-  @Column(DataType.TEXT)
-  sharedStyle: string;
-
-  @HasMany(() => OrganizationBlockStyle)
-  OrganizationBlockStyles: OrganizationBlockStyle[];
 
   Member: Member;
 

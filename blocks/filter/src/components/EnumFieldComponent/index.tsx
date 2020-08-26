@@ -1,4 +1,4 @@
-import { useBlock } from '@appsemble/preact/src';
+import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';

@@ -1,4 +1,4 @@
-import { Title } from '@appsemble/react-components/src';
+import { Title } from '@appsemble/react-components';
 import React, { ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react';
 
 import styles from './index.css';

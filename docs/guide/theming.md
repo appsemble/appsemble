@@ -91,8 +91,7 @@ Appsemble. These may also be used for styling.
 ## Custom Styling
 
 Custom styling is supported using a hierarchical model by allowing developers to upload CSS which
-gets injected during the runtime of an application. Stylesheets can be uploaded at **three different
-levels** and can be injected at **three different points** within applications.
+gets injected during the runtime of an application.
 
 ### Hierarchy
 
@@ -100,45 +99,20 @@ levels** and can be injected at **three different points** within applications.
 
 ```mermaid
 graph TD
-    A(App Block) --> B(App Core);
-    B --> C(App Shared)
-    C --> D(Organization Block)
-    D --> E(Organization Core)
-    E --> F(Organization Shared)
-    F --> G(Server Block)
-    G --> H(Server Core)
-    H --> I(Server Shared)
-    I --> J["Default Style (Bulma CSS)"]
+    A(Block / Core style);
+    A --> B(Shared style)
+    B --> C["Default style (Bulma CSS)"]
 ```
 
-Applications can be styled at a **server** level, **organization** level as well as the
-**app-specific** level. Within each level, styling can be further specified for **core** modules,
-**block** modules and **shared** modules.
+**Core** styling gets applied to any part of an Appsemble application not related to a block, such
+as the navigation bar, side menu, login view, message toasts, etc. The styling applied to the core
+modules _do not_ get applied to blocks.
 
-#### Levels
+**Block** styling gets applied to a specific block.
 
-**Server**-level styling gets applied to every application hosted on the Appsemble server. This is
-useful for quickly applying style changes without having to re-deploy the server.
-
-**Organization**-level styling gets applied to every application that belongs to a specific
-organization. This is useful for applying unified styling across every application within an
-organization, such as for supplying basic color themes and icons.
-
-**App**-level styling gets applied to one specific application. This is primarily used for any
-styling that is directly related to one specific application without influencing any other
-applications. App-level styling overrides any styling applied at organization and server levels.
-
-#### Modules
-
-**Core**-module styling gets applied to any part of an Appsemble application not related to a block,
-such as the navigation bar, side menu, login view, message toasts, etc. The styling applied to the
-core modules _do not_ get applied to blocks.
-
-**Block**-module styling gets applied to a specific block.
-
-**Shared**-module styling gets applied to each individual block as well as the Appsemble core
-modules. This is useful for applying styles to elements that can appear in both the core modules as
-well as blocks, such as input fields. It can also be used to apply [CSS variables][css-variables]
+**Shared** styling gets applied to each individual block as well as the Appsemble core. This is
+useful for applying styles to elements that can appear in both the core modules as well as blocks,
+such as input fields. It can also be used to apply [CSS variables][css-variables].
 
 ### Applying themes for an application
 
@@ -222,26 +196,37 @@ can be combined to target specific blocks on specific pages.
 }
 ```
 
-### Applying themes for an organization
+## Using the CLI
 
-Organization themes can be uploaded using the [CLI](https://www.npmjs.com/package/@appsemble/cli).
-The command for uploading themes is as follows:
+Themes may also be uploaded as part of an app by the CLI. To do this, create a directory named
+`theme` inside the app directory. Within the `themes` directory, the core style goes into
+`core/index.css`, shared style into `shared/index.css`, and block styling into
+`@<organizationId>/<blockId>/index.css`. An example app theme file structure could look like this:
 
-```sh
-yarn appsemble theme upload [path-to-theme-css] --organization [organization-id] [--shared|--core|--block @organization/blockname]
+```
+my-app/
+├── app.yaml
+└── theme/
+    ├── @appsemble/
+    │   └── form/
+    │       └── index.css
+    ├── core/
+    │   └── index.css
+    └── shared/
+        └── index.css
 ```
 
-More detailed information about the meaning of each parameter can be found using the following
-command:
+Themes uploaded using the CLI support CSS modules. This means CSS can be imported using the
+following syntax:
 
-```sh
-yarn appsemble theme upload --help
+```css
+@import 'other-file.css';
 ```
 
-### Applying themes for server
-
-Not yet implemented. <!-- XXX -->
+To do even more advanced CSS transformations, a custom `postcssrc` file can be created. See
+[`postcss-load-config`] for details.
 
 [bulma]: https://bulma.io/
 [hex]: https://htmlcolorcodes.com/
 [css-variables]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
+[postcss-load-config]: https://github.com/michael-ciniawsky/postcss-load-config
