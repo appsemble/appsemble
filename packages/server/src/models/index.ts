@@ -134,8 +134,7 @@ export function initDB({
 
 export function getDB(): Sequelize {
   if (!db) {
-    return;
-    // Throw new Error('The database hasn’t been initialized yet. Call initDB() first.');
+    throw new Error('The database hasn’t been initialized yet. Call initDB() first.');
   }
   return db;
 }
