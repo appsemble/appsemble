@@ -1,4 +1,4 @@
-import { Title } from '@appsemble/react-components/src';
+import { Title } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement, useCallback } from 'react';
 
