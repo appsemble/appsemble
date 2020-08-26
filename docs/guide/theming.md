@@ -99,22 +99,20 @@ gets injected during the runtime of an application.
 
 ```mermaid
 graph TD
-    A(App Block) --> B(App Core);
-    B --> C(App Shared)
-    C --> D["Default Style (Bulma CSS)"]
+    A(Block / Core style);
+    A --> B(Shared style)
+    B --> C["Default style (Bulma CSS)"]
 ```
 
-#### Modules
+**Core** styling gets applied to any part of an Appsemble application not related to a block, such
+as the navigation bar, side menu, login view, message toasts, etc. The styling applied to the core
+modules _do not_ get applied to blocks.
 
-**Core**-module styling gets applied to any part of an Appsemble application not related to a block,
-such as the navigation bar, side menu, login view, message toasts, etc. The styling applied to the
-core modules _do not_ get applied to blocks.
+**Block** styling gets applied to a specific block.
 
-**Block**-module styling gets applied to a specific block.
-
-**Shared**-module styling gets applied to each individual block as well as the Appsemble core
-modules. This is useful for applying styles to elements that can appear in both the core modules as
-well as blocks, such as input fields. It can also be used to apply [CSS variables][css-variables]
+**Shared** styling gets applied to each individual block as well as the Appsemble core. This is
+useful for applying styles to elements that can appear in both the core modules as well as blocks,
+such as input fields. It can also be used to apply [CSS variables][css-variables].
 
 ### Applying themes for an application
 
@@ -198,6 +196,37 @@ can be combined to target specific blocks on specific pages.
 }
 ```
 
+## Using the CLI
+
+Themes may also be uploaded as part of an app by the CLI. To do this, create a directory named
+`theme` inside the app directory. Within the `themes` directory, the core style goes into
+`core/index.css`, shared style into `shared/index.css`, and block styling into
+`@<organizationId>/<blockId>/index.css`. An example app theme file structure could look like this:
+
+```
+my-app/
+├── app.yaml
+└── theme/
+    ├── @appsemble/
+    │   └── form/
+    │       └── index.css
+    ├── core/
+    │   └── index.css
+    └── shared/
+        └── index.css
+```
+
+Themes uploaded using the CLI support CSS modules. This means CSS can be imported using the
+following syntax:
+
+```css
+@import 'other-file.css';
+```
+
+To do even more advanced CSS transformations, a custom `postcssrc` file can be created. See
+[`postcss-load-config`] for details.
+
 [bulma]: https://bulma.io/
 [hex]: https://htmlcolorcodes.com/
 [css-variables]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
+[postcss-load-config]: https://github.com/michael-ciniawsky/postcss-load-config
