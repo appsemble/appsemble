@@ -183,7 +183,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
           disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >
-          {parameters.submitLabel || <FormattedMessage id="submit" />}
+          {remap(parameters.submitLabel, {}) || <FormattedMessage id="submit" />}
         </button>
       </div>
     </form>

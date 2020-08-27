@@ -469,7 +469,7 @@ declare module '@appsemble/sdk' {
     /**
      * The text that is shown in the submit button.
      */
-    submitLabel?: string;
+    submitLabel?: Remapper;
 
     /**
      * A list of requirements that are checked across all of the form data.

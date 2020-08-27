@@ -13,20 +13,20 @@ export const validators: { [name: string]: Validator } = {
 
     if (field.accept) {
       if (field.repeated) {
-        return (
-          !(
-            (value as File[]).some((file) => field.accept.includes(file.type)) &&
-            (value as File[]).length >= 1
-          ) && {}
+        const length = (value as File[])?.length;
+        const allValidTypes = (value as File[])?.every(
+          (v) => !field.accept || field.accept.includes(v.type),
         );
+
+        return !length || !allValidTypes ? {} : undefined;
       }
 
       // XXX: Implement field requirements
-      return !field.accept.includes((value as File).type) && {};
+      return field.accept.includes((value as File).type) ? undefined : {};
     }
   },
   geocoordinates: (_, value: { longitude: number; latitude: number }) =>
-    !(value.latitude && value.longitude) && {},
+    value.latitude && value.longitude ? undefined : {},
   hidden: () => {},
   string: validateString,
   number: validateNumber,
