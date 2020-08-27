@@ -4,18 +4,6 @@
   max-width: 480px;
 }
 
-.buttonWrapper {
-  justify-content: flex-end;
-  margin: 0 auto;
-  max-width: 480px;
-  text-align: end;
-  width: 100%;
-}
-
-.submit {
-  align-self: flex-end;
-}
-
 .error {
   max-height: 64px;
   overflow: hidden;
