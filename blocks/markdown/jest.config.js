@@ -1,4 +1,5 @@
 module.exports = {
+  clearMocks: true,
   displayName: '@appsemble/markdown',
   globals: {
     'ts-jest': {
@@ -9,4 +10,6 @@ module.exports = {
     [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src',
   },
   preset: 'ts-jest',
+  resetMocks: true,
+  restoreMocks: true,
 };

@@ -1,5 +1,6 @@
 module.exports = {
   coveragePathIgnorePatterns: ['.d.ts$'],
+  clearMocks: true,
   displayName: '@appsemble/utils',
   globals: {
     'ts-jest': {
@@ -11,4 +12,6 @@ module.exports = {
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   preset: 'ts-jest',
+  resetMocks: true,
+  restoreMocks: true,
 };

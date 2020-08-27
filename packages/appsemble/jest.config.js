@@ -1,4 +1,5 @@
 module.exports = {
+  clearMocks: true,
   displayName: 'appsemble',
   globals: {
     'ts-jest': {
@@ -9,5 +10,7 @@ module.exports = {
     [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src',
   },
   preset: 'ts-jest',
+  resetMocks: true,
+  restoreMocks: true,
   testEnvironment: 'node',
 };

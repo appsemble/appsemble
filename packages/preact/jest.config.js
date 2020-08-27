@@ -1,4 +1,5 @@
 module.exports = {
+  clearMocks: true,
   displayName: '@appsemble/preact',
   globals: {
     'ts-jest': {
@@ -10,4 +11,6 @@ module.exports = {
   },
   snapshotSerializers: ['enzyme-to-json/serializer'],
   preset: 'ts-jest',
+  resetMocks: true,
+  restoreMocks: true,
 };
