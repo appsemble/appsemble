@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/blocks': {
+  '/api/blocks': {
     post: {
       tags: ['block version'],
       description: 'Publish a block.',
@@ -44,7 +44,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/blocks/@{organizationId}/{blockId}': {
+  '/api/blocks/@{organizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -61,7 +61,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/blocks/@{organizationId}/{blockId}/versions': {
+  '/api/blocks/@{organizationId}/{blockId}/versions': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -118,7 +118,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ cli: ['blocks:write'] }],
     },
   },
-  '/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -135,7 +135,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/icon': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/icon': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },

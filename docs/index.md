@@ -48,6 +48,6 @@ database, authentication provider, and the app components used to display apps.
 
 See also:
 
-- [API documentation](/api/explorer)
+- [API documentation](/api-explorer)
 - [Source code on GitLab](https://gitlab.com/appsemble/appsemble)
 - [Contribution guidelines](https://gitlab.com/appsemble/appsemble/blob/master/CONTRIBUTING.md)

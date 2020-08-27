@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/organizations': {
+  '/api/organizations': {
     post: {
       tags: ['organization'],
       description: 'Create a new organization.',
@@ -25,7 +25,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['organizations:write'] }],
     },
   },
-  '/organizations/{organizationId}': {
+  '/api/organizations/{organizationId}': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -38,7 +38,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/organizations/{organizationId}/members': {
+  '/api/organizations/{organizationId}/members': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -61,7 +61,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/organizations/{organizationId}/invites/resend': {
+  '/api/organizations/{organizationId}/invites/resend': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['organization'],
@@ -92,7 +92,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/organizations/{organizationId}/join': {
+  '/api/organizations/{organizationId}/join': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['organization'],
@@ -128,7 +128,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/organizations/{organizationId}/invites': {
+  '/api/organizations/{organizationId}/invites': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -222,7 +222,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/organizations/{organizationId}/members/{memberId}': {
+  '/api/organizations/{organizationId}/members/{memberId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {
@@ -246,7 +246,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/organizations/{organizationId}/members/{memberId}/role': {
+  '/api/organizations/{organizationId}/members/{memberId}/role': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {

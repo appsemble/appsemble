@@ -28,7 +28,7 @@ The app studio can be found on
 > ${host}
 
 The OpenAPI explorer can be found on
-> ${host}/api/explorer
+> ${host}/api-explorer
 `,
       license: {
         name: 'LGPL',
@@ -37,7 +37,6 @@ The OpenAPI explorer can be found on
       version,
     },
     paths,
-    servers: [{ url: '/api' }],
     tags,
   };
 }

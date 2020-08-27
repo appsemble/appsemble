@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/health': {
+  '/api/health': {
     get: {
       tags: ['health'],
       description: 'Check whether or not the API is healthy',

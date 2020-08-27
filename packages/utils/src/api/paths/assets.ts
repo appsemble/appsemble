@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/apps/{appId}/assets': {
+  '/api/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['asset'],
@@ -41,7 +41,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/apps/{appId}/assets/{assetId}': {
+  '/api/apps/{appId}/assets/{assetId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/assetId' },

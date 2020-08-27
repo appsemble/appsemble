@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/oauth2/client-credentials': {
+  '/api/oauth2/client-credentials': {
     post: {
       description: 'Register new OAuth2 client credentials for the authenticated user.',
       tags: ['oauth2'],
@@ -53,7 +53,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/oauth2/client-credentials/{clientId}': {
+  '/api/oauth2/client-credentials/{clientId}': {
     parameters: [
       {
         name: 'clientId',

@@ -1,12 +1,10 @@
 import { dirname } from 'path';
-import { URL } from 'url';
 
 import { loggerMiddleware } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
-import isIp from 'is-ip';
 import Koa from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
@@ -94,34 +92,6 @@ export async function createServer({
     ]),
   );
 
-  const apiMiddleware = mount(
-    '/api',
-    compose([
-      await koas(api(readPackageJson().version, argv), [
-        koasSpecHandler(),
-        koasSwaggerUI({ url: '/explorer' }),
-        koasSecurity(authentication(argv) as any),
-        koasParameters(),
-        koasBodyParser({
-          parsers: {
-            '*/*': (body, _mediaTypeObject, ctx) => raw(body, { length: ctx.request.length }),
-          },
-        }),
-        koasSerializer({
-          'text/csv': convertToCsv,
-        }),
-        koasStatusCode(),
-        koasOperations({ operations } as any),
-      ]),
-      ({ hostname }, next) => {
-        if (new URL(argv.host).hostname === hostname || isIp(hostname)) {
-          throw notFound('URL not found');
-        }
-        return next();
-      },
-    ]),
-  );
-
   if (process.env.NODE_ENV !== 'test') {
     app.use(await frontend(webpackConfigs));
   }
@@ -130,7 +100,28 @@ export async function createServer({
     appMapper(
       compose([
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
-        apiMiddleware,
+        await koas(api(readPackageJson().version, argv), [
+          koasSpecHandler(),
+          koasSwaggerUI({ url: '/api-explorer' }),
+          koasSecurity(authentication(argv) as any),
+          koasParameters(),
+          koasBodyParser({
+            parsers: {
+              '*/*': (body, _mediaTypeObject, ctx) => raw(body, { length: ctx.request.length }),
+            },
+          }),
+          koasSerializer({
+            'text/csv': convertToCsv,
+          }),
+          koasStatusCode(),
+          koasOperations({ operations } as any),
+        ]),
+        ({ path }, next) => {
+          if (path.startsWith('/api/')) {
+            throw notFound('URL not found');
+          }
+          return next();
+        },
         studioRouter,
       ]),
       appRouter,

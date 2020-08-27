@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/apps/{appId}/resources/{resourceType}': {
+  '/api/apps/{appId}/resources/{resourceType}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
@@ -49,7 +49,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
   },
-  '/apps/{appId}/resources/{resourceType}/subscriptions': {
+  '/api/apps/{appId}/resources/{resourceType}/subscriptions': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
@@ -74,7 +74,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['openid'] }, {}],
     },
   },
-  '/apps/{appId}/resources/{resourceType}/{resourceId}': {
+  '/api/apps/{appId}/resources/{resourceType}/{resourceId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
@@ -121,7 +121,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
   },
-  '/apps/{appId}/resources/{resourceType}/{resourceId}/subscriptions': {
+  '/api/apps/{appId}/resources/{resourceType}/{resourceId}/subscriptions': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
