@@ -1,4 +1,5 @@
 module.exports = {
+  clearMocks: true,
   displayName: '@appsemble/preact-components',
   globals: {
     'ts-jest': {
@@ -10,5 +11,7 @@ module.exports = {
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   preset: 'ts-jest',
+  resetMocks: true,
+  restoreMocks: true,
   snapshotSerializers: ['enzyme-to-json/serializer'],
 };

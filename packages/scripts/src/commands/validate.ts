@@ -201,6 +201,7 @@ async function validate(
   );
   assert(Boolean(jestConfig), 'jest.config.js', 'Projects should have a Jest configuration');
   if (jestConfig) {
+    assert(jestConfig.clearMocks === true, 'jest.config.js', 'clearMocks should be true');
     assert(jestConfig.displayName === pkg.name, 'jest.config.js', `Display name be '${pkg.name}'`);
     assert(
       (jestConfig.globals?.['ts-jest'] as any).isolatedModules,
@@ -213,6 +214,8 @@ async function validate(
       "Module name mapper [/@appsemble\\/([\\w-]+)/.source] should map to '@appsemble/$1/src'",
     );
     assert(jestConfig.preset === 'ts-jest', 'jest.config.js', "Preset should be 'ts-jest'");
+    assert(jestConfig.resetMocks === true, 'jest.config.js', 'resetMocks should be true');
+    assert(jestConfig.restoreMocks === true, 'jest.config.js', 'restoreMocks should be true');
   }
 }
 

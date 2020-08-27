@@ -1,4 +1,5 @@
 module.exports = {
+  clearMocks: true,
   displayName: '@appsemble/react-components',
   globals: {
     'ts-jest': {
@@ -10,6 +11,8 @@ module.exports = {
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   preset: 'ts-jest',
+  resetMocks: true,
+  restoreMocks: true,
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   transform: {

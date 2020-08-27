@@ -1,5 +1,6 @@
 module.exports = {
   coveragePathIgnorePatterns: ['.d.ts$'],
+  clearMocks: true,
   displayName: '@appsemble/node-utils',
   globals: {
     'ts-jest': {
@@ -11,5 +12,6 @@ module.exports = {
   },
   preset: 'ts-jest',
   resetMocks: true,
+  restoreMocks: true,
   testEnvironment: 'node',
 };
