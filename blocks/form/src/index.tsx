@@ -72,7 +72,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
 
             return null;
           } catch (error) {
-            e = remap(requirement.errorMessage, v) || messages.error;
+            e = remap(requirement.errorMessage, v) || messages.requirementError;
             return error;
           }
         }),
