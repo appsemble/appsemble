@@ -188,7 +188,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
           </button>
         )}
         <button
-          className={classNames('button is-primary', styles.submit)}
+          className="button is-primary"
           disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >
