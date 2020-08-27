@@ -1,5 +1,5 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
-import { Message } from '@appsemble/preact-components';
+import { FormButtons, Message } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -137,6 +137,10 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
     [actions, submitting, values],
   );
 
+  const onPrevious = useCallback(() => {
+    actions.onPrevious.dispatch(values);
+  }, [actions, values]);
+
   const receiveData = useCallback(
     (d: { [key: string]: unknown }) => {
       setDisabled(false);
@@ -177,15 +181,20 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
           />
         );
       })}
-      <div className={`${styles.buttonWrapper} is-flex`}>
+      <FormButtons className="mt-4">
+        {parameters.previousLabel && (
+          <button className="button" onClick={onPrevious} type="button">
+            {remap(parameters.previousLabel, {})}
+          </button>
+        )}
         <button
-          className={classNames('button is-primary mt-4', styles.submit)}
+          className={classNames('button is-primary', styles.submit)}
           disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >
           {remap(parameters.submitLabel, {}) || <FormattedMessage id="submit" />}
         </button>
-      </div>
+      </FormButtons>
     </form>
   );
 }, messages);

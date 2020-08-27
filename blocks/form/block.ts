@@ -445,6 +445,11 @@ declare module '@appsemble/sdk' {
     onSubmit: never;
 
     /**
+     * Action that gets dispatched when the previous button is clicked.
+     */
+    onPrevious?: never;
+
+    /**
      * A custom action that gets dispatched when checking form requirements.
      */
     [key: string]: never;
@@ -470,6 +475,11 @@ declare module '@appsemble/sdk' {
      * The text that is shown in the submit button.
      */
     submitLabel?: Remapper;
+
+    /**
+     * The text that is shown in the previous button.
+     */
+    previousLabel?: Remapper;
 
     /**
      * A list of requirements that are checked across all of the form data.
