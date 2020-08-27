@@ -1,5 +1,5 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
-import { FormButtons, Message } from '@appsemble/preact-components';
+import { Button, FormButtons, Message } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -183,17 +183,17 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       })}
       <FormButtons className="mt-4">
         {parameters.previousLabel && (
-          <button className="button" onClick={onPrevious} type="button">
+          <Button className="mr-4" onClick={onPrevious}>
             {remap(parameters.previousLabel, {})}
-          </button>
+          </Button>
         )}
-        <button
-          className="button is-primary"
+        <Button
+          color="primary"
           disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >
           {remap(parameters.submitLabel, {}) || <FormattedMessage id="submit" />}
-        </button>
+        </Button>
       </FormButtons>
     </form>
   );
