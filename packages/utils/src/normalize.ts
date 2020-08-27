@@ -2,7 +2,7 @@
  * Turn a string into a URL friendly variant by stripping any weird formatting.
  *
  * - Accents are stripped;
- * - Whitespace is replaced with a hyphen;
+ * - Non-alphanumeric is replaced with a hyphen;
  * - The resulting string is lower case.
  *
  * @param input - The input string to normalize.
@@ -15,11 +15,10 @@ export function normalize(input: string, stripTrailingHyphen = true): string {
   const normalized = input
     // Normalize accents. https://stackoverflow.com/a/37511463/1154610
     .normalize('NFD')
-    // Replace any white space with hyphens.
-    .replace(/[\s._-]+/g, '-')
-    // Strip off any non-word / hyphen characters.
-    .replace(/((?!([\w-]+)).)|^-/g, '')
+    .replace(/[\u0300-\u036F]/g, '')
     // Make it lower case.
-    .toLowerCase();
+    .toLowerCase()
+    // Replace any non-alphanumeric with single hyphens them at the start.
+    .replace(/[^\da-z]+/g, (match, index) => (index ? '-' : ''));
   return stripTrailingHyphen ? normalized.replace(/-$/, '') : normalized;
 }
