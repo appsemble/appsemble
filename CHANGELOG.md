@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.11] - 2020-08-27
+
+### Added
+
+- Block(`form`): Add support for previous button. It is defined by the `previousLabel` parameter and
+  `onPrevious` action.
+- Cli: Add `appsemble organization create` command to create organizations.
+
+### Changed
+
+- Block(`form`): Add remapper support to `submitLabel`.
+- App: Fall back to the message ID for untranslated app messages.
+
+### Removed
+
+- App: Remove organization styling.
+- Cli: Remove `appsemble theme upload` command.
+- Server: Remove organization styling.
+
+### Fixed
+
+- Block(`form`): Fix logic for determining form validity.
+
 ## [0.13.10] - 2020-08-21
 
 ### Fixed

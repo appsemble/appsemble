@@ -49,7 +49,7 @@ pages:
   - name: Report litter
     blocks:
       - type: form
-        version: 0.13.10
+        version: 0.13.11
         parameters:
           fields:
             - name: location
@@ -85,7 +85,7 @@ pages:
   - name: Litter Overview
     blocks:
       - type: data-loader
-        version: 0.13.10
+        version: 0.13.11
         actions:
           onLoad:
             type: resource.query
@@ -97,7 +97,7 @@ pages:
           emit:
             data: data
       - type: map
-        version: 0.13.10
+        version: 0.13.11
         parameters:
           latitude: location.latitude
           longitude: location.longitude
@@ -109,7 +109,7 @@ pages:
           listen:
             data: data
       - type: action-button
-        version: 0.13.10
+        version: 0.13.11
         parameters:
           icon: plus
         actions:
@@ -122,7 +122,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.13.10
+        version: 0.13.11
         actions:
           onLoad:
             type: resource.get
@@ -131,7 +131,7 @@ pages:
           emit:
             data: data
       - type: detail-viewer
-        version: 0.13.10
+        version: 0.13.11
         parameters:
           fileBase: 'https://appsemble.app/api/apps/14/assets'
           fields:
