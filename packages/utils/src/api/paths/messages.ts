@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/apps/{appId}/messages': {
+  '/api/apps/{appId}/messages': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { name: 'merge', in: 'query', schema: { type: 'boolean' } },
@@ -55,7 +55,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
-  '/apps/{appId}/messages/{language}': {
+  '/api/apps/{appId}/messages/{language}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/language' },

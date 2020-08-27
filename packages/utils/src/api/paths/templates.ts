@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/templates': {
+  '/api/templates': {
     get: {
       tags: ['template'],
       description: 'Fetch a list of all available templates.',

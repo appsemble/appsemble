@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/email': {
+  '/api/email': {
     post: {
       tags: ['user'],
       description: 'Register a new account using an email address and a password.',
@@ -37,7 +37,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/email/verify': {
+  '/api/email/verify': {
     post: {
       tags: ['user'],
       description: 'Verify the email address of a registered user.',
@@ -66,7 +66,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/email/resend': {
+  '/api/email/resend': {
     post: {
       tags: ['user'],
       description: 'Resend the verification code for a registered email.',
@@ -96,7 +96,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/email/reset/request': {
+  '/api/email/reset/request': {
     post: {
       tags: ['user'],
       description: 'Request a reset token for resetting passwords.',
@@ -125,7 +125,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/email/reset': {
+  '/api/email/reset': {
     post: {
       tags: ['user'],
       description: 'Reset a password using a password reset token.',

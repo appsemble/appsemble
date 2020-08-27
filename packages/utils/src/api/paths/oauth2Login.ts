@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/oauth2/connect/register': {
+  '/api/oauth2/connect/register': {
     post: {
       operationId: 'registerOAuth2Connection',
       description: 'asd',
@@ -31,7 +31,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/oauth2/connect/pending': {
+  '/api/oauth2/connect/pending': {
     post: {
       description: 'Create an account using an OAuth2 authorization.',
       tags: ['oauth2'],
@@ -71,7 +71,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/oauth2/connected': {
+  '/api/oauth2/connected': {
     get: {
       description: 'Get a list of the user’s connected OAuth2 accounts.',
       tags: ['oauth2'],

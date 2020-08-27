@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/login': {
+  '/api/login': {
     post: {
       tags: ['user'],
       description: 'Login using the Appsemble studio.',
@@ -10,7 +10,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ basic: [] }],
     },
   },
-  '/refresh': {
+  '/api/refresh': {
     post: {
       tags: ['user'],
       description: 'Refresh an access token using the Appsemble studio',
@@ -35,7 +35,7 @@ export const paths: OpenAPIV3.PathsObject = {
       responses: { 200: { description: 'The token has been refreshed succesfully.' } },
     },
   },
-  '/user': {
+  '/api/user': {
     get: {
       tags: ['user'],
       description: "Fetch the logged in user's profile.",
@@ -77,7 +77,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/user/organizations': {
+  '/api/user/organizations': {
     get: {
       tags: ['template'],
       description: "Fetch the logged in user's organizations.",
@@ -105,7 +105,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/user/email': {
+  '/api/user/email': {
     get: {
       tags: ['user'],
       description: "List email addresses registered to logged in user's account.",

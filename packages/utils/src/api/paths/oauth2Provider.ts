@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/connect/userinfo': {
+  '/api/connect/userinfo': {
     get: {
       tags: ['openid', 'user'],
       description: `
@@ -50,7 +50,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/oauth2/authorization-code': {
+  '/api/oauth2/authorization-code': {
     post: {
       description: 'XXX',
       tags: ['oauth2'],

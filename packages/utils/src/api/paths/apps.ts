@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
 export const paths: OpenAPIV3.PathsObject = {
-  '/apps': {
+  '/api/apps': {
     post: {
       tags: ['app'],
       description: 'Create a new app',
@@ -104,7 +104,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/apps/me': {
+  '/api/apps/me': {
     get: {
       tags: ['app'],
       description: 'Get all apps that are editable by the user.',
@@ -127,7 +127,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/apps/{appId}': {
+  '/api/apps/{appId}': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -226,7 +226,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/apps/{appId}/icon': {
+  '/api/apps/{appId}/icon': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -245,7 +245,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/apps/{appId}/subscriptions': {
+  '/api/apps/{appId}/subscriptions': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -336,7 +336,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/apps/{appId}/members': {
+  '/api/apps/{appId}/members': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -359,7 +359,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/apps/{appId}/members/{memberId}': {
+  '/api/apps/{appId}/members/{memberId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {
@@ -423,7 +423,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/apps/{appId}/ratings': {
+  '/api/apps/{appId}/ratings': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -480,7 +480,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/apps/{appId}/broadcast': {
+  '/api/apps/{appId}/broadcast': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['app'],
@@ -516,7 +516,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/apps/{appId}/screenshots/{screenshotId}': {
+  '/api/apps/{appId}/screenshots/{screenshotId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/screenshotId' },
@@ -532,7 +532,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/apps/{appId}/style/core': {
+  '/api/apps/{appId}/style/core': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -548,7 +548,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/apps/{appId}/style/shared': {
+  '/api/apps/{appId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -564,7 +564,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/apps/{appId}/style/block/@{organizationId}/{blockId}': {
+  '/api/apps/{appId}/style/block/@{organizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/organizationId' },
