@@ -16,9 +16,6 @@ rules:
     resources:
       - ingresses
     verbs:
-      - get
-      - patch
-    resourceNames:
-      # This should match the name of the ingress
-      - {{ include "appsemble.fullname" . }}
+      - create
+      - deletecollection
 {{ end }}

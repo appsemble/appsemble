@@ -1,19 +1,45 @@
-import type { Argv } from '../../types';
-import { kubernetes } from './kubernetes';
+import { inspect } from 'util';
 
-export interface DNSImplementation {
-  add: (...domains: string[]) => Promise<void>;
-  update: (oldDomain: string, newDomain: string) => Promise<void>;
-  remove: (domain: string) => Promise<void>;
+import { AppsembleError } from '@appsemble/node-utils';
+
+import type { Argv } from '../../types';
+import * as kubernetes from './kubernetes';
+
+function getImplementation({ appDomainStrategy }: Argv): typeof import('.') {
+  if (!appDomainStrategy) {
+    return;
+  }
+
+  if (appDomainStrategy === 'kubernetes-ingress') {
+    return kubernetes;
+  }
+
+  throw new AppsembleError(`Unknown app domain strategy: ${inspect(appDomainStrategy)}`);
 }
 
-// eslint-disable-next-line require-await
-export async function dns(argv: Argv): Promise<DNSImplementation> {
-  if (!argv.appDomainStrategy) {
-    return null;
-  }
-  if (argv.appDomainStrategy === 'kubernetes-ingress') {
-    return kubernetes(argv);
-  }
-  throw new Error('Unknown app domain strategy: unknown');
+/**
+ * Configure DNS for a running deployment.
+ *
+ * @param argv - The parsed command line parameters.
+ */
+export async function configureDNS(argv: Argv): Promise<void> {
+  await getImplementation(argv).configureDNS(argv);
+}
+
+/**
+ * Cleanup the DNS settings in the running environment.
+ *
+ * @param argv - The parsed command line parameters.
+ */
+export async function cleanupDNS(argv: Argv): Promise<void> {
+  await getImplementation(argv).cleanupDNS(argv);
+}
+
+/**
+ * Restore the DNS settings for the running environment.
+ *
+ * @param argv - The parsed command line parameters.
+ */
+export async function restoreDNS(argv: Argv): Promise<void> {
+  await getImplementation(argv).restoreDNS(argv);
 }

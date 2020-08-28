@@ -1,15 +1,12 @@
-import { URL } from 'url';
-
 import type { Argv } from 'yargs';
 
 import { initDB } from '../models';
 import type { Argv as Args } from '../types';
-import { bulkDNSRestore } from '../utils/bulkDNSRestore';
-import { dns } from '../utils/dns';
+import { cleanupDNS } from '../utils/dns';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';
 
-export const command = 'restore-dns';
+export const command = 'cleanup';
 export const description = 'Restore the app DNS settings from the database in the host platform';
 
 export function builder(yargs: Argv): Argv {
@@ -18,19 +15,19 @@ export function builder(yargs: Argv): Argv {
       desc: 'How to link app domain names to apps',
       choices: ['kubernetes-ingress'],
     })
-    .option('ingress-name', {
-      desc: 'The name of the ingress to patch if app-domain-strategy is set to kubernetes-ingress',
-      implies: ['ingress-service-name', 'ingress-service-port'],
+    .option('ingress-annotations', {
+      desc: 'A JSON string representing ingress annotations to add to created ingresses.',
+      implies: ['service-name', 'service-port'],
     })
-    .option('ingress-service-name', {
+    .option('service-name', {
       desc:
         'The name of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
-      implies: ['ingress-name', 'ingress-service-port'],
+      implies: ['service-port'],
     })
-    .option('ingress-service-port', {
+    .option('service-port', {
       desc:
         'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
-      implies: ['ingress-name', 'ingress-service-name'],
+      implies: ['service-name'],
     })
     .option('host', {
       desc:
@@ -54,6 +51,5 @@ export async function handler(argv: Args): Promise<void> {
     handleDBError(error as Error);
   }
 
-  const dnsConfig = await dns(argv);
-  await bulkDNSRestore(new URL(argv.host).hostname, dnsConfig, 50);
+  await cleanupDNS(argv);
 }

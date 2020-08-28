@@ -1,9 +1,10 @@
 import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { CommandModule } from 'yargs';
 
+import * as cleanup from './commands/cleanup';
 import * as health from './commands/health';
 import * as migrate from './commands/migrate';
-import * as restoreDNS from './commands/restoreDNS';
+import * as restore from './commands/restore';
 import * as start from './commands/start';
 import { readPackageJson } from './utils/readPackageJson';
 
@@ -37,10 +38,11 @@ function main(argv: string[]): void {
       type: 'count',
     })
     .middleware([configureLogger])
+    .command(cleanup as CommandModule)
     .command(health as CommandModule)
     .command(start as CommandModule)
     .command(migrate as CommandModule)
-    .command(restoreDNS as CommandModule)
+    .command(restore as CommandModule)
     .fail(handleError)
     .help('help', 'Show this help message.')
     .alias('h', 'help')
