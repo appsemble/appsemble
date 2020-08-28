@@ -67,6 +67,7 @@
     "koas-swagger-ui": "^0.3.0",
     "language-tags": "^1.0.5",
     "lodash": "^4.17.20",
+    "mime-types": "^2.1.27",
     "mustache": "^4.0.1",
     "node-sass": "^4.14.1",
     "nodemailer": "^6.4.11",

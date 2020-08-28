@@ -306,6 +306,7 @@ describe('handleEmail', () => {
 </html>
 `,
       'Body\n',
+      [],
     );
     spy.mockRestore();
   });

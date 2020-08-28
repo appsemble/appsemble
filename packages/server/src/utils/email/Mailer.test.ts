@@ -41,6 +41,7 @@ describe('sendEmail', () => {
       subject: 'Confirm account registration',
       text: expect.any(String),
       html: expect.any(String),
+      attachments: [],
     });
   });
 
@@ -56,6 +57,7 @@ describe('sendEmail', () => {
       subject: 'Confirm account registration',
       text: expect.any(String),
       html: expect.any(String),
+      attachments: [],
     });
   });
 
