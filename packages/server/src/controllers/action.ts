@@ -9,8 +9,10 @@ import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
 import type { ParameterizedContext } from 'koa';
 import { get, pick } from 'lodash';
+import { extension } from 'mime-types';
+import type { SendMailOptions } from 'nodemailer';
 
-import { App } from '../models';
+import { App, Asset } from '../models';
 import type { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
 import { getRemapperContext } from '../utils/app';
 import { renderEmail } from '../utils/email/renderEmail';
@@ -53,13 +55,27 @@ async function handleEmail(
   const to = remap(action.to, data, context) as string;
   const body = remap(action.body, data, context) as string;
   const sub = remap(action.subject, data, context) as string;
+  const attachmentUrls = remap(action.attachments, data, context) as string[];
+  const attachments: SendMailOptions['attachments'] = [];
 
   if (!to || !sub || !body) {
     throw badRequest('Fields “to”, “subject”, and “body” must be a valid string');
   }
 
+  if (attachmentUrls?.length) {
+    const assetIds = attachmentUrls.filter((a) => !a.startsWith('http'));
+    const assetUrls = attachmentUrls.filter((a) => a.startsWith('http'));
+
+    const assets = await Asset.findAll({ where: { AppId: app.id, id: assetIds } });
+
+    attachments.push(
+      ...assets.map((a) => ({ content: a.data, filename: `${a.id}.${extension(a.mime)}` })),
+    );
+    attachments.push(...assetUrls.map((a) => ({ path: a })));
+  }
+
   const { html, subject, text } = await renderEmail(body, {}, sub);
-  await mailer.sendEmail(to, subject, html, text);
+  await mailer.sendEmail(to, subject, html, text, attachments);
 
   ctx.status = 204;
 }

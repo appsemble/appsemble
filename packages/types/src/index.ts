@@ -445,6 +445,13 @@ export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
    * The body of the email.
    */
   body: Remapper;
+
+  /**
+   * The attachments that should be attached to the email
+   *
+   * Should result in an array of URLs or asset IDs.
+   */
+  attachments?: Remapper;
 }
 
 export interface LinkActionDefinition extends BaseActionDefinition<'link'> {

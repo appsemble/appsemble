@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { createTransport, Transporter } from 'nodemailer';
+import { createTransport, SendMailOptions, Transporter } from 'nodemailer';
 import type { Options } from 'nodemailer/lib/smtp-connection';
 
 import type { Argv } from '../../types';
@@ -84,14 +84,29 @@ export class Mailer {
    * @param subject - The subject of the email
    * @param html - The HTML content of the email
    * @param text - The plain-text content of the email
+   * @param attachments - The attachments to include in the email
    */
-  async sendEmail(to: string, subject: string, html: string, text: string): Promise<void> {
+  async sendEmail(
+    to: string,
+    subject: string,
+    html: string,
+    text: string,
+    attachments: SendMailOptions['attachments'] = [],
+  ): Promise<void> {
     if (!this.transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
     logger.info(`Sending email:\nTo: ${to}\nSubject: ${subject}\n\n${text}`);
+
+    if (attachments.length) {
+      logger.info(
+        `Including ${attachments.length} attachments: ${JSON.stringify(
+          attachments.map((a) => a.path || a.filename),
+        )}`,
+      );
+    }
     if (this.transport) {
-      await this.transport.sendMail({ html, subject, text, to });
+      await this.transport.sendMail({ html, subject, text, to, attachments });
     }
     logger.verbose('Email sent succesfully.');
   }

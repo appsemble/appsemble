@@ -14,7 +14,7 @@ export async function resize(
   file: Blob,
   maxWidth: number,
   maxHeight: number,
-  quality = 0.8,
+  quality = 80,
 ): Promise<Blob> {
   const img = new Image();
   const canvas = document.createElement('canvas');
@@ -32,7 +32,9 @@ export async function resize(
   if (maxWidth && width > maxWidth) {
     height *= maxWidth / width;
     width = maxWidth;
-  } else if (maxHeight && height > maxHeight) {
+  }
+
+  if (maxHeight && height > maxHeight) {
     width *= maxHeight / height;
     height = maxHeight;
   }
