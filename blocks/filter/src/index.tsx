@@ -49,8 +49,8 @@ bootstrap(
         try {
           const data = await actions.onLoad.dispatch({ $filter: toOData(fields, submitValues) });
           events.emit.filtered(data);
-        } catch (error) {
-          events.emit.filtered(null, error);
+        } catch (error: unknown) {
+          events.emit.filtered(null, error as any);
         }
         setLoading(false);
       },
@@ -90,8 +90,8 @@ bootstrap(
         try {
           const data = await actions.onLoad.dispatch({ $filter: toOData(fields, values) });
           events.emit.refreshed(data);
-        } catch (error) {
-          events.emit.refreshed(null, error);
+        } catch (error: unknown) {
+          events.emit.refreshed(null, error as any);
         }
       };
 

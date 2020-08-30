@@ -11,7 +11,7 @@ export async function checkHealth(ctx: KoaContext): Promise<void> {
 
   try {
     await getDB().authenticate();
-  } catch (err) {
+  } catch (err: unknown) {
     logger.error(err);
     status.database = false;
   }

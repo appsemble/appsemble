@@ -1,4 +1,5 @@
 import type { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
+// eslint-disable-next-line import/no-named-as-default
 import Ajv from 'ajv';
 import languageTags from 'language-tags';
 import type { Promisable } from 'type-fest';

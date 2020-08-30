@@ -40,7 +40,7 @@ export function Login(): ReactElement {
           headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
         });
         login(data);
-      } catch (error) {
+      } catch (error: unknown) {
         busy.disable();
         throw error;
       }

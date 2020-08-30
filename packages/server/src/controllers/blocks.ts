@@ -4,9 +4,9 @@ import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import * as fileType from 'file-type';
 import isSvg from 'is-svg';
+import type { File } from 'koas-body-parser/lib';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
-import type { VFile } from 'vfile';
 
 import { BlockAsset, BlockVersion, getDB, transactional } from '../models';
 import type { KoaContext } from '../types';
@@ -106,8 +106,8 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
 }
 
 interface PublishBlockBody extends Omit<BlockManifest, 'files'> {
-  files: (VFile & { mime: string })[];
-  icon: VFile;
+  files: File[];
+  icon: File;
 }
 
 export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
@@ -158,7 +158,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
 
       files.forEach((file) => {
         logger.verbose(
-          `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.basename)}`,
+          `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.filename)}`,
         );
       });
       await BlockAsset.bulkCreate(
@@ -166,7 +166,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
           name: blockId,
           OrganizationId,
           version,
-          filename: decodeURIComponent(file.basename),
+          filename: decodeURIComponent(file.filename),
           mime: file.mime,
           content: file.contents,
         })),
@@ -181,13 +181,13 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         resources,
         events,
         version,
-        files: files.map((file) => decodeURIComponent(file.basename)),
+        files: files.map((file) => decodeURIComponent(file.filename)),
         name,
         description,
         longDescription,
       };
     });
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
       throw conflict(`Block “${name}@${data.version}” already exists`);
     }

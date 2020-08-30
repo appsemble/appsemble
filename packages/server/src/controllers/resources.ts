@@ -348,7 +348,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
       $clonable: resource.clonable,
       ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
     }));
-  } catch (error) {
+  } catch (error: unknown) {
     if (query) {
       throw badRequest('Unable to process this query');
     }
@@ -628,7 +628,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
 
   try {
     await validate(schema, resource);
-  } catch (err) {
+  } catch (err: unknown) {
     if (!(err instanceof SchemaValidationError)) {
       throw err;
     }
@@ -698,7 +698,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
 
   try {
     await validate(schema, updatedResource);
-  } catch (err) {
+  } catch (err: unknown) {
     if (!(err instanceof SchemaValidationError)) {
       throw err;
     }

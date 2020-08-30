@@ -15,10 +15,10 @@ import {
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
+import type { File } from 'koas-body-parser/lib';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
-import type { VFile } from 'vfile';
 import { generateVAPIDKeys } from 'web-push';
 
 import {
@@ -166,7 +166,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
       record.AppScreenshots = screenshots?.length
         ? await AppScreenshot.bulkCreate(
-            screenshots.map((screenshot: VFile) => ({
+            screenshots.map((screenshot: File) => ({
               screenshot: screenshot.contents,
               AppId: record.id,
             })),
@@ -178,8 +178,8 @@ export async function createApp(ctx: KoaContext): Promise<void> {
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
-  } catch (error) {
-    handleAppValidationError(error, result);
+  } catch (error: unknown) {
+    handleAppValidationError(error as Error, result);
   }
 }
 
@@ -310,7 +310,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
       if (screenshots?.length) {
         logger.verbose(`Saving ${screenshots.length} screenshots`);
         dbApp.AppScreenshots = await AppScreenshot.bulkCreate(
-          screenshots.map((screenshot: VFile) => ({
+          screenshots.map((screenshot: File) => ({
             screenshot: screenshot.contents,
             AppId: dbApp.id,
           })),
@@ -321,8 +321,8 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
     });
 
     ctx.body = getAppFromRecord(dbApp);
-  } catch (error) {
-    handleAppValidationError(error, result);
+  } catch (error: unknown) {
+    handleAppValidationError(error as Error, result);
   }
 }
 
@@ -434,7 +434,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
         logger.verbose(`Saving ${screenshots.length} screenshots`);
         dbApp.AppScreenshots = await AppScreenshot.bulkCreate(
-          screenshots.map((screenshot: VFile) => ({
+          screenshots.map((screenshot: File) => ({
             screenshot: screenshot.contents,
             AppId: dbApp.id,
           })),
@@ -445,8 +445,8 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     });
 
     ctx.body = getAppFromRecord(dbApp);
-  } catch (error) {
-    handleAppValidationError(error, result);
+  } catch (error: unknown) {
+    handleAppValidationError(error as Error, result);
   }
 }
 
@@ -572,7 +572,7 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
       body: { style },
     },
   } = ctx;
-  const css = String(style).trim();
+  const css = String(style.contents).trim();
 
   try {
     validateStyle(css);
@@ -604,7 +604,7 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
     }
 
     ctx.status = 204;
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof StyleValidationError) {
       throw badRequest('Provided CSS was invalid.');
     }

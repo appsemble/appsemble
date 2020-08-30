@@ -130,7 +130,7 @@ function createAction({
             ? remap(actionDefinition.remap, args)
             : args,
         );
-      } catch (error) {
+      } catch (error: unknown) {
         if (onError) {
           return onError.dispatch(error);
         }

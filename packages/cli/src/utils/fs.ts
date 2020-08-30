@@ -24,8 +24,8 @@ export async function opendirSafe(
   let stats: Stats;
   try {
     stats = await fs.stat(directory);
-  } catch (err) {
-    if (allowMissing && err.code === 'ENOENT') {
+  } catch (err: unknown) {
+    if (allowMissing && (err as NodeJS.ErrnoException).code === 'ENOENT') {
       return;
     }
     throw new AppsembleError(`Expected ${directory} to be a directory`);

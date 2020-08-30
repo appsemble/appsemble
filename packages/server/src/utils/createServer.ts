@@ -11,19 +11,18 @@ import compress from 'koa-compress';
 import mount from 'koa-mount';
 import range from 'koa-range';
 import serve from 'koa-static';
-import koasBodyParser from 'koas-body-parser';
-import koas from 'koas-core';
-import koasOperations from 'koas-operations';
-import koasParameters from 'koas-parameters';
-import koasSecurity from 'koas-security';
-import koasSerializer from 'koas-serializer';
-import koasSpecHandler from 'koas-spec-handler';
-import koasStatusCode from 'koas-status-code';
-import koasSwaggerUI from 'koas-swagger-ui';
-import raw from 'raw-body';
+import { bodyParser, bufferParser, formdataParser } from 'koas-body-parser';
+import { koas } from 'koas-core';
+import { operations } from 'koas-operations';
+import { parameters } from 'koas-parameters';
+import { security } from 'koas-security';
+import { serializer } from 'koas-serializer';
+import { specHandler } from 'koas-spec-handler';
+import { statusCode } from 'koas-status-code';
+import { swaggerUI } from 'koas-swagger-ui';
 import type { Configuration } from 'webpack';
 
-import * as operations from '../controllers';
+import * as controllers from '../controllers';
 import { appMapper } from '../middleware/appMapper';
 import { boomMiddleware } from '../middleware/boom';
 import { conditional } from '../middleware/conditional';
@@ -36,6 +35,11 @@ import { authentication } from './authentication';
 import { convertToCsv } from './convertToCsv';
 import { Mailer } from './email/Mailer';
 import { readPackageJson } from './readPackageJson';
+
+// @ts-expect-error This is needed due to an upstream bug in Koas
+bufferParser.skipValidation = true;
+// @ts-expect-error This is needed due to an upstream bug in Koas
+formdataParser.skipValidation = true;
 
 interface CreateServerOptions {
   /**
@@ -101,20 +105,14 @@ export async function createServer({
       compose([
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
         await koas(api(readPackageJson().version, argv), [
-          koasSpecHandler(),
-          koasSwaggerUI({ url: '/api-explorer' }),
-          koasSecurity(authentication(argv) as any),
-          koasParameters(),
-          koasBodyParser({
-            parsers: {
-              '*/*': (body, _mediaTypeObject, ctx) => raw(body, { length: ctx.request.length }),
-            },
-          }),
-          koasSerializer({
-            'text/csv': convertToCsv,
-          }),
-          koasStatusCode(),
-          koasOperations({ operations } as any),
+          specHandler(),
+          swaggerUI({ url: '/api-explorer' }),
+          security(authentication(argv) as any),
+          parameters(),
+          bodyParser({ parsers: { '*/*': bufferParser } }),
+          serializer({ serializers: { 'text/csv': convertToCsv } }),
+          statusCode(),
+          operations({ controllers }),
         ]),
         ({ path }, next) => {
           if (path.startsWith('/api/')) {

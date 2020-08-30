@@ -195,7 +195,7 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
       default:
         throw new GrantError('unsupported_grant_type');
     }
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof GrantError) {
       ctx.status = error.status;
       ctx.body = { error: error.message };

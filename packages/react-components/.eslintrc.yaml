@@ -1,13 +1,15 @@
-extends:
-  - remcohaszing/react
-rules:
-  react/jsx-no-bind:
-    - error
-    - allowArrowFunctions: true
-  react/jsx-sort-props:
-    - error
-    - ignoreCase: true
-  react/no-multi-comp:
-    - error
-    - ignoreStateless: true
-  react/prop-types: off
+overrides:
+  - files:
+      - 'src/**'
+    extends:
+      - remcohaszing/react
+      - remcohaszing/web
+    rules:
+      node/no-unpublished-import: off
+      react/jsx-no-bind:
+        - error
+        - allowArrowFunctions: true
+      react/no-multi-comp:
+        - error
+        - ignoreStateless: true
+      react/prop-types: off
