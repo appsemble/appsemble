@@ -56,7 +56,7 @@ export function AppDefinitionProvider({ children }: AppDefinitionProviderProps):
   const onMessage = useCallback(
     ({ data, origin }: MessageEvent) => {
       if (origin === apiUrl && data?.type === 'editor/EDIT_SUCCESS') {
-        replaceStyle('appsemble-style-core', data.style);
+        replaceStyle('appsemble-style-core', data.coreStyle);
         replaceStyle('appsemble-style-shared', data.sharedStyle);
         setBlockManifests(data.blockManifests);
         setDefinition(resolveJsonPointers(data.definition) as AppDefinition);
