@@ -141,7 +141,7 @@ describe('getApp', () => {
       id: dbApp.id,
       OrganizationId: dbApp.OrganizationId,
       sharedStyle: dbApp.sharedStyle,
-      style: dbApp.coreStyle,
+      coreStyle: dbApp.coreStyle,
       vapidPublicKey: dbApp.vapidPublicKey,
     });
   });
