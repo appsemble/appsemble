@@ -69,7 +69,7 @@ export class App extends Model<App> {
   template: boolean;
 
   @Column(DataType.TEXT)
-  style: string;
+  coreStyle: string;
 
   @Column(DataType.TEXT)
   sharedStyle: string;

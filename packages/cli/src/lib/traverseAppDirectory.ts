@@ -55,8 +55,8 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
 
       case 'theme':
         return opendirSafe(filepath, async (themeDir, themeStat) => {
-          const name = themeStat.name.toLowerCase();
-          if (name !== 'core' && name !== 'shared') {
+          const name = `${themeStat.name.toLowerCase()}Style`;
+          if (name !== 'coreStyle' && name !== 'sharedStyle') {
             return;
           }
           if (!themeStat.isDirectory()) {
