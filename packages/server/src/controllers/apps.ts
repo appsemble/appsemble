@@ -5,10 +5,10 @@ import type { BlockManifest } from '@appsemble/types';
 import {
   AppsembleValidationError,
   BlockMap,
-  Permission,
-  StyleValidationError,
   blockNamePattern,
   normalize,
+  Permission,
+  StyleValidationError,
   validateAppDefinition,
   validateStyle,
 } from '@appsemble/utils';
@@ -17,7 +17,7 @@ import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import type { File } from 'koas-body-parser';
 import { isEqual, uniqWith } from 'lodash';
-import { Op, UniqueConstraintError, col, fn, literal } from 'sequelize';
+import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
 
@@ -178,7 +178,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
-  } catch (error) {
+  } catch (error: unknown) {
     handleAppValidationError(error as Error, result);
   }
 }
@@ -321,7 +321,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
     });
 
     ctx.body = getAppFromRecord(dbApp);
-  } catch (error) {
+  } catch (error: unknown) {
     handleAppValidationError(error as Error, result);
   }
 }
@@ -445,7 +445,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     });
 
     ctx.body = getAppFromRecord(dbApp);
-  } catch (error) {
+  } catch (error: unknown) {
     handleAppValidationError(error as Error, result);
   }
 }
@@ -604,7 +604,7 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
     }
 
     ctx.status = 204;
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof StyleValidationError) {
       throw badRequest('Provided CSS was invalid.');
     }
