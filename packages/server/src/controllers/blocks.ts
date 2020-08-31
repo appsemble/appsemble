@@ -4,7 +4,7 @@ import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import * as fileType from 'file-type';
 import isSvg from 'is-svg';
-import type { File } from 'koas-body-parser/lib';
+import type { File } from 'koas-body-parser';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 

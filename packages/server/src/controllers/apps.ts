@@ -15,7 +15,7 @@ import {
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
-import type { File } from 'koas-body-parser/lib';
+import type { File } from 'koas-body-parser';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -123,8 +123,8 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     result = {
       definition,
       OrganizationId,
-      style: validateStyle(style),
-      sharedStyle: validateStyle(sharedStyle),
+      style: validateStyle(style?.contents),
+      sharedStyle: validateStyle(sharedStyle?.contents),
       domain: domain || null,
       private: Boolean(isPrivate),
       template: Boolean(template),
@@ -281,7 +281,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
       let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        appFromYaml = jsYaml.safeLoad(yaml);
+        appFromYaml = jsYaml.safeLoad(yaml.contents);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -387,7 +387,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        appFromYaml = jsYaml.safeLoad(yaml);
+        appFromYaml = jsYaml.safeLoad(yaml.contents);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
