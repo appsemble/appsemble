@@ -29,7 +29,7 @@ function main(): any {
 if (module === require.main) {
   try {
     main();
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error(error);
   }
 }

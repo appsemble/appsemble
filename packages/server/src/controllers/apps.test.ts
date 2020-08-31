@@ -993,17 +993,7 @@ pages:
         ],
       }),
     );
-    form.append(
-      'yaml',
-      Buffer.from(`name; Foobar
-defaultPage: Test Page
-pages:
-- name: Test Page
-  blocks:
-    - type: test
-      version: 0.0.0
-`),
-    );
+    form.append('yaml', Buffer.from('name: foo\nname: bar'));
     const response = await request.patch(`/api/apps/${appA.id}`, form, {
       headers: { ...form.getHeaders(), authorization },
     });

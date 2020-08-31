@@ -66,8 +66,8 @@ describe('checkBlocks', () => {
           },
         ],
       );
-    } catch (err) {
-      error = err;
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
     }
     expect(error).toBeInstanceOf(AppsembleValidationError);
     expect(error.message).toBe('Block validation failed');
@@ -88,8 +88,8 @@ describe('checkBlocks', () => {
     let error: AppsembleValidationError;
     try {
       checkBlocks({ 'pages.0.blocks.0': { type: 'test', version: '1.2.3' } }, []);
-    } catch (err) {
-      error = err;
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
     }
     expect(error).toBeInstanceOf(AppsembleValidationError);
     expect(error.message).toBe('Block validation failed');
@@ -111,8 +111,8 @@ describe('checkBlocks', () => {
         },
         [{ name: '@appsemble/test', version: '1.2.3', files: [], actions: { onTap: {} } }],
       );
-    } catch (err) {
-      error = err;
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
     }
     expect(error).toBeInstanceOf(AppsembleValidationError);
     expect(error.message).toBe('Block validation failed');
@@ -146,8 +146,8 @@ describe('checkBlocks', () => {
           },
         ],
       );
-    } catch (err) {
-      error = err;
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
     }
     expect(error).toBeInstanceOf(AppsembleValidationError);
     expect(error.message).toBe('Block validation failed');
@@ -169,8 +169,8 @@ describe('checkBlocks', () => {
         },
         [{ name: '@appsemble/test', version: '1.2.3', files: [] }],
       );
-    } catch (err) {
-      error = err;
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
     }
     expect(error).toBeInstanceOf(AppsembleValidationError);
     expect(error.message).toBe('Block validation failed');

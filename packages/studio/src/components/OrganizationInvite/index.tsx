@@ -11,7 +11,7 @@ import {
   useMessages,
   useQuery,
 } from '@appsemble/react-components';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -50,9 +50,10 @@ export function OrganizationInvite(): ReactElement {
         if (response) {
           setOrganizations([...organizations, { ...organization, role: 'Member' }]);
         }
-      } catch (err) {
-        if (err?.response) {
-          const { status } = err.response;
+      } catch (err: unknown) {
+        const { response: res } = err as AxiosError;
+        if (res) {
+          const { status } = res;
           if (status === 404) {
             push(formatMessage(messages.invalidInvite));
           }

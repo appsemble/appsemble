@@ -46,7 +46,7 @@ export async function sendNotification(
         },
       },
     );
-  } catch (error) {
+  } catch (error: unknown) {
     if (!(error instanceof webpush.WebPushError && error.statusCode === 410)) {
       throw error;
     }

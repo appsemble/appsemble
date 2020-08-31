@@ -37,7 +37,7 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
       );
       await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
     });
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
       throw conflict('User with this email address already exists.');
     }

@@ -52,7 +52,7 @@ export async function requestFirst(request: Request): Promise<Response> {
   let response: Response;
   try {
     response = await fetch(request);
-  } catch (error) {
+  } catch (error: unknown) {
     // This might happen if the API could not be reached.
     return tryCached(request, () => {
       throw error;

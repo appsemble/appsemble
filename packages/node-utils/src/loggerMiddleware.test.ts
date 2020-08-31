@@ -27,7 +27,7 @@ beforeEach(async () => {
     });
     try {
       await next();
-    } catch (error) {
+    } catch (error: unknown) {
       if (!(error instanceof TestError)) {
         throw error;
       }
