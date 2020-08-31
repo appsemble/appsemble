@@ -58,12 +58,12 @@ const mapperImplementations: MapperImplementations = {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         values ? mapValues(values, (val) => remap(val, input, context)) : undefined,
       );
-    } catch (error) {
+    } catch (error: unknown) {
       if (messageId) {
         return `{${messageId}}`;
       }
 
-      return error.message;
+      return (error as Error).message;
     }
   },
 

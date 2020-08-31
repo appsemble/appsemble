@@ -77,7 +77,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
       })),
       invites: [],
     };
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
       throw conflict(`Another organization with the name “${name}” already exists`);
     }

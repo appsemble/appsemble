@@ -48,7 +48,6 @@ export const AppOAuth2Secret: OpenAPIV3.NonArraySchemaObject = {
     remapper: {
       type: 'array',
       description: 'A remapper to apply on retrieved user information from the user info endpoint.',
-      // @ts-expect-error Items aren’t required.
       items: {},
     },
   },

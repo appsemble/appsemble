@@ -65,7 +65,7 @@ export async function createApp({
     } else {
       await traverseAppDirectory(path, formData);
     }
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof yaml.YAMLException) {
       throw new AppsembleError(`The YAML in ${path} is invalid.\nMessage: ${error.message}`);
     }

@@ -101,7 +101,6 @@ export function Modal<T extends ElementType = 'div'>({
           onKeyDown={closable ? onKeyDown : null}
           role="presentation"
         />
-        {/* eslint-disable-next-line jsdoc/no-bad-blocks */}
         {/* @ts-expect-error */}
         <Component className={classNames('modal-card', cardClassName)} {...props}>
           <div className="modal-card-head">

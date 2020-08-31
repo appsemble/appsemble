@@ -1,5 +1,5 @@
 import { BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
-import IntlMessageFormat from 'intl-messageformat';
+import { IntlMessageFormat } from 'intl-messageformat';
 import { ComponentType, createContext, Fragment, h, render, VNode } from 'preact';
 import { useContext } from 'preact/hooks';
 
@@ -89,7 +89,7 @@ export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {
   if (!Object.hasOwnProperty.call(messages, id)) {
     return <Fragment>Untranslated message ID: {id}</Fragment>;
   }
-  const formattedMessage = messages[id].format(values);
+  const formattedMessage = messages[id].format(values as any);
   // eslint-disable-next-line react/jsx-no-useless-fragment
-  return <Fragment>{formattedMessage}</Fragment>;
+  return <Fragment>{formattedMessage as string}</Fragment>;
 }

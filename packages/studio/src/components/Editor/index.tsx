@@ -15,7 +15,7 @@ import {
   validate,
   validateStyle,
 } from '@appsemble/utils';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
 import type { editor } from 'monaco-editor';
@@ -92,8 +92,9 @@ export function Editor(): ReactElement {
 
         setStyle(styleData);
         setSharedStyle(sharedStyleData);
-      } catch (error) {
-        if (error.response && (error.response.status === 404 || error.response.status === 401)) {
+      } catch (error: unknown) {
+        const { response } = error as AxiosError;
+        if (response?.status === 404 || response?.status === 401) {
           push(formatMessage(messages.appNotFound));
         } else {
           push(formatMessage(messages.error));
@@ -167,7 +168,7 @@ export function Editor(): ReactElement {
         { type: 'editor/EDIT_SUCCESS', definition, blockManifests, style, sharedStyle },
         getAppUrl(app.OrganizationId, app.path),
       );
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof SchemaValidationError) {
         const errors = error.data;
         push({
@@ -215,8 +216,8 @@ export function Editor(): ReactElement {
 
       // Update App State
       setApp(data);
-    } catch (error) {
-      if (error.response && error.response.status === 403) {
+    } catch (error: unknown) {
+      if ((error as AxiosError).response?.status === 403) {
         push(formatMessage(messages.forbidden));
       } else {
         push(formatMessage(messages.errorUpdate));

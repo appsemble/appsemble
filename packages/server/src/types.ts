@@ -6,6 +6,12 @@ import type * as compose from 'koa-compose';
 import type { User } from './models';
 import type { Mailer } from './utils/email/Mailer';
 
+declare module 'koa' {
+  interface Request {
+    body: any;
+  }
+}
+
 export interface Argv {
   appDomainStrategy?: string;
   databaseHost?: string;

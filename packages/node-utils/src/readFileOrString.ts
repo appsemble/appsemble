@@ -9,8 +9,8 @@ import { promises as fs } from 'fs';
 export async function readFileOrString(string: string | Buffer): Promise<string | Buffer> {
   try {
     return await fs.readFile(string);
-  } catch (err) {
-    if (err.code === 'ENOENT') {
+  } catch (err: unknown) {
+    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
       return string;
     }
     throw err;

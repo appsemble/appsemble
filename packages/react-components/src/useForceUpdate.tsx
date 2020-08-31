@@ -6,6 +6,6 @@ import { useCallback, useState } from 'react';
  * @returns A function to force update a functional React component.
  */
 export function useForceUpdate(): () => void {
-  const [, updateState] = useState();
+  const [, updateState] = useState<{ [key: string]: never }>();
   return useCallback(() => updateState({}), []);
 }

@@ -1,18 +1,11 @@
 import type { JwtPayload } from '@appsemble/types';
 import { compare } from 'bcrypt';
 import { verify } from 'jsonwebtoken';
-import type { GetApiKeyUser } from 'koas-security/lib/apiKeySecurityCheck';
-import type { GetHttpUser } from 'koas-security/lib/httpSecurityCheck';
-import type { GetOAuth2User } from 'koas-security/lib/oauth2SecurityCheck';
-import type { OAuth2Client } from 'koas-security/lib/types';
+import type { GetApiKeyUser, GetHttpUser, GetOAuth2User } from 'koas-security';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models';
 import type { Argv } from '../types';
-
-interface Client extends OAuth2Client {
-  app: App;
-}
 
 interface LoggedInUser {
   id: string | number;
@@ -27,7 +20,7 @@ interface AuthenticationCheckers {
 
 export function authentication({ host, secret }: Argv): AuthenticationCheckers {
   return {
-    async basic(email, password) {
+    async basic(email: string, password: string) {
       const { User: user } = await EmailAuthorization.findOne({
         include: [User],
         where: { email },
@@ -41,10 +34,10 @@ export function authentication({ host, secret }: Argv): AuthenticationCheckers {
       // XXX use origin check when default app domains are implemented.
       const [prefix, id] = aud.split(':');
       if (prefix !== 'app') {
-        return null;
+        return;
       }
       const app = new App({ id });
-      return [{ id: sub }, { scope, app }] as [LoggedInUser, Client];
+      return [{ id: sub }, { scope, app }];
     },
 
     async cli(accessToken) {
@@ -59,9 +52,9 @@ export function authentication({ host, secret }: Argv): AuthenticationCheckers {
         },
       });
       if (!credentials) {
-        return null;
+        return;
       }
-      return [{ id: sub }, { scope }] as [LoggedInUser, Client];
+      return [{ id: sub }, { scope }];
     },
 
     studio(accessToken) {

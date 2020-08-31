@@ -154,7 +154,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
           role,
           userInfo,
         });
-      } catch (error) {
+      } catch (error: unknown) {
         logout();
         throw error;
       }

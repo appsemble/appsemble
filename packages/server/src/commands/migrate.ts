@@ -36,8 +36,8 @@ export async function handler(argv: Args): Promise<void> {
       ssl: argv.databaseSsl,
       uri: argv.databaseUrl,
     });
-  } catch (error) {
-    handleDBError(error);
+  } catch (error: unknown) {
+    handleDBError(error as Error);
   }
 
   await migrate(to, migrations);

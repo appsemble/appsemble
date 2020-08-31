@@ -13,7 +13,7 @@ export function validateStyle(css: postcss.ParserInput): string {
   }
   try {
     return String(postcss.parse(css));
-  } catch (error) {
-    throw new StyleValidationError(error);
+  } catch (error: unknown) {
+    throw new StyleValidationError(error as string);
   }
 }

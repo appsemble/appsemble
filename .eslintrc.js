@@ -1,10 +1,10 @@
 module.exports = {
   root: true,
-  extends: ['plugin:compat/recommended', 'remcohaszing', 'remcohaszing/jest'],
+  extends: ['remcohaszing', 'remcohaszing/jest'],
   settings: {
-    'import/external-module-folders': ['node_modules', 'node_modules/@types'],
     'import/resolver': {
       typescript: {
+        alwaysTryTypes: true,
         project: ['./blocks/*/tsconfig.json', './packages/*/tsconfig.json', './tsconfig.json'],
       },
     },
@@ -16,31 +16,7 @@ module.exports = {
   },
   rules: {
     camelcase: ['error', { properties: 'never' }],
-    'no-restricted-properties': [
-      'error',
-      { property: 'prototype', message: 'Use a class instead.' },
-    ],
-    'no-restricted-syntax': [
-      'error',
-      {
-        // `${value}`
-        selector:
-          'TemplateLiteral[expressions.length=1][quasis.0.value.raw=""][quasis.1.value.raw=""]',
-        message: 'Use String() instead.',
-      },
-      {
-        // `value.toString()`
-        selector: 'CallExpression[callee.property.name="toString"][arguments.length=0]',
-        message: 'Use String() instead.',
-      },
-      {
-        selector: 'SequenceExpression',
-        message: 'Split this sequence into multiple statements.',
-      },
-    ],
     'no-shadow': ['error', { hoist: 'functions' }],
-    'require-atomic-updates': 'off',
-    'sort-imports': ['error', { ignoreCase: true, ignoreDeclarationSort: true }],
 
     'jsdoc/require-jsdoc': 'off',
     'jsdoc/check-tag-names': [
@@ -48,29 +24,14 @@ module.exports = {
       { definedTags: ['format', 'maximum', 'minimum', 'TJS-pattern', 'TJS-type'] },
     ],
 
-    'node/no-unsupported-features/es-builtins': 'off',
-    'node/no-unsupported-features/es-syntax': 'off',
-    'node/no-unsupported-features/node-builtins': 'off',
-
     'unicorn/no-unsafe-regex': 'off',
-    'unicorn/prefer-replace-all': 'off',
   },
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
-      settings: {
-        'import/external-module-folders': ['node_modules', 'node_modules/@types'],
-      },
       rules: {
-        'new-cap': 'off',
-
-        'import/default': 'off',
-        'import/named': 'off',
-        'import/no-named-as-default': 'off',
-        'import/no-unresolved': 'off',
-
         '@typescript-eslint/ban-types': [
           'error',
           {
@@ -96,10 +57,10 @@ module.exports = {
           },
         ],
         '@typescript-eslint/naming-convention': 'off',
-        '@typescript-eslint/no-dynamic-delete': 'off',
         '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
-        '@typescript-eslint/no-type-alias': 'off',
+
+        'node/no-unsupported-features/es-syntax': 'off',
       },
     },
     {
@@ -115,6 +76,10 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-unused-vars': 'off',
       },
+    },
+    {
+      files: ['**/*.config.*', '**/jest.setup.ts', '**/*.test.*'],
+      extends: ['remcohaszing/dev'],
     },
   ],
 };
