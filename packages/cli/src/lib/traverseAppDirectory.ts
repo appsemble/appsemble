@@ -55,15 +55,15 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
 
       case 'theme':
         return opendirSafe(filepath, async (themeDir, themeStat) => {
-          const name = `${themeStat.name.toLowerCase()}Style`;
-          if (name !== 'coreStyle' && name !== 'sharedStyle') {
+          const name = themeStat.name.toLowerCase();
+          if (name !== 'core' && name !== 'shared') {
             return;
           }
           if (!themeStat.isDirectory()) {
             throw new AppsembleError(`Expected ${themeDir} to be a directory`);
           }
           const css = await processCss(join(themeDir, 'index.css'));
-          formData.append(name, Buffer.from(css), `${name}.css`);
+          formData.append(`${name}Style`, Buffer.from(css), `${name}.css`);
         });
 
       default:
