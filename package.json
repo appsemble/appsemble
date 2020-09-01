@@ -76,6 +76,7 @@
     "@types/mustache": "^4.0.1",
     "@types/node-sass": "^4.11.1",
     "@types/nodemailer": "^6.4.0",
+    "@types/normalize-path": "^3.0.0",
     "@types/postcss-import": "^12.0.0",
     "@types/postcss-load-config": "^2.0.1",
     "@types/postcss-url": "^8.0.1",

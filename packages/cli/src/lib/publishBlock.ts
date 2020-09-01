@@ -10,7 +10,7 @@ import { makePayload } from './makePayload';
  * @param config - The block configuration
  * @param ignoreConflict - Prevent the command from crashing when a conflict has been detected.
  */
-export async function publish(config: BlockConfig, ignoreConflict: boolean): Promise<void> {
+export async function publishBlock(config: BlockConfig, ignoreConflict: boolean): Promise<void> {
   logger.info(`Publishing ${config.name}@${config.version}…`);
   const form = await makePayload(config);
 
