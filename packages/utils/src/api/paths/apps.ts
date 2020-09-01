@@ -41,7 +41,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                style: {
+                coreStyle: {
                   type: 'string',
                   format: 'binary',
                   description: 'The custom style to apply to the core app.',
@@ -62,7 +62,7 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
             encoding: {
-              style: { contentType: 'text/css' },
+              coreStyle: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
                 contentType: 'image/png,image/jpeg,image/tiff,image/webp',
@@ -176,7 +176,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                style: {
+                coreStyle: {
                   type: 'string',
                   format: 'binary',
                   description: 'The custom style to apply to the core app.',
@@ -197,7 +197,7 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
             encoding: {
-              style: { contentType: 'text/css' },
+              coreStyle: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
                 contentType: 'image/png,image/jpeg,image/tiff,image/webp',

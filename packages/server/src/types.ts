@@ -6,6 +6,12 @@ import type * as compose from 'koa-compose';
 import type { User } from './models';
 import type { Mailer } from './utils/email/Mailer';
 
+declare module 'koa' {
+  interface Request {
+    body: any;
+  }
+}
+
 export interface Argv {
   appDomainStrategy?: string;
   databaseHost?: string;
@@ -17,9 +23,9 @@ export interface Argv {
   databaseUrl?: string;
   disableRegistration?: boolean;
   host?: string;
-  ingressName?: string;
-  ingressServiceName?: string;
-  ingressServicePort?: string | number;
+  ingressAnnotations?: string;
+  serviceName?: string;
+  servicePort?: string | number;
   kubernetesServiceHost?: string;
   kubernetesServicePort?: string | number;
   migrateTo?: string;

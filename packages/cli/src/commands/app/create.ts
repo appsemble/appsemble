@@ -1,5 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
+import normalizePath from 'normalize-path';
 import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
@@ -48,7 +49,8 @@ export async function handler({
   await authenticate(remote, 'apps:write', clientCredentials);
   const organizationId = organization.startsWith('@') ? organization.slice(1) : organization;
 
-  const directories = await fg(paths, { absolute: true, onlyDirectories: true });
+  const normalizedPaths = paths.map((path) => normalizePath(path));
+  const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
 
   logger.info(`Creating ${directories.length} Apps for @${organizationId}`);
   for (const dir of directories) {

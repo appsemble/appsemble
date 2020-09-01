@@ -15,7 +15,7 @@ import {
   validate,
   validateStyle,
 } from '@appsemble/utils';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
 import type { editor } from 'monaco-editor';
@@ -55,7 +55,7 @@ export function Editor(): ReactElement {
 
   const [appName, setAppName] = useState('');
   const [recipe, setRecipe] = useState<string>(null);
-  const [style, setStyle] = useState('');
+  const [coreStyle, setCoreStyle] = useState('');
   const [sharedStyle, setSharedStyle] = useState('');
   const [initialRecipe, setInitialRecipe] = useState('');
   const [path, setPath] = useState('');
@@ -87,13 +87,14 @@ export function Editor(): ReactElement {
 
     const getStyles = async (): Promise<void> => {
       try {
-        const { data: styleData } = await axios.get(`/api/apps/${id}/style/core`);
+        const { data: coreStyleData } = await axios.get(`/api/apps/${id}/style/core`);
         const { data: sharedStyleData } = await axios.get(`/api/apps/${id}/style/shared`);
 
-        setStyle(styleData);
+        setCoreStyle(coreStyleData);
         setSharedStyle(sharedStyleData);
-      } catch (error) {
-        if (error.response && (error.response.status === 404 || error.response.status === 401)) {
+      } catch (error: unknown) {
+        const { response } = error as AxiosError;
+        if (response?.status === 404 || response?.status === 401) {
           push(formatMessage(messages.appNotFound));
         } else {
           push(formatMessage(messages.error));
@@ -131,7 +132,7 @@ export function Editor(): ReactElement {
     }
 
     try {
-      validateStyle(style);
+      validateStyle(coreStyle);
       validateStyle(sharedStyle);
     } catch {
       push(formatMessage(messages.invalidStyle));
@@ -164,10 +165,10 @@ export function Editor(): ReactElement {
 
       // YAML and schema appear to be valid, send it to the app preview iframe
       frame.current.contentWindow.postMessage(
-        { type: 'editor/EDIT_SUCCESS', definition, blockManifests, style, sharedStyle },
+        { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
         getAppUrl(app.OrganizationId, app.path),
       );
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof SchemaValidationError) {
         const errors = error.data;
         push({
@@ -182,7 +183,7 @@ export function Editor(): ReactElement {
       setValid(false);
     }
     setDirty(false);
-  }, [app, formatMessage, openApiDocument, push, recipe, sharedStyle, style]);
+  }, [app, formatMessage, openApiDocument, push, recipe, sharedStyle, coreStyle]);
 
   useEffect(() => {
     if (editorStep !== GuiEditorStep.YAML && openApiDocument) {
@@ -206,7 +207,7 @@ export function Editor(): ReactElement {
       // The MIME type for YAML is not officially registered in IANA.
       // For the time being, x-yaml is used. See also: http://www.iana.org/assignments/media-types/media-types.xhtml
       formData.append('yaml', new Blob([recipe], { type: 'text/x-yaml' }));
-      formData.append('style', new Blob([style], { type: 'text/css' }));
+      formData.append('coreStyle', new Blob([coreStyle], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
 
       const { data } = await axios.patch(`/api/apps/${id}`, formData);
@@ -215,8 +216,8 @@ export function Editor(): ReactElement {
 
       // Update App State
       setApp(data);
-    } catch (error) {
-      if (error.response && error.response.status === 403) {
+    } catch (error: unknown) {
+      if ((error as AxiosError).response?.status === 403) {
         push(formatMessage(messages.forbidden));
       } else {
         push(formatMessage(messages.errorUpdate));
@@ -228,7 +229,7 @@ export function Editor(): ReactElement {
     setAppName(definition.name);
     setDirty(true);
     setInitialRecipe(recipe);
-  }, [formatMessage, params, push, recipe, sharedStyle, style, setApp, valid]);
+  }, [formatMessage, params, push, recipe, sharedStyle, coreStyle, setApp, valid]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -264,7 +265,7 @@ export function Editor(): ReactElement {
           }
           break;
         case '#style-core':
-          setStyle(value);
+          setCoreStyle(value);
           break;
         case '#style-shared':
           setSharedStyle(value);
@@ -288,7 +289,7 @@ export function Editor(): ReactElement {
 
   switch (location.hash) {
     case '#style-core':
-      value = style;
+      value = coreStyle;
       language = 'css';
       break;
     case '#style-shared':

@@ -3,7 +3,7 @@ import { notFound } from '@hapi/boom';
 import type { KoaMiddleware } from '../../types';
 import { getApp } from '../../utils/app';
 
-export function cssHandler(type: 'style' | 'sharedStyle'): KoaMiddleware {
+export function cssHandler(type: 'coreStyle' | 'sharedStyle'): KoaMiddleware {
   return async (ctx) => {
     const app = await getApp(ctx, { attributes: [type], raw: true });
 

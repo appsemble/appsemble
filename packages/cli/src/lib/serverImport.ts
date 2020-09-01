@@ -22,8 +22,11 @@ export async function serverImport(member: 'migrate' | 'start'): Promise<any> {
       throw new Error(`@appsemble/server does not export ${member}`);
     }
     return mod[member];
-  } catch (error) {
-    if (error.code !== 'MODULE_NOT_FOUND' || error.requireStack[0] !== __filename) {
+  } catch (error: unknown) {
+    if (
+      (error as any).code !== 'MODULE_NOT_FOUND' ||
+      (error as any).requireStack[0] !== __filename
+    ) {
       throw error;
     }
     throw new AppsembleError(INSTALL_MESSAGE);

@@ -44,14 +44,15 @@
     "inquirer": "^7.3.3",
     "js-yaml": "^3.14.0",
     "klaw": "^3.0.0",
+    "normalize-path": "^3.0.0",
     "postcss": "^7.0.32",
     "postcss-import": "^12.0.1",
     "postcss-load-config": "^2.1.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^7.0.1",
     "type-fest": "^0.16.0",
-    "typescript": "^3.9.7",
-    "typescript-json-schema": "^0.42.0",
+    "typescript": "^4.0.2",
+    "typescript-json-schema": "^0.43.0",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
@@ -63,5 +64,8 @@
   },
   "optionalDependencies": {
     "keytar": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=12.0.0"
   }
 }

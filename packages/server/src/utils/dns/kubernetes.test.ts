@@ -1,250 +1,302 @@
-import { logger } from '@appsemble/node-utils';
-import axios from 'axios';
+import { Agent } from 'https';
+
+import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { vol } from 'memfs';
 
-import { kubernetes } from './kubernetes';
+import { App, Organization } from '../../models';
+import { closeTestSchema, createTestSchema, truncate } from '../test/testSchema';
+import { cleanupDNS, configureDNS, restoreDNS } from './kubernetes';
 
-let backend: MockAdapter;
+const mock = new MockAdapter(axios);
+const ca = `-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----`;
+
 jest.mock('fs');
 
+beforeAll(createTestSchema('kubernetes'));
+
 beforeEach(() => {
-  backend = new MockAdapter(axios);
-  backend.onGet('https://kubernetes.default.svc:443/openapi/v2').reply(200, {
-    info: {
-      title: 'Kubernetes',
-      version: 'test',
-    },
-  });
   vol.fromJSON({
-    '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt':
-      '-----BEGIN CERTIFICATE-----\nFake/Kubernetes/SSL/certificate==\n-----END CERTIFICATE-----',
-    '/var/run/secrets/kubernetes.io/serviceaccount/namespace': 'appsemble',
-    '/var/run/secrets/kubernetes.io/serviceaccount/token': 'kubernetes.access.token',
+    '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt': ca,
+    '/var/run/secrets/kubernetes.io/serviceaccount/namespace': 'test',
+    '/var/run/secrets/kubernetes.io/serviceaccount/token': 'kubenetes.serviceaccount.token',
+    [require.resolve('../../../package.json')]: JSON.stringify({ version: '1.2.3' }),
   });
 });
 
-it('should log the Kubernetes API version', async () => {
-  jest.spyOn(logger, 'info');
-  await kubernetes({ host: '' });
-  expect(logger.info).toHaveBeenCalledWith('Using Kubernetes API version: Kubernetes test');
+afterEach(() => {
+  mock.reset();
 });
 
-describe('add', () => {
-  it('should add a new rule and tls config', async () => {
-    backend
-      .onPatch(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/ingress-name',
-      )
-      .reply(200);
-    const { add } = await kubernetes({
-      host: '',
-      ingressName: 'ingress-name',
-      ingressServiceName: 'test-ingress',
-      ingressServicePort: 'port',
+afterEach(() => {
+  App.removeHook('afterSave', 'dns');
+  Organization.removeHook('afterCreate', 'dns');
+});
+
+afterEach(truncate);
+
+afterAll(closeTestSchema);
+
+describe('configureDNS', () => {
+  it('should create a wildcard ingress when an organization is created', async () => {
+    let config: AxiosRequestConfig;
+    mock.onPost(/.*/).reply((request) => {
+      config = request;
+      return [201, request.data];
     });
-    await add('test.example.com');
-    expect(backend.history.patch).toHaveLength(1);
-    expect(backend.history.patch[0].headers).toMatchObject({
-      Authorization: 'Bearer kubernetes.access.token',
-      'Content-Type': 'application/json-patch+json',
+
+    await configureDNS({ host: 'https://host.example', serviceName: 'review-service' });
+    await Organization.create({ id: 'testorg' });
+
+    expect(config.url).toBe(
+      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
+    );
+    expect(config.headers).toStrictEqual({
+      Accept: 'application/json, text/plain, */*',
+      authorization: 'Bearer kubenetes.serviceaccount.token',
+      'Content-Type': 'application/json;charset=utf-8',
     });
-    expect(JSON.parse(backend.history.patch[0].data)).toStrictEqual([
-      {
-        op: 'add',
-        path: '/spec/rules/-',
-        value: {
-          host: 'test.example.com',
-          http: {
-            paths: [{ path: '/', backend: { serviceName: 'test-ingress', servicePort: 'port' } }],
-          },
+    expect(config.httpsAgent).toBeInstanceOf(Agent);
+    expect(config.httpsAgent.options.ca).toBe(ca);
+    expect(JSON.parse(config.data)).toStrictEqual({
+      metadata: {
+        labels: {
+          'app.kubernetes.io/component': 'domain',
+          'app.kubernetes.io/instance': 'testorg-host-example',
+          'app.kubernetes.io/managed-by': 'review-service',
+          'app.kubernetes.io/name': 'appsemble',
+          'app.kubernetes.io/part-of': 'review-service',
+          'app.kubernetes.io/version': '1.2.3',
         },
+        name: 'testorg-host-example',
       },
-      {
-        op: 'add',
-        path: '/spec/tls/-',
-        value: { hosts: ['test.example.com'], secretName: 'test-example-com-tls' },
+      spec: {
+        rules: [
+          {
+            host: '*.testorg.host.example',
+            http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+          },
+        ],
+        tls: [
+          { hosts: ['*.testorg.host.example'], secretName: 'testorg-host-example-tls-wilcard' },
+        ],
       },
-    ]);
+    });
+  });
+
+  it('should create a wildcard ingress when an app with a domain is created', async () => {
+    let config: AxiosRequestConfig;
+    mock.onPost(/.*/).reply((request) => {
+      config = request;
+      return [201, request.data];
+    });
+
+    await Organization.create({ id: 'org' });
+    await configureDNS({ host: 'https://host.example', serviceName: 'review-service' });
+    await App.create({
+      domain: 'example.com',
+      definition: '',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'org',
+    });
+
+    expect(config.url).toBe(
+      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
+    );
+    expect(config.headers).toStrictEqual({
+      Accept: 'application/json, text/plain, */*',
+      authorization: 'Bearer kubenetes.serviceaccount.token',
+      'Content-Type': 'application/json;charset=utf-8',
+    });
+    expect(config.httpsAgent).toBeInstanceOf(Agent);
+    expect(config.httpsAgent.options.ca).toBe(ca);
+    expect(JSON.parse(config.data)).toStrictEqual({
+      metadata: {
+        labels: {
+          'app.kubernetes.io/component': 'domain',
+          'app.kubernetes.io/instance': 'example-com',
+          'app.kubernetes.io/managed-by': 'review-service',
+          'app.kubernetes.io/name': 'appsemble',
+          'app.kubernetes.io/part-of': 'review-service',
+          'app.kubernetes.io/version': '1.2.3',
+        },
+        name: 'example-com',
+      },
+      spec: {
+        rules: [
+          {
+            host: 'example.com',
+            http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+          },
+        ],
+        tls: [{ hosts: ['example.com'], secretName: 'example-com-tls' }],
+      },
+    });
+  });
+
+  it('should not create a wildcard ingress when an app without a domain is created', async () => {
+    let config: AxiosRequestConfig;
+    mock.onPost(/.*/).reply((request) => {
+      config = request;
+      return [201, request.data];
+    });
+
+    await Organization.create({ id: 'org' });
+    await configureDNS({ host: 'https://host.example', serviceName: 'review-service' });
+    await App.create({
+      definition: '',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'org',
+    });
+
+    expect(config).toBeUndefined();
+  });
+
+  it('should inject custom annotations', async () => {
+    let config: AxiosRequestConfig;
+    mock.onPost(/.*/).reply((request) => {
+      config = request;
+      return [201, request.data];
+    });
+
+    await configureDNS({
+      host: 'https://host.example',
+      ingressAnnotations: JSON.stringify({ custom: 'annotation' }),
+      serviceName: 'review-service',
+    });
+    await Organization.create({ id: 'foo' });
+
+    expect(config.url).toBe(
+      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
+    );
+    expect(config.headers).toStrictEqual({
+      Accept: 'application/json, text/plain, */*',
+      authorization: 'Bearer kubenetes.serviceaccount.token',
+      'Content-Type': 'application/json;charset=utf-8',
+    });
+    expect(config.httpsAgent).toBeInstanceOf(Agent);
+    expect(config.httpsAgent.options.ca).toBe(ca);
+    expect(JSON.parse(config.data)).toStrictEqual({
+      metadata: {
+        annotations: { custom: 'annotation' },
+        labels: {
+          'app.kubernetes.io/component': 'domain',
+          'app.kubernetes.io/instance': 'foo-host-example',
+          'app.kubernetes.io/managed-by': 'review-service',
+          'app.kubernetes.io/name': 'appsemble',
+          'app.kubernetes.io/part-of': 'review-service',
+          'app.kubernetes.io/version': '1.2.3',
+        },
+        name: 'foo-host-example',
+      },
+      spec: {
+        rules: [
+          {
+            host: '*.foo.host.example',
+            http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+          },
+        ],
+        tls: [{ hosts: ['*.foo.host.example'], secretName: 'foo-host-example-tls-wilcard' }],
+      },
+    });
   });
 });
 
-describe('remove', () => {
-  it('should change the url rule with a rule for the host variable', async () => {
-    backend
-      .onGet(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/foo',
-      )
-      .reply(200, {
-        spec: {
-          rules: [{ host: 'appsemble.app' }, { host: 'example.com' }],
-          tls: [{ hosts: ['appsemble.app'] }],
-        },
-      });
-    backend
-      .onPatch(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/foo',
-      )
-      .reply(200);
-    const { remove } = await kubernetes({
-      host: 'appsemble.app',
-      ingressName: 'foo',
-      ingressServiceName: 'test-ingress',
-      ingressServicePort: 'port',
+describe('cleanupDNS', () => {
+  it('should delete all ingresses managed by the service', async () => {
+    let config: AxiosRequestConfig;
+    mock.onDelete(/.*/).reply((request) => {
+      config = request;
+      return [204];
     });
-    await remove('example.com');
-    expect(backend.history.patch).toHaveLength(1);
-    expect(backend.history.patch[0].headers).toMatchObject({
-      Authorization: 'Bearer kubernetes.access.token',
-      'Content-Type': 'application/json-patch+json',
+
+    await cleanupDNS({
+      host: 'https://host.example',
+      serviceName: 'review-service',
     });
-    expect(JSON.parse(backend.history.patch[0].data)).toStrictEqual([
-      {
-        op: 'replace',
-        path: '/spec/rules/1',
-        value: {
-          host: 'appsemble.app',
-          http: {
-            paths: [{ path: '/', backend: { serviceName: 'test-ingress', servicePort: 'port' } }],
-          },
-        },
-      },
-    ]);
+
+    expect(config.url).toBe(
+      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
+    );
+    expect(config.params).toStrictEqual({
+      labelSelector: 'app.kubernetes.io/managed-by=review-service',
+    });
   });
 });
 
-describe('update', () => {
-  it('should replace the old url rule with a new url rule', async () => {
-    backend
-      .onGet(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/foo',
-      )
-      .reply(200, {
-        spec: {
-          rules: [{ host: 'old.example.com' }],
-          tls: [{ hosts: ['old.example.com'] }],
-        },
-      });
-    backend
-      .onPatch(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/foo',
-      )
-      .reply(200);
-    const { update } = await kubernetes({
-      host: '',
-      ingressName: 'foo',
-      ingressServiceName: 'test-ingress',
-      ingressServicePort: 'port',
+describe('restoreDNS', () => {
+  it('should create ingresses for all apps and organizations in the database', async () => {
+    const ingresses: unknown[] = [];
+    mock.onPost(/.*/).reply((request) => {
+      ingresses.push(JSON.parse(request.data));
+      return [201, request.data];
     });
-    await update('old.example.com', 'new.example.com');
-    expect(backend.history.patch).toHaveLength(1);
-    expect(backend.history.patch[0].headers).toMatchObject({
-      Authorization: 'Bearer kubernetes.access.token',
-      'Content-Type': 'application/json-patch+json',
+    await Organization.create({ id: 'test' });
+    await App.create({
+      definition: {},
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'test',
     });
-    expect(JSON.parse(backend.history.patch[0].data)).toStrictEqual([
-      {
-        op: 'replace',
-        path: '/spec/rules/0',
-        value: {
-          host: 'new.example.com',
-          http: {
-            paths: [{ path: '/', backend: { serviceName: 'test-ingress', servicePort: 'port' } }],
-          },
-        },
-      },
-      {
-        op: 'add',
-        path: '/spec/tls/-',
-        value: { hosts: ['new.example.com'], secretName: 'new-example-com-tls' },
-      },
-    ]);
-  });
+    await App.create({
+      domain: 'app.example',
+      definition: {},
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'test',
+    });
 
-  it('should add the new url rule if the old one is unknown', async () => {
-    backend
-      .onGet(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/foo',
-      )
-      .reply(200, {
-        spec: {
-          rules: [],
-          tls: [],
-        },
-      });
-    backend
-      .onPatch(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/foo',
-      )
-      .reply(200);
-    const { update } = await kubernetes({
-      host: '',
-      ingressName: 'foo',
-      ingressServiceName: 'test-ingress',
-      ingressServicePort: 'port',
+    await restoreDNS({
+      host: 'https://host.example',
+      serviceName: 'review-service',
     });
-    await update('old.example.com', 'new.example.com');
-    expect(backend.history.patch).toHaveLength(1);
-    expect(backend.history.patch[0].headers).toMatchObject({
-      Authorization: 'Bearer kubernetes.access.token',
-      'Content-Type': 'application/json-patch+json',
-    });
-    expect(JSON.parse(backend.history.patch[0].data)).toStrictEqual([
-      {
-        op: 'add',
-        path: '/spec/rules/-',
-        value: {
-          host: 'new.example.com',
-          http: {
-            paths: [{ path: '/', backend: { serviceName: 'test-ingress', servicePort: 'port' } }],
-          },
-        },
-      },
-      {
-        op: 'add',
-        path: '/spec/tls/-',
-        value: { hosts: ['new.example.com'], secretName: 'new-example-com-tls' },
-      },
-    ]);
-  });
 
-  it('should not add the same TLS rule twice', async () => {
-    backend
-      .onGet(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/foo',
-      )
-      .reply(200, {
-        spec: {
-          rules: [],
-          tls: [{ hosts: ['new.example.com'] }],
-        },
-      });
-    backend
-      .onPatch(
-        'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/appsemble/ingresses/foo',
-      )
-      .reply(200);
-    const { update } = await kubernetes({
-      host: '',
-      ingressName: 'foo',
-      ingressServiceName: 'test-ingress',
-      ingressServicePort: 'port',
-    });
-    await update('old.example.com', 'new.example.com');
-    expect(backend.history.patch).toHaveLength(1);
-    expect(backend.history.patch[0].headers).toMatchObject({
-      Authorization: 'Bearer kubernetes.access.token',
-      'Content-Type': 'application/json-patch+json',
-    });
-    expect(JSON.parse(backend.history.patch[0].data)).toStrictEqual([
+    expect(ingresses).toStrictEqual([
       {
-        op: 'add',
-        path: '/spec/rules/-',
-        value: {
-          host: 'new.example.com',
-          http: {
-            paths: [{ path: '/', backend: { serviceName: 'test-ingress', servicePort: 'port' } }],
+        metadata: {
+          labels: {
+            'app.kubernetes.io/component': 'domain',
+            'app.kubernetes.io/instance': 'test-host-example',
+            'app.kubernetes.io/managed-by': 'review-service',
+            'app.kubernetes.io/name': 'appsemble',
+            'app.kubernetes.io/part-of': 'review-service',
+            'app.kubernetes.io/version': '1.2.3',
           },
+          name: 'test-host-example',
+        },
+        spec: {
+          rules: [
+            {
+              host: '*.test.host.example',
+              http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+            },
+          ],
+          tls: [{ hosts: ['*.test.host.example'], secretName: 'test-host-example-tls-wilcard' }],
+        },
+      },
+      {
+        metadata: {
+          labels: {
+            'app.kubernetes.io/component': 'domain',
+            'app.kubernetes.io/instance': 'app-example',
+            'app.kubernetes.io/managed-by': 'review-service',
+            'app.kubernetes.io/name': 'appsemble',
+            'app.kubernetes.io/part-of': 'review-service',
+            'app.kubernetes.io/version': '1.2.3',
+          },
+          name: 'app-example',
+        },
+        spec: {
+          rules: [
+            {
+              host: 'app.example',
+              http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+            },
+          ],
+          tls: [{ hosts: ['app.example'], secretName: 'app-example-tls' }],
         },
       },
     ]);

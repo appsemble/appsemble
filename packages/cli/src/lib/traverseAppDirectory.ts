@@ -63,7 +63,7 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
             throw new AppsembleError(`Expected ${themeDir} to be a directory`);
           }
           const css = await processCss(join(themeDir, 'index.css'));
-          formData.append(name, Buffer.from(css), `${name}.css`);
+          formData.append(`${name}Style`, Buffer.from(css), `${name}.css`);
         });
 
       default:

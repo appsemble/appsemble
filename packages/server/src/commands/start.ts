@@ -11,8 +11,8 @@ import type { Argv } from 'yargs';
 import { migrations } from '../migrations';
 import { initDB } from '../models';
 import type { Argv as Args } from '../types';
-import { addDBHooks } from '../utils/addDBHooks';
 import { createServer } from '../utils/createServer';
+import { configureDNS } from '../utils/dns';
 import { migrate } from '../utils/migrate';
 import { readPackageJson } from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
@@ -92,19 +92,19 @@ export function builder(yargs: Argv): Argv {
       desc: 'How to link app domain names to apps',
       choices: ['kubernetes-ingress'],
     })
-    .option('ingress-name', {
-      desc: 'The name of the ingress to patch if app-domain-strategy is set to kubernetes-ingress',
-      implies: ['ingress-service-name', 'ingress-service-port'],
+    .option('ingress-annotations', {
+      desc: 'A JSON string representing ingress annotations to add to created ingresses.',
+      implies: ['service-name', 'service-port'],
     })
-    .option('ingress-service-name', {
+    .option('service-name', {
       desc:
         'The name of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
-      implies: ['ingress-name', 'ingress-service-port'],
+      implies: ['service-port'],
     })
-    .option('ingress-service-port', {
+    .option('service-port', {
       desc:
         'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
-      implies: ['ingress-name', 'ingress-service-name'],
+      implies: ['service-name'],
     })
     .option('host', {
       desc:
@@ -131,15 +131,15 @@ export async function handler(
       ssl: argv.databaseSsl,
       uri: argv.databaseUrl,
     });
-  } catch (error) {
-    handleDBError(error);
+  } catch (error: unknown) {
+    handleDBError(error as Error);
   }
 
   if (argv.migrateTo) {
     await migrate(argv.migrateTo, migrations);
   }
 
-  await addDBHooks(argv);
+  await configureDNS(argv);
 
   if (argv.sentryDsn) {
     Sentry.init({ dsn: argv.sentryDsn });

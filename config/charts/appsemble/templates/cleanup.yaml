@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "appsemble.fullname" . }}-restore-ingress
+  name: {{ include "appsemble.fullname" . }}-cleanup
   labels:
     app: {{ .Values.app }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -11,20 +11,19 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     helm.sh/chart: {{ include "appsemble.chart" . }}
   annotations:
-    helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-weight: '1'
+    helm.sh/hook: pre-delete
 spec:
   template:
     spec:
       restartPolicy: Never
       containers:
-        - name: {{ include "appsemble.fullname" . }}-restore-ingress
+        - name: {{ include "appsemble.fullname" . }}-cleanup
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - node
             - packages/server/dist
-            - restore-dns
+            - cleanup
             - -vv
           env:
             - name: DATABASE_HOST
@@ -46,11 +45,9 @@ spec:
                   key: postgresql-password
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
-            - name: INGRESS_NAME
+            - name: SERVICE_NAME
               value: {{ include "appsemble.fullname" . }}
-            - name: INGRESS_SERVICE_NAME
-              value: {{ include "appsemble.fullname" . }}
-            - name: INGRESS_SERVICE_PORT
+            - name: SERVICE_PORT
               value: {{ .Values.service.port | quote }}
             - name: HOST
               {{ if .Values.ingress.enabled -}}

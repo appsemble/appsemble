@@ -17,7 +17,7 @@ import {
 } from '@appsemble/react-components';
 import type { Organization } from '@appsemble/types';
 import { normalize, Permission, roles } from '@appsemble/utils';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -106,8 +106,8 @@ export function OrganizationsSettings(): ReactElement {
           }),
           color: 'success',
         });
-      } catch (error) {
-        if (error?.response?.status === 409) {
+      } catch (error: unknown) {
+        if ((error as AxiosError)?.response?.status === 409) {
           push(formatMessage(messages.createOrganizationConflict));
         } else {
           push(formatMessage(messages.createOrganizationError));
@@ -143,8 +143,8 @@ export function OrganizationsSettings(): ReactElement {
           body: formatMessage(messages.inviteMemberSuccess, { email }),
           color: 'success',
         });
-      } catch (error) {
-        switch (error.response?.status) {
+      } catch (error: unknown) {
+        switch ((error as AxiosError).response?.status) {
           case 404:
             push(formatMessage(messages.inviteMemberNotFound));
             break;

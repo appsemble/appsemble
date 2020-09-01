@@ -65,8 +65,8 @@ export function SimpleForm<T extends {}>({
     setSubmitting(true);
     try {
       await onSubmit(values);
-    } catch (err) {
-      setSubmitError(err);
+    } catch (err: unknown) {
+      setSubmitError(err as Error);
       return;
     } finally {
       setSubmitting(false);

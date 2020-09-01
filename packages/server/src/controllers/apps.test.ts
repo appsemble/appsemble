@@ -479,7 +479,7 @@ pages:
 
   it('should not allow an upload without an app when creating an app', async () => {
     const form = new FormData();
-    form.append('style', Buffer.from('body { color: red; }'), {
+    form.append('coreStyle', Buffer.from('body { color: red; }'), {
       contentType: 'text/css',
       filename: 'style.css',
     });
@@ -796,7 +796,7 @@ pages:
         ],
       }),
     );
-    form.append('style', Buffer.from('body { color: blue; }'), {
+    form.append('coreStyle', Buffer.from('body { color: blue; }'), {
       contentType: 'text/css',
       filename: 'test.css',
     });
@@ -808,11 +808,11 @@ pages:
       headers: { ...form.getHeaders(), authorization },
     });
 
-    const style = await request.get(`/api/apps/${response.data.id}/style/core`);
+    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
 
     expect(response).toMatchObject({ status: 201 });
-    expect(style).toMatchObject({ status: 200, data: 'body { color: blue; }' });
+    expect(coreStyle).toMatchObject({ status: 200, data: 'body { color: blue; }' });
     expect(sharedStyle).toMatchObject({ status: 200, data: ':root { --primary-color: purple; }' });
   });
 
@@ -832,7 +832,7 @@ pages:
         ],
       }),
     );
-    form.append('style', Buffer.from('this is invalid css'), {
+    form.append('coreStyle', Buffer.from('this is invalid css'), {
       contentType: 'text/css',
       filename: 'test.css',
     });
@@ -993,17 +993,7 @@ pages:
         ],
       }),
     );
-    form.append(
-      'yaml',
-      Buffer.from(`name; Foobar
-defaultPage: Test Page
-pages:
-- name: Test Page
-  blocks:
-    - type: test
-      version: 0.0.0
-`),
-    );
+    form.append('yaml', Buffer.from('name: foo\nname: bar'));
     const response = await request.patch(`/api/apps/${appA.id}`, form, {
       headers: { ...form.getHeaders(), authorization },
     });
@@ -1409,7 +1399,7 @@ describe('patchApp', () => {
         ],
       }),
     );
-    form.append('style', Buffer.from('body { color: yellow; }'), {
+    form.append('coreStyle', Buffer.from('body { color: yellow; }'), {
       contentType: 'text/css',
       filename: 'style.css',
     });
@@ -1421,11 +1411,11 @@ describe('patchApp', () => {
       headers: { ...form.getHeaders(), authorization },
     });
 
-    const style = await request.get(`/api/apps/${response.data.id}/style/core`);
+    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
 
     expect(response).toMatchObject({ status: 200 });
-    expect(style).toMatchObject({ status: 200, data: 'body { color: yellow; }' });
+    expect(coreStyle).toMatchObject({ status: 200, data: 'body { color: yellow; }' });
     expect(sharedStyle).toMatchObject({ status: 200, data: 'body { color: blue; }' });
   });
 
@@ -1457,7 +1447,7 @@ describe('patchApp', () => {
         ],
       }),
     );
-    formA.append('style', Buffer.from('this is invalid css'), {
+    formA.append('coreStyle', Buffer.from('this is invalid css'), {
       contentType: 'text/css',
       filename: 'style.css',
     });
@@ -1480,7 +1470,7 @@ describe('patchApp', () => {
         ],
       }),
     );
-    formB.append('style', Buffer.from('.foo { margin: 0 auto; }'), {
+    formB.append('coreStyle', Buffer.from('.foo { margin: 0 auto; }'), {
       contentType: 'application/json',
       filename: 'style.json',
     });

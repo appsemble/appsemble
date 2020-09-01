@@ -90,7 +90,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
       throw conflict(`Another app with path “${path}” already exists`);
     }

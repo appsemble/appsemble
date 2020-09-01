@@ -1,3 +1,5 @@
+import type { Boom } from '@hapi/boom';
+
 import type { KoaMiddleware } from '../types';
 
 /**
@@ -9,7 +11,8 @@ export function boomMiddleware(): KoaMiddleware {
   return async (ctx, next) => {
     try {
       await next();
-    } catch (err) {
+    } catch (error: unknown) {
+      const err = error as Boom;
       if (!err.isBoom) {
         throw err;
       }
@@ -19,7 +22,7 @@ export function boomMiddleware(): KoaMiddleware {
       if (err.data) {
         ctx.body.data = err.data;
       }
-      ctx.set(output.headers);
+      ctx.set(output.headers as { [key: string]: string });
     }
   };
 }

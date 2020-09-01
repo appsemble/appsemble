@@ -25,7 +25,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
   } = ctx;
 
   const app = await getApp(ctx, {
-    attributes: ['definition', 'id', 'sharedStyle', 'style', 'vapidPublicKey'],
+    attributes: ['definition', 'id', 'sharedStyle', 'coreStyle', 'vapidPublicKey'],
     include: [
       {
         attributes: ['icon', 'id', 'name'],

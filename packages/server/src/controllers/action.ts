@@ -119,7 +119,7 @@ async function handleRequestProxy(
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
   try {
     response = await axios(axiosConfig);
-  } catch (err) {
+  } catch (err: unknown) {
     logger.error(err);
     throw badGateway();
   }
