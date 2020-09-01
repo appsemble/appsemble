@@ -68,11 +68,11 @@ spec:
             {{ if .Values.ingress.enabled -}}
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
-            - name: INGRESS_NAME
+            - name: INGRESS_ANNOTATIONS
+              value: {{ .Values.ingress.annotations | toJson | quote }}
+            - name: SERVICE_NAME
               value: {{ include "appsemble.fullname" . }}
-            - name: INGRESS_SERVICE_NAME
-              value: {{ include "appsemble.fullname" . }}
-            - name: INGRESS_SERVICE_PORT
+            - name: SERVICE_PORT
               value: http
             {{- end }}
             - name: SECRET

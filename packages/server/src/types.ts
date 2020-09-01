@@ -23,9 +23,9 @@ export interface Argv {
   databaseUrl?: string;
   disableRegistration?: boolean;
   host?: string;
-  ingressName?: string;
-  ingressServiceName?: string;
-  ingressServicePort?: string | number;
+  ingressAnnotations?: string;
+  serviceName?: string;
+  servicePort?: string | number;
   kubernetesServiceHost?: string;
   kubernetesServicePort?: string | number;
   migrateTo?: string;

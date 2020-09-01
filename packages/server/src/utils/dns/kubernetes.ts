@@ -1,47 +1,104 @@
 import { promises as fs } from 'fs';
 import { Agent } from 'https';
 import { join } from 'path';
+import { URL } from 'url';
 
 import { logger } from '@appsemble/node-utils';
 import { normalize } from '@appsemble/utils';
-import axios from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import { Op } from 'sequelize';
 
-import type { DNSImplementation } from '.';
+import { App, Organization } from '../../models';
 import type { Argv } from '../../types';
+import { iterTable } from '../database';
+import { readPackageJson } from '../readPackageJson';
 
 function readK8sSecret(filename: string): Promise<string> {
   return fs.readFile(join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf-8');
 }
 
-interface Rule {
-  host: string;
-  http: {
-    paths: {
-      path: string;
-      backend: {
-        serviceName: string;
-        servicePort: string | number;
-      };
-    }[];
-  };
-}
-
-interface TLS {
-  hosts: string[];
-  secretName: string;
-}
-
-interface Ingress {
-  spec: {
-    rules: Rule[];
-    tls: TLS[];
-  };
-}
-
-function formatTLS(domain: string): TLS {
+/**
+ * Get common Axios request configuration based on the command line arguments.
+ *
+ * @param argv - arguments passed on the command line.
+ *
+ * @returns A partial Axios request configuration for making ingress related requests.
+ */
+async function getAxiosConfig({
+  kubernetesServiceHost = 'kubernetes.default.svc',
+  kubernetesServicePort = 443,
+}: Argv): Promise<AxiosRequestConfig> {
+  const K8S_HOST = `https://${kubernetesServiceHost}:${kubernetesServicePort}`;
+  const ca = await readK8sSecret('ca.crt');
+  const namespace = await readK8sSecret('namespace');
+  const token = await readK8sSecret('token');
   return {
-    hosts: [domain],
-    secretName: `${normalize(domain)}-tls`,
+    headers: { authorization: `Bearer ${token}` },
+    httpsAgent: new Agent({ ca }),
+    url: `${K8S_HOST}/apis/networking.k8s.io/v1beta1/namespaces/${namespace}/ingresses`,
+  };
+}
+
+/**
+ * Create a function for creating ingresses.
+ *
+ * @param argv - arguments passed on the command line.
+ *
+ * @returns A function for creating an ingress.
+ *
+ * The ingress function takes a domain name to create an ingress for. THe rest is determined from
+ * the command line arguments and the environment.
+ */
+async function createIngressFunction(argv: Argv): Promise<(domain: string) => Promise<void>> {
+  const { ingressAnnotations, serviceName, servicePort } = argv;
+  const { version } = readPackageJson();
+  const config = await getAxiosConfig(argv);
+  const annotations = ingressAnnotations ? JSON.parse(ingressAnnotations) : undefined;
+
+  return async (domain) => {
+    const name = normalize(domain);
+    logger.info(`Registering ingress ${name} for ${domain}`);
+    try {
+      await axios({
+        ...config,
+        method: 'POST',
+        data: {
+          metadata: {
+            annotations,
+            // https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels
+            labels: {
+              'app.kubernetes.io/component': 'domain',
+              'app.kubernetes.io/instance': name.slice(0, 63),
+              'app.kubernetes.io/managed-by': serviceName,
+              'app.kubernetes.io/name': 'appsemble',
+              'app.kubernetes.io/part-of': serviceName,
+              'app.kubernetes.io/version': version,
+            },
+            name,
+          },
+          spec: {
+            rules: [
+              {
+                host: domain,
+                http: { paths: [{ path: '/', backend: { serviceName, servicePort } }] },
+              },
+            ],
+            tls: [
+              {
+                hosts: [domain],
+                secretName: `${name}-tls${domain.startsWith('*') ? '-wilcard' : ''}`,
+              },
+            ],
+          },
+        },
+      });
+    } catch (error: unknown) {
+      if ((error as AxiosError).response?.status !== 409) {
+        throw error;
+      }
+      logger.warn(`Conflict registering ingress ${name}`);
+    }
+    logger.info(`Succesfully registered ingress ${name} for ${domain}`);
   };
 }
 
@@ -55,105 +112,64 @@ function formatTLS(domain: string): TLS {
  *
  * @returns A DNS implemenation basd on a Kubernetes ingress.
  */
-export async function kubernetes({
-  host,
-  ingressName,
-  ingressServiceName,
-  ingressServicePort,
-  kubernetesServiceHost = 'kubernetes.default.svc',
-  kubernetesServicePort = 443,
-}: Argv): Promise<DNSImplementation> {
-  const K8S_HOST = `https://${kubernetesServiceHost}:${kubernetesServicePort}`;
-  const ca = await readK8sSecret('ca.crt');
-  const namespace = await readK8sSecret('namespace');
-  const token = await readK8sSecret('token');
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json-patch+json',
-  };
-  const httpsAgent = new Agent({ ca });
-  const config = { headers, httpsAgent };
-  const {
-    data: { info },
-  } = await axios.get(`${K8S_HOST}/openapi/v2`, config);
-  logger.info(`Using Kubernetes API version: ${info.title} ${info.version}`);
-  const url = `${K8S_HOST}/apis/networking.k8s.io/v1beta1/namespaces/${namespace}/ingresses/${ingressName}`;
+export async function configureDNS(argv: Argv): Promise<void> {
+  const { hostname } = new URL(argv.host);
+  const createIngress = await createIngressFunction(argv);
 
-  function formatRule(domain: string): Rule {
-    return {
-      host: domain,
-      http: {
-        paths: [
-          {
-            path: '/',
-            backend: {
-              serviceName: ingressServiceName,
-              servicePort: ingressServicePort,
-            },
-          },
-        ],
-      },
-    };
-  }
+  /**
+   * Register a wildcard domain name ingress for organizations.
+   */
+  Organization.afterCreate('dns', ({ id }) => createIngress(`*.${id}.${hostname}`));
 
-  async function add(...domains: string[]): Promise<void> {
-    domains.forEach((domain) => {
-      logger.info(`Registering ingress rule for ${domain}`);
-    });
-    await axios.patch(
-      url,
-      domains.flatMap((domain) => [
-        {
-          op: 'add',
-          path: '/spec/rules/-',
-          value: formatRule(domain),
-        },
-        {
-          op: 'add',
-          path: '/spec/tls/-',
-          value: formatTLS(domain),
-        },
-      ]),
-      config,
-    );
-  }
+  /**
+   * Register a domain name for apps who have defined a custom domain name.
+   */
+  App.afterSave('dns', async (app) => {
+    const oldDomain = app.previous('domain');
+    const { domain } = app;
 
-  async function update(oldDomain: string, newDomain: string): Promise<void> {
-    const {
-      data: {
-        spec: { rules, tls },
-      },
-    } = await axios.get<Ingress>(url, config);
-    logger.info(`Changing ingress rule for ${oldDomain} to ${newDomain}`);
-    const ops = [];
-    const ruleIndex = rules.findIndex((rule) => rule.host === oldDomain);
-    const tlsIndex = tls.findIndex((t) => t.hosts.includes(newDomain));
-    ops.push(
-      ruleIndex === -1
-        ? {
-            op: 'add',
-            path: '/spec/rules/-',
-            value: formatRule(newDomain),
-          }
-        : {
-            op: 'replace',
-            path: `/spec/rules/${ruleIndex}`,
-            value: formatRule(newDomain),
-          },
-    );
-    if (tlsIndex === -1) {
-      ops.push({
-        op: 'add',
-        path: '/spec/tls/-',
-        value: formatTLS(newDomain),
-      });
+    if (domain && oldDomain !== domain) {
+      await createIngress(domain);
     }
-    await axios.patch(url, ops, config);
+  });
+}
+
+/**
+ * Cleanup all ingresses managed by the current service.
+ *
+ * @param argv - The parsed command line parameters.
+ */
+export async function cleanupDNS(argv: Argv): Promise<void> {
+  const { serviceName } = argv;
+  const config = await getAxiosConfig(argv);
+  logger.warn(`Deleting all ingresses for ${serviceName}`);
+  await axios({
+    ...config,
+    method: 'DELETE',
+    params: {
+      labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
+    },
+  });
+  logger.info(`Succesfully Deleted all ingresses for ${serviceName}`);
+}
+
+/**
+ * Restore ingresses for all apps andorganizations.
+ *
+ * @param argv - The parsed command line parameters.
+ */
+export async function restoreDNS(argv: Argv): Promise<void> {
+  const { hostname } = new URL(argv.host);
+  const createIngress = await createIngressFunction(argv);
+
+  for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
+    await createIngress(`*.${id}.${hostname}`);
   }
 
-  async function remove(domain: string): Promise<void> {
-    await update(domain, host);
+  for await (const { domain } of iterTable(App, {
+    attributes: ['domain'],
+    where: { [Op.not]: { domain: null } },
+  })) {
+    await createIngress(domain);
   }
-
-  return { add, remove, update };
 }
