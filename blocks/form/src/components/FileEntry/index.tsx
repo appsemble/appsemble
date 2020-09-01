@@ -23,7 +23,7 @@ export function FileEntry({ field, name, onInput, value }: FileEntryProps): VNod
       currentTarget.value = null;
 
       if (file?.type.match('image/*') && (maxWidth || maxHeight || quality)) {
-        file = await resize(file, maxWidth, maxHeight, quality / 100);
+        file = await resize(file, maxWidth, maxHeight, quality);
       }
 
       onInput({ currentTarget, ...event }, file);
