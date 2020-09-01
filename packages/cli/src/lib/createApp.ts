@@ -82,6 +82,6 @@ export async function createApp({
 
   const { host, protocol } = new URL(remote);
   logger.info(`Successfully created app ${data.definition.name}! 🙌`);
-  logger.info(`App URL: ${protocol}//${data.path}.${organizationId}.${host}`);
+  logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 }

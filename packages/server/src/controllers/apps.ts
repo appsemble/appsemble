@@ -387,7 +387,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        appFromYaml = jsYaml.safeLoad(yaml.contents);
+        appFromYaml = jsYaml.safeLoad(yaml.contents || yaml);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
