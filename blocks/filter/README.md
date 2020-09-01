@@ -4,4 +4,4 @@ The filter uses OData filters to filter data. This works with the Appsemble reso
 
 ### Images
 
-![Filter screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.11/docs/images/filter.png)
+![Filter screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.12/docs/images/filter.png)

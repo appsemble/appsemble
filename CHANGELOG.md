@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.12] - 2020-09-01
+
+### Added
+
+- Server: Add support for attaching assets to emails.
+
 ## [0.13.11] - 2020-08-27
 
 ### Added
