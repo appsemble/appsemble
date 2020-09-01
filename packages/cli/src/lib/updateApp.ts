@@ -49,7 +49,7 @@ export async function updateApp({
 
     const { host, protocol } = new URL(remote);
     logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
-    logger.info(`App URL: ${protocol}//${data.path}.${data.organizationId}.${host}`);
+    logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
     logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
   } catch (error: unknown) {
     if (error instanceof yaml.YAMLException) {
