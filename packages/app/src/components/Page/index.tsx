@@ -155,7 +155,7 @@ export function Page(): ReactElement {
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
-  const redirectPage = definition.pages.find((p) => checkPagePermissions(p));
+  const redirectPage = definition.pages.find((p) => checkPagePermissions(p) && !p.parameters);
   if (redirectPage) {
     return <Redirect to={`/${lang}/${normalize(redirectPage.name)}`} />;
   }
