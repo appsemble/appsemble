@@ -168,7 +168,7 @@ export async function restoreDNS(argv: Argv): Promise<void> {
 
   for await (const { domain } of iterTable(App, {
     attributes: ['domain'],
-    where: { [Op.not]: { domain: null } },
+    where: { [Op.and]: [{ [Op.not]: { domain: null } }, { [Op.not]: { domain: '' } }] },
   })) {
     await createIngress(domain);
   }
