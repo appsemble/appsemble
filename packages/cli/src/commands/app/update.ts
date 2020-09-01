@@ -1,4 +1,5 @@
 import { logger } from '@appsemble/node-utils';
+import normalizePath from 'normalize-path';
 import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
@@ -48,5 +49,5 @@ export async function handler({
 }: CreateAppArguments): Promise<void> {
   await authenticate(remote, 'apps:write', clientCredentials);
   logger.info(`Updating App ${appId}`);
-  await updateApp({ appId, path, private: isPrivate, remote, template });
+  await updateApp({ appId, path: normalizePath(path), private: isPrivate, remote, template });
 }
