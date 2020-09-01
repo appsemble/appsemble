@@ -1,0 +1,9 @@
+.link {
+  display: block;
+  transition: 100ms linear;
+
+  &:focus,
+  &:hover {
+    background: hsl(217, 71%, 53%, 5%);
+  }
+}

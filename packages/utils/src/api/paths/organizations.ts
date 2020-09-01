@@ -159,19 +159,22 @@ export const paths: OpenAPIV3.PathsObject = {
     post: {
       tags: ['organization'],
       description: 'Invite a new member to the organization that matches the given id.',
-      operationId: 'inviteMember',
+      operationId: 'inviteMembera',
       requestBody: {
         description: 'The member to invite.',
         required: true,
         content: {
           'application/json': {
             schema: {
-              type: 'object',
-              required: ['email'],
-              properties: {
-                email: {
-                  type: 'string',
-                  format: 'email',
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['email'],
+                properties: {
+                  email: {
+                    type: 'string',
+                    format: 'email',
+                  },
                 },
               },
             },

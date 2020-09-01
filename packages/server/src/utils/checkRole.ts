@@ -1,5 +1,6 @@
 import { Permission, roles } from '@appsemble/utils';
 import { forbidden, unauthorized } from '@hapi/boom';
+import type { FindOptions } from 'sequelize';
 
 import { Member } from '../models';
 import type { KoaContext } from '../types';
@@ -10,20 +11,25 @@ import type { KoaContext } from '../types';
  * @param ctx - The Koa context that should contain the authenticated user and the database.
  * @param organizationId - The id of which to check if the user may persoem the action for.
  * @param permissions - An array of required permissions or a single required permission.
+ * @param queryOptions - Additional query options. Use this to include for example the user or
+ * organization the member is linked to.
+ *
+ * @returns The member of the organization.
  */
 export async function checkRole(
   ctx: KoaContext,
   organizationId: string,
   permissions: Permission | Permission[],
-): Promise<void> {
+  { attributes = [], ...queryOptions }: FindOptions = {},
+): Promise<Member> {
   const { user } = ctx;
   if (!user) {
     throw unauthorized();
   }
 
   const member = await Member.findOne({
-    attributes: ['role'],
-    raw: true,
+    attributes: [...new Set([...(attributes as string[]), 'role'])],
+    ...queryOptions,
     where: { OrganizationId: organizationId, UserId: user.id },
   });
 
@@ -36,4 +42,6 @@ export async function checkRole(
   if (![].concat(permissions).every((p) => role.includes(p))) {
     throw forbidden('User does not have sufficient permissions.');
   }
+
+  return member;
 }
