@@ -69,7 +69,10 @@ async function handleEmail(
     const assets = await Asset.findAll({ where: { AppId: app.id, id: assetIds } });
 
     attachments.push(
-      ...assets.map((a) => ({ content: a.data, filename: `${a.id}.${extension(a.mime)}` })),
+      ...assets.map((a) => {
+        const ext = extension(a.mime);
+        return { content: a.data, filename: ext ? `${a.id}.${ext}` : String(a.id) };
+      }),
     );
     attachments.push(...assetUrls.map((a) => ({ path: a })));
   }
