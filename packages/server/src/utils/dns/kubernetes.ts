@@ -33,12 +33,22 @@ async function getAxiosConfig({
   const namespace = await readK8sSecret('namespace');
   const token = await readK8sSecret('token');
   return {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { authorization: `Bearer ${token}` },
     httpsAgent: new Agent({ ca }),
     url: `${K8S_HOST}/apis/networking.k8s.io/v1beta1/namespaces/${namespace}/ingresses`,
   };
 }
 
+/**
+ * Create a function for creating ingresses.
+ *
+ * @param argv - arguments passed on the command line.
+ *
+ * @returns A function for creating an ingress.
+ *
+ * The ingress function takes a domain name to create an ingress for. THe rest is determined from
+ * the command line arguments and the environment.
+ */
 async function createIngressFunction(argv: Argv): Promise<(domain: string) => Promise<void>> {
   const { ingressAnnotations, serviceName, servicePort } = argv;
   const { version } = readPackageJson();
@@ -109,12 +119,12 @@ export async function configureDNS(argv: Argv): Promise<void> {
   /**
    * Register a wildcard domain name ingress for organizations.
    */
-  Organization.afterCreate(({ id }) => createIngress(`*.${id}.${hostname}`));
+  Organization.afterCreate('dns', ({ id }) => createIngress(`*.${id}.${hostname}`));
 
   /**
    * Register a domain name for apps who have defined a custom domain name.
    */
-  App.afterSave(async (app) => {
+  App.afterSave('dns', async (app) => {
     const oldDomain = app.previous('domain');
     const { domain } = app;
 

@@ -5,6 +5,13 @@ import { AppsembleError } from '@appsemble/node-utils';
 import type { Argv } from '../../types';
 import * as kubernetes from './kubernetes';
 
+/**
+ * Get the DNS implementation for the specified app domain strategy.
+ *
+ * @param argv - The parsed command line parameters.
+ *
+ * @returns An implementation for the given `--app-domain-strategy` flag.
+ */
 function getImplementation({ appDomainStrategy }: Argv): typeof import('.') {
   if (!appDomainStrategy) {
     return;
@@ -23,7 +30,7 @@ function getImplementation({ appDomainStrategy }: Argv): typeof import('.') {
  * @param argv - The parsed command line parameters.
  */
 export async function configureDNS(argv: Argv): Promise<void> {
-  await getImplementation(argv).configureDNS(argv);
+  await getImplementation(argv)?.configureDNS(argv);
 }
 
 /**
@@ -32,7 +39,7 @@ export async function configureDNS(argv: Argv): Promise<void> {
  * @param argv - The parsed command line parameters.
  */
 export async function cleanupDNS(argv: Argv): Promise<void> {
-  await getImplementation(argv).cleanupDNS(argv);
+  await getImplementation(argv)?.cleanupDNS(argv);
 }
 
 /**
@@ -41,5 +48,5 @@ export async function cleanupDNS(argv: Argv): Promise<void> {
  * @param argv - The parsed command line parameters.
  */
 export async function restoreDNS(argv: Argv): Promise<void> {
-  await getImplementation(argv).restoreDNS(argv);
+  await getImplementation(argv)?.restoreDNS(argv);
 }
