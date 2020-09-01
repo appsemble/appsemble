@@ -27,9 +27,9 @@
     <title>{{ app.definition.name }}</title>
     <link rel="stylesheet" href="{{{ bulmaURL }}}" id="bulma-style-app" />
     <link rel="stylesheet" href="{{{ faURL }}}" />
-    {{#app.style}}
+    {{#app.coreStyle}}
     <link rel="stylesheet" href="/core.css" />
-    {{/app.style}} {{#app.sharedStyle}}
+    {{/app.coreStyle}} {{#app.sharedStyle}}
     <link rel="stylesheet" href="/shared.css" />
     {{/app.sharedStyle}}
     <script nonce="{{{ nonce }}}">

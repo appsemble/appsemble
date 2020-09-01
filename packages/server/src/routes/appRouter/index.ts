@@ -33,7 +33,7 @@ export const appRouter = tinyRouter([
   },
   {
     route: '/core.css',
-    get: cssHandler('style'),
+    get: cssHandler('coreStyle'),
   },
   {
     route: '/shared.css',

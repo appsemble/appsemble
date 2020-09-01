@@ -43,7 +43,7 @@ describe('getApp', () => {
           'id',
           'OrganizationId',
           'sharedStyle',
-          'style',
+          'coreStyle',
           'vapidPublicKey',
         ],
         raw: true,
@@ -55,7 +55,7 @@ describe('getApp', () => {
       id: dbApp.id,
       OrganizationId: dbApp.OrganizationId,
       sharedStyle: dbApp.sharedStyle,
-      style: dbApp.style,
+      coreStyle: dbApp.coreStyle,
       vapidPublicKey: dbApp.vapidPublicKey,
     });
   });
@@ -85,7 +85,7 @@ describe('getApp', () => {
           'id',
           'OrganizationId',
           'sharedStyle',
-          'style',
+          'coreStyle',
           'vapidPublicKey',
         ],
         raw: true,
@@ -98,7 +98,7 @@ describe('getApp', () => {
       id: dbApp.id,
       OrganizationId: dbApp.OrganizationId,
       sharedStyle: dbApp.sharedStyle,
-      style: dbApp.style,
+      coreStyle: dbApp.coreStyle,
       vapidPublicKey: dbApp.vapidPublicKey,
     });
   });
@@ -129,7 +129,7 @@ describe('getApp', () => {
           'id',
           'OrganizationId',
           'sharedStyle',
-          'style',
+          'coreStyle',
           'vapidPublicKey',
         ],
         raw: true,
@@ -141,7 +141,7 @@ describe('getApp', () => {
       id: dbApp.id,
       OrganizationId: dbApp.OrganizationId,
       sharedStyle: dbApp.sharedStyle,
-      style: dbApp.style,
+      coreStyle: dbApp.coreStyle,
       vapidPublicKey: dbApp.vapidPublicKey,
     });
   });

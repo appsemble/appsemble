@@ -85,7 +85,7 @@ function handleAppValidationError(error: Error, app: Partial<App>): never {
     throw badRequest('Provided CSS was invalid.');
   }
 
-  if (error.message === 'Expected file ´style´ to be css') {
+  if (error.message === 'Expected file ´coreStyle´ to be css') {
     throw badRequest(error.message);
   }
 
@@ -101,13 +101,13 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     request: {
       body: {
         OrganizationId,
+        coreStyle,
         definition,
         domain,
         icon,
         private: isPrivate = true,
         screenshots,
         sharedStyle,
-        style,
         template = false,
         yaml,
       },
@@ -123,7 +123,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     result = {
       definition,
       OrganizationId,
-      style: validateStyle(style?.contents),
+      coreStyle: validateStyle(coreStyle?.contents),
       sharedStyle: validateStyle(sharedStyle?.contents),
       domain: domain || null,
       private: Boolean(isPrivate),
@@ -195,7 +195,7 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
         [fn('COUNT', col('Resources.id')), 'ResourceCount'],
       ],
-      exclude: ['icon', 'style', 'sharedStyle'],
+      exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     include: [
       { model: AppRating, attributes: [] },
@@ -223,7 +223,7 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['yaml', 'icon', 'style', 'sharedStyle'],
+      exclude: ['yaml', 'icon', 'coreStyle', 'sharedStyle'],
     },
     where: { private: false },
     include: [{ model: AppRating, attributes: [] }],
@@ -247,7 +247,7 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['yaml', 'icon', 'style', 'sharedStyle'],
+      exclude: ['yaml', 'icon', 'coreStyle', 'sharedStyle'],
     },
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
@@ -261,7 +261,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
     request: {
-      body: { definition, domain, path, screenshots, sharedStyle, style, yaml },
+      body: { coreStyle, definition, domain, path, screenshots, sharedStyle, yaml },
     },
   } = ctx;
 
@@ -270,7 +270,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
   try {
     result = {
       definition,
-      style: validateStyle(style?.contents),
+      coreStyle: validateStyle(coreStyle?.contents),
       sharedStyle: validateStyle(sharedStyle?.contents),
       domain,
       path: path || normalize(definition.name),
@@ -331,6 +331,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     params: { appId },
     request: {
       body: {
+        coreStyle,
         definition,
         domain,
         icon,
@@ -338,7 +339,6 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         private: isPrivate,
         screenshots,
         sharedStyle,
-        style,
         template,
         yaml,
       },
@@ -371,8 +371,8 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       result.domain = domain;
     }
 
-    if (style) {
-      result.style = validateStyle(style.contents);
+    if (coreStyle) {
+      result.coreStyle = validateStyle(coreStyle.contents);
     }
 
     if (sharedStyle) {
@@ -527,7 +527,7 @@ export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
-  ctx.body = app.style || '';
+  ctx.body = app.coreStyle || '';
   ctx.type = 'css';
   ctx.status = 200;
 }
