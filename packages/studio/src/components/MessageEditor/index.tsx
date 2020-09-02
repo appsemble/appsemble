@@ -125,6 +125,12 @@ export function MessageEditor(): ReactElement {
       },
       onPage(_page, prefix) {
         pages.push(prefix.join('.'));
+
+        if (_page.type === 'tabs') {
+          _page.subPages.forEach((_, index) => {
+            pages.push(`${prefix.join('.')}.subPages.${index}`);
+          });
+        }
       },
     });
     return [...[...new Set(pages)].sort(), ...[...new Set(actions)].sort()];
