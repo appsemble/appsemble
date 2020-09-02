@@ -26,7 +26,7 @@ export const validators: { [name: string]: Validator } = {
     }
   },
   geocoordinates: (_, value: { longitude: number; latitude: number }) =>
-    value.latitude && value.longitude ? undefined : {},
+    value?.latitude && value?.longitude ? undefined : {},
   hidden: () => {},
   string: validateString,
   number: validateNumber,
