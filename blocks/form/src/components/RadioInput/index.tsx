@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
@@ -12,7 +12,10 @@ type RadioInputProps = InputProps<any, RadioField>;
  * An input element for a radio button.
  */
 export function RadioInput({ disabled, error, field, onInput, value }: RadioInputProps): VNode {
-  const { utils } = useBlock();
+  const {
+    parameters: { invalidLabel = 'This value is invalid' },
+    utils,
+  } = useBlock();
   const { label, name, options } = field;
   const required = isRequired(field);
 
@@ -20,7 +23,7 @@ export function RadioInput({ disabled, error, field, onInput, value }: RadioInpu
     <RadioGroup
       className="appsemble-radio"
       disabled={disabled}
-      error={error && <FormattedMessage id="invalid" />}
+      error={error && utils.remap(invalidLabel, value)}
       label={utils.remap(label, value)}
       name={name}
       onChange={onInput}

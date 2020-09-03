@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
@@ -11,7 +11,10 @@ type NumberInputProps = InputProps<number, NumberField>;
  * An input element for a number type schema.
  */
 export function NumberInput({ disabled, error, field, onInput, value }: NumberInputProps): VNode {
-  const { utils } = useBlock();
+  const {
+    parameters: { invalidLabel = 'This value is invalid' },
+    utils,
+  } = useBlock();
   const { name, label, type, placeholder, readOnly, icon, requirements = [] } = field;
   const required = isRequired(field);
   const max = Math.max(
@@ -42,7 +45,7 @@ export function NumberInput({ disabled, error, field, onInput, value }: NumberIn
     <Input
       className="appsemble-number"
       disabled={disabled}
-      error={error && <FormattedMessage id="invalid" />}
+      error={error && utils.remap(invalidLabel, value)}
       iconLeft={icon}
       id={name}
       label={label}

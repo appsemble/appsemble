@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
@@ -69,9 +69,7 @@ export function FileEntry({ field, name, onInput, value }: FileEntryProps): VNod
           </Fragment>
         ) : (
           <span className={`image is-128x128 px-2 py-2 has-text-centered ${styles.empty}`}>
-            <span className="file-label">
-              <FormattedMessage id="emptyFileLabel" />
-            </span>
+            <span className="file-label">{utils.remap(field.emptyFileLabel ?? ' ', field)}</span>
           </span>
         )}
       </label>

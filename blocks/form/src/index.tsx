@@ -1,4 +1,4 @@
-import { bootstrap, FormattedMessage } from '@appsemble/preact';
+import { bootstrap } from '@appsemble/preact';
 import { Button, FormButtons, Message } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h } from 'preact';
@@ -13,7 +13,7 @@ import { NumberInput } from './components/NumberInput';
 import { RadioInput } from './components/RadioInput';
 import { StringInput } from './components/StringInput';
 import styles from './index.css';
-import { messages } from './messages';
+// Import { messages } from './messages';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
 import { generateDefaultValues } from './utils/generateDefaultValues';
 import { validators } from './utils/validators';
@@ -72,7 +72,15 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
 
             return null;
           } catch (error: unknown) {
-            e = remap(requirement.errorMessage, v) || messages.requirementError;
+            e = remap(
+              requirement.errorMessage ??
+                remap(
+                  parameters.formRequirementError ??
+                    'One of the requirements of this form is invalid.',
+                  {},
+                ),
+              v,
+            );
             return error;
           }
         }),
@@ -100,7 +108,12 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
     (event: Event, value: unknown): void => {
       const { name } = event.currentTarget as HTMLInputElement;
       const invalid = validateField(event, value);
-      const error = (invalid != null && remap(invalid.errorMessage, value)) || messages.error;
+      const error =
+        (invalid != null && remap(invalid.errorMessage, value)) ||
+        remap(
+          parameters?.fieldErrorLabel ?? 'One of the requirements of this field is invalid.',
+          value,
+        );
       setErrors({ ...errors, [name]: invalid && error });
       const newValues = {
         ...values,
@@ -114,7 +127,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       validateForm(newValues, newValidity, lock);
     },
 
-    [errors, remap, validateField, validateForm, validity, values],
+    [errors, parameters, remap, validateField, validateForm, validity, values],
   );
 
   const onSubmit = useCallback(
@@ -192,9 +205,9 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
           disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >
-          {remap(parameters.submitLabel, {}) || <FormattedMessage id="submit" />}
+          {remap(parameters.submitLabel || 'Submit', {})}
         </Button>
       </FormButtons>
     </form>
   );
-}, messages);
+});

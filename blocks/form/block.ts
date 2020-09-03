@@ -284,6 +284,13 @@ export interface FileField extends AbstractField {
    */
   // XXX: Implement field requirements
   requirements?: RequiredRequirement[];
+
+  /**
+   * The label that is shown for empty files.
+   *
+   * @default ' '
+   */
+  emptyFileLabel?: Remapper;
 }
 
 /**
@@ -473,11 +480,15 @@ declare module '@appsemble/sdk' {
 
     /**
      * The text that is shown in the submit button.
+     *
+     * @default 'Submit'
      */
     submitLabel?: Remapper;
 
     /**
      * The text that is shown in the previous button.
+     *
+     * If not defined, the previous button will be hidden.
      */
     previousLabel?: Remapper;
 
@@ -485,5 +496,27 @@ declare module '@appsemble/sdk' {
      * A list of requirements that are checked across all of the form data.
      */
     requirements?: FormRequirement[];
+
+    /**
+     * Text that is shown below a field if a form requirement wasn’t met.
+     *
+     * @default 'One of the requirements of this field is invalid.'
+     */
+    fieldErrorLabel?: Remapper;
+
+    /**
+     * The text that is shown when a form requirement wasn’t met
+     * and the requirement does not have its own error message.
+     *
+     * @default 'One of the requirements of this form is invalid.'
+     */
+    formRequirementError?: Remapper;
+
+    /**
+     * Text that is shown when a field is invalid.
+     *
+     * @default 'This value is invalid'
+     */
+    invalidLabel?: Remapper;
   }
 }
