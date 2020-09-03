@@ -64,7 +64,8 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
           }).format() as string;
 
           const exactPath = `${path}/${normalize(translatedName)}`;
-          return <Redirect from={exactPath} key={exactPath} to={exactPath} />;
+          const fromPath = `${path}/${normalize(name)}`;
+          return <Redirect from={fromPath} key={exactPath} to={exactPath} />;
         })}
 
         <Redirect

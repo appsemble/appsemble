@@ -5,7 +5,7 @@ import type { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, normalize, remap } from '@appsemble/utils';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
 import type { ShowDialogParams } from '../../types';
 import { apiUrl, appId } from '../../utils/settings';
@@ -29,6 +29,7 @@ export function Page(): ReactElement {
     path,
     url,
   } = useRouteMatch<{ lang: string; pageId: string }>();
+  const { pathname } = useLocation();
   const { getMessage, messageIds } = useAppMessages();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
@@ -105,7 +106,7 @@ export function Page(): ReactElement {
 
     if (pageId !== normalize(normalizedPageName)) {
       // Redirect to page with untranslated page name
-      return <Redirect to={`/${lang}/${normalizedPageName}`} />;
+      return <Redirect to={pathname.replace(pageId, normalizedPageName)} />;
     }
 
     return (
