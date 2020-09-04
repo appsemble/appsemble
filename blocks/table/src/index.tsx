@@ -1,6 +1,5 @@
 import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
-import { remapData } from '@appsemble/utils';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -84,7 +83,7 @@ bootstrap(
               onClick={onClick}
             >
               {fields.map((field) => {
-                const value = remapData(field.name, item);
+                const value = utils.remap(field.name, item);
                 return (
                   <ItemCell
                     className={onClick ? styles.clickable : undefined}
