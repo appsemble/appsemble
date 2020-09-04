@@ -18,11 +18,14 @@ pages:
         version: 0.13.12
         parameters:
           fields:
-            - name: date
+            - name:
+                - prop: date
               label: Date
-            - name: name
+            - name:
+                - prop: name
               label: Name (EN)
-            - name: localName
+            - name:
+                - prop: localName
               label: Name (NL)
         events:
           listen:
@@ -43,9 +46,11 @@ pages:
         version: 0.13.12
         parameters:
           fields:
-            - name: date
+            - name:
+                - prop: date
               label: Date
-            - name: name
+            - name:
+                - prop: name
               label: Name (EN)
         events:
           listen:
@@ -68,9 +73,11 @@ pages:
           fields:
             - name: date
               label: Date
-            - name: name
+            - name:
+                - prop: name
               label: Name (EN)
-            - name: localName
+            - name:
+                - prop: localName
               label: Name (DE)
         events:
           listen:
@@ -91,11 +98,14 @@ pages:
         version: 0.13.12
         parameters:
           fields:
-            - name: date
+            - name:
+                - prop: date
               label: Date
-            - name: name
+            - name:
+                - prop: name
               label: Name (EN)
-            - name: localName
+            - name:
+                - prop: localName
               label: Name (ES)
         events:
           listen:

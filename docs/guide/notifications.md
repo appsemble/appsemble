@@ -112,9 +112,11 @@ pages:
         version: 0.13.12
         parameters:
           fields:
-            - name: firstName
+            - name:
+                - prop: firstName
               label: First Name
-            - name: lastName
+            - name:
+                - prop: lastName
               label: Surname
         actions:
           onClick:
