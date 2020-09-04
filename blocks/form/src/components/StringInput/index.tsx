@@ -17,8 +17,21 @@ export function StringInput({
   onInput,
   value = '',
 }: StringInputProps): VNode {
-  const { utils } = useBlock();
-  const { format, icon, label, multiline, name, placeholder, readOnly, requirements = [] } = field;
+  const {
+    parameters: { optionalLabel },
+    utils,
+  } = useBlock();
+  const {
+    format,
+    icon,
+    label,
+    multiline,
+    name,
+    placeholder,
+    readOnly,
+    requirements = [],
+    tag,
+  } = field;
   const maxLength = Math.max(
     ...requirements
       ?.map((requirement) => 'maxLength' in requirement && requirement.maxLength)
@@ -46,9 +59,11 @@ export function StringInput({
       minLength={Number.isFinite(minLength) ? minLength : undefined}
       name={name}
       onInput={(event) => onInput(event, (event.currentTarget as HTMLInputElement).value)}
+      optionalLabel={utils.remap(optionalLabel, value)}
       placeholder={utils.remap(placeholder, value) ?? remappedLabel}
       readOnly={readOnly}
       required={required}
+      tag={utils.remap(tag, value)}
       type={multiline ? 'textarea' : format || 'text'}
       value={value}
     />

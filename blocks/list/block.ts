@@ -44,6 +44,20 @@ declare module '@appsemble/sdk' {
     header?: Remapper;
 
     /**
+     * The text that is shown when no data was found.
+     *
+     * @default 'There is no data available.'
+     */
+    noData?: Remapper;
+
+    /**
+     * The text that is shown when something went wrong with fetching the data.
+     *
+     * @default 'An error occurred when fetching the data.'
+     */
+    error?: Remapper;
+
+    /**
      * The icon that displays in front of the header.
      *
      * Will not render if undefined.

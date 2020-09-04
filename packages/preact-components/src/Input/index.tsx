@@ -113,6 +113,8 @@ export function Input({
   type,
   value,
   id = name,
+  tag,
+  optionalLabel,
   ...props
 }: InputProps): VNode {
   const handleInput = useCallback(
@@ -137,7 +139,9 @@ export function Input({
       iconLeft={iconLeft}
       id={id}
       label={label}
+      optionalLabel={optionalLabel}
       required={required}
+      tag={tag}
     >
       <Comp
         checked={type === 'checkbox' ? (value as boolean) : undefined}

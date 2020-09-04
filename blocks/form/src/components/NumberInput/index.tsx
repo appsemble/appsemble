@@ -12,10 +12,10 @@ type NumberInputProps = InputProps<number, NumberField>;
  */
 export function NumberInput({ disabled, error, field, onInput, value }: NumberInputProps): VNode {
   const {
-    parameters: { invalidLabel = 'This value is invalid' },
+    parameters: { invalidLabel = 'This value is invalid', optionalLabel },
     utils,
   } = useBlock();
-  const { name, label, type, placeholder, readOnly, icon, requirements = [] } = field;
+  const { name, label, type, placeholder, readOnly, icon, tag, requirements = [] } = field;
   const required = isRequired(field);
   const max = Math.max(
     ...requirements
@@ -60,10 +60,12 @@ export function NumberInput({ disabled, error, field, onInput, value }: NumberIn
             : (event.currentTarget as HTMLInputElement).valueAsNumber,
         );
       }}
+      optionalLabel={utils.remap(optionalLabel, value)}
       placeholder={utils.remap(placeholder, value) || utils.remap(label, value) || name}
       readOnly={readOnly}
       required={required}
       step={step}
+      tag={utils.remap(tag, value)}
       type="number"
       value={value}
     />

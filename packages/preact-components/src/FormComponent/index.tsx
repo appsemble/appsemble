@@ -1,9 +1,8 @@
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { ComponentChildren, h, VNode } from 'preact';
+import { ComponentChild, ComponentChildren, h, VNode } from 'preact';
 
 import styles from './index.css';
-import { messages } from './messages';
 
 export interface FormComponentProps {
   children: ComponentChildren;
@@ -32,6 +31,18 @@ export interface FormComponentProps {
    * Whether or not the input is required.
    */
   required?: boolean;
+
+  /**
+   * The label used for optional fields.
+   *
+   * @default '(Optional)'
+   */
+  optionalLabel?: ComponentChild;
+
+  /**
+   * The tag to display next to the label.
+   */
+  tag?: ComponentChild;
 }
 
 /**
@@ -43,18 +54,20 @@ export function FormComponent({
   iconLeft,
   id,
   label,
+  optionalLabel = '(Optional)',
   required,
+  tag,
 }: FormComponentProps): VNode {
   return (
     <div className={classNames('field', className)}>
       {label && (
         <label className={`label ${styles.label}`} htmlFor={id}>
           <span className={styles.labelContent}>{label}</span>
-          {required || (
+          {(required || tag) && (
             <span
               className={`is-inline has-text-weight-normal has-text-grey-light ${styles.optional}`}
             >
-              ({messages.optional})
+              {tag || optionalLabel}
             </span>
           )}
         </label>

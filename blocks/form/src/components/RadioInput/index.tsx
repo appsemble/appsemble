@@ -13,10 +13,10 @@ type RadioInputProps = InputProps<any, RadioField>;
  */
 export function RadioInput({ disabled, error, field, onInput, value }: RadioInputProps): VNode {
   const {
-    parameters: { invalidLabel = 'This value is invalid' },
+    parameters: { invalidLabel = 'This value is invalid', optionalLabel },
     utils,
   } = useBlock();
-  const { label, name, options } = field;
+  const { label, name, options, tag } = field;
   const required = isRequired(field);
 
   return (
@@ -27,7 +27,9 @@ export function RadioInput({ disabled, error, field, onInput, value }: RadioInpu
       label={utils.remap(label, value)}
       name={name}
       onChange={onInput}
+      optionalLabel={utils.remap(optionalLabel, value)}
       required={required}
+      tag={utils.remap(tag, value)}
       value={value}
     >
       {options.map((option) => (

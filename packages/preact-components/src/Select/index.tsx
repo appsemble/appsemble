@@ -26,6 +26,8 @@ export function Select({
   onInput,
   required,
   id = name,
+  tag,
+  optionalLabel,
   ...props
 }: SelectProps): VNode {
   const handleInput = useCallback(
@@ -36,7 +38,14 @@ export function Select({
   );
 
   return (
-    <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
+    <FormComponent
+      iconLeft={iconLeft}
+      id={id}
+      label={label}
+      optionalLabel={optionalLabel}
+      required={required}
+      tag={tag}
+    >
       <div className="select is-fullwidth">
         <select
           {...props}

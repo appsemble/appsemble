@@ -152,6 +152,14 @@ interface AbstractField {
    * Whether the field should be read-only.
    */
   readOnly?: boolean;
+
+  /**
+   * The label that is shown to the right of the label.
+   *
+   * Replaces the optional label if the field is optional.
+   * Won’t display if the field has no label of its own.
+   */
+  tag?: Remapper;
 }
 
 /**
@@ -496,6 +504,15 @@ declare module '@appsemble/sdk' {
      * A list of requirements that are checked across all of the form data.
      */
     requirements?: FormRequirement[];
+
+    /**
+     * The label that is displayed by default next to optional fields.
+     *
+     * Won’t display if the field has no label of its own.
+     *
+     * @default '(Optional)''
+     */
+    optionalLabel?: Remapper;
 
     /**
      * Text that is shown below a field if a form requirement wasn’t met.

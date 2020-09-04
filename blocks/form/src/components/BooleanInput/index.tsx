@@ -19,10 +19,10 @@ export function BooleanInput({
   value = false,
 }: BooleanInputProps): VNode {
   const {
-    parameters: { invalidLabel = 'This value is invalid' },
+    parameters: { invalidLabel = 'This value is invalid', optionalLabel },
     utils,
   } = useBlock();
-  const { label, labelText, name, readOnly } = field;
+  const { label, labelText, name, readOnly, tag } = field;
 
   const checkboxLabel = utils.remap(label, value);
 
@@ -39,8 +39,10 @@ export function BooleanInput({
       label={checkboxLabel}
       name={name}
       onChange={onInput}
+      optionalLabel={utils.remap(optionalLabel, value)}
       readOnly={readOnly}
       required={required}
+      tag={utils.remap(tag, value)}
     />
   );
 }
