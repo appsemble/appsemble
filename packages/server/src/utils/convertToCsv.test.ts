@@ -1,4 +1,4 @@
-import { AppsembleError } from '@appsemble/node-utils/src';
+import { AppsembleError } from '@appsemble/node-utils';
 
 import { convertToCsv } from './convertToCsv';
 

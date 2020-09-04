@@ -1,7 +1,7 @@
 import { Dirent, promises as fs, Stats } from 'fs';
 import { join } from 'path';
 
-import { AppsembleError } from '@appsemble/node-utils/src';
+import { AppsembleError } from '@appsemble/node-utils';
 import type { Promisable } from 'type-fest';
 
 interface OpenDirSafeOptions {
