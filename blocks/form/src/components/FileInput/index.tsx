@@ -12,8 +12,11 @@ import styles from './index.css';
 type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
 
 export function FileInput({ disabled, error, field, onInput, value }: FileInputProps): VNode {
-  const { utils } = useBlock();
-  const { icon, label, name, repeated } = field;
+  const {
+    parameters: { optionalLabel },
+    utils,
+  } = useBlock();
+  const { icon, label, name, repeated, tag } = field;
   const required = isRequired(field);
   const remappedLabel = utils.remap(label, value);
 
@@ -36,7 +39,9 @@ export function FileInput({ disabled, error, field, onInput, value }: FileInputP
       className="appsemble-file"
       iconLeft={icon}
       label={remappedLabel}
+      optionalLabel={utils.remap(optionalLabel, {})}
       required={required}
+      tag={utils.remap(tag, {})}
     >
       {repeated ? (
         <div

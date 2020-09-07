@@ -26,6 +26,16 @@ interface RadioGroupProps
    * The current value.
    */
   value: any;
+
+  /**
+   * The label to display if the input group is optional.
+   */
+  optionalLabel?: ComponentChild;
+
+  /**
+   * The tag to display to the right of the label.
+   */
+  tag?: ComponentChild;
 }
 
 export function RadioGroup({
@@ -36,8 +46,10 @@ export function RadioGroup({
   label,
   name,
   onChange,
+  optionalLabel,
   readOnly,
   required,
+  tag,
   value,
 }: RadioGroupProps): VNode {
   const handleChange = useCallback(
@@ -48,7 +60,14 @@ export function RadioGroup({
   );
 
   return (
-    <FormComponent className={className} id={name} label={label} required={required}>
+    <FormComponent
+      className={className}
+      id={name}
+      label={label}
+      optionalLabel={optionalLabel}
+      required={required}
+      tag={tag}
+    >
       {children.map((child, index) =>
         cloneElement(child, {
           checked: child.props.value === value,

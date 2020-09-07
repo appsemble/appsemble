@@ -1,3 +1,5 @@
+import type { Remapper } from '@appsemble/sdk';
+
 export {};
 
 declare module '@appsemble/sdk' {
@@ -17,6 +19,13 @@ declare module '@appsemble/sdk' {
      * By setting this to `true`, this won’t happen.
      */
     skipInitialLoad?: boolean;
+
+    /**
+     * The error message that should be shown when data failed to load.
+     *
+     * @default 'Failed to load data'
+     */
+    loadErrorMessage?: Remapper;
   }
 
   interface EventEmitters {

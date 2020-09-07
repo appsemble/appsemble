@@ -24,6 +24,16 @@ type CheckboxProps = Omit<typeof FormComponent, 'children'> &
     label?: ComponentChild;
 
     /**
+     * The label to display if the checkbox is optional.
+     */
+    optionalLabel?: ComponentChild;
+
+    /**
+     * The tag to display to the right of the label.
+     */
+    tag?: ComponentChild;
+
+    /**
      * This is fired when the input value has changed.
      */
     onChange: (event: h.JSX.TargetedEvent<HTMLInputElement>, value: boolean) => void;
@@ -65,7 +75,9 @@ export function Checkbox({
   value,
   id = name,
   switch: isSwitch,
+  optionalLabel,
   rtl,
+  tag,
   ...props
 }: CheckboxProps): VNode {
   const handleChange = useCallback(
@@ -76,7 +88,14 @@ export function Checkbox({
   );
 
   return (
-    <FormComponent className={wrapperClassName} id={id} label={label} required>
+    <FormComponent
+      className={wrapperClassName}
+      id={id}
+      label={label}
+      optionalLabel={optionalLabel}
+      required
+      tag={tag}
+    >
       <input
         {...props}
         checked={value}

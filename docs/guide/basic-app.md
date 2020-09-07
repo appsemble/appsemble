@@ -107,9 +107,11 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 +             data: people
 +         parameters:
 +           fields:
-+             - name: firstName
++             - name:
++                - prop: firstName
 +               label: First Name
-+             - name: lastName
++             - name:
++                - prop: lastName
 +               label: Surname
 ```
 
@@ -205,9 +207,11 @@ pages:
             data: people
         parameters:
           fields:
-            - name: firstName
+            - name:
+                - prop: firstName
               label: First Name
-            - name: lastName
+            - name:
+                - prop: lastName
               label: Surname
 ```
 
@@ -312,9 +316,11 @@ pages:
             data: people
         parameters:
           fields:
-            - name: firstName
+            - name:
+                - prop: firstName
               label: First Name
-            - name: lastName
+            - name:
+                - prop: lastName
               label: Surname
 ```
 
@@ -347,13 +353,17 @@ Add a new page:
 +             data: person
 +         parameters:
 +           fields:
-+             - name: firstName
++             - name:
++                 - prop: firstName
 +               label: First Name
-+             - name: lastName
++             - name:
++                 - prop: lastName
 +               label: Last Name
-+             - name: email
++             - name:
++                 - prop: email
 +               label: Email Address
-+             - name: description
++             - name:
++                 - prop: description
 +               label: Description
 ```
 
@@ -436,9 +446,11 @@ pages:
             data: people
         parameters:
           fields:
-            - name: firstName
+            - name:
+                - prop: firstName
               label: First Name
-            - name: lastName
+            - name:
+                - prop: lastName
               label: Surname
 
   - name: Person details
@@ -462,7 +474,7 @@ pages:
         parameters:
           fields:
             - name:
-                -prop: firstName
+                - prop: firstName
               label: First Name
             - name:
                 - prop: lastName

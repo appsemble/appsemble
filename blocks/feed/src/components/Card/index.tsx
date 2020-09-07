@@ -1,4 +1,4 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
 import type { DivIcon, Icon } from 'leaflet';
 import { Fragment, h, VNode } from 'preact';
@@ -29,7 +29,7 @@ export interface CardProps {
  */
 export function Card({ content, onUpdate }: CardProps): VNode {
   const replyContainer = useRef<HTMLDivElement>();
-  const { actions, messages, parameters, theme, utils } = useBlock();
+  const { actions, parameters, theme, utils } = useBlock();
   const [message, setMessage] = useState('');
   const [replies, setReplies] = useState<unknown[]>(null);
   const [valid, setValid] = useState(false);
@@ -111,10 +111,20 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         // Scroll to the bottom of the reply container
         replyContainer.current.scrollTop = replyContainer.current.scrollHeight;
       } catch {
-        utils.showMessage([].concat(messages.replyError.format()).join(''));
+        utils.showMessage(
+          []
+            .concat(
+              utils.remap(
+                parameters?.reply?.replyErrorMessage ??
+                  'Something went wrong trying to send this message.',
+                content,
+              ),
+            )
+            .join(''),
+        );
       }
     },
-    [actions, content, message, messages, parameters, replies, utils, valid],
+    [actions, content, message, parameters, replies, utils, valid],
   );
 
   const title = utils.remap(parameters.title, content);
@@ -216,10 +226,11 @@ export function Card({ content, onUpdate }: CardProps): VNode {
           <Fragment>
             <div className={styles.replies} ref={replyContainer}>
               {replies.map((reply: any) => {
-                const author = utils.remap(
-                  parameters?.reply.author ?? [{ prop: '$author' }, { prop: 'name' }],
-                  reply,
-                );
+                const author =
+                  utils.remap(
+                    parameters?.reply.author ?? [{ prop: '$author' }, { prop: 'name' }],
+                    reply,
+                  ) || utils.remap(parameters?.reply?.anonymousLabel || 'Anonymous', reply);
                 const replyContent = utils.remap(
                   parameters?.reply.content ?? [{ prop: 'content' }],
                   reply,
@@ -227,9 +238,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
 
                 return (
                   <div className="content" key={reply.id}>
-                    <h6 className="is-marginless">
-                      {author || <FormattedMessage id="anonymous" />}
-                    </h6>
+                    <h6 className="is-marginless">{author}</h6>
                     <p>{replyContent}</p>
                   </div>
                 );
@@ -239,7 +248,9 @@ export function Card({ content, onUpdate }: CardProps): VNode {
               <input
                 className="input"
                 onChange={onChange}
-                placeholder={[].concat(messages.reply.format()).join('')}
+                placeholder={[]
+                  .concat(utils.remap(parameters?.reply?.replyLabel ?? 'Leave a message…', content))
+                  .join('')}
                 required
                 value={message}
               />

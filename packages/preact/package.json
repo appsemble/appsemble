@@ -33,9 +33,6 @@
     "prepack": "tsc -p tsconfig.build.json",
     "test": "jest"
   },
-  "dependencies": {
-    "intl-messageformat": "^9.3.6"
-  },
   "peerDependencies": {
     "@appsemble/sdk": "0.13.12",
     "preact": "^10.0.4"

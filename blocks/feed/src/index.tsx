@@ -1,4 +1,4 @@
-import { bootstrap, FormattedMessage } from '@appsemble/preact';
+import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
@@ -6,20 +6,13 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Card } from './components/Card';
 import styles from './index.css';
 
-const messages = {
-  anonymous: 'Anonymous',
-  empty: 'No data to display',
-  reply: 'Leave a message…',
-  replyError: 'Something went wrong trying to send this message.',
-};
-
 interface Item {
   id: number;
   status: string;
   fotos: string[];
 }
 
-bootstrap(({ events, ready }) => {
+bootstrap(({ events, parameters: { emptyLabel = 'No data to display' }, ready, utils }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
 
@@ -45,11 +38,7 @@ bootstrap(({ events, ready }) => {
   }
 
   if (!data.length) {
-    return (
-      <div className={styles.empty}>
-        <FormattedMessage id="empty" />
-      </div>
-    );
+    return <div className={styles.empty}>{utils.remap(emptyLabel, data)}</div>;
   }
 
   return (
@@ -59,4 +48,4 @@ bootstrap(({ events, ready }) => {
       ))}
     </div>
   );
-}, messages);
+});
