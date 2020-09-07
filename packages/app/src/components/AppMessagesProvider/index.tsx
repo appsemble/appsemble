@@ -24,7 +24,12 @@ interface IntlMessagesProviderProps {
   children: ReactNode;
 }
 
-const Context = createContext<MessageGetter>(null);
+interface AppMessageContext {
+  getMessage: MessageGetter;
+  messageIds: string[];
+}
+
+const Context = createContext<AppMessageContext>(null);
 
 const formatters = {
   getNumberFormat: memoizeIntlConstructor(Intl.NumberFormat),
@@ -38,7 +43,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const history = useHistory();
   const redirect = useLocationString();
 
-  const [messages, setMessages] = useState<AppMessages['messages']>();
+  const [messages, setMessages] = useState<AppMessages['messages']>({});
   const messageCache = useMemo(
     () => objectCache((message) => new IntlMessageFormat(message, lang, undefined, { formatters })),
     [lang],
@@ -79,6 +84,14 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     [messageCache, messages],
   );
 
+  const value = useMemo(
+    () => ({
+      getMessage,
+      messageIds: Object.keys(messages),
+    }),
+    [getMessage, messages],
+  );
+
   if (loading) {
     return <Loader />;
   }
@@ -91,9 +104,9 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     );
   }
 
-  return <Context.Provider value={getMessage}>{children}</Context.Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
-export function useAppMessages(): MessageGetter {
+export function useAppMessages(): AppMessageContext {
   return useContext(Context);
 }

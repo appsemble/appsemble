@@ -5,7 +5,7 @@ import type { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, normalize, remap } from '@appsemble/utils';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
 import type { ShowDialogParams } from '../../types';
 import { apiUrl, appId } from '../../utils/settings';
@@ -29,7 +29,8 @@ export function Page(): ReactElement {
     path,
     url,
   } = useRouteMatch<{ lang: string; pageId: string }>();
-  const getMessage = useAppMessages();
+  const { pathname } = useLocation();
+  const { getMessage, messageIds } = useAppMessages();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
@@ -38,7 +39,19 @@ export function Page(): ReactElement {
     ee.current = new EventEmitter();
   }
 
-  const index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
+  let index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
+
+  if (index < 0) {
+    const pageMessages = messageIds.filter((id) => id.startsWith('pages.'));
+    const translatedPage = pageMessages.find(
+      (id) => normalize(getMessage({ id }).format() as string) === pageId,
+    );
+
+    if (translatedPage) {
+      index = Number(translatedPage.split('.').pop());
+    }
+  }
+
   const page = index === -1 ? null : definition.pages[index];
   const prefix = index === -1 ? null : `pages.${index}`;
 
@@ -89,6 +102,13 @@ export function Page(): ReactElement {
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
     const msg = getMessage({ id: prefix, defaultMessage: page.name });
+    const normalizedPageName = normalize(msg.format() as string);
+
+    if (pageId !== normalize(normalizedPageName)) {
+      // Redirect to page with untranslated page name
+      return <Redirect to={pathname.replace(pageId, normalizedPageName)} />;
+    }
+
     return (
       <main className={styles.root} data-path={prefix}>
         <TitleBar>{msg.format() as string}</TitleBar>
@@ -151,13 +171,27 @@ export function Page(): ReactElement {
   // page.
   const defaultPage = definition.pages.find((p) => p.name === definition.defaultPage);
   if (checkPagePermissions(defaultPage)) {
-    return <Redirect to={`/${lang}/${normalize(defaultPage.name)}`} />;
+    const i = definition.pages.indexOf(defaultPage);
+    let pageName = defaultPage.name;
+
+    if (messageIds.includes(`pages.${i}`)) {
+      pageName = getMessage({ id: `pages.${i}` }).format() as string;
+    }
+
+    return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = definition.pages.find((p) => checkPagePermissions(p) && !p.parameters);
   if (redirectPage) {
-    return <Redirect to={`/${lang}/${normalize(redirectPage.name)}`} />;
+    const i = definition.pages.indexOf(defaultPage);
+    let pageName = defaultPage.name;
+
+    if (messageIds.includes(`pages.${i}`)) {
+      pageName = getMessage({ id: `pages.${i}` }).format() as string;
+    }
+
+    return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.
