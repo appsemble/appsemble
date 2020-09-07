@@ -29,7 +29,7 @@
   "app.src.components.OpenIDCallback.accessDenied": "Toegang geweigerd",
   "app.src.components.OpenIDCallback.error": "Er is een onverwachte fout opgetreden tijdens het inloggen",
   "app.src.components.OpenIDCallback.retry": "Terug naar inloggen",
-  "app.src.components.OpenIDLogin.loginWith": "Inloggen als {name}",
+  "app.src.components.OpenIDLogin.loginWith": "Inloggen met {name}",
   "app.src.components.Page.logout": "Uitloggen",
   "app.src.components.Page.permissionError": "Vanwege verkeerd ingestelde rechten mag je de app niet bekijken. Als je denkt dat dit een vergissing is, laat dan een bericht achter op de <a>Appsemble App Store</a>.",
   "app.src.components.ProfileDropdown.login": "Inloggen",

@@ -121,7 +121,7 @@ module.exports = (env, argv) => {
           loader: 'babel-loader',
           options: {
             plugins: [
-              ['babel-plugin-react-intl-auto', { filebase: false, removePrefix: 'packages/*/src' }],
+              ['babel-plugin-react-intl-auto', { filebase: false, removePrefix: 'packages/' }],
             ],
           },
         },
