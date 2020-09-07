@@ -1,0 +1,12 @@
+{
+  "react-components.src.ErrorHandler.message": "Er is een onverwachte fout opgetreden.",
+  "react-components.src.ErrorHandler.title": "Fout",
+  "react-components.src.FormComponent.optional": "Optioneel",
+  "react-components.src.JSONInput.error": "Dit moet een geldige JSON-waarde zijn.",
+  "react-components.src.MessagesProvider.dismiss": "Bericht verbergen",
+  "react-components.src.Modal.closeDialog": "Venster sluiten",
+  "react-components.src.Stepper.back": "Terug",
+  "react-components.src.Stepper.cancel": "Annuleren",
+  "react-components.src.Stepper.finish": "Opslaan",
+  "react-components.src.Stepper.next": "Volgende"
+}
