@@ -13,7 +13,6 @@ import { NumberInput } from './components/NumberInput';
 import { RadioInput } from './components/RadioInput';
 import { StringInput } from './components/StringInput';
 import styles from './index.css';
-// Import { messages } from './messages';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
 import { generateDefaultValues } from './utils/generateDefaultValues';
 import { validators } from './utils/validators';
