@@ -63,7 +63,7 @@ export function FormComponent({
       {label && (
         <label className={`label ${styles.label}`} htmlFor={id}>
           <span className={styles.labelContent}>{label}</span>
-          {(required || tag) && (
+          {(!required || tag) && (
             <span
               className={`is-inline has-text-weight-normal has-text-grey-light ${styles.optional}`}
             >
