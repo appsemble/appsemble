@@ -1,0 +1,1 @@
+Move `accept` to `AcceptRequirement`.

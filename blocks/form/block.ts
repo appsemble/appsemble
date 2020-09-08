@@ -83,22 +83,29 @@ interface RegexRequirement extends BaseRequirement {
 }
 
 /**
- * A requirement used to enforce the length of the input.
+ * A requirement used to enforce the length or amount of items in the input.
  */
 interface LengthRequirement extends BaseRequirement {
   /**
    * The minimum length.
    *
-   * @minimum 0
+   * @minimum 1
    */
   minLength?: number;
 
   /**
    * The maximum length.
    *
-   * @minimum 0
+   * @minimum 1
    */
   maxLength?: number;
+}
+
+interface AcceptRequirement extends BaseRequirement {
+  /**
+   * The list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).
+   */
+  accept: string[];
 }
 
 /**
@@ -110,6 +117,11 @@ export type StringRequirement = RegexRequirement | LengthRequirement | RequiredR
  * All requirements applicable to number fields.
  */
 export type NumberRequirement = StepRequirement | MinMaxRequirement | RequiredRequirement;
+
+/**
+ * All requirements applicable to file fields.
+ */
+export type FileRequirement = AcceptRequirement | RequiredRequirement | LengthRequirement;
 
 /**
  * An option that is displayed in a dropdown menu or radio button field.
@@ -254,11 +266,6 @@ export interface FileField extends AbstractField {
   defaultValue?: any;
 
   /**
-   * A list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).
-   */
-  accept?: string[];
-
-  /**
    * The maximum height of uploaded images.
    */
   maxHeight?: number;
@@ -290,8 +297,7 @@ export interface FileField extends AbstractField {
    *
    * These are evaluated in the order they are defined in.
    */
-  // XXX: Implement field requirements
-  requirements?: RequiredRequirement[];
+  requirements?: FileRequirement[];
 
   /**
    * The label that is shown for empty files.

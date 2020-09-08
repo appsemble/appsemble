@@ -13,19 +13,17 @@ type GeoCoordinatesInputProps = InputProps<{ [key: string]: number }, GeoCoordin
 /**
  * An input element for an object type schema which implements GeoCoordinates.
  */
-export function GeoCoordinatesInput({
-  disabled,
-  field: {
-    defaultLocation: [defaultLat = 51.476852, defaultLng = 0],
-    name,
-    locationError = 'Couldn’t find your location. Are location services enabled?',
-  },
-  onInput,
-}: GeoCoordinatesInputProps): VNode {
+export function GeoCoordinatesInput({ disabled, field, onInput }: GeoCoordinatesInputProps): VNode {
   const { theme, utils } = useBlock();
   const ref = useRef<HTMLDivElement>();
   const [map, setMap] = useState<Map>(null);
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
+
+  const {
+    defaultLocation: [defaultLat = 51.476852, defaultLng = 0] = [],
+    name,
+    locationError = 'Couldn’t find your location. Are location services enabled?',
+  } = field;
 
   const onReset = useCallback((): void => {
     if (!map) {
