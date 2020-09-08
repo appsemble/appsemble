@@ -72,8 +72,8 @@ pages:
               type: file
               label: Photos
               requirements:
-                accept:
-                  - image/jpeg
+                - accept:
+                    - image/jpeg
               repeated: true
         actions:
           onSubmit:
