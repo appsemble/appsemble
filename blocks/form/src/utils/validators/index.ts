@@ -1,5 +1,4 @@
-import type { BaseRequirement, Field } from 'blocks/form/block';
-
+import type { BaseRequirement, Field } from '../../../block';
 import { validateFile } from './validateFile';
 import { validateNumber } from './validateNumber';
 import { validateString } from './validateString';

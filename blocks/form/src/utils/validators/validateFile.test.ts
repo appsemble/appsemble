@@ -1,5 +1,4 @@
-import type { FileField } from 'blocks/form/block';
-
+import type { FileField } from '../../../block';
 import { validateFile } from './validateFile';
 
 describe('validateFile', () => {
