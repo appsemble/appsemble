@@ -29,30 +29,31 @@ describe('validateFile', () => {
       type: 'file',
       name: 'test',
       repeated: false,
-      requirements: [{ min: 2, max: 0 }],
+      requirements: [{ minLength: 2, maxLength: 2 }],
     } as FileField;
 
     expect(validateFile(field, [{} as File])).toBeUndefined();
+    expect(validateFile(field, [{} as File, {} as File])).toBeUndefined();
   });
 
-  it('should validate min requirements', () => {
+  it('should validate minLength requirements', () => {
     const field = {
       type: 'file',
       name: 'test',
       repeated: true,
-      requirements: [{ min: 2 }],
+      requirements: [{ minLength: 2 }],
     } as FileField;
 
     expect(validateFile(field, [{} as File, {} as File])).toBeUndefined();
     expect(validateFile(field, [])).toStrictEqual(field.requirements[0]);
   });
 
-  it('should validate max requirements', () => {
+  it('should validate maxLength requirements', () => {
     const field = {
       type: 'file',
       name: 'test',
       repeated: true,
-      requirements: [{ max: 2 }],
+      requirements: [{ maxLength: 2 }],
     } as FileField;
 
     expect(validateFile(field, [{} as File, {} as File])).toBeUndefined();

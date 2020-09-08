@@ -83,20 +83,20 @@ interface RegexRequirement extends BaseRequirement {
 }
 
 /**
- * A requirement used to enforce the length of the input.
+ * A requirement used to enforce the length or amount of items in the input.
  */
 interface LengthRequirement extends BaseRequirement {
   /**
    * The minimum length.
    *
-   * @minimum 0
+   * @minimum 1
    */
   minLength?: number;
 
   /**
    * The maximum length.
    *
-   * @minimum 0
+   * @minimum 1
    */
   maxLength?: number;
 }
@@ -121,7 +121,7 @@ export type NumberRequirement = StepRequirement | MinMaxRequirement | RequiredRe
 /**
  * All requirements applicable to file fields.
  */
-export type FileRequirement = AcceptRequirement | RequiredRequirement | MinMaxRequirement;
+export type FileRequirement = AcceptRequirement | RequiredRequirement | LengthRequirement;
 
 /**
  * An option that is displayed in a dropdown menu or radio button field.

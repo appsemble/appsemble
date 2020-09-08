@@ -1,1 +1,1 @@
-Add support for `AcceptRequirement` and `MinMaxRequirement` for `file` fields.
+Add support for `AcceptRequirement` and `LengthRequirement` for `file` fields.

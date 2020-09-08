@@ -9,11 +9,19 @@ export function validateFile(field: FileField, value: File | File[]): FileRequir
       return true;
     }
 
-    if ('max' in requirement && field.repeated && requirement.max < (value as File[]).length) {
+    if (
+      'maxLength' in requirement &&
+      field.repeated &&
+      requirement.maxLength < (value as File[]).length
+    ) {
       return true;
     }
 
-    if ('min' in requirement && field.repeated && requirement.min > (value as File[]).length) {
+    if (
+      'minLength' in requirement &&
+      field.repeated &&
+      requirement.minLength > (value as File[]).length
+    ) {
       return true;
     }
 
