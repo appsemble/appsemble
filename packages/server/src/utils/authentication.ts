@@ -37,7 +37,7 @@ export function authentication({ host, secret }: Argv): AuthenticationCheckers {
         return;
       }
       const app = new App({ id });
-      return [{ id: sub }, { scope, app }];
+      return [new User({ id: sub }), { scope, app }];
     },
 
     async cli(accessToken) {
@@ -54,12 +54,12 @@ export function authentication({ host, secret }: Argv): AuthenticationCheckers {
       if (!credentials) {
         return;
       }
-      return [{ id: sub }, { scope }];
+      return [new User({ id: sub }), { scope }];
     },
 
     studio(accessToken) {
       const { sub } = verify(accessToken, secret, { audience: host }) as JwtPayload;
-      return { id: sub };
+      return new User({ id: sub });
     },
   };
 }

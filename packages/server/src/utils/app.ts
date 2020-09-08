@@ -1,5 +1,6 @@
 import { URL } from 'url';
 
+import type { UserInfo } from '@appsemble/types/src';
 import { objectCache, RemapperContext } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
@@ -63,10 +64,15 @@ export function getApp(
  *
  * @param app - The app for which to get the remapper context.
  * @param language - The preferred language for the context.
+ * @param userInfo - The OAuth2 compatible user information.
  *
  * @returns A localized remapper context for the app.
  */
-export async function getRemapperContext(app: App, language: string): Promise<RemapperContext> {
+export async function getRemapperContext(
+  app: App,
+  language: string,
+  userInfo: UserInfo,
+): Promise<RemapperContext> {
   const languages = language.toLowerCase().split(/-/g);
   const appMessages = await AppMessages.findAll({
     order: [['language', 'desc']],
@@ -84,5 +90,6 @@ export async function getRemapperContext(app: App, language: string): Promise<Re
       const message = msg ? msg.messages[id] : defaultMessage;
       return cache(message);
     },
+    userInfo,
   };
 }
