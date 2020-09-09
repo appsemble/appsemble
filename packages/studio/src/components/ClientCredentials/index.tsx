@@ -2,7 +2,7 @@ import {
   Button,
   Calendar,
   CardFooterButton,
-  Checkbox,
+  CheckboxField,
   Content,
   FormOutput,
   Join,
@@ -155,22 +155,22 @@ export function ClientCredentials(): ReactElement {
               type="date"
             />
             <SimpleFormField
-              component={Checkbox}
-              help={<FormattedMessage {...messages['blocks:write']} />}
+              component={CheckboxField}
               label="blocks:write"
               name="blocks:write"
+              title={<FormattedMessage {...messages['blocks:write']} />}
             />
             <SimpleFormField
-              component={Checkbox}
-              help={<FormattedMessage {...messages['organizations:write']} />}
+              component={CheckboxField}
               label="organizations:write"
               name="organizations:write"
+              title={<FormattedMessage {...messages['organizations:write']} />}
             />
             <SimpleFormField
-              component={Checkbox}
-              help={<FormattedMessage {...messages['apps:write']} />}
+              component={CheckboxField}
               label="apps:write"
               name="apps:write"
+              title={<FormattedMessage {...messages['apps:write']} />}
             />
           </>
         )}
