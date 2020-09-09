@@ -11,8 +11,9 @@ import type { ParameterizedContext } from 'koa';
 import { get, pick } from 'lodash';
 import { extension } from 'mime-types';
 import type { SendMailOptions } from 'nodemailer';
+import { Op } from 'sequelize';
 
-import { App, Asset } from '../models';
+import { App, Asset, EmailAuthorization } from '../models';
 import type { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
 import { getRemapperContext } from '../utils/app';
 import { renderEmail } from '../utils/email/renderEmail';
@@ -46,12 +47,36 @@ async function handleEmail(
     mailer,
     method,
     request: { body: data },
+    user,
   } = ctx;
   if (method !== 'POST') {
     throw methodNotAllowed('Method must be POST for email actions');
   }
 
-  const context = await getRemapperContext(app, app.definition.defaultLanguage || 'en-us');
+  await user?.reload({
+    attributes: ['primaryEmail', 'name'],
+    include: [
+      {
+        required: false,
+        model: EmailAuthorization,
+        attributes: ['verified'],
+        where: {
+          email: { [Op.col]: 'User.primaryEmail' },
+        },
+      },
+    ],
+  });
+
+  const context = await getRemapperContext(
+    app,
+    app.definition.defaultLanguage || 'en-us',
+    user && {
+      sub: user.id,
+      name: user.name,
+      email: user.primaryEmail,
+      email_verified: user.EmailAuthorizations[0].verified,
+    },
+  );
   const to = remap(action.to, data, context) as string;
   const body = remap(action.body, data, context) as string;
   const sub = remap(action.subject, data, context) as string;
