@@ -3,7 +3,7 @@ import {
   Loader,
   MarkdownContent,
   Message,
-  Select,
+  SelectField,
   Subtitle,
   Title,
   useData,
@@ -95,7 +95,7 @@ export function BlockDetails(): ReactElement {
             <Subtitle level={4}>@{organization}</Subtitle>
           </header>
         </div>
-        <Select
+        <SelectField
           disabled={blockVersions.length === 1}
           label={<FormattedMessage {...messages.selectedVersion} />}
           name="selectedVersion"
@@ -108,7 +108,7 @@ export function BlockDetails(): ReactElement {
               {version}
             </option>
           ))}
-        </Select>
+        </SelectField>
 
         <Title level={4}>
           <FormattedMessage {...messages.description} />

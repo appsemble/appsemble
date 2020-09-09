@@ -2,7 +2,7 @@ import {
   Content,
   FormButtons,
   SimpleForm,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
   Title,
   useMessages,
@@ -69,14 +69,14 @@ export function Notifications(): ReactElement {
         )}
 
         <SimpleForm defaultValues={{ title: '', body: '' }} onSubmit={submit} resetOnSuccess>
-          <SimpleInput
+          <SimpleFormField
             disabled={disabled}
             label={<FormattedMessage {...messages.titleLabel} />}
             maxLength={30}
             name="title"
             required
           />
-          <SimpleInput
+          <SimpleFormField
             disabled={disabled}
             label={<FormattedMessage {...messages.bodyLabel} />}
             maxLength={100}

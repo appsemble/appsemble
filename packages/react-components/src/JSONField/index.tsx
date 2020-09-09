@@ -10,10 +10,11 @@ import React, {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { TextArea } from '..';
+import { TextAreaField } from '..';
 import { messages } from './messages';
 
-interface JSONInputProps extends ComponentPropsWithoutRef<typeof TextArea> {
+interface JSONFieldProps
+  extends Omit<ComponentPropsWithoutRef<typeof TextAreaField>, 'onChange' | 'value'> {
   /**
    * This is called when he input has changed to match a new valid JSON value.
    *
@@ -35,7 +36,7 @@ interface JSONInputProps extends ComponentPropsWithoutRef<typeof TextArea> {
  *
  * If the user enters invalid JSON, an error help message will be rendered.
  */
-export const JSONInput = forwardRef<HTMLTextAreaElement, JSONInputProps>(
+export const JSONField = forwardRef<HTMLTextAreaElement, JSONFieldProps>(
   ({ error, onChange, value, ...props }, ref): ReactElement => {
     const [oldValue, setOldValue] = useState(JSON.stringify(value, null, 2));
     const [parseError, setParseError] = useState(false);
@@ -68,12 +69,12 @@ export const JSONInput = forwardRef<HTMLTextAreaElement, JSONInputProps>(
     );
 
     return (
-      <TextArea
+      <TextAreaField
+        {...props}
         error={parseError ? <FormattedMessage {...messages.error} /> : error}
         onChange={handleChange}
         ref={ref}
         value={oldValue}
-        {...props}
       />
     );
   },

@@ -1,4 +1,4 @@
-import { JSONInput, MarkdownContent } from '@appsemble/react-components';
+import { JSONField, MarkdownContent } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
@@ -13,7 +13,7 @@ export function JSONSchemaUnknownEditor({
   value = null,
 }: CommonJSONSchemaEditorProps<any>): ReactElement {
   return (
-    <JSONInput
+    <JSONField
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}

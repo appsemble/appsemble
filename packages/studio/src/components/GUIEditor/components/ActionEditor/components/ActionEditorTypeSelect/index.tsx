@@ -1,4 +1,4 @@
-import { Select } from '@appsemble/react-components/src';
+import { SelectField } from '@appsemble/react-components/src';
 import type { ActionDefinition } from '@appsemble/types';
 import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -47,7 +47,7 @@ export function ActionEditorTypeSelect({
   );
 
   return (
-    <Select
+    <SelectField
       label={<FormattedMessage {...messages.actionType} />}
       name="type"
       onChange={handleChange}
@@ -59,6 +59,6 @@ export function ActionEditorTypeSelect({
           {action}
         </option>
       ))}
-    </Select>
+    </SelectField>
   );
 }

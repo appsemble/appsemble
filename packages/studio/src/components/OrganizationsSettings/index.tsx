@@ -7,9 +7,9 @@ import {
   Loader,
   Message,
   Modal,
-  Select,
+  SelectField,
   SimpleForm,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
   Table,
   Title,
@@ -339,16 +339,16 @@ export function OrganizationsSettings(): ReactElement {
           preprocess={calculateOrganizationId}
           resetOnSuccess
         >
-          <SimpleInput
+          <SimpleFormField
             disabled={!userInfo.email_verified}
-            iconLeft="briefcase"
+            icon="briefcase"
             label={<FormattedMessage {...messages.organizationName} />}
             name="name"
             placeholder={formatMessage(messages.organizationName)}
           />
-          <SimpleInput
+          <SimpleFormField
             disabled={!userInfo.email_verified}
-            iconLeft="at"
+            icon="at"
             label={<FormattedMessage {...messages.organizationId} />}
             maxLength={30}
             name="id"
@@ -371,7 +371,7 @@ export function OrganizationsSettings(): ReactElement {
             <Title>
               <FormattedMessage {...messages.manageOrganization} />
             </Title>
-            <Select
+            <SelectField
               disabled={organizations.length === 1}
               label={<FormattedMessage {...messages.selectedOrganization} />}
               name="selectedOrganization"
@@ -383,12 +383,12 @@ export function OrganizationsSettings(): ReactElement {
                   {org.name}
                 </option>
               ))}
-            </Select>
+            </SelectField>
 
             {canInviteMembers && (
               <SimpleForm defaultValues={{ email: '' }} onSubmit={onInviteMember}>
-                <SimpleInput
-                  iconLeft="envelope"
+                <SimpleFormField
+                  icon="envelope"
                   label={<FormattedMessage {...messages.addMemberEmail} />}
                   name="email"
                   placeholder={formatMessage(messages.email)}
@@ -436,10 +436,10 @@ export function OrganizationsSettings(): ReactElement {
                   </td>
                   <td className={`has-text-right ${styles.actionsCell}`}>
                     {canManageRoles ? (
-                      <Select
+                      <SelectField
                         defaultValue={member.role}
                         disabled={member.id === userInfo.sub || submittingRole === member.id}
-                        fullwidth={false}
+                        fullWidth={false}
                         loading={submittingRole === member.id}
                         name={`role-${member.id}`}
                         onChange={(event: ChangeEvent<HTMLSelectElement>) =>
@@ -451,7 +451,7 @@ export function OrganizationsSettings(): ReactElement {
                             {formatMessage(messages[r])}
                           </option>
                         ))}
-                      </Select>
+                      </SelectField>
                     ) : (
                       <span className="mr-2">
                         <FormattedMessage {...messages[member.role]} />

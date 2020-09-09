@@ -1,16 +1,16 @@
 import React, { ComponentPropsWithoutRef, forwardRef, useCallback, useRef, useState } from 'react';
 
-import { IconButton, Input, useCombinedRefs } from '..';
+import { IconButton, InputField, useCombinedRefs } from '..';
 
-type PasswordInputProps = Omit<
-  ComponentPropsWithoutRef<typeof Input>,
+type PasswordFieldProps = Omit<
+  ComponentPropsWithoutRef<typeof InputField>,
   'control' | 'iconLeft' | 'type'
 >;
 
 /**
  * A Bulma styled form input element.
  */
-export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>((props, ref) => {
+export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>((props, ref) => {
   const inputRef = useRef<HTMLInputElement>();
   const [visible, setVisible] = useState(false);
 
@@ -22,10 +22,10 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>((p
   const combinedRef = useCombinedRefs(ref, inputRef);
 
   return (
-    <Input
+    <InputField
       {...props}
       control={<IconButton icon={visible ? 'eye-slash' : 'eye'} onClick={toggle} />}
-      iconLeft="unlock"
+      icon="unlock"
       ref={combinedRef}
       type={visible ? 'text' : 'password'}
     />

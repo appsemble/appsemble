@@ -1,4 +1,4 @@
-import { MarkdownContent, Select } from '@appsemble/react-components';
+import { MarkdownContent, SelectField } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -17,7 +17,7 @@ export function JSONSchemaEnumEditor({
   value = '',
 }: CommonJSONSchemaEditorProps<any>): ReactElement {
   return (
-    <Select
+    <SelectField
       disabled={disabled}
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
@@ -34,6 +34,6 @@ export function JSONSchemaEnumEditor({
           {option}
         </option>
       ))}
-    </Select>
+    </SelectField>
   );
 }

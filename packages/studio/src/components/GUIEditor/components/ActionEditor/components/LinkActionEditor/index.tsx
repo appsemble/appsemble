@@ -1,4 +1,4 @@
-import { Select } from '@appsemble/react-components';
+import { SelectField } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback } from 'react';
@@ -26,7 +26,7 @@ export function LinkActionEditor({
 
   return (
     <div>
-      <Select
+      <SelectField
         help={<FormattedMessage {...messages.toHelp} />}
         label={<FormattedMessage {...messages.toLabel} />}
         name="to"
@@ -42,7 +42,7 @@ export function LinkActionEditor({
             {page.name}
           </option>
         ))}
-      </Select>
+      </SelectField>
     </div>
   );
 }

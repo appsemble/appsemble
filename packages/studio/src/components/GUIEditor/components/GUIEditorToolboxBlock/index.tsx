@@ -1,4 +1,4 @@
-import { Input, ValuePickerProvider } from '@appsemble/react-components';
+import { InputField, ValuePickerProvider } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import type { NamedEvent } from '@appsemble/web-utils';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
@@ -39,7 +39,7 @@ export function GUIEditorToolboxBlock({
 
   return (
     <div>
-      <Input
+      <InputField
         label={<FormattedMessage {...messages.search} />}
         name="search"
         onChange={onChangeSearch}

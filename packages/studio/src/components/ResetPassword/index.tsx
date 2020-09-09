@@ -4,7 +4,7 @@ import {
   Message,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
 } from '@appsemble/react-components';
 import axios from 'axios';
@@ -38,9 +38,9 @@ export function ResetPassword(): ReactElement {
           <SimpleFormError>
             {() => <FormattedMessage {...messages.requestFailed} />}
           </SimpleFormError>
-          <SimpleInput
+          <SimpleFormField
             autoComplete="email"
-            iconLeft="envelope"
+            icon="envelope"
             label={<FormattedMessage {...messages.emailLabel} />}
             name="email"
             required

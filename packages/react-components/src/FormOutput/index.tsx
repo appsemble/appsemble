@@ -1,9 +1,10 @@
-import { IconButton, Input, useMessages } from '@appsemble/react-components';
 import React, { ComponentPropsWithoutRef, ReactElement, useCallback, useRef } from 'react';
+
+import { IconButton, InputField, useMessages } from '..';
 
 interface FormOutputProps
   extends Omit<
-    ComponentPropsWithoutRef<typeof Input>,
+    ComponentPropsWithoutRef<typeof InputField>,
     'control' | 'onChange' | 'readOnly' | 'required'
   > {
   /**
@@ -46,9 +47,8 @@ export function FormOutput({
   }, [copyErrorMessage, copySuccessMessage, push]);
 
   return (
-    <Input
+    <InputField
       control={<IconButton icon="copy" onClick={onClick} />}
-      onChange={null}
       readOnly
       ref={ref}
       // Hide the (Optional) label.

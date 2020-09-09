@@ -8,69 +8,49 @@ import React, {
   useCallback,
 } from 'react';
 
-import { FormComponent } from '..';
+type CheckboxProps = Omit<
+  ComponentPropsWithoutRef<'input'>,
+  'value' | 'label' | 'onChange' | 'title'
+> & {
+  /**
+   * If true, tender an error color.
+   */
+  error?: boolean;
 
-type CheckboxProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
-  Omit<ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
-    error?: any;
+  /**
+   * This is fired when the input value has changed.
+   */
+  onChange: (event: ChangeEvent<HTMLInputElement>, value: boolean) => void;
 
-    /**
-     * The name of the HTML element.
-     */
-    name: string;
+  /**
+   * The title to display right of the checkbox.
+   */
+  label?: ReactNode;
 
-    /**
-     * A help message to render next to the checkbox.
-     */
-    help?: ReactNode;
+  /**
+   * Whether or not the checkbox is checked.
+   */
+  value?: boolean;
 
-    /**
-     * This is fired when the input value has changed.
-     */
-    onChange: (event: ChangeEvent<HTMLInputElement>, value: boolean) => void;
+  /**
+   * Whether the component should render as a switch or as a square checkbox.
+   */
+  switch?: boolean;
 
-    /**
-     * Whether or not the checkbox is checked.
-     */
-    value?: boolean;
-
-    /**
-     * Whether the component should render as a switch or as a square checkbox.
-     */
-    switch?: boolean;
-
-    /**
-     * Whether the label should be displayed to the right of the checkbox or to the left.
-     *
-     * By default (false), the label will be rendered after the checkbox.
-     */
-    rtl?: boolean;
-
-    /**
-     * The class used for the FormComponent wrapper.
-     */
-    wrapperClassName?: string;
-  };
+  /**
+   * Whether the label should be displayed to the right of the checkbox or to the left.
+   *
+   * By default (false), the label will be rendered after the checkbox.
+   */
+  rtl?: boolean;
+};
 
 /**
  * A Bulma styled form select element.
  */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
-    {
-      className,
-      wrapperClassName,
-      error,
-      help = null,
-      label,
-      name,
-      onChange,
-      value,
-      id = name,
-      switch: isSwitch,
-      rtl,
-      ...props
-    },
+    { className, error, label, name, onChange, value, id = name, switch: isSwitch, rtl, ...props },
     ref,
   ): ReactElement => {
     const handleChange = useCallback(
@@ -81,15 +61,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     );
 
     return (
-      <FormComponent className={wrapperClassName} id={id} label={label} required>
+      <span className={className}>
         <input
           {...props}
           checked={value}
-          className={classNames(
-            isSwitch ? 'switch' : 'is-checkradio',
-            { 'is-rtl': rtl },
-            className,
-          )}
+          className={classNames(isSwitch ? 'switch' : 'is-checkradio', { 'is-rtl': rtl })}
           id={id}
           name={name}
           onChange={handleChange}
@@ -97,9 +73,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           type="checkbox"
         />
         <label className={classNames({ 'is-danger': error })} htmlFor={id}>
-          {help}
+          {label}
         </label>
-      </FormComponent>
+      </span>
     );
   },
 );

@@ -2,7 +2,7 @@ import {
   Button,
   Calendar,
   CardFooterButton,
-  Checkbox,
+  CheckboxField,
   Content,
   FormOutput,
   Join,
@@ -10,7 +10,7 @@ import {
   Message,
   Modal,
   SimpleForm,
-  SimpleInput,
+  SimpleFormField,
   SimpleModalFooter,
   Table,
   Title,
@@ -139,14 +139,14 @@ export function ClientCredentials(): ReactElement {
           />
         ) : (
           <>
-            <SimpleInput
+            <SimpleFormField
               help={<FormattedMessage {...messages.descriptionHelp} />}
               label={<FormattedMessage {...messages.description} />}
               maxLength={50}
               name="description"
               required
             />
-            <SimpleInput
+            <SimpleFormField
               component={Calendar}
               displayMode="inline"
               help={<FormattedMessage {...messages.expiresHelp} />}
@@ -154,23 +154,23 @@ export function ClientCredentials(): ReactElement {
               name="expires"
               type="date"
             />
-            <SimpleInput
-              component={Checkbox}
-              help={<FormattedMessage {...messages['blocks:write']} />}
+            <SimpleFormField
+              component={CheckboxField}
               label="blocks:write"
               name="blocks:write"
+              title={<FormattedMessage {...messages['blocks:write']} />}
             />
-            <SimpleInput
-              component={Checkbox}
-              help={<FormattedMessage {...messages['organizations:write']} />}
+            <SimpleFormField
+              component={CheckboxField}
               label="organizations:write"
               name="organizations:write"
+              title={<FormattedMessage {...messages['organizations:write']} />}
             />
-            <SimpleInput
-              component={Checkbox}
-              help={<FormattedMessage {...messages['apps:write']} />}
+            <SimpleFormField
+              component={CheckboxField}
               label="apps:write"
               name="apps:write"
+              title={<FormattedMessage {...messages['apps:write']} />}
             />
           </>
         )}

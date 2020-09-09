@@ -1,12 +1,12 @@
 import {
   Button,
-  Checkbox,
+  CheckboxField,
   Message,
   Modal,
-  Select,
+  SelectField,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleModalFooter,
   useData,
   useToggle,
@@ -92,15 +92,15 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
             )
           }
         </SimpleFormError>
-        <SimpleInput
+        <SimpleFormField
           label={<FormattedMessage {...messages.name} />}
           maxLength={30}
           minLength={1}
           name="name"
           required
         />
-        <SimpleInput
-          component={Select}
+        <SimpleFormField
+          component={SelectField}
           disabled={organizations?.length === 1}
           label={<FormattedMessage {...messages.organization} />}
           name="selectedOrganization"
@@ -111,14 +111,14 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
               {organization.id}
             </option>
           ))}
-        </SimpleInput>
-        <SimpleInput
+        </SimpleFormField>
+        <SimpleFormField
           label={<FormattedMessage {...messages.description} />}
           maxLength={80}
           name="description"
         />
-        <SimpleInput
-          component={Select}
+        <SimpleFormField
+          component={SelectField}
           label={<FormattedMessage {...messages.template} />}
           name="selectedTemplate"
           onChange={({ currentTarget }) => setSelectedTemplate(currentTarget.value)}
@@ -129,20 +129,20 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
               {template.name}
             </option>
           ))}
-        </SimpleInput>
+        </SimpleFormField>
         <Message>{templates[selectedTemplate].description}</Message>
-        <SimpleInput
-          component={Checkbox}
-          help={<FormattedMessage {...messages.privateHelp} />}
+        <SimpleFormField
+          component={CheckboxField}
           label={<FormattedMessage {...messages.private} />}
           name="isPrivate"
+          title={<FormattedMessage {...messages.privateHelp} />}
         />
         {templates[selectedTemplate].resources && (
-          <SimpleInput
-            component={Checkbox}
-            help={<FormattedMessage {...messages.includeResources} />}
+          <SimpleFormField
+            component={CheckboxField}
             label={<FormattedMessage {...messages.resources} />}
             name="includeResources"
+            title={<FormattedMessage {...messages.includeResources} />}
           />
         )}
       </Modal>
