@@ -2,11 +2,21 @@ import type { BlockProps } from '@appsemble/preact';
 import type { BulmaColor, Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
-interface AbstractField {
+interface AbstractField<T extends string> {
   /**
    * The label that is presented to the user. No label will be displayed if this is not defined.
    */
   label?: Remapper;
+
+  /**
+   * The Remapper used to retrieve the data.
+   */
+  value?: Remapper;
+
+  /**
+   * The name of the type of the field.
+   */
+  type: T;
 }
 
 interface AbstractMarkerIcon {
@@ -62,17 +72,10 @@ interface AssetMarkerIcon extends AbstractMarkerIcon {
   asset: number;
 }
 
-export interface FileField extends AbstractField {
-  /**
-   * The Remapper used to retrieve the data.
-   */
-  name: Remapper;
-
-  /**
-   * Displays files as images.
-   */
-  type: 'file';
-
+/**
+ * Displays files as images.
+ */
+export interface FileField extends AbstractField<'file'> {
   /**
    * Display one or multiple files.
    */
@@ -86,14 +89,17 @@ export interface FileField extends AbstractField {
   repeatedName?: Remapper;
 }
 
-export interface GeoCoordinatesField extends AbstractField {
+/**
+ * Displays a map with a marker.
+ */
+export interface GeoCoordinatesField extends AbstractField<'geocoordinates'> {
   /**
    * The path to base the longitude and latitude fields from.
    *
    * If `fields[].latitude` and `fields[].longitude` are not set it defaults to `fields[].name.lat`
    * and `fields[].name.lng`.
    */
-  name?: Remapper;
+  value?: Remapper;
 
   /**
    * The name of the field used to access the longitude value.
@@ -110,26 +116,14 @@ export interface GeoCoordinatesField extends AbstractField {
    * the data.
    */
   longitude?: Remapper;
-
-  /**
-   * Displays a map with a marker.
-   */
-  type: 'geocoordinates';
 }
 
-export interface StringField extends AbstractField {
-  /**
-   * The Remapper used to retrieve the data.
-   */
-  name: Remapper;
-
-  /**
-   * Displays the content as regular text.
-   *
-   * If the content is an object it will be converted using `JSON.stringify()`.
-   */
-  type?: 'string';
-}
+/**
+ * Displays the content as regular text.
+ *
+ * If the content is an object it will be converted using `JSON.stringify()`.
+ */
+export type StringField = AbstractField<'string'>;
 
 export type Field = FileField | GeoCoordinatesField | StringField;
 
