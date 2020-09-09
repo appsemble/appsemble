@@ -11,6 +11,7 @@ type InputFieldProps = SharedFormComponentProps &
 export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
   (
     {
+      addon,
       className,
       control,
       error,
@@ -27,6 +28,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     ref,
   ) => (
     <FormComponent
+      addon={addon}
       className={className}
       control={control}
       error={error}

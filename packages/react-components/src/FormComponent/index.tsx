@@ -12,6 +12,11 @@ import { messages } from './messages';
  */
 export interface SharedFormComponentProps {
   /**
+   * A Bulma addon to display.
+   */
+  addon?: ReactNode;
+
+  /**
    * An additional control node to render right of the form field.
    */
   control?: ReactElement;
@@ -65,6 +70,7 @@ export interface FormComponentProps extends SharedFormComponentProps {
  * A wrapper for creating consistent form components.
  */
 export function FormComponent({
+  addon,
   children,
   className,
   control,
@@ -82,6 +88,19 @@ export function FormComponent({
     </span>
   );
 
+  const controls = (
+    <div
+      className={classNames(`control ${styles.control}`, {
+        'has-icons-left': icon,
+        'has-icons-right': control,
+      })}
+    >
+      {children}
+      {icon && <Icon className="is-left" icon={icon} />}
+      {control && cloneElement(control, { className: 'is-right' })}
+    </div>
+  );
+
   return (
     <div className={classNames('field', className)}>
       {label ? (
@@ -94,24 +113,24 @@ export function FormComponent({
           )}
         </label>
       ) : null}
-      <div
-        className={classNames('control', {
-          'has-icons-left': icon,
-          'has-icons-right': control,
-        })}
-      >
-        {children}
-        {icon && <Icon className="is-left" icon={icon} />}
-        {control && cloneElement(control, { className: 'is-right' })}
-        {helpExtra ? (
-          <div className={`${styles.help} is-flex`}>
-            {helpContent}
-            <span className={`help ml-1 ${styles.counter}`}>{helpExtra}</span>
-          </div>
-        ) : (
-          helpContent
-        )}
-      </div>
+      {addon ? (
+        <div className="field is-marginless has-addons">
+          {controls}
+          <label className="control" htmlFor={id}>
+            {addon}
+          </label>
+        </div>
+      ) : (
+        controls
+      )}
+      {helpExtra ? (
+        <div className={`${styles.help} is-flex`}>
+          {helpContent}
+          <span className={`help ml-1 ${styles.counter}`}>{helpExtra}</span>
+        </div>
+      ) : (
+        helpContent
+      )}
     </div>
   );
 }

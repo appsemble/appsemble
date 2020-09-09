@@ -1,3 +1,7 @@
+.control {
+  flex: 1;
+}
+
 .help {
   justify-content: space-between;
   min-height: 1em;

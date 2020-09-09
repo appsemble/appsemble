@@ -20,7 +20,6 @@ import React, { ChangeEvent, ReactElement, useCallback, useMemo, useState } from
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
-import { getAppUrl } from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import styles from './index.css';
 import { messages } from './messages';
@@ -32,7 +31,6 @@ export function AppSettings(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const [icon, setIcon] = useState<File>();
-  const [newPath, setNewPath] = useState(app.path);
 
   const push = useMessages();
   const iconUrl = useObjectURL(icon || app.iconUrl);
@@ -56,12 +54,6 @@ export function AppSettings(): ReactElement {
 
   const onIconChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setIcon(e.currentTarget.files[0]);
-  }, []);
-
-  const processPath = useCallback((value: string) => {
-    const p = normalize(value);
-    setNewPath(p);
-    return p;
   }, []);
 
   const onDelete = useConfirmation({
@@ -114,18 +106,17 @@ export function AppSettings(): ReactElement {
             title={<FormattedMessage {...messages.private} />}
           />
           <SimpleFormField
-            help={
-              <>
-                <FormattedMessage {...messages.pathDescription} />
-                <br />
-                {getAppUrl(app.OrganizationId, newPath)}
-              </>
+            addon={
+              <span className="button is-static">
+                {`${app.OrganizationId}.${window.location.host}`}
+              </span>
             }
+            help={<FormattedMessage {...messages.pathDescription} />}
             label={<FormattedMessage {...messages.path} />}
             maxLength={30}
             name="path"
             placeholder={normalize(app.definition.name)}
-            preprocess={processPath}
+            preprocess={(value) => normalize(value)}
             required
           />
           <SimpleFormField

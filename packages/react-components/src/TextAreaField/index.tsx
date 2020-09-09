@@ -12,6 +12,7 @@ type TextAreaFieldProps = SharedFormComponentProps &
 export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
   (
     {
+      addon,
       className,
       control,
       error,
@@ -37,6 +38,7 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
 
     return (
       <FormComponent
+        addon={addon}
         className={className}
         control={control}
         error={error}
