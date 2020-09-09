@@ -10,7 +10,7 @@ import {
   Message,
   Modal,
   SimpleForm,
-  SimpleInput,
+  SimpleFormField,
   SimpleModalFooter,
   Table,
   Title,
@@ -139,14 +139,14 @@ export function ClientCredentials(): ReactElement {
           />
         ) : (
           <>
-            <SimpleInput
+            <SimpleFormField
               help={<FormattedMessage {...messages.descriptionHelp} />}
               label={<FormattedMessage {...messages.description} />}
               maxLength={50}
               name="description"
               required
             />
-            <SimpleInput
+            <SimpleFormField
               component={Calendar}
               displayMode="inline"
               help={<FormattedMessage {...messages.expiresHelp} />}
@@ -154,19 +154,19 @@ export function ClientCredentials(): ReactElement {
               name="expires"
               type="date"
             />
-            <SimpleInput
+            <SimpleFormField
               component={Checkbox}
               help={<FormattedMessage {...messages['blocks:write']} />}
               label="blocks:write"
               name="blocks:write"
             />
-            <SimpleInput
+            <SimpleFormField
               component={Checkbox}
               help={<FormattedMessage {...messages['organizations:write']} />}
               label="organizations:write"
               name="organizations:write"
             />
-            <SimpleInput
+            <SimpleFormField
               component={Checkbox}
               help={<FormattedMessage {...messages['apps:write']} />}
               label="apps:write"

@@ -1,10 +1,7 @@
 import BulmaCalendar, { Options } from 'bulma-calendar';
-import classNames from 'classnames';
 import React, {
-  cloneElement,
   ComponentPropsWithoutRef,
   forwardRef,
-  isValidElement,
   ReactElement,
   ReactNode,
   useEffect,
@@ -12,7 +9,7 @@ import React, {
   useRef,
 } from 'react';
 
-import { FormComponent, Icon } from '..';
+import { FormComponent } from '..';
 
 type CalendarProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
@@ -62,7 +59,7 @@ export const Calendar = forwardRef<HTMLInputElement, CalendarProps>(
       control,
       displayMode,
       error,
-      iconLeft,
+      icon,
       help,
       label,
       maxLength,
@@ -101,8 +98,10 @@ export const Calendar = forwardRef<HTMLInputElement, CalendarProps>(
 
     return (
       <FormComponent
-        iconLeft={iconLeft}
-        iconRight={Boolean(control)}
+        control={control}
+        error={error}
+        help={help}
+        icon={icon}
         id={id}
         label={label}
         required={required}
@@ -116,11 +115,6 @@ export const Calendar = forwardRef<HTMLInputElement, CalendarProps>(
           ref={inputRef}
           required={required}
         />
-        {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        {control && cloneElement(control, { className: 'is-right' })}
-        <p className={classNames('help', { 'is-danger': error })}>
-          {isValidElement(error) ? error : help}
-        </p>
       </FormComponent>
     );
   },

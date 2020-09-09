@@ -2,9 +2,9 @@ import {
   Button,
   Modal,
   SimpleForm,
-  SimpleInput,
+  SimpleFormField,
   SimpleModalFooter,
-  TextArea,
+  TextAreaField,
   useToggle,
 } from '@appsemble/react-components';
 import type { App, Rating } from '@appsemble/types';
@@ -55,15 +55,15 @@ export function RateApp({ app, onRate }: RateAppProps): ReactElement {
         resetOnSuccess
         title={<FormattedMessage {...messages.rateApp} />}
       >
-        <SimpleInput
+        <SimpleFormField
           // @ts-expect-error XXX This shouldn’t be needed.
           component={RatingField}
           label={<FormattedMessage {...messages.rating} />}
           name="rating"
           required
         />
-        <SimpleInput
-          component={TextArea}
+        <SimpleFormField
+          component={TextAreaField}
           label={<FormattedMessage {...messages.review} />}
           maxLength={500}
           name="description"

@@ -6,7 +6,7 @@ import {
   Message,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
   Table,
   Title,
@@ -117,9 +117,9 @@ export function UserSettings(): ReactElement {
         </Title>
         <SimpleForm defaultValues={{ name: userInfo.name || '' }} onSubmit={onSaveProfile}>
           <SimpleFormError>{() => <FormattedMessage {...messages.submitError} />}</SimpleFormError>
-          <SimpleInput
+          <SimpleFormField
             help={<FormattedMessage {...messages.displayNameHelp} />}
-            iconLeft="user"
+            icon="user"
             label={<FormattedMessage {...messages.displayName} />}
             name="name"
             placeholder={formatMessage(messages.displayName)}
@@ -146,8 +146,8 @@ export function UserSettings(): ReactElement {
               )
             }
           </SimpleFormError>
-          <SimpleInput
-            iconLeft="envelope"
+          <SimpleFormField
+            icon="envelope"
             label={<FormattedMessage {...messages.addEmail} />}
             name="email"
             placeholder={formatMessage(messages.email)}

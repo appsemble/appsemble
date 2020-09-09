@@ -9,25 +9,19 @@ import React, {
 } from 'react';
 
 import { FormComponent } from '..';
+import type { SharedFormComponentProps } from '../FormComponent';
 
-type CheckboxProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
-  Omit<ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
-    error?: any;
-
-    /**
-     * The name of the HTML element.
-     */
-    name: string;
-
-    /**
-     * A help message to render next to the checkbox.
-     */
-    help?: ReactNode;
-
+type CheckboxFieldProps = SharedFormComponentProps &
+  Omit<ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange' | 'title'> & {
     /**
      * This is fired when the input value has changed.
      */
     onChange: (event: ChangeEvent<HTMLInputElement>, value: boolean) => void;
+
+    /**
+     * The title to display right of the checkbox.
+     */
+    title: ReactNode;
 
     /**
      * Whether or not the checkbox is checked.
@@ -55,7 +49,7 @@ type CheckboxProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'child
 /**
  * A Bulma styled form select element.
  */
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
+export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
   (
     {
       className,
@@ -68,6 +62,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       value,
       id = name,
       switch: isSwitch,
+      title,
       rtl,
       ...props
     },
@@ -81,7 +76,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     );
 
     return (
-      <FormComponent className={wrapperClassName} id={id} label={label} required>
+      <FormComponent className={wrapperClassName} help={help} id={id} label={label} required>
         <input
           {...props}
           checked={value}
@@ -97,7 +92,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           type="checkbox"
         />
         <label className={classNames({ 'is-danger': error })} htmlFor={id}>
-          {help}
+          {title}
         </label>
       </FormComponent>
     );

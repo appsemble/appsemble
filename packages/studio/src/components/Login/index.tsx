@@ -2,10 +2,10 @@ import {
   Content,
   FormButtons,
   OAuth2LoginButton,
-  PasswordInput,
+  PasswordField,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
   useQuery,
   useToggle,
@@ -53,10 +53,10 @@ export function Login(): ReactElement {
       <HelmetIntl title={messages.title} />
       <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={onPasswordLogin}>
         <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
-        <SimpleInput
+        <SimpleFormField
           autoComplete="email"
           disabled={busy.enabled}
-          iconLeft="envelope"
+          icon="envelope"
           label={<FormattedMessage {...messages.emailLabel} />}
           name="email"
           required
@@ -66,9 +66,9 @@ export function Login(): ReactElement {
             valueMissing: <FormattedMessage {...messages.emailRequired} />,
           }}
         />
-        <SimpleInput
+        <SimpleFormField
           autoComplete="current-password"
-          component={PasswordInput}
+          component={PasswordField}
           disabled={busy.enabled}
           label={<FormattedMessage {...messages.passwordLabel} />}
           name="password"

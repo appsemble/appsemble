@@ -1,13 +1,13 @@
 import {
   Button,
-  Checkbox,
+  CheckboxField,
   Content,
   FileUpload,
   FormButtons,
   Message,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
   useConfirmation,
   useMessages,
@@ -106,20 +106,14 @@ export function AppSettings(): ReactElement {
             }
           />
           <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
-          <div className="mb-3">
-            <SimpleInput
-              className="is-marginless"
-              component={Checkbox}
-              help={<FormattedMessage {...messages.private} />}
-              label={<FormattedMessage {...messages.privateLabel} />}
-              name="private"
-              wrapperClassName="mb-0"
-            />
-            <p className="help">
-              <FormattedMessage {...messages.privateDescription} />
-            </p>
-          </div>
-          <SimpleInput
+          <SimpleFormField
+            component={CheckboxField}
+            help={<FormattedMessage {...messages.privateDescription} />}
+            label={<FormattedMessage {...messages.privateLabel} />}
+            name="private"
+            title={<FormattedMessage {...messages.private} />}
+          />
+          <SimpleFormField
             help={
               <>
                 <FormattedMessage {...messages.pathDescription} />
@@ -134,7 +128,7 @@ export function AppSettings(): ReactElement {
             preprocess={processPath}
             required
           />
-          <SimpleInput
+          <SimpleFormField
             help={
               <FormattedMessage
                 {...messages.domainDescription}

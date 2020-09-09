@@ -4,9 +4,9 @@ import {
   Checkbox,
   Content,
   Modal,
-  Select,
+  SelectField,
   SimpleForm,
-  SimpleInput,
+  SimpleFormField,
   Subtitle,
   Title,
   useData,
@@ -114,15 +114,15 @@ export function AppDetails(): ReactElement {
                 onSubmit={cloneApp}
                 title={<FormattedMessage {...messages.clone} />}
               >
-                <SimpleInput
+                <SimpleFormField
                   help={<FormattedMessage {...messages.nameDescription} />}
                   label={<FormattedMessage {...messages.name} />}
                   maxLength={30}
                   name="name"
                   required
                 />
-                <SimpleInput<typeof Select>
-                  component={Select}
+                <SimpleFormField
+                  component={SelectField}
                   disabled={organizations.length === 1}
                   label={<FormattedMessage {...messages.organization} />}
                   name="selectedOrganization"
@@ -133,21 +133,21 @@ export function AppDetails(): ReactElement {
                       {org.name ?? org.id}
                     </option>
                   ))}
-                </SimpleInput>
-                <SimpleInput
+                </SimpleFormField>
+                <SimpleFormField
                   help={<FormattedMessage {...messages.descriptionDescription} />}
                   label={<FormattedMessage {...messages.description} />}
                   maxLength={80}
                   name="description"
                 />
-                <SimpleInput<typeof Checkbox>
+                <SimpleFormField
                   component={Checkbox}
                   help={<FormattedMessage {...messages.privateDescription} />}
                   label={<FormattedMessage {...messages.private} />}
                   name="private"
                 />
                 {app.resources && (
-                  <SimpleInput<typeof Checkbox>
+                  <SimpleFormField
                     component={Checkbox}
                     help={<FormattedMessage {...messages.resourcesDescription} />}
                     label={<FormattedMessage {...messages.resources} />}

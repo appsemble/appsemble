@@ -2,10 +2,10 @@ import {
   Content,
   FormButtons,
   Message,
-  PasswordInput,
+  PasswordField,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
   useQuery,
 } from '@appsemble/react-components';
@@ -45,9 +45,9 @@ export function EditPassword(): ReactElement {
           <SimpleFormError>
             {() => <FormattedMessage {...messages.requestFailed} />}
           </SimpleFormError>
-          <SimpleInput
+          <SimpleFormField
             autoComplete="new-password"
-            component={PasswordInput}
+            component={PasswordField}
             label={<FormattedMessage {...messages.passwordLabel} />}
             name="password"
             required

@@ -1,4 +1,4 @@
-import { Input, MarkdownContent } from '@appsemble/react-components';
+import { InputField, MarkdownContent } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
 
@@ -14,7 +14,7 @@ export function JSONSchemaStringEditor({
   schema,
   value = '',
 }: CommonJSONSchemaEditorProps<number | string>): ReactElement {
-  let type: ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
+  let type: ComponentPropsWithoutRef<typeof InputField>['type'] = 'text';
 
   if (schema.type === 'integer' || schema.type === 'number') {
     type = 'number';
@@ -29,7 +29,7 @@ export function JSONSchemaStringEditor({
   }
 
   return (
-    <Input
+    <InputField
       disabled={disabled}
       help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}

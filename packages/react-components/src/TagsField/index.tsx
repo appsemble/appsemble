@@ -4,16 +4,16 @@ import type { NamedEvent } from '@appsemble/web-utils';
 import BulmaTagsInput, { BulmaTagsInputOptions } from '@creativebulma/bulma-tagsinput';
 import React, { ComponentPropsWithoutRef, forwardRef, useEffect, useRef } from 'react';
 
-import { Input, useCombinedRefs } from '..';
+import { InputField, useCombinedRefs } from '..';
 
-type TagsInputProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'onChange' | 'value'> &
+type TagsFieldProps = Omit<ComponentPropsWithoutRef<typeof InputField>, 'onChange' | 'value'> &
   Pick<BulmaTagsInputOptions, 'delimiter'> & {
     onChange: (event: NamedEvent<HTMLInputElement>, value: string[]) => void;
 
     value?: string[];
   };
 
-export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
+export const TagsField = forwardRef<HTMLInputElement, TagsFieldProps>(
   ({ delimiter, onChange, ...props }, ref) => {
     const innerRef = useRef<HTMLInputElement>();
     const bulmaInputRef = useRef<BulmaTagsInput>();
@@ -47,6 +47,6 @@ export const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
       };
     }, [onChange]);
 
-    return <Input onChange={null} ref={mergedRef} {...props} />;
+    return <InputField ref={mergedRef} {...props} />;
   },
 );

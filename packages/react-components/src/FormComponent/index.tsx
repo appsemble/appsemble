@@ -1,11 +1,43 @@
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import React, { ReactElement, ReactNode } from 'react';
+import React, { cloneElement, isValidElement, ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { Icon } from '../Icon';
+import styles from './index.css';
 import { messages } from './messages';
 
-export interface FormComponentProps {
+/**
+ * These props are typically inherited by a component that implements `FormComponent`.
+ */
+export interface SharedFormComponentProps {
+  /**
+   * An additional control node to render right of the form field.
+   */
+  control?: ReactElement;
+
+  /**
+   * An error message to render. This will also make the help text red.
+   */
+  error?: ReactNode;
+
+  /**
+   * A help message to render.
+   */
+  help?: ReactNode;
+
+  /**
+   * A fontaweome icon to render on the left side of the input.
+   */
+  icon?: IconName;
+
+  /**
+   * The label element to render.
+   */
+  label?: ReactNode;
+}
+
+export interface FormComponentProps extends SharedFormComponentProps {
   children: ReactNode;
 
   /**
@@ -19,16 +51,9 @@ export interface FormComponentProps {
   id?: string;
 
   /**
-   * A fontaweome icon to render on the left side of the input.
+   * An extra message to display right of the help text.
    */
-  iconLeft?: IconName;
-
-  iconRight?: boolean;
-
-  /**
-   * The label element to render.
-   */
-  label?: ReactNode;
+  helpExtra?: ReactNode;
 
   /**
    * Whether or not the input is required.
@@ -42,12 +67,21 @@ export interface FormComponentProps {
 export function FormComponent({
   children,
   className,
-  iconLeft,
-  iconRight,
+  control,
+  error,
+  help,
+  helpExtra,
+  icon,
   id,
   label,
   required,
 }: FormComponentProps): ReactElement {
+  const helpContent = (
+    <span className={classNames('help', { 'is-danger': error })}>
+      {isValidElement(error) ? error : help}
+    </span>
+  );
+
   return (
     <div className={classNames('field', className)}>
       {label ? (
@@ -62,11 +96,21 @@ export function FormComponent({
       ) : null}
       <div
         className={classNames('control', {
-          'has-icons-left': iconLeft,
-          'has-icons-right': iconRight,
+          'has-icons-left': icon,
+          'has-icons-right': control,
         })}
       >
         {children}
+        {icon && <Icon className="is-left" icon={icon} />}
+        {control && cloneElement(control, { className: 'is-right' })}
+        {helpExtra ? (
+          <div className={`${styles.help} is-flex`}>
+            {helpContent}
+            <span className={`help ml-1 ${styles.counter}`}>{helpExtra}</span>
+          </div>
+        ) : (
+          helpContent
+        )}
       </div>
     </div>
   );
