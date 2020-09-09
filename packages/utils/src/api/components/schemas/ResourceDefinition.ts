@@ -31,6 +31,14 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
   additionalProperties: {
     type: 'object',
     properties: {
+      expires: {
+        type: 'string',
+        description: `
+        A time string representing when a resource should expire.
+
+        Example: 1d 8h 30m
+        `,
+      },
       schema: {
         type: 'object',
         additionalProperties: true,

@@ -371,6 +371,13 @@ export interface ResourceDefinition {
    * The references this resources has to other resources.
    */
   references?: { [property: string]: ResourceReference };
+
+  /**
+   * A time string representing when a resource should expire.
+   *
+   * Example: 1d 8h 30m
+   */
+  expires?: string;
 }
 
 export interface BlobUploadType {

@@ -11,5 +11,9 @@ export const Resource: OpenAPIV3.NonArraySchemaObject = {
     $clonable: {
       type: 'boolean',
     },
+    $expires: {
+      type: 'string',
+      format: 'date-time',
+    },
   },
 };
