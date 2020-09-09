@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { cloneElement, isValidElement, ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Icon } from '../Icon';
+import { Icon } from '..';
 import styles from './index.css';
 import { messages } from './messages';
 

@@ -1,7 +1,7 @@
 import {
   Button,
   CardFooterButton,
-  Checkbox,
+  CheckboxField,
   Content,
   Modal,
   SelectField,
@@ -141,17 +141,17 @@ export function AppDetails(): ReactElement {
                   name="description"
                 />
                 <SimpleFormField
-                  component={Checkbox}
-                  help={<FormattedMessage {...messages.privateDescription} />}
+                  component={CheckboxField}
                   label={<FormattedMessage {...messages.private} />}
                   name="private"
+                  title={<FormattedMessage {...messages.privateDescription} />}
                 />
                 {app.resources && (
                   <SimpleFormField
-                    component={Checkbox}
-                    help={<FormattedMessage {...messages.resourcesDescription} />}
+                    component={CheckboxField}
                     label={<FormattedMessage {...messages.resources} />}
                     name="resources"
+                    title={<FormattedMessage {...messages.resourcesDescription} />}
                   />
                 )}
               </Modal>

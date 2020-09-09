@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { TextAreaField } from '../TextAreaField';
+import { TextAreaField } from '..';
 import { messages } from './messages';
 
 interface JSONFieldProps

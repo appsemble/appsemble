@@ -1,6 +1,6 @@
 import {
   Button,
-  Checkbox,
+  CheckboxField,
   Message,
   Modal,
   SelectField,
@@ -132,17 +132,17 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
         </SimpleFormField>
         <Message>{templates[selectedTemplate].description}</Message>
         <SimpleFormField
-          component={Checkbox}
-          help={<FormattedMessage {...messages.privateHelp} />}
+          component={CheckboxField}
           label={<FormattedMessage {...messages.private} />}
           name="isPrivate"
+          title={<FormattedMessage {...messages.privateHelp} />}
         />
         {templates[selectedTemplate].resources && (
           <SimpleFormField
-            component={Checkbox}
-            help={<FormattedMessage {...messages.includeResources} />}
+            component={CheckboxField}
             label={<FormattedMessage {...messages.resources} />}
             name="includeResources"
+            title={<FormattedMessage {...messages.includeResources} />}
           />
         )}
       </Modal>

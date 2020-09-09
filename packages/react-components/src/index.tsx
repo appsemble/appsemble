@@ -2,6 +2,7 @@ export * from './applyRefs';
 export * from './Button';
 export * from './Calendar';
 export * from './CardFooterButton';
+export * from './Checkbox';
 export * from './CheckboxField';
 export * from './Content';
 export * from './Confirmation';
