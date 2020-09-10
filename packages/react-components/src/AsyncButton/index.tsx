@@ -1,4 +1,3 @@
-import { Button } from '@appsemble/react-components';
 import React, {
   ComponentPropsWithoutRef,
   MouseEvent,
@@ -7,9 +6,11 @@ import React, {
   useState,
 } from 'react';
 
+import { Button } from '..';
+
 interface AsyncButtonProps extends ComponentPropsWithoutRef<typeof Button> {
   /**
-   * The asynchtonous action to perform when the button is clicked.
+   * The asynchronous action to perform when the button is clicked.
    */
   onClick: (event: MouseEvent<HTMLButtonElement>) => Promise<void>;
 }
