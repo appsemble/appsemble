@@ -1,6 +1,5 @@
 import type { Argv } from 'yargs';
 
-import { readPackageJson } from '../lib/readPackageJson';
 import { serverImport } from '../lib/serverImport';
 import type { BaseArguments } from '../types';
 
@@ -9,10 +8,6 @@ export const description = 'Deletes all expired resources from the database.';
 
 export function builder(yargs: Argv): Argv {
   return yargs
-    .positional('to', {
-      desc: 'The database version to migrate to.',
-      default: readPackageJson().version,
-    })
     .option('database-host', {
       desc:
         'The host of the database to connect to. This defaults to the connected database container.',
