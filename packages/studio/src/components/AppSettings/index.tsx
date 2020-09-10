@@ -14,7 +14,7 @@ import {
   useObjectURL,
 } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
+import { domainPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -23,6 +23,15 @@ import { Link, useHistory } from 'react-router-dom';
 import { useApp } from '../AppContext';
 import styles from './index.css';
 import { messages } from './messages';
+
+function preprocessDomain(domain: string): string {
+  return domain
+    .trim()
+    .replace(/^https?:\/\//, '')
+    .split(/\./g)
+    .map((node) => normalize(node, false).slice(0, 63))
+    .join('.');
+}
 
 /**
  * Render the app settings view.
@@ -108,7 +117,7 @@ export function AppSettings(): ReactElement {
           <SimpleFormField
             addon={
               <span className="button is-static">
-                {`${app.OrganizationId}.${window.location.host}`}
+                {`.${app.OrganizationId}.${window.location.host}`}
               </span>
             }
             help={<FormattedMessage {...messages.pathDescription} />}
@@ -134,7 +143,11 @@ export function AppSettings(): ReactElement {
             }
             label={<FormattedMessage {...messages.domain} />}
             name="domain"
-            type="url"
+            pattern={domainPattern}
+            preprocess={preprocessDomain}
+            validityMessages={{
+              patternMismatch: <FormattedMessage {...messages.domainError} />,
+            }}
           />
           <FormButtons>
             <SimpleSubmit color="primary" type="submit">
