@@ -44,6 +44,7 @@ export * from './Stepper';
 export * from './Subtitle';
 export * from './Tab';
 export * from './Tabs';
+export * from './useAnimation';
 export * from './useBeforeUnload';
 export * from './useClickOutside';
 export * from './useCombinedRefs';

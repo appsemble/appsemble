@@ -19,3 +19,4 @@ export * from './RadioGroup';
 export * from './useToggle';
 export * from './ValuePickerProvider';
 export * from './types';
+export * from './useAnimation';
