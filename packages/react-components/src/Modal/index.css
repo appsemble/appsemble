@@ -1,28 +1,17 @@
-.enter {
+.root {
+  /* The transition times must be matched by the timeout value in the React code. */
+  transition: opacity 300ms;
+  z-index: 10000;
+}
+
+.opening {
   opacity: 0;
 }
 
-.enterActive {
-  opacity: 1;
-  transition: opacity 90ms ease-in;
-}
-
-.exit {
+.open {
   opacity: 1;
 }
 
-.exitActive {
+.closing {
   opacity: 0;
-  transition: opacity 90ms ease-in;
-}
-
-.modal {
-  z-index: 3000 !important;
-}
-
-.closeButton {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  z-index: 1;
 }

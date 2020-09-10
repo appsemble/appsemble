@@ -69,7 +69,7 @@ bootstrap(
           <thead>
             <tr>
               {fields.map((field) => (
-                <th key={field.name}>{utils.remap(field.label, {})}</th>
+                <th key={field.value}>{utils.remap(field.label, {})}</th>
               ))}
             </tr>
           </thead>
@@ -83,13 +83,13 @@ bootstrap(
               onClick={onClick}
             >
               {fields.map((field) => {
-                const value = utils.remap(field.name, item);
+                const value = utils.remap(field.value, item);
                 return (
                   <ItemCell
                     className={onClick ? styles.clickable : undefined}
                     field={field}
                     item={item}
-                    key={field.name}
+                    key={field.value}
                     onClick={onClick}
                   >
                     {typeof value === 'string' ? value : JSON.stringify(value)}

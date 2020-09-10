@@ -1,4 +1,4 @@
-import { Select } from '@appsemble/react-components';
+import { SelectField } from '@appsemble/react-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -25,7 +25,7 @@ export function LanguagePreference(): ReactElement {
   );
 
   return (
-    <Select
+    <SelectField
       label={<FormattedMessage {...messages.preferredLanguage} />}
       name="preferredLanguage"
       onChange={onLanguageChange}
@@ -37,6 +37,6 @@ export function LanguagePreference(): ReactElement {
           {getLanguageDisplayName(language)}
         </option>
       ))}
-    </Select>
+    </SelectField>
   );
 }

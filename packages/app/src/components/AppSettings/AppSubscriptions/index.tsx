@@ -1,4 +1,4 @@
-import { Checkbox, FormComponent, Loader, useMessages } from '@appsemble/react-components';
+import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/react-components';
 import type { ResourceHooks, SubscriptionResponse } from '@appsemble/types';
 import axios from 'axios';
 import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
@@ -158,12 +158,12 @@ export function AppSubscriptions(): ReactElement {
           <p className={styles.settingDescription}>
             <FormattedMessage {...messages.suscribeDescription} />
           </p>
-          <Checkbox
+          <CheckboxField
             className={styles.checkbox}
-            help={<FormattedMessage {...messages.subscribe} />}
             name="subscribe"
             onChange={onSubscribeClick}
             switch
+            title={<FormattedMessage {...messages.subscribe} />}
             value={Boolean(subscription)}
             wrapperClassName="is-flex"
           />
@@ -189,10 +189,14 @@ export function AppSubscriptions(): ReactElement {
                   resource[key].notification.subscribe === 'both',
               )
               .map((key) => (
-                <Checkbox
+                <CheckboxField
                   className={styles.subscribeCheckbox}
                   disabled={!subscription || !resource.create}
-                  help={
+                  key={key}
+                  name={`${resourceType}.${key}`}
+                  onChange={(_, value) => onSubscriptionChange(resourceType, key, value)}
+                  switch
+                  title={
                     <FormattedMessage
                       {...messages.subscriptionLabel}
                       values={{
@@ -201,10 +205,6 @@ export function AppSubscriptions(): ReactElement {
                       }}
                     />
                   }
-                  key={key}
-                  name={`${resourceType}.${key}`}
-                  onChange={(_, value) => onSubscriptionChange(resourceType, key, value)}
-                  switch
                   value={subscriptions[resourceType][key].subscribed}
                 />
               ))}

@@ -188,9 +188,9 @@ export function Assets(): ReactElement {
               <td>
                 <Checkbox
                   checked={selectedAssets.includes(asset.id)}
+                  className="is-inline-block mt-2"
                   name={`asset${asset.id}`}
                   onChange={onAssetCheckboxClick}
-                  wrapperClassName="is-inline-block mt-2"
                 />
                 <Button color="primary" icon="download" onClick={() => downloadAsset(asset)} />
               </td>

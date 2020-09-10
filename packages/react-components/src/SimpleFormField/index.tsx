@@ -9,10 +9,10 @@ import React, {
   useRef,
 } from 'react';
 
-import { Input, useSimpleForm } from '..';
+import { InputField, useSimpleForm } from '..';
 
 type ValidityMessages = {
-  [_ in keyof Omit<ValidityState, 'valid'>]?: ReactNode;
+  [key in keyof Omit<ValidityState, 'valid'>]?: ReactNode;
 };
 
 interface MinimalHTMLElement {
@@ -27,31 +27,27 @@ interface InputComponentProps {
   onChange: (event: ChangeEvent<MinimalHTMLElement>, value: any) => void;
 }
 
-interface SimpleInputProps<C extends ComponentType> {
+type SimpleFormFieldProps<C extends ComponentType> = Omit<
+  ComponentPropsWithoutRef<C>,
+  keyof InputComponentProps
+> & {
   component?: C;
   disabled?: boolean;
   name: string;
   onChange?: (event: ChangeEvent<MinimalHTMLElement>, value: any) => void;
   preprocess?: (newValue: any, oldValues: { [field: string]: any }) => any;
   validityMessages?: ValidityMessages;
-}
+};
 
-type FooProps<C extends ComponentType> = Omit<
-  ComponentPropsWithoutRef<C>,
-  keyof InputComponentProps
-> &
-  SimpleInputProps<C>;
-
-export function SimpleInput<C extends ComponentType = typeof Input>({
-  // @ts-expect-error TypeScript disallows assigning a default value that matches a non-default type
-  component: Component = Input,
+export function SimpleFormField<C extends ComponentType = typeof InputField>({
+  component: Component = (InputField as ComponentType) as C,
   disabled,
   name,
   onChange,
   preprocess,
   validityMessages = {},
   ...props
-}: FooProps<C>): ReactElement {
+}: SimpleFormFieldProps<C>): ReactElement {
   const { formErrors, pristine, setFormError, setValue, submitting, values } = useSimpleForm();
   const ref = useRef<MinimalHTMLElement>(null);
   const internalOnChange = useCallback(

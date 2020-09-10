@@ -11,7 +11,7 @@ import styles from './index.css';
  */
 export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
   const { utils } = useBlock();
-  const value = utils.remap(field.name, data);
+  const value = utils.remap(field.value, data);
 
   return (
     <div className="appsemble-file">
@@ -23,13 +23,13 @@ export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
               // eslint-disable-next-line react/no-array-index-key
               key={index}
               label={field.label}
-              name={field.name}
+              name={field.value}
               src={field.repeatedName ? utils.remap(field.repeatedName, v) : v}
             />
           ))}
         </div>
       ) : (
-        value && <ImageField label={field.label} name={field.name} src={value} />
+        value && <ImageField label={field.label} name={field.value} src={value} />
       )}
     </div>
   );

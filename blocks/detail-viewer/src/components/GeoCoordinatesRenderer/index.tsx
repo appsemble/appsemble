@@ -22,7 +22,7 @@ export function GeoCoordinatesRenderer({
   const { utils } = block;
 
   const label = utils.remap(field.label, data);
-  const value = utils.remap(field.name, data);
+  const value = utils.remap(field.value, data);
   const lat = field.latitude ? utils.remap(field.latitude, value ?? data) : value.lat;
   const lng = field.longitude ? utils.remap(field.longitude, value ?? data) : value.lng;
   const [marker, setMarker] = useState<Icon | DivIcon>(null);
