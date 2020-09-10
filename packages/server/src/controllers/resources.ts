@@ -618,7 +618,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     params: { appId, resourceType },
     request: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      body: { id: _, ...resource },
+      body: { $expires = null, id: _, ...resource },
     },
     user,
   } = ctx;
@@ -657,7 +657,14 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   }
 
   let expireDate: Date;
-  if (expires) {
+  // Manual $expire takes precedence over the default calculated expire date
+  if ($expires) {
+    expireDate = new Date($expires);
+
+    if (new Date() > expireDate) {
+      throw badRequest('Expire date has already passed.');
+    }
+  } else if (expires) {
     const expireDuration = parseDuration(expires);
 
     if (expireDuration && expireDuration > 0) {
@@ -678,8 +685,8 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     id: createdResource.id,
     $created: createdResource.created,
     $updated: createdResource.updated,
-    ...(resource.expires != null && {
-      $expires: resource.expires,
+    ...(createdResource.expires != null && {
+      $expires: createdResource.expires,
     }),
     ...(resource.UserId != null && {
       $author: { id: resource.UserId, name: resource.User.name },
