@@ -5,9 +5,9 @@ import type { Remapper } from '@appsemble/sdk';
  */
 export interface Field {
   /**
-   * The name of the property of the data to fetch from.
+   * The value of the field.
    */
-  name: Remapper;
+  value: Remapper;
 
   /**
    * An optional label used in the header of the table.

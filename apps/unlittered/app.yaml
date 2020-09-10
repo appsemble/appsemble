@@ -134,7 +134,6 @@ pages:
       - type: detail-viewer
         version: 0.13.13
         parameters:
-          fileBase: 'https://appsemble.app/api/apps/14/assets'
           fields:
             - value:
                 - prop: location

@@ -18,13 +18,13 @@ pages:
         version: 0.13.13
         parameters:
           fields:
-            - name:
+            - value:
                 - prop: date
               label: Date
-            - name:
+            - value:
                 - prop: name
               label: Name (EN)
-            - name:
+            - value:
                 - prop: localName
               label: Name (NL)
         events:
@@ -46,10 +46,10 @@ pages:
         version: 0.13.13
         parameters:
           fields:
-            - name:
+            - value:
                 - prop: date
               label: Date
-            - name:
+            - value:
                 - prop: name
               label: Name (EN)
         events:
@@ -71,12 +71,13 @@ pages:
         version: 0.13.13
         parameters:
           fields:
-            - name: date
+            - value:
+                - prop: date
               label: Date
-            - name:
+            - value:
                 - prop: name
               label: Name (EN)
-            - name:
+            - value:
                 - prop: localName
               label: Name (DE)
         events:
@@ -98,13 +99,13 @@ pages:
         version: 0.13.13
         parameters:
           fields:
-            - name:
+            - value:
                 - prop: date
               label: Date
-            - name:
+            - value:
                 - prop: name
               label: Name (EN)
-            - name:
+            - value:
                 - prop: localName
               label: Name (ES)
         events:

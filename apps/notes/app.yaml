@@ -60,7 +60,7 @@ pages:
         version: 0.13.13
         parameters:
           fields:
-            - name:
+            - value:
                 - prop: title
               label: Title
         events:
