@@ -1,4 +1,5 @@
 export * from './applyRefs';
+export * from './AsyncButton';
 export * from './Button';
 export * from './Calendar';
 export * from './CardFooterButton';

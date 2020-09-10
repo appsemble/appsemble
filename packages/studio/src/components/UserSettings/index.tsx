@@ -1,4 +1,5 @@
 import {
+  AsyncButton,
   Button,
   Content,
   FormButtons,
@@ -19,7 +20,6 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import type { UserEmail } from '../../types';
-import { AsyncButton } from '../AsyncButton';
 import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
