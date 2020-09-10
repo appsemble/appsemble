@@ -1,97 +1,61 @@
 import classNames from 'classnames';
 import { format } from 'date-fns';
-import React, {
-  ChangeEvent,
-  cloneElement,
-  ComponentPropsWithoutRef,
-  forwardRef,
-  isValidElement,
-  ReactElement,
-  ReactNode,
-  useCallback,
-} from 'react';
+import React, { ChangeEvent, ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
 
-import { FormComponent, Icon } from '..';
-import styles from './index.css';
+export interface InputProps
+  extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange' | 'pattern'> {
+  /**
+   * Whether to render the input in an error state.
+   */
+  error?: boolean;
 
-type InputProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
-  Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
-    control?: ReactElement;
+  /**
+   * This is fired when the input value has changed.
+   *
+   * If the input type is `number`, the value is a number, otherwise it is a string.
+   */
+  onChange?: (event: ChangeEvent<HTMLInputElement>, value: number | string) => void;
 
-    /**
-     * An error message to render.
-     */
-    error?: ReactNode;
+  /**
+   * A regular expression the input must match.
+   */
+  pattern?: string | RegExp;
 
-    /**
-     * A help message to render.
-     */
-    help?: ReactNode;
-
-    /**
-     * The name of the HTML element.
-     */
-    name: string;
-
-    /**
-     * This is fired when the input value has changed.
-     *
-     * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
-     * value is a number, otherwise it is a string.
-     */
-    onChange: (event: ChangeEvent<HTMLInputElement>, value: number | string) => void;
-
-    /**
-     * The HTML input type.
-     *
-     * This may be extended if necessary.
-     */
-    type?:
-      | 'color'
-      | 'email'
-      | 'number'
-      | 'password'
-      | 'search'
-      | 'tel'
-      | 'text'
-      | 'url'
-      | 'date'
-      | 'datetime-local';
-  };
+  /**
+   * The HTML input type.
+   *
+   * This may be extended if necessary.
+   */
+  type?:
+    | 'color'
+    | 'email'
+    | 'number'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'text'
+    | 'url'
+    | 'date'
+    | 'datetime-local';
+}
 
 /**
  * A Bulma styled form input element.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      className,
-      control,
-      error,
-      iconLeft,
-      help,
-      label,
-      maxLength,
-      name,
-      onChange,
-      required,
-      type,
-      value,
-      id = name,
-      ...props
-    },
-    ref,
-  ) => {
+  ({ error, name, onChange, pattern, type, value, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
-        let newValue: number | string = currentTarget.value;
+        let newValue: number | string;
         if (type === 'number') {
           newValue = currentTarget.valueAsNumber;
         } else if (type === 'date' || type === 'datetime-local') {
           newValue = new Date(
             currentTarget.valueAsNumber + new Date().getTimezoneOffset() * 60000,
           ).toISOString();
+        } else {
+          newValue = currentTarget.value;
         }
         onChange(event, newValue);
       },
@@ -99,43 +63,21 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
 
     return (
-      <FormComponent
-        className={className}
-        iconLeft={iconLeft}
-        iconRight={Boolean(control)}
+      <input
+        {...props}
+        className={classNames('input', { 'is-danger': error })}
         id={id}
-        label={label}
-        required={required}
-      >
-        <input
-          {...props}
-          className={classNames('input', { 'is-danger': error })}
-          id={id}
-          maxLength={maxLength}
-          name={name}
-          onChange={handleChange}
-          ref={ref}
-          required={required}
-          type={type}
-          value={
-            type === 'datetime-local'
-              ? format(new Date((value as number) || Date.now()), "yyyy-MM-dd'T'HH:mm:ss.SSS")
-              : value
-          }
-        />
-        {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        {control && cloneElement(control, { className: 'is-right' })}
-        <div className={`${styles.help} is-flex`}>
-          <span className={classNames('help', { 'is-danger': error })}>
-            {isValidElement(error) ? error : help}
-          </span>
-          {maxLength ? (
-            <span className={`help ml-1 ${styles.counter}`}>
-              {value == null ? 0 : String(value).length} / {maxLength}
-            </span>
-          ) : null}
-        </div>
-      </FormComponent>
+        name={name}
+        onChange={handleChange}
+        pattern={pattern instanceof RegExp ? pattern.source : pattern}
+        ref={ref}
+        type={type}
+        value={
+          type === 'datetime-local'
+            ? format(new Date((value as number) || Date.now()), "yyyy-MM-dd'T'HH:mm:ss.SSS")
+            : value
+        }
+      />
     );
   },
 );

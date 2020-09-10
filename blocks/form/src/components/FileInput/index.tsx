@@ -78,6 +78,7 @@ export function FileInput({ disabled, error, field, onInput, value }: FileInputP
           value={value as string}
         />
       )}
+      {error && <p className="help is-danger">{error}</p>}
     </FormComponent>
   );
 }

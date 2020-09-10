@@ -8,6 +8,7 @@ module.exports = {
   },
   moduleNameMapper: {
     [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src',
+    '@creativebulma/bulma-tagsinput$': '@creativebulma/bulma-tagsinput/dist/js/bulma-tagsinput.js',
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   preset: 'ts-jest',
@@ -16,6 +17,6 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   transform: {
-    [/\/messages\.tsx$/.source]: 'babel-jest',
+    [/\/[A-Z]\w+\/messages\.ts$/.source]: 'babel-jest',
   },
 };

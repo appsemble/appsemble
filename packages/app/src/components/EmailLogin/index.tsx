@@ -1,9 +1,9 @@
 import {
   Content,
-  PasswordInput,
+  PasswordField,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
 } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
@@ -19,17 +19,17 @@ export function EmailLogin(): ReactElement {
     <Content main padding>
       <SimpleForm defaultValues={{ username: '', password: '' }} onSubmit={passwordLogin}>
         <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
-        <SimpleInput
+        <SimpleFormField
           autoComplete="email"
-          iconLeft="envelope"
+          icon="envelope"
           label={<FormattedMessage {...messages.usernameLabel} />}
           name="username"
           required
           type="email"
         />
-        <SimpleInput
+        <SimpleFormField
           autoComplete="current-password"
-          component={PasswordInput}
+          component={PasswordField}
           label={<FormattedMessage {...messages.passwordLabel} />}
           name="password"
           required

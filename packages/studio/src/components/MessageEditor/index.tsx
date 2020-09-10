@@ -3,14 +3,14 @@ import {
   FormButtons,
   Loader,
   Modal,
-  Select,
+  SelectField,
   SimpleBeforeUnload,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleModalFooter,
   SimpleSubmit,
-  TextArea,
+  TextAreaField,
   Title,
   useConfirmation,
   useData,
@@ -145,7 +145,7 @@ export function MessageEditor(): ReactElement {
       <Title level={2}>
         <FormattedMessage {...messages.title} />
       </Title>
-      <Select
+      <SelectField
         disabled={submitting}
         label={<FormattedMessage {...messages.selectedLanguage} />}
         name="selectedLanguage"
@@ -157,7 +157,7 @@ export function MessageEditor(): ReactElement {
             {getLanguageDisplayName(lang)}
           </option>
         ))}
-      </Select>
+      </SelectField>
       <div className="is-pulled-right">
         <Button
           className="mr-2"
@@ -185,7 +185,7 @@ export function MessageEditor(): ReactElement {
             </SimpleFormError>
             <SimpleBeforeUnload />
             {messageIds.map((id) => (
-              <SimpleInput component={TextArea} key={id} label={id} name={id} rows={2} />
+              <SimpleFormField component={TextAreaField} key={id} label={id} name={id} rows={2} />
             ))}
             <FormButtons>
               <SimpleSubmit disabled={submitting}>
@@ -211,8 +211,8 @@ export function MessageEditor(): ReactElement {
         title={<FormattedMessage {...messages.addLanguageTitle} />}
       >
         <SimpleFormError>{() => <FormattedMessage {...messages.addError} />}</SimpleFormError>
-        <SimpleInput
-          component={Select}
+        <SimpleFormField
+          component={SelectField}
           label={<FormattedMessage {...messages.language} />}
           name="language"
           required
@@ -223,7 +223,7 @@ export function MessageEditor(): ReactElement {
               {`${englishName}${englishName === nativeName ? '' : ` (${nativeName})`} [${lang}]`}
             </option>
           ))}
-        </SimpleInput>
+        </SimpleFormField>
       </Modal>
     </>
   );

@@ -18,11 +18,11 @@ export function validateString(field: StringField, value: string): StringRequire
       return !regex.test(value);
     }
 
-    if ('maxLength' in requirement && value.length > requirement.maxLength) {
+    if ('maxLength' in requirement && (value == null || value.length > requirement.maxLength)) {
       return true;
     }
 
-    if ('minLength' in requirement && value.length < requirement.minLength) {
+    if ('minLength' in requirement && (value == null || value.length < requirement.minLength)) {
       return true;
     }
 

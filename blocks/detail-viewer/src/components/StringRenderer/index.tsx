@@ -10,7 +10,7 @@ export function StringRenderer({ data, field }: RendererProps<StringField>): VNo
   const { utils } = useBlock();
 
   const label = utils.remap(field.label, data);
-  const value = utils.remap(field.name, data);
+  const value = utils.remap(field.value, data);
 
   return (
     <div className="appsemble-string">

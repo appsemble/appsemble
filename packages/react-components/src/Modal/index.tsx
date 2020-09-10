@@ -2,17 +2,15 @@ import classNames from 'classnames';
 import React, {
   ComponentPropsWithoutRef,
   ElementType,
-  EventHandler,
+  KeyboardEvent,
+  MouseEvent,
   ReactElement,
   ReactNode,
-  SyntheticEvent,
   useCallback,
 } from 'react';
-import { useIntl } from 'react-intl';
-import { CSSTransition } from 'react-transition-group';
 
+import { useAnimation } from '..';
 import styles from './index.css';
-import { messages } from './messages';
 
 interface ModalProps<T extends ElementType> {
   /**
@@ -25,6 +23,14 @@ interface ModalProps<T extends ElementType> {
    */
   closable?: boolean;
 
+  /**
+   * The aria label to apply on the close button.
+   */
+  closeButtonLabel?: string;
+
+  /**
+   * The React component to render as the root for the modal.
+   */
   component?: T;
 
   /**
@@ -35,7 +41,7 @@ interface ModalProps<T extends ElementType> {
   /**
    * A function that will be called when the user closes the modal.
    */
-  onClose?: EventHandler<SyntheticEvent>;
+  onClose?: (event: KeyboardEvent | MouseEvent) => void;
 
   /**
    * The title that is displayed at the top of the modal.
@@ -43,15 +49,18 @@ interface ModalProps<T extends ElementType> {
   title?: ReactNode;
 
   /**
-   * The CSS class applied to the card
+   * The CSS class applied to the card.
    */
   cardClassName?: string;
 
   /**
-   * The CSS class applied to the body
+   * The CSS class applied to the body.
    */
   className?: string;
 
+  /**
+   * The footer to render on the modal.
+   */
   footer?: ReactNode;
 }
 
@@ -63,6 +72,7 @@ export function Modal<T extends ElementType = 'div'>({
   children = null,
   className,
   closable = true,
+  closeButtonLabel,
   component: Component = 'div' as T,
   footer = null,
   isActive,
@@ -70,10 +80,14 @@ export function Modal<T extends ElementType = 'div'>({
   title,
   ...props
 }: ModalProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): ReactElement {
-  const { formatMessage } = useIntl();
+  const openClass = useAnimation(isActive, 300, {
+    opening: styles.opening,
+    open: styles.open,
+    closing: styles.closing,
+  });
 
   const onKeyDown = useCallback(
-    (event) => {
+    (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose(event);
       }
@@ -81,43 +95,34 @@ export function Modal<T extends ElementType = 'div'>({
     [onClose],
   );
 
+  if (!openClass) {
+    return null;
+  }
+
   return (
-    <CSSTransition
-      classNames={{
-        enter: styles.enter,
-        enterActive: styles.enterActive,
-        exit: styles.exit,
-        exitActive: styles.exitActive,
-      }}
-      in={isActive}
-      mountOnEnter
-      timeout={90}
-      unmountOnExit
-    >
-      <div className={`is-active modal ${styles.modal}`}>
-        <div
-          className="modal-background"
-          onClick={closable ? onClose : null}
-          onKeyDown={closable ? onKeyDown : null}
-          role="presentation"
-        />
-        {/* @ts-expect-error */}
-        <Component className={classNames('modal-card', cardClassName)} {...props}>
-          <div className="modal-card-head">
-            <p className="modal-card-title">{title}</p>
-            {closable && (
-              <button
-                aria-label={formatMessage(messages.closeDialog)}
-                className="delete is-large"
-                onClick={onClose}
-                type="button"
-              />
-            )}
-          </div>
-          <div className={classNames('modal-card-body', className)}>{children}</div>
-          {footer && <footer className="card-footer">{footer}</footer>}
-        </Component>
-      </div>
-    </CSSTransition>
+    <div className={`is-active modal ${styles.root} ${openClass}`}>
+      <div
+        className="modal-background"
+        onClick={closable ? onClose : null}
+        onKeyDown={closable ? onKeyDown : null}
+        role="presentation"
+      />
+      {/* @ts-expect-error */}
+      <Component className={classNames('modal-card', cardClassName)} {...props}>
+        <div className="modal-card-head">
+          <p className="modal-card-title">{title}</p>
+          {closable && (
+            <button
+              aria-label={closeButtonLabel}
+              className="delete is-large"
+              onClick={onClose}
+              type="button"
+            />
+          )}
+        </div>
+        <div className={classNames('modal-card-body', className)}>{children}</div>
+        {footer && <footer className="card-footer">{footer}</footer>}
+      </Component>
+    </div>
   );
 }

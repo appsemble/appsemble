@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.13] - 2020-09-08
+
+### Added
+
+- Block(`data-loader`): Add `loadErrorMessage` parameter for translating load error messages.
+- Block(`feed`): Add the following translatable messages to the block: `anonymousLabel`,
+  `replyErrorMessage`, `replyLabel`, `emptyLabel`.
+- Block(`form`): Add support for `AcceptRequirement` and `LengthRequirement` for `file` fields.
+- Block(`form`): Add support for `tag` on fields. This sets the tag for a field’s label, overwriting
+  the optional label.
+- Block(`form`): Add support for the following translatable messages: `submitLabel`,
+  `fieldErrorLabel`, `formRequirementError`, `invalidLabel`, `emptyFileLabel`, `optionalLabel`.
+- Block(`list`): Add parameters for translating error messages and when no data is available.
+- Block(`table`): Add `errorMessage` and `emptyMessage` parameters for translation purposes.
+- App: Add support for translated app URLs. Translated page names can be entered in the translations
+  editor.
+
+### Changed
+
+- Block(`form`): Add minimum value of `1` to `maxLength` and `minLength` in `LengthRequirement`.
+- Block(`form`): Move `accept` to `AcceptRequirement`.
+- Block(`table`): Update `name` to use remappers.
+
+### Removed
+
+- Preact: Remove support for messages using `intl-messageformat`. Use block parameters with
+  remappers instead.
+
+### Fixed
+
+- Server: Don’t create ingress for apps that have an empty string domain field.
+
 ## [0.13.12] - 2020-09-01
 
 ### Added

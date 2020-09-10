@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import { ComponentChildren, h, VNode } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback } from 'preact/hooks';
 
-import type { ElementType, Props } from '..';
+import { ElementType, Props, useAnimation } from '..';
 import styles from './index.css';
 
 interface ModalProps<T extends ElementType> {
@@ -73,7 +73,11 @@ export function Modal<T extends ElementType = 'div'>({
   title,
   ...props
 }: ModalProps<T> & Omit<Props<T>, keyof ModalProps<T>>): VNode {
-  const [open, setOpen] = useState(isActive);
+  const openClass = useAnimation(isActive, 300, {
+    opening: styles.opening,
+    open: styles.open,
+    closing: styles.closing,
+  });
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -84,29 +88,12 @@ export function Modal<T extends ElementType = 'div'>({
     [onClose],
   );
 
-  useEffect(() => {
-    if (isActive) {
-      setOpen(true);
-      return;
-    }
-
-    // The timeout must match the CSS transition length.
-    const timeout = setTimeout(setOpen, 300, false);
-    return () => clearTimeout(timeout);
-  }, [isActive]);
-
-  if (!isActive && !open) {
+  if (!openClass) {
     return null;
   }
 
   return (
-    <div
-      className={classNames(`is-active modal ${styles.root}`, {
-        [styles.opening]: isActive && !open,
-        [styles.open]: isActive && open,
-        [styles.closing]: !isActive && open,
-      })}
-    >
+    <div className={`is-active modal ${styles.root} ${openClass}`}>
       <div
         className="modal-background"
         onClick={closable ? onClose : null}

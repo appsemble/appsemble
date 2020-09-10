@@ -18,6 +18,6 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   transform: {
-    [/\/messages\.tsx$/.source]: 'babel-jest',
+    [/\/[A-Z]\w+\/messages\.ts$/.source]: 'babel-jest',
   },
 };

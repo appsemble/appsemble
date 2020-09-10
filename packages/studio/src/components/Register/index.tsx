@@ -1,10 +1,10 @@
 import {
   Content,
   FormButtons,
-  PasswordInput,
+  PasswordField,
   SimpleForm,
   SimpleFormError,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
@@ -44,16 +44,16 @@ export function Register(): ReactElement {
             )
           }
         </SimpleFormError>
-        <SimpleInput
+        <SimpleFormField
           autoComplete="name"
           help={<FormattedMessage {...messages.nameHelp} />}
-          iconLeft="user"
+          icon="user"
           label={<FormattedMessage {...messages.nameLabel} />}
           name="name"
         />
-        <SimpleInput
+        <SimpleFormField
           autoComplete="email"
-          iconLeft="envelope"
+          icon="envelope"
           label={<FormattedMessage {...messages.emailLabel} />}
           name="email"
           required
@@ -63,9 +63,9 @@ export function Register(): ReactElement {
             valueMissing: <FormattedMessage {...messages.emailRequired} />,
           }}
         />
-        <SimpleInput
+        <SimpleFormField
           autoComplete="new-password"
-          component={PasswordInput}
+          component={PasswordField}
           label={<FormattedMessage {...messages.passwordLabel} />}
           name="password"
           required

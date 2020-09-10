@@ -237,8 +237,8 @@ review:
     - if: $CI_MERGE_REQUEST_ID
       when: manual
   environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
+    name: review/$CI_MERGE_REQUEST_IID
+    url: https://$CI_MERGE_REQUEST_IID.appsemble.review
     on_stop: stop review
   script:
     # This is the only way to make sure the review environment can be overwritten
@@ -266,11 +266,6 @@ review:
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "proxy=true"
       --set "sentrySecret=sentry"
-    - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
-  artifacts:
-    expire_in: 30 days
-    paths:
-      - environment-url.txt
 
 # Stop a review environment.
 stop review:
@@ -281,7 +276,7 @@ stop review:
       when: manual
   allow_failure: true
   environment:
-    name: review/$CI_COMMIT_REF_SLUG
+    name: review/$CI_MERGE_REQUEST_IID
     action: stop
 
 # Deploy the Docker image for master to the staging environment.
@@ -364,14 +359,12 @@ provision review:
   stage: provision
   rules:
     - if: $CI_MERGE_REQUEST_ID
-  dependencies:
-    - review
   needs:
     - review
   environment:
     name: review/provision/$CI_COMMIT_REF_SLUG
   script:
-    - yarn appsemble config set remote "$(cat environment-url.txt)"
+    - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - yarn appsemble organization create appsemble --name Appsemble
     - yarn appsemble block publish blocks/*
     - yarn appsemble app create --template --organization appsemble apps/*

@@ -42,7 +42,7 @@ bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
             data={data}
             // @ts-expect-error XXX This should be fine
             field={field}
-            key={field.name || field.label || `${field.type}.${index}`}
+            key={field.value || field.label || `${field.type}.${index}`}
             theme={theme}
           />
         );

@@ -1,4 +1,11 @@
-import { Content, Input, Loader, Message, Select, useData } from '@appsemble/react-components';
+import {
+  Content,
+  InputField,
+  Loader,
+  Message,
+  SelectField,
+  useData,
+} from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
@@ -90,15 +97,15 @@ export function AppList(): ReactElement {
       <HelmetIntl title={messages.title} />
       <Content className={styles.content} main padding>
         <div className="is-flex">
-          <Input
+          <InputField
             className="mr-4 mb-0"
-            iconLeft="search"
+            icon="search"
             name="search"
             onChange={onFilterChange}
             placeholder={formatMessage(messages.search)}
             type="search"
           />
-          <Select className="mb-0" icon="sort" name="sort" onChange={onSortChange}>
+          <SelectField className="mb-0" icon="sort" name="sort" onChange={onSortChange}>
             <option hidden>{formatMessage(messages.sort)}</option>
             <option value="rating.asc">
               {`${formatMessage(messages.ratings)} (${formatMessage(messages.ascending)})`}
@@ -130,7 +137,7 @@ export function AppList(): ReactElement {
             <option value="$updated.desc">
               {`${formatMessage(messages.updated)} (${formatMessage(messages.descending)})`}
             </option>
-          </Select>
+          </SelectField>
           {createOrganizations.length >= 1 && (
             <CreateAppButton className={styles.createAppButton} />
           )}

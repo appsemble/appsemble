@@ -3,12 +3,12 @@ import {
   FormOutput,
   Icon,
   IconButton,
-  JSONInput,
-  PasswordInput,
+  JSONField,
+  PasswordField,
   SimpleForm,
-  SimpleInput,
+  SimpleFormField,
   SimpleSubmit,
-  TagsInput,
+  TagsField,
   Title,
   useToggle,
 } from '@appsemble/react-components';
@@ -73,16 +73,16 @@ export function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactE
       </Title>
       {editing.enabled ? (
         <SimpleForm defaultValues={secret} onSubmit={onSubmit}>
-          <SimpleInput
+          <SimpleFormField
             help={<FormattedMessage {...messages.nameHelp} />}
-            iconLeft="tag"
+            icon="tag"
             label={<FormattedMessage {...messages.nameLabel} />}
             name="name"
             required
           />
-          <SimpleInput
+          <SimpleFormField
             help={<FormattedMessage {...messages.iconHelp} />}
-            iconLeft="image"
+            icon="image"
             label={<FormattedMessage {...messages.iconLabel} />}
             name="icon"
             required
@@ -91,14 +91,14 @@ export function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactE
             copyErrorMessage={formatMessage(messages.redirectUrlCopyError)}
             copySuccessMessage={formatMessage(messages.redirectUrlCopySuccess)}
             help={<FormattedMessage {...messages.redirectUrlHelp} />}
-            iconLeft="route"
+            icon="route"
             label={<FormattedMessage {...messages.redirectUrlLabel} />}
             name="redirectUri"
             value={`${window.location.origin}/callback`}
           />
-          <SimpleInput
+          <SimpleFormField
             help={<FormattedMessage {...messages.authorizationUrlHelp} />}
-            iconLeft="external-link-alt"
+            icon="external-link-alt"
             label={<FormattedMessage {...messages.authorizationUrlLabel} />}
             name="authorizationUrl"
             placeholder="https://example.com/oauth2/authorize"
@@ -108,9 +108,9 @@ export function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactE
               typeMismatch: <FormattedMessage {...messages.badUrl} />,
             }}
           />
-          <SimpleInput
+          <SimpleFormField
             help={<FormattedMessage {...messages.tokenUrlHelp} />}
-            iconLeft="bezier-curve"
+            icon="bezier-curve"
             label={<FormattedMessage {...messages.tokenUrlLabel} />}
             name="tokenUrl"
             placeholder="https://example.com/oauth2/token"
@@ -120,33 +120,33 @@ export function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactE
               typeMismatch: <FormattedMessage {...messages.badUrl} />,
             }}
           />
-          <SimpleInput
+          <SimpleFormField
             help={<FormattedMessage {...messages.clientIdHelp} />}
-            iconLeft="fingerprint"
+            icon="fingerprint"
             label={<FormattedMessage {...messages.clientIdLabel} />}
             name="clientId"
             required
           />
-          <SimpleInput
+          <SimpleFormField
             // https://stackoverflow.com/questions/15738259
             autoComplete="one-time-code"
-            component={PasswordInput}
+            component={PasswordField}
             help={<FormattedMessage {...messages.clientSecretHelp} />}
             label={<FormattedMessage {...messages.clientSecretLabel} />}
             name="clientSecret"
             required
           />
-          <SimpleInput
-            component={TagsInput}
+          <SimpleFormField
+            component={TagsField}
             delimiter=" "
             help={<FormattedMessage {...messages.scopeHelp} />}
             label={<FormattedMessage {...messages.scopeLabel} />}
             name="scope"
             required
           />
-          <SimpleInput
+          <SimpleFormField
             help={<FormattedMessage {...messages.userInfoUrlHelp} />}
-            iconLeft="id-card"
+            icon="id-card"
             label={<FormattedMessage {...messages.userInfoUrlLabel} />}
             name="userInfoUrl"
             placeholder="https://example.com/oauth2/token"
@@ -155,8 +155,8 @@ export function AppSecretCard({ onUpdated, secret }: AppSecretCardProps): ReactE
               typeMismatch: <FormattedMessage {...messages.badUrl} />,
             }}
           />
-          <SimpleInput
-            component={JSONInput}
+          <SimpleFormField
+            component={JSONField}
             help={<FormattedMessage {...messages.remapperHelp} />}
             label={<FormattedMessage {...messages.remapperLabel} />}
             name="remapper"

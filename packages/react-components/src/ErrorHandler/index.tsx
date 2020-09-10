@@ -1,8 +1,16 @@
 import { captureException, withScope } from '@sentry/browser';
 import React, { Component, ElementType, ErrorInfo, ReactNode } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
-interface ErrorHandlerProps {
+interface ErrorHandlerProps extends RouteComponentProps<any> {
+  /**
+   * Children to render.
+   */
   children: ReactNode;
+
+  /**
+   * The fallback to render in case an error occurs rendering children.
+   */
   fallback: ElementType;
 }
 
@@ -11,12 +19,22 @@ interface ErrorHandlerState {
 }
 
 /**
- * Capture renderer errors using Sentry.
+ * Capture React render errors.
+ *
+ * The are captured errors using Sentry.
  */
-export class ErrorHandler extends Component<ErrorHandlerProps, ErrorHandlerState> {
+class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
   state: ErrorHandlerState = {
     error: false,
   };
+
+  componentDidMount(): void {
+    const { history } = this.props;
+
+    history.listen(() => {
+      this.setState({ error: false });
+    });
+  }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
     this.setState({ error: true });
@@ -35,3 +53,5 @@ export class ErrorHandler extends Component<ErrorHandlerProps, ErrorHandlerState
     return error ? <Fallback /> : children;
   }
 }
+
+export const ErrorHandler = withRouter(ErrorBoundary);
