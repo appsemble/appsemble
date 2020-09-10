@@ -134,9 +134,8 @@ pages:
       - type: detail-viewer
         version: 0.13.13
         parameters:
-          fileBase: 'https://appsemble.app/api/apps/14/assets'
           fields:
-            - name:
+            - value:
                 - prop: location
               type: geocoordinates
               label: Location
@@ -144,13 +143,13 @@ pages:
                 - prop: latitude
               longitude:
                 - prop: longitude
-            - name:
+            - value:
                 - prop: process
               label: Process
-            - name:
+            - value:
                 - prop: notes
               label: Notes
-            - name:
+            - value:
                 - prop: photos
               type: file
               label: Photos

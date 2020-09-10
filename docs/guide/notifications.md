@@ -113,9 +113,9 @@ pages:
         parameters:
           fields:
             - name:
-                - prop: firstName
+                - value: firstName
               label: First Name
-            - name:
+            - value:
                 - prop: lastName
               label: Surname
         actions:

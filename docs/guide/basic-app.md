@@ -107,10 +107,10 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 +             data: people
 +         parameters:
 +           fields:
-+             - name:
++             - value:
 +                - prop: firstName
 +               label: First Name
-+             - name:
++             - value:
 +                - prop: lastName
 +               label: Surname
 ```
@@ -207,10 +207,10 @@ pages:
             data: people
         parameters:
           fields:
-            - name:
+            - value:
                 - prop: firstName
               label: First Name
-            - name:
+            - value:
                 - prop: lastName
               label: Surname
 ```
@@ -316,10 +316,10 @@ pages:
             data: people
         parameters:
           fields:
-            - name:
+            - value:
                 - prop: firstName
               label: First Name
-            - name:
+            - value:
                 - prop: lastName
               label: Surname
 ```
@@ -353,16 +353,16 @@ Add a new page:
 +             data: person
 +         parameters:
 +           fields:
-+             - name:
++             - value:
 +                 - prop: firstName
 +               label: First Name
-+             - name:
++             - value:
 +                 - prop: lastName
 +               label: Last Name
-+             - name:
++             - value:
 +                 - prop: email
 +               label: Email Address
-+             - name:
++             - value:
 +                 - prop: description
 +               label: Description
 ```
@@ -446,10 +446,10 @@ pages:
             data: people
         parameters:
           fields:
-            - name:
+            - value:
                 - prop: firstName
               label: First Name
-            - name:
+            - value:
                 - prop: lastName
               label: Surname
 
@@ -473,16 +473,16 @@ pages:
             data: person
         parameters:
           fields:
-            - name:
+            - value:
                 - prop: firstName
               label: First Name
-            - name:
+            - value:
                 - prop: lastName
               label: Last Name
-            - name:
+            - value:
                 - prop: email
               label: Email Address
-            - name:
+            - value:
                 - prop: description
               label: Description
 ```

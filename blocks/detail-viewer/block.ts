@@ -7,6 +7,11 @@ interface AbstractField {
    * The label that is presented to the user. No label will be displayed if this is not defined.
    */
   label?: Remapper;
+
+  /**
+   * The Remapper used to retrieve the data.
+   */
+  value?: Remapper;
 }
 
 interface AbstractMarkerIcon {
@@ -62,17 +67,10 @@ interface AssetMarkerIcon extends AbstractMarkerIcon {
   asset: number;
 }
 
+/**
+ * Displays files as images.
+ */
 export interface FileField extends AbstractField {
-  /**
-   * The Remapper used to retrieve the data.
-   */
-  name: Remapper;
-
-  /**
-   * Displays files as images.
-   */
-  type: 'file';
-
   /**
    * Display one or multiple files.
    */
@@ -84,8 +82,16 @@ export interface FileField extends AbstractField {
    * If not set, the item itself is used as the url.
    */
   repeatedName?: Remapper;
+
+  /**
+   * The name of the type of the field.
+   */
+  type: 'file';
 }
 
+/**
+ * Displays a map with a marker.
+ */
 export interface GeoCoordinatesField extends AbstractField {
   /**
    * The path to base the longitude and latitude fields from.
@@ -93,7 +99,7 @@ export interface GeoCoordinatesField extends AbstractField {
    * If `fields[].latitude` and `fields[].longitude` are not set it defaults to `fields[].name.lat`
    * and `fields[].name.lng`.
    */
-  name?: Remapper;
+  value?: Remapper;
 
   /**
    * The name of the field used to access the longitude value.
@@ -112,21 +118,19 @@ export interface GeoCoordinatesField extends AbstractField {
   longitude?: Remapper;
 
   /**
-   * Displays a map with a marker.
+   * The name of the type of the field.
    */
   type: 'geocoordinates';
 }
 
+/**
+ * Displays the content as regular text.
+ *
+ * If the content is an object it will be converted using `JSON.stringify()`.
+ */
 export interface StringField extends AbstractField {
   /**
-   * The Remapper used to retrieve the data.
-   */
-  name: Remapper;
-
-  /**
-   * Displays the content as regular text.
-   *
-   * If the content is an object it will be converted using `JSON.stringify()`.
+   * The name of the type of the field.
    */
   type?: 'string';
 }
