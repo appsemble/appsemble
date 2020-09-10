@@ -11,35 +11,37 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     helm.sh/chart: {{ include "appsemble.chart" . }}
 spec:
-  template:
+  schedule: 0 23 * * * # Run every day at 23:00:00
+  jobTemplate:
     spec:
-      schedule: '0 0 23 1/1 * ? *' # Run every day at 23:00:00
-      restartPolicy: Never
-      containers:
-        - name: {{ include "appsemble.fullname" . }}-cronjob
-          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - node
-            - packages/server/dist
-            - cleanupResources
-            - -vv
-          env:
-            - name: DATABASE_HOST
-              value: {{ .Values.postgresql.fullnameOverride }}
-            {{ if .Values.postgresSSL }}
-            - name: DATABASE_SSL
-              value: 'true'
-            {{ end }}
-            - name: DATABASE_PORT
-              value: {{ .Values.global.postgresql.servicePort | quote }}
-            - name: DATABASE_NAME
-              value: {{ .Values.global.postgresql.postgresqlDatabase }}
-            - name: DATABASE_USER
-              value: {{ .Values.global.postgresql.postgresqlUsername }}
-            - name: DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.global.postgresql.existingSecret }}
-                  key: postgresql-password
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: {{ include "appsemble.fullname" . }}-cronjob
+              image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command:
+                - node
+                - packages/server/dist
+                - cleanupResources
+                - -vv
+              env:
+                - name: DATABASE_HOST
+                  value: {{ .Values.postgresql.fullnameOverride }}
+                {{ if .Values.postgresSSL }}
+                - name: DATABASE_SSL
+                  value: 'true'
+                {{ end }}
+                - name: DATABASE_PORT
+                  value: {{ .Values.global.postgresql.servicePort | quote }}
+                - name: DATABASE_NAME
+                  value: {{ .Values.global.postgresql.postgresqlDatabase }}
+                - name: DATABASE_USER
+                  value: {{ .Values.global.postgresql.postgresqlUsername }}
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.global.postgresql.existingSecret }}
+                      key: postgresql-password
 {{ end }}
