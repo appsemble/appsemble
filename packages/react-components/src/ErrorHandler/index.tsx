@@ -23,35 +23,35 @@ interface ErrorHandlerState {
  *
  * The are captured errors using Sentry.
  */
-export const ErrorHandler = withRouter(
-  class extends Component<ErrorHandlerProps, ErrorHandlerState> {
-    state: ErrorHandlerState = {
-      error: false,
-    };
+class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
+  state: ErrorHandlerState = {
+    error: false,
+  };
 
-    componentDidMount(): void {
-      const { history } = this.props;
+  componentDidMount(): void {
+    const { history } = this.props;
 
-      history.listen(() => {
-        this.setState({ error: false });
+    history.listen(() => {
+      this.setState({ error: false });
+    });
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo): void {
+    this.setState({ error: true });
+    withScope((scope) => {
+      Object.entries(info).forEach(([key, value]) => {
+        scope.setExtra(key, value);
       });
-    }
+      captureException(error);
+    });
+  }
 
-    componentDidCatch(error: Error, info: ErrorInfo): void {
-      this.setState({ error: true });
-      withScope((scope) => {
-        Object.entries(info).forEach(([key, value]) => {
-          scope.setExtra(key, value);
-        });
-        captureException(error);
-      });
-    }
+  render(): ReactNode {
+    const { children, fallback: Fallback } = this.props;
+    const { error } = this.state;
 
-    render(): ReactNode {
-      const { children, fallback: Fallback } = this.props;
-      const { error } = this.state;
+    return error ? <Fallback /> : children;
+  }
+}
 
-      return error ? <Fallback /> : children;
-    }
-  },
-);
+export const ErrorHandler = withRouter(ErrorBoundary);
