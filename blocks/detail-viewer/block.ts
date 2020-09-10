@@ -2,7 +2,7 @@ import type { BlockProps } from '@appsemble/preact';
 import type { BulmaColor, Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
-interface AbstractField<T extends string> {
+interface AbstractField {
   /**
    * The label that is presented to the user. No label will be displayed if this is not defined.
    */
@@ -12,11 +12,6 @@ interface AbstractField<T extends string> {
    * The Remapper used to retrieve the data.
    */
   value?: Remapper;
-
-  /**
-   * The name of the type of the field.
-   */
-  type: T;
 }
 
 interface AbstractMarkerIcon {
@@ -75,7 +70,7 @@ interface AssetMarkerIcon extends AbstractMarkerIcon {
 /**
  * Displays files as images.
  */
-export interface FileField extends AbstractField<'file'> {
+export interface FileField extends AbstractField {
   /**
    * Display one or multiple files.
    */
@@ -87,12 +82,17 @@ export interface FileField extends AbstractField<'file'> {
    * If not set, the item itself is used as the url.
    */
   repeatedName?: Remapper;
+
+  /**
+   * The name of the type of the field.
+   */
+  type: 'file';
 }
 
 /**
  * Displays a map with a marker.
  */
-export interface GeoCoordinatesField extends AbstractField<'geocoordinates'> {
+export interface GeoCoordinatesField extends AbstractField {
   /**
    * The path to base the longitude and latitude fields from.
    *
@@ -116,6 +116,11 @@ export interface GeoCoordinatesField extends AbstractField<'geocoordinates'> {
    * the data.
    */
   longitude?: Remapper;
+
+  /**
+   * The name of the type of the field.
+   */
+  type: 'geocoordinates';
 }
 
 /**
@@ -123,7 +128,12 @@ export interface GeoCoordinatesField extends AbstractField<'geocoordinates'> {
  *
  * If the content is an object it will be converted using `JSON.stringify()`.
  */
-export type StringField = AbstractField<'string'>;
+export interface StringField extends AbstractField {
+  /**
+   * The name of the type of the field.
+   */
+  type?: 'string';
+}
 
 export type Field = FileField | GeoCoordinatesField | StringField;
 
