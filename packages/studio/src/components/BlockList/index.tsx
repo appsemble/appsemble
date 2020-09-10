@@ -4,7 +4,7 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { HelmetIntl } from '../HelmetIntl';
-import { BlockCard } from './components/BlockCard';
+import { BlockCard } from './BlockCard';
 import styles from './index.css';
 import { messages } from './messages';
 

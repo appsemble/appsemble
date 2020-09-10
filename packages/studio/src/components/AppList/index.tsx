@@ -15,8 +15,8 @@ import { Link } from 'react-router-dom';
 import { checkRole } from '../../utils/checkRole';
 import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
-import { AppCard } from './components/AppCard';
-import { CreateAppButton } from './components/CreateAppButton';
+import { AppCard } from './AppCard';
+import { CreateAppButton } from './CreateAppButton';
 import styles from './index.css';
 import { messages } from './messages';
 

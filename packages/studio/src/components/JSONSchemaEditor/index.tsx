@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback } from 'react';
 
-import { RecursiveJSONSchemaEditor } from './components/RecursiveJSONSchemaEditor';
+import { RecursiveJSONSchemaEditor } from './RecursiveJSONSchemaEditor';
 import type { CommonJSONSchemaEditorProps } from './types';
 
 /**
