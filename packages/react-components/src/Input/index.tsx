@@ -2,7 +2,8 @@ import classNames from 'classnames';
 import { format } from 'date-fns';
 import React, { ChangeEvent, ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
 
-export interface InputProps extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> {
+export interface InputProps
+  extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange' | 'pattern'> {
   /**
    * Whether to render the input in an error state.
    */
@@ -14,6 +15,11 @@ export interface InputProps extends Omit<ComponentPropsWithoutRef<'input'>, 'lab
    * If the input type is `number`, the value is a number, otherwise it is a string.
    */
   onChange?: (event: ChangeEvent<HTMLInputElement>, value: number | string) => void;
+
+  /**
+   * A regular expression the input must match.
+   */
+  pattern?: string | RegExp;
 
   /**
    * The HTML input type.
@@ -37,7 +43,7 @@ export interface InputProps extends Omit<ComponentPropsWithoutRef<'input'>, 'lab
  * A Bulma styled form input element.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ error, name, onChange, type, value, id = name, ...props }, ref) => {
+  ({ error, name, onChange, pattern, type, value, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
@@ -63,6 +69,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         id={id}
         name={name}
         onChange={handleChange}
+        pattern={pattern instanceof RegExp ? pattern.source : pattern}
         ref={ref}
         type={type}
         value={
