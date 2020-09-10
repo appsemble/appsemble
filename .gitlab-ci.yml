@@ -266,11 +266,6 @@ review:
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "proxy=true"
       --set "sentrySecret=sentry"
-    - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
-  artifacts:
-    expire_in: 30 days
-    paths:
-      - environment-url.txt
 
 # Stop a review environment.
 stop review:
@@ -364,14 +359,12 @@ provision review:
   stage: provision
   rules:
     - if: $CI_MERGE_REQUEST_ID
-  dependencies:
-    - review
   needs:
     - review
   environment:
     name: review/provision/$CI_COMMIT_REF_SLUG
   script:
-    - yarn appsemble config set remote "$(cat environment-url.txt)"
+    - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - yarn appsemble organization create appsemble --name Appsemble
     - yarn appsemble block publish blocks/*
     - yarn appsemble app create --template --organization appsemble apps/*
