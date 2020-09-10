@@ -1,5 +1,6 @@
 import { mount } from 'enzyme';
 import React, { ReactElement } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
 import { ErrorHandler } from '.';
 
@@ -11,9 +12,11 @@ it('should render its children if no errors are thrown', () => {
     return <p>Something went wrong!</p>;
   }
   const result = mount(
-    <ErrorHandler fallback={Fallback}>
-      <Child />
-    </ErrorHandler>,
+    <BrowserRouter>
+      <ErrorHandler fallback={Fallback}>
+        <Child />
+      </ErrorHandler>
+    </BrowserRouter>,
   );
 
   expect(result).toMatchSnapshot();
@@ -28,9 +31,11 @@ it('should render its fallback when errors are thrown', () => {
     return <p>Something went wrong!</p>;
   }
   const result = mount(
-    <ErrorHandler fallback={Fallback}>
-      <Child />
-    </ErrorHandler>,
+    <BrowserRouter>
+      <ErrorHandler fallback={Fallback}>
+        <Child />
+      </ErrorHandler>
+    </BrowserRouter>,
   );
 
   expect(result).toMatchSnapshot();

@@ -1,25 +1,155 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should render its children if no errors are thrown 1`] = `
-<ErrorHandler
-  fallback={[Function]}
->
-  <Child>
-    <p>
-      Test
-    </p>
-  </Child>
-</ErrorHandler>
+<BrowserRouter>
+  <Router
+    history={
+      Object {
+        "action": "POP",
+        "block": [Function],
+        "createHref": [Function],
+        "go": [Function],
+        "goBack": [Function],
+        "goForward": [Function],
+        "length": 1,
+        "listen": [Function],
+        "location": Object {
+          "hash": "",
+          "pathname": "/",
+          "search": "",
+          "state": undefined,
+        },
+        "push": [Function],
+        "replace": [Function],
+      }
+    }
+  >
+    <withRouter(Component)
+      fallback={[Function]}
+    >
+      <Component
+        fallback={[Function]}
+        history={
+          Object {
+            "action": "POP",
+            "block": [Function],
+            "createHref": [Function],
+            "go": [Function],
+            "goBack": [Function],
+            "goForward": [Function],
+            "length": 1,
+            "listen": [Function],
+            "location": Object {
+              "hash": "",
+              "pathname": "/",
+              "search": "",
+              "state": undefined,
+            },
+            "push": [Function],
+            "replace": [Function],
+          }
+        }
+        location={
+          Object {
+            "hash": "",
+            "pathname": "/",
+            "search": "",
+            "state": undefined,
+          }
+        }
+        match={
+          Object {
+            "isExact": true,
+            "params": Object {},
+            "path": "/",
+            "url": "/",
+          }
+        }
+      >
+        <Child>
+          <p>
+            Test
+          </p>
+        </Child>
+      </Component>
+    </withRouter(Component)>
+  </Router>
+</BrowserRouter>
 `;
 
 exports[`should render its fallback when errors are thrown 1`] = `
-<ErrorHandler
-  fallback={[Function]}
->
-  <Fallback>
-    <p>
-      Something went wrong!
-    </p>
-  </Fallback>
-</ErrorHandler>
+<BrowserRouter>
+  <Router
+    history={
+      Object {
+        "action": "POP",
+        "block": [Function],
+        "createHref": [Function],
+        "go": [Function],
+        "goBack": [Function],
+        "goForward": [Function],
+        "length": 1,
+        "listen": [Function],
+        "location": Object {
+          "hash": "",
+          "pathname": "/",
+          "search": "",
+          "state": undefined,
+        },
+        "push": [Function],
+        "replace": [Function],
+      }
+    }
+  >
+    <withRouter(Component)
+      fallback={[Function]}
+    >
+      <Component
+        fallback={[Function]}
+        history={
+          Object {
+            "action": "POP",
+            "block": [Function],
+            "createHref": [Function],
+            "go": [Function],
+            "goBack": [Function],
+            "goForward": [Function],
+            "length": 1,
+            "listen": [Function],
+            "location": Object {
+              "hash": "",
+              "pathname": "/",
+              "search": "",
+              "state": undefined,
+            },
+            "push": [Function],
+            "replace": [Function],
+          }
+        }
+        location={
+          Object {
+            "hash": "",
+            "pathname": "/",
+            "search": "",
+            "state": undefined,
+          }
+        }
+        match={
+          Object {
+            "isExact": true,
+            "params": Object {},
+            "path": "/",
+            "url": "/",
+          }
+        }
+      >
+        <Fallback>
+          <p>
+            Something went wrong!
+          </p>
+        </Fallback>
+      </Component>
+    </withRouter(Component)>
+  </Router>
+</BrowserRouter>
 `;
