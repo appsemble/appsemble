@@ -91,6 +91,7 @@
   "studio.src.components.AppSettings.documentation": "documentation",
   "studio.src.components.AppSettings.domain": "Domain name",
   "studio.src.components.AppSettings.domainDescription": "The domain name on which this app is available. For more information on how to set this up, please refer to the {documentation}.",
+  "studio.src.components.AppSettings.domainError": "This must be a valid domain name without a protocol",
   "studio.src.components.AppSettings.errorDelete": "Something went wrong trying to delete this app",
   "studio.src.components.AppSettings.icon": "Icon",
   "studio.src.components.AppSettings.iconDescription": "The icon that will be shown to the user.",

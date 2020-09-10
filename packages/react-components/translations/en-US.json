@@ -2,7 +2,7 @@
   "react-components.src.ErrorHandler.message": "An unexpected error has occurred.",
   "react-components.src.ErrorHandler.title": "Error",
   "react-components.src.FormComponent.optional": "Optional",
-  "react-components.src.JSONInput.error": "This must be a valid JSON value.",
+  "react-components.src.JSONField.error": "This must be a valid JSON value.",
   "react-components.src.MessagesProvider.dismiss": "Dismiss message",
   "react-components.src.Modal.closeDialog": "Close dialog",
   "react-components.src.Stepper.back": "Back",

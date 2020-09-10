@@ -91,6 +91,7 @@
   "studio.src.components.AppSettings.documentation": "",
   "studio.src.components.AppSettings.domain": "",
   "studio.src.components.AppSettings.domainDescription": "",
+  "studio.src.components.AppSettings.domainError": "",
   "studio.src.components.AppSettings.errorDelete": "",
   "studio.src.components.AppSettings.icon": "",
   "studio.src.components.AppSettings.iconDescription": "",
