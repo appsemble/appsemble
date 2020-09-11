@@ -169,7 +169,7 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
   await invite.destroy();
 }
 
-export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
+export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
   const {
     argv: { host },
     mailer,
