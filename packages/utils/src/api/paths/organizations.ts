@@ -159,7 +159,7 @@ export const paths: OpenAPIV3.PathsObject = {
     post: {
       tags: ['organization'],
       description: 'Invite a new member to the organization that matches the given id.',
-      operationId: 'inviteMembera',
+      operationId: 'inviteMembers',
       requestBody: {
         description: 'The member to invite.',
         required: true,
