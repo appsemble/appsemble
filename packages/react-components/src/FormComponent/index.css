@@ -3,8 +3,12 @@
 }
 
 .help {
+  /* This matches the line height of help content, which is inherited from body. */
+  min-height: 1.5em;
+}
+
+.helpWrapper {
   justify-content: space-between;
-  min-height: 1em;
 }
 
 .counter {
