@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils/src';
+import { logger } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 import type { Argv } from 'yargs';
 
