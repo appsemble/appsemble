@@ -3,7 +3,7 @@ import {
   Content,
   Modal,
   SimpleForm,
-  SimpleInput,
+  SimpleFormField,
   SimpleModalFooter,
   Subtitle,
   Title,
@@ -105,15 +105,15 @@ export function OrganizationsList(): ReactElement {
         preprocess={calculateOrganizationId}
         resetOnSuccess
       >
-        <SimpleInput
+        <SimpleFormField
           disabled={!userInfo.email_verified}
-          iconLeft="briefcase"
+          icon="briefcase"
           label={<FormattedMessage {...messages.organizationName} />}
           name="name"
         />
-        <SimpleInput
+        <SimpleFormField
           disabled={!userInfo.email_verified}
-          iconLeft="at"
+          icon="at"
           label={<FormattedMessage {...messages.organizationId} />}
           maxLength={30}
           name="id"
