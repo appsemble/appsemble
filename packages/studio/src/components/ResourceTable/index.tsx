@@ -19,8 +19,8 @@ import { download } from '../../utils/download';
 import { useApp } from '../AppContext';
 import { HelmetIntl } from '../HelmetIntl';
 import { JSONSchemaEditor } from '../JSONSchemaEditor';
-import { ResourceRow } from './components/ResourceRow';
 import { messages } from './messages';
+import { ResourceRow } from './ResourceRow';
 
 export interface Resource {
   id: number;

@@ -21,7 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { download } from '../../utils/download';
 import { useApp } from '../AppContext';
 import { HelmetIntl } from '../HelmetIntl';
-import { AssetPreview } from './components/AssetPreview';
+import { AssetPreview } from './AssetPreview';
 import styles from './index.css';
 import { messages } from './messages';
 

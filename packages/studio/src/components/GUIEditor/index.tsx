@@ -6,10 +6,10 @@ import yaml from 'js-yaml';
 import { editor, Range } from 'monaco-editor';
 import React, { ReactElement, useCallback, useState } from 'react';
 
-import { GUIEditorEditBlock } from './components/GUIEditorEditBlock';
-import { GUIEditorNavBar } from './components/GUIEditorNavBar';
-import { GUIEditorSelect } from './components/GUIEditorSelect';
-import { GUIEditorToolbox } from './components/GUIEditorToolbox';
+import { GUIEditorEditBlock } from './GUIEditorEditBlock';
+import { GUIEditorNavBar } from './GUIEditorNavBar';
+import { GUIEditorSelect } from './GUIEditorSelect';
+import { GUIEditorToolbox } from './GUIEditorToolbox';
 import { EditLocation, GuiEditorStep } from './types';
 import { applyMonacoEdits } from './utils/applyMonacoEdits';
 
