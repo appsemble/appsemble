@@ -1,11 +1,10 @@
 import { createReadStream, promises as fs } from 'fs';
 import { join } from 'path';
 
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, logger, opendirSafe } from '@appsemble/node-utils';
 import type FormData from 'form-data';
 import yaml from 'js-yaml';
 
-import { opendirSafe } from '../utils/fs';
 import { processCss } from './processCss';
 
 /**

@@ -1,7 +1,8 @@
 import { basename, dirname, join, relative } from 'path';
 
-import { getWorkspaces, logger } from '@appsemble/node-utils';
+import { getWorkspaces, logger, opendirSafe } from '@appsemble/node-utils';
 import type { Config } from '@jest/types';
+import extractReactIntlMessages from 'extract-react-intl-messages/dist/extract-react-intl/index';
 import { readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
 import semver from 'semver';
@@ -62,7 +63,71 @@ interface Result {
  * @param filename - On which file name the assertion applies.
  * @param message - A description of the assertion that was run.
  */
-type Assert = (assertion: boolean, filename: string, message: string) => void;
+type Assert = (assertion: boolean, filename: string, message: string, workspace?: string) => void;
+
+async function validateTranslations(assert: Assert): Promise<void> {
+  const workspaces = ['app', 'react-components'];
+  const locales = ['nl', 'en-US'];
+  const defaultLocale = 'en-US';
+
+  for (const workspace of workspaces) {
+    const translatedMessages = await extractReactIntlMessages(
+      locales,
+      `./packages/${workspace}/src/**/messages.ts`,
+      {
+        format: 'json',
+        flat: true,
+        defaultLocale,
+        overwriteDefault: true,
+      },
+    );
+
+    const translated: string[] = [];
+
+    await opendirSafe(`./packages/${workspace}/translations`, async (filepath, stat) => {
+      if (stat.name === 'index.tsx') {
+        return;
+      }
+
+      if (!stat.isFile() || !filepath.endsWith('.json')) {
+        assert(false, filepath, 'should be a json file');
+        return;
+      }
+
+      const [language] = stat.name.split('.json');
+
+      if (!locales.includes(language)) {
+        assert(false, filepath, `Language ${language} should be supported.`);
+        return;
+      }
+
+      translated.push(language);
+      const messages = await readJson(filepath);
+      if (stat.name === `${defaultLocale}.json`) {
+        assert(
+          isEqual(messages, translatedMessages[language]),
+          filepath,
+          `${defaultLocale} messages should be equal when extracted`,
+        );
+      } else {
+        assert(
+          isEqual(Object.keys(messages), Object.keys(translatedMessages[language]).sort()),
+          filepath,
+          'Keys should be the same',
+        );
+        const untranslatedMessages = Object.values(messages).filter((message) => message === '');
+        assert(untranslatedMessages.length === 0, filepath, 'Messages should be translated');
+      }
+    });
+
+    assert(
+      isEqual(locales.sort(), translated.sort()),
+      '',
+      'should have translations for each supported language',
+      `packages\\${workspace}`,
+    );
+  }
+}
 
 async function validate(
   assert: Assert,
@@ -154,7 +219,7 @@ async function validate(
    * Validate tsconfig.json
    */
   const tsConfig = await readJson(join(dir, 'tsconfig.json')).catch(() => null);
-  assert(tsConfig, 'tsconfig.json', 'The workspace should have a TypeScrip configuration');
+  assert(tsConfig, 'tsconfig.json', 'The workspace should have a TypeScript configuration');
   if (tsConfig) {
     assert(
       tsConfig.extends === '../../tsconfig',
@@ -245,6 +310,15 @@ export async function handler(): Promise<void> {
       latestVersion,
     );
   }
+
+  await validateTranslations((pass, filename, message, workspace = '') =>
+    results.push({
+      filename,
+      message,
+      pass,
+      workspace: { dir: workspace, pkg: ('' as unknown) as PackageJson },
+    }),
+  );
 
   const valid = results.filter(({ pass }) => pass);
   const invalid = results.filter(({ pass }) => !pass);
