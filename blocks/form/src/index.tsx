@@ -5,29 +5,11 @@ import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import type { BaseRequirement } from '../block';
-import { BooleanInput } from './components/BooleanInput';
-import { EnumInput } from './components/EnumInput';
-import { FileInput } from './components/FileInput';
-import { GeoCoordinatesInput } from './components/GeoCoordinatesInput';
-import { NumberInput } from './components/NumberInput';
-import { RadioInput } from './components/RadioInput';
-import { StringInput } from './components/StringInput';
+import { FormInput } from './components/FormInput';
 import styles from './index.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
 import { generateDefaultValues } from './utils/generateDefaultValues';
 import { validators } from './utils/validators';
-
-const inputs = {
-  enum: EnumInput,
-  file: FileInput,
-  geocoordinates: GeoCoordinatesInput,
-  hidden: (): null => null,
-  string: StringInput,
-  number: NumberInput,
-  integer: NumberInput,
-  boolean: BooleanInput,
-  radio: RadioInput,
-};
 
 bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
@@ -174,25 +156,16 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       <Message className={classNames(styles.error, { [styles.hidden]: !formError })} color="danger">
         <span>{formError}</span>
       </Message>
-      {parameters.fields.map((field) => {
-        const Comp = inputs[field.type];
-        return (
-          <Comp
-            // @ts-expect-error XXX This shouldn’t be necessary
-            disabled={disabled}
-            // @ts-expect-error XXX This shouldn’t be necessary
-            error={errors[field.name]}
-            // @ts-expect-error XXX This shouldn’t be necessary
-            field={field}
-            // @ts-expect-error XXX This shouldn’t be necessary
-            key={field.name}
-            // @ts-expect-error XXX This shouldn’t be necessary
-            onInput={onChange}
-            // @ts-expect-error XXX This shouldn’t be necessary
-            value={values[field.name]}
-          />
-        );
-      })}
+      {parameters.fields.map((field) => (
+        <FormInput
+          disabled={disabled}
+          error={errors[field.name]}
+          field={field}
+          key={field.name}
+          onInput={onChange}
+          value={values[field.name]}
+        />
+      ))}
       <FormButtons className="mt-4">
         {parameters.previousLabel && (
           <Button className="mr-4" onClick={onPrevious}>
