@@ -15,12 +15,12 @@ import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
 
 import { HelmetIntl } from '../HelmetIntl';
-import { ActionTable } from './components/ActionTable';
-import { EventTable } from './components/EventTable';
-import { ParameterTable } from './components/ParameterTable';
-import { TypeTable } from './components/TypeTable';
+import { ActionTable } from './ActionTable';
+import { EventTable } from './EventTable';
 import styles from './index.css';
 import { messages } from './messages';
+import { ParameterTable } from './ParameterTable';
+import { TypeTable } from './TypeTable';
 
 interface BlockDetailsRoutesMatch {
   /**

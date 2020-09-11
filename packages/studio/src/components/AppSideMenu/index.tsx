@@ -1,4 +1,4 @@
-import { useToggle } from '@appsemble/react-components/src';
+import { useToggle } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
