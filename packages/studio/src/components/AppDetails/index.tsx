@@ -56,7 +56,7 @@ export function AppDetails(): ReactElement {
   );
 
   const createOrganizations =
-    organizations.filter((org) => checkRole(org.role, Permission.CreateApps)) || [];
+    organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) ?? [];
 
   return (
     <Content className={styles.root}>
