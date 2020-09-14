@@ -1,9 +1,9 @@
 import {
   CardFooterButton,
   Form,
+  FormComponent,
   Input,
   Modal,
-  Table,
   Toggle,
   useMessages,
 } from '@appsemble/react-components';
@@ -151,35 +151,28 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
       onSubmit={onSubmit}
       title={<FormattedMessage {...messages.title} />}
     >
-      <Table>
-        <thead>
-          <tr>
-            <th>
-              <FormattedMessage {...messages.email} />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {invites.map((member, index) => (
+      <FormComponent
+        help={<FormattedMessage {...messages.help} />}
+        id={`email-${invites.length - 1}`}
+        label={<FormattedMessage {...messages.email} />}
+        required
+      >
+        {invites.map((member, index) => (
+          <Input
+            disabled={submitting}
+            id={`email-${index}`}
             // eslint-disable-next-line react/no-array-index-key
-            <tr key={index}>
-              <td>
-                <Input
-                  disabled={submitting}
-                  id={`email-${index}`}
-                  name="email"
-                  onBlur={onBlur}
-                  onChange={onChange}
-                  onPaste={onPaste}
-                  required
-                  type="email"
-                  value={member.email}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+            key={index}
+            name="email"
+            onBlur={onBlur}
+            onChange={onChange}
+            onPaste={onPaste}
+            required
+            type="email"
+            value={member.email}
+          />
+        ))}
+      </FormComponent>
     </Modal>
   );
 }
