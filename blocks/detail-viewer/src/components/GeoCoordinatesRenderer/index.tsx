@@ -13,13 +13,9 @@ import styles from './index.css';
  *
  * https://schema.org/GeoCoordinates
  */
-export function GeoCoordinatesRenderer({
-  data,
-  field,
-  theme,
-}: RendererProps<GeoCoordinatesField>): VNode {
+export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordinatesField>): VNode {
   const block = useBlock();
-  const { utils } = block;
+  const { theme, utils } = block;
 
   const label = utils.remap(field.label, data);
   const value = utils.remap(field.value, data);
