@@ -1,6 +1,7 @@
 import { Role, roles } from '@appsemble/utils';
 import {
   AllowNull,
+  BelongsTo,
   Column,
   CreatedAt,
   DataType,
@@ -34,4 +35,10 @@ export class Member extends Model<Member> {
   @ForeignKey(() => User)
   @Column
   UserId: number;
+
+  @BelongsTo(() => Organization)
+  Organization: Organization;
+
+  @BelongsTo(() => User)
+  User: User;
 }

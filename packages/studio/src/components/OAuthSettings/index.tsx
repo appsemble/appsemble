@@ -1,4 +1,5 @@
 import {
+  AsyncButton,
   Content,
   Loader,
   Message,
@@ -15,7 +16,6 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { logins } from '../../utils/settings';
-import { AsyncButton } from '../AsyncButton';
 import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
 import { messages } from './messages';

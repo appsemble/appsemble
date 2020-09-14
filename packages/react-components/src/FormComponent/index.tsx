@@ -83,7 +83,7 @@ export function FormComponent({
   required,
 }: FormComponentProps): ReactElement {
   const helpContent = (
-    <span className={classNames('help', { 'is-danger': error })}>
+    <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>
       {isValidElement(error) ? error : help}
     </span>
   );
@@ -124,7 +124,7 @@ export function FormComponent({
         controls
       )}
       {helpExtra ? (
-        <div className={`${styles.help} is-flex`}>
+        <div className={`is-flex ${styles.helpWrapper}`}>
           {helpContent}
           <span className={`help ml-1 ${styles.counter}`}>{helpExtra}</span>
         </div>

@@ -30,7 +30,7 @@ import { GUIEditor } from '../GUIEditor';
 import { GuiEditorStep } from '../GUIEditor/types';
 import { HelmetIntl } from '../HelmetIntl';
 import { MonacoEditor } from '../MonacoEditor';
-import { EditorNavBar } from './components/EditorNavBar';
+import { EditorNavBar } from './EditorNavBar';
 import styles from './index.css';
 import { messages } from './messages';
 

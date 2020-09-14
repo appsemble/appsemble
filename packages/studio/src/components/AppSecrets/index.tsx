@@ -13,7 +13,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '../AppContext';
 import { HelmetIntl } from '../HelmetIntl';
-import { AppSecretCard } from './components/AppSecretCard';
+import { AppSecretCard } from './AppSecretCard';
 import { messages } from './messages';
 
 const initialSecret: AppOAuth2Secret = {

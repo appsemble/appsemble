@@ -169,57 +169,75 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
   await invite.destroy();
 }
 
-export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
+export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
   const {
     argv: { host },
     mailer,
     params: { organizationId },
-    request: {
-      body: { email },
-    },
-    user,
+    request: { body },
   } = ctx;
 
-  const organization = await Organization.findByPk(organizationId, { include: [User] });
-  if (!organization) {
-    throw notFound('Organization not found.');
-  }
+  const allInvites = (body as OrganizationInvite[]).map((invite) => invite.email);
 
-  const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
-  const invitedUser = dbEmail ? dbEmail.User : null;
-
-  if (!(await organization.$has('User', user.id))) {
-    throw forbidden('Not allowed to invite users to organizations you are not a member of.');
-  }
-
-  await checkRole(ctx, organization.id, Permission.InviteMember);
-
-  if (invitedUser && (await organization.$has('User', invitedUser))) {
-    throw conflict('User is already in this organization or has already been invited.');
-  }
-
-  const key = randomBytes(20).toString('hex');
-  await OrganizationInvite.create({
-    OrganizationId: organization.id,
-    UserId: invitedUser ? invitedUser.id : null,
-    key,
-    email,
+  const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
+    include: [
+      {
+        model: Organization,
+        attributes: ['id'],
+        include: [
+          {
+            model: User,
+            attributes: ['primaryEmail'],
+            include: [{ model: EmailAuthorization, attributes: ['email'] }],
+          },
+          { model: OrganizationInvite, attributes: ['email'] },
+        ],
+      },
+    ],
   });
 
-  await mailer.sendTemplateEmail(
-    { email, ...(invitedUser && { name: invitedUser.name }) },
-    'organizationInvite',
-    {
-      organization: organization.id,
-      url: `${host}/organization-invite?token=${key}`,
-    },
+  const memberEmails = new Set(
+    member.Organization.Users.flatMap(({ EmailAuthorizations }) =>
+      EmailAuthorizations.flatMap(({ email }) => email),
+    ),
+  );
+  const newInvites = allInvites.filter((email) => !memberEmails.has(email));
+  if (!newInvites.length) {
+    throw badRequest('All invited users are already part of this organization');
+  }
+
+  const existingInvites = new Set(
+    member.Organization.OrganizationInvites.flatMap(({ email }) => email),
+  );
+  const pendingInvites = newInvites.filter((email) => !existingInvites.has(email));
+  if (!pendingInvites.length) {
+    throw badRequest('All email addresses are already invited to this organization');
+  }
+
+  const auths = await EmailAuthorization.findAll({
+    include: [{ model: User }],
+    where: { email: { [Op.in]: pendingInvites } },
+  });
+  const userMap = new Map(auths.map((auth) => [auth.email, auth.User]));
+  const result = await OrganizationInvite.bulkCreate(
+    pendingInvites.map((email) => {
+      const user = userMap.get(email);
+      const key = randomBytes(20).toString('hex');
+      return user
+        ? { email: user.primaryEmail, UserId: user.id, key, OrganizationId: organizationId }
+        : { email, key, OrganizationId: organizationId };
+    }),
   );
 
-  ctx.body = {
-    id: invitedUser ? invitedUser.id : null,
-    name: invitedUser ? invitedUser.name : null,
-    primaryEmail: invitedUser ? invitedUser.primaryEmail : email,
-  };
+  await Promise.all(
+    result.map((invite) =>
+      mailer.sendTemplateEmail({ ...invite.User, email: invite.email }, 'organizationInvite', {
+        organization: organizationId,
+        url: `${host}/organization-invite?token=${invite.key}`,
+      }),
+    ),
+  );
+  ctx.body = result.map(({ email }) => ({ email }));
 }
 
 export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {

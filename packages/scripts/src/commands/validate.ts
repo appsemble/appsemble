@@ -5,6 +5,7 @@ import type { Config } from '@jest/types';
 import extractReactIntlMessages from 'extract-react-intl-messages/dist/extract-react-intl/index';
 import { readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
+import normalizePath from 'normalize-path';
 import semver from 'semver';
 import type { PackageJson } from 'type-fest';
 
@@ -190,9 +191,9 @@ async function validate(
     'Repository url should be "https://gitlab.com/appsemble/appsemble.git"',
   );
   assert(
-    (pkg?.repository as any)?.directory === relative(process.cwd(), dir),
+    (pkg?.repository as any)?.directory === normalizePath(relative(process.cwd(), dir)),
     'package.json',
-    `Repository directory should be "${relative(process.cwd(), dir)}"`,
+    `Repository directory should be "${normalizePath(relative(process.cwd(), dir))}"`,
   );
   assert(
     pkg.license === 'LGPL-3.0-or-later',

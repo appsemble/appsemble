@@ -959,6 +959,16 @@ export interface Organization {
 }
 
 /**
+ * An invite for an organizaton.
+ */
+export interface OrganizationInvite {
+  /**
+   * The email address of the user to invite.
+   */
+  email: string;
+}
+
+/**
  * A member of an app.
  */
 export interface AppMember {
