@@ -17,8 +17,7 @@ export const messages = defineMessages({
     'Unable to subscribe. Either no permission has been granted or your device does not support notifications.',
   subscriptions: 'Subscriptions',
   resourceSubscriptions: '{resource} subscriptions',
-  subscriptionLabel: 'Get notified when “{resource}” {actionVerb}',
-  create: 'is created',
-  update: 'is updated',
-  delete: 'is deleted',
+  createSubscriptionLabel: 'Get notified when “{resource}” is created',
+  updateSubscriptionLabel: 'Get notified when “{resource}” is updated',
+  deleteSubscriptionLabel: 'Get notified when “{resource}” is deleted',
 });
