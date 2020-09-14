@@ -116,7 +116,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
           filepath,
           'Keys should be the same',
         );
-        const untranslatedMessages = Object.values(messages).filter(Boolean);
+        const untranslatedMessages = Object.values(messages).filter((message) => !message);
         assert(untranslatedMessages.length === 0, filepath, 'Messages should be translated');
       }
     });
