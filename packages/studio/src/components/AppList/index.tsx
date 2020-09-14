@@ -88,9 +88,8 @@ export function AppList(): ReactElement {
       app.OrganizationId.toLowerCase().includes(filter.toLowerCase().replace(/@/g, '')),
   );
 
-  const createOrganizations = organizations.filter((org) =>
-    checkRole(org.role, Permission.CreateApps),
-  );
+  const createOrganizations =
+    organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) ?? [];
 
   return (
     <>
