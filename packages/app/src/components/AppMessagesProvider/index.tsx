@@ -1,6 +1,5 @@
 import {
   Content,
-  enUS as enUSReactComponentMessages,
   Loader,
   Message,
   nl as nlReactComponentMessages,
@@ -24,7 +23,6 @@ import React, {
 import { IntlProvider } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
-import enUSAppMessages from '../../../translations/en-US.json';
 import nlAppMessages from '../../../translations/nl.json';
 import { detectLocale } from '../../utils/i18n';
 import { apiUrl, appId, languages } from '../../utils/settings';
@@ -48,7 +46,6 @@ const formatters = {
 };
 
 const providedMessages: { [language: string]: { [messageId: string]: string } } = {
-  'en-US': { ...enUSReactComponentMessages, ...enUSAppMessages },
   nl: { ...nlReactComponentMessages, ...nlAppMessages },
 };
 
@@ -121,11 +118,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   return (
     <Context.Provider value={value}>
-      <IntlProvider
-        defaultLocale="en-US"
-        locale={lang}
-        messages={providedMessages[lang] || providedMessages['en-US']}
-      >
+      <IntlProvider defaultLocale="en-US" locale={lang} messages={providedMessages[lang]}>
         {children}
       </IntlProvider>
     </Context.Provider>

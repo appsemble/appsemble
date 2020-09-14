@@ -85,7 +85,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
     const translated: string[] = [];
 
     await opendirSafe(`./packages/${workspace}/translations`, async (filepath, stat) => {
-      if (stat.name === 'index.tsx') {
+      if (stat.name === 'index.ts') {
         return;
       }
 
@@ -115,7 +115,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
           filepath,
           'Keys should be the same',
         );
-        const untranslatedMessages = Object.values(messages).filter((message) => message === '');
+        const untranslatedMessages = Object.values(messages).filter(Boolean);
         assert(untranslatedMessages.length === 0, filepath, 'Messages should be translated');
       }
     });
