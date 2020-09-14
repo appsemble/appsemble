@@ -75,7 +75,9 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
       const newValidity = Object.fromEntries(
         parameters.fields.map((field) => [
           field.name,
-          !validators[field.type](field, newValues[field.name]),
+          Object.hasOwnProperty.call(validators, field.type)
+            ? !validators[field.type](field, newValues[field.name])
+            : true,
         ]),
       );
       setValues(newValues);
