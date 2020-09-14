@@ -6,7 +6,7 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import { ClientCredentials } from '../ClientCredentials';
 import { NavLink } from '../NavLink';
 import { OAuthSettings } from '../OAuthSettings';
-import { OrganizationsSettings } from '../OrganizationsSettings';
+import { Organizations } from '../Organizations';
 import { SideMenu } from '../SideMenu';
 import { SideNavLink } from '../SideNavLink';
 import { UserSettings } from '../UserSettings';
@@ -44,8 +44,8 @@ export function Settings(): ReactElement {
           <Route exact path={`${path}/social`}>
             <OAuthSettings />
           </Route>
-          <Route exact path={`${path}/organizations`}>
-            <OrganizationsSettings />
+          <Route path={`${path}/organizations`}>
+            <Organizations />
           </Route>
           <Route exact path={`${path}/client-credentials`}>
             <ClientCredentials />

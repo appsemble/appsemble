@@ -1,7 +1,7 @@
 .root {
   /* The transition times must be matched by the timeout value in the Preact code. */
   transition: opacity 300ms;
-  z-index: 10000;
+  z-index: 2000;
 }
 
 .opening {

@@ -1,4 +1,7 @@
+import { randomBytes } from 'crypto';
+
 import { request, setTestApp } from 'axios-test-instance';
+import type * as Koa from 'koa';
 
 import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
 import { createServer } from '../utils/createServer';
@@ -7,12 +10,13 @@ import { testToken } from '../utils/test/testToken';
 
 let authorization: string;
 let organization: Organization;
+let server: Koa;
 let user: User;
 
 beforeAll(createTestSchema('organizations'));
 
 beforeAll(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   await setTestApp(server);
 });
 
@@ -24,6 +28,7 @@ beforeEach(async () => {
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+  jest.spyOn(server.context.mailer, 'sendTemplateEmail');
 });
 
 afterEach(truncate);
@@ -165,37 +170,15 @@ describe('getInvites', () => {
   });
 });
 
-describe('inviteMember', () => {
-  it('should send an invite to an organization', async () => {
-    await Member.update({ role: 'Maintainer' }, { where: { UserId: user.id } });
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+describe('inviteMembers', () => {
+  it('should require the InviteMember permission', async () => {
+    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+
     const response = await request.post(
       '/api/organizations/testorganization/invites',
-      { email: 'test2@example.com' },
+      [{ email: 'a@example.com' }],
       { headers: { authorization } },
     );
-
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        id: expect.any(String),
-        name: 'John',
-        primaryEmail: 'test2@example.com',
-      },
-    });
-  });
-
-  it('should not send an invite to an organization if the user does not have the right permissions', async () => {
-    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
-    const response = await request.post(
-      '/api/organizations/testorganization/invites',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
-
     expect(response).toMatchObject({
       status: 403,
       data: {
@@ -204,63 +187,129 @@ describe('inviteMember', () => {
         statusCode: 403,
       },
     });
+    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
   });
 
-  it('should not send an invite for non-existent organizations', async () => {
-    const response = await request.post(
-      '/api/organizations/doesnotexist/invites',
-      { email: 'test@example.com' },
-      { headers: { authorization } },
-    );
+  it('should throw a bad request of all invitees are already in the organization', async () => {
+    const userA = await User.create({ primaryEmail: 'a@example.com' });
+    await EmailAuthorization.create({ UserId: userA.id, email: 'a@example.com' });
+    await Member.create({ OrganizationId: organization.id, UserId: userA.id });
 
-    expect(response).toMatchObject({ status: 404, data: { message: 'Organization not found.' } });
-  });
-
-  it('should not send an invite to an organization you are not a member of', async () => {
-    await Organization.create({ id: 'org' });
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
-    const response = await request.post(
-      '/api/organizations/org/invites',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
-
-    expect(response).toMatchObject({
-      status: 403,
-      data: { message: 'Not allowed to invite users to organizations you are not a member of.' },
-    });
-  });
-
-  it('should not send an invite to members of an organization', async () => {
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    const { id } = await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
-    await organization.$add('User', id);
+    const userB = await User.create({ primaryEmail: 'b@example.com' });
+    await EmailAuthorization.create({ UserId: userB.id, email: 'b@example.com' });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id });
 
     const response = await request.post(
       '/api/organizations/testorganization/invites',
-      { email: 'test2@example.com' },
+      [{ email: 'a@example.com' }, { email: 'b@example.com' }],
       { headers: { authorization } },
     );
-
     expect(response).toMatchObject({
-      status: 409,
-      data: { message: 'User is already in this organization or has already been invited.' },
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        message: 'All invited users are already part of this organization',
+        statusCode: 400,
+      },
     });
+    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
+  });
+
+  it('should throw a bad request of all new invitees are have already been invited', async () => {
+    const userA = await User.create({ primaryEmail: 'a@example.com' });
+    await EmailAuthorization.create({ UserId: userA.id, email: 'a@example.com' });
+    await Member.create({ OrganizationId: organization.id, UserId: userA.id });
+
+    await OrganizationInvite.create({
+      OrganizationId: organization.id,
+      email: 'b@example.com',
+      key: randomBytes(20).toString('hex'),
+    });
+
+    const response = await request.post(
+      '/api/organizations/testorganization/invites',
+      [{ email: 'a@example.com' }, { email: 'b@example.com' }],
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        message: 'All email addresses are already invited to this organization',
+        statusCode: 400,
+      },
+    });
+    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
+  });
+
+  it('should invite users by their primary email', async () => {
+    const userA = await User.create({ primaryEmail: 'a@example.com' });
+    await EmailAuthorization.create({ UserId: userA.id, email: 'a@example.com' });
+    await EmailAuthorization.create({ UserId: userA.id, email: 'aa@example.com' });
+
+    const response = await request.post(
+      '/api/organizations/testorganization/invites',
+      [{ email: 'aa@example.com' }],
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 201,
+      data: [{ email: 'a@example.com' }],
+    });
+
+    const invite = await OrganizationInvite.findOne();
+    expect(invite).toMatchObject({
+      email: 'a@example.com',
+      key: expect.stringMatching(/^\w{40}$/),
+      OrganizationId: 'testorganization',
+      UserId: userA.id,
+    });
+    expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
+      { email: 'a@example.com' },
+      'organizationInvite',
+      {
+        organization: 'testorganization',
+        url: `http://localhost/organization-invite?token=${invite.key}`,
+      },
+    );
+  });
+
+  it('should invite unknown email addresses', async () => {
+    const response = await request.post(
+      '/api/organizations/testorganization/invites',
+      [{ email: 'a@example.com' }],
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 201,
+      data: [{ email: 'a@example.com' }],
+    });
+
+    const invite = await OrganizationInvite.findOne();
+    expect(invite).toMatchObject({
+      email: 'a@example.com',
+      key: expect.stringMatching(/^\w{40}$/),
+      OrganizationId: 'testorganization',
+      UserId: null,
+    });
+    expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
+      { email: 'a@example.com' },
+      'organizationInvite',
+      {
+        organization: 'testorganization',
+        url: `http://localhost/organization-invite?token=${invite.key}`,
+      },
+    );
   });
 });
 
 describe('resendInvitation', () => {
   it('should resend an invitation', async () => {
-    await Member.update({ role: 'Maintainer' }, { where: { UserId: user.id } });
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
-
-    await request.post(
-      '/api/organizations/testorganization/invites',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    await OrganizationInvite.create({
+      email: 'test2@example.com',
+      key: 'invitekey',
+      OrganizationId: 'testorganization',
+    });
 
     const response = await request.post(
       '/api/organizations/testorganization/invites/resend',
@@ -269,6 +318,14 @@ describe('resendInvitation', () => {
     );
 
     expect(response).toMatchObject({ status: 204 });
+    expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
+      { email: 'test2@example.com' },
+      'organizationInvite',
+      {
+        organization: 'testorganization',
+        url: 'http://localhost/organization-invite?token=invitekey',
+      },
+    );
   });
 
   it('should not resend an invitation if the user does not have the right permissions', async () => {
@@ -296,6 +353,7 @@ describe('resendInvitation', () => {
         statusCode: 403,
       },
     });
+    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
   });
 
   it('should not resend an invitation to a member who has not been invited', async () => {
@@ -316,6 +374,7 @@ describe('resendInvitation', () => {
         statusCode: 404,
       },
     });
+    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
   });
 
   it('should not resend an invitation for a non-existent organization', async () => {
@@ -333,18 +392,17 @@ describe('resendInvitation', () => {
         statusCode: 404,
       },
     });
+    expect(server.context.mailer.sendTemplateEmail).not.toHaveBeenCalled();
   });
 });
 
 describe('removeInvite', () => {
   it('should revoke an invite', async () => {
-    await Member.update({ role: 'Maintainer' }, { where: { UserId: user.id } });
-
-    await request.post(
-      '/api/organizations/testorganization/invites',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    await OrganizationInvite.create({
+      email: 'test2@example.com',
+      key: 'invitekey',
+      OrganizationId: 'testorganization',
+    });
 
     const response = await request.delete('/api/organizations/testorganization/invites', {
       headers: { authorization },
@@ -355,11 +413,11 @@ describe('removeInvite', () => {
   });
 
   it('should not revoke an invite if the user does not have the right permissions', async () => {
-    await request.post(
-      '/api/organizations/testorganization/invites',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    await OrganizationInvite.create({
+      email: 'test2@example.com',
+      key: 'invitekey',
+      OrganizationId: 'testorganization',
+    });
 
     await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
 
