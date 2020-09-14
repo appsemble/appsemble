@@ -11,12 +11,19 @@ import styles from './index.css';
 
 type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
 
-export function FileInput({ disabled, error, field, onInput, value }: FileInputProps): VNode {
+export function FileInput({
+  disabled,
+  error,
+  field,
+  name,
+  onChange,
+  value,
+}: FileInputProps): VNode {
   const {
     parameters: { optionalLabel },
     utils,
   } = useBlock();
-  const { icon, label, name, repeated, tag } = field;
+  const { icon, label, repeated, tag } = field;
   const required = isRequired(field);
   const remappedLabel = utils.remap(label, value);
 
@@ -29,9 +36,9 @@ export function FileInput({ disabled, error, field, onInput, value }: FileInputP
       } else {
         copy[index] = val;
       }
-      onInput(({ currentTarget: { name } } as unknown) as Event, copy);
+      onChange(({ currentTarget: { name } } as unknown) as Event, copy);
     },
-    [name, onInput, value],
+    [name, onChange, value],
   );
 
   return (
@@ -54,7 +61,7 @@ export function FileInput({ disabled, error, field, onInput, value }: FileInputP
             error={error}
             field={field}
             name={`${name}.${(value as string[]).length}`}
-            onInput={handleInput}
+            onChange={handleInput}
             value={null}
           />
           {(value as string[]).map((val, index) => (
@@ -64,7 +71,7 @@ export function FileInput({ disabled, error, field, onInput, value }: FileInputP
               // eslint-disable-next-line react/no-array-index-key
               key={index}
               name={`${name}.${index}`}
-              onInput={handleInput}
+              onChange={handleInput}
               value={val}
             />
           ))}
@@ -74,7 +81,7 @@ export function FileInput({ disabled, error, field, onInput, value }: FileInputP
           error={error}
           field={field}
           name={name}
-          onInput={onInput}
+          onChange={onChange}
           value={value as string}
         />
       )}

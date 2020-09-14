@@ -11,12 +11,19 @@ type RadioInputProps = InputProps<any, RadioField>;
 /**
  * An input element for a radio button.
  */
-export function RadioInput({ disabled, error, field, onInput, value }: RadioInputProps): VNode {
+export function RadioInput({
+  disabled,
+  error,
+  field,
+  name,
+  onChange,
+  value,
+}: RadioInputProps): VNode {
   const {
     parameters: { invalidLabel = 'This value is invalid', optionalLabel },
     utils,
   } = useBlock();
-  const { label, name, options, tag } = field;
+  const { label, options, tag } = field;
   const required = isRequired(field);
 
   return (
@@ -26,7 +33,7 @@ export function RadioInput({ disabled, error, field, onInput, value }: RadioInpu
       error={error && utils.remap(invalidLabel, value)}
       label={utils.remap(label, value)}
       name={name}
-      onChange={onInput}
+      onChange={onChange}
       optionalLabel={utils.remap(optionalLabel, value)}
       required={required}
       tag={utils.remap(tag, value)}

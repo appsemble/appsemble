@@ -1,7 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { InputField } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
 
 import type { InputProps, NumberField } from '../../../block';
 import { isRequired } from '../../utils/isRequired';
@@ -11,20 +10,19 @@ type NumberInputProps = InputProps<number, NumberField>;
 /**
  * An input element for a number type schema.
  */
-export function NumberInput({ disabled, error, field, onInput, value }: NumberInputProps): VNode {
+export function NumberInput({
+  disabled,
+  error,
+  field,
+  name,
+  onChange,
+  value,
+}: NumberInputProps): VNode {
   const {
     parameters: { invalidLabel = 'This value is invalid', optionalLabel },
     utils,
   } = useBlock();
-  const { name, label, type, placeholder, readOnly, icon, tag, requirements = [] } = field;
-
-  const handleChange = useCallback(
-    (event: Event, val: number) => {
-      onInput(event, type === 'integer' ? Math.floor(val) : val);
-    },
-    [onInput, type],
-  );
-
+  const { label, type, placeholder, readOnly, icon, tag, requirements = [] } = field;
   const required = isRequired(field);
   const max = Math.max(
     ...requirements
@@ -56,14 +54,13 @@ export function NumberInput({ disabled, error, field, onInput, value }: NumberIn
       disabled={disabled}
       error={error && utils.remap(invalidLabel, value)}
       icon={icon}
-      id={name}
       label={label}
       max={Number.isFinite(max) ? max : undefined}
       min={Number.isFinite(min) ? min : undefined}
       name={name}
-      onChange={handleChange}
+      onChange={onChange}
       optionalLabel={utils.remap(optionalLabel, value)}
-      placeholder={utils.remap(placeholder, value) || utils.remap(label, value) || name}
+      placeholder={utils.remap(placeholder, value) || utils.remap(label, value) || field.name}
       readOnly={readOnly}
       required={required}
       step={step}

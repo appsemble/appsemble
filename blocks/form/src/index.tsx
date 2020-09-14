@@ -1,126 +1,88 @@
 import { bootstrap } from '@appsemble/preact';
-import { Button, FormButtons, Message } from '@appsemble/preact-components';
+import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import type { BaseRequirement } from '../block';
-import { FormInput } from './components/FormInput';
+import type { FieldErrorMap } from '../block';
+import { FieldGroup } from './components/FieldGroup';
 import styles from './index.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
 import { generateDefaultValues } from './utils/generateDefaultValues';
-import { validators } from './utils/validators';
+import { isFormValid } from './utils/validity';
 
-bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
-  const defaultValues = useMemo(() => generateDefaultValues(parameters), [parameters]);
-  const defaultValidity = useMemo(
-    () => generateDefaultValidity(parameters, { ...defaultValues, ...data }),
-    [parameters, defaultValues, data],
-  );
-  const [errors, setErrors] = useState<{ [name: string]: string }>({});
-  const [formError, setFormError] = useState<string>(null);
-  const [disabled, setDisabled] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [validity, setValidity] = useState(defaultValidity);
-  const [values, setValues] = useState({
-    ...defaultValues,
-    ...data,
-  });
-  const ref = useRef<unknown>({});
-
-  const validateField = useCallback(
-    (event: Event, value: unknown): BaseRequirement => {
-      const { fields } = parameters;
-      const { name } = event.currentTarget as HTMLInputElement;
-      const field = fields.find((f) => f.name === name);
-
-      if (Object.hasOwnProperty.call(validators, field.type)) {
-        return validators[field.type](field, value) as BaseRequirement;
-      }
-
-      return null;
+bootstrap(
+  ({
+    actions,
+    data,
+    events,
+    parameters: {
+      fields,
+      formRequirementError = 'One of the requirements of this form is invalid.',
+      previousLabel,
+      requirements,
+      submitLabel = 'Submit',
     },
-    [parameters],
-  );
+    ready,
+    utils,
+  }) => {
+    const defaultValues = useMemo(() => generateDefaultValues(fields), [fields]);
+    const defaultErrors = useMemo(() => generateDefaultValidity(fields, defaultValues, utils), [
+      defaultValues,
+      fields,
+      utils,
+    ]);
 
-  const validateForm = useCallback(
-    async (v: unknown, currentValidity: { [field: string]: boolean }, lock: object) => {
-      const requirements = parameters.requirements || [];
-      let e = null;
+    const [formError, setFormError] = useState<string>(null);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
 
-      const newData = await Promise.all(
-        requirements.map(async (requirement) => {
-          try {
-            if (requirement.isValid.every((field) => currentValidity[field])) {
-              return await actions[requirement.action].dispatch(v);
+    const [values, setValues] = useState({ ...defaultValues, ...data });
+    const [errors, setErrors] = useState(defaultErrors);
+
+    const lock = useRef<symbol>();
+
+    const onChange = useCallback(
+      async (name: string, value: { [key: string]: unknown }, err: FieldErrorMap) => {
+        setValues(value);
+        setErrors(err);
+
+        if (!requirements?.length) {
+          return;
+        }
+
+        const token = Symbol();
+        lock.current = token;
+
+        let error;
+        const patchedValues = await Promise.all(
+          requirements.map(async (requirement) => {
+            if (!isFormValid(err, requirement.isValid)) {
+              return;
             }
-
-            return null;
-          } catch (error: unknown) {
-            e = remap(
-              requirement.errorMessage ??
-                remap(
-                  parameters.formRequirementError ??
-                    'One of the requirements of this form is invalid.',
-                  {},
-                ),
-              v,
-            );
-            return error;
-          }
-        }),
-      );
-
-      if (lock !== ref.current) {
-        return;
-      }
-
-      const newValues = Object.assign({}, v, ...newData);
-      const newValidity = Object.fromEntries(
-        parameters.fields.map((field) => [
-          field.name,
-          Object.hasOwnProperty.call(validators, field.type)
-            ? !validators[field.type](field, newValues[field.name])
-            : true,
-        ]),
-      );
-      setValues(newValues);
-      setFormError(e ?? null);
-      setValidity(newValidity);
-    },
-    [actions, ref, parameters, remap],
-  );
-
-  const onChange = useCallback(
-    (event: Event, value: unknown): void => {
-      const { name } = event.currentTarget as HTMLInputElement;
-      const invalid = validateField(event, value);
-      const error =
-        (invalid != null && remap(invalid.errorMessage, value)) ||
-        remap(
-          parameters?.fieldErrorLabel ?? 'One of the requirements of this field is invalid.',
-          value,
+            try {
+              return await actions[requirement.action].dispatch(value);
+            } catch {
+              error = utils.remap(
+                requirement.errorMessage ?? utils.remap(formRequirementError, {}),
+                value,
+              );
+            }
+          }),
         );
-      setErrors({ ...errors, [name]: invalid && error });
-      const newValues = {
-        ...values,
-        [name]: value,
-      };
-      const newValidity = { ...validity, [name]: !invalid };
-      setValidity(newValidity);
-      const lock = {};
-      setValues(newValues);
-      ref.current = lock;
-      validateForm(newValues, newValidity, lock);
-    },
 
-    [errors, parameters, remap, validateField, validateForm, validity, values],
-  );
+        if (lock.current !== token) {
+          return;
+        }
+        const newValues = Object.assign({}, value, ...patchedValues);
+        setValues(newValues);
+        setErrors(generateDefaultValidity(fields, newValues, utils));
+        setFormError(error);
+      },
+      [actions, fields, formRequirementError, requirements, utils],
+    );
 
-  const onSubmit = useCallback(
-    (event: Event): void => {
-      event.preventDefault();
-
+    const onSubmit = useCallback(() => {
       if (!submitting) {
         setSubmitting(true);
         actions.onSubmit
@@ -133,59 +95,58 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
           })
           .finally(() => setSubmitting(false));
       }
-    },
-    [actions, submitting, values],
-  );
+    }, [actions, submitting, values]);
 
-  const onPrevious = useCallback(() => {
-    actions.onPrevious.dispatch(values);
-  }, [actions, values]);
+    const onPrevious = useCallback(() => {
+      actions.onPrevious.dispatch(values);
+    }, [actions, values]);
 
-  const receiveData = useCallback(
-    (d: { [key: string]: unknown }) => {
-      setDisabled(false);
-      setValues({ ...defaultValues, ...d });
-    },
-    [defaultValues],
-  );
+    const receiveData = useCallback(
+      (d: { [key: string]: unknown }) => {
+        setLoading(false);
+        setValues({ ...defaultValues, ...d });
+      },
+      [defaultValues],
+    );
 
-  useEffect(() => {
-    // If a listener is present, wait until data has been received
-    const hasListener = events.on.data(receiveData);
-    setDisabled(hasListener);
-    ready();
-  }, [parameters, events, ready, receiveData]);
+    useEffect(() => {
+      // If a listener is present, wait until data has been received
+      const hasListener = events.on.data(receiveData);
+      setLoading(hasListener);
+      ready();
+    }, [events, ready, receiveData]);
 
-  return (
-    <form className={`${styles.root} is-flex px-2 py-2`} noValidate onSubmit={onSubmit}>
-      {disabled && <progress className="progress is-small is-primary" />}
-      <Message className={classNames(styles.error, { [styles.hidden]: !formError })} color="danger">
-        <span>{formError}</span>
-      </Message>
-      {parameters.fields.map((field) => (
-        <FormInput
-          disabled={disabled}
-          error={errors[field.name]}
-          field={field}
-          key={field.name}
-          onInput={onChange}
-          value={values[field.name]}
-        />
-      ))}
-      <FormButtons className="mt-4">
-        {parameters.previousLabel && (
-          <Button className="mr-4" onClick={onPrevious}>
-            {remap(parameters.previousLabel, {})}
-          </Button>
-        )}
-        <Button
-          color="primary"
-          disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
-          type="submit"
+    return (
+      <Form className={`${styles.root} is-flex px-2 py-2`} onSubmit={onSubmit}>
+        {loading && <progress className="progress is-small is-primary" />}
+        <Message
+          className={classNames(styles.error, { [styles.hidden]: !formError })}
+          color="danger"
         >
-          {remap(parameters.submitLabel || 'Submit', {})}
-        </Button>
-      </FormButtons>
-    </form>
-  );
-});
+          <span>{formError}</span>
+        </Message>
+        <FieldGroup
+          disabled={loading || submitting}
+          errors={errors}
+          fields={fields}
+          onChange={onChange}
+          value={values}
+        />
+        <FormButtons className="mt-4">
+          {previousLabel && (
+            <Button className="mr-4" disabled={loading || submitting} onClick={onPrevious}>
+              {utils.remap(previousLabel, {})}
+            </Button>
+          )}
+          <Button
+            color="primary"
+            disabled={loading || submitting || !isFormValid(errors)}
+            type="submit"
+          >
+            {utils.remap(submitLabel, {})}
+          </Button>
+        </FormButtons>
+      </Form>
+    );
+  },
+);

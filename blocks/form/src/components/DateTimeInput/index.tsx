@@ -14,7 +14,7 @@ export function DateTimeInput({
   disabled,
   error,
   field,
-  onInput,
+  onChange,
   value = null,
 }: DateTimeInputProps): VNode {
   const {
@@ -36,7 +36,7 @@ export function DateTimeInput({
       iso
       label={checkboxLabel}
       name={name}
-      onChange={onInput}
+      onChange={onChange}
       optionalLabel={utils.remap(optionalLabel, value)}
       placeholder={utils.remap(placeholder, value)}
       readOnly={readOnly}

@@ -7,11 +7,9 @@ import type { FileField, InputProps } from '../../../block';
 import { resize } from '../../utils/resize';
 import styles from './index.css';
 
-interface FileEntryProps extends InputProps<string | Blob, FileField> {
-  name: string;
-}
+type FileEntryProps = InputProps<string | Blob, FileField>;
 
-export function FileEntry({ field, name, onInput, value }: FileEntryProps): VNode {
+export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNode {
   const url = useObjectURL(value);
   const { utils } = useBlock();
 
@@ -26,17 +24,17 @@ export function FileEntry({ field, name, onInput, value }: FileEntryProps): VNod
         file = await resize(file, maxWidth, maxHeight, quality);
       }
 
-      onInput({ currentTarget, ...event }, file);
+      onChange({ currentTarget, ...event }, file);
     },
-    [field, onInput],
+    [field, onChange],
   );
 
   const onRemove = useCallback(
     (event: Event) => {
       event.preventDefault();
-      onInput(({ currentTarget: { name } } as any) as Event, null);
+      onChange(({ currentTarget: { name } } as any) as Event, null);
     },
-    [name, onInput],
+    [name, onChange],
   );
 
   return (
