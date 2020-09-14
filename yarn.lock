@@ -6250,6 +6250,11 @@ flat-cache@^2.0.1:
     rimraf "2.6.3"
     write "1.0.3"
 
+flatpickr@^4.5.1, flatpickr@^4.6.6:
+  version "4.6.6"
+  resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.6.6.tgz#34d2ad80adfa34254e62583a34264d472f1038d6"
+  integrity sha512-EZ48CJMttMg3maMhJoX+GvTuuEhX/RbA1YeuI19attP3pwBdbYy6+yqAEVm0o0hSBFYBiLbVxscLW6gJXq6H3A==
+
 flatted@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
@@ -12363,6 +12368,13 @@ postgres-interval@^1.1.0:
   integrity sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==
   dependencies:
     xtend "^4.0.0"
+
+preact-flatpickr@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/preact-flatpickr/-/preact-flatpickr-1.0.3.tgz#6388b8cd2ebc5f1bbb84a615101e26e538f50d74"
+  integrity sha512-evCV4hC/mmtelwLafEilN4LKgUBX19zK3pD7a6GYPOPRxOLtFoE11TDpciRlhe4pWMCDIMreS1SnCpzcR/nOgA==
+  dependencies:
+    flatpickr "^4.5.1"
 
 preact@^10.4.8:
   version "10.4.8"

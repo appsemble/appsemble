@@ -2,6 +2,7 @@ export * from './Button';
 export * from './ButtonGroup';
 export * from './ButtonOption';
 export * from './CardFooterButton';
+export * from './Calendar';
 export * from './Form';
 export * from './FormButtons';
 export * from './FormComponent';

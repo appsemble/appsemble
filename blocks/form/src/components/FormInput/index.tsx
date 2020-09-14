@@ -2,6 +2,7 @@ import { h, VNode } from 'preact';
 
 import type { Field, InputProps } from '../../../block';
 import { BooleanInput } from '../BooleanInput';
+import { DateTimeInput } from '../DateTimeInput';
 import { EnumInput } from '../EnumInput';
 import { FileInput } from '../FileInput';
 import { GeoCoordinatesInput } from '../GeoCoordinatesInput';
@@ -16,6 +17,10 @@ type FormInputProps = InputProps<any, Field>;
  */
 export function FormInput({ field, ...props }: FormInputProps): VNode {
   switch (field.type) {
+    case 'date':
+    case 'date-time':
+    case 'time':
+      return <DateTimeInput field={field} {...props} />;
     case 'enum':
       return <EnumInput field={field} {...props} />;
     case 'file':

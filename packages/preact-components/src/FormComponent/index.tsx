@@ -1,6 +1,7 @@
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { ComponentChild, ComponentChildren, h, VNode } from 'preact';
+import { ComponentChild, ComponentChildren, h } from 'preact';
+import { forwardRef } from 'preact/compat';
 
 import styles from './index.css';
 
@@ -48,18 +49,12 @@ export interface FormComponentProps {
 /**
  * A wrapper for creating consistent form components.
  */
-export function FormComponent({
-  children,
-  className,
-  iconLeft,
-  id,
-  label,
-  optionalLabel = '(Optional)',
-  required,
-  tag,
-}: FormComponentProps): VNode {
-  return (
-    <div className={classNames('field', className)}>
+export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
+  (
+    { children, className, iconLeft, id, label, optionalLabel = '(Optional)', required, tag },
+    ref,
+  ) => (
+    <div className={classNames('field', className)} ref={ref}>
       {label && (
         <label className={`label ${styles.label}`} htmlFor={id}>
           <span className={styles.labelContent}>{label}</span>
@@ -74,5 +69,5 @@ export function FormComponent({
       )}
       <div className={classNames('control', { 'has-icons-left': iconLeft })}>{children}</div>
     </div>
-  );
-}
+  ),
+);
