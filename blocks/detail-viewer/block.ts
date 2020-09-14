@@ -1,4 +1,3 @@
-import type { BlockProps } from '@appsemble/preact';
 import type { BulmaColor, Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
@@ -137,7 +136,7 @@ export interface StringField extends AbstractField {
 
 export type Field = FileField | GeoCoordinatesField | StringField;
 
-export interface RendererProps<F extends Field> extends Partial<BlockProps> {
+export interface RendererProps<F extends Field> {
   /**
    * Structure used to define the field.
    */

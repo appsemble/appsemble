@@ -14,7 +14,7 @@ const renderers = {
   string: StringRenderer,
 };
 
-bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
+bootstrap(({ data: blockData, events, parameters, ready }) => {
   const [data, setData] = useState(blockData);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +43,6 @@ bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
             // @ts-expect-error XXX This should be fine
             field={field}
             key={field.value || field.label || `${field.type}.${index}`}
-            theme={theme}
           />
         );
       })}
