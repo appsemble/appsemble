@@ -32,7 +32,7 @@
     "bulma-calendar": "^6.0.9",
     "classnames": "^2.2.6",
     "flatpickr": "^4.6.6",
-    "leaflet": "~1.5.1",
+    "leaflet": "~1.5.1"
   },
   "peerDependencies": {
     "preact": "^10.0.4"
