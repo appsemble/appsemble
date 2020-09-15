@@ -1,3 +1,5 @@
+import type { UserInfo } from '@appsemble/types/src';
+
 import { App, AppMessages, Organization } from '../models';
 import { getApp, getRemapperContext } from './app';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
@@ -171,11 +173,20 @@ describe('getRemapperContext', () => {
       language: 'nl-nl-brabants',
       messages: { bye: 'Houdoe' },
     });
+    const userInfo: UserInfo = {
+      email: '',
+      email_verified: true,
+      picture: '',
+      profile: '',
+      name: '',
+      sub: '',
+    };
 
-    const context = await getRemapperContext(app, 'nl-nl-brabants');
+    const context = await getRemapperContext(app, 'nl-nl-brabants', userInfo);
     const word = context.getMessage({ id: 'word' });
     const hello = context.getMessage({ id: 'hello' });
     const bye = context.getMessage({ id: 'bye' });
+    expect(context.userInfo).toBe(userInfo);
 
     expect(word.format()).toBe('Woord');
     expect(hello.format()).toBe('Hoi');

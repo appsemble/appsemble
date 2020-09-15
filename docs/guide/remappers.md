@@ -102,3 +102,12 @@ The format used to parse the date. The tokens that can be used can be found
 [here](https://date-fns.org/v2.12.0/docs/parse).
 
 If empty, the string will be parsed as an ISO date string.
+
+### `user`
+
+Get user information of the logged in user.
+
+#### Parameters
+
+The type of user information to get. The allowed values are: `email`, `email_verified`, `name`, and
+`sub`,

@@ -73,7 +73,7 @@ export interface AppsembleContext<P = unknown> {
   /**
    * The user that is logged in.
    */
-  user: Pick<User, 'id'>;
+  user: User;
 }
 
 export type KoaContext<P = unknown> = ParameterizedContext<AppsembleState, AppsembleContext<P>>;

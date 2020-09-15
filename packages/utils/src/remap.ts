@@ -1,4 +1,4 @@
-import type { Remapper, Remappers } from '@appsemble/types';
+import type { Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { parse, parseISO } from 'date-fns';
 import type { IntlMessageFormat } from 'intl-messageformat';
 
@@ -13,6 +13,7 @@ export type MessageGetter = (msg: IntlMessage) => IntlMessageFormat;
 
 export interface RemapperContext {
   getMessage: (msg: IntlMessage) => IntlMessageFormat;
+  userInfo: UserInfo;
 }
 
 type MapperImplementations = {
@@ -71,6 +72,8 @@ const mapperImplementations: MapperImplementations = {
     const [[regex, replacer]] = Object.entries(values);
     return String(input).replace(new RegExp(regex, 'gm'), replacer);
   },
+
+  user: (values, input, context) => context.userInfo?.[values],
 };
 
 export function remap(mappers: Remapper, input: unknown, context: RemapperContext): unknown {

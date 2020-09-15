@@ -4,7 +4,6 @@ import { logger } from '@appsemble/node-utils';
 import webpush from 'web-push';
 
 import type { App, AppSubscription } from '../models';
-import type { KoaContext } from '../types';
 
 export interface SendNotificationOptions {
   title: string;
@@ -12,7 +11,7 @@ export interface SendNotificationOptions {
 }
 
 export async function sendNotification(
-  ctx: KoaContext,
+  hostname: string,
   app: App,
   subscription: AppSubscription,
   options: SendNotificationOptions,
@@ -23,7 +22,7 @@ export async function sendNotification(
     );
 
     const { auth, endpoint, p256dh } = subscription;
-    const { host, protocol } = new URL(ctx.argv.host);
+    const { host, protocol } = new URL(hostname);
     const icon = `${protocol}//${app.path}.${app.OrganizationId}.${host}/icon-96.png`;
 
     await webpush.sendNotification(
