@@ -100,7 +100,7 @@ export function Block({
     }
     setInitialized(true);
 
-    const shadowRoot = div?.attachShadow({ mode: 'closed' }) ?? null;
+    const shadowRoot = div?.attachShadow({ mode: 'open' });
 
     const events = {
       emit: Object.fromEntries(
