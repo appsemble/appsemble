@@ -4,6 +4,7 @@ import type { NotificationDefinition } from '@appsemble/types';
 import { checkAppRole, Permission, remap, SchemaValidationError, validate } from '@appsemble/utils';
 import { badRequest, forbidden, notFound, unauthorized } from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
+import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import type { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
 import { FindOptions, Op, QueryOptions, WhereOptions } from 'sequelize';
@@ -657,18 +658,16 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   }
 
   let expireDate: Date;
-  // Manual $expire takes precedence over the default calculated expire date
+  // Manual $expire takes precedence over the default calculated expiration date
   if ($expires) {
-    expireDate = new Date($expires);
-
-    if (new Date() > expireDate) {
-      throw badRequest('Expire date has already passed.');
+    if (isPast(parseISO($expires))) {
+      throw badRequest('Expiration date has already passed.');
     }
   } else if (expires) {
     const expireDuration = parseDuration(expires);
 
     if (expireDuration && expireDuration > 0) {
-      expireDate = new Date(Date.now() + expireDuration);
+      expireDate = addMilliseconds(new Date(), expireDuration);
     }
   }
 
@@ -750,12 +749,10 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
     throw boom;
   }
 
-  let { expires } = resource;
+  const { expires } = resource;
   if ($expires) {
-    expires = new Date($expires);
-
-    if (new Date() > expires) {
-      throw badRequest('Expire date has already passed.');
+    if (isPast(parseISO($expires))) {
+      throw badRequest('Expiration date has already passed.');
     }
   }
 

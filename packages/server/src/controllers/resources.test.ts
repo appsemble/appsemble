@@ -706,7 +706,7 @@ describe('createResource', () => {
     expect(response).toMatchObject({
       status: 400,
       data: {
-        message: 'Expire date has already passed.',
+        message: 'Expiration date has already passed.',
       },
     });
   });
@@ -908,7 +908,7 @@ describe('updateResource', () => {
     expect(response).toMatchObject({
       status: 400,
       data: {
-        message: 'Expire date has already passed.',
+        message: 'Expiration date has already passed.',
       },
     });
   });

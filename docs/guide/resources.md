@@ -176,8 +176,8 @@ fetching or updating a resource. The exact date and time of when the resource wi
 also be manually set by including the `$expires` property with a valid ISO 8601 date/time value.
 
 > Note: When adding `expires` to a resource, this will not be retroactively applied to existing
-> resources. These resources can be updated to have an expire date set by updating the resource and
-> including the `$expires` property.
+> resources. These resources can be updated to have an expiration date set by updating the resource
+> and including the `$expires` property.
 
 ## Filtering resources from the Appsemble API
 

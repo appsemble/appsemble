@@ -24,7 +24,7 @@ spec:
               command:
                 - node
                 - packages/server/dist
-                - cleanupResources
+                - cleanup-resources
                 - -vv
               env:
                 - name: DATABASE_HOST
