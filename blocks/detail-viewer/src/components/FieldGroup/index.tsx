@@ -15,7 +15,7 @@ export function FieldGroup({ data, field }: RendererProps<FieldGroupType>): VNod
 
   return (
     <div className="appsemble-group">
-      {label ? <h6 className="title is-6">{label}</h6> : null}
+      {label ? <h5 className="title is-5">{label}</h5> : null}
       {Array.isArray(value)
         ? value.flatMap((val) =>
             field.fields.map((subField, index) => (
