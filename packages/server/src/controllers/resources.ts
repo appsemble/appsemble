@@ -1,7 +1,6 @@
 import { randomBytes } from 'crypto';
 
-import type { NotificationDefinition } from '@appsemble/types';
-import { checkAppRole, Permission, remap, SchemaValidationError, validate } from '@appsemble/utils';
+import { checkAppRole, Permission, SchemaValidationError, validate } from '@appsemble/utils';
 import { badRequest, forbidden, notFound, unauthorized } from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
@@ -19,9 +18,8 @@ import {
   User,
 } from '../models';
 import type { KoaContext } from '../types';
-import { getRemapperContext } from '../utils/app';
 import { checkRole } from '../utils/checkRole';
-import { sendNotification, SendNotificationOptions } from '../utils/sendNotification';
+import { processHooks, processReferenceHooks } from '../utils/resource';
 
 interface Params {
   appId: number;
@@ -218,89 +216,6 @@ async function verifyAppRole(
   if (!filteredRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
     throw forbidden('User does not have sufficient permissions.');
   }
-}
-
-async function sendSubscriptionNotifications(
-  ctx: KoaContext<Params>,
-  app: App,
-  notification: NotificationDefinition,
-  resourceUserId: string,
-  resourceType: string,
-  action: 'create' | 'update' | 'delete',
-  resourceId: number,
-  options: SendNotificationOptions,
-): Promise<void> {
-  const {
-    params: { appId },
-  } = ctx;
-  const to = notification.to || [];
-  const roles = to.filter((n) => n !== '$author');
-  const author = resourceUserId && to.includes('$author');
-  const subscribers = notification.subscribe;
-
-  if (!roles.length && !author && !subscribers) {
-    return;
-  }
-
-  const subscriptions = [];
-
-  if (roles.length || author) {
-    const roleSubscribers = await AppSubscription.findAll({
-      where: { AppId: appId },
-      attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-      include: [
-        {
-          model: User,
-          attributes: [],
-          required: true,
-          include: [
-            {
-              model: App,
-              attributes: [],
-              where: { id: appId },
-              through: {
-                attributes: [],
-                where: {
-                  [Op.or]: [
-                    ...(author ? [{ UserId: resourceUserId }] : []),
-                    ...(roles.length ? [{ role: roles }] : []),
-                  ],
-                },
-              },
-            },
-          ],
-        },
-      ],
-    });
-
-    subscriptions.push(...roleSubscribers);
-  }
-
-  if (subscribers) {
-    const resourceSubscribers = await AppSubscription.findAll({
-      attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-      where: { AppId: appId },
-      include: [
-        {
-          model: ResourceSubscription,
-          attributes: ['ResourceId'],
-          where: {
-            type: resourceType,
-            action,
-            ...(resourceId
-              ? { ResourceId: { [Op.or]: [null, resourceId] } }
-              : { ResourceId: null }),
-          },
-        },
-      ],
-    });
-
-    subscriptions.push(...resourceSubscribers);
-  }
-
-  subscriptions.forEach((subscription) => {
-    sendNotification(ctx, app, subscription, options);
-  });
 }
 
 export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
@@ -538,82 +453,6 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
   ctx.body = result;
 }
 
-async function processHooks(
-  ctx: KoaContext<Params>,
-  app: App,
-  resource: Resource,
-  action: 'create' | 'update' | 'delete',
-): Promise<void> {
-  const resourceDefinition = app.definition.resources[resource.type];
-
-  if (resourceDefinition[action]?.hooks?.notification) {
-    const { notification } = resourceDefinition[action].hooks;
-    const { data } = notification;
-
-    const r = {
-      ...resource.data,
-      id: resource.id,
-      $created: resource.created,
-      $updated: resource.updated,
-    };
-
-    const remapperContext = await getRemapperContext(
-      app,
-      app.definition.defaultLanguage || 'en-us',
-    );
-
-    const title = (data?.title ? remap(data.title, r, remapperContext) : resource.type) as string;
-    const content = (data?.content
-      ? remap(data.content, r, remapperContext)
-      : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`) as string;
-
-    await sendSubscriptionNotifications(
-      ctx,
-      app,
-      notification,
-      // Don't send notifications to the creator when creating
-      action === 'create' ? null : resource.UserId,
-      resource.type,
-      action,
-      resource.id,
-      {
-        title,
-        body: content,
-      },
-    );
-  }
-}
-
-async function processReferenceHooks(
-  ctx: KoaContext<Params>,
-  app: App,
-  resource: Resource,
-  action: 'create' | 'update' | 'delete',
-): Promise<void> {
-  await Promise.all(
-    Object.entries(app.definition.resources[resource.type].references || {}).map(
-      async ([propertyName, reference]) => {
-        if (!reference[action] || !reference[action].trigger || !reference[action].trigger.length) {
-          // Do nothing
-          return;
-        }
-
-        const { trigger } = reference[action];
-        const ids = [].concat(resource.data[propertyName]);
-        const parents = await Resource.findAll({
-          where: { id: ids, type: reference.resource, AppId: app.id },
-        });
-
-        await Promise.all(
-          parents.map((parent) =>
-            Promise.all(trigger.map((t) => processHooks(ctx, app, parent, t))),
-          ),
-        );
-      },
-    ),
-  );
-}
-
 export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
@@ -694,8 +533,8 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   };
   ctx.status = 201;
 
-  processReferenceHooks(ctx, app, createdResource, action);
-  processHooks(ctx, app, createdResource, action);
+  processReferenceHooks(ctx.argv.host, ctx.user, app, createdResource, action);
+  processHooks(ctx.argv.host, ctx.user, app, createdResource, action);
 }
 
 export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
@@ -779,8 +618,8 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
     }),
   };
 
-  processReferenceHooks(ctx, app, resource, action);
-  processHooks(ctx, app, resource, action);
+  processReferenceHooks(ctx.argv.host, ctx.user, app, resource, action);
+  processHooks(ctx.argv.host, ctx.user, app, resource, action);
 }
 
 export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
@@ -821,6 +660,6 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   await resource.destroy();
   ctx.status = 204;
 
-  processReferenceHooks(ctx, app, resource, action);
-  processHooks(ctx, app, resource, action);
+  processReferenceHooks(ctx.argv.host, ctx.user, app, resource, action);
+  processHooks(ctx.argv.host, ctx.user, app, resource, action);
 }

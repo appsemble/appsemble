@@ -23,7 +23,7 @@ import { messages } from './messages';
 export function Page(): ReactElement {
   const { definition } = useAppDefinition();
   const redirect = useLocationString();
-  const { isLoggedIn, role } = useUser();
+  const { isLoggedIn, role, userInfo } = useUser();
   const {
     params: { lang, pageId },
     path,
@@ -56,8 +56,8 @@ export function Page(): ReactElement {
   const prefix = index === -1 ? null : `pages.${index}`;
 
   const remapWithContext = useCallback(
-    (mappers: Remapper, input: any) => remap(mappers, input, { getMessage }),
-    [getMessage],
+    (mappers: Remapper, input: any) => remap(mappers, input, { getMessage, userInfo }),
+    [getMessage, userInfo],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {

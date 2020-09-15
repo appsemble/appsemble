@@ -207,6 +207,6 @@ export async function broadcast(ctx: KoaContext<Params>): Promise<void> {
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
 
   app.AppSubscriptions.forEach((subscription) => {
-    sendNotification(ctx, app, subscription, { title, body });
+    sendNotification(ctx.argv.host, app, subscription, { title, body });
   });
 }

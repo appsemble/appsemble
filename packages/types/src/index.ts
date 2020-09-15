@@ -112,12 +112,12 @@ export interface UserInfo {
   /**
    * The URL of the profile picture for the end-user.
    */
-  picture: string;
+  picture?: string;
 
   /**
    * A URL that links to the user profile.
    */
-  profile: string;
+  profile?: string;
 }
 
 /**
@@ -222,6 +222,8 @@ export interface Remappers {
   'string.replace': {
     [regex: string]: string;
   };
+
+  user: keyof UserInfo;
 }
 
 export type Remapper = RequireExactlyOne<Remappers>[] | string;
@@ -963,6 +965,16 @@ export interface Organization {
    * The display name of the organization.
    */
   name: string;
+}
+
+/**
+ * An invite for an organizaton.
+ */
+export interface OrganizationInvite {
+  /**
+   * The email address of the user to invite.
+   */
+  email: string;
 }
 
 /**
