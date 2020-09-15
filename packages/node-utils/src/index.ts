@@ -7,3 +7,4 @@ export * from './handleError';
 export * from './interceptors';
 export * from './loggerMiddleware';
 export * from './readFileOrString';
+export * from './fs';

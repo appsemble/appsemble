@@ -2,6 +2,7 @@ import { configureAxios, configureLogger, handleError } from '@appsemble/node-ut
 import yargs, { CommandModule } from 'yargs';
 
 import * as cleanup from './commands/cleanup';
+import * as cleanupResources from './commands/cleanupResources';
 import * as health from './commands/health';
 import * as migrate from './commands/migrate';
 import * as restore from './commands/restore';
@@ -13,7 +14,12 @@ import { readPackageJson } from './utils/readPackageJson';
  */
 const startHandler = start.handler;
 const migrateHandler = migrate.handler;
-export { startHandler as start, migrateHandler as migrate };
+const cleanupResourcesHandler = cleanupResources.handler;
+export {
+  startHandler as start,
+  migrateHandler as migrate,
+  cleanupResourcesHandler as cleanupResources,
+};
 
 /**
  * The main entry point for the Appsemble production server.
@@ -39,6 +45,7 @@ function main(argv: string[]): void {
     })
     .middleware([configureLogger])
     .command(cleanup as CommandModule)
+    .command(cleanupResources as CommandModule)
     .command(health as CommandModule)
     .command(start as CommandModule)
     .command(migrate as CommandModule)

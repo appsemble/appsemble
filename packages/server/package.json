@@ -71,6 +71,7 @@
     "mustache": "^4.0.1",
     "node-sass": "^4.14.1",
     "nodemailer": "^6.4.11",
+    "parse-duration": "^0.4.4",
     "pg": "^8.3.3",
     "pg-hstore": "^2.3.3",
     "postcss": "^7.0.32",

@@ -3,7 +3,7 @@ module.exports = (api) => {
 
   const plugins = [
     env === 'test' && '@babel/plugin-transform-modules-commonjs',
-    'babel-plugin-react-intl-auto',
+    ['babel-plugin-react-intl-auto', { filebase: false, removePrefix: 'packages/' }],
   ];
 
   return {

@@ -35,6 +35,9 @@ export class Resource extends Model<Resource> {
   @Column(DataType.BOOLEAN)
   clonable: boolean;
 
+  @Column
+  expires: Date;
+
   @CreatedAt
   created: Date;
 

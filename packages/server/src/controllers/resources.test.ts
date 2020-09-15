@@ -83,6 +83,14 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             roles: ['Reader'],
           },
         },
+        testExpirableResource: {
+          expires: '10m',
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+        },
       },
       security: {
         default: {
@@ -220,6 +228,36 @@ describe('getResourceById', () => {
         $updated: new Date(0).toJSON(),
         $author: { id: user.id, name: user.name },
       },
+    });
+  });
+
+  it('should not fetch expired resources', async () => {
+    const app = await exampleApp(organizationId);
+    const {
+      data: { id },
+    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+    });
+
+    const responseA = await request.get(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+    );
+
+    // The resource expires after 10 minutes.
+    clock.tick(601e3);
+
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+    );
+
+    expect(responseA).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'test',
+      },
+    });
+    expect(responseB).toMatchObject({
+      status: 404,
     });
   });
 });
@@ -517,6 +555,46 @@ describe('queryResources', () => {
       ],
     });
   });
+
+  it('should not fetch expired resources', async () => {
+    const app = await exampleApp(organizationId);
+    const {
+      data: { id: idA },
+    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1970-01-01T00:05:00.000Z',
+    });
+    const {
+      data: { id: idB },
+    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'bar',
+    });
+
+    const responseA = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
+
+    // The resource A expires after 5 minutes.
+    clock.tick(301e3);
+
+    const responseB = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
+
+    expect(responseA).toMatchObject({
+      status: 200,
+      data: [
+        { id: idA, foo: 'test', $expires: '1970-01-01T00:05:00.000Z' },
+        { id: idB, foo: 'bar', $expires: '1970-01-01T00:10:00.000Z' },
+      ],
+    });
+    expect(responseB.data).toStrictEqual([
+      {
+        id: idB,
+        foo: 'bar',
+        $clonable: false,
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        $expires: '1970-01-01T00:10:00.000Z',
+      },
+    ]);
+  });
 });
 
 describe('createResource', () => {
@@ -576,6 +654,59 @@ describe('createResource', () => {
     expect(response).toMatchObject({
       status: 404,
       data: { message: 'App does not have any resources defined' },
+    });
+  });
+
+  it('should calculate resource expiration', async () => {
+    const app = await exampleApp(organizationId);
+    const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+    });
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        foo: 'test',
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        $expires: '1970-01-01T00:10:00.000Z',
+      },
+    });
+  });
+
+  it('should set resource expiration', async () => {
+    const app = await exampleApp(organizationId);
+    const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1970-01-01T00:05:00.000Z',
+    });
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        foo: 'test',
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        $expires: '1970-01-01T00:05:00.000Z',
+      },
+    });
+  });
+
+  it('should not set resource expiration if given date has already passed', async () => {
+    // 10 minutes
+    clock.tick(600e3);
+
+    const app = await exampleApp(organizationId);
+    const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1970-01-01T00:05:00.000Z',
+    });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message: 'Expiration date has already passed.',
+      },
     });
   });
 });
@@ -712,6 +843,73 @@ describe('updateResource', () => {
 
     expect(response.status).toBe(200);
     expect(resource.clonable).toBe(true);
+  });
+
+  it('should set $expires', async () => {
+    const app = await exampleApp(organizationId);
+    const {
+      data: { id },
+    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1970-01-01T00:05:00.000Z',
+    });
+
+    const responseA = await request.put(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+      {
+        foo: 'updated',
+        $expires: '1970-01-01T00:07:00.000Z',
+      },
+    );
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+    );
+
+    expect(responseA).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'updated',
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        $expires: '1970-01-01T00:07:00.000Z',
+      },
+    });
+
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'updated',
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        $expires: '1970-01-01T00:07:00.000Z',
+      },
+    });
+  });
+
+  it('should not set $expires if the date has already passed', async () => {
+    // 10 minutes
+    clock.tick(600e3);
+
+    const app = await exampleApp(organizationId);
+    const {
+      data: { id },
+    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+    });
+
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+      {
+        foo: 'updated',
+        $expires: '1970-01-01T00:07:00.000Z',
+      },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message: 'Expiration date has already passed.',
+      },
+    });
   });
 });
 
