@@ -124,6 +124,11 @@ export type NumberRequirement = StepRequirement | MinMaxRequirement | RequiredRe
 export type FileRequirement = AcceptRequirement | RequiredRequirement | LengthRequirement;
 
 /**
+ * All requirements applicable to date-time fields.
+ */
+export type DateTimeRequirement = RequiredRequirement;
+
+/**
  * An option that is displayed in a dropdown menu or radio button field.
  */
 interface Choice {
@@ -172,6 +177,16 @@ interface AbstractField {
    * Won’t display if the field has no label of its own.
    */
   tag?: Remapper;
+}
+
+/**
+ * A date/time picker that results in an exact date and time.
+ */
+export interface DateTimeField extends AbstractField {
+  /**
+   * The type of the field.
+   */
+  type: 'date-time';
 }
 
 /**
@@ -429,7 +444,8 @@ export type Field =
   | HiddenField
   | NumberField
   | StringField
-  | RadioField;
+  | RadioField
+  | DateTimeField;
 
 export interface InputProps<T, F extends Field> {
   /**
