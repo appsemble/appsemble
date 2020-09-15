@@ -1,6 +1,5 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
-import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Route } from 'react-router-dom';
 
 import { AppDefinitionProvider } from '../AppDefinitionProvider';
@@ -24,30 +23,28 @@ interface AppProps {
  */
 export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElement {
   return (
-    <IntlProvider defaultLocale="en-US" locale="en-US">
-      <BrowserRouter>
-        <Route path="/:lang?">
-          <AppDefinitionProvider>
+    <BrowserRouter>
+      <Route path="/:lang?">
+        <AppDefinitionProvider>
+          <AppMessagesProvider>
             <MessagesProvider>
-              <AppMessagesProvider>
-                <ErrorHandler fallback={ErrorFallback}>
-                  <ServiceWorkerRegistrationProvider
-                    serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
-                  >
-                    <UserProvider>
-                      <MenuProvider>
-                        <PermissionRequest />
-                        <Main />
-                        <Navigation />
-                      </MenuProvider>
-                    </UserProvider>
-                  </ServiceWorkerRegistrationProvider>
-                </ErrorHandler>
-              </AppMessagesProvider>
+              <ErrorHandler fallback={ErrorFallback}>
+                <ServiceWorkerRegistrationProvider
+                  serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
+                >
+                  <UserProvider>
+                    <MenuProvider>
+                      <PermissionRequest />
+                      <Main />
+                      <Navigation />
+                    </MenuProvider>
+                  </UserProvider>
+                </ServiceWorkerRegistrationProvider>
+              </ErrorHandler>
             </MessagesProvider>
-          </AppDefinitionProvider>
-        </Route>
-      </BrowserRouter>
-    </IntlProvider>
+          </AppMessagesProvider>
+        </AppDefinitionProvider>
+      </Route>
+    </BrowserRouter>
   );
 }

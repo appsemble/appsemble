@@ -1,7 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  blocked: 'Notifications have been blocked. Please update your site and try again.',
+  blocked:
+    'Notifications have been blocked. Please update your notification permissions and try again.',
   subscribe: 'Subscribe',
   suscribeDescription:
     'Subscribing to an app allows for the app creators to connect with their users by sending push notifications.',
@@ -16,8 +17,7 @@ export const messages = defineMessages({
     'Unable to subscribe. Either no permission has been granted or your device does not support notifications.',
   subscriptions: 'Subscriptions',
   resourceSubscriptions: '{resource} subscriptions',
-  subscriptionLabel: 'Get notified when “{resource}” {actionVerb}',
-  create: 'is created',
-  update: 'is updated',
-  delete: 'is deleted',
+  createSubscriptionLabel: 'Get notified when “{resource}” is created',
+  updateSubscriptionLabel: 'Get notified when “{resource}” is updated',
+  deleteSubscriptionLabel: 'Get notified when “{resource}” is deleted',
 });

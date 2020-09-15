@@ -1,8 +1,7 @@
 import { join } from 'path';
 
-import { logger } from '@appsemble/node-utils';
+import { logger, opendirSafe } from '@appsemble/node-utils';
 
-import { opendirSafe } from '../utils/fs';
 import { uploadAppBlockTheme } from './uploadAppBlockTheme';
 
 /**

@@ -182,32 +182,63 @@ export function AppSubscriptions(): ReactElement {
             }
             required
           >
-            {(Object.keys(resource) as (keyof SubscriptionState)[])
-              .filter(
-                (key) =>
-                  resource[key].notification.subscribe === 'all' ||
-                  resource[key].notification.subscribe === 'both',
-              )
-              .map((key) => (
-                <CheckboxField
-                  className={styles.subscribeCheckbox}
-                  disabled={!subscription || !resource.create}
-                  key={key}
-                  name={`${resourceType}.${key}`}
-                  onChange={(_, value) => onSubscriptionChange(resourceType, key, value)}
-                  switch
-                  title={
-                    <FormattedMessage
-                      {...messages.subscriptionLabel}
-                      values={{
-                        resource: resourceType,
-                        actionVerb: <FormattedMessage {...messages[key]} />,
-                      }}
-                    />
-                  }
-                  value={subscriptions[resourceType][key].subscribed}
-                />
-              ))}
+            {(resource.create.notification.subscribe === 'all' ||
+              resource.create.notification.subscribe === 'both') && (
+              <CheckboxField
+                className={styles.subscribeCheckbox}
+                disabled={!subscription || !resource.create}
+                name={`${resourceType}.create`}
+                onChange={(_, value) => onSubscriptionChange(resourceType, 'create', value)}
+                switch
+                title={
+                  <FormattedMessage
+                    {...messages.createSubscriptionLabel}
+                    values={{
+                      resource: resourceType,
+                    }}
+                  />
+                }
+                value={subscriptions[resourceType].create.subscribed}
+              />
+            )}
+            {(resource.update.notification.subscribe === 'all' ||
+              resource.update.notification.subscribe === 'both') && (
+              <CheckboxField
+                className={styles.subscribeCheckbox}
+                disabled={!subscription || !resource.update}
+                name={`${resourceType}.update`}
+                onChange={(_, value) => onSubscriptionChange(resourceType, 'update', value)}
+                switch
+                title={
+                  <FormattedMessage
+                    {...messages.updateSubscriptionLabel}
+                    values={{
+                      resource: resourceType,
+                    }}
+                  />
+                }
+                value={subscriptions[resourceType].update.subscribed}
+              />
+            )}
+            {(resource.delete.notification.subscribe === 'all' ||
+              resource.delete.notification.subscribe === 'both') && (
+              <CheckboxField
+                className={styles.subscribeCheckbox}
+                disabled={!subscription || !resource.delete}
+                name={`${resourceType}.delete`}
+                onChange={(_, value) => onSubscriptionChange(resourceType, 'delete', value)}
+                switch
+                title={
+                  <FormattedMessage
+                    {...messages.deleteSubscriptionLabel}
+                    values={{
+                      resource: resourceType,
+                    }}
+                  />
+                }
+                value={subscriptions[resourceType].update.subscribed}
+              />
+            )}
           </FormComponent>
         ))}
       </FormComponent>

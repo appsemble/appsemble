@@ -1,4 +1,10 @@
-import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
+import {
+  Content,
+  Loader,
+  Message,
+  nl as nlReactComponentMessages,
+  useLocationString,
+} from '@appsemble/react-components';
 import type { AppMessages } from '@appsemble/types';
 import { IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
 import axios from 'axios';
@@ -14,8 +20,10 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { IntlProvider } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
+import nlAppMessages from '../../../translations/nl.json';
 import { detectLocale } from '../../utils/i18n';
 import { apiUrl, appId, languages } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -35,6 +43,10 @@ const formatters = {
   getNumberFormat: memoizeIntlConstructor(Intl.NumberFormat),
   getDateTimeFormat: memoizeIntlConstructor(Intl.DateTimeFormat),
   getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
+};
+
+const providedMessages: { [language: string]: { [messageId: string]: string } } = {
+  nl: { ...nlReactComponentMessages, ...nlAppMessages },
 };
 
 export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
@@ -104,7 +116,13 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     );
   }
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={value}>
+      <IntlProvider defaultLocale="en-US" locale={lang} messages={providedMessages[lang]}>
+        {children}
+      </IntlProvider>
+    </Context.Provider>
+  );
 }
 
 export function useAppMessages(): AppMessageContext {

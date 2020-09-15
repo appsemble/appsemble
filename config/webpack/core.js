@@ -120,7 +120,9 @@ module.exports = (env, argv) => {
           test: /[/\\]messages\.ts$/,
           loader: 'babel-loader',
           options: {
-            plugins: ['babel-plugin-react-intl-auto'],
+            plugins: [
+              ['babel-plugin-react-intl-auto', { filebase: false, removePrefix: 'packages/' }],
+            ],
           },
         },
         {
