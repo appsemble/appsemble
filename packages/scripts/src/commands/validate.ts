@@ -2,7 +2,7 @@ import { basename, dirname, join, relative } from 'path';
 
 import { getWorkspaces, logger, opendirSafe } from '@appsemble/node-utils';
 import type { Config } from '@jest/types';
-import extractReactIntlMessages from 'extract-react-intl-messages/dist/extract-react-intl/index';
+import extractMessages from 'extract-react-intl-messages';
 import { readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
 import normalizePath from 'normalize-path';
@@ -72,7 +72,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
   const defaultLocale = 'en-US';
 
   for (const workspace of workspaces) {
-    const translatedMessages = await extractReactIntlMessages(
+    const translatedMessages = await extractMessages.extractReactIntl(
       locales,
       `./packages/${workspace}/src/**/messages.ts`,
       {
