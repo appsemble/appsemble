@@ -134,7 +134,20 @@ export interface StringField extends AbstractField {
   type?: 'string';
 }
 
+/**
+ * All supported types of fields.
+ */
 export type Field = FileField | GeoCoordinatesField | StringField;
+
+/**
+ * A group of fields that is repeated for each item in it value.
+ */
+export interface FieldGroup extends AbstractField {
+  /**
+   * The list of fields to repeat.
+   */
+  fields: Field[];
+}
 
 export interface RendererProps<F extends Field> {
   /**
@@ -160,7 +173,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display based on the name from the schema.
      */
-    fields: Field[];
+    fields: (Field | FieldGroup)[];
 
     /**
      * Custom icon configuration for geocoordinate fields.
