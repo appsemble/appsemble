@@ -660,7 +660,8 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   let expireDate: Date;
   // Manual $expire takes precedence over the default calculated expiration date
   if ($expires) {
-    if (isPast(parseISO($expires))) {
+    expireDate = parseISO($expires);
+    if (isPast(expireDate)) {
       throw badRequest('Expiration date has already passed.');
     }
   } else if (expires) {
@@ -749,9 +750,10 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
     throw boom;
   }
 
-  const { expires } = resource;
+  let { expires } = resource;
   if ($expires) {
-    if (isPast(parseISO($expires))) {
+    expires = parseISO($expires);
+    if (isPast(expires)) {
       throw badRequest('Expiration date has already passed.');
     }
   }

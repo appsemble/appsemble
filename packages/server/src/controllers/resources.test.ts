@@ -658,7 +658,7 @@ describe('createResource', () => {
     });
   });
 
-  it('should calculate resource expiracy', async () => {
+  it('should calculate resource expiration', async () => {
     const app = await exampleApp(organizationId);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
@@ -675,7 +675,7 @@ describe('createResource', () => {
     });
   });
 
-  it('should set resource expiracy', async () => {
+  it('should set resource expiration', async () => {
     const app = await exampleApp(organizationId);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
@@ -693,7 +693,7 @@ describe('createResource', () => {
     });
   });
 
-  it('should not set resource expiracy if given date has already passed', async () => {
+  it('should not set resource expiration if given date has already passed', async () => {
     // 10 minutes
     clock.tick(600e3);
 
