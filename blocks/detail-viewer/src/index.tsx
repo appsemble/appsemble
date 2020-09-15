@@ -3,16 +3,9 @@ import { Loader } from '@appsemble/preact-components';
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import { FileRenderer } from './components/FileRenderer';
-import { GeoCoordinatesRenderer } from './components/GeoCoordinatesRenderer';
-import { StringRenderer } from './components/StringRenderer';
+import { Field } from './components/Field';
+import { FieldGroup } from './components/FieldGroup';
 import styles from './index.css';
-
-const renderers = {
-  file: FileRenderer,
-  geocoordinates: GeoCoordinatesRenderer,
-  string: StringRenderer,
-};
 
 bootstrap(({ data: blockData, events, parameters, ready }) => {
   const [data, setData] = useState(blockData);
@@ -34,13 +27,13 @@ bootstrap(({ data: blockData, events, parameters, ready }) => {
   return (
     <div className={`${styles.root} px-2 py-2 is-flex`}>
       {parameters.fields.map((field, index) => {
-        // Always default to string if type is not supported in renderers list.
-        const Comp = renderers[field.type] || renderers.string;
+        if ('fields' in field) {
+          return <FieldGroup data={data} field={field} />;
+        }
 
         return (
-          <Comp
+          <Field
             data={data}
-            // @ts-expect-error XXX This should be fine
             field={field}
             key={field.value || field.label || `${field.type}.${index}`}
           />
