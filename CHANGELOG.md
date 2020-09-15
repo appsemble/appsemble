@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.14] - 2020-09-15
+
+### Added
+
+- Block(`detail-viewer`): Add support for groups of fields.
+- App: Add Dutch translations.
+- App: Add the `user` remapper.
+- React-components: Add Dutch translations.
+
+### Changed
+
+- Block(`detail-viewer`): Rename `name` to `value`.
+- Block(`table`): Rename `name` to `value`.
+
 ## [0.13.13] - 2020-09-08
 
 ### Added
