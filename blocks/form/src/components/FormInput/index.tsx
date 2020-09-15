@@ -17,9 +17,7 @@ type FormInputProps = InputProps<any, Field>;
  */
 export function FormInput({ field, ...props }: FormInputProps): VNode {
   switch (field.type) {
-    case 'date':
     case 'date-time':
-    case 'time':
       return <DateTimeInput field={field} {...props} />;
     case 'enum':
       return <EnumInput field={field} {...props} />;

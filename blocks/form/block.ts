@@ -186,14 +186,7 @@ export interface DateTimeField extends AbstractField {
   /**
    * The type of the field.
    */
-  type: 'date' | 'time' | 'date-time';
-
-  /**
-   * The requirements that are used to validate the field with.
-   *
-   * These are evaluated in the order they are defined in.
-   */
-  requirements?: DateTimeRequirement[];
+  type: 'date-time';
 }
 
 /**
