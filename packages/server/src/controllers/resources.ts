@@ -3,8 +3,10 @@ import { randomBytes } from 'crypto';
 import { checkAppRole, Permission, SchemaValidationError, validate } from '@appsemble/utils';
 import { badRequest, forbidden, notFound, unauthorized } from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
+import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import type { OpenAPIV3 } from 'openapi-types';
-import type { FindOptions, QueryOptions, WhereOptions } from 'sequelize';
+import parseDuration from 'parse-duration';
+import { FindOptions, Op, QueryOptions, WhereOptions } from 'sequelize';
 
 import {
   App,
@@ -251,7 +253,13 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   try {
     const resources = await Resource.findAll({
       ...renamedQuery,
-      where: { ...renamedQuery.where, type: resourceType, AppId: appId, ...userQuery },
+      where: {
+        ...renamedQuery.where,
+        type: resourceType,
+        AppId: appId,
+        ...userQuery,
+        expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
+      },
       include: [{ model: User, attributes: ['id', 'name'], required: false }],
     });
 
@@ -261,6 +269,9 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
       $created: resource.created,
       $updated: resource.updated,
       $clonable: resource.clonable,
+      ...(resource.expires != null && {
+        $expires: resource.expires,
+      }),
       ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
     }));
   } catch (error: unknown) {
@@ -295,7 +306,12 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
   verifyResourceDefinition(app, resourceType);
 
   const resource = await Resource.findOne({
-    where: { AppId: appId, id: resourceId, type: resourceType },
+    where: {
+      AppId: appId,
+      id: resourceId,
+      type: resourceType,
+      expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
+    },
     include: [{ model: User, attributes: ['name'], required: false }],
   });
 
@@ -310,6 +326,9 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
     id: resource.id,
     $created: resource.created,
     $updated: resource.updated,
+    ...(resource.expires != null && {
+      $expires: resource.expires,
+    }),
     ...(resource.UserId != null && {
       $author: { id: resource.UserId, name: resource.User.name },
     }),
@@ -439,7 +458,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     params: { appId, resourceType },
     request: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      body: { id: _, ...resource },
+      body: { $expires = null, id: _, ...resource },
     },
     user,
   } = ctx;
@@ -463,7 +482,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   verifyResourceDefinition(app, resourceType);
 
   await verifyAppRole(ctx, app, resource, resourceType, action);
-  const { schema } = app.definition.resources[resourceType];
+  const { expires, schema } = app.definition.resources[resourceType];
 
   try {
     await validate(schema, resource);
@@ -477,11 +496,27 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     throw boom;
   }
 
+  let expireDate: Date;
+  // Manual $expire takes precedence over the default calculated expiration date
+  if ($expires) {
+    expireDate = parseISO($expires);
+    if (isPast(expireDate)) {
+      throw badRequest('Expiration date has already passed.');
+    }
+  } else if (expires) {
+    const expireDuration = parseDuration(expires);
+
+    if (expireDuration && expireDuration > 0) {
+      expireDate = addMilliseconds(new Date(), expireDuration);
+    }
+  }
+
   const createdResource = await Resource.create({
     AppId: app.id,
     type: resourceType,
     data: resource,
     UserId: user?.id,
+    expires: expireDate,
   });
 
   ctx.body = {
@@ -489,6 +524,12 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     id: createdResource.id,
     $created: createdResource.created,
     $updated: createdResource.updated,
+    ...(createdResource.expires != null && {
+      $expires: createdResource.expires,
+    }),
+    ...(resource.UserId != null && {
+      $author: { id: resource.UserId, name: resource.User.name },
+    }),
   };
   ctx.status = 201;
 
@@ -500,8 +541,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceId, resourceType },
     request: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      body: { $clonable: clonable = false, id: _, ...updatedResource },
+      body: { $clonable: clonable = false, $expires = null, ...updatedResource },
     },
     user,
   } = ctx;
@@ -523,8 +563,10 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   });
 
   verifyResourceDefinition(app, resourceType);
+
   let resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId },
+    include: [{ model: User, attributes: ['id', 'name'], required: false }],
   });
 
   if (!resource) {
@@ -547,9 +589,17 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
     throw boom;
   }
 
+  let { expires } = resource;
+  if ($expires) {
+    expires = parseISO($expires);
+    if (isPast(expires)) {
+      throw badRequest('Expiration date has already passed.');
+    }
+  }
+
   resource.changed('updated', true);
   resource = await resource.update(
-    { data: updatedResource, clonable },
+    { data: updatedResource, clonable, expires },
     { where: { id: resourceId, type: resourceType, AppId: appId } },
   );
 
@@ -560,6 +610,12 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
     id: resourceId,
     $created: resource.created,
     $updated: resource.updated,
+    ...(resource.expires != null && {
+      $expires: resource.expires,
+    }),
+    ...(resource.UserId != null && {
+      $author: { id: resource.UserId, name: resource.User.name },
+    }),
   };
 
   processReferenceHooks(ctx.argv.host, ctx.user, app, resource, action);
