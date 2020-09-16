@@ -1,4 +1,4 @@
-import { Content, Title } from '@appsemble/react-components';
+import { Content } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -16,9 +16,6 @@ export function AppSettings(): ReactElement {
       <TitleBar>
         <FormattedMessage {...messages.settings} />
       </TitleBar>
-      <Title level={2}>
-        <FormattedMessage {...messages.settings} />
-      </Title>
       <LanguagePreference />
       <AppSubscriptions />
     </Content>
