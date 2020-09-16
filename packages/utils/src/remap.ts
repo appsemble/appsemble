@@ -31,6 +31,10 @@ const mapperImplementations: MapperImplementations = {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
+  'array.map': (mappers, input: any[], context) =>
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    [].concat(input).flatMap((item) => mappers.map((mapper) => remap(mapper, item, context))),
+
   static: (input) => input,
 
   prop: (prop, obj: { [key: string]: unknown }) =>

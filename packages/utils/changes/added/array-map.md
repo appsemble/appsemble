@@ -1,0 +1,1 @@
+Implement `array.map` remapper.

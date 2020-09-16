@@ -173,6 +173,15 @@ export interface Remappers {
   'date.parse': string;
 
   /**
+   * Builds an array based on the given data and list of remappers.
+   *
+   * The list of remappers gets applied to each item in the array.
+   *
+   * Always returns an array, can be empty if supplied data isn't an array.
+   */
+  'array.map': Remapper[];
+
+  /**
    * Create a new object given some predefined mapper keys.
    */
   'object.from': {
