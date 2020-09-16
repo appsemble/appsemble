@@ -3090,14 +3090,6 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-bulma-calendar@^6.0.9:
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/bulma-calendar/-/bulma-calendar-6.0.9.tgz#cff21c7a2cae3ef4c2c5616c042ed4585d70f585"
-  integrity sha512-Z+zu1uVqKOKYV+I6LAkvhLM0uR+Qb8SixZ+Xv70a/A0mc2wU5mh+xr+BT02+Gj5U2KTE0m4xDk6hZKIEibqbCQ==
-  dependencies:
-    date-and-time "^0.6.3"
-    date-fns "^1.29.0"
-
 bulma-checkradio@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/bulma-checkradio/-/bulma-checkradio-1.1.1.tgz#d94c4bce810089957102670b19cafb194bcb97be"
@@ -4686,16 +4678,6 @@ data-urls@^2.0.0:
     abab "^2.0.3"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
-
-date-and-time@^0.6.3:
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/date-and-time/-/date-and-time-0.6.3.tgz#2daee52df67c28bd93bce862756ac86b68cf4237"
-  integrity sha512-lcWy3AXDRJOD7MplwZMmNSRM//kZtJaLz4n6D1P5z9wEmZGBKhJRBIr1Xs9KNQJmdXPblvgffynYji4iylUTcA==
-
-date-fns@^1.29.0:
-  version "1.30.1"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
-  integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
 date-fns@^2.16.0:
   version "2.16.0"

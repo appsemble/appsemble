@@ -10,7 +10,6 @@ const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');
 const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass').replace(/\\/g, '/');
 const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').replace(/\\/g, '/');
-const calendarPath = require.resolve('bulma-calendar/src/sass/index.sass').replace(/\\/g, '/');
 const postCss = postcss([autoprefixer]);
 
 /**
@@ -40,7 +39,6 @@ function processStyle(theme: Theme): string {
     @import "${bulmaPath}";
     @import "${checkRadioPath}";
     @import "${bulmaSwitchPath}";
-    @import "${calendarPath}";
     // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
     :root {
       --primary-color: #{$primary};

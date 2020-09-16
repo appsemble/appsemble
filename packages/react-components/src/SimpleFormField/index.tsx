@@ -25,6 +25,7 @@ interface InputComponentProps {
   error: ReactNode;
   name: string;
   onChange: (event: ChangeEvent<MinimalHTMLElement>, value: any) => void;
+  value: any;
 }
 
 type SimpleFormFieldProps<C extends ComponentType> = Omit<

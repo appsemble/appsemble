@@ -1,9 +1,9 @@
 import {
   Button,
-  Calendar,
   CardFooterButton,
   CheckboxField,
   Content,
+  DateTimeField,
   FormOutput,
   Join,
   Loader,
@@ -147,9 +147,9 @@ export function ClientCredentials(): ReactElement {
               required
             />
             <SimpleFormField
-              component={Calendar}
-              displayMode="inline"
+              component={DateTimeField}
               help={<FormattedMessage {...messages.expiresHelp} />}
+              iso
               label={<FormattedMessage {...messages.expires} />}
               name="expires"
               type="date"
