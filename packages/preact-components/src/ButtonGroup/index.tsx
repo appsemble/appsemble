@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { ComponentProps, h, VNode } from 'preact';
 
-import { Props, ValuePickerProvider } from '..';
+import { ValuePickerProvider } from '..';
 
-interface ButtonGroupProps extends Props<typeof ValuePickerProvider> {
+interface ButtonGroupProps extends ComponentProps<typeof ValuePickerProvider> {
   className?: string;
 }
 

@@ -39,10 +39,6 @@ module.exports = {
             types: {
               'JSX.Element': 'Use ReactElement for React contexts and VNode for Preact contexts',
               Record: 'Use a mapped type instead',
-              ComponentProps: {
-                message: 'Use ComponentPropsWithoutRef instead',
-                fixWith: 'ComponentPropsWithoutRef',
-              },
               Context: {
                 message:
                   'The builtin Koa Context type is too loose. Use the custom KoaContext instead.',

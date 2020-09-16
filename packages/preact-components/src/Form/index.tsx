@@ -1,9 +1,7 @@
-import { h, VNode } from 'preact';
+import { ComponentProps, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Props } from '..';
-
-interface FormProps extends Omit<Props<'form'>, 'noValidate'> {
+interface FormProps extends Omit<ComponentProps<'form'>, 'noValidate'> {
   /**
    * The submit event handler for the form.
    */

@@ -1,11 +1,11 @@
 import type { BulmaColor } from '@appsemble/sdk';
 import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { Fragment, h, VNode } from 'preact';
+import { ComponentProps, Fragment, h, VNode } from 'preact';
 
-import { Icon, Props } from '..';
+import { Icon } from '..';
 
-interface ButtonProps extends Omit<Props<'button'>, 'loading'> {
+interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
   /**
    * The bulma color to apply to the button.
    */
