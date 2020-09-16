@@ -1,10 +1,10 @@
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { ComponentProps, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Button, Props, useValuePicker } from '..';
+import { Button, useValuePicker } from '..';
 
-interface ButtonOptionProps extends Omit<Props<typeof Button>, 'value'> {
+interface ButtonOptionProps extends Omit<ComponentProps<typeof Button>, 'value'> {
   activeClassName: string;
 
   multiple?: boolean;

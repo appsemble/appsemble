@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { ComponentChildren, h, VNode } from 'preact';
+import { ComponentChildren, ComponentProps, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { ElementType, Props, useAnimation } from '..';
+import { ElementType, useAnimation } from '..';
 import styles from './index.css';
 
 interface ModalProps<T extends ElementType> {
@@ -72,7 +72,7 @@ export function Modal<T extends ElementType = 'div'>({
   onClose = () => {},
   title,
   ...props
-}: ModalProps<T> & Omit<Props<T>, keyof ModalProps<T>>): VNode {
+}: ModalProps<T> & Omit<ComponentProps<T>, keyof ModalProps<T>>): VNode {
   const openClass = useAnimation(isActive, 300, {
     opening: styles.opening,
     open: styles.open,
