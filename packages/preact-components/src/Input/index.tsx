@@ -1,163 +1,66 @@
 import classNames from 'classnames';
-import { ComponentChild, h, VNode } from 'preact';
+import { ComponentProps, h } from 'preact';
+import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
-import { FormComponent, FormComponentProps, Icon } from '..';
-
-type InputEventHandler<T> = (event: Event, value: T) => void;
-
-interface GenericInputProps<T, H extends string> extends Omit<FormComponentProps, 'children'> {
+export interface InputProps
+  extends Omit<ComponentProps<'input'>, 'label' | 'loading' | 'onChange' | 'onInput' | 'pattern'> {
   /**
-   * The HTML input type.
-   *
-   * This may be extended if necessary.
+   * Whether to render the input in an error state.
    */
-  type: H;
+  error?: boolean;
 
   /**
-   * Whether or not the input should be disabled.
+   * Indicate the select box is in a loading state.
    */
-  disabled?: boolean;
-
-  /**
-   * An error message to render.
-   */
-  error?: ComponentChild;
-
-  /**
-   * A help message to render.
-   */
-  help?: ComponentChild;
-
-  /**
-   * The name of the HTML element.
-   */
-  name: string;
+  loading?: boolean;
 
   /**
    * This is fired when the input value has changed.
    *
-   * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
-   * value is a number, otherwise it is a string.
+   * If the input type is `number`, the value is a number, otherwise it is a string.
    */
-  onInput: InputEventHandler<T>;
+  onChange?: (event: h.JSX.TargetedEvent<HTMLInputElement>, value: number | string) => void;
 
   /**
-   * A placeholder to render if the input is empty,
+   * A regular expression the input must match.
    */
-  placeholder?: string;
+  pattern?: string | RegExp;
 
   /**
-   * The current value of the input.
+   * The HTML input type.
+   *
+   * This may be extended if necessary.
+   *
    */
-  value: T;
-
-  /**
-   * Mark the input as read only.
-   */
-  readOnly?: boolean;
+  // XXX 'date' should be removed.
+  type?: 'color' | 'date' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
 }
-
-export type BooleanInputProps = GenericInputProps<boolean, 'checkbox'>;
-
-export interface NumberInputProps extends GenericInputProps<number, 'number'> {
-  /**
-   * A maximum numeric value.
-   */
-  max?: number;
-
-  /**
-   * A minimum numeric value.
-   */
-  min?: number;
-
-  /**
-   * By how much to increment or decrement a numeric input.
-   */
-  step?: number;
-}
-
-export interface StringInputProps
-  extends GenericInputProps<
-    string,
-    | 'color'
-    | 'email'
-    | 'password'
-    | 'search'
-    | 'tel'
-    | 'text'
-    | 'textarea'
-    | 'url'
-    | null
-    | undefined
-  > {
-  maxLength?: number;
-  minLength?: number;
-}
-
-export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps;
 
 /**
  * A Bulma styled form input element.
  */
-export function Input({
-  className,
-  disabled,
-  error,
-  iconLeft,
-  help,
-  label,
-  name,
-  onInput,
-  required,
-  type,
-  value,
-  id = name,
-  tag,
-  optionalLabel,
-  ...props
-}: InputProps): VNode {
-  const handleInput = useCallback(
-    (event: Event): void => {
-      const currentTarget = event.currentTarget as HTMLInputElement;
-      if (type === 'number') {
-        (onInput as InputEventHandler<number>)(event, currentTarget.valueAsNumber);
-      } else if (type === 'checkbox') {
-        (onInput as InputEventHandler<boolean>)(event, currentTarget.checked);
-      } else {
-        (onInput as InputEventHandler<string>)(event, currentTarget.value);
-      }
-    },
-    [onInput, type],
-  );
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ error, loading, name, onChange, pattern, type, id = name, ...props }, ref) => {
+    const handleChange = useCallback(
+      (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+        const { currentTarget } = event;
+        onChange(event, type === 'number' ? currentTarget.valueAsNumber : currentTarget.value);
+      },
+      [onChange, type],
+    );
 
-  const Comp = type === 'textarea' ? 'textarea' : 'input';
-
-  return (
-    <FormComponent
-      className={className}
-      iconLeft={iconLeft}
-      id={id}
-      label={label}
-      optionalLabel={optionalLabel}
-      required={required}
-      tag={tag}
-    >
-      <Comp
-        checked={type === 'checkbox' ? (value as boolean) : undefined}
-        className={classNames(type === 'textarea' ? 'textarea' : 'input', { 'is-danger': error })}
-        disabled={disabled}
+    return (
+      <input
+        {...props}
+        className={classNames('input', { 'is-danger': error, 'is-loading': loading })}
         id={id}
         name={name}
-        onInput={handleInput}
-        required={required}
-        type={type === 'textarea' ? undefined : type}
-        value={String(value)}
-        {...props}
+        onInput={handleChange}
+        pattern={pattern instanceof RegExp ? pattern.source : pattern}
+        ref={ref}
+        type={type}
       />
-      {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-      {help && <p className="help">{help}</p>}
-      {error && <p className="help is-danger">{error}</p>}
-    </FormComponent>
-  );
-}
+    );
+  },
+);

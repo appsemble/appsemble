@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Location } from '@appsemble/preact-components';
+import { Button, Input, Location } from '@appsemble/preact-components';
 import type { DivIcon, Icon } from 'leaflet';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -83,9 +83,9 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   );
 
   const onChange = useCallback(
-    ({ currentTarget: { validity, value } }: h.JSX.TargetedEvent<HTMLInputElement>): void => {
+    (event: h.JSX.TargetedEvent<HTMLInputElement>, value: string): void => {
       setMessage(value);
-      setValid(validity.valid);
+      setValid(event.currentTarget.validity.valid);
     },
     [setMessage, setValid],
   );
@@ -218,9 +218,9 @@ export function Card({ content, onUpdate }: CardProps): VNode {
       <div className="card-content px-4 py-4">
         {description && <p className="content">{description}</p>}
         {actions.onButtonClick.type !== 'noop' && (
-          <button className={`button ${styles.button} mb-4`} onClick={onButtonClick} type="button">
+          <Button className={`${styles.button} mb-4`} onClick={onButtonClick}>
             {parameters.buttonLabel ?? 'Click'}
-          </button>
+          </Button>
         )}
         {actions.onLoadReply.type !== 'noop' && replies && (
           <Fragment>
@@ -245,8 +245,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
               })}
             </div>
             <form className="is-flex py-2 px-0" noValidate onSubmit={onSubmit}>
-              <input
-                className="input"
+              <Input
                 onChange={onChange}
                 placeholder={[]
                   .concat(utils.remap(parameters?.reply?.replyLabel ?? 'Leave a message…', content))
@@ -254,15 +253,12 @@ export function Card({ content, onUpdate }: CardProps): VNode {
                 required
                 value={message}
               />
-              <button
-                className={`button ${styles.replyButton} ml-1`}
+              <Button
+                className={`${styles.replyButton} ml-1`}
                 disabled={!valid}
+                icon="paper-plane"
                 type="submit"
-              >
-                <span className="icon is-small">
-                  <i className="fas fa-paper-plane" />
-                </span>
-              </button>
+              />
             </form>
           </Fragment>
         )}

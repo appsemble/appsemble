@@ -37,7 +37,7 @@ export function FileInput({ disabled, error, field, onInput, value }: FileInputP
   return (
     <FormComponent
       className="appsemble-file"
-      iconLeft={icon}
+      icon={icon}
       label={remappedLabel}
       optionalLabel={utils.remap(optionalLabel, {})}
       required={required}

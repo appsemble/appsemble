@@ -1,6 +1,7 @@
 import { useBlock } from '@appsemble/preact';
-import { Input } from '@appsemble/preact-components';
+import { InputField } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import type { InputProps, NumberField } from '../../../block';
 import { isRequired } from '../../utils/isRequired';
@@ -16,6 +17,14 @@ export function NumberInput({ disabled, error, field, onInput, value }: NumberIn
     utils,
   } = useBlock();
   const { name, label, type, placeholder, readOnly, icon, tag, requirements = [] } = field;
+
+  const handleChange = useCallback(
+    (event: Event, val: number) => {
+      onInput(event, type === 'integer' ? Math.floor(val) : val);
+    },
+    [onInput, type],
+  );
+
   const required = isRequired(field);
   const max = Math.max(
     ...requirements
@@ -42,24 +51,17 @@ export function NumberInput({ disabled, error, field, onInput, value }: NumberIn
   }
 
   return (
-    <Input
+    <InputField
       className="appsemble-number"
       disabled={disabled}
       error={error && utils.remap(invalidLabel, value)}
-      iconLeft={icon}
+      icon={icon}
       id={name}
       label={label}
       max={Number.isFinite(max) ? max : undefined}
       min={Number.isFinite(min) ? min : undefined}
       name={name}
-      onInput={(event) => {
-        onInput(
-          event,
-          type === 'integer'
-            ? Math.floor((event.currentTarget as HTMLInputElement).valueAsNumber)
-            : (event.currentTarget as HTMLInputElement).valueAsNumber,
-        );
-      }}
+      onChange={handleChange}
       optionalLabel={utils.remap(optionalLabel, value)}
       placeholder={utils.remap(placeholder, value) || utils.remap(label, value) || name}
       readOnly={readOnly}

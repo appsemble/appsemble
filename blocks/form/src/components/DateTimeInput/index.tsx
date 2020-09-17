@@ -1,7 +1,6 @@
 import { useBlock } from '@appsemble/preact';
-import { Calendar } from '@appsemble/preact-components';
+import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
 
 import type { DateTimeField, InputProps } from '../../../block';
 import { isRequired } from '../../utils/isRequired';
@@ -28,27 +27,22 @@ export function DateTimeInput({
 
   const required = isRequired(field);
 
-  const handleChange = useCallback(
-    (event: Event, dates: Date[]) => {
-      onInput(event, dates[0].toISOString());
-    },
-    [onInput],
-  );
-
   return (
-    <Calendar
+    <DateTimeComponent
       disabled={disabled}
       enableTime
       error={error && utils.remap(invalidLabel, value)}
       id={name}
+      iso
       label={checkboxLabel}
       name={name}
-      onChange={handleChange}
+      onChange={onInput}
       optionalLabel={utils.remap(optionalLabel, value)}
       placeholder={utils.remap(placeholder, value)}
       readOnly={readOnly}
       required={required}
       tag={utils.remap(tag, value)}
+      value={value}
     />
   );
 }
