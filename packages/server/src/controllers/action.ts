@@ -78,32 +78,49 @@ async function handleEmail(
     },
   );
   const to = remap(action.to, data, context) as string;
+  const cc = remap(action.cc, data, context) as string | string[];
+  const bcc = remap(action.bcc, data, context) as string | string[];
   const body = remap(action.body, data, context) as string;
   const sub = remap(action.subject, data, context) as string;
   const attachmentUrls = remap(action.attachments, data, context) as string[];
   const attachments: SendMailOptions['attachments'] = [];
 
-  if (!to || !sub || !body) {
-    throw badRequest('Fields “to”, “subject”, and “body” must be a valid string');
+  if (!to && !cc?.length && !bcc?.length) {
+    // Continue as normal without doing anything
+    ctx.status = 204;
+    return;
+  }
+
+  if (!sub || !body) {
+    throw badRequest('Fields “subject” and “body” must be a valid string');
   }
 
   if (attachmentUrls?.length) {
-    const assetIds = attachmentUrls.filter((a) => !a.startsWith('http'));
-    const assetUrls = attachmentUrls.filter((a) => a.startsWith('http'));
+    const assetIds = attachmentUrls.filter((a) => !String(a).startsWith('http'));
+    const assetUrls = attachmentUrls.filter((a) => String(a).startsWith('http'));
 
     const assets = await Asset.findAll({ where: { AppId: app.id, id: assetIds } });
 
     attachments.push(
       ...assets.map((a) => {
         const ext = extension(a.mime);
-        return { content: a.data, filename: ext ? `${a.id}.${ext}` : String(a.id) };
+        const filename = a.filename || (ext ? `${a.id}.${ext}` : String(a.id));
+        return { content: a.data, filename };
       }),
     );
     attachments.push(...assetUrls.map((a) => ({ path: a })));
   }
 
   const { html, subject, text } = await renderEmail(body, {}, sub);
-  await mailer.sendEmail(to, subject, html, text, attachments);
+  await mailer.sendEmail({
+    ...(to && { to }),
+    ...(cc && { cc }),
+    ...(bcc && { bcc }),
+    subject,
+    html,
+    text,
+    attachments,
+  });
 
   ctx.status = 204;
 }

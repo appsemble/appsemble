@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { createTransport, SendMailOptions, Transporter } from 'nodemailer';
+import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
 import type { Options } from 'nodemailer/lib/smtp-connection';
 
 import type { Argv } from '../../types';
@@ -16,6 +16,43 @@ export interface Recipient {
    * The name of the recipient.
    */
   name?: string;
+}
+
+export interface SendMailOptions {
+  /**
+   * The email address of the recipient
+   */
+  to?: string;
+
+  /**
+   * The email address(es) to BCC the mail to.
+   */
+  cc?: string | string[];
+
+  /**
+   * The email address(es) to BCC the mail to.
+   */
+  bcc?: string | string[];
+
+  /**
+   * The subject of the email.
+   */
+  subject: string;
+
+  /**
+   * The HTML content of the email.
+   */
+  html: string;
+
+  /**
+   * The plain-text content of the email.
+   */
+  text: string;
+
+  /**
+   * The attachments to include in the email.
+   */
+  attachments?: MailerSendMailOptions['attachments'];
 }
 
 /**
@@ -74,29 +111,34 @@ export class Mailer {
       greeting: to.name ? `Hello ${to.name}` : 'Hello',
     });
 
-    return this.sendEmail(to.name ? `${to.name} <${to.email}>` : to.email, subject, html, text);
+    return this.sendEmail({
+      to: to.name ? `${to.name} <${to.email}>` : to.email,
+      subject,
+      html,
+      text,
+    });
   }
 
   /**
    * Send an email using the configured SMTP transport.
    *
-   * @param to - The email address of the recipient
-   * @param subject - The subject of the email
-   * @param html - The HTML content of the email
-   * @param text - The plain-text content of the email
-   * @param attachments - The attachments to include in the email
+   * @param options - The options specifying the contents and metadata of the email
    */
-  async sendEmail(
-    to: string,
-    subject: string,
-    html: string,
-    text: string,
-    attachments: SendMailOptions['attachments'] = [],
-  ): Promise<void> {
+  async sendEmail({
+    to,
+    cc,
+    bcc,
+    subject,
+    html,
+    text,
+    attachments = [],
+  }: SendMailOptions): Promise<void> {
     if (!this.transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
-    logger.info(`Sending email:\nTo: ${to}\nSubject: ${subject}\n\n${text}`);
+    logger.info(
+      `Sending email:\nTo: ${to} | CC: ${cc} | BCC: ${bcc}\nSubject: ${subject}\n\n${text}`,
+    );
 
     if (attachments.length) {
       logger.info(

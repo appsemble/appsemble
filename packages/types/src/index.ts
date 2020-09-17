@@ -452,7 +452,17 @@ export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
   /**
    * The recipient of the email.
    */
-  to: Remapper;
+  to?: Remapper;
+
+  /**
+   * The recipients to CC the email to.
+   */
+  cc?: Remapper;
+
+  /**
+   * The recipients to BCC the email to.
+   */
+  bcc?: Remapper;
 
   /**
    * The subject of the email.

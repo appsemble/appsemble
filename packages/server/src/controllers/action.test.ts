@@ -4,7 +4,7 @@ import type { EmailActionDefinition } from '@appsemble/types';
 import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
 
-import { App, Organization } from '../models';
+import { App, Asset, Organization } from '../models';
 import { createServer } from '../utils/createServer';
 import { readPackageJson } from '../utils/readPackageJson';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
@@ -44,6 +44,7 @@ it('should handle if the path doesn’t point to an action', async () => {
     OrganizationId: 'org',
     definition: {
       defaultPage: '',
+      resources: { testResource: { schema: { type: 'object' } } },
       pages: [
         {
           name: '',
@@ -269,9 +270,12 @@ describe('handleEmail', () => {
                 actions: {
                   email: {
                     type: 'email',
-                    to: 'test@example.com',
+                    to: [{ prop: 'to' }],
+                    cc: [{ prop: 'cc' }],
+                    bcc: [{ prop: 'bcc' }],
                     subject: [{ static: 'Test title' }],
                     body: [{ prop: 'body' }],
+                    attachments: [{ prop: 'attachments' }],
                   } as EmailActionDefinition,
                 },
               },
@@ -287,13 +291,14 @@ describe('handleEmail', () => {
 
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       body: 'Body',
+      to: 'test@example.com',
     });
 
     expect(response.status).toBe(204);
-    expect(spy).toHaveBeenCalledWith(
-      'test@example.com',
-      'Test title',
-      `<!doctype html>
+    expect(spy).toHaveBeenCalledWith({
+      to: 'test@example.com',
+      subject: 'Test title',
+      html: `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -305,18 +310,209 @@ describe('handleEmail', () => {
 </body>
 </html>
 `,
-      'Body\n',
-      [],
-    );
+      text: 'Body\n',
+      attachments: [],
+    });
     spy.mockRestore();
   });
 
-  it('should not send emails if parts of it are empty', async () => {
-    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {});
+  it('should send mails using CC', async () => {
+    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      body: 'Test',
+      cc: ['test@example.com', 'John Doe <test2@example.com>'],
+    });
+
+    expect(response.status).toBe(204);
+    expect(spy).toHaveBeenCalledWith({
+      cc: ['test@example.com', 'John Doe <test2@example.com>'],
+      subject: 'Test title',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test title</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Test</p>
+</body>
+</html>
+`,
+      text: 'Test\n',
+      attachments: [],
+    });
+    spy.mockRestore();
+  });
+
+  it('should send mails using BCC', async () => {
+    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      body: 'Test',
+      bcc: ['test@example.com', 'John Doe <test2@example.com>'],
+    });
+
+    expect(response.status).toBe(204);
+    expect(spy).toHaveBeenCalledWith({
+      bcc: ['test@example.com', 'John Doe <test2@example.com>'],
+      subject: 'Test title',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test title</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Test</p>
+</body>
+</html>
+`,
+      text: 'Test\n',
+      attachments: [],
+    });
+    spy.mockRestore();
+  });
+
+  it('should do nothing if to, cc, and bcc are empty', async () => {
+    const responseA = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      body: 'Test',
+    });
+
+    const responseB = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      to: '',
+      body: 'Test',
+    });
+
+    const responseC = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      cc: [],
+      body: 'Test',
+    });
+
+    const responseD = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      bcc: [],
+      body: 'Test',
+    });
+
+    expect(responseA).toMatchObject({
+      status: 204,
+    });
+    expect(responseB).toMatchObject({
+      status: 204,
+    });
+    expect(responseC).toMatchObject({
+      status: 204,
+    });
+    expect(responseD).toMatchObject({
+      status: 204,
+    });
+  });
+
+  it('should attach URLs', async () => {
+    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      to: 'test@example.com',
+      body: 'Body',
+      attachments: ['https://via.placeholder.com/150'],
+    });
+
+    expect(response.status).toBe(204);
+    expect(spy).toHaveBeenCalledWith({
+      to: 'test@example.com',
+      subject: 'Test title',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test title</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Body</p>
+</body>
+</html>
+`,
+      text: 'Body\n',
+      attachments: [{ path: 'https://via.placeholder.com/150' }],
+    });
+    spy.mockRestore();
+  });
+
+  it('should attach existing assets', async () => {
+    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const buffer = Buffer.from('test');
+    const asset = await Asset.create({
+      AppId: 1,
+      mime: 'text/plain',
+      filename: 'test.txt',
+      data: buffer,
+    });
+    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      to: 'test@example.com',
+      body: 'Body',
+      attachments: [asset.id],
+    });
+
+    expect(response.status).toBe(204);
+    expect(spy).toHaveBeenCalledWith({
+      to: 'test@example.com',
+      subject: 'Test title',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test title</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Body</p>
+</body>
+</html>
+`,
+      text: 'Body\n',
+      attachments: [{ content: buffer, filename: 'test.txt' }],
+    });
+    spy.mockRestore();
+  });
+
+  it('should not attach non-existant assets', async () => {
+    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      to: 'test@example.com',
+      body: 'Body',
+      attachments: [100],
+    });
+
+    expect(response.status).toBe(204);
+    expect(spy).toHaveBeenCalledWith({
+      to: 'test@example.com',
+      subject: 'Test title',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test title</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Body</p>
+</body>
+</html>
+`,
+      text: 'Body\n',
+      attachments: [],
+    });
+    spy.mockRestore();
+  });
+
+  it('should not send emails if body or subject is empty', async () => {
+    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      to: 'test@example.com',
+    });
 
     expect(response).toMatchObject({
       status: 400,
-      data: { message: 'Fields “to”, “subject”, and “body” must be a valid string' },
+      data: { message: 'Fields “subject” and “body” must be a valid string' },
     });
   });
 
