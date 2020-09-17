@@ -12,9 +12,6 @@ export interface TextAreaProps
 
   /**
    * This is fired when the input value has changed.
-   *
-   * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
-   * value is a number, otherwise it is a string.
    */
   onChange?: (event: h.JSX.TargetedEvent<HTMLTextAreaElement>, value: string) => void;
 }

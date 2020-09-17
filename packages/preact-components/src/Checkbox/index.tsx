@@ -8,7 +8,7 @@ type CheckboxProps = Omit<
   'value' | 'label' | 'onChange' | 'onInput' | 'title'
 > & {
   /**
-   * If true, tender an error color.
+   * If true, render an error color.
    */
   error?: boolean;
 
