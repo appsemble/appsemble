@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import { JSONSchemaArrayEditor } from '../JSONSchemaArrayEditor';
 import { JSONSchemaBooleanEditor } from '../JSONSchemaBooleanEditor';
 import { JSONSchemaEnumEditor } from '../JSONSchemaEnumEditor';
+import { JSONSchemaNumberEditor } from '../JSONSchemaNumberEditor';
 import { JSONSchemaObjectEditor } from '../JSONSchemaObjectEditor';
 import { JSONSchemaStringEditor } from '../JSONSchemaStringEditor';
 import { JSONSchemaUnknownEditor } from '../JSONSchemaUnknownEditor';
@@ -22,9 +23,10 @@ export function RecursiveJSONSchemaEditor(props: CommonJSONSchemaEditorProps<any
       return <JSONSchemaBooleanEditor {...props} />;
     case 'object':
       return <JSONSchemaObjectEditor {...props} />;
-    case 'string':
     case 'integer':
     case 'number':
+      return <JSONSchemaNumberEditor {...props} />;
+    case 'string':
       return <JSONSchemaStringEditor {...props} />;
     default:
       return <JSONSchemaUnknownEditor {...props} />;

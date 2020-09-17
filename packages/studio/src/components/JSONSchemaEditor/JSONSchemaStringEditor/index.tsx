@@ -1,6 +1,11 @@
-import { InputField, MarkdownContent } from '@appsemble/react-components';
+import {
+  DateTimeField,
+  InputField,
+  MarkdownContent,
+  PasswordField,
+} from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
-import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import type { CommonJSONSchemaEditorProps } from '../types';
@@ -13,37 +18,38 @@ export function JSONSchemaStringEditor({
   required,
   schema,
   value = '',
-}: CommonJSONSchemaEditorProps<number | string>): ReactElement {
-  let type: ComponentPropsWithoutRef<typeof InputField>['type'] = 'text';
+}: CommonJSONSchemaEditorProps<string>): ReactElement {
+  const {
+    description,
+    example,
+    format,
+    maxLength,
+    minLength,
+    multipleOf,
+  } = schema as OpenAPIV3.SchemaObject;
 
-  if (schema.type === 'integer' || schema.type === 'number') {
-    type = 'number';
-  } else if (schema.format === 'email') {
-    type = 'email';
-  } else if (schema.format === 'password') {
-    type = 'password';
-  } else if (schema.format === 'date') {
-    type = 'date';
-  } else if (schema.format === 'date-time') {
-    type = 'datetime-local';
+  const commonProps = {
+    disabled,
+    help: <MarkdownContent content={description} />,
+    label: <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />,
+    maxLength,
+    minLength,
+    name,
+    placeholder: example,
+    required,
+    step: multipleOf,
+    value,
+  };
+
+  if (format === 'password') {
+    return <PasswordField {...commonProps} onChange={onChange} />;
+  }
+
+  if (format === 'date-time') {
+    return <DateTimeField {...commonProps} enableTime iso onChange={onChange} />;
   }
 
   return (
-    <InputField
-      disabled={disabled}
-      help={<MarkdownContent content={schema.description} />}
-      label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
-      max={schema.maximum}
-      maxLength={schema.maxLength}
-      min={schema.minimum}
-      minLength={schema.minLength}
-      name={name}
-      onChange={onChange}
-      placeholder={(schema as OpenAPIV3.SchemaObject).example}
-      required={required}
-      step={schema.multipleOf}
-      type={type}
-      value={value}
-    />
+    <InputField {...commonProps} onChange={onChange} type={format === 'email' ? format : 'text'} />
   );
 }

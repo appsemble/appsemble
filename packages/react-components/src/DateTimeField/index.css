@@ -1,0 +1,3 @@
+.wrapper :global(.flatpickr-wrapper) {
+  display: block;
+}

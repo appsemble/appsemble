@@ -25,7 +25,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, fullWidth, loading, name, onChange, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLSelectElement>) => {
-        onChange(event, event.target.value);
+        onChange(event, event.currentTarget.value);
       },
       [onChange],
     );

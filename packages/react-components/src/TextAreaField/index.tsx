@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ChangeEvent, ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
+import React, { ComponentPropsWithoutRef, forwardRef } from 'react';
 
 import { FormComponent, SharedFormComponentProps, TextArea } from '..';
 
@@ -21,46 +21,35 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       label,
       maxLength,
       name,
-      onChange,
       required,
       value,
       id = name,
       ...props
     },
     ref,
-  ) => {
-    const handleChange = useCallback(
-      (event: ChangeEvent<HTMLTextAreaElement>) => {
-        onChange(event, event.currentTarget.value);
-      },
-      [onChange],
-    );
-
-    return (
-      <FormComponent
-        addon={addon}
-        className={className}
-        control={control}
-        error={error}
-        help={help}
-        helpExtra={maxLength ? `${value == null ? 0 : String(value).length} / ${maxLength}` : null}
-        icon={icon}
+  ) => (
+    <FormComponent
+      addon={addon}
+      className={className}
+      control={control}
+      error={error}
+      help={help}
+      helpExtra={maxLength ? `${value == null ? 0 : String(value).length} / ${maxLength}` : null}
+      icon={icon}
+      id={id}
+      label={label}
+      required={required}
+    >
+      <TextArea
+        {...props}
+        className={classNames('textarea', { 'is-danger': error })}
         id={id}
-        label={label}
+        maxLength={maxLength}
+        name={name}
+        ref={ref}
         required={required}
-      >
-        <TextArea
-          {...props}
-          className={classNames('textarea', { 'is-danger': error })}
-          id={id}
-          maxLength={maxLength}
-          name={name}
-          onChange={handleChange}
-          ref={ref}
-          required={required}
-          value={value}
-        />
-      </FormComponent>
-    );
-  },
+        value={value}
+      />
+    </FormComponent>
+  ),
 );

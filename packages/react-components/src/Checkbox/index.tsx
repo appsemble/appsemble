@@ -3,7 +3,6 @@ import React, {
   ChangeEvent,
   ComponentPropsWithoutRef,
   forwardRef,
-  ReactElement,
   ReactNode,
   useCallback,
 } from 'react';
@@ -52,7 +51,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     { className, error, label, name, onChange, value, id = name, switch: isSwitch, rtl, ...props },
     ref,
-  ): ReactElement => {
+  ) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
         onChange(event, event.currentTarget.checked);
