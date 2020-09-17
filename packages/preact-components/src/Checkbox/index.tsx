@@ -1,114 +1,76 @@
 import classNames from 'classnames';
-import { ComponentChild, h, VNode } from 'preact';
+import { ComponentChild, ComponentProps, h } from 'preact';
+import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
-import { FormComponent } from '..';
+type CheckboxProps = Omit<
+  ComponentProps<'input'>,
+  'value' | 'label' | 'onChange' | 'onInput' | 'title'
+> & {
+  /**
+   * If true, render an error color.
+   */
+  error?: boolean;
 
-type CheckboxProps = Omit<typeof FormComponent, 'children'> &
-  Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'label' | 'onChange'> & {
-    error?: any;
+  /**
+   * This is fired when the input value has changed.
+   */
+  onChange: (event: h.JSX.TargetedEvent<HTMLInputElement>, value: boolean) => void;
 
-    /**
-     * The name of the HTML element.
-     */
-    name: string;
+  /**
+   * The title to display right of the checkbox.
+   */
+  label?: ComponentChild;
 
-    /**
-     * A help message to render next to the checkbox.
-     */
-    help?: ComponentChild;
+  /**
+   * Whether or not the checkbox is checked.
+   */
+  value?: boolean;
 
-    /**
-     * The label to display above the checkbox.
-     */
-    label?: ComponentChild;
+  /**
+   * Whether the component should render as a switch or as a square checkbox.
+   */
+  switch?: boolean;
 
-    /**
-     * The label to display if the checkbox is optional.
-     */
-    optionalLabel?: ComponentChild;
-
-    /**
-     * The tag to display to the right of the label.
-     */
-    tag?: ComponentChild;
-
-    /**
-     * This is fired when the input value has changed.
-     */
-    onChange: (event: h.JSX.TargetedEvent<HTMLInputElement>, value: boolean) => void;
-
-    /**
-     * Whether or not the checkbox is checked.
-     */
-    value?: boolean;
-
-    /**
-     * Whether the component should render as a switch or as a square checkbox.
-     */
-    switch?: boolean;
-
-    /**
-     * Whether the label should be displayed to the right of the checkbox or to the left.
-     *
-     * @default false
-     */
-    rtl?: boolean;
-
-    /**
-     * The class used for the FormComponent wrapper.
-     */
-    wrapperClassName?: string;
-  };
+  /**
+   * Whether the label should be displayed to the right of the checkbox or to the left.
+   *
+   * By default (false), the label will be rendered after the checkbox.
+   */
+  rtl?: boolean;
+};
 
 /**
  * A Bulma styled form select element.
  */
-export function Checkbox({
-  className,
-  wrapperClassName,
-  error,
-  help = null,
-  label,
-  name,
-  onChange,
-  value,
-  id = name,
-  switch: isSwitch,
-  optionalLabel,
-  rtl,
-  tag,
-  ...props
-}: CheckboxProps): VNode {
-  const handleChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
-      onChange(event, event.currentTarget.checked);
-    },
-    [onChange],
-  );
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
+  (
+    { className, error, label, name, onChange, value, id = name, switch: isSwitch, rtl, ...props },
+    ref,
+  ) => {
+    const handleChange = useCallback(
+      (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+        onChange(event, event.currentTarget.checked);
+      },
+      [onChange],
+    );
 
-  return (
-    <FormComponent
-      className={wrapperClassName}
-      id={id}
-      label={label}
-      optionalLabel={optionalLabel}
-      required
-      tag={tag}
-    >
-      <input
-        {...props}
-        checked={value}
-        className={classNames(isSwitch ? 'switch' : 'is-checkradio', { 'is-rtl': rtl }, className)}
-        id={id}
-        name={name}
-        onChange={handleChange}
-        type="checkbox"
-      />
-      <label className={classNames({ 'is-danger': error })} htmlFor={id}>
-        {help}
-      </label>
-      {error && <p className="help is-danger">{error}</p>}
-    </FormComponent>
-  );
-}
+    return (
+      <span className={className}>
+        <input
+          {...props}
+          checked={value}
+          className={classNames(isSwitch ? 'switch' : 'is-checkradio', { 'is-rtl': rtl })}
+          id={id}
+          name={name}
+          onChange={handleChange}
+          ref={ref}
+          type="checkbox"
+        />
+        <label className={classNames({ 'is-danger': error })} htmlFor={id}>
+          {label}
+        </label>
+      </span>
+    );
+  },
+);

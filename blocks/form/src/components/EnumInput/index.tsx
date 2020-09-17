@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Select } from '@appsemble/preact-components';
+import { SelectField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
@@ -22,14 +22,13 @@ export function EnumInput({ disabled, field, onInput, value = '' }: EnumInputPro
   const required = isRequired(field);
 
   return (
-    <Select
+    <SelectField
       className="appsemble-enum"
       disabled={disabled}
-      iconLeft={icon}
-      id={name}
+      icon={icon}
       label={utils.remap(label, value)}
       name={name}
-      onInput={onInput}
+      onChange={onInput}
       optionalLabel={utils.remap(optionalLabel, value)}
       required={required}
       tag={utils.remap(tag, value)}
@@ -45,6 +44,6 @@ export function EnumInput({ disabled, field, onInput, value = '' }: EnumInputPro
           {utils.remap(choice.label, value) ?? choice.value}
         </option>
       ))}
-    </Select>
+    </SelectField>
   );
 }

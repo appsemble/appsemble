@@ -1,13 +1,16 @@
-.label {
-  display: flex;
-  flex-flow: wrap row;
+.control {
+  flex: 1;
+}
+
+.help {
+  /* This matches the line height of help content, which is inherited from body. */
+  min-height: 1.5em;
+}
+
+.helpWrapper {
   justify-content: space-between;
 }
 
-.labelContent {
-  word-break: break-word;
-}
-
-.optional {
-  margin-left: auto;
+.counter {
+  flex: 0 0 auto;
 }

@@ -1,4 +1,5 @@
 import { useBlock } from '@appsemble/preact';
+import { Input } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
@@ -35,16 +36,16 @@ export function DateRangeFieldComponent({
         'is-loading': loading,
       })}
     >
-      <input
-        className={`input ${styles.input}`}
+      <Input
+        className={styles.input}
         name={field.name}
         onChange={onChangeFrom}
         placeholder={utils.remap(field.fromLabel ?? 'From', {})}
         type="date"
         value={value[0]}
       />
-      <input
-        className={`input ${styles.input}`}
+      <Input
+        className={styles.input}
         name={field.name}
         onChange={onChangeTo}
         placeholder={utils.remap(field.toLabel ?? 'To', {})}

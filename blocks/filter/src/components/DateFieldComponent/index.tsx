@@ -1,6 +1,5 @@
-import classNames from 'classnames';
+import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
 
 import type { DateField, FieldComponentProps } from '../../../block';
 
@@ -11,16 +10,12 @@ export function DateFieldComponent({
   onChange,
   value,
 }: FieldComponentProps<DateField>): VNode {
-  const handleChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>) => onChange(event, event.currentTarget.value),
-    [onChange],
-  );
-
   return (
-    <input
-      className={classNames(`input ${className}`, { 'is-loading': loading })}
+    <Input
+      className={className}
+      loading={loading}
       name={field.name}
-      onChange={handleChange}
+      onChange={onChange}
       type="date"
       value={value}
     />

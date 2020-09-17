@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Input } from '@appsemble/preact-components';
+import { InputField, TextAreaField } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, StringField } from '../../../block';
@@ -46,26 +46,28 @@ export function StringInput({
 
   const required = isRequired(field);
   const remappedLabel = utils.remap(label, value) ?? name;
+  const commonProps = {
+    className: 'appsemble-string',
+    disabled,
+    error,
+    iconLeft: icon,
+    id: name,
+    label: remappedLabel,
+    maxLength: Number.isFinite(maxLength) ? maxLength : undefined,
+    minLength: Number.isFinite(minLength) ? minLength : undefined,
+    name,
+    onChange: onInput,
+    optionalLabel: utils.remap(optionalLabel, value),
+    placeholder: utils.remap(placeholder, value) ?? remappedLabel,
+    readOnly,
+    required,
+    tag: utils.remap(tag, value),
+    value,
+  };
 
-  return (
-    <Input
-      className="appsemble-string"
-      disabled={disabled}
-      error={error}
-      iconLeft={icon}
-      id={name}
-      label={remappedLabel}
-      maxLength={Number.isFinite(maxLength) ? maxLength : undefined}
-      minLength={Number.isFinite(minLength) ? minLength : undefined}
-      name={name}
-      onInput={(event) => onInput(event, (event.currentTarget as HTMLInputElement).value)}
-      optionalLabel={utils.remap(optionalLabel, value)}
-      placeholder={utils.remap(placeholder, value) ?? remappedLabel}
-      readOnly={readOnly}
-      required={required}
-      tag={utils.remap(tag, value)}
-      type={multiline ? 'textarea' : format || 'text'}
-      value={value}
-    />
+  return multiline ? (
+    <TextAreaField {...commonProps} />
+  ) : (
+    <InputField {...commonProps} type={format} />
   );
 }

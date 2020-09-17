@@ -1,62 +1,54 @@
-import { ClassAttributes, h, JSX, PreactDOMAttributes, VNode } from 'preact';
+import classNames from 'classnames';
+import { ComponentProps, h } from 'preact';
+import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
-import { FormComponent, FormComponentProps, Icon } from '..';
+export interface SelectProps
+  extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {
+  /**
+   * Whether or not the element should take as much space as it can.
+   */
+  fullWidth?: boolean;
 
-type SelectProps = FormComponentProps &
-  Omit<JSX.HTMLAttributes & PreactDOMAttributes & ClassAttributes<any>, 'label' | 'onInput'> & {
-    /**
-     * The name of the HTML element.
-     */
-    name: string;
+  /**
+   * Indicate the select box is in a loading state.
+   */
+  loading?: boolean;
 
-    /**
-     * This is fired when the input value has changed.
-     */
-    onInput: (event: Event, value: any) => void;
-  };
+  /**
+   * This is fired when the input value has changed.
+   */
+  onChange?: (event: h.JSX.TargetedEvent<HTMLSelectElement>, value: string) => void;
+}
 
 /**
  * A Bulma styled form select element.
  */
-export function Select({
-  iconLeft,
-  label,
-  name,
-  onInput,
-  required,
-  id = name,
-  tag,
-  optionalLabel,
-  ...props
-}: SelectProps): VNode {
-  const handleInput = useCallback(
-    (event: Event): void => {
-      onInput(event, (event.currentTarget as HTMLSelectElement).value);
-    },
-    [onInput],
-  );
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(
+  ({ className, fullWidth, loading, name, onChange, id = name, ...props }, ref) => {
+    const handleChange = useCallback(
+      (event: h.JSX.TargetedEvent<HTMLSelectElement>) => {
+        onChange(event, event.currentTarget.value);
+      },
+      [onChange],
+    );
 
-  return (
-    <FormComponent
-      iconLeft={iconLeft}
-      id={id}
-      label={label}
-      optionalLabel={optionalLabel}
-      required={required}
-      tag={tag}
-    >
-      <div className="select is-fullwidth">
+    return (
+      <div
+        className={classNames('select', className, {
+          'is-loading': loading,
+          'is-fullwidth': fullWidth,
+        })}
+      >
         <select
-          {...props}
-          className="is-fullwidth"
+          className={classNames({ 'is-fullwidth': fullWidth })}
           id={id}
           name={name}
-          onInput={handleInput}
-          required={required}
+          onChange={handleChange}
+          ref={ref}
+          {...props}
         />
       </div>
-      {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-    </FormComponent>
-  );
-}
+    );
+  },
+);

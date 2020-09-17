@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Checkbox } from '@appsemble/preact-components/src';
+import { CheckboxField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
@@ -29,7 +29,7 @@ export function BooleanInput({
   const required = isRequired(field);
 
   return (
-    <Checkbox
+    <CheckboxField
       checked={Boolean(value)}
       className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
