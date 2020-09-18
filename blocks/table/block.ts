@@ -25,6 +25,25 @@ export interface Field {
   onClick?: string;
 }
 
+/**
+ * Repeated fields based on an input array.
+ *
+ * Only one repeated field is allowed, only the first RepeatedField is considered.
+ */
+export interface RepeatedField {
+  /**
+   * The list of fields that should be repeated for each array item.
+   */
+  repeat: Field[];
+
+  /**
+   * The value to use as the base of the repeated field.
+   *
+   * Should be an array of data.
+   */
+  value: Remapper;
+}
+
 declare module '@appsemble/sdk' {
   interface Parameters {
     /**
@@ -42,9 +61,9 @@ declare module '@appsemble/sdk' {
     emptyMessage?: Remapper;
 
     /**
-     * A list of fields to display based on the name from the schema.
+     * A list of fields to display.
      */
-    fields: Field[];
+    fields: (Field | RepeatedField)[];
   }
 
   interface Actions {
