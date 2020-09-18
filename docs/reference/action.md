@@ -23,11 +23,15 @@ used as the `type`.
 
 The email action can be used to send emails via the Appsemble server.
 
+If `to`, `cc`, and `bcc` all end up being empty, no emails will be sent but the action will still
+continue as normal.
+
 | Parameter   | Required | Description                                                                                                                                                   |
 | ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| to          | true     | The address the email should be sent to. Can be either in the format of `test@example.com`, or `John Doe <test@example.com>`. Supports remappers.             |
-| subject     | true     | The subject of the email. Supports remappers.                                                                                                                 |
-| body        | true     | The body of the email. The content of the body is converted to HTML using the Markdown syntax. Supports remappers.                                            |
+| to          | false    | The address the email should be sent to. Can be either in the format of `test@example.com`, or `John Doe <test@example.com>`. Supports remappers.             |
+| cc          | false    | The list of additional email addresses email should be sent to. Uses the same format as `to`. Every email address in the CC is visible to all recipients.     |
+| bcc         | false    | The list of additional email addresses email should be sent to. Uses the same format as `to`. Email addresses in the BCC are hidden from other recipients.    |
+| subject     | true     | The subject of the email. Supports remappers.                                                                                                                 |  | body | true | The body of the email. The content of the body is converted to HTML using the Markdown syntax. Supports remappers. |
 | attachments | false    | Remapper for the attachments to include in the email. Must resolve into an array of either asset IDs that are associated with the same app, or absolute URLs. |
 
 ## `link`

@@ -47,6 +47,16 @@ Create a new object given some predefined mapper keys.
 
 A key / value pair object keys and remappers.
 
+### `array.map`
+
+Map an array based on a given array of data and a list of remappers.
+
+Always returns an array even if the input is invalid.
+
+### Parameters
+
+An array of remappers. These get applied to each array item.
+
 ### `static`
 
 Insert a static value.

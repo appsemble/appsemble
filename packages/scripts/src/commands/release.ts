@@ -3,7 +3,7 @@ import { basename, dirname, join } from 'path';
 
 import { getWorkspaces, logger } from '@appsemble/node-utils';
 import { formatISO } from 'date-fns';
-import { readJson, remove, writeJson } from 'fs-extra';
+import { ensureFile, readJson, remove, writeJson } from 'fs-extra';
 import globby from 'globby';
 import { capitalize, mapValues } from 'lodash';
 import type { BlockContent, ListItem, Root } from 'mdast';
@@ -92,11 +92,14 @@ async function replaceFile(
 }
 
 async function processChangesDir(dir: string, prefix: string): Promise<ListItem[]> {
-  await fs.mkdir(dir, { recursive: true });
+  await ensureFile(join(dir, '.gitkeep'));
+
   const filenames = await fs.readdir(dir);
-  const absoluteFiles = filenames.map((f) => join(dir, f));
+  const absoluteFiles = filenames.filter((f) => f !== '.gitkeep').map((f) => join(dir, f));
   const lines = await Promise.all(absoluteFiles.map((f) => fs.readFile(f, 'utf-8')));
+  await Promise.all(absoluteFiles.map((f) => remove(f)));
   return lines
+    .filter(Boolean)
     .sort()
     .map((line) => `${prefix}: ${line}`)
     .map((line) => line.trim())
@@ -117,7 +120,6 @@ async function processChanges(dir: string): Promise<Changes> {
     fixed: await processChangesDir(join(changesDir, 'fixed'), prefix),
     security: await processChangesDir(join(changesDir, 'security'), prefix),
   };
-  await remove(changesDir);
   return result;
 }
 

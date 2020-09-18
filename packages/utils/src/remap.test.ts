@@ -31,6 +31,40 @@ const cases: TestCase[] = [
     expected: { firstName: 'Patrick', lastName: 'Star' },
   },
 
+  // Mapper array.map
+  {
+    description: 'return an empty array',
+    input: {},
+    mappers: [{ 'array.map': [] }],
+    expected: [],
+  },
+  {
+    description: 'apply remappers to each array item',
+    input: [
+      { firstName: 'John', lastName: 'Doe' },
+      { firstName: 'Jane', lastName: 'Smith' },
+    ],
+    mappers: [
+      {
+        'array.map': [
+          [
+            {
+              'string.format': {
+                template: '{firstName} {lastName}',
+                values: {
+                  firstName: [{ prop: 'firstName' }],
+                  lastName: [{ prop: 'lastName' }],
+                },
+              },
+            },
+            { 'string.case': 'lower' },
+          ],
+        ],
+      },
+    ],
+    expected: ['john doe', 'jane smith'],
+  },
+
   // Mapper prop
   {
     description: 'get a simple property',

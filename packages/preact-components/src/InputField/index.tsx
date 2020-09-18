@@ -24,6 +24,8 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       required,
       value,
       id = name,
+      tag,
+      optionalLabel,
       ...props
     },
     ref,
@@ -38,7 +40,9 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       icon={icon}
       id={id}
       label={label}
+      optionalLabel={optionalLabel}
       required={required}
+      tag={tag}
     >
       <Input
         {...props}

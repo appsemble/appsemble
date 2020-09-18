@@ -12,12 +12,16 @@ import { generateDefaultValues } from './utils/generateDefaultValues';
 import { validators } from './utils/validators';
 
 bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
+  const defaultValues = useMemo(() => generateDefaultValues(parameters), [parameters]);
+  const defaultValidity = useMemo(
+    () => generateDefaultValidity(parameters, { ...defaultValues, ...data }),
+    [parameters, defaultValues, data],
+  );
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [formError, setFormError] = useState<string>(null);
   const [disabled, setDisabled] = useState(true);
-  const [validity, setValidity] = useState(generateDefaultValidity(parameters, data || {}));
   const [submitting, setSubmitting] = useState(false);
-  const defaultValues = useMemo(() => generateDefaultValues(parameters), [parameters]);
+  const [validity, setValidity] = useState(defaultValidity);
   const [values, setValues] = useState({
     ...defaultValues,
     ...data,

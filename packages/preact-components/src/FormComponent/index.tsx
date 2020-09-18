@@ -123,7 +123,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         {label ? (
           <label className="label" htmlFor={id}>
             {label}
-            {!required || tag || (
+            {(!required || tag) && (
               <span className="is-pulled-right has-text-weight-normal">{tag || optionalLabel}</span>
             )}
           </label>

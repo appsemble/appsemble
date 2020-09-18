@@ -20,8 +20,30 @@ type CheckboxFieldProps = SharedFormComponentProps &
  * A Bulma styled form select element.
  */
 export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
-  ({ wrapperClassName, error, help = null, label, name, id = name, title, ...props }, ref) => (
-    <FormComponent className={wrapperClassName} help={help} id={id} label={label} required>
+  (
+    {
+      wrapperClassName,
+      error,
+      help = null,
+      label,
+      name,
+      id = name,
+      title,
+      tag,
+      optionalLabel,
+      ...props
+    },
+    ref,
+  ) => (
+    <FormComponent
+      className={wrapperClassName}
+      help={help}
+      id={id}
+      label={label}
+      optionalLabel={optionalLabel}
+      required
+      tag={tag}
+    >
       <Checkbox {...props} error={Boolean(error)} id={id} label={title} name={name} ref={ref} />
     </FormComponent>
   ),
