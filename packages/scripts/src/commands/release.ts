@@ -92,7 +92,6 @@ async function replaceFile(
 }
 
 async function processChangesDir(dir: string, prefix: string): Promise<ListItem[]> {
-  await fs.mkdir(dir, { recursive: true });
   await ensureFile(join(dir, '.gitkeep'));
 
   const filenames = await fs.readdir(dir);
