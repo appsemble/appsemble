@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.15] - 2020-09-18
+
+### Added
+
+- App: Add support for `cc` and `bcc` in email actions.
+- Server: Add support for `cc` and `bcc` in email actions.
+- Server: Added option to skip sending emails by leaving `to`, `cc`, and `bcc` empty.
+- Utils: Implement `array.map` remapper.
+
+### Fixed
+
+- Block(`form`): Fix issue where the default state was not correctly initialized.
+- Preact-components: Fix logic for when to display the optional label.
+
 ## [0.13.14] - 2020-09-15
 
 ### Added
