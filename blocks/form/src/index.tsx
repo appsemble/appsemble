@@ -15,7 +15,9 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [formError, setFormError] = useState<string>(null);
   const [disabled, setDisabled] = useState(true);
-  const [validity, setValidity] = useState(generateDefaultValidity(parameters, data || {}));
+  const [validity, setValidity] = useState(
+    generateDefaultValidity(parameters, { ...generateDefaultValues(parameters), ...data }),
+  );
   const [submitting, setSubmitting] = useState(false);
   const defaultValues = useMemo(() => generateDefaultValues(parameters), [parameters]);
   const [values, setValues] = useState({
