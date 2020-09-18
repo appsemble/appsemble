@@ -96,8 +96,10 @@ following steps:
 - Update the changelog.
 - Verify and commit the results.
 - Push.
-- Create a merge request. Use the changes in the changelog as the merge request description.
-- Once merged, create a git tag. Use the changes in the changelog as the release description.
+- Create a merge request. Use the changes in the changelog as the merge request description. This
+  does not include the header of the tag itself.
+- Once merged, create a git tag. Use the changes in the changelog as the release notes. This does
+  not include the header of the tag itself. The tag message should be left empty.
 
 CI will take care of the rest.
 
