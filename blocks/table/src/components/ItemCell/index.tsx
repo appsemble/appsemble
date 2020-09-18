@@ -1,26 +1,24 @@
+import type { Action } from '@appsemble/sdk';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Field } from '../../../block';
-
 type ItemCellProps = {
   item: any;
-  field: Field;
-  onClick: (item: any) => void;
-} & h.JSX.HTMLAttributes<HTMLTableCellElement>;
+  onClick: Action;
+} & Omit<h.JSX.HTMLAttributes<HTMLTableCellElement>, 'onClick'>;
 
-export function ItemCell({ children, className, field, item, onClick }: ItemCellProps): VNode {
+export function ItemCell({ children, className, item, onClick }: ItemCellProps): VNode {
   const onCellClick = useCallback(
     (event: Event) => {
-      if (field.onClick === undefined) {
+      if (onClick === undefined) {
         return;
       }
 
       // Prevent row click event from happening
       event.stopPropagation();
-      onClick(item);
+      onClick.dispatch(item);
     },
-    [item, field, onClick],
+    [item, onClick],
   );
 
   return (

@@ -37,15 +37,6 @@ bootstrap(
       setLoading(false);
     }, []);
 
-    const onClick = useCallback(
-      (d: any): void => {
-        if (actions.onClick) {
-          actions.onClick.dispatch(d);
-        }
-      },
-      [actions],
-    );
-
     useEffect(() => {
       events.on.data(loadData);
       ready();
@@ -80,17 +71,18 @@ bootstrap(
               className={actions.onClick.type === 'noop' ? undefined : styles.clickable}
               item={item}
               key={item.id || dataIndex}
-              onClick={onClick}
+              onClick={actions.onClick}
             >
               {fields.map((field) => {
                 const value = utils.remap(field.value, item);
+                const onClickAction = actions[field.onClick] ?? actions.onClick;
+
                 return (
                   <ItemCell
-                    className={onClick ? styles.clickable : undefined}
-                    field={field}
+                    className={onClickAction?.type !== 'noop' && styles.clickable}
                     item={item}
                     key={field.value}
-                    onClick={onClick}
+                    onClick={onClickAction}
                   >
                     {typeof value === 'string' ? value : JSON.stringify(value)}
                   </ItemCell>
