@@ -13,6 +13,19 @@ import {
 import { getRemapperContext } from './app';
 import { sendNotification, SendNotificationOptions } from './sendNotification';
 
+export function renameOData(name: string): string {
+  switch (name) {
+    case '$created':
+      return 'created';
+    case '$updated':
+      return 'updated';
+    case 'id':
+      return name;
+    default:
+      return `data.${name}`;
+  }
+}
+
 async function sendSubscriptionNotifications(
   host: string,
   app: App,

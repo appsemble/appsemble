@@ -1,17 +1,13 @@
-import { randomBytes } from 'crypto';
-
 import { checkAppRole, Permission, SchemaValidationError, validate } from '@appsemble/utils';
 import { badRequest, forbidden, notFound, unauthorized } from '@hapi/boom';
-import parseOData from '@wesselkuipers/odata-sequelize';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import type { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
-import { FindOptions, Op, QueryOptions, WhereOptions } from 'sequelize';
+import { Op, Order, WhereOptions } from 'sequelize';
 
 import {
   App,
   AppSubscription,
-  getDB,
   Organization,
   Resource,
   ResourceSubscription,
@@ -19,12 +15,17 @@ import {
 } from '../models';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
-import { processHooks, processReferenceHooks } from '../utils/resource';
+import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
+import { processHooks, processReferenceHooks, renameOData } from '../utils/resource';
 
 interface Params {
   appId: number;
   resourceType: string;
   resourceId: number;
+  $filter: string;
+  $orderby: string;
+  $select: string;
+  $top: number;
 }
 
 function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.SchemaObject {
@@ -45,90 +46,6 @@ function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.Sch
   }
 
   return app.definition.resources[resourceType].schema;
-}
-
-interface GenerateQueryOptions {
-  createdHash: string;
-  updatedHash: string;
-}
-
-function generateQuery(
-  ctx: KoaContext,
-  { createdHash, updatedHash }: GenerateQueryOptions,
-): QueryOptions {
-  if (ctx.querystring) {
-    try {
-      return parseOData(
-        decodeURIComponent(
-          ctx.querystring
-            .replace(/\+/g, '%20')
-            .replace(/\$updated/g, updatedHash)
-            .replace(/\$created/g, createdHash),
-        ),
-        getDB(),
-      );
-    } catch {
-      return {};
-    }
-  }
-
-  return {};
-}
-
-/**
- * Iterates through all keys in an object and preprends matched keys with ´data.´
- *
- * @param object - Object to iterate through
- * @param keys - Keys to match with
- * @param hashes - The hashes to use for mapping the created and updated values.
- *
- * @returns A Sequelize query whose properties have been prefixed with `data.`.
- */
-function deepRename(
-  object: any,
-  keys: string[],
-  { createdHash, updatedHash }: GenerateQueryOptions,
-): FindOptions {
-  if (!object) {
-    return {};
-  }
-
-  const isArray = Array.isArray(object);
-  const obj = isArray ? [...object] : { ...object };
-
-  const entries = [...Object.keys(obj), ...Object.getOwnPropertySymbols(obj)];
-  entries.forEach((key: string) => {
-    const value = obj[key];
-
-    if (isArray) {
-      if (keys.some((k) => k === value)) {
-        obj[key] = `data.${value}`;
-      }
-    } else if (keys.some((k) => k === key)) {
-      obj[`data.${key}`] = value;
-      delete obj[key];
-    }
-
-    if (value === updatedHash) {
-      obj[key] = 'updated';
-    } else if (value === createdHash) {
-      obj[key] = 'created';
-    }
-
-    if (key === updatedHash) {
-      obj.updated = obj[key];
-      delete obj[key];
-    } else if (key === createdHash) {
-      obj.created = obj[key];
-      delete obj[key];
-    }
-
-    if (obj[key] && (obj[key] instanceof Object || Array.isArray(obj[key]))) {
-      obj[key] = deepRename(obj[key], keys, { updatedHash, createdHash });
-    }
-  });
-
-  return obj;
 }
 
 /**
@@ -221,13 +138,9 @@ async function verifyAppRole(
 export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
+    query: { $filter, $orderby, $select, $top },
     user,
   } = ctx;
-
-  const updatedHash = `updated${randomBytes(5).toString('hex')}`;
-  const createdHash = `created${randomBytes(5).toString('hex')}`;
-
-  const query = generateQuery(ctx, { updatedHash, createdHash });
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -243,44 +156,46 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
       ],
     }),
   });
-  const { properties } = verifyResourceDefinition(app, resourceType);
+  verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyAppRole(ctx, app, null, resourceType, 'query');
 
-  const keys = Object.keys(properties);
-  // The data is stored in the ´data´ column as json
-  const renamedQuery = deepRename(query, keys, { updatedHash, createdHash });
-
+  let order: Order;
+  let query: WhereOptions;
   try {
-    const resources = await Resource.findAll({
-      ...renamedQuery,
-      where: {
-        ...renamedQuery.where,
-        type: resourceType,
-        AppId: appId,
-        ...userQuery,
-        expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
-      },
-      include: [{ model: User, attributes: ['id', 'name'], required: false }],
-    });
-
-    ctx.body = resources.map((resource) => ({
-      ...resource.data,
-      id: resource.id,
-      $created: resource.created,
-      $updated: resource.updated,
-      $clonable: resource.clonable,
-      ...(resource.expires != null && {
-        $expires: resource.expires,
-      }),
-      ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
-    }));
-  } catch (error: unknown) {
-    if (query) {
-      throw badRequest('Unable to process this query');
-    }
-
-    throw error;
+    order = $orderby && odataOrderbyToSequelize($orderby, renameOData);
+    query = odataFilterToSequelize($filter, renameOData);
+  } catch {
+    throw badRequest('Unable to process this query');
   }
+
+  const resources = await Resource.findAll({
+    include: [{ model: User, attributes: ['id', 'name'], required: false }],
+    limit: $top,
+    order,
+    where: {
+      [Op.and]: [
+        query,
+        {
+          ...userQuery,
+          type: resourceType,
+          AppId: appId,
+          expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
+        },
+      ],
+    },
+  });
+
+  ctx.body = resources.map((resource) => ({
+    ...resource.data,
+    id: resource.id,
+    $created: resource.created,
+    $updated: resource.updated,
+    $clonable: resource.clonable,
+    ...(resource.expires != null && {
+      $expires: resource.expires,
+    }),
+    ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
+  }));
 }
 
 export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {

@@ -36,7 +36,7 @@ export function toOData(fields: Field[], values: FilterValues): string {
           if (field.exact) {
             return `${field.name} eq '${value}'`;
           }
-          return `substringof('${value}',${field.name})`;
+          return `substringof(${field.name},'${value}')`;
         default:
           return null;
       }

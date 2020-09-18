@@ -1,5 +1,5 @@
 import { defaultParser, Token, TokenType } from '@odata/parser';
-import { Op, WhereOptions } from 'sequelize';
+import { Op, Order, WhereOptions } from 'sequelize';
 
 /**
  * A function which accepts the name in the filter, and returns a name to replace it with.
@@ -72,6 +72,8 @@ function processToken(token: Token, rename: Rename, nested = false): unknown {
   }
 
   switch (token.type) {
+    case TokenType.CommonExpression:
+      return processToken(token.value, rename, nested);
     case TokenType.Literal:
       return processLiteral(token, nested);
     case TokenType.AndExpression:
@@ -93,7 +95,20 @@ export function odataFilterToSequelize(
   query: string | Token,
   rename: Rename = defaultRename,
 ): WhereOptions {
+  if (!query) {
+    return {};
+  }
   // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
   const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
   return processToken(ast, rename) as WhereOptions;
+}
+
+export function odataOrderbyToSequelize(value: string, rename: Rename = defaultRename): Order {
+  if (!value) {
+    return [];
+  }
+  return value.split(/,/g).map((line) => {
+    const [name, direction] = line.split(' ');
+    return [rename(name), direction?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'];
+  });
 }

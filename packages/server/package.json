@@ -34,7 +34,6 @@
     "@koa/cors": "^3.1.0",
     "@odata/parser": "^0.2.1",
     "@sentry/node": "^5.22.3",
-    "@wesselkuipers/odata-sequelize": "^1.0.15",
     "autoprefixer": "^9.8.6",
     "axios": "^0.19.2",
     "bcrypt": "5.0.0",
