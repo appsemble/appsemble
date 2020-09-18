@@ -120,7 +120,6 @@ async function processChanges(dir: string): Promise<Changes> {
     fixed: await processChangesDir(join(changesDir, 'fixed'), prefix),
     security: await processChangesDir(join(changesDir, 'security'), prefix),
   };
-  await remove(changesDir);
   return result;
 }
 
