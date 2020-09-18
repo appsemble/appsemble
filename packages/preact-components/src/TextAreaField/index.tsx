@@ -25,6 +25,8 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       required,
       value,
       id = name,
+      tag,
+      optionalLabel,
       ...props
     },
     ref,
@@ -39,7 +41,9 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       icon={icon}
       id={id}
       label={label}
+      optionalLabel={optionalLabel}
       required={required}
+      tag={tag}
     >
       <TextArea
         {...props}
