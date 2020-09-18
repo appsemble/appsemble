@@ -3,12 +3,33 @@ import { Op, WhereOptions } from 'sequelize';
 
 /**
  * A function which accepts the name in the filter, and returns a name to replace it with.
+ *
+ * @param name - The original name. This uses `/` as a separator.
+ *
+ * @returns The new name to use instead.
  */
 type Rename = (name: string) => string;
 
 const defaultRename: Rename = (name) => name;
 
-function parseLiteral(token: Token, nested: boolean): unknown {
+const operators = new Map([
+  [TokenType.EqualsExpression, Op.eq],
+  [TokenType.LesserOrEqualsExpression, Op.lte],
+  [TokenType.LesserThanExpression, Op.lt],
+  [TokenType.GreaterOrEqualsExpression, Op.gte],
+  [TokenType.GreaterThanExpression, Op.gt],
+  [TokenType.NotEqualsExpression, Op.ne],
+]);
+
+const comparisonMethods = new Map(
+  Object.entries({
+    startswith: Op.startsWith,
+    endswith: Op.endsWith,
+    substringof: Op.substring,
+  }),
+);
+
+function processLiteral(token: Token, nested: boolean): unknown {
   switch (token.value) {
     case 'Edm.Boolean':
       return token.raw === 'true';
@@ -27,23 +48,32 @@ function parseLiteral(token: Token, nested: boolean): unknown {
   }
 }
 
+function processName(token: Token, rename: Rename): [name: string, nested: boolean] {
+  const name = rename(token.raw).replace(/\//g, '.');
+  // OData uses `/` as a path separator, but Sequelize uses `.`.
+  // https://sequelize.org/master/manual/other-data-types.html#jsonb--postgresql-only-
+  return [name, name.includes('.')];
+}
+
+function processMethod(token: Token, rename: Rename): WhereOptions {
+  const comparison = comparisonMethods.get(token.value.method);
+  if (comparison) {
+    const [name, nested] = processName(token.value.parameters[0], rename);
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    return { [name]: { [comparison]: processToken(token.value.parameters[1], rename, nested) } };
+  }
+}
+
 function processToken(token: Token, rename: Rename, nested = false): unknown {
+  const operator = operators.get(token.type);
+  if (operator) {
+    const [name, isNested] = processName(token.value.left, rename);
+    return { [name]: { [operator]: processToken(token.value.right, rename, isNested) } };
+  }
+
   switch (token.type) {
-    case TokenType.EqualsExpression: {
-      const name = rename(token.value.left.raw);
-      // OData uses / as a path separator, but Sequelize uses dots.
-      // https://sequelize.org/master/manual/other-data-types.html#jsonb--postgresql-only-
-      if (name.includes('/')) {
-        return {
-          [name.replace(/\//g, '.')]: { [Op.eq]: processToken(token.value.right, rename, true) },
-        };
-      }
-      return {
-        [name]: { [Op.eq]: processToken(token.value.right, rename) },
-      };
-    }
     case TokenType.Literal:
-      return parseLiteral(token, nested);
+      return processLiteral(token, nested);
     case TokenType.AndExpression:
       return {
         [Op.and]: [processToken(token.value.left, rename), processToken(token.value.right, rename)],
@@ -52,12 +82,18 @@ function processToken(token: Token, rename: Rename, nested = false): unknown {
       return {
         [Op.or]: [processToken(token.value.left, rename), processToken(token.value.right, rename)],
       };
+    case TokenType.MethodCallExpression:
+      return processMethod(token, rename);
     default:
+      process.emitWarning(`Unhandled OData type: ${token.type}`);
   }
 }
 
-export function odataFilterToSequelize(query: string, rename = defaultRename): WhereOptions {
+export function odataFilterToSequelize(
+  query: string | Token,
+  rename: Rename = defaultRename,
+): WhereOptions {
   // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
-  const ast = defaultParser.filter(query);
+  const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
   return processToken(ast, rename) as WhereOptions;
 }
