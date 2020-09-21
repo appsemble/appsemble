@@ -1,4 +1,3 @@
-import { logger } from '@appsemble/node-utils';
 import { defaultParser, Token, TokenType } from '@odata/parser';
 import { Op, Order, WhereOptions, WhereValue } from 'sequelize';
 
