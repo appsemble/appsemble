@@ -168,6 +168,11 @@ export interface TokenResponse {
 
 export interface Remappers {
   /**
+   * Get a property from the context.
+   */
+  context: string;
+
+  /**
    * Convert a string to a date using a given format.
    */
   'date.parse': string;

@@ -89,7 +89,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
-  remap: (remapper: Remapper, data: any) => any;
+  remap: (remapper: Remapper, data: any, context: { [key: string]: any }) => any;
   showMessage: ShowMessage;
 }
 

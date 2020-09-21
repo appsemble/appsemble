@@ -14,6 +14,7 @@ export type MessageGetter = (msg: IntlMessage) => IntlMessageFormat;
 export interface RemapperContext {
   getMessage: (msg: IntlMessage) => IntlMessageFormat;
   userInfo: UserInfo;
+  context: { [key: string]: any };
 }
 
 type MapperImplementations = {
@@ -26,6 +27,11 @@ type MapperImplementations = {
  * All arguments are deferred from {@link @appsemble/sdk#Remappers}
  */
 const mapperImplementations: MapperImplementations = {
+  context: (prop, _, context) =>
+    String(prop)
+      .split('.')
+      .reduce((acc, p) => acc?.[p] ?? null, context.context),
+
   'object.from': (mappers, input, context) =>
     // This ESLint rule needs to be disabled, because remap is called recursively.
     // eslint-disable-next-line @typescript-eslint/no-use-before-define

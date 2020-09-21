@@ -100,9 +100,10 @@ export interface Utils {
    *
    * @param remapper - The user defined remapper function.
    * @param data - The data to remap.
+   * @param context - The context to retrieve contextual data from.
    * @returns The result of the remapped data.
    */
-  remap: (remapper: Remapper, data: any) => any;
+  remap: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any;
 
   /**
    * Show a bulma style message.

@@ -28,7 +28,7 @@ interface MakeActionsParams {
   pageReady: Promise<void>;
   prefix: string;
   ee: EventEmitter;
-  remap: (remapper: Remapper, data: any) => any;
+  remap: (remapper: Remapper, data: any, context: { [key: string]: any }) => any;
   showMessage: ShowMessage;
 }
 
@@ -43,7 +43,7 @@ interface CreateActionParams {
   pageReady: Promise<void>;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
-  remap: (remapper: Remapper, data: any) => any;
+  remap: (remapper: Remapper, data: any, context: { [key: string]: any }) => any;
   showDialog: ShowDialogAction;
   type: Action['type'];
   showMessage: ShowMessage;
@@ -120,26 +120,26 @@ function createAction({
 
   const { dispatch } = action;
   if (actionDefinition) {
-    action.dispatch = async (args: any) => {
+    action.dispatch = async (args: any, context: { [key: string]: any }) => {
       await pageReady;
       let result;
 
       try {
         result = await dispatch(
           Object.hasOwnProperty.call(actionDefinition, 'remap')
-            ? remap(actionDefinition.remap, args)
+            ? remap(actionDefinition.remap, args, context)
             : args,
         );
       } catch (error: unknown) {
         if (onError) {
-          return onError.dispatch(error);
+          return onError.dispatch(error, context);
         }
 
         throw error;
       }
 
       if (onSuccess) {
-        return onSuccess.dispatch(result);
+        return onSuccess.dispatch(result, context);
       }
 
       return result;
