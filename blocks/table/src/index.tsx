@@ -1,11 +1,9 @@
 import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
-import { h } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { h, VNode } from 'preact';
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
-import { ItemCell } from './components/ItemCell';
 import { ItemRow } from './components/ItemRow';
-import styles from './index.css';
 
 interface Item {
   id?: number;
@@ -13,7 +11,6 @@ interface Item {
 
 bootstrap(
   ({
-    actions,
     events,
     parameters: {
       emptyMessage = 'No data is available',
@@ -37,14 +34,32 @@ bootstrap(
       setLoading(false);
     }, []);
 
-    const onClick = useCallback(
-      (d: any): void => {
-        if (actions.onClick) {
-          actions.onClick.dispatch(d);
+    const headers = useMemo<VNode>(() => {
+      const heads = fields.flatMap((field) => {
+        if ('label' in field) {
+          return utils.remap(field.label, {});
         }
-      },
-      [actions],
-    );
+
+        if ('repeat' in field) {
+          return field.repeat.map((subField) => utils.remap(subField.label, {}));
+        }
+      });
+
+      // Don’t render any headers if none of the headers have labels
+      if (!heads.some(Boolean)) {
+        return;
+      }
+
+      return (
+        <thead>
+          <tr>
+            {heads.map((header) => (
+              <th key={header}>{header}</th>
+            ))}
+          </tr>
+        </thead>
+      );
+    }, [fields, utils]);
 
     useEffect(() => {
       events.on.data(loadData);
@@ -65,38 +80,10 @@ bootstrap(
 
     return (
       <table className="table is-hoverable is-striped is-fullwidth" role="grid">
-        {fields.some((field) => field.label) && (
-          <thead>
-            <tr>
-              {fields.map((field) => (
-                <th key={field.value}>{utils.remap(field.label, {})}</th>
-              ))}
-            </tr>
-          </thead>
-        )}
+        {headers}
         <tbody>
           {data.map((item, dataIndex) => (
-            <ItemRow
-              className={actions.onClick.type === 'noop' ? undefined : styles.clickable}
-              item={item}
-              key={item.id || dataIndex}
-              onClick={onClick}
-            >
-              {fields.map((field) => {
-                const value = utils.remap(field.value, item);
-                return (
-                  <ItemCell
-                    className={onClick ? styles.clickable : undefined}
-                    field={field}
-                    item={item}
-                    key={field.value}
-                    onClick={onClick}
-                  >
-                    {typeof value === 'string' ? value : JSON.stringify(value)}
-                  </ItemCell>
-                );
-              })}
-            </ItemRow>
+            <ItemRow item={item} key={item.id || dataIndex} />
           ))}
         </tbody>
       </table>

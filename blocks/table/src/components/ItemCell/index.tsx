@@ -1,31 +1,44 @@
-import { h, VNode } from 'preact';
+import { useBlock } from '@appsemble/preact';
+import { ComponentProps, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import type { Field } from '../../../block';
+import styles from './index.css';
 
-type ItemCellProps = {
+interface ItemCellProps extends ComponentProps<'td'> {
+  /**
+   * The item to dislay.
+   */
   item: any;
+
+  /**
+   * The field to render.
+   */
   field: Field;
-  onClick: (item: any) => void;
-} & h.JSX.HTMLAttributes<HTMLTableCellElement>;
+}
 
-export function ItemCell({ children, className, field, item, onClick }: ItemCellProps): VNode {
-  const onCellClick = useCallback(
-    (event: Event) => {
-      if (field.onClick === undefined) {
-        return;
-      }
+/**
+ * Render an item value as a table cell.
+ */
+export function ItemCell({ field, item, ...props }: ItemCellProps): VNode {
+  const { actions } = useBlock();
 
-      // Prevent row click event from happening
-      event.stopPropagation();
-      onClick(item);
-    },
-    [item, field, onClick],
-  );
+  const onClickAction = actions[field.onClick] || actions.onClick;
+
+  const onCellClick = useCallback(() => {
+    if (!onClickAction || onClickAction.type === 'noop') {
+      return;
+    }
+
+    onClickAction.dispatch(item);
+  }, [onClickAction, item]);
 
   return (
-    <td className={className} onClick={onCellClick} role="gridcell">
-      {children}
-    </td>
+    <td
+      {...props}
+      className={onClickAction?.type !== 'noop' && styles.clickable}
+      onClick={onCellClick}
+      role="gridcell"
+    />
   );
 }
