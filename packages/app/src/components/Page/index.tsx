@@ -56,7 +56,8 @@ export function Page(): ReactElement {
   const prefix = index === -1 ? null : `pages.${index}`;
 
   const remapWithContext = useCallback(
-    (mappers: Remapper, input: any) => remap(mappers, input, { getMessage, userInfo }),
+    (mappers: Remapper, input: any, context: { [key: string]: any }) =>
+      remap(mappers, input, { getMessage, userInfo, context }),
     [getMessage, userInfo],
   );
 

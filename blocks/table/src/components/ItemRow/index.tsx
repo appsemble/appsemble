@@ -9,6 +9,11 @@ interface ItemRowProps {
    * The item to display a row of.
    */
   item: any;
+
+  /**
+   * The index of the item being rendered.
+   */
+  index: number;
 }
 
 function renderValue(value: unknown): String {
@@ -18,7 +23,7 @@ function renderValue(value: unknown): String {
 /**
  * Render an item as a table row.
  */
-export function ItemRow({ item }: ItemRowProps): VNode {
+export function ItemRow({ index, item }: ItemRowProps): VNode {
   const {
     parameters: { fields },
     utils,
@@ -27,19 +32,32 @@ export function ItemRow({ item }: ItemRowProps): VNode {
   const repeatedField = fields.find((field) => 'repeat' in field) as RepeatedField;
   if (repeatedField) {
     const repeatedItems = utils.remap(repeatedField.value, item) as any[];
-    return (repeatedItems.map((repeatedItem, index) => (
-      <tr key={repeatedItem.id || index}>
+    return (repeatedItems.map((repeatedItem, repeatedIndex) => (
+      <tr key={repeatedItem.id || repeatedIndex}>
         {fields.map((field) =>
           field === repeatedField ? (
             repeatedField.repeat.map((repeatedCell) => (
               // eslint-disable-next-line react/jsx-key
-              <ItemCell field={repeatedCell} item={item}>
-                {renderValue(utils.remap(repeatedCell.value, repeatedItem))}
+              <ItemCell
+                field={repeatedCell}
+                index={index}
+                item={item}
+                repeatedIndex={repeatedIndex}
+              >
+                {renderValue(
+                  utils.remap(repeatedCell.value, repeatedItem, { repeatedIndex, index }),
+                )}
               </ItemCell>
             ))
-          ) : index ? null : (
-            <ItemCell field={field} item={item} rowSpan={repeatedItems.length}>
-              {renderValue(utils.remap(field.value, item))}
+          ) : repeatedIndex ? null : (
+            <ItemCell
+              field={field}
+              index={index}
+              item={item}
+              repeatedIndex={0}
+              rowSpan={repeatedItems.length}
+            >
+              {renderValue(utils.remap(field.value, item, { index, repeatedIndex: 0 }))}
             </ItemCell>
           ),
         )}
@@ -51,8 +69,8 @@ export function ItemRow({ item }: ItemRowProps): VNode {
     <tr>
       {fields.map((field) => (
         // eslint-disable-next-line react/jsx-key
-        <ItemCell field={field} item={item}>
-          {renderValue(utils.remap(field.value, item))}
+        <ItemCell field={field} index={index} item={item} repeatedIndex={0}>
+          {renderValue(utils.remap(field.value, item, { index, repeatedIndex: 0 }))}
         </ItemCell>
       ))}
     </tr>

@@ -23,7 +23,7 @@ interface BlockListProps {
   flowActions?: {};
   page: PageDefinition;
   prefix: string;
-  remap: (remapper: Remapper, data: any) => any;
+  remap: (remapper: Remapper, data: any, context: { [key: string]: any }) => any;
   showDialog: ShowDialogAction;
   transitions?: boolean;
 }

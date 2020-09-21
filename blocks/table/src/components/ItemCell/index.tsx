@@ -15,12 +15,22 @@ interface ItemCellProps extends ComponentProps<'td'> {
    * The field to render.
    */
   field: Field;
+
+  /**
+   * The index of the row that was clicked.
+   */
+  index: number;
+
+  /**
+   * The index of the subrow that was clicked.
+   */
+  repeatedIndex: number;
 }
 
 /**
  * Render an item value as a table cell.
  */
-export function ItemCell({ field, item, ...props }: ItemCellProps): VNode {
+export function ItemCell({ field, index, item, repeatedIndex, ...props }: ItemCellProps): VNode {
   const { actions } = useBlock();
 
   const onClickAction = actions[field.onClick] || actions.onClick;
@@ -30,8 +40,8 @@ export function ItemCell({ field, item, ...props }: ItemCellProps): VNode {
       return;
     }
 
-    onClickAction.dispatch(item);
-  }, [onClickAction, item]);
+    onClickAction.dispatch(item, { index, repeatedIndex });
+  }, [onClickAction, item, index, repeatedIndex]);
 
   return (
     <td

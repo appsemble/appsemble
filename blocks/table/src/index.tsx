@@ -82,8 +82,8 @@ bootstrap(
       <table className="table is-hoverable is-striped is-fullwidth" role="grid">
         {headers}
         <tbody>
-          {data.map((item, dataIndex) => (
-            <ItemRow item={item} key={item.id || dataIndex} />
+          {data.map((item, index) => (
+            <ItemRow index={index} item={item} key={item.id || index} />
           ))}
         </tbody>
       </table>
