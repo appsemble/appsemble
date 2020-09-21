@@ -5,6 +5,7 @@ import flatpickr from 'flatpickr';
 import React, { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
 
 import { FormComponent, Input, SharedFormComponentProps } from '..';
+import { useCombinedRefs } from '../useCombinedRefs';
 import styles from './index.css';
 
 type DateTimeFieldProps = SharedFormComponentProps &
@@ -35,27 +36,31 @@ type DateTimeFieldProps = SharedFormComponentProps &
   };
 
 export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
-  ({
-    className,
-    enableTime,
-    error,
-    help,
-    icon,
-    iso,
-    label,
-    mode = 'single',
-    name,
-    onChange,
-    required,
-    value,
-    id = name,
-    ...props
-  }) => {
-    const ref = useRef<HTMLInputElement>();
+  (
+    {
+      className,
+      enableTime,
+      error,
+      help,
+      icon,
+      iso,
+      label,
+      mode = 'single',
+      name,
+      onChange,
+      required,
+      value,
+      id = name,
+      ...props
+    },
+    ref,
+  ) => {
+    const inputRef = useRef<HTMLInputElement>();
+    const combinedRef = useCombinedRefs(ref, inputRef);
     const [picker, setPicker] = useState<flatpickr.Instance>(null);
 
     useEffect(() => {
-      const p = flatpickr(ref.current, {
+      const p = flatpickr(inputRef.current, {
         static: true,
         enableTime,
         mode,
@@ -71,7 +76,7 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
       if (!picker) {
         return;
       }
-      const { current } = ref;
+      const { current } = inputRef;
       const handlers = picker.config.onChange;
 
       const handleChange = ([val]: Date[]): void => {
@@ -105,7 +110,7 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
         label={label}
         required={required}
       >
-        <Input {...props} className="is-fullwidth" id={id} name={name} ref={ref} />
+        <Input {...props} className="is-fullwidth" id={id} name={name} ref={combinedRef} />
       </FormComponent>
     );
   },
