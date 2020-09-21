@@ -91,5 +91,6 @@ export async function getRemapperContext(
       return cache(message);
     },
     userInfo,
+    context: {},
   };
 }
