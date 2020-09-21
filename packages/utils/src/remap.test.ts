@@ -4,7 +4,6 @@ import { IntlMessageFormat } from 'intl-messageformat';
 import { remap } from './remap';
 
 interface TestCase {
-  description: string;
   input: any;
   mappers: Remapper;
   expected: any;
@@ -13,15 +12,10 @@ interface TestCase {
   context?: { [key: string]: any };
 }
 
-function runTests(cases: TestCase[]): void {
-  const tests = cases.map(
-    ({ context, description, expected, input, mappers, messages, userInfo }) =>
-      [description, mappers, messages, input, expected, userInfo, context] as const,
-  );
-
-  it.each(tests)(
-    'should %s given %j',
-    (_, mappers, messages, input, expected, userInfo, context) => {
+function runTests(tests: { [description: string]: TestCase }): void {
+  it.each(Object.entries(tests))(
+    'should %s',
+    (_, { context, expected, input, mappers, messages, userInfo }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           new IntlMessageFormat(messages?.[id] ?? defaultMessage),
@@ -34,69 +28,57 @@ function runTests(cases: TestCase[]): void {
 }
 
 describe('Raw string', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'return a literal string',
+  runTests({
+    'return a literal string': {
       input: 'a string',
       mappers: 'raw string',
       expected: 'raw string',
     },
-  ];
-
-  runTests(cases);
+  });
 });
 
 describe('context', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'get a simple property from context',
+  runTests({
+    'get a simple property from context': {
       input: {},
       mappers: [{ context: 'name' }],
       expected: 'Spongebob',
       context: { name: 'Spongebob' },
     },
-    {
-      description: 'get a nested property',
+    'get a nested property': {
       input: {},
       context: { address: { town: 'Bikini Bottom' } },
       mappers: [{ context: 'address.town' }],
       expected: 'Bikini Bottom',
     },
-    {
-      description: 'handle null',
+    'handle null': {
       input: {},
       context: { name: 'Spongebob' },
       mappers: [{ context: null }],
       expected: null,
     },
-    {
-      description: 'handle properties named null',
+    'handle properties named null': {
       input: {},
       context: { null: 'Spongebob' },
       mappers: [{ context: null }],
       expected: 'Spongebob',
     },
-    {
-      description: 'handle null values',
+    'handle null values': {
       input: {},
       mappers: [{ context: 'foo.bar' }],
       expected: null,
     },
-    {
-      description: 'return null if context is not available',
+    'return null if context is not available': {
       input: {},
       mappers: [{ context: 'test' }],
       expected: null,
     },
-  ];
-
-  runTests(cases);
+  });
 });
 
 describe('object.from', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'create a new object from remappers',
+  runTests({
+    'create a new object from remappers': {
       input: { givenName: 'Patrick', familyName: 'Star', species: 'Starfish' },
       mappers: [
         {
@@ -105,21 +87,17 @@ describe('object.from', () => {
       ],
       expected: { firstName: 'Patrick', lastName: 'Star' },
     },
-  ];
-
-  runTests(cases);
+  });
 });
 
 describe('array.map', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'return an empty array',
+  runTests({
+    'return an empty array': {
       input: {},
       mappers: [{ 'array.map': [] }],
       expected: [],
     },
-    {
-      description: 'apply remappers to each array item',
+    'apply remappers to each array item': {
       input: [
         { firstName: 'John', lastName: 'Doe' },
         { firstName: 'Jane', lastName: 'Smith' },
@@ -144,77 +122,62 @@ describe('array.map', () => {
       ],
       expected: ['john doe', 'jane smith'],
     },
-  ];
-
-  runTests(cases);
+  });
 });
 
 describe('prop', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'get a simple property',
+  runTests({
+    'get a simple property': {
       input: { name: 'Spongebob' },
       mappers: [{ prop: 'name' }],
       expected: 'Spongebob',
     },
-    {
-      description: 'get a nested property',
+    'get a nested property': {
       input: { address: { town: 'Bikini Bottom' } },
       mappers: [{ prop: 'address.town' }],
       expected: 'Bikini Bottom',
     },
-    {
-      description: 'handle numbers',
+    'handle numbers': {
       input: { names: ['foo', 'bar'] },
       mappers: [{ prop: 'names' }, { prop: (0 as unknown) as string }],
       expected: 'foo',
     },
-    {
-      description: 'handle null',
+    'handle null': {
       input: { name: 'Spongebob' },
       mappers: [{ prop: null }],
       expected: null,
     },
-    {
-      description: 'handle properties named null',
+    'handle properties named null': {
       input: { null: 'Spongebob' },
       mappers: [{ prop: null }],
       expected: 'Spongebob',
     },
-    {
-      description: 'handle null values',
+    'handle null values': {
       input: {},
       mappers: [{ prop: 'foo.bar' }],
       expected: null,
     },
-  ];
-
-  runTests(cases);
+  });
 });
 
 describe('string.case', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'convert a string to upper case',
+  runTests({
+    'convert a string to upper case': {
       input: 'I’m a Goofy Goober',
       mappers: [{ 'string.case': 'upper' }],
       expected: 'I’M A GOOFY GOOBER',
     },
-    {
-      description: 'convert a string to lower case',
+    'convert a string to lower case': {
       input: 'We’re all Goofy Goobers',
       mappers: [{ 'string.case': 'lower' }],
       expected: 'we’re all goofy goobers',
     },
-  ];
-
-  runTests(cases);
+  });
 });
 
 describe('string.format', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'format a template string',
+  runTests({
+    'format a template string': {
       input: { name: 'Krusty Krab', food: 'krabby patties' },
       mappers: [
         {
@@ -226,8 +189,7 @@ describe('string.format', () => {
       ],
       expected: 'The Krusty Krab serves krabby patties',
     },
-    {
-      description: 'escape formatting double curly brackets',
+    'escape formatting double curly brackets': {
       input: { food: 'krabby patty' },
       mappers: [
         {
@@ -239,15 +201,13 @@ describe('string.format', () => {
       ],
       expected: 'A krabby patty can be ressembled in ascii using: {{I}}',
     },
-    {
-      description: 'format unknown values to empty strings',
+    'format unknown values to empty strings': {
       input: {},
       mappers: [{ 'string.format': { template: '‘{value}’ is unknown', values: {} } }],
       expected:
         'The intl string context variable "value" was not provided to the string "‘{value}’ is unknown"',
     },
-    {
-      description: 'format dates it parsed',
+    'format dates it parsed': {
       input: { date: '1970-01-01T00:00:00.000Z' },
       mappers: [
         {
@@ -259,8 +219,7 @@ describe('string.format', () => {
       ],
       expected: 'Date’s year: 1970',
     },
-    {
-      description: 'format multilingual messages',
+    'format multilingual messages': {
       input: null,
       mappers: [
         {
@@ -275,34 +234,27 @@ describe('string.format', () => {
         patty: '{type} Patty',
       },
     },
-  ];
-
-  runTests(cases);
+  });
 });
 
 describe('static', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'return a static value',
+  runTests({
+    'return a static value': {
       input: null,
       mappers: [{ static: 'Hello world' }],
       expected: 'Hello world',
     },
-    {
-      description: 'apply regex replacements',
+    'apply regex replacements': {
       input: null,
       mappers: [{ static: '1234 AA' }, { 'string.replace': { '\\s+': '' } }],
       expected: '1234AA',
     },
-  ];
-
-  runTests(cases);
+  });
 });
 
 describe('user', () => {
-  const cases: TestCase[] = [
-    {
-      description: 'should insert user info',
+  runTests({
+    'insert user info': {
       input: null,
       mappers: [{ user: 'name' }],
       expected: 'Me',
@@ -315,7 +267,5 @@ describe('user', () => {
         profile: '',
       },
     },
-  ];
-
-  runTests(cases);
+  });
 });
