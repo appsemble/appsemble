@@ -5,7 +5,6 @@ import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata';
 describe('odataFilterToSequelize', () => {
   const cases: { [key: string]: WhereOptions } = {
     // Simple equal to
-    '$this eq true': { $foo: { [Op.eq]: true } },
     'foo eq true': { foo: { [Op.eq]: true } },
     'foo eq 1999-12-31': { foo: { [Op.eq]: new Date('1999-12-31T00:00:00.000Z') } },
     'foo eq 12': { foo: { [Op.eq]: 12 } },
