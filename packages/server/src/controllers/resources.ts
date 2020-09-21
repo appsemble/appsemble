@@ -24,7 +24,6 @@ interface Params {
   resourceId: number;
   $filter: string;
   $orderby: string;
-  $select: string;
   $top: number;
 }
 
@@ -138,7 +137,7 @@ async function verifyAppRole(
 export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    query: { $filter, $orderby, $select, $top },
+    query: { $filter, $orderby, $top },
     user,
   } = ctx;
 

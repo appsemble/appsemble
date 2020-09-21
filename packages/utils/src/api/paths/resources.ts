@@ -13,7 +13,6 @@ export const paths: OpenAPIV3.PathsObject = {
       parameters: [
         { $ref: '#/components/parameters/$filter' },
         { $ref: '#/components/parameters/$orderby' },
-        { $ref: '#/components/parameters/$select' },
         { $ref: '#/components/parameters/$top' },
       ],
       responses: {
