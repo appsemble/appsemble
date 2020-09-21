@@ -39,6 +39,15 @@ as the result.
 
 The following remapper functions are available:
 
+### `context`
+
+Get a property from the context. Some blocks may provide contextual data that can be used. The
+context is passed to each remapper and can be accessed using this remapper.
+
+### Parameters
+
+The name of the property to get.
+
 ### `object.from`
 
 Create a new object given some predefined mapper keys.

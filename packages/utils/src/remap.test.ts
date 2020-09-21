@@ -82,6 +82,12 @@ describe('context', () => {
       mappers: [{ context: 'foo.bar' }],
       expected: null,
     },
+    {
+      description: 'return null if context is not available',
+      input: {},
+      mappers: [{ context: 'test' }],
+      expected: null,
+    },
   ];
 
   runTests(cases);
