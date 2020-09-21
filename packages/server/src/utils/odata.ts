@@ -1,5 +1,6 @@
+import { logger } from '@appsemble/node-utils';
 import { defaultParser, Token, TokenType } from '@odata/parser';
-import { Op, Order, WhereOptions } from 'sequelize';
+import { Op, Order, WhereOptions, WhereValue } from 'sequelize';
 
 /**
  * A function which accepts the name in the filter, and returns a name to replace it with.
@@ -29,7 +30,7 @@ const comparisonMethods = new Map(
   }),
 );
 
-function processLiteral(token: Token, nested: boolean): unknown {
+function processLiteral(token: Token, nested: boolean): WhereValue {
   switch (token.value) {
     case 'Edm.Boolean':
       return token.raw === 'true';
@@ -64,7 +65,7 @@ function processMethod(token: Token, rename: Rename): WhereOptions {
   }
 }
 
-function processToken(token: Token, rename: Rename, nested = false): unknown {
+function processToken(token: Token, rename: Rename, nested = false): WhereOptions | WhereValue {
   const operator = operators.get(token.type);
   if (operator) {
     const [name, isNested] = processName(token.value.left, rename);
@@ -72,17 +73,24 @@ function processToken(token: Token, rename: Rename, nested = false): unknown {
   }
 
   switch (token.type) {
+    case TokenType.BoolParenExpression:
     case TokenType.CommonExpression:
       return processToken(token.value, rename, nested);
     case TokenType.Literal:
       return processLiteral(token, nested);
     case TokenType.AndExpression:
       return {
-        [Op.and]: [processToken(token.value.left, rename), processToken(token.value.right, rename)],
+        [Op.and]: [
+          processToken(token.value.left, rename) as WhereOptions,
+          processToken(token.value.right, rename) as WhereOptions,
+        ],
       };
     case TokenType.OrExpression:
       return {
-        [Op.or]: [processToken(token.value.left, rename), processToken(token.value.right, rename)],
+        [Op.or]: [
+          processToken(token.value.left, rename) as WhereOptions,
+          processToken(token.value.right, rename) as WhereOptions,
+        ],
       };
     case TokenType.MethodCallExpression:
       return processMethod(token, rename);

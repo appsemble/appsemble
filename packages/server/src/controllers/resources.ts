@@ -162,7 +162,12 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   let query: WhereOptions;
   try {
     order = $orderby && odataOrderbyToSequelize($orderby, renameOData);
-    query = odataFilterToSequelize($filter, renameOData);
+    query = odataFilterToSequelize(
+      $filter
+        .replace(/(^|\B)\$created(\b|$)/g, '__created__')
+        .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+      renameOData,
+    );
   } catch {
     throw badRequest('Unable to process this query');
   }

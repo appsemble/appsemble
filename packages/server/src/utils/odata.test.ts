@@ -5,6 +5,7 @@ import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata';
 describe('odataFilterToSequelize', () => {
   const cases: { [key: string]: WhereOptions } = {
     // Simple equal to
+    '$this eq true': { $foo: { [Op.eq]: true } },
     'foo eq true': { foo: { [Op.eq]: true } },
     'foo eq 1999-12-31': { foo: { [Op.eq]: new Date('1999-12-31T00:00:00.000Z') } },
     'foo eq 12': { foo: { [Op.eq]: 12 } },
@@ -88,10 +89,22 @@ describe('odataFilterToSequelize', () => {
         { [Op.and]: [{ bar: { [Op.eq]: 14 } }, { baz: { [Op.eq]: 8 } }] },
       ],
     },
+    'foo eq 12 and (bar eq 14 and baz eq 8)': {
+      [Op.and]: [
+        { foo: { [Op.eq]: 12 } },
+        { [Op.and]: [{ bar: { [Op.eq]: 14 } }, { baz: { [Op.eq]: 8 } }] },
+      ],
+    },
     'foo eq 12 or bar eq 14': {
       [Op.or]: [{ foo: { [Op.eq]: 12 } }, { bar: { [Op.eq]: 14 } }],
     },
     'foo eq 12 or bar eq 14 or baz eq 8': {
+      [Op.or]: [
+        { foo: { [Op.eq]: 12 } },
+        { [Op.or]: [{ bar: { [Op.eq]: 14 } }, { baz: { [Op.eq]: 8 } }] },
+      ],
+    },
+    'foo eq 12 or (bar eq 14 or baz eq 8)': {
       [Op.or]: [
         { foo: { [Op.eq]: 12 } },
         { [Op.or]: [{ bar: { [Op.eq]: 14 } }, { baz: { [Op.eq]: 8 } }] },

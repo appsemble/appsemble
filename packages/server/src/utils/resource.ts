@@ -15,9 +15,9 @@ import { sendNotification, SendNotificationOptions } from './sendNotification';
 
 export function renameOData(name: string): string {
   switch (name) {
-    case '$created':
+    case '__created__':
       return 'created';
-    case '$updated':
+    case '__updated__':
       return 'updated';
     case 'id':
       return name;

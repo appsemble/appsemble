@@ -1,7 +1,7 @@
 import type { Field, FilterValues } from '../../block';
 
 export function toOData(fields: Field[], values: FilterValues): string {
-  return fields
+  const queries = fields
     .map((field) => {
       const value = values[field.name];
 
@@ -11,7 +11,7 @@ export function toOData(fields: Field[], values: FilterValues): string {
 
       switch (field.type) {
         case 'buttons':
-          return `(${(value as string[]).map((val) => `${field.name} eq '${val}'`).join(' or ')})`;
+          return (value as string[]).map((val) => `${field.name} eq '${val}'`).join(' or ');
         case 'date':
           // Quotes are disallowed for eq by odata-sequelize
           return `${field.name} eq ${value}`;
@@ -23,12 +23,12 @@ export function toOData(fields: Field[], values: FilterValues): string {
           }
           if (value[1]) {
             // Quotes are required for ge by odata-sequelize
-            filters.push(`${field.name} ge '${value[1]}'`);
+            filters.push(`${field.name} le '${value[1]}'`);
           }
           if (!filters.length) {
             return null;
           }
-          return `(${filters.join(' and ')})`;
+          return filters.join(' and ');
         }
         case 'enum':
           return `${field.name} eq '${value}'`;
@@ -41,6 +41,6 @@ export function toOData(fields: Field[], values: FilterValues): string {
           return null;
       }
     })
-    .filter(Boolean)
-    .join(' and ');
+    .filter(Boolean);
+  return queries.length === 1 ? queries[0] : queries.map((query) => `(${query})`).join(' and ');
 }
