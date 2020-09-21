@@ -48,6 +48,15 @@ context is passed to each remapper and can be accessed using this remapper.
 
 The name of the property to get.
 
+### `equals`
+
+Compares an array of remappers against each other. Returns `true` if all remapped values are equal,
+otherwise `false`.
+
+#### Parameters
+
+An array of remappers.
+
 ### `object.from`
 
 Create a new object given some predefined mapper keys.

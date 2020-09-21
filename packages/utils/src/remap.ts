@@ -1,5 +1,6 @@
 import type { Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { parse, parseISO } from 'date-fns';
+import equal from 'fast-deep-equal';
 import type { IntlMessageFormat } from 'intl-messageformat';
 
 import { mapValues } from './mapValues';
@@ -31,6 +32,16 @@ const mapperImplementations: MapperImplementations = {
     String(prop)
       .split('.')
       .reduce((acc, p) => acc?.[p] ?? null, context.context),
+
+  equals: (mappers, input: any, context) => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    const values = mappers.map((mapper) => remap(mapper, input, context));
+
+    if (values.length <= 0) {
+      return true;
+    }
+    return values.length <= 0 ? true : values.every((value) => equal(values[0], value));
+  },
 
   'object.from': (mappers, input, context) =>
     // This ESLint rule needs to be disabled, because remap is called recursively.
