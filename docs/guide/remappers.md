@@ -75,6 +75,15 @@ Always returns an array even if the input is invalid.
 
 An array of remappers. These get applied to each array item.
 
+### `array`
+
+Get the length or index in the current context of `array.map`. This returns nothing if not used
+within an `array.map` remapper.
+
+### Parameters
+
+`index` for the current index, or `length` to get the length of the array.
+
 ### `static`
 
 Insert a static value.
