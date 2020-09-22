@@ -76,6 +76,36 @@ describe('context', () => {
   });
 });
 
+describe('equals', () => {
+  runTests({
+    'return true if all values are equal': {
+      input: [1, 1, 1],
+      mappers: [{ equals: [[{ prop: '0' }], [{ prop: '1' }], [{ prop: '2' }]] }],
+      expected: true,
+    },
+    'use deep equality': {
+      input: [{ foo: { bar: 3 } }, { foo: { bar: 3 } }],
+      mappers: [{ equals: [[{ prop: '0' }], [{ prop: '1' }]] }],
+      expected: true,
+    },
+    'return false if not all values are equal': {
+      input: [{ foo: { bar: 3 } }, { foo: { bar: 2 } }],
+      mappers: [{ equals: [[{ prop: '0' }], [{ prop: '1' }]] }],
+      expected: false,
+    },
+    'return true on empty arrays': {
+      input: { empty: [] },
+      mappers: [{ equals: [] }],
+      expected: true,
+    },
+    'return true on arrays with 1 entry': {
+      input: { empty: [] },
+      mappers: [{ equals: [[{ prop: 'empty' }]] }],
+      expected: true,
+    },
+  });
+});
+
 describe('object.from', () => {
   runTests({
     'create a new object from remappers': {
