@@ -46,7 +46,7 @@ interface BlockProps {
 
   showDialog: ShowDialogAction;
   ready: (block: BlockDefinition) => void;
-  remap: (remapper: Remapper, data: any) => any;
+  remap: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any;
   pageReady: Promise<void>;
   prefix: string;
 }
