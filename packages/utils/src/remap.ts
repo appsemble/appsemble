@@ -32,6 +32,19 @@ const mapperImplementations: MapperImplementations = {
       .split('.')
       .reduce((acc, p) => acc?.[p] ?? null, context.context),
 
+  if: (mappers, input, context) => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    const condition = remap(mappers.condition, input, context);
+
+    if (condition) {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return remap(mappers.then, input, context);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    return remap(mappers.else, input, context);
+  },
+
   'object.from': (mappers, input, context) =>
     // This ESLint rule needs to be disabled, because remap is called recursively.
     // eslint-disable-next-line @typescript-eslint/no-use-before-define

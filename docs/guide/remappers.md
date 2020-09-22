@@ -48,6 +48,20 @@ context is passed to each remapper and can be accessed using this remapper.
 
 The name of the property to get.
 
+### `if`
+
+Evaluates the value of the given `condition`. It returns the value of `then` if the value of
+`condition` is [true](https://developer.mozilla.org/en-US/docs/Glossary/Truthy), otherwise it
+returns the value of `else`.
+
+#### Parameters
+
+| Name        | Description                                                         |
+| ----------- | ------------------------------------------------------------------- |
+| `condition` | Remapper resulting in the value to check the truthiness of.         |
+| `then`      | Remapper for the value that is returned if `condition` is true.     |
+| `else`      | Remapper for the value that is returned if `condition` is not true. |
+
 ### `object.from`
 
 Create a new object given some predefined mapper keys.

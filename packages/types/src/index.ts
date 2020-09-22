@@ -187,6 +187,13 @@ export interface Remappers {
   'array.map': Remapper[];
 
   /**
+   * Checks if condition results in a truthy value.
+   *
+   * Returns value of then if condition is truthy, otherwise it returns the value of else.
+   */
+  if: { condition: Remapper; then: Remapper; else: Remapper };
+
+  /**
    * Create a new object given some predefined mapper keys.
    */
   'object.from': {
