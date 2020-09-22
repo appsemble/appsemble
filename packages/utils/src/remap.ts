@@ -49,12 +49,7 @@ const mapperImplementations: MapperImplementations = {
 
   if: (mappers, input, context) => {
     const condition = remap(mappers.condition, input, context);
-
-    if (condition) {
-      return remap(mappers.then, input, context);
-    }
-
-    return remap(mappers.else, input, context);
+    return remap(condition ? mappers.then : mappers.else, input, context);
   },
 
   'object.from': (mappers, input, context) =>
