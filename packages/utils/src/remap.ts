@@ -1,5 +1,6 @@
 import type { Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { parse, parseISO } from 'date-fns';
+import equal from 'fast-deep-equal';
 import type { IntlMessageFormat } from 'intl-messageformat';
 
 import { mapValues } from './mapValues';
@@ -46,6 +47,15 @@ const mapperImplementations: MapperImplementations = {
     String(prop)
       .split('.')
       .reduce((acc, p) => acc?.[p] ?? null, context.context),
+
+  equals: (mappers, input: any, context) => {
+    if (mappers.length <= 1) {
+      return true;
+    }
+
+    const values = mappers.map((mapper) => remap(mapper, input, context));
+    return values.every((value) => equal(values[0], value));
+  },
 
   if: (mappers, input, context) => {
     const condition = remap(mappers.condition, input, context);

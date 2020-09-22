@@ -178,6 +178,13 @@ export interface Remappers {
   'date.parse': string;
 
   /**
+   * Compare all computed remapper values against each other.
+   *
+   * Returns `true` if all entries are equal, otherwise `false`.
+   */
+  equals: Remapper[];
+
+  /**
    * Builds an array based on the given data and list of remappers.
    *
    * The list of remappers gets applied to each item in the array.
