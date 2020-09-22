@@ -34,13 +34,14 @@ const mapperImplementations: MapperImplementations = {
       .reduce((acc, p) => acc?.[p] ?? null, context.context),
 
   equals: (mappers, input: any, context) => {
+    if (mappers.length <= 1) {
+      return true;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     const values = mappers.map((mapper) => remap(mapper, input, context));
 
-    if (values.length <= 0) {
-      return true;
-    }
-    return values.length <= 0 ? true : values.every((value) => equal(values[0], value));
+    return values.every((value) => equal(values[0], value));
   },
 
   'object.from': (mappers, input, context) =>
