@@ -166,6 +166,13 @@ export interface TokenResponse {
   token_type: 'bearer';
 }
 
+export interface InternalContext {
+  'array.map': {
+    index: number;
+    length: number;
+  };
+}
+
 export interface Remappers {
   /**
    * Get a property from the context.
@@ -189,9 +196,16 @@ export interface Remappers {
    *
    * The list of remappers gets applied to each item in the array.
    *
-   * Always returns an array, can be empty if supplied data isn't an array.
+   * Always returns an array, can be empty if supplied data isn’t an array.
    */
   'array.map': Remapper[];
+
+  /**
+   * Get the current array.map’s index or length.
+   *
+   * Returns nothing if array.map’s context isn’t set.
+   */
+  array: 'index' | 'length';
 
   /**
    * Create a new object given some predefined mapper keys.

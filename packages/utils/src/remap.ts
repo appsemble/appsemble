@@ -16,11 +16,27 @@ export interface RemapperContext {
   getMessage: (msg: IntlMessage) => IntlMessageFormat;
   userInfo: UserInfo;
   context: { [key: string]: any };
+  internalContext?: { [M in keyof MapperImplementations]?: { [key: string]: any } };
 }
 
 type MapperImplementations = {
   [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: RemapperContext) => unknown;
 };
+
+export function remap(mappers: Remapper, input: unknown, context: RemapperContext): unknown {
+  if (typeof mappers === 'string' || mappers == null) {
+    return mappers;
+  }
+  return mappers.reduce((acc, mapper) => {
+    const entries = Object.entries(mapper) as [[keyof MapperImplementations, unknown]];
+    if (entries.length !== 1) {
+      throw new Error(`Remapper has duplicate function definition: ${JSON.stringify(mapper)}`);
+    }
+    const [[name, args]] = entries;
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    return mapperImplementations[name](args, acc, context);
+  }, input);
+}
 
 /**
  * Implementations of all remappers.
@@ -38,20 +54,25 @@ const mapperImplementations: MapperImplementations = {
       return true;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     const values = mappers.map((mapper) => remap(mapper, input, context));
 
     return values.every((value) => equal(values[0], value));
   },
 
   'object.from': (mappers, input, context) =>
-    // This ESLint rule needs to be disabled, because remap is called recursively.
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
-  'array.map': (mappers, input: any[], context) =>
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    [].concat(input).flatMap((item) => mappers.map((mapper) => remap(mapper, item, context))),
+  'array.map': (mappers, input: any[], context: RemapperContext) =>
+    [].concat(input).flatMap((item, index) =>
+      mappers.map((mapper) =>
+        remap(mapper, item, {
+          ...context,
+          internalContext: { 'array.map': { index, length: input.length } },
+        }),
+      ),
+    ),
+
+  array: (prop, _, context) => context.internalContext?.['array.map']?.[prop],
 
   static: (input) => input,
 
@@ -77,8 +98,6 @@ const mapperImplementations: MapperImplementations = {
     try {
       const message = context.getMessage({ id: messageId, defaultMessage: template });
       return message.format(
-        // This ESLint rule needs to be disabled, because remap is called recursively.
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         values ? mapValues(values, (val) => remap(val, input, context)) : undefined,
       );
     } catch (error: unknown) {
@@ -97,17 +116,3 @@ const mapperImplementations: MapperImplementations = {
 
   user: (values, input, context) => context.userInfo?.[values],
 };
-
-export function remap(mappers: Remapper, input: unknown, context: RemapperContext): unknown {
-  if (typeof mappers === 'string' || mappers == null) {
-    return mappers;
-  }
-  return mappers.reduce((acc, mapper) => {
-    const entries = Object.entries(mapper) as [[keyof MapperImplementations, unknown]];
-    if (entries.length !== 1) {
-      throw new Error(`Remapper has duplicate function definition: ${JSON.stringify(mapper)}`);
-    }
-    const [[name, args]] = entries;
-    return mapperImplementations[name](args, acc, context);
-  }, input);
-}

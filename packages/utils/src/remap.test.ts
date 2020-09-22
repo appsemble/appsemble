@@ -155,6 +155,47 @@ describe('array.map', () => {
   });
 });
 
+describe('array', () => {
+  runTests({
+    'return undefined if not in the context of array.map': {
+      input: {},
+      mappers: [
+        {
+          'object.from': {
+            index: [{ array: 'index' }],
+            length: [{ array: 'length' }],
+          },
+        },
+      ],
+      expected: { index: undefined, length: undefined },
+    },
+    'return the index and length if in the context of array.map': {
+      input: { array: [{ value: 'a' }, { value: 'b' }, { value: 'c' }] },
+      mappers: [
+        { prop: 'array' },
+        {
+          'array.map': [
+            [
+              {
+                'object.from': {
+                  value: [{ prop: 'value' }],
+                  index: [{ array: 'index' }],
+                  length: [{ array: 'length' }],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+      expected: [
+        { value: 'a', index: 0, length: 3 },
+        { value: 'b', index: 1, length: 3 },
+        { value: 'c', index: 2, length: 3 },
+      ],
+    },
+  });
+});
+
 describe('prop', () => {
   runTests({
     'get a simple property': {
