@@ -13,16 +13,14 @@ export function toOData(fields: Field[], values: FilterValues): string {
         case 'buttons':
           return (value as string[]).map((val) => `${field.name} eq '${val}'`).join(' or ');
         case 'date':
-          // Quotes are disallowed for eq by odata-sequelize
-          return `${field.name} eq ${value}`;
+          // XXX: Quotes are added to dates because OData does not parse date + time as dates yet
+          return `${field.name} eq '${value}'`;
         case 'date-range': {
           const filters = [];
           if (value[0]) {
-            // Quotes are required for ge by odata-sequelize
             filters.push(`${field.name} ge '${value[0]}'`);
           }
           if (value[1]) {
-            // Quotes are required for ge by odata-sequelize
             filters.push(`${field.name} le '${value[1]}'`);
           }
           if (!filters.length) {
