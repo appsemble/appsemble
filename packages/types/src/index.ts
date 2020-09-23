@@ -185,13 +185,13 @@ export interface Remappers {
   equals: Remapper[];
 
   /**
-   * Builds an array based on the given data and list of remappers.
+   * Builds an array based on the given data and remappers.
    *
-   * The list of remappers gets applied to each item in the array.
+   * The remappers gets applied to each item in the array.
    *
-   * Always returns an array, can be empty if supplied data isn't an array.
+   * Always returns an array, can be empty if supplied data isn’t an array.
    */
-  'array.map': Remapper[];
+  'array.map': Remapper;
 
   /**
    * Checks if condition results in a truthy value.
@@ -199,6 +199,13 @@ export interface Remappers {
    * Returns value of then if condition is truthy, otherwise it returns the value of else.
    */
   if: { condition: Remapper; then: Remapper; else: Remapper };
+
+  /**
+   * Get the current array.map’s index or length.
+   *
+   * Returns nothing if array.map’s context isn’t set.
+   */
+  array: 'index' | 'length';
 
   /**
    * Create a new object given some predefined mapper keys.

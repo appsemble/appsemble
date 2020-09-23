@@ -18,11 +18,18 @@ export interface RemapperContext {
   context: { [key: string]: any };
 }
 
+interface InternalContext extends RemapperContext {
+  array?: {
+    index: number;
+    length: number;
+  };
+}
+
 type MapperImplementations = {
-  [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: RemapperContext) => unknown;
+  [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: InternalContext) => unknown;
 };
 
-export function remap(remapper: Remapper, input: unknown, context: RemapperContext): unknown {
+export function remap(remapper: Remapper, input: unknown, context: InternalContext): unknown {
   if (
     typeof remapper === 'string' ||
     typeof remapper === 'number' ||
@@ -71,8 +78,15 @@ const mapperImplementations: MapperImplementations = {
   'object.from': (mappers, input, context) =>
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
-  'array.map': (mappers, input: any[], context) =>
-    [].concat(input).flatMap((item) => mappers.map((mapper) => remap(mapper, item, context))),
+  'array.map': (mapper, input: any[], context) =>
+    input?.map((item, index) =>
+      remap(mapper, item, {
+        ...context,
+        array: { index, length: input.length },
+      }),
+    ) ?? [],
+
+  array: (prop, input, context) => context.array?.[prop],
 
   static: (input) => input,
 
