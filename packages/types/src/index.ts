@@ -192,13 +192,13 @@ export interface Remappers {
   equals: Remapper[];
 
   /**
-   * Builds an array based on the given data and list of remappers.
+   * Builds an array based on the given data and remappers.
    *
-   * The list of remappers gets applied to each item in the array.
+   * The remappers gets applied to each item in the array.
    *
    * Always returns an array, can be empty if supplied data isn’t an array.
    */
-  'array.map': Remapper[];
+  'array.map': Remapper;
 
   /*
    * Checks if condition results in a truthy value.

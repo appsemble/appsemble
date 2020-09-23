@@ -161,11 +161,6 @@ describe('object.from', () => {
 
 describe('array.map', () => {
   runTests({
-    'return an empty array': {
-      input: {},
-      mappers: [{ 'array.map': [] }],
-      expected: [],
-    },
     'apply remappers to each array item': {
       input: [
         { firstName: 'John', lastName: 'Doe' },
@@ -173,18 +168,16 @@ describe('array.map', () => {
       ],
       mappers: {
         'array.map': [
-          [
-            {
-              'string.format': {
-                template: '{firstName} {lastName}',
-                values: {
-                  firstName: { prop: 'firstName' },
-                  lastName: { prop: 'lastName' },
-                },
+          {
+            'string.format': {
+              template: '{firstName} {lastName}',
+              values: {
+                firstName: { prop: 'firstName' },
+                lastName: { prop: 'lastName' },
               },
             },
-            { 'string.case': 'lower' },
-          ],
+          },
+          { 'string.case': 'lower' },
         ],
       },
 
@@ -213,15 +206,14 @@ describe('array', () => {
         { prop: 'array' },
         {
           'array.map': [
-            [
-              {
-                'object.from': {
-                  value: [{ prop: 'value' }],
-                  index: [{ array: 'index' }],
-                  length: [{ array: 'length' }],
-                },
+            {
+              'object.from': {
+                value: [{ prop: 'value' }],
+                index: [{ array: 'index' }],
+                length: [{ array: 'length' }],
               },
-            ],
+            },
+            ,
           ],
         },
       ],

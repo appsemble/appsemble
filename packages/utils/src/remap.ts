@@ -78,15 +78,13 @@ const mapperImplementations: MapperImplementations = {
   'object.from': (mappers, input, context) =>
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
-  'array.map': (mappers, input: any[], context) =>
-    [].concat(input).flatMap((item, index) =>
-      mappers.map((mapper) =>
-        remap(mapper, item, {
-          ...context,
-          array: { index, length: input.length },
-        }),
-      ),
-    ),
+  'array.map': (mapper, input: any[], context) =>
+    input?.flatMap((item, index) =>
+      remap(mapper, item, {
+        ...context,
+        array: { index, length: input.length },
+      }),
+    ) ?? [],
 
   array: (prop, input, context) => context.array?.[prop],
 
