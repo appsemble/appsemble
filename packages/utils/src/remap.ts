@@ -79,7 +79,7 @@ const mapperImplementations: MapperImplementations = {
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
   'array.map': (mapper, input: any[], context) =>
-    input?.flatMap((item, index) =>
+    input?.map((item, index) =>
       remap(mapper, item, {
         ...context,
         array: { index, length: input.length },
