@@ -140,17 +140,17 @@ pages:
               type: geocoordinates
               label: Location
               latitude:
-                - prop: latitude
+                prop: latitude
               longitude:
-                - prop: longitude
+                prop: longitude
             - value:
-                - prop: process
+                prop: process
               label: Process
             - value:
-                - prop: notes
+                prop: notes
               label: Notes
             - value:
-                - prop: photos
+                prop: photos
               type: file
               label: Photos
               repeated: true
