@@ -2,11 +2,13 @@ import { normalize } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
+import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { AppSettings } from '../AppSettings';
 import { Login } from '../Login';
 import { OpenIDCallback } from '../OpenIDCallback';
 import { Page } from '../Page';
+import { useUser } from '../UserProvider';
 
 /**
  * The main body of the loaded app.
@@ -15,10 +17,13 @@ import { Page } from '../Page';
  */
 export function Main(): ReactElement {
   const { definition } = useAppDefinition();
+  const { isLoggedIn, role } = useUser();
 
   if (definition == null) {
     return null;
   }
+
+  const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
 
   // The `lang` parameter for the parent route is optional. It should be required for subroutes to
   // prevent an infinite routing loop.
@@ -36,7 +41,7 @@ export function Main(): ReactElement {
       <Route path="/:lang/:pageId">
         <Page />
       </Route>
-      <Redirect to={`/:lang/${normalize(definition.defaultPage)}`} />
+      <Redirect to={`/:lang/${normalize(defaultPageName)}`} />
     </Switch>
   );
 }

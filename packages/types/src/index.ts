@@ -294,6 +294,7 @@ export interface Security {
     [role: string]: {
       description?: string;
       inherits?: string[];
+      defaultPage?: string;
     };
   };
 }
