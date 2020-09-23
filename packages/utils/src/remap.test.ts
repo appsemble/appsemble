@@ -261,6 +261,21 @@ describe('prop', () => {
   });
 });
 
+describe('root', () => {
+  runTests({
+    'return the input data': {
+      input: { input: [{ input: 'input' }, { input: 'input' }] },
+      mappers: { root: {} },
+      expected: { input: [{ input: 'input' }, { input: 'input' }] },
+    },
+    'handle empty input': {
+      input: undefined,
+      mappers: { root: {} },
+      expected: undefined,
+    },
+  });
+});
+
 describe('string.case', () => {
   runTests({
     'convert a string to upper case': {

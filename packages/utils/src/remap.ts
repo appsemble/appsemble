@@ -98,6 +98,8 @@ const mapperImplementations: MapperImplementations = {
   'date.parse': (format, input: string) =>
     format ? parse(input, format, new Date()) : parseISO(input),
 
+  root: (args, input: string) => input,
+
   'string.case': (stringCase, input) => {
     if (stringCase === 'lower') {
       return String(input).toLowerCase();
