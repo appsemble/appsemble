@@ -23,11 +23,17 @@ type MapperImplementations = {
   [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: RemapperContext) => unknown;
 };
 
-export function remap(mappers: Remapper, input: unknown, context: RemapperContext): unknown {
-  if (typeof mappers === 'string' || mappers == null) {
-    return mappers;
+export function remap(remapper: Remapper, input: unknown, context: RemapperContext): unknown {
+  if (
+    typeof remapper === 'string' ||
+    typeof remapper === 'number' ||
+    typeof remapper === 'boolean' ||
+    remapper == null
+  ) {
+    return remapper;
   }
-  return mappers.reduce((acc, mapper) => {
+
+  return [].concat(remapper).reduce((acc, mapper) => {
     const entries = Object.entries(mapper) as [[keyof MapperImplementations, unknown]];
     if (entries.length !== 1) {
       throw new Error(`Remapper has duplicate function definition: ${JSON.stringify(mapper)}`);

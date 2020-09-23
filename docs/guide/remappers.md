@@ -2,11 +2,11 @@
 
 Remapper functions are objects that define how a value should be transformed. This can be useful for
 various purposes, such as retrieving properties from data structures, transforming data, and
-formatting text. Remappers consist of an array of remapper objects. Each object has one key, which
-represents the remapper function. The value represents parameters to customize the behavior of the
-remapper.
+formatting text. Remappers consist of either an array of remapper objects or a single remapper
+object. Each object has one key, which represents the remapper function. The value represents
+parameters to customize the behavior of the remapper.
 
-For example, given the following remapper:
+For example, given the following list of remappers:
 
 ```yaml
 - prop: firstName
@@ -30,10 +30,10 @@ This will result in the following data:
 
 This data can be used for example to render a value in `detail-viewer`.
 
-## String Remapper
+## Primitive Remapper
 
-If remapper is a string instead of an array of objects, this static string will always be returned
-as the result.
+If remapper is a string, boolean, or number instead of an array of objects, this static value will
+always be returned as the result.
 
 ## Remapper Functions
 
