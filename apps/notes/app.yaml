@@ -61,7 +61,7 @@ pages:
         parameters:
           fields:
             - value:
-                - prop: title
+                prop: title
               label: Title
         events:
           listen:
@@ -76,9 +76,9 @@ pages:
                 parameters:
                   fields:
                     - label:
-                        - prop: title
+                        prop: title
                       value:
-                        - prop: body
+                        prop: body
       - type: action-button
         version: 0.13.15
         parameters:

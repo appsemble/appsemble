@@ -19,13 +19,13 @@ pages:
         parameters:
           fields:
             - value:
-                - prop: date
+                prop: date
               label: Date
             - value:
-                - prop: name
+                prop: name
               label: Name (EN)
             - value:
-                - prop: localName
+                prop: localName
               label: Name (NL)
         events:
           listen:
@@ -47,10 +47,10 @@ pages:
         parameters:
           fields:
             - value:
-                - prop: date
+                prop: date
               label: Date
             - value:
-                - prop: name
+                prop: name
               label: Name (EN)
         events:
           listen:
@@ -72,13 +72,13 @@ pages:
         parameters:
           fields:
             - value:
-                - prop: date
+                prop: date
               label: Date
             - value:
-                - prop: name
+                prop: name
               label: Name (EN)
             - value:
-                - prop: localName
+                prop: localName
               label: Name (DE)
         events:
           listen:
@@ -100,13 +100,13 @@ pages:
         parameters:
           fields:
             - value:
-                - prop: date
+                prop: date
               label: Date
             - value:
-                - prop: name
+                prop: name
               label: Name (EN)
             - value:
-                - prop: localName
+                prop: localName
               label: Name (ES)
         events:
           listen:
