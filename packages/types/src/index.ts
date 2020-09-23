@@ -225,7 +225,7 @@ export interface Remappers {
   prop: string;
 
   /**
-   * Get the input data as it was initially passed through.
+   * Get the input data as it was initially passed to the remap function.
    */
   root: unknown;
 
