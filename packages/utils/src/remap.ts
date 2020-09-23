@@ -114,5 +114,5 @@ const mapperImplementations: MapperImplementations = {
     return String(input).replace(new RegExp(regex, 'gm'), replacer);
   },
 
-  user: (values, _, context) => context.userInfo?.[values],
+  user: (values, input, context) => context.userInfo?.[values],
 };
