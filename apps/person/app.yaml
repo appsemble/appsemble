@@ -38,10 +38,10 @@ pages:
         parameters:
           fields:
             - value:
-                - prop: firstName
+                prop: firstName
               label: First Name
             - value:
-                - prop: lastName
+                prop: lastName
               label: Surname
         actions:
           onClick:
@@ -104,16 +104,16 @@ pages:
         parameters:
           fields:
             - value:
-                - prop: firstName
+                prop: firstName
               label: First Name
             - value:
-                - prop: lastName
+                prop: lastName
               label: Surname
             - value:
-                - prop: email
+                prop: email
               label: Email Address
             - value:
-                - prop: description
+                prop: description
               label: Description
         events:
           listen:
