@@ -129,10 +129,13 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       private: Boolean(isPrivate),
       template: Boolean(template),
       yaml: yaml || jsYaml.safeDump(definition),
-      icon,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
     };
+
+    if (icon) {
+      result.icon = icon.contents;
+    }
 
     if (yaml) {
       try {
