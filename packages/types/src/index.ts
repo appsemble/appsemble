@@ -166,13 +166,6 @@ export interface TokenResponse {
   token_type: 'bearer';
 }
 
-export interface InternalContext {
-  'array.map': {
-    index: number;
-    length: number;
-  };
-}
-
 export interface Remappers {
   /**
    * Get a property from the context.
@@ -200,7 +193,7 @@ export interface Remappers {
    */
   'array.map': Remapper;
 
-  /*
+  /**
    * Checks if condition results in a truthy value.
    *
    * Returns value of then if condition is truthy, otherwise it returns the value of else.
