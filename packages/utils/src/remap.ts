@@ -23,9 +23,15 @@ type MapperImplementations = {
 };
 
 export function remap(mappers: Remapper, input: unknown, context: RemapperContext): unknown {
-  if (typeof mappers === 'string' || mappers == null) {
+  if (
+    typeof mappers === 'string' ||
+    typeof mappers === 'number' ||
+    typeof mappers === 'boolean' ||
+    mappers == null
+  ) {
     return mappers;
   }
+
   return mappers.reduce((acc, mapper) => {
     const entries = Object.entries(mapper) as [[keyof MapperImplementations, unknown]];
     if (entries.length !== 1) {
@@ -108,5 +114,5 @@ const mapperImplementations: MapperImplementations = {
     return String(input).replace(new RegExp(regex, 'gm'), replacer);
   },
 
-  user: (values, input, context) => context.userInfo?.[values],
+  user: (values, _, context) => context.userInfo?.[values],
 };

@@ -30,10 +30,10 @@ This will result in the following data:
 
 This data can be used for example to render a value in `detail-viewer`.
 
-## String Remapper
+## Primitive Remapper
 
-If remapper is a string instead of an array of objects, this static string will always be returned
-as the result.
+If remapper is a string, boolean, or number instead of an array of objects, this static value will
+always be returned as the result.
 
 ## Remapper Functions
 

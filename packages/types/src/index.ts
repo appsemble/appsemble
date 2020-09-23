@@ -254,7 +254,7 @@ export interface Remappers {
   user: keyof UserInfo;
 }
 
-export type Remapper = RequireExactlyOne<Remappers>[] | string;
+export type Remapper = RequireExactlyOne<Remappers>[] | string | number | boolean;
 
 export interface SubscriptionResponseResource {
   create: boolean;
