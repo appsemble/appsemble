@@ -106,6 +106,36 @@ describe('equals', () => {
   });
 });
 
+describe('if', () => {
+  runTests({
+    'return the value of then if condition is truthy': {
+      input: { really: true },
+      mappers: [{ if: { condition: [{ prop: 'really' }], else: 'no really', then: 'yes really' } }],
+      expected: 'yes really',
+    },
+    'return the value of else if condition is falsy': {
+      input: { really: false },
+      mappers: [{ if: { condition: [{ prop: 'really' }], else: 'no really', then: 'yes really' } }],
+      expected: 'no really',
+    },
+    'return the value of then if condition is empty': {
+      input: { really: false },
+      mappers: [{ if: { condition: [], else: 'no really', then: 'yes really' } }],
+      expected: 'yes really',
+    },
+    'return input if else is empty': {
+      input: { really: false },
+      mappers: [{ if: { condition: [{ prop: 'really' }], else: [], then: 'yes really' } }],
+      expected: { really: false },
+    },
+    'return input if then is empty': {
+      input: { really: true },
+      mappers: [{ if: { condition: [{ prop: 'really' }], else: 'no really', then: [] } }],
+      expected: { really: true },
+    },
+  });
+});
+
 describe('object.from', () => {
   runTests({
     'create a new object from remappers': {

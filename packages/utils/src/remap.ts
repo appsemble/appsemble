@@ -55,14 +55,18 @@ const mapperImplementations: MapperImplementations = {
     }
 
     const values = mappers.map((mapper) => remap(mapper, input, context));
-
     return values.every((value) => equal(values[0], value));
+  },
+
+  if: (mappers, input, context) => {
+    const condition = remap(mappers.condition, input, context);
+    return remap(condition ? mappers.then : mappers.else, input, context);
   },
 
   'object.from': (mappers, input, context) =>
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
-  'array.map': (mappers, input: any[], context: RemapperContext) =>
+  'array.map': (mappers, input: any[], context) =>
     [].concat(input).flatMap((item, index) =>
       mappers.map((mapper) =>
         remap(mapper, item, {
