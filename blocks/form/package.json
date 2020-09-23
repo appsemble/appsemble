@@ -21,7 +21,6 @@
     "@fortawesome/fontawesome-common-types": "^0.2.30",
     "classnames": "^2.2.6",
     "leaflet": "~1.5.1",
-    "lodash": "^4.17.20",
     "preact": "^10.4.8"
   }
 }
