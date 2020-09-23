@@ -27,12 +27,22 @@ function runTests(tests: { [description: string]: TestCase }): void {
   );
 }
 
-describe('Raw string', () => {
+describe('Primitive values', () => {
   runTests({
     'return a literal string': {
       input: 'a string',
       mappers: 'raw string',
       expected: 'raw string',
+    },
+    'return a literal number': {
+      input: 'a string',
+      mappers: 42,
+      expected: 42,
+    },
+    'return a literal boolean': {
+      input: 'a string',
+      mappers: false,
+      expected: false,
     },
   });
 });

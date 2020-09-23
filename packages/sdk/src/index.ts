@@ -78,7 +78,7 @@ export interface Parameters {}
  *
  * @format remapper
  */
-export type Remapper = string | object | object[];
+export type Remapper = string | number | boolean | object | object[];
 
 export interface PageParameters {
   [parameter: string]: string;

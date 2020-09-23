@@ -23,7 +23,12 @@ type MapperImplementations = {
 };
 
 export function remap(remapper: Remapper, input: unknown, context: RemapperContext): unknown {
-  if (typeof remapper === 'string' || remapper == null) {
+  if (
+    typeof remapper === 'string' ||
+    typeof remapper === 'number' ||
+    typeof remapper === 'boolean' ||
+    remapper == null
+  ) {
     return remapper;
   }
 
