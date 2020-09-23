@@ -16,14 +16,20 @@ export interface RemapperContext {
   getMessage: (msg: IntlMessage) => IntlMessageFormat;
   userInfo: UserInfo;
   context: { [key: string]: any };
-  internalContext?: { [M in keyof MapperImplementations]?: { [key: string]: any } };
+}
+
+interface InternalContext extends RemapperContext {
+  array?: {
+    index: number;
+    length: number;
+  };
 }
 
 type MapperImplementations = {
-  [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: RemapperContext) => unknown;
+  [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: InternalContext) => unknown;
 };
 
-export function remap(remapper: Remapper, input: unknown, context: RemapperContext): unknown {
+export function remap(remapper: Remapper, input: unknown, context: InternalContext): unknown {
   if (
     typeof remapper === 'string' ||
     typeof remapper === 'number' ||
@@ -77,12 +83,12 @@ const mapperImplementations: MapperImplementations = {
       mappers.map((mapper) =>
         remap(mapper, item, {
           ...context,
-          internalContext: { 'array.map': { index, length: input.length } },
+          array: { index, length: input.length },
         }),
       ),
     ),
 
-  array: (prop, _, context) => context.internalContext?.['array.map']?.[prop],
+  array: (prop, input, context) => context.array?.[prop],
 
   static: (input) => input,
 
