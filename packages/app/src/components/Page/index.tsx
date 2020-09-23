@@ -57,7 +57,7 @@ export function Page(): ReactElement {
 
   const remapWithContext = useCallback(
     (mappers: Remapper, input: any, context: { [key: string]: any }) =>
-      remap(mappers, input, { getMessage, userInfo, context }),
+      remap(mappers, input, { getMessage, userInfo, context, root: input }),
     [getMessage, userInfo],
   );
 
