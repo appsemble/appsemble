@@ -191,13 +191,6 @@ export interface Remappers {
    */
   equals: Remapper[];
 
-  /*
-   * Checks if condition results in a truthy value.
-   *
-   * Returns value of then if condition is truthy, otherwise it returns the value of else.
-   */
-  if: { condition: Remapper; then: Remapper; else: Remapper };
-
   /**
    * Builds an array based on the given data and list of remappers.
    *
@@ -206,6 +199,13 @@ export interface Remappers {
    * Always returns an array, can be empty if supplied data isn’t an array.
    */
   'array.map': Remapper[];
+
+  /*
+   * Checks if condition results in a truthy value.
+   *
+   * Returns value of then if condition is truthy, otherwise it returns the value of else.
+   */
+  if: { condition: Remapper; then: Remapper; else: Remapper };
 
   /**
    * Get the current array.map’s index or length.
