@@ -19,7 +19,7 @@ export interface RemapperContext {
 }
 
 interface InternalContext extends RemapperContext {
-  root: unknown;
+  root?: unknown;
 
   array?: {
     index: number;
@@ -31,7 +31,11 @@ type MapperImplementations = {
   [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: InternalContext) => unknown;
 };
 
-export function remap(remapper: Remapper, input: unknown, context: InternalContext): unknown {
+export function remap(
+  remapper: Remapper,
+  input: unknown,
+  context: RemapperContext | InternalContext,
+): unknown {
   if (
     typeof remapper === 'string' ||
     typeof remapper === 'number' ||
