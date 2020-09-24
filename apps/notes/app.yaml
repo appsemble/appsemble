@@ -46,7 +46,7 @@ pages:
   - name: Notes
     blocks:
       - type: data-loader
-        version: 0.13.15
+        version: 0.14.0
         actions:
           onLoad:
             type: resource.query
@@ -57,7 +57,7 @@ pages:
           emit:
             data: notes
       - type: table
-        version: 0.13.15
+        version: 0.14.0
         parameters:
           fields:
             - value:
@@ -72,7 +72,7 @@ pages:
             closable: true
             blocks:
               - type: detail-viewer
-                version: 0.13.15
+                version: 0.14.0
                 parameters:
                   fields:
                     - label:
@@ -80,7 +80,7 @@ pages:
                       value:
                         prop: body
       - type: action-button
-        version: 0.13.15
+        version: 0.14.0
         parameters:
           icon: plus
         actions:
@@ -88,7 +88,7 @@ pages:
             type: dialog
             blocks:
               - type: form
-                version: 0.13.15
+                version: 0.14.0
                 parameters:
                   fields:
                     - type: string

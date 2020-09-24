@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.0] - 2020-09-24
+
+### Added
+
+- Block(`form`): Added option to add `required` requirement to fields of type `date-time`.
+- Block(`form`): Added support for fields of type `object`.
+- Block(`table`): Add `index` and `repeatedIndex` to context.
+- App: Add `defaultPage` property to roles in the security definition.
+- Utils: Add `array` remapper.
+- Utils: Add `if` remapper.
+- Utils: Add `root` remapper.
+- Utils: Add option to define remappers as a single object instead of an array of remappers.
+- Utils: Add option to directly use boolean and number values in remappers without having to use
+  `static`.
+- Utils: Add support for `equals` remapper.
+
 ## [0.13.15] - 2020-09-18
 
 ### Added

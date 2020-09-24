@@ -1,12 +1,12 @@
 apiVersion: v2
 name: appsemble
-version: 0.13.15
+version: 0.14.0
 description: The official Helm chart for Appsemble.
 icon: https://gitlab.com/uploads/-/system/project/avatar/7050597/bitmap.png
 home: https://appsemble.com
 sources:
   - https://gitlab.com/appsemble/appsemble
-appVersion: 0.13.15
+appVersion: 0.14.0
 dependencies:
   - name: postgresql
     version: 8.9.6
