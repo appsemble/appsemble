@@ -1,13 +1,17 @@
 import { useBlock } from '@appsemble/preact';
-import { h, VNode } from 'preact';
+import { Button, FormButtons } from '@appsemble/preact-components';
+import { Fragment, h, VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
-import type { FieldErrorMap, InputProps, ObjectField } from '../../../block';
-import { FieldGroup } from '../FieldGroup';
+import type { FieldError, FieldErrorMap, InputProps, ObjectField, Values } from '../../../block';
+import { generateDefaultValidity } from '../../utils/generateDefaultValidity';
+import { generateDefaultValues } from '../../utils/generateDefaultValues';
+import { ObjectEntry } from '../ObjectEntry';
 
-type ObjectInputProps = InputProps<{ [key: string]: unknown }, ObjectField>;
+type ObjectInputProps = InputProps<Values | Values[], ObjectField>;
 
 /**
- * An input element for a text type schema.
+ * An input element for an object field
  */
 export function ObjectInput({
   disabled,
@@ -18,18 +22,83 @@ export function ObjectInput({
   value,
 }: ObjectInputProps): VNode {
   const { utils } = useBlock();
+  const values = value as Values[];
+  const errors = error as FieldError[];
+
+  const changeArray = useCallback(
+    (localName: string, val: Values | Values, err: FieldErrorMap) => {
+      const index = Number(localName);
+      onChange(
+        localName,
+        values.map((v, i) => (index === i ? val : v)),
+        errors.map((e, i) => (index === i ? err : e)),
+      );
+    },
+    [errors, onChange, values],
+  );
+
+  const addEntry = useCallback(() => {
+    const newEntry = generateDefaultValues(field.fields);
+    onChange(
+      field.name,
+      [...(value as Values[]), newEntry],
+      [...(error as FieldError[]), generateDefaultValidity(field.fields, newEntry, utils)],
+    );
+  }, [error, field, onChange, utils, value]);
+
+  const removeEntry = useCallback(
+    (event: h.JSX.TargetedMouseEvent<HTMLButtonElement>) => {
+      const index = Number(event.currentTarget.name);
+
+      onChange(
+        field.name,
+        values.slice(0, index).concat(values.slice(index + 1)),
+        errors.slice(0, index).concat(errors.slice(index + 1)),
+      );
+    },
+    [errors, field, onChange, values],
+  );
 
   return (
     <fieldset className="appsemble-object">
       <legend className="title is-5">{utils.remap(field.label, value)}</legend>
-      <FieldGroup
-        disabled={disabled}
-        errors={error as FieldErrorMap}
-        fields={field.fields}
-        name={name}
-        onChange={onChange}
-        value={value}
-      />
+      {field.repeated ? (
+        <Fragment>
+          {(values || []).map((val, index) => (
+            // eslint-disable-next-line react/jsx-key
+            <div>
+              <ObjectEntry
+                disabled={disabled}
+                error={errors[index]}
+                field={field}
+                index={index}
+                name={name}
+                onChange={changeArray}
+                value={val}
+              />
+              <FormButtons>
+                <Button icon="minus" name={String(index)} onClick={removeEntry}>
+                  {utils.remap(field.removeLabel ?? 'Remove', val)}
+                </Button>
+              </FormButtons>
+            </div>
+          ))}
+          <FormButtons className="mt-2">
+            <Button icon="plus" onClick={addEntry}>
+              {utils.remap(field.addLabel ?? 'Add', value)}
+            </Button>
+          </FormButtons>
+        </Fragment>
+      ) : (
+        <ObjectEntry
+          disabled={disabled}
+          error={error}
+          field={field}
+          name={name}
+          onChange={onChange}
+          value={value as Values}
+        />
+      )}
     </fieldset>
   );
 }

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import type { FieldErrorMap } from '../block';
+import type { FieldErrorMap, Values } from '../block';
 import { FieldGroup } from './components/FieldGroup';
 import styles from './index.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
@@ -21,6 +21,7 @@ bootstrap(
       formRequirementError = 'One of the requirements of this form is invalid.',
       previousLabel,
       requirements,
+      submitError = 'There was a problem submitting this form',
       submitLabel = 'Submit',
     },
     ready,
@@ -43,7 +44,7 @@ bootstrap(
     const lock = useRef<symbol>();
 
     const onChange = useCallback(
-      async (name: string, value: { [key: string]: unknown }, err: FieldErrorMap) => {
+      async (name: string, value: Values, err: FieldErrorMap) => {
         setValues(value);
         setErrors(err);
 
@@ -88,21 +89,21 @@ bootstrap(
         actions.onSubmit
           .dispatch(values)
           .catch((error) => {
-            if (error.message !== 'Schema Validation Failed') {
-              throw error;
-            }
-            setErrors(error.data);
+            // Log the error to the console for troubleshooting.
+            // eslint-disable-next-line no-console
+            console.error(error);
+            setFormError(utils.remap(submitError, values));
           })
           .finally(() => setSubmitting(false));
       }
-    }, [actions, submitting, values]);
+    }, [actions, submitError, submitting, utils, values]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious.dispatch(values);
     }, [actions, values]);
 
     const receiveData = useCallback(
-      (d: { [key: string]: unknown }) => {
+      (d: Values) => {
         setLoading(false);
         setValues({ ...defaultValues, ...d });
       },

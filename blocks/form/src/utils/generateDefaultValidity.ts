@@ -5,10 +5,17 @@ import { validate } from './validators';
 
 export function generateDefaultValidity(fields: Field[], data: any, utils: Utils): FieldErrorMap {
   return fields.reduce<FieldErrorMap>((acc, field) => {
+    const value = data[field.name];
     if (field.type === 'object') {
-      acc[field.name] = generateDefaultValidity(field.fields, data[field.name], utils);
+      if (field.repeated) {
+        acc[field.name] = value.map((d: unknown) =>
+          generateDefaultValidity(field.fields, d, utils),
+        );
+      } else {
+        acc[field.name] = generateDefaultValidity(field.fields, value, utils);
+      }
     } else {
-      acc[field.name] = validate(field, data[field.name], utils);
+      acc[field.name] = validate(field, value, utils);
     }
     return acc;
   }, {});
