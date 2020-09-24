@@ -51,6 +51,9 @@ export const Security: OpenAPIV3.NonArraySchemaObject = {
             type: 'string',
             description: 'The description of the role.',
           },
+          defaultPage: {
+            $ref: '#/components/schemas/App/properties/definition/properties/defaultPage',
+          },
           inherits: {
             type: 'array',
             minItems: 1,

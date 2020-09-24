@@ -8,6 +8,7 @@ import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
 import type { ShowDialogParams } from '../../types';
+import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
@@ -170,7 +171,8 @@ export function Page(): ReactElement {
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
   // page.
-  const defaultPage = definition.pages.find((p) => p.name === definition.defaultPage);
+  const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
+  const defaultPage = definition.pages.find((p) => p.name === defaultPageName);
   if (checkPagePermissions(defaultPage)) {
     const i = definition.pages.indexOf(defaultPage);
     let pageName = defaultPage.name;

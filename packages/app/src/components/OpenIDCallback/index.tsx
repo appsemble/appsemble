@@ -5,6 +5,7 @@ import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
 
+import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
@@ -20,7 +21,7 @@ export function OpenIDCallback(): ReactElement {
   const state = query.get('state');
 
   const session = useMemo(() => loadOAuth2State(), []);
-  const { authorizationCodeLogin, isLoggedIn } = useUser();
+  const { authorizationCodeLogin, isLoggedIn, role } = useUser();
   const { definition } = useAppDefinition();
 
   const [error, setError] = useState(false);
@@ -47,7 +48,8 @@ export function OpenIDCallback(): ReactElement {
   }, [isLoggedIn]);
 
   if (isLoggedIn) {
-    return <Redirect to={redirect || normalize(definition.defaultPage)} />;
+    const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
+    return <Redirect to={redirect || normalize(defaultPageName)} />;
   }
 
   if (!isOk) {
