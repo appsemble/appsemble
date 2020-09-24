@@ -379,16 +379,6 @@ describe('queryResources', () => {
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=foo asc`,
     );
-    const responseB = await request.get(
-      `/api/apps/${app.id}/resources/testResource?$orderby=foo desc`,
-    );
-    const responseC = await request.get(
-      `/api/apps/${app.id}/resources/testResource?$orderby=$created asc`,
-    );
-    const responseD = await request.get(
-      `/api/apps/${app.id}/resources/testResource?$orderby=$created desc`,
-    );
-
     expect(responseA).toMatchObject({
       status: 200,
       data: [
@@ -406,6 +396,10 @@ describe('queryResources', () => {
         },
       ],
     });
+
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=foo desc`,
+    );
     expect(responseB).toMatchObject({
       status: 200,
       data: [
@@ -423,24 +417,16 @@ describe('queryResources', () => {
         },
       ],
     });
+
+    const responseC = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=$created asc`,
+    );
     expect(responseC).toMatchObject({ status: 200, data: responseA.data });
+
+    const responseD = await request.get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=$created desc`,
+    );
     expect(responseD).toMatchObject({ status: 200, data: responseB.data });
-  });
-
-  it('should be able to select fields when fetching resources', async () => {
-    const app = await exampleApp(organizationId);
-
-    const resource = await Resource.create({
-      AppId: app.id,
-      type: 'testResource',
-      data: { foo: 'bar' },
-    });
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource?$select=id`);
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: [{ id: resource.id }],
-    });
   });
 
   it('should be able to filter fields when fetching resources', async () => {
@@ -479,7 +465,7 @@ describe('queryResources', () => {
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar', bar: 2 } });
 
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource?$filter=substringof('oo', foo) and id le ${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource?$filter=substringof(foo, 'oo') and id le ${resource.id}`,
     );
 
     expect(response).toMatchObject({
@@ -510,7 +496,7 @@ describe('queryResources', () => {
     });
 
     const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource?$filter=substringof('oo', foo) or foo eq 'bar'&$orderby=$updated desc&$select=id,$created,$updated`,
+      `/api/apps/${app.id}/resources/testResource?$filter=substringof(foo, 'oo') or foo eq 'bar'&$orderby=$updated desc`,
     );
 
     expect(response).toMatchObject({
@@ -520,11 +506,15 @@ describe('queryResources', () => {
           id: resourceB.id,
           $created: new Date(clock.now).toJSON(),
           $updated: new Date(clock.now).toJSON(),
+          foo: 'bar',
+          bar: 2,
         },
         {
           id: resource.id,
           $created: new Date(0).toJSON(),
           $updated: new Date(0).toJSON(),
+          foo: 'foo',
+          bar: 1,
         },
       ],
     });

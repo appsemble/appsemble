@@ -843,6 +843,11 @@
   resolved "https://registry.yarnpkg.com/@mdx-js/util/-/util-1.6.16.tgz#07a7342f6b61ea1ecbfb31e6e23bf7a8c79b9b57"
   integrity sha512-SFtLGIGZummuyMDPRL5KdmpgI8U19Ble28UjEWihPjGxF1Lgj8aDjLWY8KiaUy9eqb9CKiVCqEIrK9jbnANfkw==
 
+"@newdash/newdash@^5.12.0":
+  version "5.13.0"
+  resolved "https://registry.yarnpkg.com/@newdash/newdash/-/newdash-5.13.0.tgz#566a9c671f6f0c9025953df28856dbd0e94400b8"
+  integrity sha512-7sx5mwB5pJtFEbIcpzi47obQS4CW85xHTXH0MyDDG0P86F+6nSiQC1zVOF6ARLkFbuDpoJG48cVK1BaJ0FuiGw==
+
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.3.tgz#3a582bdb53804c6ba6d146579c46e52130cf4a3b"
@@ -870,6 +875,13 @@
   integrity sha512-Uv6h1sT+0DrblvIrolFtbvM1FgWm+/sy4B3pvLp67Zys+thcukzS5ekn7HsZFGpWP4Q3fYJCljbWQE/XivMRLw==
   dependencies:
     mkdirp "^1.0.4"
+
+"@odata/parser@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@odata/parser/-/parser-0.2.1.tgz#018f7a29b8d8b7ebd39fb8e72c2825a3e7917da4"
+  integrity sha512-SWxWSB6ZoZfJ257HXJibvFRcLjdNH3Umx9/CctdBCKNs9Qb2s6Ig31ZO/uUcjTZ/lAHcSHKgZr3Od0d5HQm9oA==
+  dependencies:
+    "@newdash/newdash" "^5.12.0"
 
 "@sentry/browser@^5.22.3":
   version "5.22.3"
@@ -2066,13 +2078,6 @@
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/@wesselkuipers/leaflet.markercluster/-/leaflet.markercluster-1.4.4.tgz#ac123028a0cd316711630e8a7ef38a6f58f7b7b6"
   integrity sha512-1xHxNK2mFZcSr3utc549oO9j1JO0EewV7boeISQviJJdcgJEoe7/9K+MQzx9bGX/iJBEMe9gtGGOyoZsBJYK3g==
-
-"@wesselkuipers/odata-sequelize@^1.0.15":
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/@wesselkuipers/odata-sequelize/-/odata-sequelize-1.0.15.tgz#6d5f329d9c46b8087664dedeb1f285f66968aa23"
-  integrity sha512-PtCQ0qtmz9fsOkYYIsyksjQEHlTfd5dZ4XS2ryiDUwvq96aPCULGP5cCB/Nu7RZ9SJE5eg1DDL3QRPa+XJd8GA==
-  dependencies:
-    odata-parser "^1.4.1"
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -11005,11 +11010,6 @@ object.values@^1.1.0, object.values@^1.1.1:
     es-abstract "^1.17.0-next.1"
     function-bind "^1.1.1"
     has "^1.0.3"
-
-odata-parser@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/odata-parser/-/odata-parser-1.4.1.tgz#a2224bc749e76a6205bd47f47acd50eb1e71ed99"
-  integrity sha1-oiJLx0nnamIFvUf0es1Q6x5x7Zk=
 
 on-finished@^2.3.0, on-finished@~2.3.0:
   version "2.3.0"
