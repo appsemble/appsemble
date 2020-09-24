@@ -114,6 +114,10 @@ Get a property from an object.
 
 The name of the property to get.
 
+### `root`
+
+Get the input data as it was initially passed to the remap function.
+
 ### `string.case`
 
 Convert an input to lower or upper case.

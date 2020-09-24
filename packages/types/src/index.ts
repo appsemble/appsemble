@@ -225,6 +225,11 @@ export interface Remappers {
   prop: string;
 
   /**
+   * Get the input data as it was initially passed to the remap function.
+   */
+  root: unknown;
+
+  /**
    * Convert an input to lower or upper case.
    */
   'string.case': 'lower' | 'upper';

@@ -19,6 +19,8 @@ export interface RemapperContext {
 }
 
 interface InternalContext extends RemapperContext {
+  root?: unknown;
+
   array?: {
     index: number;
     length: number;
@@ -29,7 +31,11 @@ type MapperImplementations = {
   [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: InternalContext) => unknown;
 };
 
-export function remap(remapper: Remapper, input: unknown, context: InternalContext): unknown {
+export function remap(
+  remapper: Remapper,
+  input: unknown,
+  context: RemapperContext | InternalContext,
+): unknown {
   if (
     typeof remapper === 'string' ||
     typeof remapper === 'number' ||
@@ -46,7 +52,7 @@ export function remap(remapper: Remapper, input: unknown, context: InternalConte
     }
     const [[name, args]] = entries;
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    return mapperImplementations[name](args, acc, context);
+    return mapperImplementations[name](args, acc, { ...context, root: input });
   }, input);
 }
 
@@ -97,6 +103,8 @@ const mapperImplementations: MapperImplementations = {
 
   'date.parse': (format, input: string) =>
     format ? parse(input, format, new Date()) : parseISO(input),
+
+  root: (args, input, context) => context.root,
 
   'string.case': (stringCase, input) => {
     if (stringCase === 'lower') {
