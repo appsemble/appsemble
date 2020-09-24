@@ -1,3 +1,5 @@
+import type { Utils } from '@appsemble/sdk';
+
 import type { BaseRequirement, Field } from '../../../block';
 import { validateFile } from './validateFile';
 import { validateNumber } from './validateNumber';
@@ -13,3 +15,13 @@ export const validators: { [name: string]: Validator } = {
 };
 
 type Validator = (field: Field, value: unknown) => BaseRequirement;
+
+export function validate(field: Field, value: any, utils: Utils): boolean | string {
+  if (!Object.hasOwnProperty.call(validators, field.type)) {
+    return;
+  }
+  const requirement = validators[field.type](field, value);
+  if (requirement) {
+    return utils.remap(requirement.errorMessage, value) || true;
+  }
+}

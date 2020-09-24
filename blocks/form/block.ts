@@ -436,6 +436,15 @@ export interface StringField extends AbstractField {
   requirements?: StringRequirement[];
 }
 
+export interface ObjectField extends AbstractField {
+  /**
+   * The type of the field.
+   */
+  type: 'object';
+
+  fields: Field[];
+}
+
 export type Field =
   | BooleanField
   | EnumField
@@ -445,7 +454,14 @@ export type Field =
   | NumberField
   | StringField
   | RadioField
-  | DateTimeField;
+  | DateTimeField
+  | ObjectField;
+
+export type FieldError = boolean | string | FieldErrorMap;
+
+export interface FieldErrorMap {
+  [field: string]: FieldError;
+}
 
 export interface InputProps<T, F extends Field> {
   /**
@@ -456,7 +472,7 @@ export interface InputProps<T, F extends Field> {
   /**
    * A field error object.
    */
-  error: string;
+  error: FieldError;
 
   /**
    * The field to render.
@@ -464,9 +480,14 @@ export interface InputProps<T, F extends Field> {
   field: F;
 
   /**
+   * The fully resolved field name.
+   */
+  name: string;
+
+  /**
    * A callback for when the value changes.
    */
-  onInput: (event: Event, value: T) => void;
+  onChange: (name: string | Event, value: T, validity?: FieldError) => void;
 
   /**
    * The current value.

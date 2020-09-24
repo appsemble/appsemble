@@ -14,24 +14,16 @@ export function StringInput({
   disabled,
   error,
   field,
-  onInput,
-  value = '',
+  name,
+  onChange,
+  value,
 }: StringInputProps): VNode {
   const {
     parameters: { optionalLabel },
     utils,
   } = useBlock();
-  const {
-    format,
-    icon,
-    label,
-    multiline,
-    name,
-    placeholder,
-    readOnly,
-    requirements = [],
-    tag,
-  } = field;
+  const { format, icon, label, multiline, placeholder, readOnly, requirements = [], tag } = field;
+
   const maxLength = Math.max(
     ...requirements
       ?.map((requirement) => 'maxLength' in requirement && requirement.maxLength)
@@ -51,12 +43,11 @@ export function StringInput({
     disabled,
     error,
     iconLeft: icon,
-    id: name,
     label: remappedLabel,
     maxLength: Number.isFinite(maxLength) ? maxLength : undefined,
     minLength: Number.isFinite(minLength) ? minLength : undefined,
     name,
-    onChange: onInput,
+    onChange,
     optionalLabel: utils.remap(optionalLabel, value),
     placeholder: utils.remap(placeholder, value) ?? remappedLabel,
     readOnly,

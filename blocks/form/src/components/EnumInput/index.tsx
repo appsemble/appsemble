@@ -12,13 +12,13 @@ type EnumInputProps = InputProps<string, EnumField>;
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
-export function EnumInput({ disabled, field, onInput, value = '' }: EnumInputProps): VNode {
+export function EnumInput({ disabled, field, name, onChange, value }: EnumInputProps): VNode {
   const {
     parameters: { optionalLabel },
     utils,
   } = useBlock();
 
-  const { enum: options, icon, label, name, placeholder, tag } = field;
+  const { enum: options, icon, label, placeholder, tag } = field;
   const required = isRequired(field);
 
   return (
@@ -28,7 +28,7 @@ export function EnumInput({ disabled, field, onInput, value = '' }: EnumInputPro
       icon={icon}
       label={utils.remap(label, value)}
       name={name}
-      onChange={onInput}
+      onChange={onChange}
       optionalLabel={utils.remap(optionalLabel, value)}
       required={required}
       tag={utils.remap(tag, value)}

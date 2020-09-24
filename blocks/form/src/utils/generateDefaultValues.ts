@@ -1,28 +1,29 @@
-import type { Parameters } from '@appsemble/sdk';
+import type { Field } from '../../block';
 
-export function generateDefaultValues(parameters: Parameters): { [field: string]: any } {
-  return parameters.fields.reduce((acc, field) => {
-    if ('defaultValue' in field) {
-      acc[field.name] = field.defaultValue;
-    } else if (field.type === 'string') {
-      acc[field.name] = '';
-    } else if (field.type === 'boolean') {
-      acc[field.name] = false;
-    } else if (
-      field.type === 'enum' ||
-      field.type === 'hidden' ||
-      field.type === 'integer' ||
-      field.type === 'number'
-    ) {
-      acc[field.name] = null;
-    } else if (field.type === 'geocoordinates') {
-      acc[field.name] = {};
-    } else if (field.type === 'file' && field.repeated) {
-      acc[field.name] = [];
-    } else {
-      acc[field.name] = null;
-    }
+function generateDefaultValue(field: Field): unknown {
+  if ('defaultValue' in field) {
+    return field.defaultValue;
+  }
+  switch (field.type) {
+    case 'boolean':
+      return false;
+    case 'string':
+      return '';
+    case 'file':
+      return field.repeated ? [] : null;
+    case 'geocoordinates':
+      return {};
+    case 'object':
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return generateDefaultValues(field.fields);
+    default:
+      return null;
+  }
+}
 
+export function generateDefaultValues(fields: Field[]): { [field: string]: unknown } {
+  return fields.reduce<{ [key: string]: unknown }>((acc, field) => {
+    acc[field.name] = generateDefaultValue(field);
     return acc;
-  }, {} as { [key: string]: any });
+  }, {});
 }

@@ -13,7 +13,12 @@ type GeoCoordinatesInputProps = InputProps<{ [key: string]: number }, GeoCoordin
 /**
  * An input element for an object type schema which implements GeoCoordinates.
  */
-export function GeoCoordinatesInput({ disabled, field, onInput }: GeoCoordinatesInputProps): VNode {
+export function GeoCoordinatesInput({
+  disabled,
+  field,
+  name,
+  onChange,
+}: GeoCoordinatesInputProps): VNode {
   const { theme, utils } = useBlock();
   const ref = useRef<HTMLDivElement>();
   const [map, setMap] = useState<Map>(null);
@@ -21,7 +26,6 @@ export function GeoCoordinatesInput({ disabled, field, onInput }: GeoCoordinates
 
   const {
     defaultLocation: [defaultLat = 51.476852, defaultLng = 0] = [],
-    name,
     locationError = 'Couldn’t find your location. Are location services enabled?',
   } = field;
 
@@ -63,7 +67,7 @@ export function GeoCoordinatesInput({ disabled, field, onInput }: GeoCoordinates
 
     const onMove = (): void => {
       const { lat, lng } = map.getCenter();
-      onInput(({ currentTarget: { name } } as unknown) as Event, {
+      onChange(({ currentTarget: { name } } as unknown) as Event, {
         latitude: lat,
         longitude: lng,
       });
@@ -71,8 +75,8 @@ export function GeoCoordinatesInput({ disabled, field, onInput }: GeoCoordinates
 
     map.on('move', onMove);
 
-    return () => map.off('move, onMove');
-  }, [name, map, onInput]);
+    return () => map.off('move', onMove);
+  }, [name, map, onChange]);
 
   useEffect(() => {
     const m = new Map(ref.current, {
