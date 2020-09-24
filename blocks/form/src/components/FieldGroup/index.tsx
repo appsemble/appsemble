@@ -1,7 +1,7 @@
 import { ComponentChildren, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Field, FieldError, FieldErrorMap } from '../../../block';
+import type { Field, FieldError, FieldErrorMap, Values } from '../../../block';
 import { FormInput } from '../FormInput';
 
 interface FieldGroupProps {
@@ -32,12 +32,12 @@ interface FieldGroupProps {
    * @param value - The updated value.
    * @param errors - The errors that apply to the field group
    */
-  onChange: (name: string, value: { [key: string]: unknown }, errors: FieldErrorMap) => void;
+  onChange: (name: string, value: Values, errors: FieldErrorMap) => void;
 
   /**
    * The current values.
    */
-  value: { [key: string]: unknown };
+  value: Values;
 }
 
 /**

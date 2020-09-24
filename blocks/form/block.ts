@@ -442,6 +442,28 @@ export interface ObjectField extends AbstractField {
    */
   type: 'object';
 
+  /**
+   * If true, this field represents an array of objects.
+   */
+  repeated?: boolean;
+
+  /**
+   * The label to show on the button for adding a new entry for repeated fields.
+   *
+   * @default 'Remove'
+   */
+  addLabel?: Remapper;
+
+  /**
+   * The label to show on the button for removing an entry for repeated fields.
+   *
+   * @default 'Add'
+   */
+  removeLabel?: Remapper;
+
+  /**
+   * The fields contained by this object.
+   */
   fields: Field[];
 }
 
@@ -457,7 +479,11 @@ export type Field =
   | DateTimeField
   | ObjectField;
 
-export type FieldError = boolean | string | FieldErrorMap;
+export interface Values {
+  [key: string]: unknown;
+}
+
+export type FieldError = boolean | string | FieldErrorMap | FieldError[];
 
 export interface FieldErrorMap {
   [field: string]: FieldError;
@@ -528,6 +554,13 @@ declare module '@appsemble/sdk' {
      * A list of objects describing each field that can be entered in the form.
      */
     fields: Field[];
+
+    /**
+     * The text to display when the form submission failed.
+     *
+     * @default 'There was a problem submitting this form'
+     */
+    submitError?: Remapper;
 
     /**
      * The text that is shown in the submit button.
