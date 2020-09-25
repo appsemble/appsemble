@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.1] - 2020-09-25
+
+### Changed
+
+- Block(`form`): Don’t mark pristine fields as errors.
+
+### Fixed
+
+- Block(`form`): Fix the error state if initial data was received.
+
 ## [0.14.0] - 2020-09-24
 
 ### Added
