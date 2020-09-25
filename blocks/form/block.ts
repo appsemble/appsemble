@@ -520,7 +520,7 @@ export interface InputProps<T, F extends Field> {
   /**
    * Whether ot not the input has been modified by the user.
    */
-  dirty: boolean;
+  dirty?: boolean;
 
   /**
    * The current value.
