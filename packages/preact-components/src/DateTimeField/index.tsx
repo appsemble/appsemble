@@ -49,6 +49,7 @@ export function DateTimeField({
   ...props
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
+  const positionElement = useRef<HTMLDivElement>();
   const [picker, setPicker] = useState<flatpickr.Instance>(null);
 
   const handleChange = useCallback(
@@ -62,8 +63,10 @@ export function DateTimeField({
 
   useEffect(() => {
     const p = flatpickr(wrapper.current, {
+      appendTo: wrapper.current,
       enableTime,
       mode,
+      positionElement: positionElement.current,
       time_24hr: true,
       wrap: true,
     });
@@ -90,6 +93,7 @@ export function DateTimeField({
       required={required}
       tag={tag}
     >
+      <div ref={positionElement} />
       <Input
         {...props}
         className="is-fullwidth"
