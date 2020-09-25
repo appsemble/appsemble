@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.2] - 2020-09-25
+
+### Fixed
+
+- Block(`form`): Fix styling of date time fields.
+
 ## [0.14.1] - 2020-09-25
 
 ### Changed
