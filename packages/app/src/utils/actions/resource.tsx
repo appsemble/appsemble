@@ -151,7 +151,7 @@ export function remove(
 ): ResourceDeleteAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = resource?.update?.method || 'POST';
+  const method = resource?.update?.method || 'DELETE';
   const url =
     resource?.update?.url ||
     resource.url ||
