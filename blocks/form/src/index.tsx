@@ -27,7 +27,10 @@ bootstrap(
     ready,
     utils,
   }) => {
-    const defaultValues = useMemo(() => generateDefaultValues(fields), [fields]);
+    const defaultValues = useMemo(() => ({ ...generateDefaultValues(fields), ...data }), [
+      data,
+      fields,
+    ]);
     const defaultErrors = useMemo(() => generateDefaultValidity(fields, defaultValues, utils), [
       defaultValues,
       fields,
@@ -38,7 +41,7 @@ bootstrap(
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
-    const [values, setValues] = useState({ ...defaultValues, ...data });
+    const [values, setValues] = useState(defaultValues);
     const [errors, setErrors] = useState(defaultErrors);
 
     const lock = useRef<symbol>();
@@ -104,10 +107,12 @@ bootstrap(
 
     const receiveData = useCallback(
       (d: Values) => {
+        const newValues = { ...defaultValues, ...d };
         setLoading(false);
-        setValues({ ...defaultValues, ...d });
+        setValues(newValues);
+        setErrors(generateDefaultValidity(fields, newValues, utils));
       },
-      [defaultValues],
+      [defaultValues, fields, utils],
     );
 
     useEffect(() => {
