@@ -518,6 +518,11 @@ export interface InputProps<T, F extends Field> {
   onChange: (name: string | Event, value: T, validity?: FieldError) => void;
 
   /**
+   * Whether ot not the input has been modified by the user.
+   */
+  dirty?: boolean;
+
+  /**
    * The current value.
    */
   value: T;

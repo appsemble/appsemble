@@ -11,6 +11,7 @@ type StringInputProps = InputProps<string, StringField>;
  * An input element for a text type schema.
  */
 export function StringInput({
+  dirty,
   disabled,
   error,
   field,
@@ -41,7 +42,7 @@ export function StringInput({
   const commonProps = {
     className: 'appsemble-string',
     disabled,
-    error,
+    error: dirty && error,
     iconLeft: icon,
     label: remappedLabel,
     maxLength: Number.isFinite(maxLength) ? maxLength : undefined,

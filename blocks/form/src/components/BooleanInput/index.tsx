@@ -12,6 +12,7 @@ type BooleanInputProps = InputProps<boolean, BooleanField>;
  * An input element for a boolean value.
  */
 export function BooleanInput({
+  dirty,
   disabled,
   error,
   field,
@@ -34,7 +35,7 @@ export function BooleanInput({
       checked={Boolean(value)}
       className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
-      error={error && utils.remap(invalidLabel, value)}
+      error={dirty && error && utils.remap(invalidLabel, value)}
       help={utils.remap(labelText, value) ?? checkboxLabel ?? null}
       label={checkboxLabel}
       name={name}

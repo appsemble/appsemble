@@ -11,6 +11,7 @@ type DateTimeInputProps = InputProps<string, DateTimeField>;
  * An input element for a date/time value.
  */
 export function DateTimeInput({
+  dirty,
   disabled,
   error,
   field,
@@ -31,7 +32,7 @@ export function DateTimeInput({
     <DateTimeComponent
       disabled={disabled}
       enableTime
-      error={error && utils.remap(invalidLabel, value)}
+      error={dirty && error && utils.remap(invalidLabel, value)}
       id={name}
       iso
       label={checkboxLabel}
