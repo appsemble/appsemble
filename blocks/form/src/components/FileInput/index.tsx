@@ -12,6 +12,7 @@ import styles from './index.css';
 type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
 
 export function FileInput({
+  dirty,
   disabled,
   error,
   field,
@@ -58,7 +59,7 @@ export function FileInput({
         >
           <FileEntry
             disabled={disabled}
-            error={error}
+            error={dirty && error}
             field={field}
             name={`${name}.${(value as string[]).length}`}
             onChange={handleInput}

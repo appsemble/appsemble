@@ -11,6 +11,7 @@ type NumberInputProps = InputProps<number, NumberField>;
  * An input element for a number type schema.
  */
 export function NumberInput({
+  dirty,
   disabled,
   error,
   field,
@@ -52,7 +53,7 @@ export function NumberInput({
     <InputField
       className="appsemble-number"
       disabled={disabled}
-      error={error && utils.remap(invalidLabel, value)}
+      error={dirty && error && utils.remap(invalidLabel, value)}
       icon={icon}
       label={label}
       max={Number.isFinite(max) ? max : undefined}

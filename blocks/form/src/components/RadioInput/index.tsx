@@ -12,6 +12,7 @@ type RadioInputProps = InputProps<any, RadioField>;
  * An input element for a radio button.
  */
 export function RadioInput({
+  dirty,
   disabled,
   error,
   field,
@@ -30,7 +31,7 @@ export function RadioInput({
     <RadioGroup
       className="appsemble-radio"
       disabled={disabled}
-      error={error && utils.remap(invalidLabel, value)}
+      error={dirty && error && utils.remap(invalidLabel, value)}
       label={utils.remap(label, value)}
       name={name}
       onChange={onChange}
