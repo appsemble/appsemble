@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import type { BooleanField, InputProps } from '../../../block';
-import { isRequired } from '../../utils/isRequired';
+import { isRequired } from '../../utils/requirements';
 
 type BooleanInputProps = InputProps<boolean, BooleanField>;
 

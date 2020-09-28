@@ -3,7 +3,7 @@ import { InputField } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, NumberField } from '../../../block';
-import { isRequired } from '../../utils/isRequired';
+import { getMax, getMin, getStep, isRequired } from '../../utils/requirements';
 
 type NumberInputProps = InputProps<number, NumberField>;
 
@@ -23,31 +23,7 @@ export function NumberInput({
     parameters: { invalidLabel = 'This value is invalid', optionalLabel },
     utils,
   } = useBlock();
-  const { label, type, placeholder, readOnly, icon, tag, requirements = [] } = field;
-  const required = isRequired(field);
-  const max = Math.max(
-    ...requirements
-      ?.map((requirement) => 'max' in requirement && requirement.max)
-      .filter(Number.isFinite),
-  );
-
-  const min = Math.min(
-    ...requirements
-      ?.map((requirement) => 'min' in requirement && requirement.min)
-      .filter(Number.isFinite),
-  );
-
-  let step = Math.min(
-    ...requirements
-      ?.map((requirement) => 'step' in requirement && requirement.step)
-      .filter(Number.isFinite),
-  );
-
-  if (Number.isFinite(step)) {
-    step = type === 'integer' ? Math.floor(step) : step;
-  } else {
-    step = undefined;
-  }
+  const { icon, label, placeholder, readOnly, tag } = field;
 
   return (
     <InputField
@@ -56,15 +32,15 @@ export function NumberInput({
       error={dirty && error && utils.remap(invalidLabel, value)}
       icon={icon}
       label={label}
-      max={Number.isFinite(max) ? max : undefined}
-      min={Number.isFinite(min) ? min : undefined}
+      max={getMax(field)}
+      min={getMin(field)}
       name={name}
       onChange={onChange}
       optionalLabel={utils.remap(optionalLabel, value)}
       placeholder={utils.remap(placeholder, value) || utils.remap(label, value) || field.name}
       readOnly={readOnly}
-      required={required}
-      step={step}
+      required={isRequired(field)}
+      step={getStep(field)}
       tag={utils.remap(tag, value)}
       type="number"
       value={value}
