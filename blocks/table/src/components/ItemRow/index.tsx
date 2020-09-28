@@ -16,10 +16,6 @@ interface ItemRowProps {
   index: number;
 }
 
-function renderValue(value: unknown): String {
-  return typeof value === 'string' ? value : JSON.stringify(value);
-}
-
 /**
  * Render an item as a table row.
  */
@@ -41,24 +37,20 @@ export function ItemRow({ index, item }: ItemRowProps): VNode {
               <ItemCell
                 field={repeatedCell}
                 index={index}
-                item={item}
+                item={repeatedItem}
+                record={item}
                 repeatedIndex={repeatedIndex}
-              >
-                {renderValue(
-                  utils.remap(repeatedCell.value, repeatedItem, { repeatedIndex, index }),
-                )}
-              </ItemCell>
+              />
             ))
           ) : repeatedIndex ? null : (
             <ItemCell
               field={field}
               index={index}
               item={item}
+              record={item}
               repeatedIndex={0}
               rowSpan={repeatedItems.length}
-            >
-              {renderValue(utils.remap(field.value, item, { index, repeatedIndex: 0 }))}
-            </ItemCell>
+            />
           ),
         )}
       </tr>
@@ -69,9 +61,7 @@ export function ItemRow({ index, item }: ItemRowProps): VNode {
     <tr>
       {fields.map((field) => (
         // eslint-disable-next-line react/jsx-key
-        <ItemCell field={field} index={index} item={item} repeatedIndex={0}>
-          {renderValue(utils.remap(field.value, item, { index, repeatedIndex: 0 }))}
-        </ItemCell>
+        <ItemCell field={field} index={index} item={item} record={item} repeatedIndex={0} />
       ))}
     </tr>
   );
