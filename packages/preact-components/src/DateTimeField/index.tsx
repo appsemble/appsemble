@@ -32,6 +32,7 @@ type DateTimeFieldProps = SharedFormComponentProps &
 
 export function DateTimeField({
   className,
+  disabled,
   enableTime,
   error,
   help,
@@ -49,6 +50,7 @@ export function DateTimeField({
   ...props
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
+  const positionElement = useRef<HTMLDivElement>();
   const [picker, setPicker] = useState<flatpickr.Instance>(null);
 
   const handleChange = useCallback(
@@ -61,17 +63,26 @@ export function DateTimeField({
   );
 
   useEffect(() => {
+    if (disabled) {
+      return;
+    }
+
     const p = flatpickr(wrapper.current, {
+      appendTo: wrapper.current,
       enableTime,
       mode,
+      positionElement: positionElement.current,
       time_24hr: true,
       wrap: true,
     });
 
     setPicker(p);
 
-    return p.destroy;
-  }, [enableTime, mode]);
+    return () => {
+      p.destroy();
+      setPicker(null);
+    };
+  }, [disabled, enableTime, mode]);
 
   useEffect(() => {
     picker?.setDate(value);
@@ -90,10 +101,12 @@ export function DateTimeField({
       required={required}
       tag={tag}
     >
+      <div ref={positionElement} />
       <Input
         {...props}
         className="is-fullwidth"
         data-input
+        disabled={disabled}
         id={id}
         name={name}
         onChange={handleChange}
