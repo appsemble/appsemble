@@ -114,7 +114,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
         const { data } = await axios.post<TokenResponse>('/api/refresh', {
           refresh_token: tokenResponse.refresh_token,
         });
-        setTokenResponse(data);
+        setToken(data);
         refreshUserInfo();
       } catch {
         logout();
@@ -128,7 +128,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchOrganizations, logout, refreshUserInfo, tokenResponse]);
+  }, [fetchOrganizations, logout, refreshUserInfo, setToken, tokenResponse]);
 
   if (!initialized) {
     return <Loader />;
