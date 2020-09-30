@@ -1,4 +1,5 @@
-import { RefObject, useCallback } from 'react';
+import type { RefObject } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import { useEventListener } from '.';
 

@@ -1,20 +1,27 @@
 import { useBlock } from '@appsemble/preact';
-import { ComponentProps, h, VNode } from 'preact';
+import { Dropdown } from '@appsemble/preact-components';
+import { ComponentProps, Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Field } from '../../../block';
+import type { Dropdown as DropdownType, Field } from '../../../block';
+import { DropdownOption } from '../DropdownOption';
 import styles from './index.css';
 
 interface ItemCellProps extends ComponentProps<'td'> {
   /**
    * The item to dislay.
    */
-  item: any;
+  item: unknown;
+
+  /**
+   * The data of the record that item is a part of.
+   */
+  record: unknown;
 
   /**
    * The field to render.
    */
-  field: Field;
+  field: Field | DropdownType;
 
   /**
    * The index of the row that was clicked.
@@ -27,21 +34,35 @@ interface ItemCellProps extends ComponentProps<'td'> {
   repeatedIndex: number;
 }
 
+function renderValue(value: unknown): String {
+  return typeof value === 'string' ? value : JSON.stringify(value);
+}
+
 /**
  * Render an item value as a table cell.
  */
-export function ItemCell({ field, index, item, repeatedIndex, ...props }: ItemCellProps): VNode {
-  const { actions } = useBlock();
+export function ItemCell({
+  field,
+  index,
+  item,
+  record,
+  repeatedIndex,
+  ...props
+}: ItemCellProps): VNode {
+  const {
+    actions,
+    utils: { remap },
+  } = useBlock();
 
-  const onClickAction = actions[field.onClick] || actions.onClick;
+  const onClickAction = !('dropdown' in field) && (actions[field.onClick] || actions.onClick);
 
   const onCellClick = useCallback(() => {
     if (!onClickAction || onClickAction.type === 'noop') {
       return;
     }
 
-    onClickAction.dispatch(item, { index, repeatedIndex });
-  }, [onClickAction, item, index, repeatedIndex]);
+    onClickAction.dispatch(record, { index, repeatedIndex });
+  }, [onClickAction, record, index, repeatedIndex]);
 
   return (
     <td
@@ -49,6 +70,33 @@ export function ItemCell({ field, index, item, repeatedIndex, ...props }: ItemCe
       className={onClickAction?.type !== 'noop' && styles.clickable}
       onClick={onCellClick}
       role="gridcell"
-    />
+    >
+      {'dropdown' in field ? (
+        <Dropdown
+          className="is-right"
+          icon={field.dropdown.icon}
+          label={remap(field.dropdown.label, item, { index, repeatedIndex })}
+        >
+          {field.dropdown.options.map((option, i) => {
+            const label = remap(option.label, item, { index, repeatedIndex });
+
+            return (
+              <Fragment key={label || i}>
+                {i ? <hr className="dropdown-divider" /> : null}
+                <DropdownOption
+                  index={index}
+                  item={item}
+                  option={option}
+                  record={record}
+                  repeatedIndex={repeatedIndex}
+                />
+              </Fragment>
+            );
+          })}
+        </Dropdown>
+      ) : (
+        renderValue(remap(field.value, item, { index, repeatedIndex }))
+      )}
+    </td>
   );
 }
