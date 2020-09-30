@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import type { EnumField, InputProps } from '../../../block';
-import { isRequired } from '../../utils/isRequired';
+import { isRequired } from '../../utils/requirements';
 import styles from './index.css';
 
 type EnumInputProps = InputProps<string, EnumField>;

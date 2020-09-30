@@ -6,6 +6,7 @@ import { useCallback } from 'preact/hooks';
 import type { FieldError, FieldErrorMap, InputProps, ObjectField, Values } from '../../../block';
 import { generateDefaultValidity } from '../../utils/generateDefaultValidity';
 import { generateDefaultValues } from '../../utils/generateDefaultValues';
+import { getMaxLength, getMinLength } from '../../utils/requirements';
 import { ObjectEntry } from '../ObjectEntry';
 
 type ObjectInputProps = InputProps<Values | Values[], ObjectField>;
@@ -24,6 +25,8 @@ export function ObjectInput({
   const { utils } = useBlock();
   const values = value as Values[];
   const errors = error as FieldError[];
+  const minLength = getMinLength(field);
+  const maxLength = getMaxLength(field);
 
   const changeArray = useCallback(
     (localName: string, val: Values | Values, err: FieldErrorMap) => {
@@ -76,18 +79,22 @@ export function ObjectInput({
                 onChange={changeArray}
                 value={val}
               />
-              <FormButtons>
-                <Button icon="minus" name={String(index)} onClick={removeEntry}>
-                  {utils.remap(field.removeLabel ?? 'Remove', val)}
-                </Button>
-              </FormButtons>
+              {(!minLength || values.length > minLength) && (
+                <FormButtons>
+                  <Button icon="minus" name={String(index)} onClick={removeEntry}>
+                    {utils.remap(field.removeLabel ?? 'Remove', val)}
+                  </Button>
+                </FormButtons>
+              )}
             </div>
           ))}
-          <FormButtons className="mt-2">
-            <Button icon="plus" onClick={addEntry}>
-              {utils.remap(field.addLabel ?? 'Add', value)}
-            </Button>
-          </FormButtons>
+          {(!maxLength || values.length < maxLength) && (
+            <FormButtons className="mt-2">
+              <Button icon="plus" onClick={addEntry}>
+                {utils.remap(field.addLabel ?? 'Add', value)}
+              </Button>
+            </FormButtons>
+          )}
         </Fragment>
       ) : (
         <ObjectEntry

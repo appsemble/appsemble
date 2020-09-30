@@ -129,6 +129,11 @@ export type FileRequirement = AcceptRequirement | RequiredRequirement | LengthRe
 export type DateTimeRequirement = RequiredRequirement;
 
 /**
+ * All requirements applicable to object fields.
+ */
+export type ObjectRequirement = LengthRequirement;
+
+/**
  * An option that is displayed in a dropdown menu or radio button field.
  */
 interface Choice {
@@ -467,6 +472,11 @@ export interface ObjectField extends AbstractField {
    * The fields contained by this object.
    */
   fields: Field[];
+
+  /**
+   * Requirements that are applicable to an object field.
+   */
+  requirements?: ObjectRequirement[];
 }
 
 export type Field =

@@ -1,4 +1,5 @@
 import type { Field, Values } from '../../block';
+import { getMinLength } from './requirements';
 
 function generateDefaultValue(field: Field): unknown {
   if ('defaultValue' in field) {
@@ -13,9 +14,19 @@ function generateDefaultValue(field: Field): unknown {
       return field.repeated ? [] : null;
     case 'geocoordinates':
       return {};
-    case 'object':
+    case 'object': {
+      if (!field.repeated) {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        return generateDefaultValues(field.fields);
+      }
+      const length = getMinLength(field);
+      if (!length) {
+        return [];
+      }
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      return field.repeated ? [] : generateDefaultValues(field.fields);
+      const values = generateDefaultValues(field.fields);
+      return Array.from({ length }).map(() => values);
+    }
     default:
       return null;
   }
