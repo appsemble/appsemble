@@ -144,7 +144,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId, {
     ...(user && {
       include: [
-        { model: Organization, attributes: [] },
+        { model: Organization, attributes: ['id'] },
         {
           model: User,
           attributes: ['id'],
@@ -220,7 +220,7 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId, {
     ...(user && {
       include: [
-        { model: Organization, attributes: [] },
+        { model: Organization, attributes: ['id'] },
         {
           model: User,
           attributes: ['id'],
@@ -395,7 +395,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId, {
     ...(user && {
       include: [
-        { model: Organization, attributes: [] },
+        { model: Organization, attributes: ['id'] },
         {
           model: User,
           attributes: ['id'],
@@ -478,7 +478,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId, {
     ...(user && {
       include: [
-        { model: Organization, attributes: [] },
+        { model: Organization, attributes: ['id'] },
         {
           model: User,
           attributes: ['id'],
@@ -560,7 +560,7 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   const app = await App.findByPk(appId, {
     ...(user && {
       include: [
-        { model: Organization, attributes: [] },
+        { model: Organization, attributes: ['id'] },
         {
           model: User,
           attributes: ['id'],
