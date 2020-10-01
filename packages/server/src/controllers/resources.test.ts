@@ -496,7 +496,7 @@ describe('queryResources', () => {
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
-      params: { $filter: "contains(foo, 'oo') or foo eq 'bar'", $prderby: '$updated desc' },
+      params: { $filter: "contains(foo, 'oo') or foo eq 'bar'", $orderby: '$updated desc' },
     });
 
     expect(response).toMatchObject({
