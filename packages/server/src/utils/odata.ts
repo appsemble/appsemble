@@ -1,6 +1,8 @@
 import { defaultParser, Token, TokenType } from '@odata/parser';
-import { col, fn, json, literal, Op, Order, where, WhereOptions, WhereValue } from 'sequelize';
-import type { Col, Fn, Json, Literal, Where } from 'sequelize/types/lib/utils';
+import { col, fn, json, Model, Op, Order, where, WhereOptions, WhereValue } from 'sequelize';
+import type { Col, Fn, Json, Where } from 'sequelize/types/lib/utils';
+
+type PartialModel = Pick<typeof Model, 'tableName'>;
 
 enum Edm {
   Boolean = 'Edm.Boolean',
@@ -27,13 +29,13 @@ type Rename = (name: string) => string;
 
 const defaultRename: Rename = (name) => name;
 
-const operators = new Map<TokenType, symbol | string>([
-  [TokenType.EqualsExpression, Op.eq],
-  [TokenType.LesserOrEqualsExpression, Op.lte],
-  [TokenType.LesserThanExpression, Op.lt],
-  [TokenType.GreaterOrEqualsExpression, Op.gte],
-  [TokenType.GreaterThanExpression, Op.gt],
-  [TokenType.NotEqualsExpression, Op.ne],
+const operators = new Map([
+  [TokenType.EqualsExpression, '='],
+  [TokenType.LesserOrEqualsExpression, '<='],
+  [TokenType.LesserThanExpression, '<'],
+  [TokenType.GreaterOrEqualsExpression, '>='],
+  [TokenType.GreaterThanExpression, '>'],
+  [TokenType.NotEqualsExpression, '!='],
   [TokenType.AddExpression, '+'],
   [TokenType.SubExpression, '-'],
   [TokenType.DivExpression, '/'],
@@ -87,36 +89,38 @@ const functions: { [key: string]: MethodConverter } = {
   trim: [[Edm.String], fnFunction('trim')],
 };
 
-function processLiteral(token: Token): Date | Literal {
+function processLiteral(token: Token): boolean | number | string | Date {
   switch (token.value) {
     case Edm.Boolean:
+      return token.raw === 'true';
+    case Edm.String:
+      return JSON.parse(`"${token.raw.slice(1, -1).replace(/"/g, '\\"')}"`);
     case Edm.Decimal:
     case Edm.Double:
     case Edm.Int16:
     case Edm.Int32:
     case Edm.Int64:
     case Edm.SByte:
-    case Edm.String:
-      return literal(token.raw);
+      return Number(token.raw);
     case Edm.Date:
     case Edm.DateTimeOffset:
       // The Date constructor will convert it to UTC.
       return new Date(token.raw);
     case Edm.Guid:
-      return literal(`'${token.raw}'`);
+      return token.raw;
     default:
       throw new TypeError(`${token.position}: Unhandled OData literal type: ${token.value}`);
   }
 }
 
-function processName(token: Token, rename: Rename): Col | Json {
+function processName(token: Token, model: PartialModel, rename: Rename): Col | Json {
   // OData uses `/` as a path separator, but Sequelize uses `.`.
   // https://sequelize.org/master/manual/other-data-types.html#jsonb--postgresql-only-
   const name = rename(token.raw).replace(/\//g, '.');
-  return name.includes('.') ? json(name) : col(name);
+  return name.includes('.') ? json(name) : col(`${model.tableName}.${name}`);
 }
 
-function processMethod(token: Token, rename: Rename): Where | Fn {
+function processMethod(token: Token, model: PartialModel, rename: Rename): Where | Fn {
   const { method, parameters } = token.value as { method: string; parameters: Token[] };
 
   if (!Object.hasOwnProperty.call(functions, method)) {
@@ -131,7 +135,7 @@ function processMethod(token: Token, rename: Rename): Where | Fn {
   }
   const parsedParameters = parameters.map((parameter, index) => {
     if (parameter.type === TokenType.FirstMemberExpression) {
-      return processName(parameter, rename);
+      return processName(parameter, model, rename);
     }
     if (parameter.type === TokenType.Literal) {
       if (parameter.value !== parameterTypes[index]) {
@@ -142,7 +146,7 @@ function processMethod(token: Token, rename: Rename): Where | Fn {
       return processLiteral(parameter);
     }
     if (parameter.type === 'MethodCallExpression') {
-      return processMethod(parameter, rename);
+      return processMethod(parameter, model, rename);
     }
     throw new TypeError(`${parameter.position}: Unhandled parameter type: ${parameter.type}`);
   });
@@ -150,23 +154,27 @@ function processMethod(token: Token, rename: Rename): Where | Fn {
   return implementation(...parsedParameters);
 }
 
-function processToken(token: Token, rename: Rename): WhereOptions | WhereValue {
+function processToken(
+  token: Token,
+  model: PartialModel,
+  rename: Rename,
+): WhereOptions | WhereValue {
   if (token.type === 'FirstMemberExpression') {
-    return processName(token, rename) as WhereValue;
+    return processName(token, model, rename) as WhereValue;
   }
   if (token.type === TokenType.MethodCallExpression) {
-    return processMethod(token, rename);
+    return processMethod(token, model, rename);
   }
   if (token.type === TokenType.ParenExpression) {
-    return processToken(token.value, rename);
+    return processToken(token.value, model, rename);
   }
   if (operators.has(token.type)) {
-    const left = processToken(token.value.left, rename);
-    if (left instanceof Date) {
-      throw new TypeError(`${token.position}: Date values are not supported left of the operand`);
-    }
-    // @ts-expect-error This is a bug in the Sequelize types
-    return where(left, operators.get(token.type), processToken(token.value.right, rename));
+    return where(
+      // @ts-expect-error This is a bug in the Sequelize types
+      processToken(token.value.left, model, rename),
+      operators.get(token.type),
+      processToken(token.value.right, model, rename),
+    );
   }
 
   if (token.type === TokenType.Literal) {
@@ -183,16 +191,17 @@ function processToken(token: Token, rename: Rename): WhereOptions | WhereValue {
  * - `not`
  *
  * @param token - The token to process.
+ * @param model - The model to do a query for.
  * @param rename - A rename function.
  * @returns The Sequelize query that matches the given token.
  */
-function processLogicalExpression(token: Token, rename: Rename): WhereOptions {
+function processLogicalExpression(token: Token, model: PartialModel, rename: Rename): WhereOptions {
   if (token.type === TokenType.BoolParenExpression || token.type === TokenType.CommonExpression) {
-    return processLogicalExpression(token.value, rename);
+    return processLogicalExpression(token.value, model, rename);
   }
 
   if (token.type === TokenType.NotExpression) {
-    return { [Op.not]: processLogicalExpression(token.value, rename) };
+    return { [Op.not]: processLogicalExpression(token.value, model, rename) };
   }
 
   const op =
@@ -202,11 +211,11 @@ function processLogicalExpression(token: Token, rename: Rename): WhereOptions {
       ? Op.or
       : undefined;
   if (!op) {
-    return processToken(token, rename) as WhereOptions;
+    return processToken(token, model, rename) as WhereOptions;
   }
   const flatten = (expr: any): WhereOptions => (op in expr ? expr[op] : expr);
-  const left = flatten(processLogicalExpression(token.value.left, rename));
-  const right = flatten(processLogicalExpression(token.value.right, rename));
+  const left = flatten(processLogicalExpression(token.value.left, model, rename));
+  const right = flatten(processLogicalExpression(token.value.right, model, rename));
   return { [op]: [].concat(left).concat(right) };
 }
 
@@ -214,11 +223,13 @@ function processLogicalExpression(token: Token, rename: Rename): WhereOptions {
  * https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html
  *
  * @param query - The OData query to convert to a Sequelize query.
+ * @param model - The model to do a query for.
  * @param rename - A function for renaming incoming property names.
  * @returns The OData filter converted to a Sequelize query.
  */
 export function odataFilterToSequelize(
   query: string | Token,
+  model: PartialModel,
   rename: Rename = defaultRename,
 ): WhereOptions {
   if (!query) {
@@ -226,7 +237,7 @@ export function odataFilterToSequelize(
   }
   // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
   const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
-  return processLogicalExpression(ast, rename);
+  return processLogicalExpression(ast, model, rename);
 }
 
 export function odataOrderbyToSequelize(value: string, rename: Rename = defaultRename): Order {

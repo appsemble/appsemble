@@ -176,6 +176,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
         $filter
           .replace(/(^|\B)\$created(\b|$)/g, '__created__')
           .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+        Resource,
         renameOData,
       );
   } catch (error: unknown) {

@@ -464,9 +464,9 @@ describe('queryResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar', bar: 2 } });
 
-    const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource?$filter=substringof(foo, 'oo') and id le ${resource.id}`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: `contains(foo, 'oo') and id le ${resource.id}` },
+    });
 
     expect(response).toMatchObject({
       status: 200,
@@ -495,9 +495,9 @@ describe('queryResources', () => {
       data: { foo: 'bar', bar: 2 },
     });
 
-    const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource?$filter=substringof(foo, 'oo') or foo eq 'bar'&$orderby=$updated desc`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: "contains(foo, 'oo') or foo eq 'bar'", $prderby: '$updated desc' },
+    });
 
     expect(response).toMatchObject({
       status: 200,
