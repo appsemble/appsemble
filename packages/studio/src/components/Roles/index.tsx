@@ -3,6 +3,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import { HelmetIntl } from '../HelmetIntl';
@@ -87,6 +88,16 @@ export function Roles(): ReactElement {
       <Title>
         <FormattedMessage {...messages.members} />
       </Title>
+      {app.definition.security.default.policy === 'organization' && (
+        <FormattedMessage
+          {...messages.inviteOrganization}
+          values={{
+            link: (text: string) => (
+              <Link to={`/settings/organizations/${app.OrganizationId}`}>{text}</Link>
+            ),
+          }}
+        />
+      )}
       <Table>
         <thead>
           <tr>

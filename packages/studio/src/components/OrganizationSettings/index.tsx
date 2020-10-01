@@ -31,7 +31,6 @@ import { messages } from './messages';
 export function OrganizationSettings(): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();
   const { organizations, userInfo } = useUser();
-  const organization = organizations.find((org) => org.id === organizationId);
   const {
     data: members,
     error: membersError,
@@ -66,6 +65,7 @@ export function OrganizationSettings(): ReactElement {
     [invites, setInvites],
   );
 
+  const organization = organizations.find((org) => org.id === organizationId);
   const me = members?.find((member) => member.id === userInfo.sub);
   const ownerCount = me && members.filter((member) => member.role === 'Owner').length;
   const mayEdit = me && checkRole(me.role, Permission.ManageMembers);
