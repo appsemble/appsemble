@@ -12,7 +12,7 @@ import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 
 import type { ExtendedOAuth2State } from '../../types';
 import { logins } from '../../utils/settings';
@@ -37,6 +37,7 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
   const history = useHistory();
   const redirect = useLocationString();
   const qs = useQuery();
+  const { lang } = useParams<{ lang: string }>();
   const { login, userInfo } = useUser();
 
   const code = qs.get('code');
@@ -194,7 +195,7 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
                   ) : (
                     <Link
                       to={{
-                        pathname: '/login',
+                        pathname: `${lang}/login`,
                         search: `?${new URLSearchParams({ redirect })}`,
                       }}
                     >

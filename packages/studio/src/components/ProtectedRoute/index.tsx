@@ -20,12 +20,15 @@ export function ProtectedRoute({
   const redirect = useLocationString();
   const { userInfo } = useUser();
   const qs = useQuery();
-  const { url } = useRouteMatch();
+  const {
+    params: { lang },
+    url,
+  } = useRouteMatch<{ lang: string }>();
 
   if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', redirect);
-    return <Redirect to={{ pathname: '/login', search: `?${search}` }} />;
+    return <Redirect to={{ pathname: `${lang}/login`, search: `?${search}` }} />;
   }
 
   if (permission) {

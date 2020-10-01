@@ -10,7 +10,7 @@ import React, {
   useState,
 } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../utils/oauth2Utils';
 import { HelmetIntl } from '../HelmetIntl';
@@ -22,6 +22,7 @@ import { messages } from './messages';
  */
 export function OpenIDLogin(): ReactElement {
   const qs = useQuery();
+  const { lang } = useParams<{ lang: string }>();
 
   const [appLoading, setAppLoading] = useState(true);
   const [app, setApp] = useState<App>();
@@ -93,7 +94,7 @@ export function OpenIDLogin(): ReactElement {
             {...messages.prompt}
             values={{
               app: (
-                <Link className="has-text-weight-bold is-italic" to={`/appa/${app.id}`}>
+                <Link className="has-text-weight-bold is-italic" to={`${lang}/app/${app.id}`}>
                   {app.definition.name}
                 </Link>
               ),

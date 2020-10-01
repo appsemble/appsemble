@@ -1,7 +1,7 @@
 import { Button, Dropdown, Icon, useLocationString, useQuery } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { useUser } from '../UserProvider';
 import styles from './index.css';
@@ -12,11 +12,12 @@ export function ProfileDropdown(): ReactElement {
   const { logout, userInfo } = useUser();
   const location = useLocation();
   const redirect = useLocationString();
+  const { path } = useRouteMatch();
   const qs = useQuery();
   let search: URLSearchParams;
 
   if (!userInfo) {
-    if (location.pathname === '/login') {
+    if (location.pathname.endsWith('/login')) {
       return null;
     }
 
@@ -44,20 +45,20 @@ export function ProfileDropdown(): ReactElement {
       }
     >
       {userInfo && (
-        <Link className="dropdown-item" to="/settings">
+        <Link className="dropdown-item" to={`${path}/settings`}>
           <Icon icon="wrench" />
           <span>
             <FormattedMessage {...messages.settings} />
           </span>
         </Link>
       )}
-      <Link className="dropdown-item" to="/blocks">
+      <Link className="dropdown-item" to={`${path}/blocks`}>
         <Icon icon="cubes" />
         <span>
           <FormattedMessage {...messages.blocks} />
         </span>
       </Link>
-      <Link className="dropdown-item" to="/docs">
+      <Link className="dropdown-item" to={`${path}/docs`}>
         <Icon icon="book" />
         <span>
           <FormattedMessage {...messages.documentation} />
@@ -75,7 +76,7 @@ export function ProfileDropdown(): ReactElement {
       ) : (
         <Link
           className={`button dropdown-item ${styles.logoutButton}`}
-          to={{ pathname: '/login', search: `?${search}` }}
+          to={{ pathname: `${path}/login`, search: `?${search}` }}
         >
           <Icon icon="sign-in-alt" />
           <span>

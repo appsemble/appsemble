@@ -13,7 +13,7 @@ import {
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { enableRegistration, logins } from '../../utils/settings';
 import { HelmetIntl } from '../HelmetIntl';
@@ -31,6 +31,7 @@ export function Login(): ReactElement {
   const { login } = useUser();
   const qs = useQuery();
   const busy = useToggle();
+  const { lang } = useParams<{ lang: string }>();
 
   const onPasswordLogin = useCallback(
     async ({ email, password }: LoginFormValues) => {
@@ -82,12 +83,12 @@ export function Login(): ReactElement {
             {enableRegistration && (
               <Link
                 className="is-block"
-                to={{ pathname: '/register', search: location.search, hash: location.hash }}
+                to={{ pathname: `${lang}/register`, search: location.search, hash: location.hash }}
               >
                 <FormattedMessage {...messages.registerLink} />
               </Link>
             )}
-            <Link className="is-block" to="/reset-password">
+            <Link className="is-block" to={`${lang}/reset-password`}>
               <FormattedMessage {...messages.forgotPasswordLink} />
             </Link>
           </div>

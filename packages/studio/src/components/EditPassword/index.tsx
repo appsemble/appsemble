@@ -12,7 +12,7 @@ import {
 import axios from 'axios';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 
 import { HelmetIntl } from '../HelmetIntl';
 import { messages } from './messages';
@@ -21,6 +21,7 @@ export function EditPassword(): ReactElement {
   const qs = useQuery();
   const [success, setSuccess] = useState(false);
   const token = qs.get('token');
+  const { lang } = useParams<{ lang: string }>();
   const submit = useCallback(
     async ({ password }) => {
       await axios.post('/api/email/reset', { token, password });
@@ -30,7 +31,7 @@ export function EditPassword(): ReactElement {
   );
 
   if (!token) {
-    return <Redirect to="/apps" />;
+    return <Redirect to={`${lang}/apps`} />;
   }
 
   return (
