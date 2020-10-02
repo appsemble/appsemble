@@ -5,6 +5,7 @@ import {
   FormButtons,
   Loader,
   Message,
+  SelectField,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
@@ -18,6 +19,7 @@ import {
 import axios, { AxiosError } from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import type { UserEmail } from '../../types';
 import { HelmetIntl } from '../HelmetIntl';
@@ -25,8 +27,12 @@ import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
 
+const languages = ['en-us', 'nl'];
+
 export function UserSettings(): ReactElement {
   const { formatMessage } = useIntl();
+  const history = useHistory();
+  const match = useRouteMatch<{ lang: string }>();
   const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
   const { data: emails, error, loading, setData: setEmails } = useData<UserEmail[]>(
@@ -34,12 +40,14 @@ export function UserSettings(): ReactElement {
   );
 
   const onSaveProfile = useCallback(
-    async (values) => {
+    async (values: { name: string; locale: 'en-us' | 'nl' }) => {
+      localStorage.setItem('preferredLanguage', values.locale);
       await axios.put('/api/user', values);
       refreshUserInfo();
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
+      history.replace(match.url.replace(match.params.lang, values.locale));
     },
-    [formatMessage, push, refreshUserInfo],
+    [formatMessage, history, match, push, refreshUserInfo],
   );
 
   const onAddNewEmail = useCallback(
@@ -115,7 +123,16 @@ export function UserSettings(): ReactElement {
         <Title>
           <FormattedMessage {...messages.profile} />
         </Title>
-        <SimpleForm defaultValues={{ name: userInfo.name || '' }} onSubmit={onSaveProfile}>
+        <SimpleForm
+          defaultValues={{
+            name: userInfo.name || '',
+            locale:
+              languages.find((lang) => lang === userInfo.locale?.toLowerCase()) ||
+              localStorage.getItem('preferredLanguage') ||
+              'en-us',
+          }}
+          onSubmit={onSaveProfile}
+        >
           <SimpleFormError>{() => <FormattedMessage {...messages.submitError} />}</SimpleFormError>
           <SimpleFormField
             help={<FormattedMessage {...messages.displayNameHelp} />}
@@ -124,6 +141,16 @@ export function UserSettings(): ReactElement {
             name="name"
             placeholder={formatMessage(messages.displayName)}
           />
+          <SimpleFormField
+            component={SelectField}
+            help={<FormattedMessage {...messages.preferredLanguageHelp} />}
+            icon="globe"
+            label={<FormattedMessage {...messages.preferredLanguage} />}
+            name="locale"
+          >
+            <option value="nl">Dutch (Nederlands)</option>
+            <option value="en-us">English</option>
+          </SimpleFormField>
           <FormButtons>
             <SimpleSubmit>
               <FormattedMessage {...messages.saveProfile} />
