@@ -147,6 +147,7 @@ export function UserSettings(): ReactElement {
             icon="globe"
             label={<FormattedMessage {...messages.preferredLanguage} />}
             name="locale"
+            required
           >
             <option value="nl">Dutch (Nederlands)</option>
             <option value="en-us">English</option>
