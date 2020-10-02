@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/filter",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "private": true,
   "description": "A block that allows users to filter data.",
   "homepage": "https://appsemble.app",
@@ -16,10 +16,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.14.2",
-    "@appsemble/preact-components": "0.14.2",
-    "@appsemble/sdk": "0.14.2",
-    "@appsemble/utils": "0.14.2",
+    "@appsemble/preact": "0.15.0",
+    "@appsemble/preact-components": "0.15.0",
+    "@appsemble/sdk": "0.15.0",
+    "@appsemble/utils": "0.15.0",
     "classnames": "^2.2.6",
     "preact": "^10.4.8"
   }
