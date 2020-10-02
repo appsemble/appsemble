@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.0] - 2020-10-02
+
+### Added
+
+- Block(`filter`): Made the search for string fields case insensitive.
+- Block(`form`): Added support for length requirements for repeated object fields.
+- Block(`table`): Add support for `dropdown` fields.
+
+### Fixed
+
+- Block(`form`): Fixed the accept property for file fields.
+
 ## [0.14.2] - 2020-09-25
 
 ### Fixed
