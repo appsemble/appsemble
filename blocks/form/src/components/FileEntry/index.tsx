@@ -4,6 +4,7 @@ import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import type { FileField, InputProps } from '../../../block';
+import { getAccept } from '../../utils/requirements';
 import { resize } from '../../utils/resize';
 import styles from './index.css';
 
@@ -41,6 +42,7 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
     <div className={`appsemble-file file mr-3 ${styles.root}`}>
       <label className="file-label">
         <input
+          accept={getAccept(field)}
           className={`file-input ${styles.input}`}
           name={name}
           onChange={onSelect}

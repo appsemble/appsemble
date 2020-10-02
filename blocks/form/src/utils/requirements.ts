@@ -76,3 +76,13 @@ export function getStep(field: FieldWithRequirements): number | undefined {
     return Math.min(...steps);
   }
 }
+
+/**
+ * Get the joined accept value for the field.
+ *
+ * @param field - The field to check.
+ * @returns The accept attribute
+ */
+export function getAccept(field: FieldWithRequirements): string {
+  return field.requirements?.map((r) => r.accept).join(',');
+}
