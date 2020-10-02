@@ -157,10 +157,8 @@ export function AppList(): ReactElement {
               <FormattedMessage
                 {...messages.createOrganizationInstruction}
                 values={{
-                  link: (
-                    <Link to={`/${lang}/settings/organizations`}>
-                      <FormattedMessage {...messages.here} />
-                    </Link>
+                  link: (link: string) => (
+                    <Link to={`/${lang}/settings/organizations`}>{link}</Link>
                   ),
                 }}
               />
