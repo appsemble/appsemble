@@ -87,7 +87,7 @@ export function OrganizationInvite(): ReactElement {
           <FormattedMessage
             {...messages.noInvite}
             values={{
-              link: (text: string) => <Link to={`${lang}/apps`}>{text}</Link>,
+              link: (text: string) => <Link to={`/${lang}/apps`}>{text}</Link>,
             }}
           />
         </p>
@@ -139,7 +139,7 @@ export function OrganizationInvite(): ReactElement {
               {...messages.successJoined}
               values={{
                 organization: <strong>{organization.name || organization.id}</strong>,
-                makeApps: (link: string) => <Link to={`${lang}/apps`}>{link}</Link>,
+                makeApps: (link: string) => <Link to={`/${lang}/apps`}>{link}</Link>,
                 viewOrganization: (link: string) => (
                   <Link to={`${lang}/settings/organizations`}>{link}</Link>
                 ),
@@ -151,7 +151,7 @@ export function OrganizationInvite(): ReactElement {
             <FormattedMessage
               {...messages.successDeclined}
               values={{
-                makeApps: (link: string) => <Link to={`${lang}/apps`}>{link}</Link>,
+                makeApps: (link: string) => <Link to={`/${lang}/apps`}>{link}</Link>,
               }}
             />
           </Message>

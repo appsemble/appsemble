@@ -3,7 +3,7 @@ import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { IntlProvider } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
-import nl from '../../translations/nl.json';
+import nl from '../../../translations/nl.json';
 
 interface IntlMessagesProviderProps {
   children: ReactNode;

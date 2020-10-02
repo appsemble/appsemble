@@ -4,10 +4,10 @@ import React, { ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { BrowserRouter, Route } from 'react-router-dom';
 
-import { StudioMessagesProvider } from '../../StudioMessagesProvider';
 import { ErrorFallback } from '../ErrorFallback';
 import { MDXAnchor, MDXCode, MDXPre } from '../MDX';
 import { Routes } from '../Routes';
+import { StudioMessagesProvider } from '../StudioMessagesProvider';
 import { Toolbar } from '../Toolbar';
 import { UserProvider } from '../UserProvider';
 

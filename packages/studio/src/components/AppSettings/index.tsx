@@ -135,7 +135,7 @@ export function AppSettings(): ReactElement {
                 {...messages.domainDescription}
                 values={{
                   documentation: (
-                    <Link rel="noopener noreferrer" target="_blank" to={`${lang}/docs/dns`}>
+                    <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/dns`}>
                       <FormattedMessage {...messages.documentation} />
                     </Link>
                   ),

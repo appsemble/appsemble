@@ -88,7 +88,7 @@ export function Login(): ReactElement {
                 <FormattedMessage {...messages.registerLink} />
               </Link>
             )}
-            <Link className="is-block" to={`${lang}/reset-password`}>
+            <Link className="is-block" to={`/${lang}/reset-password`}>
               <FormattedMessage {...messages.forgotPasswordLink} />
             </Link>
           </div>

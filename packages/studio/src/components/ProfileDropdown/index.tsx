@@ -12,7 +12,7 @@ export function ProfileDropdown(): ReactElement {
   const { logout, userInfo } = useUser();
   const location = useLocation();
   const redirect = useLocationString();
-  const { path } = useRouteMatch();
+  const { url } = useRouteMatch();
   const qs = useQuery();
   let search: URLSearchParams;
 
@@ -45,20 +45,20 @@ export function ProfileDropdown(): ReactElement {
       }
     >
       {userInfo && (
-        <Link className="dropdown-item" to={`${path}/settings`}>
+        <Link className="dropdown-item" to={`${url}/settings`}>
           <Icon icon="wrench" />
           <span>
             <FormattedMessage {...messages.settings} />
           </span>
         </Link>
       )}
-      <Link className="dropdown-item" to={`${path}/blocks`}>
+      <Link className="dropdown-item" to={`${url}/blocks`}>
         <Icon icon="cubes" />
         <span>
           <FormattedMessage {...messages.blocks} />
         </span>
       </Link>
-      <Link className="dropdown-item" to={`${path}/docs`}>
+      <Link className="dropdown-item" to={`${url}/docs`}>
         <Icon icon="book" />
         <span>
           <FormattedMessage {...messages.documentation} />
@@ -76,7 +76,7 @@ export function ProfileDropdown(): ReactElement {
       ) : (
         <Link
           className={`button dropdown-item ${styles.logoutButton}`}
-          to={{ pathname: `${path}/login`, search: `?${search}` }}
+          to={{ pathname: `${url}/login`, search: `?${search}` }}
         >
           <Icon icon="sign-in-alt" />
           <span>

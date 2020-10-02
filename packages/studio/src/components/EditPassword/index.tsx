@@ -31,7 +31,7 @@ export function EditPassword(): ReactElement {
   );
 
   if (!token) {
-    return <Redirect to={`${lang}/apps`} />;
+    return <Redirect to={`/${lang}/apps`} />;
   }
 
   return (

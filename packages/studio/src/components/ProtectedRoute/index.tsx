@@ -28,7 +28,7 @@ export function ProtectedRoute({
   if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', redirect);
-    return <Redirect to={{ pathname: `${lang}/login`, search: `?${search}` }} />;
+    return <Redirect to={{ pathname: `/${lang}/login`, search: `?${search}` }} />;
   }
 
   if (permission) {

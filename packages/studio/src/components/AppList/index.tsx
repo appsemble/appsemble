@@ -10,7 +10,7 @@ import type { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { checkRole } from '../../utils/checkRole';
 import { HelmetIntl } from '../HelmetIntl';
@@ -21,7 +21,7 @@ import styles from './index.css';
 import { messages } from './messages';
 
 export function AppList(): ReactElement {
-  const { path } = useRouteMatch();
+  const { lang } = useParams<{ lang: string }>();
   const [filter, setFilter] = useState('');
   const { formatMessage } = useIntl();
   const { organizations, userInfo } = useUser();
@@ -158,7 +158,7 @@ export function AppList(): ReactElement {
                 {...messages.createOrganizationInstruction}
                 values={{
                   link: (
-                    <Link to={`${path}/settings/organizations`}>
+                    <Link to={`/${lang}/settings/organizations`}>
                       <FormattedMessage {...messages.here} />
                     </Link>
                   ),
