@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.1] - 2020-10-05
+
+### Added
+
+- Block(`form`): Implemented `required` requirement for `date-time` fields.
+
+### Fixed
+
+- Block(`filter`): Fixed layout for highlighted `date-range` fields.
+- Server: Added support for more numeric OData types.
+
 ## [0.15.0] - 2020-10-02
 
 ### Added
