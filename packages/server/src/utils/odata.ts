@@ -6,6 +6,7 @@ type PartialModel = Pick<typeof Model, 'tableName'>;
 
 enum Edm {
   Boolean = 'Edm.Boolean',
+  Byte = 'Edm.Byte',
   Date = 'Edm.Date',
   DateTimeOffset = 'Edm.DateTimeOffset',
   Decimal = 'Edm.Decimal',
@@ -15,6 +16,7 @@ enum Edm {
   Int32 = 'Edm.Int32',
   Int64 = 'Edm.Int64',
   SByte = 'Edm.SByte',
+  Single = 'Edm.Single',
   String = 'Edm.String',
 }
 
@@ -95,12 +97,14 @@ function processLiteral(token: Token): boolean | number | string | Date {
       return token.raw === 'true';
     case Edm.String:
       return JSON.parse(`"${token.raw.slice(1, -1).replace(/"/g, '\\"')}"`);
+    case Edm.Byte:
     case Edm.Decimal:
     case Edm.Double:
     case Edm.Int16:
     case Edm.Int32:
     case Edm.Int64:
     case Edm.SByte:
+    case Edm.Single:
       return Number(token.raw);
     case Edm.Date:
     case Edm.DateTimeOffset:
