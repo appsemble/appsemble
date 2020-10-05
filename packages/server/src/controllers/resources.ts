@@ -1,5 +1,6 @@
+import { logger } from '@appsemble/node-utils';
 import { checkAppRole, Permission, SchemaValidationError, validate } from '@appsemble/utils';
-import { badRequest, forbidden, notFound, unauthorized } from '@hapi/boom';
+import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import type { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
@@ -175,12 +176,16 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
         $filter
           .replace(/(^|\B)\$created(\b|$)/g, '__created__')
           .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+        Resource,
         renameOData,
       );
-  } catch {
-    throw badRequest('Unable to process this query');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw badRequest('Unable to process this query', { syntaxError: error.message });
+    }
+    logger.error(error);
+    throw internal('Unable to process this query');
   }
-
   const resources = await Resource.findAll({
     include: [{ model: User, attributes: ['id', 'name'], required: false }],
     limit: $top,

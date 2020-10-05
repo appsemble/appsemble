@@ -33,7 +33,7 @@ export function toOData(fields: Field[], values: FilterValues): string {
           if (field.exact) {
             return `${field.name} eq '${value}'`;
           }
-          return `substringof(${field.name},'${value}')`;
+          return `contains(tolower(${field.name}),'${(value as string).toLowerCase()}')`;
         default:
           return null;
       }

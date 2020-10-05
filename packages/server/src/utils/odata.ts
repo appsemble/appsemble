@@ -1,5 +1,24 @@
 import { defaultParser, Token, TokenType } from '@odata/parser';
-import { Op, Order, WhereOptions, WhereValue } from 'sequelize';
+import { col, fn, json, Model, Op, Order, where, WhereOptions, WhereValue } from 'sequelize';
+import type { Col, Fn, Json, Where } from 'sequelize/types/lib/utils';
+
+type PartialModel = Pick<typeof Model, 'tableName'>;
+
+enum Edm {
+  Boolean = 'Edm.Boolean',
+  Byte = 'Edm.Byte',
+  Date = 'Edm.Date',
+  DateTimeOffset = 'Edm.DateTimeOffset',
+  Decimal = 'Edm.Decimal',
+  Double = 'Edm.Double',
+  Guid = 'Edm.Guid',
+  Int16 = 'Edm.Int16',
+  Int32 = 'Edm.Int32',
+  Int64 = 'Edm.Int64',
+  SByte = 'Edm.SByte',
+  Single = 'Edm.Single',
+  String = 'Edm.String',
+}
 
 /**
  * A function which accepts the name in the filter, and returns a name to replace it with.
@@ -13,93 +32,208 @@ type Rename = (name: string) => string;
 const defaultRename: Rename = (name) => name;
 
 const operators = new Map([
-  [TokenType.EqualsExpression, Op.eq],
-  [TokenType.LesserOrEqualsExpression, Op.lte],
-  [TokenType.LesserThanExpression, Op.lt],
-  [TokenType.GreaterOrEqualsExpression, Op.gte],
-  [TokenType.GreaterThanExpression, Op.gt],
-  [TokenType.NotEqualsExpression, Op.ne],
+  [TokenType.EqualsExpression, '='],
+  [TokenType.LesserOrEqualsExpression, '<='],
+  [TokenType.LesserThanExpression, '<'],
+  [TokenType.GreaterOrEqualsExpression, '>='],
+  [TokenType.GreaterThanExpression, '>'],
+  [TokenType.NotEqualsExpression, '!='],
+  [TokenType.AddExpression, '+'],
+  [TokenType.SubExpression, '-'],
+  [TokenType.DivExpression, '/'],
+  [TokenType.MulExpression, '*'],
+  [TokenType.ModExpression, '%'],
 ]);
 
-const comparisonMethods = new Map(
-  Object.entries({
-    startswith: Op.startsWith,
-    endswith: Op.endsWith,
-    substringof: Op.substring,
-  }),
-);
+type MethodConverter = [Edm[], (...args: any[]) => Where | Fn];
 
-function processLiteral(token: Token, nested: boolean): WhereValue {
+function whereFunction(op: symbol): (haystack: any, needle: any) => Where {
+  return (haystack, needle) => where(haystack, { [op]: needle });
+}
+
+function fnFunction(name: string): (...args: any[]) => Fn {
+  return (...args) => fn(name, ...args);
+}
+
+const functions: { [key: string]: MethodConverter } = {
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_concat
+  contains: [[Edm.String, Edm.String], whereFunction(Op.substring)],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_contains
+  concat: [[Edm.String, Edm.String], fnFunction('concat')],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_endswith
+  endswith: [[Edm.String, Edm.String], whereFunction(Op.endsWith)],
+
+  indexof: [[Edm.String, Edm.String], fnFunction('strpos')],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_length
+  length: [[Edm.String], fnFunction('length')],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_startswith
+  startswith: [[Edm.String, Edm.String], whereFunction(Op.startsWith)],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_substring
+  substring: [[Edm.String, Edm.SByte, Edm.SByte], fnFunction('substring')],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_matchesPattern
+  // This is currently not supported by the parser
+  // https://github.com/Soontao/odata-v4-parser/issues/36
+  matchesPattern: [[Edm.String, Edm.String], whereFunction(Op.iRegexp)],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_tolower
+  tolower: [[Edm.String], fnFunction('lower')],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_toupper
+  toupper: [[Edm.String], fnFunction('upper')],
+
+  // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_trim
+  trim: [[Edm.String], fnFunction('trim')],
+};
+
+function processLiteral(token: Token): boolean | number | string | Date {
   switch (token.value) {
-    case 'Edm.Boolean':
+    case Edm.Boolean:
       return token.raw === 'true';
-    case 'Edm.Date':
-      // JSON properties don’t support native date objects. Treat them as strings instead.
-      if (nested) {
-        return token.raw;
-      }
-      return new Date(token.raw);
-    case 'Edm.SByte':
+    case Edm.String:
+      return JSON.parse(`"${token.raw.slice(1, -1).replace(/"/g, '\\"')}"`);
+    case Edm.Byte:
+    case Edm.Decimal:
+    case Edm.Double:
+    case Edm.Int16:
+    case Edm.Int32:
+    case Edm.Int64:
+    case Edm.SByte:
+    case Edm.Single:
       return Number(token.raw);
-    case 'Edm.String':
-      return token.raw.slice(1, -1);
+    case Edm.Date:
+    case Edm.DateTimeOffset:
+      // The Date constructor will convert it to UTC.
+      return new Date(token.raw);
+    case Edm.Guid:
+      return token.raw;
     default:
-      process.emitWarning(`Unhandled OData literal type: ${token.value}`);
+      throw new TypeError(`${token.position}: Unhandled OData literal type: ${token.value}`);
   }
 }
 
-function processName(token: Token, rename: Rename): [name: string, nested: boolean] {
-  const name = rename(token.raw).replace(/\//g, '.');
+function processName(token: Token, model: PartialModel, rename: Rename): Col | Json {
   // OData uses `/` as a path separator, but Sequelize uses `.`.
   // https://sequelize.org/master/manual/other-data-types.html#jsonb--postgresql-only-
-  return [name, name.includes('.')];
+  const name = rename(token.raw).replace(/\//g, '.');
+  return name.includes('.') ? json(name) : col(`${model.tableName}.${name}`);
 }
 
-function processMethod(token: Token, rename: Rename): WhereOptions {
-  const comparison = comparisonMethods.get(token.value.method);
-  if (comparison) {
-    const [name, nested] = processName(token.value.parameters[0], rename);
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    return { [name]: { [comparison]: processToken(token.value.parameters[1], rename, nested) } };
+function processMethod(token: Token, model: PartialModel, rename: Rename): Where | Fn {
+  const { method, parameters } = token.value as { method: string; parameters: Token[] };
+
+  if (!Object.hasOwnProperty.call(functions, method)) {
+    throw new TypeError(`${token.position}: Filter function not implemented: ${method}`);
   }
+  const [parameterTypes, implementation] = functions[token.value.method];
+
+  if (parameterTypes.length !== parameters.length) {
+    throw new TypeError(
+      `${token.position}: Expected ${parameterTypes.length} parameters, but got ${parameters.length}`,
+    );
+  }
+  const parsedParameters = parameters.map((parameter, index) => {
+    if (parameter.type === TokenType.FirstMemberExpression) {
+      return processName(parameter, model, rename);
+    }
+    if (parameter.type === TokenType.Literal) {
+      if (parameter.value !== parameterTypes[index]) {
+        throw new TypeError(
+          `${parameter.position}: Expected parameter of type ${parameterTypes[index]}, but got ${parameter.value}`,
+        );
+      }
+      return processLiteral(parameter);
+    }
+    if (parameter.type === 'MethodCallExpression') {
+      return processMethod(parameter, model, rename);
+    }
+    throw new TypeError(`${parameter.position}: Unhandled parameter type: ${parameter.type}`);
+  });
+
+  return implementation(...parsedParameters);
 }
 
-function processToken(token: Token, rename: Rename, nested = false): WhereOptions | WhereValue {
-  const operator = operators.get(token.type);
-  if (operator) {
-    const [name, isNested] = processName(token.value.left, rename);
-    return { [name]: { [operator]: processToken(token.value.right, rename, isNested) } };
+function processToken(
+  token: Token,
+  model: PartialModel,
+  rename: Rename,
+): WhereOptions | WhereValue {
+  if (token.type === 'FirstMemberExpression') {
+    return processName(token, model, rename) as WhereValue;
+  }
+  if (token.type === TokenType.MethodCallExpression) {
+    return processMethod(token, model, rename);
+  }
+  if (token.type === TokenType.ParenExpression) {
+    return processToken(token.value, model, rename);
+  }
+  if (operators.has(token.type)) {
+    return where(
+      // @ts-expect-error This is a bug in the Sequelize types
+      processToken(token.value.left, model, rename),
+      operators.get(token.type),
+      processToken(token.value.right, model, rename),
+    );
   }
 
-  switch (token.type) {
-    case TokenType.BoolParenExpression:
-    case TokenType.CommonExpression:
-      return processToken(token.value, rename, nested);
-    case TokenType.Literal:
-      return processLiteral(token, nested);
-    case TokenType.AndExpression:
-      return {
-        [Op.and]: [
-          processToken(token.value.left, rename) as WhereOptions,
-          processToken(token.value.right, rename) as WhereOptions,
-        ],
-      };
-    case TokenType.OrExpression:
-      return {
-        [Op.or]: [
-          processToken(token.value.left, rename) as WhereOptions,
-          processToken(token.value.right, rename) as WhereOptions,
-        ],
-      };
-    case TokenType.MethodCallExpression:
-      return processMethod(token, rename);
-    default:
-      process.emitWarning(`Unhandled OData type: ${token.type}`);
+  if (token.type === TokenType.Literal) {
+    return processLiteral(token);
   }
+  throw new TypeError(`${token.position}: Unhandled OData type: ${token.type}`);
 }
 
+/**
+ * Process OData logical expressions:
+ *
+ * - `and`
+ * - `or`
+ * - `not`
+ *
+ * @param token - The token to process.
+ * @param model - The model to do a query for.
+ * @param rename - A rename function.
+ * @returns The Sequelize query that matches the given token.
+ */
+function processLogicalExpression(token: Token, model: PartialModel, rename: Rename): WhereOptions {
+  if (token.type === TokenType.BoolParenExpression || token.type === TokenType.CommonExpression) {
+    return processLogicalExpression(token.value, model, rename);
+  }
+
+  if (token.type === TokenType.NotExpression) {
+    return { [Op.not]: processLogicalExpression(token.value, model, rename) };
+  }
+
+  const op =
+    token.type === TokenType.AndExpression
+      ? Op.and
+      : token.type === TokenType.OrExpression
+      ? Op.or
+      : undefined;
+  if (!op) {
+    return processToken(token, model, rename) as WhereOptions;
+  }
+  const flatten = (expr: any): WhereOptions => (op in expr ? expr[op] : expr);
+  const left = flatten(processLogicalExpression(token.value.left, model, rename));
+  const right = flatten(processLogicalExpression(token.value.right, model, rename));
+  return { [op]: [].concat(left).concat(right) };
+}
+
+/**
+ * https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html
+ *
+ * @param query - The OData query to convert to a Sequelize query.
+ * @param model - The model to do a query for.
+ * @param rename - A function for renaming incoming property names.
+ * @returns The OData filter converted to a Sequelize query.
+ */
 export function odataFilterToSequelize(
   query: string | Token,
+  model: PartialModel,
   rename: Rename = defaultRename,
 ): WhereOptions {
   if (!query) {
@@ -107,7 +241,7 @@ export function odataFilterToSequelize(
   }
   // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
   const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
-  return processToken(ast, rename) as WhereOptions;
+  return processLogicalExpression(ast, model, rename);
 }
 
 export function odataOrderbyToSequelize(value: string, rename: Rename = defaultRename): Order {
