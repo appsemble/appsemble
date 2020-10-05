@@ -48,6 +48,7 @@ export async function handler({
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
   logger.info(`Publishing ${directories.length} Blocks`);
   for (const dir of directories) {
+    logger.info('');
     const config = await getBlockConfig(dir);
 
     if (build) {
