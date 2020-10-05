@@ -1,11 +1,13 @@
 import type { Utils } from '@appsemble/sdk';
 
 import type { BaseRequirement, Field } from '../../../block';
+import { validateDateTime } from './validateDateTime';
 import { validateFile } from './validateFile';
 import { validateNumber } from './validateNumber';
 import { validateString } from './validateString';
 
 export const validators: { [name: string]: Validator } = {
+  'date-time': validateDateTime,
   file: validateFile,
   geocoordinates: (_, value: { longitude: number; latitude: number }) =>
     value?.latitude && value?.longitude ? undefined : {},
