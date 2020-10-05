@@ -23,6 +23,6 @@ export const messages = defineMessages({
   userInfoUrlHelp: 'The URL from which Appsemble should fetch user information',
   remapperLabel: 'User info remapper',
   remapperHelp: 'A remapper that is applied on the user info object',
-  badUrl: 'This mustbe a valid URL',
+  badUrl: 'This must be a valid URL',
   save: 'Save secret',
 });

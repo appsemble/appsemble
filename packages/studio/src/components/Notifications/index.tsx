@@ -50,10 +50,8 @@ export function Notifications(): ReactElement {
             <FormattedMessage
               {...messages.enableInstructions}
               values={{
-                appDefinition: (
-                  <Link to={`/${lang}/apps/${app.id}/edit#editor`}>
-                    <FormattedMessage {...messages.appDefinition} />
-                  </Link>
+                link: (link: string) => (
+                  <Link to={`/${lang}/apps/${app.id}/edit#editor`}>{link}</Link>
                 ),
                 navigation: (
                   <Link
