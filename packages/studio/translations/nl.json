@@ -87,7 +87,6 @@
   "studio.src.components.AppSettings.deleteSuccess": "De app {app} is succesvol verwijderd",
   "studio.src.components.AppSettings.deleteWarning": "Weet je zeker dat je deze app wil verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
   "studio.src.components.AppSettings.deleteWarningTitle": "App verwijderen",
-  "studio.src.components.AppSettings.documentation": "documentatie",
   "studio.src.components.AppSettings.domain": "Domeinnaam",
   "studio.src.components.AppSettings.domainDescription": "De domeinnaam waarop de app beschikbaar is. Raadpleeg de <link>documentatie</link> voor meer informatie over het instellen hiervan.",
   "studio.src.components.AppSettings.domainError": "Dit moet een geldige domeinnaam zijn zonder protocol",

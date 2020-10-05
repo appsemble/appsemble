@@ -4,7 +4,7 @@ export const messages = defineMessages({
   nameLabel: 'Name',
   nameHelp: 'The name that will be displayed on the login button',
   iconLabel: 'Icon',
-  iconHelp: 'The Fontawesome icon that will be displayed on the login button',
+  iconHelp: 'The FontAwesome icon that will be displayed on the login button',
   redirectUrlLabel: 'Redirect URL',
   redirectUrlHelp: 'Copy this into the callback URI field of the provider',
   redirectUrlCopySuccess: 'Redirect URL copied to clipboard',
