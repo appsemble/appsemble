@@ -19,6 +19,7 @@ import { Member } from './Member';
 import { Meta } from './Meta';
 import { OAuth2AuthorizationCode } from './OAuth2AuthorizationCode';
 import { OAuth2ClientCredentials } from './OAuth2ClientCredentials';
+import { OAuth2Consent } from './OAuth2Consent';
 import { OAuthAuthorization } from './OAuthAuthorization';
 import { Organization } from './Organization';
 import { OrganizationInvite } from './OrganizationInvite';
@@ -57,6 +58,7 @@ export {
   Meta,
   OAuth2AuthorizationCode,
   OAuth2ClientCredentials,
+  OAuth2Consent,
   OAuthAuthorization,
   Organization,
   OrganizationInvite,
@@ -100,6 +102,7 @@ export function initDB({
       Meta,
       OAuth2AuthorizationCode,
       OAuth2ClientCredentials,
+      OAuth2Consent,
       OAuthAuthorization,
       Organization,
       OrganizationInvite,
