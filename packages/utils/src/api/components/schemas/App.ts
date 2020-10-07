@@ -79,6 +79,11 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
             This will be displayed on the app store.
           `,
         },
+        login: {
+          type: 'string',
+          enum: ['navigation', 'menu', 'hidden'],
+          description: 'Where the login and logout buttons should be located.',
+        },
         navigation: {
           type: 'string',
           enum: ['bottom', 'left-menu', 'hidden'],

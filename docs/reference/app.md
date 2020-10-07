@@ -24,6 +24,12 @@ Set a navigation type for the app. This defaults to `left-menu` for a left side 
 `bottom` to use a navigation pane at the bottom of the screen instead of the default side menu. Set
 to `hidden` to display no navigational menus at all.
 
+## `login`
+
+Set the location of the login button. This defaults to `navigation` which adds a login button and
+dropdown to the navigation bar. This can be set to `menu` to instead display it in the side menu, or
+`hidden` to hide it entirely.
+
 ## `notifications`
 
 Set the notification strategy for the app. If specified, push notifications can be sent to

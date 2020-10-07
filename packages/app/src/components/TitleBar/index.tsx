@@ -1,6 +1,7 @@
 import { Portal } from '@appsemble/react-components';
 import React, { ReactChild, ReactElement } from 'react';
 
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { ProfileDropdown } from '../ProfileDropdown';
 import { SideMenuButton } from '../SideMenuButton';
 import styles from './index.css';
@@ -15,6 +16,9 @@ interface TitleBarProps {
  * This displays the app name,
  */
 export function TitleBar({ children }: TitleBarProps): ReactElement {
+  const {
+    definition: { login },
+  } = useAppDefinition();
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className={`is-flex ${styles.container}`}>
@@ -26,11 +30,13 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
         <div className={`navbar-brand ${styles.title}`}>
           <h2 className="navbar-item title is-4">{children}</h2>
         </div>
-        <div className="navbar-brand">
-          <div className="navbar-item">
-            <ProfileDropdown />
+        {(!login || login === 'navigation') && (
+          <div className="navbar-brand">
+            <div className="navbar-item">
+              <ProfileDropdown />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </Portal>
   );

@@ -1,12 +1,14 @@
-import { Icon } from '@appsemble/react-components';
+import { Button, Icon } from '@appsemble/react-components';
 import type { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { SideMenu } from '../SideMenu';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
 
@@ -20,6 +22,10 @@ interface SideNavigationProps {
 export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { getMessage } = useAppMessages();
+  const {
+    definition: { login, security: showLogin },
+  } = useAppDefinition();
+  const { isLoggedIn, logout } = useUser();
 
   return (
     <SideMenu>
@@ -48,6 +54,23 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
               </span>
             </NavLink>
           </li>
+
+          {showLogin &&
+            login === 'menu' &&
+            (isLoggedIn ? (
+              <li>
+                <Button className={styles.button} icon="sign-out-alt" onClick={logout}>
+                  <FormattedMessage {...messages.logout} />
+                </Button>
+              </li>
+            ) : (
+              <li>
+                <NavLink to={`${url}/Login`}>
+                  <Icon className={styles.icon} icon="sign-in-alt" />
+                  <FormattedMessage {...messages.login} />
+                </NavLink>
+              </li>
+            ))}
         </ul>
       </nav>
     </SideMenu>

@@ -305,6 +305,7 @@ export interface Security {
 }
 
 export type Navigation = 'bottom' | 'left-menu' | 'hidden';
+export type Login = 'navigation' | 'menu' | 'hidden';
 
 export interface NotificationDefinition {
   to?: string[];
@@ -884,6 +885,13 @@ export interface AppDefinition {
    * If this is omitted, a collapsable side navigation menu will be rendered on the left.
    */
   navigation?: Navigation;
+
+  /**
+   * The location of the login and logout button.
+   *
+   * If this is omitted, it will be shown in the navbar.
+   */
+  login?: Login;
 
   /**
    * The strategy to use for apps to subscribe to push notifications.
