@@ -2,11 +2,13 @@ import {
   AllowNull,
   BelongsTo,
   Column,
+  CreatedAt,
   DataType,
   ForeignKey,
   Model,
   PrimaryKey,
   Table,
+  UpdatedAt,
 } from 'sequelize-typescript';
 
 import { App, User } from '.';
@@ -52,4 +54,10 @@ export class OAuth2Consent extends Model<OAuth2Consent> {
    */
   @BelongsTo(() => User)
   User: User;
+
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
 }
