@@ -51,7 +51,7 @@ export function getAppFromRecord(
 
 export async function createOAuth2AuthorizationCode(
   { host }: Argv,
-  app: App,
+  app: models.App,
   redirectUri: string,
   scope: string,
   user: models.User,
