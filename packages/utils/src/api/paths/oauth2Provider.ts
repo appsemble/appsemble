@@ -50,42 +50,23 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
-  '/api/oauth2/authorization-code': {
+  '/api/oauth2/consent/verify': {
     post: {
-      description: 'XXX',
+      description: 'Verify if the user has previously agreed to the requested OAuth2 consent.',
       tags: ['oauth2'],
-      operationId: 'createAuthorizationCode',
-      requestBody: {
-        description: 'The OAuth2 client credentials',
-        required: true,
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              properties: {
-                appId: { type: 'number' },
-                redirectUri: { type: 'string', format: 'uri' },
-                scope: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        201: {
-          description: 'The newly created client credentials',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  code: { type: 'string' },
-                },
-              },
-            },
-          },
-        },
-      },
+      operationId: 'verifyOAuth2Consent',
+      requestBody: { $ref: '#/components/requestBodies/oauth2Consent' },
+      responses: { 200: { $ref: '#/components/responses/oauth2AuthorizationCode' } },
+      security: [{ studio: [] }],
+    },
+  },
+  '/api/oauth2/consent/agree': {
+    post: {
+      description: 'Create a new OAuth2 consent.',
+      tags: ['oauth2'],
+      operationId: 'agreeOAuth2Consent',
+      requestBody: { $ref: '#/components/requestBodies/oauth2Consent' },
+      responses: { 201: { $ref: '#/components/responses/oauth2AuthorizationCode' } },
       security: [{ studio: [] }],
     },
   },

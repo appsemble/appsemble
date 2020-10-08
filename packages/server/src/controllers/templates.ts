@@ -8,7 +8,7 @@ import { generateVAPIDKeys } from 'web-push';
 import { App, AppMessages, Resource } from '../models';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
-import { getAppFromRecord } from '../utils/getAppFromRecord';
+import { getAppFromRecord } from '../utils/model';
 
 export async function getAppTemplates(ctx: KoaContext): Promise<void> {
   const templates = await App.findAll({
