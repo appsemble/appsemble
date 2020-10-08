@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization, OAuth2Consent, User } from '../models';
+import { App, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
 import type { KoaContext } from '../types';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 import { hasScope } from '../utils/oauth2';
@@ -64,16 +64,42 @@ export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void
 
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
-    include: [{ model: OAuth2Consent, where: { UserId: user.id }, required: false }],
+    include: [
+      { model: OAuth2Consent, where: { UserId: user.id }, required: false },
+      { model: User, where: { id: user.id }, required: false },
+    ],
   });
 
   if (!app) {
     throw notFound('App not found');
   }
 
+  let isAllowed = true;
+
+  if (app.definition?.security?.default?.policy) {
+    const { policy } = app.definition.security.default;
+    if (policy === 'invite' && !app.Users.length) {
+      isAllowed = false;
+    } else if (policy === 'organization') {
+      isAllowed = Boolean(
+        await Member.count({
+          where: { OrganizationId: app.OrganizationId, UserId: user.id },
+        }),
+      );
+    }
+  }
+
   if (!app.OAuth2Consents?.length || !hasScope(app.OAuth2Consents[0].scope, scope)) {
     throw badRequest('User has not agreed to the requested scopes', {
       appName: app.definition.name,
+      isAllowed,
+    });
+  }
+
+  if (!isAllowed) {
+    throw badRequest('User is not allowed to login due to the app’s security policy', {
+      appName: app.definition.name,
+      isAllowed,
     });
   }
 

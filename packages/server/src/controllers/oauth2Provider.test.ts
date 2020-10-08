@@ -191,6 +191,58 @@ describe('verifyOAuth2Consent', () => {
     });
   });
 
+  it('should block if user has agreed before but isn’t allowed anymore due to the policy', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: { security: { default: { policy: 'invite' } } },
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
+
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        data: { isAllowed: false },
+        message: 'User is not allowed to login due to the app’s security policy',
+        statusCode: 400,
+      },
+    });
+  });
+
+  it('should block if user isn’t allowed due to the policy', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: { security: { default: { policy: 'invite' } } },
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        data: { isAllowed: false },
+        message: 'User has not agreed to the requested scopes',
+        statusCode: 400,
+      },
+    });
+  });
+
   it('should return 404 for non-existent apps', async () => {
     const response = await request.post(
       '/api/oauth2/consent/verify',
