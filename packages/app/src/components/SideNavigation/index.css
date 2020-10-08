@@ -22,8 +22,8 @@
     background-color: hsl(0, 0%, 96%);
     color: hsl(0, 0%, 21%);
   }
-}
 
-.button span {
-  margin-left: 0 !important;
+  & span {
+    margin-left: 0 !important;
+  }
 }

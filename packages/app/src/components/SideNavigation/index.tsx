@@ -55,22 +55,20 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
             </NavLink>
           </li>
 
-          {showLogin &&
-            login === 'menu' &&
-            (isLoggedIn ? (
-              <li>
+          {showLogin && login === 'menu' && (
+            <li>
+              {isLoggedIn ? (
                 <Button className={styles.button} icon="sign-out-alt" onClick={logout}>
                   <FormattedMessage {...messages.logout} />
                 </Button>
-              </li>
-            ) : (
-              <li>
+              ) : (
                 <NavLink to={`${url}/Login`}>
                   <Icon className={styles.icon} icon="sign-in-alt" />
                   <FormattedMessage {...messages.login} />
                 </NavLink>
-              </li>
-            ))}
+              )}
+            </li>
+          )}
         </ul>
       </nav>
     </SideMenu>
