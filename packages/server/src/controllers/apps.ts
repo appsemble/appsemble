@@ -33,7 +33,7 @@ import {
 } from '../models';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
-import { getAppFromRecord } from '../utils/getAppFromRecord';
+import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
 
 interface Params {

@@ -1,12 +1,12 @@
-import { createHash, randomBytes } from 'crypto';
-import { URL } from 'url';
+import { createHash } from 'crypto';
 
-import { forbidden, notFound } from '@hapi/boom';
-import { addMinutes } from 'date-fns';
+import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization, OAuth2AuthorizationCode, User } from '../models';
+import { App, EmailAuthorization, OAuth2Consent, User } from '../models';
 import type { KoaContext } from '../types';
+import { createOAuth2AuthorizationCode } from '../utils/model';
+import { hasScope } from '../utils/oauth2';
 
 interface Params {
   appId: number;
@@ -53,36 +53,51 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function createAuthorizationCode(ctx: KoaContext<Params>): Promise<void> {
+export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
+    argv,
     request: {
       body: { appId, redirectUri, scope },
     },
-    user: { id },
+    user,
   } = ctx;
 
-  const app = await App.findByPk(appId, { attributes: ['domain', 'path', 'OrganizationId'] });
+  const app = await App.findByPk(appId, {
+    attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
+    include: [{ model: OAuth2Consent, where: { UserId: user.id }, required: false }],
+  });
 
   if (!app) {
     throw notFound('App not found');
   }
 
-  const appHost = `${app.path}.${app.OrganizationId}.${new URL(host).hostname}`;
-  const redirectHost = new URL(redirectUri).hostname;
-  if (redirectHost !== appHost && redirectHost !== app.domain) {
-    throw forbidden('Invalid redirectUri');
+  if (!app.OAuth2Consents?.length || !hasScope(app.OAuth2Consents[0].scope, scope)) {
+    throw badRequest('User has not agreed to the requested scopes', {
+      appName: app.definition.name,
+    });
   }
 
-  const { code } = await OAuth2AuthorizationCode.create({
-    AppId: appId,
-    code: randomBytes(12).toString('hex'),
-    expires: addMinutes(new Date(), 10),
-    redirectUri,
-    scope,
-    UserId: id,
+  ctx.body = await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user);
+}
+
+export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    argv,
+    request: {
+      body: { appId, redirectUri, scope },
+    },
+    user,
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['domain', 'id', 'path', 'OrganizationId'],
+    include: [OAuth2Consent],
   });
-  ctx.body = {
-    code,
-  };
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await OAuth2Consent.upsert({ AppId: appId, UserId: user.id, scope });
+  ctx.body = await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user);
 }

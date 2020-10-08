@@ -9,6 +9,7 @@ export * from './Error';
 export * from './Health';
 export * from './Hooks';
 export * from './Member';
+export * from './OAuth2AuthorizationCode';
 export * from './OAuth2ClientCredentials';
 export * from './Organization';
 export * from './Page';
