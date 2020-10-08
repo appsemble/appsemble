@@ -59,7 +59,7 @@ export function OpenIDLogin(): ReactElement {
       .post('/api/oauth2/consent/verify', { appId, redirectUri, scope })
       .then(({ data: { code } }) => oauth2Redirect(qs, { code }))
       .catch(({ response: { data, status } }) => {
-        if (!(status === 404 && 'appName' in data.data)) {
+        if (!(status === 400 && 'appName' in data.data)) {
           setError(messages.unknownError);
         }
         setAppName(data.data.appName);
