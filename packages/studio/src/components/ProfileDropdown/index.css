@@ -1,5 +1,5 @@
 .gravatar {
-  width: initial !important;
+  max-height: unset !important;
 }
 
 .logoutButton {
