@@ -14,6 +14,16 @@ import type { Definition } from 'typescript-json-schema';
 export type { Theme };
 
 /**
+ * A representation of a generated OAuth2 authorization code response.
+ */
+export interface OAuth2AuthorizationCode {
+  /**
+   * The authorization code.
+   */
+  code: string;
+}
+
+/**
  * A block that is displayed on a page.
  */
 export interface BlockDefinition {

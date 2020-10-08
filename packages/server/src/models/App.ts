@@ -27,6 +27,7 @@ import {
   AppScreenshot,
   AppSubscription,
   Asset,
+  OAuth2Consent,
   Organization,
   Resource,
   User,
@@ -120,6 +121,9 @@ export class App extends Model<App> {
 
   @BelongsToMany(() => User, () => AppMember)
   Users: User[];
+
+  @HasMany(() => OAuth2Consent)
+  OAuth2Consents: OAuth2Consent[];
 
   @HasMany(() => Resource)
   Resources: Resource[];

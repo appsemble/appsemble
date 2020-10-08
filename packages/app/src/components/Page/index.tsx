@@ -81,20 +81,8 @@ export function Page(): ReactElement {
     bulmaStyle.href = String(bulmaUrl);
   }, [definition, page]);
 
-  useEffect(() => {
-    if (ee.current) {
-      ee.current.removeAllListeners();
-      ee.current = null;
-      ee.current = new EventEmitter();
-    }
-
-    return () => {
-      if (ee.current) {
-        ee.current.removeAllListeners();
-        ee.current = null;
-      }
-    };
-  }, [page]);
+  // Remove the listeners from any previous pages
+  useEffect(() => () => ee.current.removeAllListeners(), [page]);
 
   const checkPagePermissions = (p: PageDefinition): boolean => {
     const roles = p.roles || definition.roles || [];

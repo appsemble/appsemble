@@ -1,15 +1,7 @@
 import { Button, Content, Loader, Message, useQuery } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
 import axios from 'axios';
-import React, {
-  ComponentPropsWithoutRef,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../utils/oauth2Utils';
@@ -25,51 +17,56 @@ export function OpenIDLogin(): ReactElement {
   const { lang } = useParams<{ lang: string }>();
 
   const [appLoading, setAppLoading] = useState(true);
-  const [app, setApp] = useState<App>();
-  const [error, setError] = useState<ComponentPropsWithoutRef<typeof FormattedMessage>>(null);
+  const [appName, setAppName] = useState<string>();
+  const [error, setError] = useState<MessageDescriptor>(null);
   const [generating, setGenerating] = useState(false);
 
+  const appId = useMemo(() => {
+    const match = /^app:(\d+)$/.exec(qs.get('client_id'));
+    if (match) {
+      return Number(match[1]);
+    }
+  }, [qs]);
   const scopes = useMemo(() => qs.get('scope')?.split(' '), [qs]);
+  const redirectUri = qs.get('redirect_uri');
+  const scope = qs.get('scope');
+  const isRequestValid = useMemo(
+    () => verifyOAuth2LoginRequest(qs, ['email', 'openid', 'profile', 'resources:manage']),
+    [qs],
+  );
 
   const onAccept = useCallback(() => {
     setGenerating(true);
     axios
-      .post('/api/oauth2/authorization-code', {
-        appId: app.id,
-        redirectUri: qs.get('redirect_uri'),
+      .post('/api/oauth2/consent/agree', {
+        appId,
+        redirectUri,
         scope: [...new Set(scopes)].join(' '),
       })
       .then(({ data }) => oauth2Redirect(qs, { code: data.code }))
       .catch(() => oauth2Redirect(qs, { error: 'server_error' }));
-  }, [app, qs, scopes]);
+  }, [appId, qs, redirectUri, scopes]);
 
   const onDeny = useCallback(() => {
     oauth2Redirect(qs, { error: 'access_denied' });
   }, [qs]);
 
   useEffect(() => {
-    try {
-      if (!verifyOAuth2LoginRequest(qs, ['email', 'openid', 'profile', 'resources:manage'])) {
-        return;
-      }
-    } catch {
-      setError(messages.missingRedirectUri);
-      return;
-    }
-
-    const clientId = qs.get('client_id');
-    const appIdMatch = clientId.match(/^app:(\d+)$/);
-    if (!appIdMatch) {
-      setError({ ...messages.invalidClientId, values: { clientId } });
+    if (!isRequestValid) {
       return;
     }
 
     axios
-      .get<App>(`/api/apps/${appIdMatch[1]}`)
-      .then(({ data }) => setApp(data))
-      .catch(() => setError(messages.unknownError))
-      .finally(() => setAppLoading(false));
-  }, [qs]);
+      .post('/api/oauth2/consent/verify', { appId, redirectUri, scope })
+      .then(({ data: { code } }) => oauth2Redirect(qs, { code }))
+      .catch(({ response: { data, status } }) => {
+        if (!(status === 404 && 'appName' in data.data)) {
+          setError(messages.unknownError);
+        }
+        setAppName(data.data.appName);
+        setAppLoading(false);
+      });
+  }, [appId, isRequestValid, qs, redirectUri, scope]);
 
   if (error) {
     return (
@@ -87,15 +84,15 @@ export function OpenIDLogin(): ReactElement {
 
   return (
     <Content padding>
-      <HelmetIntl title={messages.title} titleValues={{ app: app.definition.name }} />
+      <HelmetIntl title={messages.title} titleValues={{ app: appName }} />
       <div className="content">
         <p>
           <FormattedMessage
             {...messages.prompt}
             values={{
               app: (
-                <Link className="has-text-weight-bold is-italic" to={`${lang}/app/${app.id}`}>
-                  {app.definition.name}
+                <Link className="has-text-weight-bold is-italic" to={`${lang}/apps/${appId}`}>
+                  {appName}
                 </Link>
               ),
             }}

@@ -6,6 +6,12 @@ import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { decode } from 'jsonwebtoken';
 
+export function hasScope(grantedScopes: string, requiredScopes: string): boolean {
+  const granted = grantedScopes.split(' ');
+  const required = requiredScopes.split(' ');
+  return required.every((scope) => granted.includes(scope));
+}
+
 /**
  * Fetch an access token as part of the authorization code OAuth2 flow.
  *
