@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import { Button, Content, Message, useLocationString } from '@appsemble/react-components';
 import type { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, normalize, remap } from '@appsemble/utils';
+import classNames from 'classnames';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
@@ -14,6 +15,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { BlockList } from '../BlockList';
 import { FlowPage } from '../FlowPage';
+import { Main } from '../Main';
 import { PageDialog } from '../PageDialog';
 import { TabsPage } from '../TabsPage';
 import { TitleBar } from '../TitleBar';
@@ -100,7 +102,12 @@ export function Page(): ReactElement {
     }
 
     return (
-      <main className={styles.root} data-path={prefix}>
+      <Main
+        className={classNames(styles.root, {
+          [styles.hasBottomNavigation]: definition.navigation === 'bottom',
+        })}
+        data-path={prefix}
+      >
         <TitleBar>{msg.format() as string}</TitleBar>
         {page.type === 'tabs' ? (
           <TabsPage
@@ -147,7 +154,7 @@ export function Page(): ReactElement {
           remap={remapWithContext}
           showDialog={showDialog}
         />
-      </main>
+      </Main>
     );
   }
 

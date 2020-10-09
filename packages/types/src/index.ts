@@ -56,6 +56,24 @@ export interface BlockDefinition {
   header?: string;
 
   /**
+   * An override of the block’s default layout.
+   */
+  layout?: 'float' | 'grow' | 'static';
+
+  /**
+   * For floating blocks this propert defines where the block should float.
+   */
+  position?:
+    | 'top left'
+    | 'top'
+    | 'top right'
+    | 'left'
+    | 'right'
+    | 'bottom left'
+    | 'bottom'
+    | 'bottom right';
+
+  /**
    * The theme of the block.
    */
   theme?: Partial<Theme>;
@@ -805,13 +823,6 @@ export interface BasePageDefinition {
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
-
-  /**
-   * The navigation type to use.
-   *
-   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
-   */
-  navigation?: Navigation;
 
   /**
    * Whether or not the page should be displayed in navigational menus.

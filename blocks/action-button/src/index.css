@@ -1,21 +1,7 @@
-a,
-button {
-  align-items: center;
-  background-color: var(--primary-color);
-  border: none;
-  border-radius: 50%;
-  bottom: 12px;
-  box-shadow: 0 1px 5px 0 hsl(0, 0%, 0%);
-  color: var(--primary-color-invert);
-  cursor: pointer;
-  display: flex !important;
-  font-size: 24px;
-  height: 56px;
-  justify-content: center;
-  outline: none;
-  padding: 0;
-  position: fixed;
-  right: 12px;
-  text-decoration: none;
+:global(.button) {
+  box-shadow: 0 1px 5px 0 hsl(0, 0%, 0%) !important;
+  display: flex;
+  height: 56px !important;
+  margin: 0 auto;
   width: 56px;
 }

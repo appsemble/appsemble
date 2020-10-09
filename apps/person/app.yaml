@@ -37,11 +37,9 @@ pages:
         version: 0.15.2
         parameters:
           fields:
-            - value:
-                prop: firstName
+            - value: { prop: firstName }
               label: First Name
-            - value:
-                prop: lastName
+            - value: { prop: lastName }
               label: Surname
         actions:
           onClick:
@@ -103,17 +101,13 @@ pages:
         version: 0.15.2
         parameters:
           fields:
-            - value:
-                prop: firstName
+            - value: { prop: firstName }
               label: First Name
-            - value:
-                prop: lastName
+            - value: { prop: lastName }
               label: Surname
-            - value:
-                prop: email
+            - value: { prop: email }
               label: Email Address
-            - value:
-                prop: description
+            - value: { prop: description }
               label: Description
         events:
           listen:

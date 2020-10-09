@@ -7,6 +7,8 @@ import { Link, Redirect } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { useAppDefinition } from '../AppDefinitionProvider';
+import { Main } from '../Main';
+import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
@@ -54,21 +56,24 @@ export function OpenIDCallback(): ReactElement {
 
   if (!isOk) {
     return (
-      <Content className={styles.error} padding>
-        <Message color="danger">
-          {errorMessage === 'access_denied' ? (
-            <FormattedMessage {...messages.accessDenied} />
-          ) : (
-            <FormattedMessage {...messages.error} />
-          )}
-        </Message>
-        <Link
-          className="button"
-          to={{ pathname: '/Login', search: String(new URLSearchParams({ redirect })) }}
-        >
-          <FormattedMessage {...messages.retry} />
-        </Link>
-      </Content>
+      <Main>
+        <TitleBar />
+        <Content className={styles.error} padding>
+          <Message color="danger">
+            {errorMessage === 'access_denied' ? (
+              <FormattedMessage {...messages.accessDenied} />
+            ) : (
+              <FormattedMessage {...messages.error} />
+            )}
+          </Message>
+          <Link
+            className="button"
+            to={{ pathname: '/Login', search: String(new URLSearchParams({ redirect })) }}
+          >
+            <FormattedMessage {...messages.retry} />
+          </Link>
+        </Content>
+      </Main>
     );
   }
 

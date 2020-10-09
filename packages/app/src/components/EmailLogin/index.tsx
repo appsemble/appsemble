@@ -1,5 +1,6 @@
 import {
   Content,
+  FormButtons,
   PasswordField,
   SimpleForm,
   SimpleFormError,
@@ -9,6 +10,7 @@ import {
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { Main } from '../Main';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
 
@@ -16,28 +18,32 @@ export function EmailLogin(): ReactElement {
   const { passwordLogin } = useUser();
 
   return (
-    <Content main padding>
-      <SimpleForm defaultValues={{ username: '', password: '' }} onSubmit={passwordLogin}>
-        <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
-        <SimpleFormField
-          autoComplete="email"
-          icon="envelope"
-          label={<FormattedMessage {...messages.usernameLabel} />}
-          name="username"
-          required
-          type="email"
-        />
-        <SimpleFormField
-          autoComplete="current-password"
-          component={PasswordField}
-          label={<FormattedMessage {...messages.passwordLabel} />}
-          name="password"
-          required
-        />
-        <SimpleSubmit className="is-pulled-right">
-          <FormattedMessage {...messages.loginButton} />
-        </SimpleSubmit>
-      </SimpleForm>
+    <Content padding>
+      <Main>
+        <SimpleForm defaultValues={{ username: '', password: '' }} onSubmit={passwordLogin}>
+          <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
+          <SimpleFormField
+            autoComplete="email"
+            icon="envelope"
+            label={<FormattedMessage {...messages.usernameLabel} />}
+            name="username"
+            required
+            type="email"
+          />
+          <SimpleFormField
+            autoComplete="current-password"
+            component={PasswordField}
+            label={<FormattedMessage {...messages.passwordLabel} />}
+            name="password"
+            required
+          />
+          <FormButtons>
+            <SimpleSubmit>
+              <FormattedMessage {...messages.loginButton} />
+            </SimpleSubmit>
+          </FormButtons>
+        </SimpleForm>
+      </Main>
     </Content>
   );
 }

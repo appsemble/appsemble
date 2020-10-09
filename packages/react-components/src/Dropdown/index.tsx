@@ -43,7 +43,13 @@ export function Dropdown({ children, className, label }: DropdownProps): ReactEl
   return (
     <div className={classNames('dropdown', className, { 'is-active': enabled })} ref={ref}>
       <div className="dropdown-trigger">
-        <Button aria-haspopup onClick={toggle} onKeyDown={onKeyDown}>
+        <Button
+          aria-haspopup
+          // This is important for Safari.
+          className="py-0"
+          onClick={toggle}
+          onKeyDown={onKeyDown}
+        >
           {label}
           <Icon icon="angle-down" size="small" />
         </Button>

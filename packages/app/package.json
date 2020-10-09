@@ -45,7 +45,6 @@
     "react-dom": "^16.13.1",
     "react-intl": "^5.8.0",
     "react-router-dom": "^5.2.0",
-    "react-transition-group": "^4.4.1",
     "roboto-fontface": "^0.10.0",
     "serviceworker-webpack-plugin": "^1.0.1",
     "type-fest": "^0.16.0"

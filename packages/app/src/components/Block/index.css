@@ -3,6 +3,78 @@
   text-align: center;
 }
 
-.blockRoot {
+.root {
+  flex-flow: column;
+}
+
+.float {
+  bottom: 50%;
+  left: 50%;
+  position: fixed;
+
+  /* Halfway, plus half the navbar size */
+  top: calc(50% + 1.675rem);
+  transform: translate(-50%, -50%);
+  z-index: 2000;
+
+  &.top {
+    bottom: unset;
+
+    /* Additional margin was added for to take the navbar into account */
+    top: 4rem;
+
+    /* Trim the Y translation */
+    transform: translateX(-50%);
+
+    &.left,
+    &.right {
+      transform: unset;
+    }
+  }
+
+  &.bottom {
+    bottom: 0.75rem;
+    top: unset;
+
+    /* Trim the Y translation */
+    transform: translateX(-50%);
+
+    &.left,
+    &.right {
+      transform: unset;
+    }
+
+    &.hasBottomNav {
+      bottom: 7.75rem;
+    }
+  }
+
+  &.left {
+    left: 0.75rem;
+
+    /* Trim the X translation */
+    transform: translateY(-50%);
+  }
+
+  &.right {
+    left: unset;
+    right: 0.75rem;
+
+    /* Trim the X translation */
+    transform: translateY(-50%);
+  }
+
+  & .title {
+    margin-top: 0 !important;
+  }
+}
+
+.grow {
+  /* It’s muy important for Safari to specify the full flex property here. */
   flex: 1 0 auto;
+}
+
+.host {
+  flex: 1;
+  position: relative;
 }

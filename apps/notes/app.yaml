@@ -44,6 +44,7 @@ resources:
 
 pages:
   - name: Notes
+    icon: scroll
     blocks:
       - type: data-loader
         version: 0.15.2
@@ -60,8 +61,7 @@ pages:
         version: 0.15.2
         parameters:
           fields:
-            - value:
-                prop: title
+            - value: { prop: title }
               label: Title
         events:
           listen:
@@ -75,10 +75,8 @@ pages:
                 version: 0.15.2
                 parameters:
                   fields:
-                    - label:
-                        prop: title
-                      value:
-                        prop: body
+                    - label: { prop: title }
+                      value: { prop: body }
       - type: action-button
         version: 0.15.2
         parameters:

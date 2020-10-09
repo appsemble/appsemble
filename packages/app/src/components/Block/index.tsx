@@ -1,6 +1,6 @@
 import type { EventEmitter } from 'events';
 
-import { useMessages } from '@appsemble/react-components';
+import { Title, useMessages } from '@appsemble/react-components';
 import type { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
@@ -25,7 +25,6 @@ const FA_URL = [...document.styleSheets]
 
 interface BlockProps {
   data?: any;
-  className?: string;
   ee: EventEmitter;
 
   /**
@@ -59,7 +58,6 @@ interface BlockProps {
  */
 export function Block({
   block,
-  className,
   data,
   ee,
   extraCreators,
@@ -234,30 +232,47 @@ export function Block({
     showDialog,
   ]);
 
+  const { layout = manifest.layout } = block;
+
+  if (layout === 'hidden') {
+    return null;
+  }
+
   const header = block.header ? (
-    <h6 className={classNames('title is-6', styles.title)}>
+    <Title className={styles.title} level={6}>
       {remap(block.header, { ...data, ...params })}
-    </h6>
+    </Title>
   ) : null;
 
-  switch (manifest.layout) {
-    case 'float':
-      return createPortal(
-        <div className={className} data-block={blockName} data-path={prefix} ref={ref} />,
-        document.body,
-      );
-    case 'hidden':
-      return null;
-    default:
-      return (
-        <div
-          className={`${className} ${styles.blockRoot}`}
-          data-block={blockName}
-          data-path={prefix}
-        >
-          {header}
-          <div ref={ref} />
-        </div>
-      );
+  if (layout === 'float') {
+    const { position = 'bottom right' } = block;
+    return createPortal(
+      <div
+        className={classNames(`is-flex ${styles.root} ${styles.float}`, {
+          [styles.top]: position.includes('top'),
+          [styles.bottom]: position.includes('bottom'),
+          [styles.left]: position.includes('left'),
+          [styles.right]: position.includes('right'),
+          [styles.hasBottomNav]: definition.navigation === 'bottom',
+        })}
+        data-block={blockName}
+        data-path={prefix}
+      >
+        {header}
+        <div className={styles.host} ref={ref} />
+      </div>,
+      document.body,
+    );
   }
+
+  return (
+    <div
+      className={classNames(`is-flex ${styles.root}`, { [styles.grow]: layout !== 'static' })}
+      data-block={blockName}
+      data-path={prefix}
+    >
+      {header}
+      <div className={styles.host} ref={ref} />
+    </div>
+  );
 }
