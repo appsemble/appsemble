@@ -28,6 +28,7 @@ import {
   AppScreenshot,
   BlockVersion,
   Member,
+  Organization,
   Resource,
   transactional,
 } from '../models';
@@ -474,13 +475,16 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
   } = ctx;
-  const app = await App.findByPk(appId, { raw: true });
+  const app = await App.findByPk(appId, {
+    attributes: ['icon'],
+    include: [{ model: Organization, attributes: ['icon'] }],
+  });
 
   if (!app) {
     throw notFound('App not found');
   }
 
-  const icon = app.icon || (await readAsset('appsemble.svg'));
+  const icon = app.icon || app.Organization.icon || (await readAsset('appsemble.svg'));
   const metadata = await sharp(icon).metadata();
 
   ctx.body = icon;

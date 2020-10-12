@@ -8,7 +8,7 @@ import type { File } from 'koas-body-parser';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import { BlockAsset, BlockVersion, getDB, transactional } from '../models';
+import { BlockAsset, BlockVersion, getDB, Organization, transactional } from '../models';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { readAsset } from '../utils/readAsset';
@@ -274,15 +274,16 @@ export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
 
   const version = await BlockVersion.findOne({
     attributes: ['icon'],
-    raw: true,
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
+    include: [{ model: Organization, attributes: ['icon'] }],
   });
 
   if (!version) {
     throw notFound('Block version not found');
   }
 
-  const icon = version.icon || ((await readAsset('appsemble.svg')) as Buffer);
+  const icon =
+    version.icon || version.Organization.icon || ((await readAsset('appsemble.svg')) as Buffer);
   ctx.type = isSvg(icon) ? 'svg' : (await fileType.fromBuffer(icon)).mime;
   ctx.body = icon;
 }
