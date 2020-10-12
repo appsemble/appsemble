@@ -32,6 +32,36 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
+export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { organizationId },
+    request: {
+      body: { icon, name },
+    },
+  } = ctx;
+
+  const organization = await Organization.findByPk(organizationId);
+  if (!organization) {
+    throw notFound('Organization not found.');
+  }
+
+  const result: Partial<Organization> = {};
+  if (name) {
+    result.name = name;
+  }
+
+  if (icon) {
+    result.icon = icon.contents;
+  }
+
+  await organization.update(result);
+
+  ctx.body = {
+    id: organization.id,
+    name: name || organization.name,
+  };
+}
+
 export async function createOrganization(ctx: KoaContext): Promise<void> {
   const {
     request: {

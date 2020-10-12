@@ -6,6 +6,7 @@ export const key = '0.15.2';
 /**
  * Symmary:
  * - Add the `OAuth2Consent` table.
+ * - Add `icon` to Organization
  *
  * @param db - The sequelize database.
  */
@@ -31,11 +32,15 @@ export async function up(db: Sequelize): Promise<void> {
     created: { type: DataTypes.DATE, allowNull: false },
     updated: { type: DataTypes.DATE, allowNull: false },
   });
+
+  logger.info('Adding column icon to Organization');
+  await queryInterface.addColumn('Organization', 'icon', { type: DataTypes.BLOB });
 }
 
 /**
  * Symmary:
  * - Drop the `OAuth2Consent` table.
+ * - Drop the `icon` column from Organization
  *
  * @param db - The sequelize database.
  */
@@ -43,4 +48,7 @@ export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
   logger.info('Removing table OAuth2Consent');
   await queryInterface.dropTable('OAuth2Consent');
+
+  logger.info('Adding column icon to Organization');
+  await queryInterface.removeColumn('Organization', 'icon');
 }
