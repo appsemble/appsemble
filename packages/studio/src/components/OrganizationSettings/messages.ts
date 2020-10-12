@@ -6,4 +6,6 @@ export const messages = defineMessages({
   addMembers: 'Add members',
   name: 'Name',
   actions: 'Actions',
+  logo: 'Logo',
+  edit: 'Edit Organization',
 });

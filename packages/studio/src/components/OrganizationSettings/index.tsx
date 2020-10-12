@@ -12,7 +12,7 @@ import {
 import type { OrganizationInvite } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import React, { ReactElement, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import type { Member } from '../../types';
@@ -31,6 +31,7 @@ import { messages } from './messages';
 export function OrganizationSettings(): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();
   const { organizations, userInfo } = useUser();
+  const { formatMessage } = useIntl();
   const {
     data: members,
     error: membersError,
@@ -73,8 +74,21 @@ export function OrganizationSettings(): ReactElement {
 
   return (
     <Content fullwidth main padding>
-      <Title level={1}>{organization.name || `@${organizationId}`}</Title>
-      {organization.name ? <Subtitle level={3}>{`@${organizationId}`}</Subtitle> : null}
+      <div className="is-flex">
+        <img
+          alt={formatMessage(messages.logo)}
+          className={styles.vertical}
+          src={`/organization/@${organizationId}/icon-128.png`}
+        />
+        <div className={`${styles.vertical} ml-4 is-inline-block`}>
+          <Title level={1}>{organization.name || `@${organizationId}`}</Title>
+          {organization.name ? <Subtitle level={3}>{`@${organizationId}`}</Subtitle> : null}
+        </div>
+        <Button className={styles.editButton} onClick={addMembersModal.enable}>
+          <FormattedMessage {...messages.edit} />
+        </Button>
+      </div>
+
       <hr />
       <HeaderControl
         control={
