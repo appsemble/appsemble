@@ -13,6 +13,25 @@ interface Params {
   redirectUri: string;
 }
 
+async function checkIsAllowed(app: App, user: User): Promise<boolean> {
+  let isAllowed = true;
+
+  if (app.definition?.security?.default?.policy) {
+    const { policy } = app.definition.security.default;
+    if (policy === 'invite' && !app.Users.length) {
+      isAllowed = false;
+    } else if (policy === 'organization') {
+      isAllowed = Boolean(
+        await Member.count({
+          where: { OrganizationId: app.OrganizationId, UserId: user.id },
+        }),
+      );
+    }
+  }
+
+  return isAllowed;
+}
+
 export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
   const {
     user: { id },
@@ -74,20 +93,7 @@ export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
-  let isAllowed = true;
-
-  if (app.definition?.security?.default?.policy) {
-    const { policy } = app.definition.security.default;
-    if (policy === 'invite' && !app.Users.length) {
-      isAllowed = false;
-    } else if (policy === 'organization') {
-      isAllowed = Boolean(
-        await Member.count({
-          where: { OrganizationId: app.OrganizationId, UserId: user.id },
-        }),
-      );
-    }
-  }
+  const isAllowed = await checkIsAllowed(app, user);
 
   if (!app.OAuth2Consents?.length || !hasScope(app.OAuth2Consents[0].scope, scope)) {
     throw badRequest('User has not agreed to the requested scopes', {
@@ -116,12 +122,19 @@ export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void>
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['domain', 'id', 'path', 'OrganizationId'],
-    include: [OAuth2Consent],
+    attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],
+    include: [OAuth2Consent, { model: User, where: { id: user.id }, required: false }],
   });
 
   if (!app) {
     throw notFound('App not found');
+  }
+
+  if (!(await checkIsAllowed(app, user))) {
+    throw badRequest('User is not allowed to login due to the app’s security policy', {
+      appName: app.definition.name,
+      isAllowed: false,
+    });
   }
 
   await OAuth2Consent.upsert({ AppId: appId, UserId: user.id, scope });

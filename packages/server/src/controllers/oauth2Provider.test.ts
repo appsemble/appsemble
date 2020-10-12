@@ -360,6 +360,31 @@ describe('agreeOAuth2Consent', () => {
     });
   });
 
+  it('should block if user is not allowed to login due to the app’s security policy', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: { security: { default: { policy: 'invite' } } },
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+
+    const response = await request.post(
+      '/api/oauth2/consent/agree',
+      { appId: app.id, redirectUri: 'http://app.org.localhost:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        data: { isAllowed: false },
+        message: 'User is not allowed to login due to the app’s security policy',
+        statusCode: 400,
+      },
+    });
+  });
+
   it('should return 404 for non-existent apps', async () => {
     const response = await request.post(
       '/api/oauth2/consent/agree',
