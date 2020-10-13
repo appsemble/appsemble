@@ -68,6 +68,7 @@ export const paths: OpenAPIV3.PathsObject = {
       responses: {
         200: { $ref: '#/components/responses/organization' },
       },
+      security: [{ studio: [] }, { cli: ['organizations:write'] }],
     },
   },
   '/api/organizations/{organizationId}/members': {
