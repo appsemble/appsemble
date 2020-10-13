@@ -106,6 +106,7 @@ export function OrganizationSettings(): ReactElement {
   const organization = organizations.find((org) => org.id === organizationId);
   const me = members?.find((member) => member.id === userInfo.sub);
   const ownerCount = me && members.filter((member) => member.role === 'Owner').length;
+  const mayEditOrganization = me && checkRole(me.role, Permission.EditOrganization);
   const mayEdit = me && checkRole(me.role, Permission.ManageMembers);
   const mayInvite = me && checkRole(me.role, Permission.InviteMember);
 
@@ -119,9 +120,11 @@ export function OrganizationSettings(): ReactElement {
           <Title level={1}>{organization.name || `@${organizationId}`}</Title>
           {organization.name ? <Subtitle level={3}>{`@${organizationId}`}</Subtitle> : null}
         </div>
-        <Button className={styles.editButton} onClick={editModal.enable}>
-          <FormattedMessage {...messages.edit} />
-        </Button>
+        {mayEditOrganization && (
+          <Button className={styles.editButton} onClick={editModal.enable}>
+            <FormattedMessage {...messages.edit} />
+          </Button>
+        )}
       </div>
 
       <hr />
@@ -175,52 +178,54 @@ export function OrganizationSettings(): ReactElement {
           </tbody>
         </Table>
       )}
-      <Modal
-        component={SimpleForm}
-        defaultValues={{
-          name: organization.name,
-        }}
-        footer={
-          <>
-            <CardFooterButton onClick={editModal.disable}>
-              <FormattedMessage {...messages.cancel} />
-            </CardFooterButton>
-            <CardFooterButton color="primary" type="submit">
-              <FormattedMessage {...messages.submit} />
-            </CardFooterButton>
-          </>
-        }
-        isActive={editModal.enabled}
-        onClose={editModal.disable}
-        onSubmit={onEditOrganization}
-        title={<FormattedMessage {...messages.edit} />}
-      >
-        <SimpleFormField
-          help={<FormattedMessage {...messages.nameDescription} />}
-          label={<FormattedMessage {...messages.name} />}
-          maxLength={30}
-          minLength={1}
-          name="name"
-        />
-        <FileUpload
-          accept="image/jpeg, image/png, image/tiff, image/webp"
-          fileButtonLabel={<FormattedMessage {...messages.logo} />}
-          fileLabel={<FormattedMessage {...messages.noFile} />}
-          help={<FormattedMessage {...messages.logoDescription} />}
-          label={<FormattedMessage {...messages.logo} />}
-          name="logo"
-          onChange={onLogoChange}
-          preview={
-            <figure className="image is-128x128 mb-2">
-              <img
-                alt={formatMessage(messages.logo)}
-                className={styles.icon}
-                src={editingIconUrl}
-              />
-            </figure>
+      {mayEditOrganization && (
+        <Modal
+          component={SimpleForm}
+          defaultValues={{
+            name: organization.name,
+          }}
+          footer={
+            <>
+              <CardFooterButton onClick={editModal.disable}>
+                <FormattedMessage {...messages.cancel} />
+              </CardFooterButton>
+              <CardFooterButton color="primary" type="submit">
+                <FormattedMessage {...messages.submit} />
+              </CardFooterButton>
+            </>
           }
-        />
-      </Modal>
+          isActive={editModal.enabled}
+          onClose={editModal.disable}
+          onSubmit={onEditOrganization}
+          title={<FormattedMessage {...messages.edit} />}
+        >
+          <SimpleFormField
+            help={<FormattedMessage {...messages.nameDescription} />}
+            label={<FormattedMessage {...messages.name} />}
+            maxLength={30}
+            minLength={1}
+            name="name"
+          />
+          <FileUpload
+            accept="image/jpeg, image/png, image/tiff, image/webp"
+            fileButtonLabel={<FormattedMessage {...messages.logo} />}
+            fileLabel={<FormattedMessage {...messages.noFile} />}
+            help={<FormattedMessage {...messages.logoDescription} />}
+            label={<FormattedMessage {...messages.logo} />}
+            name="logo"
+            onChange={onLogoChange}
+            preview={
+              <figure className="image is-128x128 mb-2">
+                <img
+                  alt={formatMessage(messages.logo)}
+                  className={styles.icon}
+                  src={editingIconUrl}
+                />
+              </figure>
+            }
+          />
+        </Modal>
+      )}
       <AddMembersModal onInvited={onInvited} state={addMembersModal} />
     </Content>
   );

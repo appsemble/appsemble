@@ -45,6 +45,8 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
     throw notFound('Organization not found.');
   }
 
+  await checkRole(ctx, organization.id, Permission.EditOrganization);
+
   const result: Partial<Organization> = {};
   if (name) {
     result.name = name;

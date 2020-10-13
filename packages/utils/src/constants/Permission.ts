@@ -15,4 +15,5 @@ export enum Permission {
   PushNotifications,
   ManageResources,
   InviteMember,
+  EditOrganization,
 }
