@@ -1,6 +1,9 @@
 import { randomBytes } from 'crypto';
+import { createReadStream, promises as fs } from 'fs';
+import { join } from 'path';
 
 import { request, setTestApp } from 'axios-test-instance';
+import FormData from 'form-data';
 import type * as Koa from 'koa';
 
 import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
@@ -56,6 +59,51 @@ describe('getOrganization', () => {
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
+    });
+  });
+});
+
+describe('patchOrganization', () => {
+  it('should update the name of the organization', async () => {
+    const formData = new FormData();
+    formData.append('name', 'Test');
+
+    const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
+      headers: { authorization, ...formData.getHeaders() },
+    });
+    expect(response).toMatchObject({ data: { id: organization.id, name: 'Test' } });
+  });
+
+  it('should update the logo of the organization', async () => {
+    const formData = new FormData();
+    formData.append('icon', createReadStream(join(__dirname, '__fixtures__', 'testpattern.png')));
+
+    const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
+      headers: { authorization, ...formData.getHeaders() },
+    });
+
+    await organization.reload();
+
+    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'testpattern.png'));
+
+    expect(response).toMatchObject({ data: { id: organization.id, name: 'Test Organization' } });
+    expect(organization.icon).toStrictEqual(buffer);
+  });
+
+  it('should not allow anything if the user is not an owner', async () => {
+    await Member.update(
+      { role: 'Member' },
+      { where: { OrganizationId: organization.id, UserId: user.id } },
+    );
+    const formData = new FormData();
+    formData.append('name', 'Test');
+
+    const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
+      headers: { authorization, ...formData.getHeaders() },
+    });
+    expect(response).toMatchObject({
+      data: { message: 'User does not have sufficient permissions.' },
+      status: 403,
     });
   });
 });
