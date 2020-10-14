@@ -14,22 +14,22 @@ interface Params {
 }
 
 async function checkIsAllowed(app: App, user: User): Promise<boolean> {
-  let isAllowed = true;
-
-  if (app.definition?.security?.default?.policy) {
-    const { policy } = app.definition.security.default;
-    if (policy === 'invite' && !app.Users.length) {
-      isAllowed = false;
-    } else if (policy === 'organization') {
-      isAllowed = Boolean(
-        await Member.count({
-          where: { OrganizationId: app.OrganizationId, UserId: user.id },
-        }),
-      );
-    }
+  const policy = app.definition?.security?.default?.policy ?? 'everyone';
+  if (policy === 'everyone') {
+    return true;
   }
 
-  return isAllowed;
+  if (policy === 'invite' && !app.Users.length) {
+    return false;
+  }
+
+  if (policy === 'organization') {
+    return Boolean(
+      await Member.count({
+        where: { OrganizationId: app.OrganizationId, UserId: user.id },
+      }),
+    );
+  }
 }
 
 export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
