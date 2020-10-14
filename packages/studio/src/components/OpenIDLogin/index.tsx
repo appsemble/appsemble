@@ -17,6 +17,7 @@ export function OpenIDLogin(): ReactElement {
 
   const [appLoading, setAppLoading] = useState(true);
   const [appName, setAppName] = useState<string>();
+  const [isAllowed, setIsAllowed] = useState<boolean>();
   const [error, setError] = useState<MessageDescriptor>(null);
   const [generating, setGenerating] = useState(false);
 
@@ -57,11 +58,22 @@ export function OpenIDLogin(): ReactElement {
 
     axios
       .post('/api/oauth2/consent/verify', { appId, redirectUri, scope })
-      .then(({ data: { code } }) => oauth2Redirect(qs, { code }))
+      .then(({ data }) => {
+        if (!data.isAllowed) {
+          setIsAllowed(false);
+          setAppName(data.appName);
+          setAppLoading(false);
+          return;
+        }
+
+        oauth2Redirect(qs, { code: data.code });
+      })
       .catch(({ response: { data, status } }) => {
         if (!(status === 400 && 'appName' in data.data)) {
           setError(messages.unknownError);
         }
+
+        setIsAllowed(data.data.isAllowed);
         setAppName(data.data.appName);
         setAppLoading(false);
       });
@@ -79,6 +91,31 @@ export function OpenIDLogin(): ReactElement {
 
   if (appLoading) {
     return <Loader />;
+  }
+
+  if (!isAllowed) {
+    return (
+      <Content padding>
+        <HelmetIntl title={messages.title} titleValues={{ app: appName }} />
+        <div className="content">
+          <Message color="warning">
+            <FormattedMessage
+              {...messages.notAllowed}
+              values={{
+                app: (
+                  <Link className="has-text-weight-bold is-italic" to={`/apps/${appId}`}>
+                    {appName}
+                  </Link>
+                ),
+              }}
+            />
+          </Message>
+          <Button className={`${styles.returnButton} is-block`} onClick={onDeny}>
+            <FormattedMessage {...messages.returnToApp} />
+          </Button>
+        </div>
+      </Content>
+    );
   }
 
   return (
