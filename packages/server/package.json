@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -26,9 +26,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.15.1",
-    "@appsemble/types": "0.15.1",
-    "@appsemble/utils": "0.15.1",
+    "@appsemble/node-utils": "0.15.2",
+    "@appsemble/types": "0.15.2",
+    "@appsemble/utils": "0.15.2",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@hapi/boom": "^9.1.0",
     "@koa/cors": "^3.1.0",
