@@ -1,7 +1,5 @@
-import { ReadStream } from 'fs';
 import { URL } from 'url';
 
-import type { Readable } from 'form-data';
 import { createReadStream } from 'fs-extra';
 import normalizePath from 'normalize-path';
 
