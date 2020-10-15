@@ -1,4 +1,3 @@
-import { Organization } from '../../models';
 import type { KoaContext } from '../../types';
 import { serveIcon } from '../serveIcon';
 

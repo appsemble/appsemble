@@ -19,9 +19,9 @@ export async function serveIcon(
   const finalIcon = icon || (await readAsset('appsemble.svg'));
   let img = sharp(finalIcon);
   const metadata = await img.metadata();
-  const width = options.width ?? icon ? metadata.width : 128;
-  const height = options.height ?? icon ? metadata.height : 128;
-  const format = options.format ?? icon ? metadata.format : 'png';
+  const width = options.width ?? (icon ? metadata.width : 128);
+  const height = options.height ?? (icon ? metadata.height : 128);
+  const format = options.format ?? (icon ? metadata.format : 'png');
   // SVG images can be resized with a density much better than its metadata specified.
   if (metadata.format === 'svg') {
     const density = Math.max(
