@@ -14,8 +14,9 @@ export function ProfileDropdown(): ReactElement {
   const { isLoggedIn, logout, userInfo } = useUser();
 
   const showLogin = definition.security;
+  const { layout } = definition;
 
-  if (!showLogin) {
+  if (!showLogin || (layout?.login != null && layout?.login !== 'navbar')) {
     return null;
   }
 

@@ -14,6 +14,16 @@ import type { Definition } from 'typescript-json-schema';
 export type { Theme };
 
 /**
+ * A representation of a generated OAuth2 authorization code response.
+ */
+export interface OAuth2AuthorizationCode {
+  /**
+   * The authorization code.
+   */
+  code: string;
+}
+
+/**
  * A block that is displayed on a page.
  */
 export interface BlockDefinition {
@@ -305,7 +315,7 @@ export interface Security {
 }
 
 export type Navigation = 'bottom' | 'left-menu' | 'hidden';
-export type Login = 'navigation' | 'menu' | 'hidden';
+export type LayoutPosition = 'navigation' | 'navbar' | 'hidden';
 
 export interface NotificationDefinition {
   to?: string[];
@@ -880,18 +890,32 @@ export interface AppDefinition {
   defaultPage: string;
 
   /**
-   * The navigation type to use.
-   *
-   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+   * The settings for the layout of the app.
    */
-  navigation?: Navigation;
+  layout?: {
+    /**
+     * The location of the login button.
+     *
+     * @default 'navbar'
+     */
+    login?: LayoutPosition;
 
-  /**
-   * The location of the login and logout button.
-   *
-   * If this is omitted, it will be shown in the navbar.
-   */
-  login?: Login;
+    /**
+     * The location of the settings button.
+     *
+     * If set to `navigation`, it will only be visible if `login` is also visible in `navigation`.
+     *
+     * @default 'navbar'
+     */
+    settings?: LayoutPosition;
+
+    /**
+     * The navigation type to use.
+     *
+     * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+     */
+    navigation?: Navigation;
+  };
 
   /**
    * The strategy to use for apps to subscribe to push notifications.

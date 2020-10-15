@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.2] - 2020-10-14
+
+### Fixed
+
+- App: Fix events when called from a dialog action.
+- Studio: Save agreed OAuth2 consent for app login.
+
 ## [0.15.1] - 2020-10-05
 
 ### Added

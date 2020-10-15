@@ -23,7 +23,7 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { getMessage } = useAppMessages();
   const {
-    definition: { login, security: showLogin },
+    definition: { layout, security: showLogin },
   } = useAppDefinition();
   const { isLoggedIn, logout } = useUser();
 
@@ -46,16 +46,18 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
               </li>
             );
           })}
-          <li>
-            <NavLink activeClassName={styles.active} to={`${url}/Settings`}>
-              <Icon className={styles.icon} icon="wrench" />
-              <span>
-                <FormattedMessage {...messages.settings} />
-              </span>
-            </NavLink>
-          </li>
+          {layout?.settings === 'navigation' && (
+            <li>
+              <NavLink activeClassName={styles.active} to={`${url}/Settings`}>
+                <Icon className={styles.icon} icon="wrench" />
+                <span>
+                  <FormattedMessage {...messages.settings} />
+                </span>
+              </NavLink>
+            </li>
+          )}
 
-          {showLogin && login === 'menu' && (
+          {showLogin && layout?.login === 'navigation' && (
             <li>
               {isLoggedIn ? (
                 <Button className={styles.button} icon="sign-out-alt" onClick={logout}>

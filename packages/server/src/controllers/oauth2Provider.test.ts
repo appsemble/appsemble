@@ -1,7 +1,7 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Member, OAuth2AuthorizationCode, Organization, User } from '../models';
+import { App, Member, OAuth2AuthorizationCode, OAuth2Consent, Organization, User } from '../models';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -64,7 +64,203 @@ describe('getUserInfo', () => {
   });
 });
 
-describe('createAuthorizationCode', () => {
+describe('verifyOAuth2Consent', () => {
+  let organization: Organization;
+
+  beforeEach(async () => {
+    organization = await Organization.create({
+      id: 'org',
+      name: 'Test Organization',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  });
+
+  it('should create an authorization code for the user and app on a default domain if the user has previously agreed', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      definition: {},
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: app.id, redirectUri: 'http://app.org.localhost:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        code: expect.stringMatching(/^[0-f]{24}$/),
+      },
+    });
+
+    const { code } = response.data;
+    const authCode = await OAuth2AuthorizationCode.findOne({ raw: true, where: { code } });
+    expect(authCode).toStrictEqual({
+      AppId: app.id,
+      code,
+      expires: new Date('2000-01-01T00:10:00.000Z'),
+      redirectUri: 'http://app.org.localhost:9999',
+      scope: 'openid',
+      UserId: user.id,
+    });
+  });
+
+  it('should create an authorization code for the user and app on a custom domain if the user has previously agreed', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: {},
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    await OAuth2Consent.create({ scope: 'email', AppId: app.id, UserId: user.id });
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'email' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        code: expect.stringMatching(/^[0-f]{24}$/),
+      },
+    });
+
+    const { code } = response.data;
+    const authCode = await OAuth2AuthorizationCode.findOne({ raw: true, where: { code } });
+    expect(authCode).toStrictEqual({
+      AppId: app.id,
+      code,
+      expires: new Date('2000-01-01T00:10:00.000Z'),
+      redirectUri: 'http://app.example:9999',
+      scope: 'email',
+      UserId: user.id,
+    });
+  });
+
+  it('should block if a user hasn’t agreed before', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: {},
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: app.id, redirectUri: 'http://invalid.example:9999', scope: 'email openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        message: 'User has not agreed to the requested scopes',
+        statusCode: 400,
+      },
+    });
+  });
+
+  it('should block if the previously agreed scope doesn’t match the current scope', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: {},
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: app.id, redirectUri: 'http://invalid.example:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        message: 'User has not agreed to the requested scopes',
+        statusCode: 400,
+      },
+    });
+  });
+
+  it('should block if user has agreed before but isn’t allowed anymore due to the policy', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: { security: { default: { policy: 'invite' } } },
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
+
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        data: { isAllowed: false },
+        message: 'User is not allowed to login due to the app’s security policy',
+        statusCode: 400,
+      },
+    });
+  });
+
+  it('should block if user isn’t allowed due to the policy', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: { security: { default: { policy: 'invite' } } },
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'Bad Request',
+        data: { isAllowed: false },
+        message: 'User has not agreed to the requested scopes',
+        statusCode: 400,
+      },
+    });
+  });
+
+  it('should return 404 for non-existent apps', async () => {
+    const response = await request.post(
+      '/api/oauth2/consent/verify',
+      { appId: 346, redirectUri: 'http://any.example:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App not found',
+        statusCode: 404,
+      },
+    });
+  });
+});
+
+describe('agreeOAuth2Consent', () => {
   let organization: Organization;
 
   beforeEach(async () => {
@@ -84,7 +280,7 @@ describe('createAuthorizationCode', () => {
       vapidPrivateKey: '',
     });
     const response = await request.post(
-      '/api/oauth2/authorization-code',
+      '/api/oauth2/consent/agree',
       { appId: app.id, redirectUri: 'http://app.org.localhost:9999', scope: 'openid' },
       { headers: { authorization } },
     );
@@ -117,7 +313,7 @@ describe('createAuthorizationCode', () => {
       vapidPrivateKey: '',
     });
     const response = await request.post(
-      '/api/oauth2/authorization-code',
+      '/api/oauth2/consent/agree',
       { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'email' },
       { headers: { authorization } },
     );
@@ -150,8 +346,8 @@ describe('createAuthorizationCode', () => {
       vapidPrivateKey: '',
     });
     const response = await request.post(
-      '/api/oauth2/authorization-code',
-      { appId: app.id, redirectUri: 'http://invalid.example:9999' },
+      '/api/oauth2/consent/agree',
+      { appId: app.id, redirectUri: 'http://invalid.example:9999', scope: 'openid' },
       { headers: { authorization } },
     );
     expect(response).toMatchObject({
@@ -164,10 +360,35 @@ describe('createAuthorizationCode', () => {
     });
   });
 
+  it('should block if user is not allowed to login due to the app’s security policy', async () => {
+    const app = await App.create({
+      OrganizationId: organization.id,
+      path: 'app',
+      domain: 'app.example',
+      definition: { security: { default: { policy: 'invite' } } },
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+    });
+
+    const response = await request.post(
+      '/api/oauth2/consent/agree',
+      { appId: app.id, redirectUri: 'http://app.org.localhost:9999', scope: 'openid' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        data: { isAllowed: false },
+        message: 'User is not allowed to login due to the app’s security policy',
+        statusCode: 400,
+      },
+    });
+  });
+
   it('should return 404 for non-existent apps', async () => {
     const response = await request.post(
-      '/api/oauth2/authorization-code',
-      { appId: 346, redirectUri: 'http://any.example:9999' },
+      '/api/oauth2/consent/agree',
+      { appId: 346, redirectUri: 'http://any.example:9999', scope: 'openid' },
       { headers: { authorization } },
     );
     expect(response).toMatchObject({

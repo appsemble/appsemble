@@ -28,7 +28,7 @@ export function Toolbar(): ReactElement {
         </a>
       </div>
       <div className="navbar-brand">
-        <div className="navbar-item">
+        <div className="navbar-item is-paddingless px-1">
           <ProfileDropdown />
         </div>
       </div>

@@ -42,9 +42,7 @@ export function authentication({ host, secret }: Argv): AuthenticationCheckers {
 
     async cli(accessToken) {
       const { aud, scope, sub } = verify(accessToken, secret) as JwtPayload;
-      const credentials = await OAuth2ClientCredentials.findOne({
-        attributes: [],
-        raw: true,
+      const credentials = await OAuth2ClientCredentials.count({
         where: {
           id: aud,
           expires: { [Op.or]: [null, { [Op.gt]: new Date() }] },

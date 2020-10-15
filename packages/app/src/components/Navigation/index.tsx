@@ -22,7 +22,7 @@ export function Navigation(): ReactElement {
     (p) => normalize(p.name) === location.pathname.split('/')[1],
   );
 
-  const navigation = currentPage?.navigation || definition.navigation || 'left-menu';
+  const navigation = currentPage?.navigation || definition?.layout?.navigation || 'left-menu';
   const checkPagePermissions = (page: PageDefinition): boolean => {
     const roles = page.roles || definition.roles || [];
     return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));

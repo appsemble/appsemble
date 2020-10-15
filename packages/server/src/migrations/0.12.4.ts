@@ -93,7 +93,8 @@ export async function up(db: Sequelize): Promise<void> {
   });
 
   // The combination of block name, version, and organization should be unique.
-  await queryInterface.addConstraint('BlockVersion', ['name', 'version', 'OrganizationId'], {
+  await queryInterface.addConstraint('BlockVersion', {
+    fields: ['name', 'version', 'OrganizationId'],
     type: 'primary key',
     name: 'BlockVersion_pkey',
   });

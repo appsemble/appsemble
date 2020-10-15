@@ -17,7 +17,7 @@ interface TitleBarProps {
  */
 export function TitleBar({ children }: TitleBarProps): ReactElement {
   const {
-    definition: { login },
+    definition: { layout },
   } = useAppDefinition();
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
@@ -30,9 +30,9 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
         <div className={`navbar-brand ${styles.title}`}>
           <h2 className="navbar-item title is-4">{children}</h2>
         </div>
-        {(!login || login === 'navigation') && (
+        {(layout?.login == null || layout?.login === 'navbar') && (
           <div className="navbar-brand">
-            <div className="navbar-item">
+            <div className="navbar-item is-paddingless px-1">
               <ProfileDropdown />
             </div>
           </div>
