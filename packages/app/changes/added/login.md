@@ -1,1 +1,1 @@
-Add `login` property which can be used to determine where the login button should be.
+Add `layout` property which can be used to determine where various layout elements should be.
