@@ -5,6 +5,7 @@ import { join } from 'path';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import type * as Koa from 'koa';
+import sharp from 'sharp';
 
 import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
 import { createServer } from '../utils/createServer';
@@ -60,6 +61,19 @@ describe('getOrganization', () => {
       status: 404,
       data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
     });
+  });
+});
+
+describe('getOrganizationIcon', () => {
+  it('should return the organization logo', async () => {
+    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'testpattern.png'));
+    await organization.update({ icon: buffer });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+    });
+
+    const img = await sharp(buffer).toFormat('png').resize(1200, 900).toBuffer();
+    expect(response.data).toStrictEqual(img);
   });
 });
 

@@ -1,4 +1,9 @@
+import { ReadStream } from 'fs';
 import { URL } from 'url';
+
+import type { Readable } from 'form-data';
+import { createReadStream } from 'fs-extra';
+import normalizePath from 'normalize-path';
 
 /**
  * Convert a remote to a valid URL.
@@ -28,4 +33,22 @@ export function coerceRemote(value: string): string {
   remote.search = '';
   remote.pathname = '';
   return String(remote);
+}
+
+/**
+ * Get a stream based on the filepath.
+ *
+ * @param value - The filepath of the file to read.
+ * @returns A stream of the file.
+ */
+export function coerceFile(value: string): NodeJS.ReadableStream {
+  if (value == null) {
+    return;
+  }
+
+  if (value === '-') {
+    return process.stdin;
+  }
+
+  return createReadStream(normalizePath(value));
 }

@@ -2,16 +2,14 @@ import { logger } from '@appsemble/node-utils';
 import type { BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
-import * as fileType from 'file-type';
-import isSvg from 'is-svg';
 import type { File } from 'koas-body-parser';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { BlockAsset, BlockVersion, getDB, Organization, transactional } from '../models';
+import { serveIcon } from '../routes/serveIcon';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
-import { readAsset } from '../utils/readAsset';
 
 interface Params {
   blockId: string;
@@ -282,8 +280,6 @@ export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Block version not found');
   }
 
-  const icon =
-    version.icon || version.Organization.icon || ((await readAsset('appsemble.svg')) as Buffer);
-  ctx.type = isSvg(icon) ? 'svg' : (await fileType.fromBuffer(icon)).mime;
-  ctx.body = icon;
+  const icon = version.icon || version.Organization.icon;
+  await serveIcon(ctx, { icon });
 }

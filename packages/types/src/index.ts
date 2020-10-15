@@ -1031,6 +1031,11 @@ export interface Organization {
    * The display name of the organization.
    */
   name: string;
+
+  /**
+   * The URL at which the organization’s icon can be found.
+   */
+  iconUrl: string;
 }
 
 /**

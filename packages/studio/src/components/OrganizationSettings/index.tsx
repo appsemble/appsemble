@@ -56,11 +56,6 @@ export function OrganizationSettings(): ReactElement {
   const addMembersModal = useToggle();
   const editModal = useToggle();
 
-  const iconUrl = useObjectURL(
-    (!editModal.enabled && icon) || `/organization/@${organizationId}/icon-128.png`,
-  );
-  const editingIconUrl = useObjectURL(icon || `/organization/@${organizationId}/icon-128.png`);
-
   const onInvited = useCallback(
     (newInvites: OrganizationInvite[]) => setInvites([...invites, ...newInvites]),
     [invites, setInvites],
@@ -109,6 +104,8 @@ export function OrganizationSettings(): ReactElement {
   const mayEditOrganization = me && checkRole(me.role, Permission.EditOrganization);
   const mayEdit = me && checkRole(me.role, Permission.ManageMembers);
   const mayInvite = me && checkRole(me.role, Permission.InviteMember);
+  const iconUrl = useObjectURL((!editModal.enabled && icon) || organization.iconUrl);
+  const editingIconUrl = useObjectURL(icon || organization.iconUrl);
 
   return (
     <Content fullwidth main padding>

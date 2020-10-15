@@ -6,7 +6,7 @@ import { cosmiconfig } from 'cosmiconfig';
 import yargs from 'yargs';
 
 import { CREDENTIALS_ENV_VAR } from './lib/authentication';
-import { coerceRemote } from './lib/coerceRemote';
+import { coerceRemote } from './lib/coercers';
 import { initAxios } from './lib/initAxios';
 
 export async function main(argv: string[]): Promise<void> {

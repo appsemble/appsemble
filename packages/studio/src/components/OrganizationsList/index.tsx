@@ -84,11 +84,9 @@ export function OrganizationsList(): ReactElement {
         {organizations.map((org) => (
           <li className="my-4" key={org.id}>
             <Link className={`px-4 py-4 ${styles.link}`} to={`${url}/${org.id}`}>
-              <img
-                alt={formatMessage(messages.logo)}
-                className={styles.vertical}
-                src={`/organization/@${org.id}/icon-96.png`}
-              />
+              <figure className={`image is-96x96 is-inline-block ${styles.vertical}`}>
+                <img alt={formatMessage(messages.logo)} src={org.iconUrl} />
+              </figure>
               <div className={`ml-4 is-inline-block ${styles.vertical}`}>
                 <Title level={3}>{org.name || `@${org.id}`}</Title>
                 <Subtitle level={5}>{org.role}</Subtitle>

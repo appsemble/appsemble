@@ -4,6 +4,7 @@ import { join } from 'path';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
+import sharp from 'sharp';
 
 import { Member, Organization, User } from '../models';
 import { createServer } from '../utils/createServer';
@@ -360,11 +361,12 @@ describe('getBlockIcon', () => {
       headers: { authorization, ...formData.getHeaders() },
     });
 
+    const img = await sharp(icon).toFormat('png').resize(1200, 900).toBuffer();
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
     });
     expect(response.headers['content-type']).toBe('image/png');
-    expect(response.data.equals(icon)).toBe(true);
+    expect(response.data).toStrictEqual(img);
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
@@ -390,7 +392,12 @@ describe('getBlockIcon', () => {
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
     });
-    expect(response.headers['content-type']).toBe('image/svg+xml');
-    expect(response.data.equals(await readAsset('appsemble.svg'))).toBe(true);
+    const img = await sharp(await readAsset('appsemble.svg'), { density: 2400 })
+      .resize(128, 128)
+      .toFormat('png')
+      .toBuffer();
+
+    expect(response.headers['content-type']).toBe('image/png');
+    expect(response.data).toStrictEqual(img);
   });
 });

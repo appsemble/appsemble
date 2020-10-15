@@ -1,18 +1,16 @@
-import { createReadStream, existsSync } from 'fs';
-
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import normalizePath from 'normalize-path';
 import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
+import { coerceFile } from '../../lib/coercers';
 import type { BaseArguments } from '../../types';
 
 interface UpdateOrganizationArguments extends BaseArguments {
   id: string;
   name: string;
-  logo: string;
+  logo: NodeJS.ReadStream;
 }
 
 export const command = 'update <id>';
@@ -29,6 +27,7 @@ export function builder(yargs: Argv): Argv {
     })
     .option('logo', {
       describe: 'The file location of the logo representing the organization.',
+      coerce: coerceFile,
     });
 }
 
@@ -51,13 +50,8 @@ export async function handler({
   }
 
   if (logo) {
-    const logoPath = normalizePath(logo);
-    if (!existsSync(logoPath)) {
-      throw new AppsembleError(`File at ${logo} does not exist.`);
-    }
-
-    logger.info(`Including logo ${logo}`);
-    formData.append('icon', createReadStream(logoPath));
+    logger.info('Including logo');
+    formData.append('icon', logo);
   }
 
   await axios.patch(`/api/organizations/${organizationId}`, formData);
