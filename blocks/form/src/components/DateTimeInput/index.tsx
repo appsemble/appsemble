@@ -31,12 +31,13 @@ export function DateTimeInput({
   return (
     <DateTimeComponent
       disabled={disabled}
-      enableTime
+      enableTime={field.type === 'date-time'}
       error={dirty && error && utils.remap(invalidLabel, value)}
       id={name}
       iso
       label={checkboxLabel}
       name={name}
+      noCalendar={field.type === 'time'}
       onChange={onChange}
       optionalLabel={utils.remap(optionalLabel, value)}
       placeholder={utils.remap(placeholder, value)}
