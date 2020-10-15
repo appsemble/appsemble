@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization, OAuth2Consent, User } from '../models';
+import { App, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
 import type { KoaContext } from '../types';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 import { hasScope } from '../utils/oauth2';
@@ -11,6 +11,25 @@ import { hasScope } from '../utils/oauth2';
 interface Params {
   appId: number;
   redirectUri: string;
+}
+
+async function checkIsAllowed(app: App, user: User): Promise<boolean> {
+  const policy = app.definition?.security?.default?.policy ?? 'everyone';
+  if (policy === 'everyone') {
+    return true;
+  }
+
+  if (policy === 'invite' && !app.Users.length) {
+    return false;
+  }
+
+  if (policy === 'organization') {
+    return Boolean(
+      await Member.count({
+        where: { OrganizationId: app.OrganizationId, UserId: user.id },
+      }),
+    );
+  }
 }
 
 export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
@@ -65,16 +84,29 @@ export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void
 
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
-    include: [{ model: OAuth2Consent, where: { UserId: user.id }, required: false }],
+    include: [
+      { model: OAuth2Consent, where: { UserId: user.id }, required: false },
+      { model: User, where: { id: user.id }, required: false },
+    ],
   });
 
   if (!app) {
     throw notFound('App not found');
   }
 
+  const isAllowed = await checkIsAllowed(app, user);
+
   if (!app.OAuth2Consents?.length || !hasScope(app.OAuth2Consents[0].scope, scope)) {
     throw badRequest('User has not agreed to the requested scopes', {
       appName: app.definition.name,
+      isAllowed,
+    });
+  }
+
+  if (!isAllowed) {
+    throw badRequest('User is not allowed to login due to the app’s security policy', {
+      appName: app.definition.name,
+      isAllowed,
     });
   }
 
@@ -91,12 +123,19 @@ export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void>
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['domain', 'id', 'path', 'OrganizationId'],
-    include: [OAuth2Consent],
+    attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],
+    include: [OAuth2Consent, { model: User, where: { id: user.id }, required: false }],
   });
 
   if (!app) {
     throw notFound('App not found');
+  }
+
+  if (!(await checkIsAllowed(app, user))) {
+    throw badRequest('User is not allowed to login due to the app’s security policy', {
+      appName: app.definition.name,
+      isAllowed: false,
+    });
   }
 
   await OAuth2Consent.upsert({ AppId: appId, UserId: user.id, scope });

@@ -90,7 +90,8 @@ export async function up(db: Sequelize): Promise<void> {
 
   for (const table of tables) {
     logger.info(`Adding UserId constraint to ${table.name}`);
-    await queryInterface.addConstraint(table.name, ['UserId'], {
+    await queryInterface.addConstraint(table.name, {
+      fields: ['UserId'],
       type: 'foreign key',
       name: `${table.name}_UserId_fkey`,
       onUpdate: 'cascade',
