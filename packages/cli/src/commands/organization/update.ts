@@ -50,7 +50,7 @@ export async function handler({
   }
 
   if (logo) {
-    logger.info('Including logo');
+    logger.info(`Including logo ${logo.path || 'from stdin'}`);
     formData.append('icon', logo);
   }
 
