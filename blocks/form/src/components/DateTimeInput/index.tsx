@@ -31,7 +31,7 @@ export function DateTimeInput({
   return (
     <DateTimeComponent
       disabled={disabled}
-      enableTime={field.type === 'date-time'}
+      enableTime={field.type === 'date-time' || field.type === 'time'}
       error={dirty && error && utils.remap(invalidLabel, value)}
       id={name}
       iso
