@@ -9,7 +9,6 @@ interface Params {
 
 export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const { params } = ctx;
-
   const width = Number(params.width);
   const height = Number(params.height || params.width);
   const { format } = params;
