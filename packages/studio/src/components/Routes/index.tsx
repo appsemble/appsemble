@@ -20,6 +20,9 @@ import { ResetPassword } from '../ResetPassword';
 import { Settings } from '../Settings';
 import { VerifyEmail } from '../VerifyEmail';
 
+/**
+ * Render all top level routes.
+ */
 export function Routes(): ReactElement {
   const { path } = useRouteMatch();
   return (

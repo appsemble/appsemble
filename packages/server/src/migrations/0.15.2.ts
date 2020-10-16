@@ -7,7 +7,7 @@ export const key = '0.15.2';
  * Summary:
  * - Add the `OAuth2Consent` table.
  *
- * @param db - The sequelize Database.
+ * @param db - The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -38,7 +38,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Drop the `OAuth2Consent` table.
  *
- * @param db - The sequelize Database.
+ * @param db - The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
