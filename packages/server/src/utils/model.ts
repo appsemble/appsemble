@@ -22,6 +22,8 @@ export function getAppFromRecord(
   record: models.App,
   omittedValues: (keyof types.App)[] = [],
 ): Partial<types.App> {
+  omittedValues.push('anchors');
+
   const result: types.App = {
     id: record.id,
     $created: record.created.toISOString(),
