@@ -1,4 +1,4 @@
-import { normalized, partialNormalized } from './patterns';
+import { domainPattern, normalized, partialNormalized } from './patterns';
 
 describe('partialNormalized', () => {
   it.each([
@@ -49,5 +49,31 @@ describe('normalized', () => {
     '🐱',
   ])('should not match %j', (string) => {
     expect(string).not.toMatch(normalized);
+  });
+});
+
+describe('domainPattern', () => {
+  it.each([
+    'example.com',
+    'valid.com',
+    'definitely.valid.org',
+    'a.nl',
+    'very.deeply.nested.domain.name.example',
+  ])('should match %j', (string) => {
+    expect(string).toMatch(domainPattern);
+  });
+
+  it.each([
+    'a',
+    'a.a',
+    '.com',
+    '-.de',
+    'valid.ínválíd.com',
+    'example.COM',
+    'EXAMPLE.com',
+    'EXAMPLE.COM',
+    'This is a random string',
+  ])('should not match %j', (string) => {
+    expect(string).not.toMatch(domainPattern);
   });
 });

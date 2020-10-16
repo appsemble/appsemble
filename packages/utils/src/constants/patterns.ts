@@ -25,4 +25,4 @@ export const blockNamePattern = new RegExp(
   `^@${partialNormalized.source}/${partialNormalized.source}$`,
 );
 
-export const domainPattern = new RegExp(`^(${partialNormalized.source})+\\.[a-z]{2,}$`);
+export const domainPattern = new RegExp(`^(${partialNormalized.source}+\\.)+[a-z]{2,}$`);
