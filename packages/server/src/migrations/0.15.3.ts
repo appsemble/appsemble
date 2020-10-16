@@ -1,11 +1,11 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, Sequelize } from 'sequelize';
 
-export const key = '0.15.2';
+export const key = '0.15.3';
 
 /**
  * Symmary:
- * - Add the `OAuth2Consent` table.
+ * - Add `icon` to Organization
  *
  * @param db - The sequelize database.
  */
@@ -18,12 +18,13 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Symmary:
- * - Drop the `OAuth2Consent` table.
+ * - Drop the `icon` column from Organization
  *
  * @param db - The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-  logger.info('Removing table OAuth2Consent');
-  await queryInterface.dropTable('OAuth2Consent');
+
+  logger.info('Adding column icon to Organization');
+  await queryInterface.removeColumn('Organization', 'icon');
 }
