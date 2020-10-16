@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { createReadStream, promises as fs } from 'fs';
+import { promises as fs } from 'fs';
 import { join } from 'path';
 
 import { request, setTestApp } from 'axios-test-instance';
@@ -8,7 +8,6 @@ import type * as Koa from 'koa';
 import sharp from 'sharp';
 
 import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
-import { iconHandler } from '../routes/appRouter/iconHandler';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';

@@ -1,3 +1,5 @@
+import type { ReadStream } from 'fs';
+
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -10,7 +12,7 @@ import type { BaseArguments } from '../../types';
 interface UpdateOrganizationArguments extends BaseArguments {
   id: string;
   name: string;
-  logo: NodeJS.ReadStream;
+  logo: ReadStream;
 }
 
 export const command = 'update <id>';

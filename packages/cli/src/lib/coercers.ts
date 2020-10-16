@@ -1,3 +1,4 @@
+import type { ReadStream } from 'fs';
 import { URL } from 'url';
 
 import { createReadStream } from 'fs-extra';
@@ -39,7 +40,7 @@ export function coerceRemote(value: string): string {
  * @param value - The filepath of the file to read.
  * @returns A stream of the file.
  */
-export function coerceFile(value: string): NodeJS.ReadableStream {
+export function coerceFile(value: string): ReadStream | NodeJS.ReadStream {
   if (value == null) {
     return;
   }
