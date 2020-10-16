@@ -15,6 +15,7 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.createTable('OAuth2Consent', {
     AppId: {
       type: DataTypes.INTEGER,
+      primaryKey: true,
       onDelete: 'cascade',
       onUpdate: 'cascade',
       allowNull: false,
@@ -22,6 +23,7 @@ export async function up(db: Sequelize): Promise<void> {
     },
     UserId: {
       type: DataTypes.UUID,
+      primaryKey: true,
       onDelete: 'cascade',
       onUpdate: 'cascade',
       allowNull: false,
