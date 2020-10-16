@@ -15,3 +15,4 @@ export * from './objectCache';
 export * from './remap';
 export * from './validateAppDefinition';
 export * from './langmap';
+export * from './i18n';
