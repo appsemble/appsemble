@@ -22,8 +22,7 @@ export function getAppFromRecord(
   record: models.App,
   omittedValues: (keyof types.App)[] = [],
 ): Partial<types.App> {
-  const { definition } = record;
-  delete definition.anchors;
+  const { ...definition, anchors } = record.definition;
 
   const result: types.App = {
     id: record.id,
