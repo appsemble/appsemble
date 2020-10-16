@@ -22,7 +22,8 @@ export function getAppFromRecord(
   record: models.App,
   omittedValues: (keyof types.App)[] = [],
 ): Partial<types.App> {
-  omittedValues.push('anchors');
+  const { definition } = record;
+  delete definition.anchors;
 
   const result: types.App = {
     id: record.id,
@@ -32,7 +33,7 @@ export function getAppFromRecord(
     path: record.path,
     private: Boolean(record.private),
     iconUrl: `/api/apps/${record.id}/icon`,
-    definition: record.definition,
+    definition,
     yaml: record.yaml || yaml.safeDump(record.definition),
     ...(record.get('RatingCount') && {
       rating: {
