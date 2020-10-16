@@ -22,7 +22,8 @@ export function getAppFromRecord(
   record: models.App,
   omittedValues: (keyof types.App)[] = [],
 ): Partial<types.App> {
-  const { ...definition, anchors } = record.definition;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { anchors, ...definition } = record.definition;
 
   const result: types.App = {
     id: record.id,
