@@ -8,6 +8,7 @@ import type * as Koa from 'koa';
 import sharp from 'sharp';
 
 import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
+import { iconHandler } from '../routes/appRouter/iconHandler';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -90,15 +91,15 @@ describe('patchOrganization', () => {
 
   it('should update the logo of the organization', async () => {
     const formData = new FormData();
-    formData.append('icon', createReadStream(join(__dirname, '__fixtures__', 'testpattern.png')));
+    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'testpattern.png'));
+
+    formData.append('icon', buffer, { filename: 'icon.png' });
 
     const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
       headers: { authorization, ...formData.getHeaders() },
     });
 
     await organization.reload();
-
-    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'testpattern.png'));
 
     expect(response).toMatchObject({ data: { id: organization.id, name: 'Test Organization' } });
     expect(organization.icon).toStrictEqual(buffer);
