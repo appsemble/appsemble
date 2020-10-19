@@ -27,7 +27,7 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
           <h2 className="navbar-item title is-4">{children}</h2>
         </div>
         <div className="navbar-brand">
-          <div className="navbar-item">
+          <div className="navbar-item is-paddingless px-1">
             <ProfileDropdown />
           </div>
         </div>

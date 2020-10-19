@@ -12,8 +12,28 @@ export const key = '0.15.2';
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Adding column icon to Organization');
-  await queryInterface.addColumn('Organization', 'icon', { type: DataTypes.BLOB });
+  logger.info('Adding table OAuth2Consent');
+  await queryInterface.createTable('OAuth2Consent', {
+    AppId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+      allowNull: false,
+      references: { model: 'App', key: 'id' },
+    },
+    UserId: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+      allowNull: false,
+      references: { model: 'User', key: 'id' },
+    },
+    scope: { type: DataTypes.STRING, allowNull: false },
+    created: { type: DataTypes.DATE, allowNull: false },
+    updated: { type: DataTypes.DATE, allowNull: false },
+  });
 }
 
 /**
