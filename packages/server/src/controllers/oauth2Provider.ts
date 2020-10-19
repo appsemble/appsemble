@@ -109,7 +109,10 @@ export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void
     });
   }
 
-  ctx.body = await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user);
+  ctx.body = {
+    ...(await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user)),
+    isAllowed: true,
+  };
 }
 
 export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {
