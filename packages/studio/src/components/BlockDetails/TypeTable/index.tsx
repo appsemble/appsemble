@@ -20,15 +20,9 @@ export function TypeTable({ definition }: TypeTableProps): ReactElement {
     <Table>
       <thead>
         <tr>
-          <th>
-            <FormattedMessage {...messages.type} />
-          </th>
-          <th>
-            <FormattedMessage {...messages.format} />
-          </th>
-          <th>
-            <FormattedMessage {...messages.enum} />
-          </th>
+          <th>{messages.type}</th>
+          <th>{messages.format}</th>
+          <th>{messages.enum}</th>
         </tr>
       </thead>
       <tbody>

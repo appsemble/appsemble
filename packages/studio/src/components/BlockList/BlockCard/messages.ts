@@ -1,7 +1,5 @@
-import { defineMessages } from 'react-intl';
-
-export const messages = defineMessages({
+export const messages = {
   buttonDetails: 'View details',
   noDescription: '(No description available)',
-  blockLogo: '{name} Logo',
-});
+  blockLogo: 'Logo',
+};

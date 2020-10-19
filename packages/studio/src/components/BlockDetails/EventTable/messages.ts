@@ -1,8 +1,6 @@
-import { defineMessages } from 'react-intl';
-
-export const messages = defineMessages({
+export const messages = {
   name: 'Name',
   description: 'Description',
   listenEvents: 'Listen Events',
   emitEvents: 'Emit Events',
-});
+};
