@@ -124,6 +124,12 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
         theme: {
           $ref: '#/components/schemas/Theme',
         },
+        anchors: {
+          type: 'array',
+          minItems: 1,
+          description: 'Helper property that can be used to store YAML anchors.',
+          items: {},
+        },
       },
     },
     screenshotUrls: {
