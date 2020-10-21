@@ -8,6 +8,7 @@ import { EmailAuthorization, Organization, OrganizationInvite, User } from '../m
 import { serveIcon } from '../routes/serveIcon';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
+import { readAsset } from '../utils/readAsset';
 
 interface Params {
   blockId: string;
@@ -49,7 +50,10 @@ export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void
     throw notFound('Organization not found.');
   }
 
-  await serveIcon(ctx, { icon: organization.icon });
+  await serveIcon(ctx, {
+    icon: organization.icon ?? ((await readAsset('appsemble.svg')) as Buffer),
+    ...(!organization.icon && { width: 128, height: 128, format: 'png' }),
+  });
 }
 
 export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> {

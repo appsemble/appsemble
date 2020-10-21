@@ -2,6 +2,7 @@ import type { Theme } from '@appsemble/types';
 
 import type { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
+import { readAsset } from '../../utils/readAsset';
 import { serveIcon } from '../serveIcon';
 
 interface Params {
@@ -28,5 +29,6 @@ export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
     background = splashColor;
   }
 
-  await serveIcon(ctx, { background, format, height, icon: app?.icon, width });
+  const icon = app.icon ?? ((await readAsset('appsemble.svg')) as Buffer);
+  await serveIcon(ctx, { background, format, height, icon, width });
 }

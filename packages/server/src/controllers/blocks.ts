@@ -10,6 +10,7 @@ import { BlockAsset, BlockVersion, getDB, Organization, transactional } from '..
 import { serveIcon } from '../routes/serveIcon';
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
+import { readAsset } from '../utils/readAsset';
 
 interface Params {
   blockId: string;
@@ -280,6 +281,10 @@ export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Block version not found');
   }
 
-  const icon = version.icon || version.Organization.icon;
-  await serveIcon(ctx, { icon });
+  const icon =
+    version.icon || version.Organization.icon || ((await readAsset('appsemble.svg')) as Buffer);
+  await serveIcon(ctx, {
+    icon,
+    ...(!version.icon && !version.Organization.icon && { width: 128, height: 128, format: 'png' }),
+  });
 }

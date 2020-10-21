@@ -1,4 +1,5 @@
 import type { KoaContext } from '../../types';
+import { readAsset } from '../../utils/readAsset';
 import { serveIcon } from '../serveIcon';
 
 interface Params {
@@ -15,5 +16,6 @@ export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
   const background = opaque && '#ffffff';
 
-  await serveIcon(ctx, { background, format, height, width });
+  const icon = (await readAsset('appsemble.svg')) as Buffer;
+  await serveIcon(ctx, { background, format: format ?? 'png', height, width, icon });
 }
