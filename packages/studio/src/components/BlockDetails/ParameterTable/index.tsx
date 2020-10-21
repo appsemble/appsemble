@@ -1,6 +1,5 @@
 import { Table } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
 import type { Definition } from 'typescript-json-schema';
 
 import { ParameterRow } from '../ParameterRow';
