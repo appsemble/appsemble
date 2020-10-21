@@ -4,11 +4,9 @@ import { join } from 'path';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
-import sharp from 'sharp';
 
 import { Member, Organization, User } from '../models';
 import { createServer } from '../utils/createServer';
-import { readAsset } from '../utils/readAsset';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
 
