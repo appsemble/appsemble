@@ -102,7 +102,7 @@ export function Page(): ReactElement {
     }
 
     return (
-      <Main
+      <main
         className={classNames(styles.root, {
           [styles.hasBottomNavigation]: definition.navigation === 'bottom',
         })}
