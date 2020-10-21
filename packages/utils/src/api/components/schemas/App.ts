@@ -86,7 +86,7 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
         },
         navigation: {
           type: 'string',
-          enum: ['bottom', 'left-menu', 'hidden'],
+          enum: ['navbar', 'navigation', 'hidden'],
           description: `The navigation type to use.
 
             If this is omitted, a collapsable side navigation menu will be rendered on the left.

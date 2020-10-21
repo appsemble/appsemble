@@ -913,6 +913,8 @@ export interface AppDefinition {
      * The navigation type to use.
      *
      * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+     *
+     * @default 'left-menu'
      */
     navigation?: Navigation;
   };
