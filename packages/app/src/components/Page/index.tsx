@@ -15,7 +15,6 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { BlockList } from '../BlockList';
 import { FlowPage } from '../FlowPage';
-import { Main } from '../Main';
 import { PageDialog } from '../PageDialog';
 import { TabsPage } from '../TabsPage';
 import { TitleBar } from '../TitleBar';
@@ -154,7 +153,7 @@ export function Page(): ReactElement {
           remap={remapWithContext}
           showDialog={showDialog}
         />
-      </Main>
+      </main>
     );
   }
 
