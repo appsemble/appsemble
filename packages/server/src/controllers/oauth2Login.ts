@@ -19,7 +19,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
     },
   } = ctx;
   // XXX Replace this with an imported language array when supporting more languages
-  const referer = trimUrl(headers.referer).replace(/(nl|en-us)\//, '');
+  const referer = trimUrl(headers.referer)?.replace(/(nl|en-us)\//, '');
   if (!referer) {
     throw badRequest('The referer header is invalid');
   }
