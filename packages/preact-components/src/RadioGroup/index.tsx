@@ -1,7 +1,6 @@
-import { cloneElement, ComponentChild, h, VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { ComponentChild, h, VNode } from 'preact';
 
-import { FormComponent } from '..';
+import { FormComponent, ValuePickerProvider } from '..';
 
 interface RadioGroupProps
   extends Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'label' | 'onChange'> {
@@ -41,24 +40,15 @@ interface RadioGroupProps
 export function RadioGroup({
   children,
   className,
-  disabled,
   error,
   label,
   name,
   onChange,
   optionalLabel,
-  readOnly,
   required,
   tag,
   value,
 }: RadioGroupProps): VNode {
-  const handleChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
-      onChange(event, event.currentTarget.value);
-    },
-    [onChange],
-  );
-
   return (
     <FormComponent
       className={className}
@@ -68,18 +58,10 @@ export function RadioGroup({
       required={required}
       tag={tag}
     >
-      {children.map((child, index) =>
-        cloneElement(child, {
-          checked: child.props.value === value,
-          disabled: child.props.disabled || disabled,
-          id: `${name}${index}`,
-          name,
-          onChange: handleChange,
-          readOnly: child.props.readOnly || readOnly,
-          value: child.props.value,
-        }),
-      )}
-      {error && <p className="help is-danger">{error}</p>}
+      <ValuePickerProvider name={name} onChange={onChange} value={value}>
+        {children}
+        {error && <p className="help is-danger">{error}</p>}
+      </ValuePickerProvider>
     </FormComponent>
   );
 }

@@ -1,22 +1,61 @@
 import { ComponentChild, h, VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
-type RadioButtonProps = Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'onChange'> & {
+import { useValuePicker } from '..';
+
+interface RadioButtonProps<T>
+  extends Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'name' | 'onChange' | 'value'> {
+  /**
+   * The node to render as a label.
+   */
   children: ComponentChild;
+
+  /**
+   * The value represented by this radio button.
+   */
+  value: T;
+
+  /**
+   * A function which returns how to represent the value in the DOM.
+   */
+  valueToString?: (value: T) => string;
 
   /**
    * The class used for the wrapper div.
    */
   wrapperClassName?: string;
-};
+}
 
 /**
  * A Bulma styled form select element.
  */
-export function RadioButton({ children, wrapperClassName, ...props }: RadioButtonProps): VNode {
-  const { id } = props;
+export function RadioButton<T>({
+  children,
+  id,
+  value,
+  valueToString = JSON.stringify,
+  wrapperClassName,
+  ...props
+}: RadioButtonProps<T>): VNode {
+  const { name, onChange, value: currentValue } = useValuePicker();
+
+  const handleChange = useCallback(
+    (event: h.JSX.TargetedEvent<HTMLInputElement>) => onChange(event, value),
+    [onChange, value],
+  );
+
   return (
     <div className={wrapperClassName}>
-      <input {...props} className="is-checkradio" type="radio" />
+      <input
+        {...props}
+        checked={value === currentValue}
+        className="is-checkradio"
+        id={id}
+        name={name}
+        onChange={handleChange}
+        type="radio"
+        value={valueToString(value)}
+      />
       <label htmlFor={id}>{children}</label>
     </div>
   );

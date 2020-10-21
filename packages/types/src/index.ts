@@ -916,6 +916,13 @@ export interface AppDefinition {
    * The global theme for the app.
    */
   theme?: Partial<Theme>;
+
+  /**
+   * Helper property that can be used to store YAML anchors.
+   *
+   * This is omitted any time the API serves the app definition.
+   */
+  anchors?: any[];
 }
 
 export interface App {
