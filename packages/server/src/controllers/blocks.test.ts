@@ -361,12 +361,11 @@ describe('getBlockIcon', () => {
       headers: { authorization, ...formData.getHeaders() },
     });
 
-    const img = await sharp(icon).toFormat('png').resize(1200, 900).toBuffer();
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
     });
     expect(response.headers['content-type']).toBe('image/png');
-    expect(response.data).toStrictEqual(img);
+    expect(response.data).toMatchImageSnapshot();
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
@@ -392,12 +391,8 @@ describe('getBlockIcon', () => {
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
     });
-    const img = await sharp(await readAsset('appsemble.svg'), { density: 2400 })
-      .resize(128, 128)
-      .toFormat('png')
-      .toBuffer();
 
     expect(response.headers['content-type']).toBe('image/png');
-    expect(response.data).toStrictEqual(img);
+    expect(response.data).toMatchImageSnapshot();
   });
 });

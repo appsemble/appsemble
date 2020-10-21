@@ -72,8 +72,7 @@ describe('getOrganizationIcon', () => {
       responseType: 'arraybuffer',
     });
 
-    const img = await sharp(buffer).toFormat('png').resize(1200, 900).toBuffer();
-    expect(response.data).toStrictEqual(img);
+    expect(response.data).toMatchImageSnapshot();
   });
 });
 
