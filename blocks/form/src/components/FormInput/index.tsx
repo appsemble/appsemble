@@ -34,7 +34,6 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
   switch (field.type) {
     case 'date-time':
     case 'date':
-    case 'time':
       return <DateTimeInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'enum':
       return <EnumInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
