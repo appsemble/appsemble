@@ -37,7 +37,7 @@ export function DateTimeInput({
 
       return onChange(event, v);
     },
-    [field.type, onChange],
+    [field, onChange],
   );
 
   return (
