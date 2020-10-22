@@ -15,7 +15,9 @@ ${PROMPT} ${COMMAND} @appsemble/server
  * @param member - The name of the exported member to import.
  * @returns The exported member.
  */
-export async function serverImport(member: 'migrate' | 'start' | 'cleanupResources'): Promise<any> {
+export async function serverImport(
+  member: 'migrate' | 'start' | 'cleanupResources' | 'runCronJobs',
+): Promise<any> {
   try {
     const mod = await import('@appsemble/server');
     if (!Object.hasOwnProperty.call(mod, member)) {

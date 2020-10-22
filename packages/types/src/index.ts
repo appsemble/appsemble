@@ -948,6 +948,19 @@ export interface AppDefinition {
    * This is omitted any time the API serves the app definition.
    */
   anchors?: any[];
+
+  /**
+   * Cron jobs associated with the app.
+   */
+  cron?: { [key: string]: CronDefinition };
+}
+
+/**
+ * The definition of a cron job for an app.
+ */
+export interface CronDefinition {
+  schedule: string;
+  action: ActionDefinition;
 }
 
 export interface App {
