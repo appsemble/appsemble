@@ -67,7 +67,7 @@ interface Result {
 type Assert = (assertion: boolean, filename: string, message: string, workspace?: string) => void;
 
 async function validateTranslations(assert: Assert): Promise<void> {
-  const workspaces = ['app', 'react-components'];
+  const workspaces = ['app', 'react-components', 'studio'];
   const locales = ['nl', 'en-US'];
   const defaultLocale = 'en-US';
 

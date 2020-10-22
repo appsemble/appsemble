@@ -45,6 +45,9 @@ export class User extends Model<User> {
   @Column
   password: string;
 
+  @Column
+  locale: string;
+
   AppMember: AppMember;
 
   Member: Member;

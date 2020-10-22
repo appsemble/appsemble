@@ -128,6 +128,11 @@ export interface UserInfo {
    * A URL that links to the user profile.
    */
   profile?: string;
+
+  /**
+   * The end-user’s locale, represented as a BCP47 language tag.
+   */
+  locale?: string;
 }
 
 /**

@@ -38,7 +38,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
   } = ctx;
 
   const user = await User.findOne({
-    attributes: ['primaryEmail', 'name'],
+    attributes: ['primaryEmail', 'name', 'locale'],
     include: [
       {
         required: false,
@@ -69,6 +69,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
     name: user.name,
     picture,
     sub: id,
+    locale: user.locale,
   };
 }
 

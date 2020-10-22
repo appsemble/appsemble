@@ -3,7 +3,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import { HelmetIntl } from '../HelmetIntl';
@@ -20,6 +20,7 @@ export interface Member {
 export function Roles(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
+  const { lang } = useParams<{ lang: string }>();
   const { userInfo } = useUser();
   const { app } = useApp();
   const [members, setMembers] = useState<Member[]>();
@@ -93,7 +94,7 @@ export function Roles(): ReactElement {
           {...messages.inviteOrganization}
           values={{
             link: (text: string) => (
-              <Link to={`/settings/organizations/${app.OrganizationId}`}>{text}</Link>
+              <Link to={`${lang}/settings/organizations/${app.OrganizationId}`}>{text}</Link>
             ),
           }}
         />

@@ -18,7 +18,7 @@ import { HelmetIntl } from '../HelmetIntl';
 import { ActionTable } from './ActionTable';
 import { EventTable } from './EventTable';
 import styles from './index.css';
-import { messages } from './messages';
+import { messages, untranslatedMessages } from './messages';
 import { ParameterTable } from './ParameterTable';
 import { TypeTable } from './TypeTable';
 
@@ -97,7 +97,7 @@ export function BlockDetails(): ReactElement {
         </div>
         <SelectField
           disabled={blockVersions.length === 1}
-          label={<FormattedMessage {...messages.selectedVersion} />}
+          label={untranslatedMessages.selectedVersion}
           name="selectedVersion"
           onChange={onSelectedVersionChange}
           required
@@ -110,9 +110,7 @@ export function BlockDetails(): ReactElement {
           ))}
         </SelectField>
 
-        <Title level={4}>
-          <FormattedMessage {...messages.description} />
-        </Title>
+        <Title level={4}>{untranslatedMessages.description}</Title>
         {selectedBlockManifest.description && (
           <Message>{selectedBlockManifest.description}</Message>
         )}
@@ -125,34 +123,26 @@ export function BlockDetails(): ReactElement {
 
         {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
           <>
-            <Title level={4}>
-              <FormattedMessage {...messages.parameters} />
-            </Title>
+            <Title level={4}>{untranslatedMessages.parameters}</Title>
             <ParameterTable parameters={selectedBlockManifest.parameters} />
           </>
         )}
         {Object.keys(selectedBlockManifest.actions || {}).length > 0 && (
           <>
-            <Title level={4}>
-              <FormattedMessage {...messages.actions} />
-            </Title>
+            <Title level={4}>{untranslatedMessages.actions}</Title>
             <ActionTable manifest={selectedBlockManifest} />
           </>
         )}
         {(selectedBlockManifest.events?.emit || selectedBlockManifest.events?.listen) && (
           <>
-            <Title level={4}>
-              <FormattedMessage {...messages.events} />
-            </Title>
+            <Title level={4}>{untranslatedMessages.events}</Title>
             <EventTable manifest={selectedBlockManifest} />
           </>
         )}
 
         {selectedBlockManifest.parameters?.definitions && (
           <>
-            <Title level={4}>
-              <FormattedMessage {...messages.definitions} />
-            </Title>
+            <Title level={4}>{untranslatedMessages.definitions}</Title>
             {Object.entries((selectedBlockManifest.parameters as any).definitions).map(
               ([key, definition]: [string, Definition]) => (
                 <Fragment key={key}>
