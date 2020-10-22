@@ -4,6 +4,8 @@ import { attach } from '@appsemble/sdk';
 
 attach(({ actions, data, parameters: { icon } }) => {
   let node;
+  const iconNode = document.createElement('i');
+  iconNode.classList.add('fas', `fa-${icon}`);
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');
     node.href = actions.onClick.href(data);
@@ -11,7 +13,7 @@ attach(({ actions, data, parameters: { icon } }) => {
     node = document.createElement('button');
     node.type = 'button';
   }
-  node.classList.add('fas', `fa-${icon}`);
+  node.classList.add('button', 'is-paddingless', 'is-primary', 'is-rounded');
   node.addEventListener(
     'click',
     (event) => {
@@ -20,5 +22,6 @@ attach(({ actions, data, parameters: { icon } }) => {
     },
     true,
   );
+  node.append(iconNode);
   return node;
 });

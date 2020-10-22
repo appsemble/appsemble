@@ -6,7 +6,7 @@ import marked from 'marked';
  */
 attach(({ parameters: { content }, utils }) => {
   const markdown = document.createElement('div');
-  markdown.classList.add('content', 'mx-3', 'my-3');
+  markdown.classList.add('content', 'px-3', 'py-3');
   markdown.innerHTML = marked(utils.remap(content, {}));
 
   return markdown;

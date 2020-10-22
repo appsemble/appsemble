@@ -1,47 +1,28 @@
-import { normalize } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import classNames from 'classnames';
+import React, { ComponentPropsWithoutRef, ReactElement, useMemo } from 'react';
 
-import { getDefaultPageName } from '../../utils/getDefaultPageName';
+import { shouldShowMenu } from '../../utils/layout';
 import { useAppDefinition } from '../AppDefinitionProvider';
-import { AppSettings } from '../AppSettings';
-import { Login } from '../Login';
-import { OpenIDCallback } from '../OpenIDCallback';
-import { Page } from '../Page';
 import { useUser } from '../UserProvider';
+import styles from './index.css';
 
-/**
- * The main body of the loaded app.
- *
- * This maps the page to a route and displays a page depending on URL.
- */
-export function Main(): ReactElement {
+type MainProps = ComponentPropsWithoutRef<'main'>;
+
+export function Main({ className, ...props }: MainProps): ReactElement {
   const { definition } = useAppDefinition();
-  const { isLoggedIn, role } = useUser();
+  const { role } = useUser();
 
-  if (definition == null) {
-    return null;
-  }
+  const hasBottomNav = useMemo(
+    () => definition.navigation === 'bottom' && shouldShowMenu(definition, role),
+    [definition, role],
+  );
 
-  const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
-
-  // The `lang` parameter for the parent route is optional. It should be required for subroutes to
-  // prevent an infinite routing loop.
   return (
-    <Switch>
-      <Route exact path="/:lang/Settings" sensitive>
-        <AppSettings />
-      </Route>
-      <Route exact path="/:lang/Login" sensitive>
-        <Login />
-      </Route>
-      <Route exact path="/:lang/Callback" sensitive>
-        <OpenIDCallback />
-      </Route>
-      <Route path="/:lang/:pageId">
-        <Page />
-      </Route>
-      <Redirect to={`/:lang/${normalize(defaultPageName)}`} />
-    </Switch>
+    <main
+      className={classNames(className, {
+        [styles.hasBottomNav]: hasBottomNav,
+      })}
+      {...props}
+    />
   );
 }

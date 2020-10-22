@@ -2,7 +2,9 @@ import { Content, OAuth2LoginButton, useQuery, useToggle } from '@appsemble/reac
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { apiUrl, appId, logins } from '../../utils/settings';
+import { apiUrl, appId, definition, logins } from '../../utils/settings';
+import { Main } from '../Main';
+import { TitleBar } from '../TitleBar';
 import styles from './index.css';
 import { messages } from './messages';
 
@@ -20,24 +22,30 @@ export function OpenIDLogin(): ReactElement {
   };
 
   return (
-    <Content className={`is-flex ${styles.root}`} main padding>
-      <OAuth2LoginButton
-        authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
-        icon="user"
-        {...buttonProps}
-      >
-        <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
-      </OAuth2LoginButton>
-      {logins?.map(({ icon, id, name }) => (
+    <Main className={styles.root}>
+      <TitleBar />
+      <Content className={`is-flex ${styles.wrapper}`} padding>
+        <figure className="my-4">
+          <img alt={definition.name} src="/icon-256.png" />
+        </figure>
         <OAuth2LoginButton
-          authorizationUrl={String(new URL(`/connect/authorize/${id}`, apiUrl))}
-          icon={icon}
-          key={id}
+          authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
+          icon="user"
           {...buttonProps}
         >
-          <FormattedMessage {...messages.loginWith} values={{ name }} />
+          <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
         </OAuth2LoginButton>
-      ))}
-    </Content>
+        {logins?.map(({ icon, id, name }) => (
+          <OAuth2LoginButton
+            authorizationUrl={String(new URL(`/connect/authorize/${id}`, apiUrl))}
+            icon={icon}
+            key={id}
+            {...buttonProps}
+          >
+            <FormattedMessage {...messages.loginWith} values={{ name }} />
+          </OAuth2LoginButton>
+        ))}
+      </Content>
+    </Main>
   );
 }

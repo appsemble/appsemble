@@ -2,6 +2,7 @@ import { Content } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { Main } from '../Main';
 import { TitleBar } from '../TitleBar';
 import { AppSubscriptions } from './AppSubscriptions';
 import { LanguagePreference } from './LanguagePreference';
@@ -12,12 +13,14 @@ import { messages } from './messages';
  */
 export function AppSettings(): ReactElement {
   return (
-    <Content main padding>
+    <Content padding>
       <TitleBar>
         <FormattedMessage {...messages.settings} />
       </TitleBar>
-      <LanguagePreference />
-      <AppSubscriptions />
+      <Main>
+        <LanguagePreference />
+        <AppSubscriptions />
+      </Main>
     </Content>
   );
 }

@@ -135,22 +135,16 @@ pages:
         version: 0.15.2
         parameters:
           fields:
-            - value:
-                - prop: location
+            - value: { prop: location }
               type: geocoordinates
               label: Location
-              latitude:
-                prop: latitude
-              longitude:
-                prop: longitude
-            - value:
-                prop: process
+              latitude: { prop: latitude }
+              longitude: { prop: longitude }
+            - value: { prop: process }
               label: Process
-            - value:
-                prop: notes
+            - value: { prop: notes }
               label: Notes
-            - value:
-                prop: photos
+            - value: { prop: photos }
               type: file
               label: Photos
               repeated: true

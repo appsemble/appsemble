@@ -1,5 +1,10 @@
 html {
+  height: 100%;
   overflow-y: auto;
+}
+
+body {
+  height: 100%;
 }
 
 :global(.navbar.is-fixed-top) {
@@ -7,6 +12,8 @@ html {
 }
 
 :global(#app) {
+  height: 100%;
+
   & :global(.browsers) {
     margin: auto;
     text-align: center;

@@ -8,3 +8,7 @@
     max-height: 0;
   }
 }
+
+.message {
+  transition: 150ms;
+}
