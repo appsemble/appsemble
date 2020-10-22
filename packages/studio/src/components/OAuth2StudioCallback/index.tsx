@@ -195,7 +195,7 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
                   ) : (
                     <Link
                       to={{
-                        pathname: `${lang}/login`,
+                        pathname: `/${lang}/login`,
                         search: `?${new URLSearchParams({ redirect })}`,
                       }}
                     >

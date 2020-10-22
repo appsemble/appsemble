@@ -25,6 +25,7 @@ import { VerifyEmail } from '../VerifyEmail';
  */
 export function Routes(): ReactElement {
   const { path } = useRouteMatch();
+
   return (
     <Switch>
       <Route exact path={`${path}/apps`}>
