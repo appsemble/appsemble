@@ -69,6 +69,11 @@
   }
 }
 
+.static {
+  /* It’s muy important for Safari to specify the full flex property here. */
+  flex: 0 0 auto;
+}
+
 .grow {
   /* It’s muy important for Safari to specify the full flex property here. */
   flex: 1 0 auto;

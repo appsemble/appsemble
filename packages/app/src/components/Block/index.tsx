@@ -267,7 +267,7 @@ export function Block({
 
   return (
     <div
-      className={classNames(`is-flex ${styles.root}`, { [styles.grow]: layout !== 'static' })}
+      className={`is-flex ${styles.root} ${layout === 'static' ? styles.static : styles.grow}`}
       data-block={blockName}
       data-path={prefix}
     >
