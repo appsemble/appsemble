@@ -2,7 +2,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ include "appsemble.fullname" . }}-cronjob
+  name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-resources
   labels:
     app: {{ .Values.app }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -18,7 +18,7 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: {{ include "appsemble.fullname" . }}-cronjob
+            - name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-resources
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               command:
