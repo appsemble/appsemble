@@ -28,7 +28,11 @@ export async function getUser(ctx: KoaContext): Promise<void> {
     id: dbUser.id,
     name: dbUser.name,
     primaryEmail: dbUser.primaryEmail,
-    organizations: dbUser.Organizations.map(({ id, name }) => ({ id, name })),
+    organizations: dbUser.Organizations.map(({ id, name }) => ({
+      id,
+      name,
+      iconUrl: `/api/organizations/${id}/icon`,
+    })),
     emails: dbUser.EmailAuthorizations.map(({ email, verified }) => ({
       email,
       verified,
@@ -55,6 +59,7 @@ export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
     id: org.id,
     name: org.name,
     role: org.Member.role,
+    iconUrl: `/api/organizations/${org.id}/icon`,
   }));
 }
 

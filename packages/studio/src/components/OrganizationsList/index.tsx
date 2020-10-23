@@ -13,7 +13,7 @@ import type { Organization } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { HeaderControl } from '../HeaderControl';
@@ -53,6 +53,7 @@ export function OrganizationsList(): ReactElement {
   const { organizations, setOrganizations, userInfo } = useUser();
   const { url } = useRouteMatch();
   const modal = useToggle();
+  const { formatMessage } = useIntl();
 
   const submitOrganization = useCallback(
     async ({ id, name }: Organization) => {
@@ -81,10 +82,15 @@ export function OrganizationsList(): ReactElement {
       </HeaderControl>
       <ul>
         {organizations.map((org) => (
-          <li className={`my-4 ${styles.listItem}`} key={org.id}>
+          <li className="my-4" key={org.id}>
             <Link className={`px-4 py-4 ${styles.link}`} to={`${url}/${org.id}`}>
-              <Title level={3}>{org.name || `@${org.id}`}</Title>
-              <Subtitle level={5}>{org.role}</Subtitle>
+              <figure className={`image is-96x96 is-inline-block ${styles.vertical}`}>
+                <img alt={formatMessage(messages.logo)} src={org.iconUrl} />
+              </figure>
+              <div className={`ml-4 is-inline-block ${styles.vertical}`}>
+                <Title level={3}>{org.name || `@${org.id}`}</Title>
+                <Subtitle level={5}>{org.role}</Subtitle>
+              </div>
             </Link>
           </li>
         ))}

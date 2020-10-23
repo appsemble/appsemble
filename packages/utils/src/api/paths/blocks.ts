@@ -148,7 +148,6 @@ export const paths: OpenAPIV3.PathsObject = {
       responses: {
         200: {
           description: 'The icon that represents the block.',
-          // $ref: '#/components/responses/blockVersion',
         },
       },
     },

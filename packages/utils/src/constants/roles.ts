@@ -17,7 +17,12 @@ const Maintainer = [
   Permission.DeleteApps,
   Permission.InviteMember,
 ];
-const Owner = [...Maintainer, Permission.ManageMembers, Permission.ManageRoles];
+const Owner = [
+  ...Maintainer,
+  Permission.EditOrganization,
+  Permission.ManageMembers,
+  Permission.ManageRoles,
+];
 
 export const roles = {
   Member,

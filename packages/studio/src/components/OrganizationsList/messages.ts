@@ -6,4 +6,5 @@ export const messages = defineMessages({
   organizationName: 'Organization name',
   organizationId: 'Organization ID',
   cancelLabel: 'Cancel',
+  logo: 'Logo',
 });

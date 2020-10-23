@@ -37,6 +37,52 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
+    patch: {
+      tags: ['organization'],
+      description: 'Update an organization',
+      operationId: 'patchOrganization',
+      requestBody: {
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              properties: {
+                name: {
+                  $ref: '#/components/schemas/Organization/properties/name',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The organization icon.',
+                },
+              },
+            },
+            encoding: {
+              icon: {
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: { $ref: '#/components/responses/organization' },
+      },
+      security: [{ studio: [] }, { cli: ['organizations:write'] }],
+    },
+  },
+  '/api/organizations/{organizationId}/icon': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get the organization icon.',
+      operationId: 'getOrganizationIcon',
+      responses: {
+        200: {
+          description: 'The icon that represents the organization.',
+        },
+      },
+    },
   },
   '/api/organizations/{organizationId}/members': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
