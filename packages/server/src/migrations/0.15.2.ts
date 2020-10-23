@@ -11,6 +11,7 @@ export const key = '0.15.2';
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
   logger.info('Adding table OAuth2Consent');
   await queryInterface.createTable('OAuth2Consent', {
     AppId: {

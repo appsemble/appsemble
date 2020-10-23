@@ -6,7 +6,7 @@ interface ServeIconOptions {
   background?: string;
   format?: string;
   height?: number;
-  icon?: Buffer;
+  icon: Buffer;
   width?: number;
 }
 
