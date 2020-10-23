@@ -359,7 +359,7 @@ post release:
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - yarn appsemble scripts post-release
+    - yarn scripts post-release
       --docker-hub-username "$DOCKER_HUB_USER"
       --docker-hub-password "$DOCKER_HUB_PASSWORD"
 
