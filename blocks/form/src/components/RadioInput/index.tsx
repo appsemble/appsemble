@@ -40,15 +40,21 @@ export function RadioInput({
       tag={utils.remap(tag, value)}
       value={value}
     >
-      {options.map((option) => (
-        <RadioButton
-          key={String(option.value)}
-          value={option.value}
-          wrapperClassName={styles.choice}
-        >
-          {utils.remap(option.label, {}) ?? option.value}
-        </RadioButton>
-      ))}
+      {options.map((option, index) => {
+        const id = `${name}.${index}`;
+        return (
+          <RadioButton
+            disabled={disabled}
+            id={id}
+            key={id}
+            required={required}
+            value={option.value}
+            wrapperClassName={styles.choice}
+          >
+            {utils.remap(option.label, {}) ?? option.value}
+          </RadioButton>
+        );
+      })}
     </RadioGroup>
   );
 }

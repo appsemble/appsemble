@@ -38,7 +38,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
   } = ctx;
 
   const user = await User.findOne({
-    attributes: ['primaryEmail', 'name'],
+    attributes: ['primaryEmail', 'name', 'locale'],
     include: [
       {
         required: false,
@@ -69,6 +69,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
     name: user.name,
     picture,
     sub: id,
+    locale: user.locale,
   };
 }
 
@@ -109,7 +110,10 @@ export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void
     });
   }
 
-  ctx.body = await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user);
+  ctx.body = {
+    ...(await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user)),
+    isAllowed: true,
+  };
 }
 
 export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {

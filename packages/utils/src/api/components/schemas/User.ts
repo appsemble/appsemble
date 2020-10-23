@@ -18,5 +18,9 @@ export const User: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The primary email used for communication.',
     },
+    locale: {
+      type: 'string',
+      description: 'The locale of the user.',
+    },
   },
 };

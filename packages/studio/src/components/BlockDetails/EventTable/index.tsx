@@ -1,7 +1,6 @@
 import { MarkdownContent, Table, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import React, { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages';
 
@@ -20,18 +19,12 @@ export function EventTable({ manifest }: EventTableProps): ReactElement {
     <>
       {manifest.events.emit && (
         <>
-          <Title level={5}>
-            <FormattedMessage {...messages.emitEvents} />
-          </Title>
+          <Title level={5}>{messages.emitEvents}</Title>
           <Table>
             <thead>
               <tr>
-                <th>
-                  <FormattedMessage {...messages.name} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.description} />
-                </th>
+                <th>{messages.name}</th>
+                <th>{messages.description}</th>
               </tr>
             </thead>
             <tbody>
@@ -49,18 +42,12 @@ export function EventTable({ manifest }: EventTableProps): ReactElement {
       )}
       {manifest.events.listen && (
         <>
-          <Title level={5}>
-            <FormattedMessage {...messages.listenEvents} />
-          </Title>
+          <Title level={5}>{messages.listenEvents}</Title>
           <Table>
             <thead>
               <tr>
-                <th>
-                  <FormattedMessage {...messages.name} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.description} />
-                </th>
+                <th>{messages.name}</th>
+                <th>{messages.description}</th>
               </tr>
             </thead>
             <tbody>

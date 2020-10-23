@@ -109,7 +109,7 @@ describe('registerOAuth2Connection', () => {
       url: 'https://gitlab.com/oauth/token',
       headers: { authorization: 'Basic Z2l0bGFiX2NsaWVudF9pZDpnaXRsYWJfY2xpZW50X3NlY3JldA==' },
       data:
-        'grant_type=authorization_code&client_id=gitlab_client_id&client_secret=gitlab_client_secret&code=456&redirect_uri=http%3A%2F%2Flocalhost%2Ffoo',
+        'grant_type=authorization_code&client_id=gitlab_client_id&client_secret=gitlab_client_secret&code=456&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback',
     });
     expect(response).toMatchObject({
       status: 200,
@@ -173,7 +173,7 @@ describe('registerOAuth2Connection', () => {
       url: 'https://gitlab.com/oauth/token',
       headers: { authorization: 'Basic Z2l0bGFiX2NsaWVudF9pZDpnaXRsYWJfY2xpZW50X3NlY3JldA==' },
       data:
-        'grant_type=authorization_code&client_id=gitlab_client_id&client_secret=gitlab_client_secret&code=456&redirect_uri=http%3A%2F%2Flocalhost%2Ffoo',
+        'grant_type=authorization_code&client_id=gitlab_client_id&client_secret=gitlab_client_secret&code=456&redirect_uri=http%3A%2F%2Flocalhost%2Fcallback',
     });
     expect(response).toMatchObject({
       status: 200,

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -24,10 +24,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.15.2",
-    "@appsemble/sdk": "0.15.2",
-    "@appsemble/types": "0.15.2",
-    "@appsemble/utils": "0.15.2",
+    "@appsemble/react-components": "0.15.3",
+    "@appsemble/sdk": "0.15.3",
+    "@appsemble/types": "0.15.3",
+    "@appsemble/utils": "0.15.3",
     "@browser-logos/chrome": "^1.0.18",
     "@browser-logos/edge": "^2.0.5",
     "@browser-logos/firefox": "^3.0.9",
@@ -45,7 +45,6 @@
     "react-dom": "^16.13.1",
     "react-intl": "^5.8.0",
     "react-router-dom": "^5.2.0",
-    "react-transition-group": "^4.4.1",
     "roboto-fontface": "^0.10.0",
     "serviceworker-webpack-plugin": "^1.0.1",
     "type-fest": "^0.16.0"

@@ -4,10 +4,13 @@ export const messages = defineMessages({
   title: 'Block Details · {name}',
   blockIcon: 'Block Icon',
   error: 'Something went wrong when fetching this block.',
+});
+
+export const untranslatedMessages = {
   selectedVersion: 'Selected version',
   description: 'Description',
   actions: 'Actions',
   events: 'Events',
   parameters: 'Parameters',
   definitions: 'Definitions',
-});
+};

@@ -1,8 +1,8 @@
+import { Tab, Tabs } from '@appsemble/react-components';
 import type { TabsPageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import classNames from 'classnames';
-import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
-import { Link, Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
+import React, { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
+import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { useAppMessages } from '../AppMessagesProvider';
 import { BlockList } from '../BlockList';
@@ -14,30 +14,29 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
   const { path, url } = useRouteMatch();
   const { getMessage } = useAppMessages();
   const { pathname } = useLocation();
+  const history = useHistory();
+
+  const onChange = useCallback((event: ChangeEvent, value: string) => history.push(value), [
+    history,
+  ]);
 
   return (
     <>
-      <div className="tabs is-centered is-medium">
-        <ul>
-          {subPages.map(({ name }, index) => {
-            const translatedName = getMessage({
-              id: `${prefix}.subPages.${index}`,
-              defaultMessage: name,
-            }).format() as string;
+      <Tabs centered onChange={onChange} size="medium" value={pathname}>
+        {subPages.map(({ name }, index) => {
+          const translatedName = getMessage({
+            id: `${prefix}.subPages.${index}`,
+            defaultMessage: name,
+          }).format() as string;
+          const value = `${url}/${normalize(translatedName)}`;
 
-            return (
-              <li
-                className={classNames({
-                  'is-active': pathname.endsWith(normalize(translatedName)),
-                })}
-                key={name}
-              >
-                <Link to={normalize(translatedName)}>{translatedName}</Link>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+          return (
+            <Tab href={value} key={name} value={value}>
+              {translatedName}
+            </Tab>
+          );
+        })}
+      </Tabs>
       <Switch>
         {subPages.map(({ blocks, name }, index) => {
           const translatedName = getMessage({

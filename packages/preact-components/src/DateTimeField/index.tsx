@@ -8,7 +8,7 @@ import { FormComponent, Input, SharedFormComponentProps } from '..';
 
 type DateTimeFieldProps = SharedFormComponentProps &
   Omit<ComponentProps<typeof Input>, 'error'> &
-  Pick<flatpickr.Options.Options, 'enableTime' | 'mode'> & {
+  Pick<flatpickr.Options.Options, 'enableTime' | 'noCalendar' | 'mode'> & {
     /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
      * used.
@@ -34,6 +34,7 @@ export function DateTimeField({
   className,
   disabled,
   enableTime,
+  noCalendar,
   error,
   help,
   icon,
@@ -70,6 +71,7 @@ export function DateTimeField({
     const p = flatpickr(wrapper.current, {
       appendTo: wrapper.current,
       enableTime,
+      noCalendar,
       mode,
       positionElement: positionElement.current,
       time_24hr: true,
@@ -82,7 +84,7 @@ export function DateTimeField({
       p.destroy();
       setPicker(null);
     };
-  }, [disabled, enableTime, mode]);
+  }, [disabled, enableTime, mode, noCalendar]);
 
   useEffect(() => {
     picker?.setDate(value);

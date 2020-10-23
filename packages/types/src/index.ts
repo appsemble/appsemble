@@ -56,6 +56,24 @@ export interface BlockDefinition {
   header?: string;
 
   /**
+   * An override of the block’s default layout.
+   */
+  layout?: 'float' | 'grow' | 'static';
+
+  /**
+   * For floating blocks this propert defines where the block should float.
+   */
+  position?:
+    | 'top left'
+    | 'top'
+    | 'top right'
+    | 'left'
+    | 'right'
+    | 'bottom left'
+    | 'bottom'
+    | 'bottom right';
+
+  /**
    * The theme of the block.
    */
   theme?: Partial<Theme>;
@@ -128,6 +146,11 @@ export interface UserInfo {
    * A URL that links to the user profile.
    */
   profile?: string;
+
+  /**
+   * The end-user’s locale, represented as a BCP47 language tag.
+   */
+  locale?: string;
 }
 
 /**
@@ -805,13 +828,6 @@ export interface BasePageDefinition {
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
-
-  /**
-   * The navigation type to use.
-   *
-   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
-   */
-  navigation?: Navigation;
 
   /**
    * Whether or not the page should be displayed in navigational menus.

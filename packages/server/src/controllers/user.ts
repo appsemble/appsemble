@@ -38,6 +38,7 @@ export async function getUser(ctx: KoaContext): Promise<void> {
       verified,
       primary: dbUser.primaryEmail === email,
     })),
+    locale: dbUser.locale,
   };
 }
 
@@ -65,7 +66,7 @@ export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
 export async function updateUser(ctx: KoaContext): Promise<void> {
   const {
     request: {
-      body: { email, name },
+      body: { email, locale, name },
     },
     user,
   } = ctx;
@@ -93,13 +94,14 @@ export async function updateUser(ctx: KoaContext): Promise<void> {
     }
   }
 
-  await dbUser.update({ name, primaryEmail: email });
+  await dbUser.update({ name, primaryEmail: email, locale });
 
   ctx.body = {
     id: dbUser.id,
     name,
     email,
     email_verified: true,
+    locale: dbUser.locale,
   };
 }
 

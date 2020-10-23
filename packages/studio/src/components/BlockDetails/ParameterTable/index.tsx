@@ -1,6 +1,5 @@
 import { Table } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
 import type { Definition } from 'typescript-json-schema';
 
 import { ParameterRow } from '../ParameterRow';
@@ -21,21 +20,11 @@ export function ParameterTable({ parameters }: ParameterTableProps): ReactElemen
     <Table>
       <thead>
         <tr>
-          <th>
-            <FormattedMessage {...messages.name} />
-          </th>
-          <th>
-            <FormattedMessage {...messages.required} />
-          </th>
-          <th>
-            <FormattedMessage {...messages.type} />
-          </th>
-          <th>
-            <FormattedMessage {...messages.default} />
-          </th>
-          <th>
-            <FormattedMessage {...messages.description} />
-          </th>
+          <th>{messages.name}</th>
+          <th>{messages.required}</th>
+          <th>{messages.type}</th>
+          <th>{messages.default}</th>
+          <th>{messages.description}</th>
         </tr>
       </thead>
       <tbody>

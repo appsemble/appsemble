@@ -60,6 +60,7 @@ describe('getUserInfo', () => {
       profile: 'https://example.com/me',
       picture: 'https://example.com/me.png',
       sub: '42',
+      locale: undefined,
     });
   });
 
@@ -72,6 +73,7 @@ describe('getUserInfo', () => {
           name: 'User',
           profile: 'https://example.com/user',
           picture: 'https://example.com/user.png',
+          locale: undefined,
         },
         'secret',
       ),
@@ -83,6 +85,7 @@ describe('getUserInfo', () => {
       profile: 'https://example.com/user',
       picture: 'https://example.com/user.png',
       sub: '1337',
+      locale: undefined,
     });
   });
 
@@ -95,6 +98,7 @@ describe('getUserInfo', () => {
         name: 'User',
         profile: 'https://example.com/user',
         picture: 'https://example.com/user.png',
+        locale: undefined,
       },
     ]);
     const userInfo = await getUserInfo('', sign({ sub: '1337' }, 'secret'), '/userinfo');
@@ -105,6 +109,7 @@ describe('getUserInfo', () => {
       profile: 'https://example.com/user',
       picture: 'https://example.com/user.png',
       sub: '1337',
+      locale: undefined,
     });
   });
 
@@ -137,6 +142,7 @@ describe('getUserInfo', () => {
       profile: 'https://example.com/user',
       picture: 'https://example.com/user.png',
       sub: '1337',
+      locale: undefined,
     });
   });
 

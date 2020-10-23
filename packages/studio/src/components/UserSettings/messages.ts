@@ -28,4 +28,6 @@ export const messages = defineMessages({
   verified: 'Verified',
   unverified: 'Not verified',
   primary: 'Primary',
+  preferredLanguage: 'Preferred language',
+  preferredLanguageHelp: 'The preferred language to use for the Appsemble Studio.',
 });

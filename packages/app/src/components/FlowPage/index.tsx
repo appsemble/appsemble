@@ -146,7 +146,6 @@ export function FlowPage({
         prefix={`${prefix}.subPages.${currentPage}.blocks`}
         remap={remap}
         showDialog={showDialog}
-        transitions
       />
     </>
   );

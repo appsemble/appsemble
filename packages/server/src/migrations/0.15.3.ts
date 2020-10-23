@@ -4,27 +4,27 @@ import { DataTypes, Sequelize } from 'sequelize';
 export const key = '0.15.3';
 
 /**
- * Symmary:
- * - Add `icon` to Organization
+ * Summary:
+ * - Add the `locale` column to User
  *
  * @param db - The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-
-  logger.info('Adding column icon to Organization');
-  await queryInterface.addColumn('Organization', 'icon', { type: DataTypes.BLOB });
+  logger.info('Adding column locale to User');
+  await queryInterface.addColumn('User', 'locale', {
+    type: DataTypes.STRING,
+  });
 }
 
 /**
- * Symmary:
- * - Drop the `icon` column from Organization
+ * Summary:
+ * - Remove the `locale` column from User.
  *
  * @param db - The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-
-  logger.info('Adding column icon to Organization');
-  await queryInterface.removeColumn('Organization', 'icon');
+  logger.warn('Dropping column locale from User');
+  await queryInterface.removeColumn('User', 'locale');
 }
