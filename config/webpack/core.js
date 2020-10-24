@@ -145,6 +145,10 @@ module.exports = (env, argv) => {
           test: /\.svg$/,
           loader: 'svgo-loader',
         },
+        {
+          test: /yaml\.worker\.js$/,
+          loader: 'worker-loader',
+        },
       ],
     },
   };
