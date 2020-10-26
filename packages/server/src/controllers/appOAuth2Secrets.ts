@@ -1,7 +1,8 @@
 import { randomBytes } from 'crypto';
+import { URL } from 'url';
 
 import { Permission } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
+import { badRequest, notFound } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
 
 import {
@@ -15,7 +16,6 @@ import {
 import type { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
-import { trimUrl } from '../utils/trimUrl';
 
 interface Params {
   appId: string;
@@ -85,6 +85,7 @@ export async function getAppOAuth2Secret(ctx: KoaContext<Params>): Promise<void>
 
 export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promise<void> {
   const {
+    argv: { host },
     headers,
     params: { appId, appOAuth2SecretId },
     request: {
@@ -92,7 +93,16 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
     },
     user,
   } = ctx;
-  const referer = trimUrl(headers.referer);
+  // XXX Replace this with an imported language array when supporting more languages
+  let referer: URL;
+  try {
+    referer = new URL(headers.referer);
+  } catch {
+    throw badRequest('The referer header is invalid');
+  }
+  if (referer.origin !== new URL(host).origin) {
+    throw badRequest('The referer header is invalid');
+  }
 
   const app = await App.findByPk(appId, {
     attributes: ['id'],
@@ -119,7 +129,13 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
     access_token: accessToken,
     id_token: idToken,
     refresh_token: refreshToken,
-  } = await getAccessToken(secret.tokenUrl, code, referer, secret.clientId, secret.clientSecret);
+  } = await getAccessToken(
+    secret.tokenUrl,
+    code,
+    String(new URL('/callback', host)),
+    secret.clientId,
+    secret.clientSecret,
+  );
 
   const { sub } = await getUserInfo(accessToken, idToken, secret.userInfoUrl, secret.remapper);
   const authorization = await AppOAuth2Authorization.findOne({
