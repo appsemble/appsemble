@@ -107,6 +107,51 @@ describe('date.now', () => {
   });
 });
 
+describe('date.add', () => {
+  let clock: FakeTimers.InstalledClock;
+
+  beforeEach(() => {
+    clock = FakeTimers.install();
+  });
+
+  afterEach(() => {
+    clock.uninstall();
+  });
+
+  runTests({
+    'add 3 days to the given date': {
+      input: 'whatever',
+      mappers: [{ 'date.now': {} }, { 'date.add': '3d' }],
+      expected: new Date(3 * 24 * 60 * 60 * 1e3),
+    },
+    'add 3 days to the given date as number': {
+      input: 20e3,
+      mappers: [{ 'date.add': '3d' }],
+      expected: new Date(3 * 24 * 60 * 60 * 1e3 + 20e3),
+    },
+    'subtract 1 day from the given date': {
+      input: 'whatever',
+      mappers: [{ 'date.now': {} }, { 'date.add': '-1d' }],
+      expected: new Date(-(24 * 60 * 60 * 1e3)),
+    },
+    'return input when input is nothing': {
+      input: undefined,
+      mappers: [{ 'date.add': '3d' }],
+      expected: undefined,
+    },
+    'return input when input is not a date': {
+      input: 'whatever',
+      mappers: [{ 'date.add': '3d' }],
+      expected: 'whatever',
+    },
+    'return input date when duration is invalid': {
+      input: new Date(1000),
+      mappers: [{ 'date.add': '3dd' }],
+      expected: new Date(1000),
+    },
+  });
+});
+
 describe('equals', () => {
   runTests({
     'return true if all values are equal': {

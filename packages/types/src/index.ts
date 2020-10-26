@@ -216,6 +216,11 @@ export interface Remappers {
   'date.now': unknown;
 
   /**
+   * Adds to a date.
+   */
+  'date.add': string;
+
+  /**
    * Compare all computed remapper values against each other.
    *
    * Returns `true` if all entries are equal, otherwise `false`.
