@@ -155,6 +155,10 @@ Replace parts of a string based on regex.
 | ------------------------ | --------------------------------------------------------------------------------------- |
 | `[key containing regex]` | The regex to match with. The value will be what this regex will replace its match with. |
 
+### `date.now`
+
+Return the current date.
+
 ### `date.parse`
 
 Parse a string into a date using the given format.

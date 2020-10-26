@@ -211,6 +211,11 @@ export interface Remappers {
   'date.parse': string;
 
   /**
+   * Returns the current date.
+   */
+  'date.now': unknown;
+
+  /**
    * Compare all computed remapper values against each other.
    *
    * Returns `true` if all entries are equal, otherwise `false`.

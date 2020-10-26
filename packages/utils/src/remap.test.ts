@@ -1,4 +1,5 @@
 import type { AppMessages, Remapper, UserInfo } from '@appsemble/types';
+import FakeTimers from '@sinonjs/fake-timers';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 import { remap } from './remap';
@@ -82,6 +83,26 @@ describe('context', () => {
       input: {},
       mappers: { context: 'test' },
       expected: null,
+    },
+  });
+});
+
+describe('date.now', () => {
+  let clock: FakeTimers.InstalledClock;
+
+  beforeEach(() => {
+    clock = FakeTimers.install();
+  });
+
+  afterEach(() => {
+    clock.uninstall();
+  });
+
+  runTests({
+    'return the current date': {
+      input: 'whatever',
+      mappers: { 'date.now': {} },
+      expected: new Date(0),
     },
   });
 });

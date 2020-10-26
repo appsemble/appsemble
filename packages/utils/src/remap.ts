@@ -109,6 +109,8 @@ const mapperImplementations: MapperImplementations = {
   'date.parse': (format, input: string) =>
     format ? parse(input, format, new Date()) : parseISO(input),
 
+  'date.now': () => new Date(),
+
   root: (args, input, context) => context.root,
 
   'string.case': (stringCase, input) => {
