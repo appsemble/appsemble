@@ -248,6 +248,13 @@ export interface Remappers {
   };
 
   /**
+   * Assign properties to an existing object given some predefined mapper keys.
+   */
+  'object.assign': {
+    [key: string]: Remapper;
+  };
+
+  /**
    * Use a static value.
    */
   static: any;

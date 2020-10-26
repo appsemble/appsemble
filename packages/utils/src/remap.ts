@@ -84,6 +84,11 @@ const mapperImplementations: MapperImplementations = {
   'object.from': (mappers, input, context) =>
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
+  'object.assign': (mappers, input: any, context) => ({
+    ...input,
+    ...mapValues(mappers, (mapper) => remap(mapper, input, context)),
+  }),
+
   'array.map': (mapper, input: any[], context) =>
     input?.map((item, index) =>
       remap(mapper, item, {

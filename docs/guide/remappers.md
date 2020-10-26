@@ -79,6 +79,14 @@ Create a new object given some predefined mapper keys.
 
 A key / value pair object keys and remappers.
 
+### `object.assign`
+
+Assign properties to an existing object given some predefined mapper keys.
+
+#### Parameters
+
+A key / value pair object keys and remappers.
+
 ### `array.map`
 
 Map an array based on a given array of data and a list of remappers.

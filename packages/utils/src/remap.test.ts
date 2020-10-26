@@ -159,6 +159,22 @@ describe('object.from', () => {
   });
 });
 
+describe('object.assign', () => {
+  runTests({
+    'assign to an object from remappers': {
+      input: { givenName: 'Patrick', familyName: 'Star' },
+      mappers: {
+        'object.assign': {
+          familyName: [{ prop: 'familyName' }, { 'string.case': 'lower' }],
+          species: 'Starfish',
+        },
+      },
+
+      expected: { givenName: 'Patrick', familyName: 'star', species: 'Starfish' },
+    },
+  });
+});
+
 describe('array.map', () => {
   runTests({
     'apply remappers to each array item': {
