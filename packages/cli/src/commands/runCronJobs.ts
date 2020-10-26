@@ -3,7 +3,7 @@ import type { Argv } from 'yargs';
 import { serverImport } from '../lib/serverImport';
 import type { BaseArguments } from '../types';
 
-export const command = 'run-cron-jobs';
+export const command = 'run-cronjobs';
 export const description = 'Runs all cronjobs associated with apps.';
 
 export function builder(yargs: Argv): Argv {
