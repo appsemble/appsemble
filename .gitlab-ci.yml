@@ -188,7 +188,7 @@ publish docker:
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin
+    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "appsemble/appsemble:latest"
