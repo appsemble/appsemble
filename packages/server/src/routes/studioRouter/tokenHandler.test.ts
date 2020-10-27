@@ -186,6 +186,42 @@ describe('authorization_code', () => {
     );
   });
 
+  it('should only allow granted scopes', async () => {
+    await user.$create('Organization', { id: 'org' });
+    const app = await App.create({
+      OrganizationId: 'org',
+      definition: '',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const expires = new Date('2000-01-01T00:10:00Z');
+    await OAuth2AuthorizationCode.create({
+      AppId: app.id,
+      code: '123',
+      UserId: user.id,
+      expires,
+      redirectUri: 'http://foo.bar.localhost:9999/',
+      scope: 'openid',
+    });
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        client_id: `app:${app.id}`,
+        code: '123',
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://foo.bar.localhost:9999/',
+        scope: 'email openid',
+      }),
+      { headers: { referer: 'http://foo.bar.localhost:9999/' } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'invalid_scope',
+      },
+    });
+  });
+
   it('should return an access token response if the authorization code is valid', async () => {
     await user.$create('Organization', { id: 'org' });
     const app = await App.create({
@@ -210,6 +246,7 @@ describe('authorization_code', () => {
         code: '123',
         grant_type: 'authorization_code',
         redirect_uri: 'http://foo.bar.localhost:9999/',
+        scope: 'openid',
       }),
       { headers: { referer: 'http://foo.bar.localhost:9999/' } },
     );
