@@ -4,6 +4,9 @@
 export const scopes = [
   'apps:write',
   'blocks:write',
+  'email',
+  'openid',
+  'profile',
   'organizations:write',
   'resources:manage',
 ] as const;
