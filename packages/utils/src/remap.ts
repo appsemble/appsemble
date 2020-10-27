@@ -1,7 +1,8 @@
 import type { Remapper, Remappers, UserInfo } from '@appsemble/types';
-import { parse, parseISO } from 'date-fns';
+import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
 import type { IntlMessageFormat } from 'intl-messageformat';
+import parseDuration from 'parse-duration';
 
 import { mapValues } from './mapValues';
 
@@ -84,6 +85,11 @@ const mapperImplementations: MapperImplementations = {
   'object.from': (mappers, input, context) =>
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 
+  'object.assign': (mappers, input: any, context) => ({
+    ...input,
+    ...mapValues(mappers, (mapper) => remap(mapper, input, context)),
+  }),
+
   'array.map': (mapper, input: any[], context) =>
     input?.map((item, index) =>
       remap(mapper, item, {
@@ -103,6 +109,18 @@ const mapperImplementations: MapperImplementations = {
 
   'date.parse': (format, input: string) =>
     format ? parse(input, format, new Date()) : parseISO(input),
+
+  'date.now': () => new Date(),
+
+  'date.add': (time, input: any) => {
+    const expireDuration = parseDuration(time);
+
+    if (!expireDuration || !input || (!Number.isFinite(input) && !(input instanceof Date))) {
+      return input;
+    }
+
+    return addMilliseconds(input, expireDuration);
+  },
 
   root: (args, input, context) => context.root,
 

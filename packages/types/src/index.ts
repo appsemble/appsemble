@@ -211,6 +211,16 @@ export interface Remappers {
   'date.parse': string;
 
   /**
+   * Returns the current date.
+   */
+  'date.now': unknown;
+
+  /**
+   * Adds to a date.
+   */
+  'date.add': string;
+
+  /**
    * Compare all computed remapper values against each other.
    *
    * Returns `true` if all entries are equal, otherwise `false`.
@@ -244,6 +254,13 @@ export interface Remappers {
    * Create a new object given some predefined mapper keys.
    */
   'object.from': {
+    [key: string]: Remapper;
+  };
+
+  /**
+   * Assign properties to an existing object given some predefined mapper keys.
+   */
+  'object.assign': {
     [key: string]: Remapper;
   };
 
