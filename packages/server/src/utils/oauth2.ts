@@ -6,6 +6,13 @@ import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { decode } from 'jsonwebtoken';
 
+/**
+ * Check if all required scopes are granted.
+ *
+ * @param grantedScopes - The scopes that have been granted to the client.
+ * @param requiredScopes - The scopes that are required to perform an operation.
+ * @returns If the client is allowed to perform the operation based on the scopes.
+ */
 export function hasScope(grantedScopes: string, requiredScopes: string): boolean {
   const granted = grantedScopes.split(' ');
   const required = requiredScopes.split(' ');
