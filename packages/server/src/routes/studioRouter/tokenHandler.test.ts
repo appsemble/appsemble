@@ -3,7 +3,7 @@ import { URLSearchParams } from 'url';
 import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
-import { verify } from 'jsonwebtoken';
+import { decode } from 'jsonwebtoken';
 import type Koa from 'koa';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
@@ -237,7 +237,7 @@ describe('authorization_code', () => {
       UserId: user.id,
       expires,
       redirectUri: 'http://foo.bar.localhost:9999/',
-      scope: 'openid',
+      scope: 'email openid',
     });
     const response = await request.post(
       '/oauth2/token',
@@ -262,6 +262,15 @@ describe('authorization_code', () => {
     await expect(authCode.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
+    const payload = decode(response.data.access_token);
+    expect(payload).toStrictEqual({
+      aud: 'app:1',
+      exp: 946688400,
+      iat: 946684800,
+      iss: 'http://localhost',
+      scope: 'openid',
+      sub: user.id,
+    });
   });
 });
 
@@ -271,7 +280,7 @@ describe('client_credentials', () => {
       description: 'Test credentials',
       id: 'testClientId',
       expires: new Date('2000-01-02T00:00:00Z'),
-      scopes: 'blocks:write',
+      scopes: 'apps:write blocks:write',
       secret: 'testClientSecret',
       UserId: user.id,
     });
@@ -368,9 +377,15 @@ describe('client_credentials', () => {
         token_type: 'bearer',
       },
     });
-    expect(() =>
-      verify(response.data.access_token, 'test', { audience: 'testClientId' }),
-    ).not.toThrow();
+    const payload = decode(response.data.access_token);
+    expect(payload).toStrictEqual({
+      aud: 'testClientId',
+      exp: 946688400,
+      iat: 946684800,
+      iss: 'http://localhost',
+      scope: 'blocks:write',
+      sub: user.id,
+    });
   });
 });
 
@@ -410,8 +425,13 @@ describe('refresh_token', () => {
         token_type: 'bearer',
       },
     });
-    expect(() =>
-      verify(response.data.access_token, 'test', { audience: 'http://localhost' }),
-    ).not.toThrow();
+    const payload = decode(response.data.access_token);
+    expect(payload).toStrictEqual({
+      aud: 'http://localhost',
+      exp: 946688400,
+      iat: 946684800,
+      iss: 'http://localhost',
+      sub: user.id,
+    });
   });
 });

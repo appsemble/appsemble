@@ -112,7 +112,7 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         }
         aud = clientId;
         refreshToken = true;
-        ({ scope } = authorizationCode);
+        scope = requestedScope;
         sub = authorizationCode.UserId;
         break;
       }
@@ -144,8 +144,9 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
           throw new GrantError('invalid_scope');
         }
         aud = client.id;
-        sub = client.UserId;
         refreshToken = false;
+        scope = requestedScope;
+        sub = client.UserId;
         break;
       }
       // XXX The password grant type is supported for now for legacy apps.
