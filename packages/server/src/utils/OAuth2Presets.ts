@@ -49,17 +49,15 @@ export const githubPreset: OAuth2Preset = {
   scope: 'read:user user:email',
   tokenUrl: 'https://github.com/login/oauth/access_token',
   userInfoUrl: 'https://api.github.com/user',
-  remapper: [
-    {
-      'object.from': {
-        email: [{ prop: 'email' }],
-        name: [{ prop: 'name' }],
-        profile: [{ prop: 'html_url' }],
-        picture: [{ prop: 'avatar_url' }],
-        sub: [{ prop: 'id' }],
-      },
+  remapper: {
+    'object.from': {
+      email: { prop: 'email' },
+      name: { prop: 'name' },
+      profile: { prop: 'html_url' },
+      picture: { prop: 'avatar_url' },
+      sub: { prop: 'id' },
     },
-  ],
+  },
 };
 
 /**
