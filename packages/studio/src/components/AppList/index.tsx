@@ -6,7 +6,7 @@ import {
   SelectField,
   useData,
 } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

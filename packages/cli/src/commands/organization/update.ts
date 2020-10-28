@@ -1,13 +1,13 @@
-import type { ReadStream } from 'fs';
+import { ReadStream } from 'fs';
 
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
 import { coerceFile } from '../../lib/coercers';
-import type { BaseArguments } from '../../types';
+import { BaseArguments } from '../../types';
 
 interface UpdateOrganizationArguments extends BaseArguments {
   id: string;

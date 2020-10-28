@@ -2,7 +2,7 @@ import { Loader, useQuery } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
 import React, { ReactElement, useEffect } from 'react';
 
-import type { ExtendedOAuth2State } from '../../types';
+import { ExtendedOAuth2State } from '../../types';
 import { oauth2Redirect } from '../../utils/oauth2Utils';
 
 interface OAuth2AppCallbackProps {

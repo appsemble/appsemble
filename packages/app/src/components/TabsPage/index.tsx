@@ -1,5 +1,5 @@
 import { Tab, Tabs } from '@appsemble/react-components';
-import type { TabsPageDefinition } from '@appsemble/types';
+import { TabsPageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import React, { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom';

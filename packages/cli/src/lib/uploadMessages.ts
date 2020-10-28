@@ -2,7 +2,7 @@ import { existsSync, promises as fs } from 'fs';
 import { join, parse } from 'path';
 
 import { logger } from '@appsemble/node-utils';
-import type { AppMessages } from '@appsemble/types';
+import { AppMessages } from '@appsemble/types';
 import axios from 'axios';
 import yaml from 'js-yaml';
 

@@ -1,6 +1,6 @@
 import { SelectField } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
-import type { NamedEvent } from '@appsemble/web-utils';
+import { App } from '@appsemble/types';
+import { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 

@@ -1,4 +1,4 @@
-import type { AppDefinition } from '@appsemble/types';
+import { AppDefinition } from '@appsemble/types';
 
 import {
   AppsembleValidationError,

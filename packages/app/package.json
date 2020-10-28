@@ -32,25 +32,25 @@
     "@browser-logos/edge": "^2.0.5",
     "@browser-logos/firefox": "^3.0.9",
     "@browser-logos/safari": "^2.0.0",
-    "@sentry/browser": "^5.22.3",
-    "axios": "^0.19.2",
+    "@sentry/browser": "^5.27.1",
+    "axios": "^0.21.0",
     "classnames": "^2.2.6",
     "events": "^3.2.0",
     "intl-format-cache": "^4.3.1",
-    "intl-messageformat": "^9.3.6",
+    "intl-messageformat": "^9.3.12",
     "jsonpointer": "^4.1.0",
     "jwt-decode": "^2.2.0",
     "openapi-types": "^7.0.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-intl": "^5.8.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-intl": "^5.8.8",
     "react-router-dom": "^5.2.0",
     "roboto-fontface": "^0.10.0",
     "serviceworker-webpack-plugin": "^1.0.1",
-    "type-fest": "^0.16.0"
+    "type-fest": "^0.18.0"
   },
   "devDependencies": {
     "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.3"
+    "enzyme-adapter-react-16": "^1.15.5"
   }
 }

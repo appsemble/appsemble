@@ -1,6 +1,6 @@
 import { baseTheme, normalize } from '@appsemble/utils';
 
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 
 const iconSizes = [48, 144, 192, 512];

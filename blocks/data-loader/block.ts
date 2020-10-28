@@ -1,4 +1,4 @@
-import type { Remapper } from '@appsemble/sdk';
+import { Remapper } from '@appsemble/sdk';
 
 export {};
 

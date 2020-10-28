@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 import { URL } from 'url';
 
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 import { createSettings } from '../../utils/createSettings';
 import { makeCSP } from '../../utils/makeCSP';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';

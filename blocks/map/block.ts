@@ -1,5 +1,5 @@
-import type { BulmaColor } from '@appsemble/sdk';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { BulmaColor } from '@appsemble/sdk';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 
 interface AbstractMarkerIcon {
   /**

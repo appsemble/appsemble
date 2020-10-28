@@ -1,5 +1,5 @@
 import { readJson } from 'fs-extra';
-import type { PackageJson } from 'type-fest';
+import { PackageJson } from 'type-fest';
 
 /**
  * Read package.json

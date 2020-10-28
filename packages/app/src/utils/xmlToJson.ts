@@ -1,5 +1,5 @@
-import type { OpenAPIV3 } from 'openapi-types';
-import type { JsonValue } from 'type-fest';
+import { OpenAPIV3 } from 'openapi-types';
+import { JsonValue } from 'type-fest';
 
 const parser = new DOMParser();
 

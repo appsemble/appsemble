@@ -1,10 +1,10 @@
-import type { RequestAction, RequestLikeAction, RequestLikeActionTypes } from '@appsemble/sdk';
-import type { RequestLikeActionDefinition } from '@appsemble/types';
+import { RequestAction, RequestLikeAction, RequestLikeActionTypes } from '@appsemble/sdk';
+import { RequestLikeActionDefinition } from '@appsemble/types';
 import { formatRequestAction, remapData, validate } from '@appsemble/utils';
 import axios, { Method } from 'axios';
 
-import type { MakeActionParameters } from '../../types';
-import type { RecursiveValue } from '../extractBlobs';
+import { MakeActionParameters } from '../../types';
+import { RecursiveValue } from '../extractBlobs';
 import { apiUrl, appId } from '../settings';
 import { uploadBlobs } from '../uploadBlobs';
 import { xmlToJson } from '../xmlToJson';

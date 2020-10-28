@@ -1,7 +1,7 @@
 import { Button, Icon } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import classNames from 'classnames';
-import type { editor } from 'monaco-editor';
+import { editor } from 'monaco-editor';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';

@@ -1,8 +1,8 @@
-import type { EventEmitter } from 'events';
+import { EventEmitter } from 'events';
 
-import type { ShowMessage } from '@appsemble/react-components';
-import type { Action } from '@appsemble/sdk';
-import type {
+import { ShowMessage } from '@appsemble/react-components';
+import { Action } from '@appsemble/sdk';
+import {
   ActionDefinition,
   ActionType,
   AppDefinition,
@@ -10,13 +10,13 @@ import type {
   FlowPageDefinition,
   Remapper,
 } from '@appsemble/types';
-import type { match as Match, RouteComponentProps } from 'react-router-dom';
+import { match as Match, RouteComponentProps } from 'react-router-dom';
 
-import type { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
+import { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
 import { ActionCreator, ActionCreators, actionCreators } from './actions';
 
 interface MakeActionsParams {
-  actions: { [action: string]: ActionType };
+  actions: Record<string, ActionType>;
   definition: AppDefinition;
   context: BlockDefinition | FlowPageDefinition;
   history: RouteComponentProps['history'];
@@ -28,7 +28,7 @@ interface MakeActionsParams {
   pageReady: Promise<void>;
   prefix: string;
   ee: EventEmitter;
-  remap: (remapper: Remapper, data: any, context: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   showMessage: ShowMessage;
 }
 
@@ -43,7 +43,7 @@ interface CreateActionParams {
   pageReady: Promise<void>;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
-  remap: (remapper: Remapper, data: any, context: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   showDialog: ShowDialogAction;
   type: Action['type'];
   showMessage: ShowMessage;
@@ -120,7 +120,7 @@ function createAction({
 
   const { dispatch } = action;
   if (actionDefinition) {
-    action.dispatch = async (args: any, context: { [key: string]: any }) => {
+    action.dispatch = async (args: any, context: Record<string, any>) => {
       await pageReady;
       let result;
 
@@ -164,10 +164,10 @@ export function makeActions({
   route,
   showDialog,
   showMessage,
-}: MakeActionsParams): { [key: string]: Action } {
+}: MakeActionsParams): Record<string, Action> {
   const actionMap = Object.entries(actions || {})
     .filter(([key]) => key !== '$any')
-    .reduce<{ [key: string]: Action }>((acc, [on, { required }]) => {
+    .reduce<Record<string, Action>>((acc, [on, { required }]) => {
       let actionDefinition: ActionDefinition;
       let type: Action['type'];
       if (!context.actions || !Object.hasOwnProperty.call(context.actions, on)) {
@@ -201,13 +201,11 @@ export function makeActions({
       return acc;
     }, {});
 
-  let anyActions: {
-    [key: string]: Action;
-  };
+  let anyActions: Record<string, Action>;
   if (actions?.$any) {
     anyActions = Object.keys(context.actions || {})
       .filter((key) => !actionMap[key])
-      .reduce<{ [key: string]: Action }>((acc, on: keyof typeof context.actions) => {
+      .reduce<Record<string, Action>>((acc, on: keyof typeof context.actions) => {
         const actionDefinition = context.actions[on];
         const { type } = actionDefinition;
 

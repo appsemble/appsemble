@@ -1,7 +1,7 @@
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { initDB } from '../models';
-import type { Argv as Args } from '../types';
+import { Argv as Args } from '../types';
 import { cleanupDNS } from '../utils/dns';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';

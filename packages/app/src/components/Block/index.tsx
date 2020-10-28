@@ -1,15 +1,15 @@
-import type { EventEmitter } from 'events';
+import { EventEmitter } from 'events';
 
 import { Title, useMessages } from '@appsemble/react-components';
-import type { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
+import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 
-import type { ShowDialogAction } from '../../types';
-import type { ActionCreators } from '../../utils/actions';
+import { ShowDialogAction } from '../../types';
+import { ActionCreators } from '../../utils/actions';
 import { callBootstrap } from '../../utils/bootstrapper';
 import { injectCSS } from '../../utils/injectCSS';
 import { makeActions } from '../../utils/makeActions';
@@ -45,7 +45,7 @@ interface BlockProps {
 
   showDialog: ShowDialogAction;
   ready: (block: BlockDefinition) => void;
-  remap: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   pageReady: Promise<void>;
   prefix: string;
 }

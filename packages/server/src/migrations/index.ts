@@ -1,4 +1,4 @@
-import type { Migration } from '../utils/migrate';
+import { Migration } from '../utils/migrate';
 import * as m4 from './0.10.0';
 import * as m5 from './0.11.0';
 import * as m6 from './0.11.3';

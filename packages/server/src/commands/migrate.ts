@@ -1,10 +1,10 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import semver from 'semver';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { migrations } from '../migrations';
 import { initDB } from '../models';
-import type { Argv as Args } from '../types';
+import { Argv as Args } from '../types';
 import { migrate } from '../utils/migrate';
 import { readPackageJson } from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';

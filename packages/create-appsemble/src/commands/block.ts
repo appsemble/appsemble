@@ -3,7 +3,7 @@ import { join, resolve } from 'path';
 
 import { copy, outputJson, readJson } from 'fs-extra';
 import { prompt } from 'inquirer';
-import type { PackageJson } from 'type-fest';
+import { PackageJson } from 'type-fest';
 
 import { readPackageJson } from '../lib/readPackageJson';
 

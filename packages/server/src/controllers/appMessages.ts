@@ -1,11 +1,11 @@
-import type { AppMessages as AppMessagesInterface } from '@appsemble/types';
+import { AppMessages as AppMessagesInterface } from '@appsemble/types';
 import { Permission, validateLanguage } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 
 interface Params {
@@ -27,8 +27,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
 
   const baseLanguage = tags(language)
     .subtags()
-    .filter((sub) => sub.type() === 'language')?.[0]
-    ?.toString();
+    .find((sub) => sub.type() === 'language');
 
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
@@ -37,7 +36,9 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
         model: AppMessages,
         where:
           merge && baseLanguage
-            ? { language: { [Op.or]: [baseLanguage.toLowerCase(), language.toLowerCase()] } }
+            ? {
+                language: { [Op.or]: [String(baseLanguage).toLowerCase(), language.toLowerCase()] },
+              }
             : { language: language.toLowerCase() },
         required: false,
       },
@@ -60,7 +61,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
   }
 
   const base: AppMessagesInterface = app.AppMessages.find(
-    (m) => m.language === baseLanguage.toLowerCase(),
+    (m) => m.language === String(baseLanguage).toLowerCase(),
   );
   const messages = app.AppMessages.find((m) => m.language === language.toLowerCase());
 

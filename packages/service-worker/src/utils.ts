@@ -1,4 +1,4 @@
-import type { Promisable } from 'type-fest';
+import { Promisable } from 'type-fest';
 
 async function put(
   request: Request,

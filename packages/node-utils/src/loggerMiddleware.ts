@@ -1,6 +1,6 @@
 import { bold, cyan, green, red, white, yellow } from 'chalk';
-import type { ParameterizedContext } from 'koa';
-import type * as compose from 'koa-compose';
+import { ParameterizedContext } from 'koa';
+import * as compose from 'koa-compose';
 
 import { logger } from './logger';
 

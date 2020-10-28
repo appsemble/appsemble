@@ -1,6 +1,6 @@
 import { notFound } from '@hapi/boom';
 
-import type { KoaMiddleware } from '../../types';
+import { KoaMiddleware } from '../../types';
 import { getApp } from '../../utils/app';
 
 export function cssHandler(type: 'coreStyle' | 'sharedStyle'): KoaMiddleware {

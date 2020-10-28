@@ -1,14 +1,14 @@
 import { logger } from '@appsemble/node-utils';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
-import type { File } from 'koas-body-parser';
+import { File } from 'koas-body-parser';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { BlockAsset, BlockVersion, getDB, Organization, transactional } from '../models';
 import { serveIcon } from '../routes/serveIcon';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { readAsset } from '../utils/readAsset';
 

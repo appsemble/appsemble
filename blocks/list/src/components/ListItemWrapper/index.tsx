@@ -1,7 +1,7 @@
-import type { BootstrapParams } from '@appsemble/sdk';
+import { BootstrapParams } from '@appsemble/sdk';
 import { h, VNode } from 'preact';
 
-import type { Item } from '../../../block';
+import { Item } from '../../../block';
 
 type ListItemWrapperProps = (
   | h.JSX.HTMLAttributes<HTMLButtonElement>

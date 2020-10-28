@@ -2,7 +2,7 @@ import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 
 import { App, Asset } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 
 interface Params {

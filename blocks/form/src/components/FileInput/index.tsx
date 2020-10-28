@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { FileField, InputProps } from '../../../block';
+import { FileField, InputProps } from '../../../block';
 import { isRequired } from '../../utils/requirements';
 import { FileEntry } from '../FileEntry';
 import styles from './index.css';

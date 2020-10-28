@@ -4,9 +4,7 @@ import { h } from 'mini-jsx';
 
 import styles from './index.css';
 
-interface Item {
-  [key: string]: unknown;
-}
+type Item = Record<string, unknown>;
 
 type Data = Item | Item[];
 

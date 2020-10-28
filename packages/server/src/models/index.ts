@@ -1,4 +1,4 @@
-import type { Options, Transaction } from 'sequelize';
+import { Options, Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 
 import { logSQL } from '../utils/sqlUtils';
@@ -112,24 +112,21 @@ export function initDB({
       User,
     ],
   };
-  let args: [Options] | [string, Options];
-  if (uri) {
-    args = [uri, options];
-  } else {
-    args = [
-      Object.assign(options, {
-        dialect: 'postgres' as const,
-        host,
-        port,
-        username,
-        password,
-        database,
-        dialectOptions: {
-          ssl: ssl && { rejectUnauthorized: false },
-        },
-      }),
-    ];
-  }
+  const args: [Options] | [string, Options] = uri
+    ? [uri, options]
+    : [
+        Object.assign(options, {
+          dialect: 'postgres' as const,
+          host,
+          port,
+          username,
+          password,
+          database,
+          dialectOptions: {
+            ssl: ssl && { rejectUnauthorized: false },
+          },
+        }),
+      ];
   db = new Sequelize(...(args as [Options]));
 
   return db;

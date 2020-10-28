@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import type { AppMember, UserInfo } from '@appsemble/types';
+import { AppMember, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import React, {
@@ -100,7 +100,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
    * @param grantType - The grant type to authenticate with
    * @param params - Additional parameters, which depend on the grant type.
    */
-  const fetchToken = useCallback(async (grantType: string, params: { [key: string]: string }) => {
+  const fetchToken = useCallback(async (grantType: string, params: Record<string, string>) => {
     const {
       data: { access_token: accessToken, refresh_token: rt },
     } = await axios.post<TokenResponse>(

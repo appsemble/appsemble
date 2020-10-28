@@ -6,7 +6,7 @@ import {
   useLocationString,
   useQuery,
 } from '@appsemble/react-components';
-import type { TokenResponse, UserInfo } from '@appsemble/types';
+import { TokenResponse, UserInfo } from '@appsemble/types';
 import { appendOAuth2State, clearOAuth2State } from '@appsemble/web-utils';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
@@ -14,7 +14,7 @@ import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 
-import type { ExtendedOAuth2State } from '../../types';
+import { ExtendedOAuth2State } from '../../types';
 import { logins } from '../../utils/settings';
 import { useUser } from '../UserProvider';
 import styles from './index.css';

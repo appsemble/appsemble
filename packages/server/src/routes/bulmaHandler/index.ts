@@ -1,10 +1,10 @@
-import type { Theme } from '@appsemble/types';
+import { Theme } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
 import sass from 'node-sass';
 import postcss from 'postcss';
 
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');

@@ -2,7 +2,7 @@ import { Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 
 import { App, AppMember, Organization, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 
 interface Params {
@@ -108,14 +108,10 @@ export async function setAppMember(ctx: KoaContext<Params>): Promise<void> {
   const [member] = await app.$get('Users', { where: { id: memberId } });
 
   if (member) {
-    if (
-      role === app.definition.security.default.role &&
-      app.definition.security.default.policy !== 'invite'
-    ) {
-      await app.$remove('User', member);
-    } else {
-      await member.AppMember.update({ role });
-    }
+    await (role === app.definition.security.default.role &&
+    app.definition.security.default.policy !== 'invite'
+      ? app.$remove('User', member)
+      : member.AppMember.update({ role }));
   } else {
     await AppMember.create({
       UserId: user.id,

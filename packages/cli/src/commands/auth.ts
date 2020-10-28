@@ -1,5 +1,5 @@
 import { commandDirOptions } from '@appsemble/node-utils';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 export const command = 'auth';
 export const description = 'Commands related authorization using OAuth2.';

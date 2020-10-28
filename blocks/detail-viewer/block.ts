@@ -1,5 +1,5 @@
-import type { BulmaColor, Remapper } from '@appsemble/sdk';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { BulmaColor, Remapper } from '@appsemble/sdk';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 
 interface AbstractField {
   /**

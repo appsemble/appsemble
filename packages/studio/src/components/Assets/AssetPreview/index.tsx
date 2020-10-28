@@ -3,7 +3,7 @@ import { extension } from 'mime-types';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import type { Asset } from '..';
+import { Asset } from '..';
 import { download } from '../../../utils/download';
 import { useApp } from '../../AppContext';
 import styles from './index.css';

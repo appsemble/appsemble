@@ -3,7 +3,7 @@ import { URL } from 'url';
 import { logger } from '@appsemble/node-utils';
 import webpush from 'web-push';
 
-import type { App, AppSubscription } from '../models';
+import { App, AppSubscription } from '../models';
 
 export interface SendNotificationOptions {
   title: string;

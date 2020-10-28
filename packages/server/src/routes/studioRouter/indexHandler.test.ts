@@ -2,11 +2,11 @@ import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import { studioRouter } from '.';
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 
 let app: Koa;
 let templateName: string;
-let templateData: { [key: string]: unknown };
+let templateData: Record<string, unknown>;
 
 jest.mock('crypto');
 

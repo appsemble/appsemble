@@ -1,7 +1,7 @@
 import { URLSearchParams } from 'url';
 
 import { AppsembleError, basicAuth } from '@appsemble/node-utils';
-import type { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
+import { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { decode } from 'jsonwebtoken';

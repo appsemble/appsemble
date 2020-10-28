@@ -1,5 +1,5 @@
 import { SelectField } from '@appsemble/react-components';
-import type { ActionDefinition } from '@appsemble/types';
+import { ActionDefinition } from '@appsemble/types';
 import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 

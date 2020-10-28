@@ -1,5 +1,5 @@
 import { Loader, Message, useData } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import React, { createContext, ReactElement, useContext, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';

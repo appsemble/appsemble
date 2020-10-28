@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 export const app: OpenAPIV3.OAuth2SecurityScheme = {
   type: 'oauth2',

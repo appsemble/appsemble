@@ -1,9 +1,9 @@
 import { logger } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { initDB, Resource } from '../models';
-import type { Argv as Args } from '../types';
+import { Argv as Args } from '../types';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';
 

@@ -1,11 +1,11 @@
-import type { ActionType, App } from '@appsemble/types';
-import type { NamedEvent } from '@appsemble/web-utils';
+import { ActionType, App } from '@appsemble/types';
+import { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback } from 'react';
 
 import { ActionEditor } from '../ActionEditor';
 
 interface ActionsEditorProps {
-  actions: { [action: string]: ActionType };
+  actions: Record<string, ActionType>;
   app: App;
   onChange: (event: NamedEvent, value?: any) => void;
   value: any;

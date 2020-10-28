@@ -1,10 +1,10 @@
 import { logger } from '@appsemble/node-utils';
-import type { SubscriptionResponse } from '@appsemble/types';
+import { SubscriptionResponse } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 
 import { App, AppSubscription, ResourceSubscription } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { sendNotification } from '../utils/sendNotification';
 
@@ -173,16 +173,14 @@ export async function updateSubscription(ctx: KoaContext<Params>): Promise<void>
   }
 
   // Toggle subscription
-  if (resourceSubscription) {
-    await resourceSubscription.destroy();
-  } else {
-    await ResourceSubscription.create({
-      AppSubscriptionId: appSubscription.id,
-      type: resource,
-      action,
-      ...(resourceId && { ResourceId: resourceId }),
-    });
-  }
+  await (resourceSubscription
+    ? resourceSubscription.destroy()
+    : ResourceSubscription.create({
+        AppSubscriptionId: appSubscription.id,
+        type: resource,
+        action,
+        ...(resourceId && { ResourceId: resourceId }),
+      }));
 }
 
 export async function broadcast(ctx: KoaContext<Params>): Promise<void> {

@@ -2,7 +2,7 @@ import { URL } from 'url';
 
 import isIp from 'is-ip';
 
-import type { KoaMiddleware } from '../types';
+import { KoaMiddleware } from '../types';
 
 export function appMapper(
   platformMiddleware: KoaMiddleware,

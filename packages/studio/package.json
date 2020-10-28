@@ -34,29 +34,30 @@
     "@browser-logos/edge": "^2.0.5",
     "@browser-logos/firefox": "^3.0.9",
     "@browser-logos/safari": "^2.0.0",
-    "@fortawesome/fontawesome-common-types": "^0.2.30",
-    "@mdx-js/react": "^1.6.16",
-    "@sentry/browser": "^5.22.3",
-    "axios": "^0.19.2",
+    "@fortawesome/fontawesome-common-types": "^0.2.32",
+    "@mdx-js/react": "^1.6.19",
+    "@sentry/browser": "^5.27.1",
+    "axios": "^0.21.0",
     "classnames": "^2.2.6",
     "indent-string": "^4.0.0",
     "js-yaml": "^3.14.0",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.20",
-    "mermaid": "^8.7.0",
+    "mermaid": "^8.8.2",
     "mime-types": "^2.1.27",
-    "monaco-editor": "^0.20.0",
-    "monaco-yaml": "^2.5.0",
+    "monaco-editor": "^0.21.2",
+    "monaco-yaml": "^2.5.1",
     "openapi-types": "^7.0.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-helmet": "^6.1.0",
-    "react-intl": "^5.8.0",
+    "react-intl": "^5.8.8",
     "react-router-dom": "^5.2.0",
-    "resize-observer-polyfill": "^1.5.1"
+    "resize-observer-polyfill": "^1.5.1",
+    "typescript-json-schema": "^0.43.0"
   },
   "devDependencies": {
     "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.3"
+    "enzyme-adapter-react-16": "^1.15.5"
   }
 }

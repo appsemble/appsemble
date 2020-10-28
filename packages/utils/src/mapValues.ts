@@ -1,8 +1,8 @@
 export function mapValues<Input, Output>(
-  object: { [key: string]: Input },
+  object: Record<string, Input>,
   iteratee: (value: Input) => Output,
-): { [key: string]: Output } {
-  return Object.entries(object).reduce<{ [key: string]: Output }>((acc, [key, value]) => {
+): Record<string, Output> {
+  return Object.entries(object).reduce<Record<string, Output>>((acc, [key, value]) => {
     acc[key] = iteratee(value);
     return acc;
   }, {});

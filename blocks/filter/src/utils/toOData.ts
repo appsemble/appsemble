@@ -1,4 +1,4 @@
-import type { Field, FilterValues } from '../../block';
+import { Field, FilterValues } from '../../block';
 
 export function toOData(fields: Field[], values: FilterValues): string {
   const queries = fields

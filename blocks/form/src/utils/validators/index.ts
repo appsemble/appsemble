@@ -1,12 +1,12 @@
-import type { Utils } from '@appsemble/sdk';
+import { Utils } from '@appsemble/sdk';
 
-import type { BaseRequirement, Field } from '../../../block';
+import { BaseRequirement, Field } from '../../../block';
 import { validateDateTime } from './validateDateTime';
 import { validateFile } from './validateFile';
 import { validateNumber } from './validateNumber';
 import { validateString } from './validateString';
 
-export const validators: { [name: string]: Validator } = {
+export const validators: Record<string, Validator> = {
   'date-time': validateDateTime,
   file: validateFile,
   geocoordinates: (_, value: { longitude: number; latitude: number }) =>

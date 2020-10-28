@@ -20,7 +20,7 @@ import { serializer } from 'koas-serializer';
 import { specHandler } from 'koas-spec-handler';
 import { statusCode } from 'koas-status-code';
 import { swaggerUI } from 'koas-swagger-ui';
-import type { Configuration } from 'webpack';
+import { Configuration } from 'webpack';
 
 import * as controllers from '../controllers';
 import { appMapper } from '../middleware/appMapper';
@@ -30,7 +30,7 @@ import { frontend } from '../middleware/frontend';
 import { tinyRouter } from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
 import { bulmaHandler } from '../routes/bulmaHandler';
-import type { Argv, KoaMiddleware } from '../types';
+import { Argv, KoaMiddleware } from '../types';
 import { authentication } from './authentication';
 import { convertToCsv } from './convertToCsv';
 import { Mailer } from './email/Mailer';

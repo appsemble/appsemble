@@ -1,5 +1,5 @@
 import { Subtitle, Title } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import React, { ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 

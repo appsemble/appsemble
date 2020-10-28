@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import axios, { AxiosError } from 'axios';
 
-import type { BlockConfig } from '../types';
+import { BlockConfig } from '../types';
 import { makePayload } from './makePayload';
 
 /**

@@ -100,7 +100,7 @@ export function Modal<T extends ElementType = 'div'>({
         onKeyDown={closable ? onKeyDown : null}
         role="presentation"
       />
-      {/* @ts-expect-error */}
+      {/* @ts-expect-error This construct should work */}
       <Component className={classNames('modal-card', cardClassName)} {...props}>
         <div className="modal-card-head">
           <p className="modal-card-title">{title}</p>

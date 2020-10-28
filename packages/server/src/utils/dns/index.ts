@@ -2,7 +2,7 @@ import { inspect } from 'util';
 
 import { AppsembleError } from '@appsemble/node-utils';
 
-import type { Argv } from '../../types';
+import { Argv } from '../../types';
 import * as kubernetes from './kubernetes';
 
 /**

@@ -1,4 +1,4 @@
-import type { BaseMessage } from '@appsemble/sdk';
+import { BaseMessage } from '@appsemble/sdk';
 import React, {
   createContext,
   ReactElement,

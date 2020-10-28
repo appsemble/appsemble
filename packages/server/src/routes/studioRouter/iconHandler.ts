@@ -1,4 +1,4 @@
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 import { readAsset } from '../../utils/readAsset';
 import { serveIcon } from '../serveIcon';
 

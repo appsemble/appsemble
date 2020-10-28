@@ -3,7 +3,7 @@ import { join } from 'path';
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import webpack, { Stats } from 'webpack';
 
-import type { BlockConfig } from '../types';
+import { BlockConfig } from '../types';
 import { loadWebpackConfig } from './loadWebpackConfig';
 
 /**
@@ -19,7 +19,7 @@ export async function buildBlock(config: BlockConfig): Promise<Stats> {
   logger.info(`Building ${config.name}@${config.version} 🔨`);
 
   const compiler = webpack(conf);
-  return new Promise((resolve, reject) =>
+  return new Promise((resolve, reject) => {
     compiler.run((err, stats) => {
       if (err) {
         reject(err);
@@ -29,6 +29,6 @@ export async function buildBlock(config: BlockConfig): Promise<Stats> {
         logger.verbose(stats.toString({ colors: true }));
         resolve(stats);
       }
-    }),
-  );
+    });
+  });
 }

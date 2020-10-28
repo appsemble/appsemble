@@ -4,7 +4,7 @@ import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
-import type Koa from 'koa';
+import Koa from 'koa';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
 import { createServer } from '../../utils/createServer';

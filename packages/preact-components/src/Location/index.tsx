@@ -2,7 +2,7 @@ import 'leaflet/dist/leaflet.css';
 
 // eslint-disable-next-line import/no-deprecated
 import { BlockProps, withBlock } from '@appsemble/preact';
-import type { Theme } from '@appsemble/sdk';
+import { Theme } from '@appsemble/sdk';
 import {
   CircleMarker,
   DivIcon,

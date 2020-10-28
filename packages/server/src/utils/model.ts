@@ -1,14 +1,14 @@
 import { randomBytes } from 'crypto';
 import { URL } from 'url';
 
-import type * as types from '@appsemble/types';
+import * as types from '@appsemble/types';
 import { forbidden } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
 import yaml from 'js-yaml';
 import { omit } from 'lodash';
 
 import * as models from '../models';
-import type { Argv } from '../types';
+import { Argv } from '../types';
 
 /**
  * Normalizes an app record for consistant return values.

@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import React, { Children, ReactElement, ReactNode } from 'react';
 
@@ -51,7 +51,6 @@ export function SideNavLink({ children, exact, icon, label, to }: SideNavLinkPro
       </NavLink>
       {!isCollapsed && Children.count(children) ? (
         <ul>
-          {/* eslint-disable-next-line unicorn/no-fn-reference-in-iterator */}
           {Children.map(children, (child) => (
             <li>{child}</li>
           ))}

@@ -1,7 +1,7 @@
-import type { LogAction } from '@appsemble/sdk';
-import type { LogActionDefinition } from '@appsemble/types';
+import { LogAction } from '@appsemble/sdk';
+import { LogActionDefinition } from '@appsemble/types';
 
-import type { MakeActionParameters } from '../../types';
+import { MakeActionParameters } from '../../types';
 
 export function log({ definition }: MakeActionParameters<LogActionDefinition>): LogAction {
   const { level = 'info' } = definition;

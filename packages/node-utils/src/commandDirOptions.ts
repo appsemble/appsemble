@@ -1,6 +1,6 @@
 import { join, parse } from 'path';
 
-import type { RequireDirectoryOptions } from 'yargs';
+import { RequireDirectoryOptions } from 'yargs';
 
 /**
  * Generate `yargs.commandDir()` options based on a filename.
