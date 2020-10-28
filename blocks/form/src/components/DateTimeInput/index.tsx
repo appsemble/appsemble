@@ -4,7 +4,7 @@ import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import type { DateTimeField, InputProps } from '../../../block';
-import { isRequired } from '../../utils/requirements';
+import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
 
 type DateTimeInputProps = InputProps<string, DateTimeField>;
 
@@ -48,6 +48,8 @@ export function DateTimeInput({
       id={name}
       iso
       label={checkboxLabel}
+      maxDate={getMaxDate(field)}
+      minDate={getMinDate(field)}
       name={name}
       onChange={handleOnChange}
       optionalLabel={utils.remap(optionalLabel, value)}
