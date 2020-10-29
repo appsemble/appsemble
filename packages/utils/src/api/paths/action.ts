@@ -10,6 +10,7 @@ function proxy(method: string, body?: boolean): OpenAPIV3.OperationObject {
         description: 'The proxied response',
       },
     },
+    security: [{ app: ['email', 'profile'] }, {}],
   };
   if (body) {
     operation.requestBody = {
