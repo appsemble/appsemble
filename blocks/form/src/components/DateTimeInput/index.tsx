@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useMemo } from 'preact/hooks';
 
 import type { DateTimeField, InputProps } from '../../../block';
 import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
@@ -40,6 +40,9 @@ export function DateTimeInput({
     [field, onChange],
   );
 
+  const maxDate = useMemo(() => getMaxDate(field), [field]);
+  const minDate = useMemo(() => getMinDate(field), [field]);
+
   return (
     <DateTimeComponent
       disabled={disabled}
@@ -48,8 +51,8 @@ export function DateTimeInput({
       id={name}
       iso
       label={checkboxLabel}
-      maxDate={getMaxDate(field)}
-      minDate={getMinDate(field)}
+      maxDate={maxDate}
+      minDate={minDate}
       name={name}
       onChange={handleOnChange}
       optionalLabel={utils.remap(optionalLabel, value)}
