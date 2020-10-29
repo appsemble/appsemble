@@ -1,4 +1,4 @@
-import type {
+import {
   BaseAction,
   ResourceCreateAction,
   ResourceDeleteAction,
@@ -6,7 +6,7 @@ import type {
   ResourceQueryAction,
   ResourceUpdateAction,
 } from '@appsemble/sdk';
-import type {
+import {
   BlobUploadType,
   ResourceCreateActionDefinition,
   ResourceDefinition,
@@ -21,7 +21,7 @@ import type {
 } from '@appsemble/types';
 import axios from 'axios';
 
-import type { MakeActionParameters, ServiceWorkerRegistrationContextType } from '../../types';
+import { MakeActionParameters, ServiceWorkerRegistrationContextType } from '../../types';
 import { apiUrl, appId } from '../settings';
 import { requestLikeAction } from './request';
 

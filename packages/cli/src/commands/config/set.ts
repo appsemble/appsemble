@@ -3,9 +3,9 @@ import { inspect } from 'util';
 import { logger } from '@appsemble/node-utils';
 import { writeJson } from 'fs-extra';
 import readPkgUp from 'read-pkg-up';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
-import type { BaseArguments, MonoRepoPackageJson } from '../../types';
+import { BaseArguments, MonoRepoPackageJson } from '../../types';
 
 interface ConfigSetArguments extends BaseArguments {
   key: string;

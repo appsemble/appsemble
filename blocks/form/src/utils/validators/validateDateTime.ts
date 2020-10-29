@@ -1,4 +1,4 @@
-import type { DateTimeField, DateTimeRequirement } from '../../../block';
+import { DateTimeField, DateTimeRequirement } from '../../../block';
 
 /**
  * Validates a date time based on a set of requirements.

@@ -1,5 +1,5 @@
 import { useEventListener } from '@appsemble/react-components';
-import type { AppDefinition, BlockManifest } from '@appsemble/types';
+import { AppDefinition, BlockManifest } from '@appsemble/types';
 import React, {
   createContext,
   ReactElement,

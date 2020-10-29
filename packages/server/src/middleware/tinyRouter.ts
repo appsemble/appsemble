@@ -1,6 +1,6 @@
 import { methodNotAllowed } from '@hapi/boom';
 
-import type { KoaMiddleware } from '../types';
+import { KoaMiddleware } from '../types';
 
 type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
 

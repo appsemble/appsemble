@@ -4,7 +4,7 @@ import { inspect } from 'util';
 import axios, { AxiosError } from 'axios';
 import { blue } from 'chalk';
 import { highlight } from 'cli-highlight';
-import type { TransformableInfo } from 'logform';
+import { TransformableInfo } from 'logform';
 import winston from 'winston';
 
 interface ConfigureLoggerParams {

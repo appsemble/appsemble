@@ -26,8 +26,6 @@ export class Organization extends Model<Organization> {
   @Column
   icon: Buffer;
 
-  Member: Member;
-
   @BelongsToMany(() => User, () => Member)
   Users: User[];
 
@@ -55,4 +53,6 @@ export class Organization extends Model<Organization> {
 
   @DeletedAt
   deleted: Date;
+
+  Member: Member;
 }

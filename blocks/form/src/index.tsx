@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import type { FieldErrorMap, Values } from '../block';
+import { FieldErrorMap, Values } from '../block';
 import { FieldGroup } from './components/FieldGroup';
 import styles from './index.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
@@ -55,7 +55,7 @@ bootstrap(
           return;
         }
 
-        const token = Symbol();
+        const token = Symbol('Async requirements lock');
         lock.current = token;
 
         let error;

@@ -1,4 +1,4 @@
-import type { PageDefinition } from '@appsemble/types';
+import { PageDefinition } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 

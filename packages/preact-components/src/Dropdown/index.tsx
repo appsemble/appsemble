@@ -1,4 +1,4 @@
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentChildren, h, VNode } from 'preact';
 import { useCallback, useRef } from 'preact/hooks';

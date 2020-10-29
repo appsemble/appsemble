@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Fragment, h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
-import type { FilterValue, FilterValues } from '../block';
+import { FilterValue, FilterValues } from '../block';
 import { FieldComponent } from './components/FieldComponent';
 import styles from './index.css';
 import { toOData } from './utils/toOData';

@@ -1,4 +1,4 @@
-import type { FieldError, FieldErrorMap } from '../../block';
+import { FieldError, FieldErrorMap } from '../../block';
 
 function isValid(error: FieldError): boolean {
   if (Array.isArray(error)) {

@@ -7,7 +7,7 @@ import {
   Toggle,
   useMessages,
 } from '@appsemble/react-components';
-import type { OrganizationInvite } from '@appsemble/types';
+import { OrganizationInvite } from '@appsemble/types';
 import axios from 'axios';
 import React, { ChangeEvent, ClipboardEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

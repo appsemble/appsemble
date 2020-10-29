@@ -1,10 +1,10 @@
 import { useBlock } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
-import type { DivIcon, Icon } from 'leaflet';
+import { DivIcon, Icon } from 'leaflet';
 import { h, VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import type { GeoCoordinatesField, RendererProps } from '../../../block';
+import { GeoCoordinatesField, RendererProps } from '../../../block';
 import { createIcon } from '../utils/createIcon';
 import styles from './index.css';
 

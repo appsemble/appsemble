@@ -25,17 +25,20 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.15.4",
-    "axios": "^0.19.2",
-    "date-fns": "^2.16.0",
+    "@jest/types": "^26.6.1",
+    "axios": "^0.21.0",
+    "date-fns": "^2.16.1",
     "extract-react-intl-messages": "^4.1.1",
     "fs-extra": "^9.0.1",
     "globby": "^11.0.1",
     "lodash": "^4.17.20",
     "normalize-path": "^3.0.0",
-    "prettier": "^2.1.1",
+    "prettier": "^2.1.2",
     "remark": "^12.0.1",
     "semver": "^7.3.2",
-    "yargs": "^15.4.1"
+    "type-fest": "^0.18.0",
+    "webpack": "^4.44.2",
+    "yargs": "^16.1.0"
   },
   "engines": {
     "node": ">=12.0.0"

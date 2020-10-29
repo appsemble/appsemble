@@ -1,4 +1,4 @@
-import type { KoaContext, KoaMiddleware } from '../types';
+import { KoaContext, KoaMiddleware } from '../types';
 
 export function conditional(
   check: (ctx: KoaContext) => boolean,

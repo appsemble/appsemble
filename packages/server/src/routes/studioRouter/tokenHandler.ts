@@ -1,7 +1,7 @@
 import querystring from 'querystring';
 import { URL } from 'url';
 
-import type { JwtPayload } from '@appsemble/types';
+import { JwtPayload } from '@appsemble/types';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import { verify } from 'jsonwebtoken';
@@ -13,7 +13,7 @@ import {
   OAuth2ClientCredentials,
   User,
 } from '../../models';
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { createJWTResponse } from '../../utils/createJWTResponse';
 import { hasScope } from '../../utils/oauth2';
@@ -37,9 +37,9 @@ class GrantError extends Error {
 }
 
 function checkTokenRequestParameters(
-  query: { [parameter: string]: string | string[] },
+  query: Record<string, string | string[]>,
   allowed: string[],
-): { [parameter: string]: string } {
+): Record<string, string> {
   Object.entries(query).forEach(([key, value]) => {
     if (allowed.includes(key)) {
       return;
@@ -48,7 +48,7 @@ function checkTokenRequestParameters(
       throw new GrantError('invalid_request');
     }
   });
-  return query as { [parameter: string]: string };
+  return query as Record<string, string>;
 }
 
 /**

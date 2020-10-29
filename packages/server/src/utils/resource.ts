@@ -1,4 +1,4 @@
-import type { NotificationDefinition } from '@appsemble/types';
+import { NotificationDefinition } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import { Op } from 'sequelize';
 

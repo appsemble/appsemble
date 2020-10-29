@@ -4,7 +4,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { sign } from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, User } from '../models';
-import type { Argv } from '../types';
+import { Argv } from '../types';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';

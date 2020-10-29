@@ -6,11 +6,12 @@ import { formatISO } from 'date-fns';
 import { ensureFile, readJson, remove, writeJson } from 'fs-extra';
 import globby from 'globby';
 import { capitalize, mapValues } from 'lodash';
-import type { BlockContent, ListItem, Root } from 'mdast';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { BlockContent, ListItem, Root } from 'mdast';
 import remark from 'remark';
 import * as semver from 'semver';
-import type { PackageJson } from 'type-fest';
-import type { Argv } from 'yargs';
+import { PackageJson } from 'type-fest';
+import { Argv } from 'yargs';
 
 import {
   createHeading,

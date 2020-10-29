@@ -1,4 +1,4 @@
-import type { BaseAction } from '@appsemble/sdk';
+import { BaseAction } from '@appsemble/sdk';
 
 export function throwAction(): BaseAction<'throw'> {
   return {

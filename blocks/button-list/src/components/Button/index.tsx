@@ -1,10 +1,10 @@
 import { Icon } from '@appsemble/preact-components';
-import type { Action, Utils } from '@appsemble/sdk';
+import { Action, Utils } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
-import type { Button as ButtonType } from '../../../block';
+import { Button as ButtonType } from '../../../block';
 import { ButtonWrapper } from '../ButtonWrapper';
 
 interface ButtonProps {

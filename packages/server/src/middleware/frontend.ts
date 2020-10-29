@@ -4,9 +4,9 @@ import { join, resolve } from 'path';
 import compose from 'koa-compose';
 import serve from 'koa-static';
 import mustache from 'mustache';
-import type { Compiler, Configuration, ICompiler } from 'webpack';
+import { Compiler, Configuration, ICompiler } from 'webpack';
 
-import type { KoaContext, KoaMiddleware } from '../types';
+import { KoaContext, KoaMiddleware } from '../types';
 
 export async function frontend(webpackConfigs: Configuration[]): Promise<KoaMiddleware> {
   if (process.env.NODE_ENV === 'production') {

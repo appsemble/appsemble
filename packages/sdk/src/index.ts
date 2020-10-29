@@ -1,8 +1,8 @@
-import type { Promisable } from 'type-fest';
+import { Promisable } from 'type-fest';
 
-import type { Action, Message, Theme } from './types';
+import { Action, Message, Theme } from './types';
 
-// eslint-disable-next-line no-duplicate-imports
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 export * from './types';
 
 /**
@@ -80,9 +80,7 @@ export interface Parameters {}
  */
 export type Remapper = string | number | boolean | object | object[];
 
-export interface PageParameters {
-  [parameter: string]: string;
-}
+export type PageParameters = Record<string, string>;
 
 /**
  * A set of utility functions provided by the Appsemble SDK.
@@ -103,7 +101,7 @@ export interface Utils {
    * @param context - The context to retrieve contextual data from.
    * @returns The result of the remapped data.
    */
-  remap: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
 
   /**
    * Show a bulma style message.

@@ -6,7 +6,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import yaml from 'js-yaml';
 
-import type { UpdateAppArguments } from '../types';
+import { UpdateAppArguments } from '../types';
 import { traverseAppDirectory } from './traverseAppDirectory';
 import { traverseBlockThemes } from './traverseBlockThemes';
 import { uploadMessages } from './uploadMessages';

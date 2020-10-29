@@ -2,7 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import { serverUnavailable } from '@hapi/boom';
 
 import { getDB } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 
 export async function checkHealth(ctx: KoaContext): Promise<void> {
   const status = {

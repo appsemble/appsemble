@@ -1,4 +1,4 @@
-const fs = require('fs');
+const { readdirSync } = require('fs');
 
 const puppeteer = require('puppeteer');
 
@@ -11,9 +11,7 @@ module.exports = {
           .filter(Boolean)
           .join(' '),
       },
-      url: fs
-        .readdirSync('apps')
-        .map((path) => `https://${path}.appsemble.staging.appsemble.review`),
+      url: readdirSync('apps').map((path) => `https://${path}.appsemble.staging.appsemble.review`),
     },
     assert: {
       assertions: {

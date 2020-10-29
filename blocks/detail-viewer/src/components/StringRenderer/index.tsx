@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { h, VNode } from 'preact';
 
-import type { RendererProps, StringField } from '../../../block';
+import { RendererProps, StringField } from '../../../block';
 
 /**
  * An element for a text type schema.

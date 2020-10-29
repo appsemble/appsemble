@@ -4,7 +4,7 @@ import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 import { hasScope } from '../utils/oauth2';
 

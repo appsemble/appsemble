@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 
-import type { Permission, ServiceWorkerRegistrationContextType } from '../../types';
+import { Permission, ServiceWorkerRegistrationContextType } from '../../types';
 import { apiUrl, appId, vapidPublicKey } from '../../utils/settings';
 
 interface ServiceWorkerRegistrationProviderProps {

@@ -53,8 +53,8 @@ export async function down(db: Sequelize): Promise<void> {
     name: string;
     version: string;
     events: {
-      listen?: { [key: string]: unknown };
-      emit?: { [key: string]: unknown };
+      listen?: Record<string, unknown>;
+      emit?: Record<string, unknown>;
     };
   }>(
     'SELECT "OrganizationId", name, version, events FROM "BlockVersion" WHERE events IS NOT NULL',

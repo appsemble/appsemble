@@ -1,10 +1,8 @@
-import type { AppDefinition, BlockDefinition } from '@appsemble/types';
+import { AppDefinition, BlockDefinition } from '@appsemble/types';
 
 import { iterApp } from './iterApp';
 
-export interface BlockMap {
-  [path: string]: BlockDefinition;
-}
+export type BlockMap = Record<string, BlockDefinition>;
 
 /**
  * Extract all blocks from an app recipe.

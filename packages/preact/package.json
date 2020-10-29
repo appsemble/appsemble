@@ -34,7 +34,7 @@
     "test": "jest"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "0.15.4",
-    "preact": "^10.0.4"
+    "@appsemble/sdk": "^0.15",
+    "preact": "^10"
   }
 }

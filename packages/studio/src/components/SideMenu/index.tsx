@@ -24,7 +24,6 @@ export function SideMenu({
       <aside className={classNames('menu', styles.sideMenu)}>
         <ul className="menu-list">
           <Context.Provider value={isCollapsed}>
-            {/* eslint-disable-next-line unicorn/no-fn-reference-in-iterator */}
             {Children.map(children, (item, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <li key={index}>{item}</li>

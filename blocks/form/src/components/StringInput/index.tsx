@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { InputField, TextAreaField } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import type { InputProps, StringField } from '../../../block';
+import { InputProps, StringField } from '../../../block';
 import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements';
 
 type StringInputProps = InputProps<string, StringField>;

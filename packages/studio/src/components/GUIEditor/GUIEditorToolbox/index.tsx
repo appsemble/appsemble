@@ -1,5 +1,5 @@
 import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';

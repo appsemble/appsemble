@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import type { PageDefinition } from '@appsemble/types';
+import { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';

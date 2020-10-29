@@ -1,5 +1,5 @@
 import { useToggle } from '@appsemble/react-components';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import React, { FunctionComponent, ReactElement } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 

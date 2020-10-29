@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { AppDefinition } from '@appsemble/types';
 import {
   AllowNull,

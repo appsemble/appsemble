@@ -1,11 +1,11 @@
 import { randomBytes } from 'crypto';
 
-import type { JwtPayload } from '@appsemble/types';
+import { JwtPayload } from '@appsemble/types';
 import { conflict, notAcceptable, notFound } from '@hapi/boom';
 import { verify } from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { createJWTResponse } from '../utils/createJWTResponse';
 
 export async function getUser(ctx: KoaContext): Promise<void> {

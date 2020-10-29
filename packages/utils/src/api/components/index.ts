@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 import * as parameters from './parameters';
 import * as requestBodies from './requestBodies';

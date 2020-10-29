@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import type { InputProps, RadioField } from '../../../block';
+import { InputProps, RadioField } from '../../../block';
 import { isRequired } from '../../utils/requirements';
 import styles from './index.css';
 

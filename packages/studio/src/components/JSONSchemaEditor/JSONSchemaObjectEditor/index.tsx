@@ -1,10 +1,10 @@
 import { Title } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement, useCallback } from 'react';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
-import type { CommonJSONSchemaEditorProps } from '../types';
+import { CommonJSONSchemaEditorProps } from '../types';
 import styles from './index.css';
 
 export function JSONSchemaObjectEditor({
@@ -15,7 +15,7 @@ export function JSONSchemaObjectEditor({
   prefix,
   schema,
   value = {},
-}: CommonJSONSchemaEditorProps<{ [key: string]: string }>): ReactElement {
+}: CommonJSONSchemaEditorProps<Record<string, string>>): ReactElement {
   const onPropertyChange = useCallback(
     ({ currentTarget }, val) => {
       const id = currentTarget.name.slice(name.length + 1);

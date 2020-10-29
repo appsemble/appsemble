@@ -3,7 +3,7 @@ import { useObjectURL } from '@appsemble/preact-components';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { FileField, InputProps } from '../../../block';
+import { FileField, InputProps } from '../../../block';
 import { getAccept } from '../../utils/requirements';
 import { resize } from '../../utils/resize';
 import styles from './index.css';

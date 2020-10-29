@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
-import type { Remapper } from '@appsemble/sdk';
+import { Remapper } from '@appsemble/sdk';
 import { h, VNode } from 'preact';
 
 import styles from './ImageField.css';

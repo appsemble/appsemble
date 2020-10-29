@@ -7,14 +7,14 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import type { NamedEvent } from '@appsemble/web-utils';
+import { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import type { Resource, RouteParams } from '..';
+import { Resource, RouteParams } from '..';
 import { useApp } from '../../AppContext';
 import { JSONSchemaEditor } from '../../JSONSchemaEditor';
 import { ClonableCheckbox } from '../ClonableCheckbox';

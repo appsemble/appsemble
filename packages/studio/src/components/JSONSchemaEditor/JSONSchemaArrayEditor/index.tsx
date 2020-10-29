@@ -1,11 +1,11 @@
 import { Button, Title } from '@appsemble/react-components';
-import type { NamedEvent } from '@appsemble/web-utils';
-import type { OpenAPIV3 } from 'openapi-types';
+import { NamedEvent } from '@appsemble/web-utils';
+import { OpenAPIV3 } from 'openapi-types';
 import React, { MouseEvent, ReactElement, useCallback } from 'react';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
-import type { CommonJSONSchemaEditorProps } from '../types';
+import { CommonJSONSchemaEditorProps } from '../types';
 import styles from './index.css';
 
 const defaults = {

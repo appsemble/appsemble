@@ -1,7 +1,7 @@
-import type { BaseAction } from '@appsemble/sdk';
-import type { StaticActionDefinition } from '@appsemble/types';
+import { BaseAction } from '@appsemble/sdk';
+import { StaticActionDefinition } from '@appsemble/types';
 
-import type { MakeActionParameters } from '../../types';
+import { MakeActionParameters } from '../../types';
 
 export function staticAction({
   definition: { value },

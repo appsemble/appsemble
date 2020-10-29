@@ -13,7 +13,7 @@ import {
   transactional,
   User,
 } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
 
@@ -145,14 +145,12 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
   const authorizationCode = await transactional(async (transaction) => {
     const { id: UserId } = user ?? (await User.create({ transaction }));
 
-    if (authorization) {
-      await authorization.update({ accessToken, refreshToken }, { transaction });
-    } else {
-      await AppOAuth2Authorization.create(
-        { accessToken, AppOAuth2SecretId: secret.id, refreshToken, sub, UserId },
-        { transaction },
-      );
-    }
+    await (authorization
+      ? authorization.update({ accessToken, refreshToken }, { transaction })
+      : AppOAuth2Authorization.create(
+          { accessToken, AppOAuth2SecretId: secret.id, refreshToken, sub, UserId },
+          { transaction },
+        ));
     return OAuth2AuthorizationCode.create(
       {
         AppId: app.id,

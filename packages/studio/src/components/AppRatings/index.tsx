@@ -6,7 +6,7 @@ import {
   useData,
   useMessages,
 } from '@appsemble/react-components';
-import type { Rating } from '@appsemble/types';
+import { Rating } from '@appsemble/types';
 import React, { ReactElement } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 

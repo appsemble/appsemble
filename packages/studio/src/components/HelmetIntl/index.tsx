@@ -4,7 +4,7 @@ import { MessageDescriptor, useIntl } from 'react-intl';
 
 interface HelmIntlProps {
   title: MessageDescriptor;
-  titleValues?: { [key: string]: string };
+  titleValues?: Record<string, string>;
 }
 
 export function HelmetIntl({ title, titleValues = {} }: HelmIntlProps): ReactElement {

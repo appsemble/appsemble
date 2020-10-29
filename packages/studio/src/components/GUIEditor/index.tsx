@@ -1,5 +1,5 @@
 import { Stepper } from '@appsemble/react-components';
-import type { App, BlockDefinition, BlockManifest } from '@appsemble/types';
+import { App, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import indentString from 'indent-string';
 import yaml from 'js-yaml';

@@ -1,4 +1,4 @@
-import type { Field } from '../../block';
+import { Field } from '../../block';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
 

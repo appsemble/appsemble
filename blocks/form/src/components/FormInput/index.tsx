@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { h, VNode } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
 
-import type { Field, FieldError, InputProps } from '../../../block';
+import { Field, FieldError, InputProps } from '../../../block';
 import { validate } from '../../utils/validators';
 import { BooleanInput } from '../BooleanInput';
 import { DateTimeInput } from '../DateTimeInput';

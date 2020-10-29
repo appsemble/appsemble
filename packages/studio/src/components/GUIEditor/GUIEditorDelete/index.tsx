@@ -1,11 +1,11 @@
 import { Button, useConfirmation } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
 import { editor, Range } from 'monaco-editor';
 import React, { ReactElement, ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import type { EditLocation } from '../types';
+import { EditLocation } from '../types';
 import { applyMonacoEdits } from '../utils/applyMonacoEdits';
 import { messages } from './messages';
 

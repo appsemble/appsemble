@@ -1,7 +1,7 @@
 import { loadOAuth2State } from '@appsemble/web-utils';
 import React, { ReactElement, useMemo } from 'react';
 
-import type { ExtendedOAuth2State } from '../../types';
+import { ExtendedOAuth2State } from '../../types';
 import { OAuth2AppCallback } from '../OAuth2AppCallback';
 import { OAuth2StudioCallback } from '../OAuth2StudioCallback';
 

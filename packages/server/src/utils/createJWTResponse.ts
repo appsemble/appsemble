@@ -1,7 +1,7 @@
-import type { TokenResponse } from '@appsemble/types';
+import { TokenResponse } from '@appsemble/types';
 import { sign } from 'jsonwebtoken';
 
-import type { Argv } from '../types';
+import { Argv } from '../types';
 
 interface Options {
   /**

@@ -1,5 +1,5 @@
 import { Subtitle, Title } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import React, { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';

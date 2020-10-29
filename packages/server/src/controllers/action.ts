@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import type {
+import {
   ActionDefinition,
   EmailActionDefinition,
   RequestLikeActionDefinition,
@@ -7,14 +7,14 @@ import type {
 import { formatRequestAction, remap } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
-import type { ParameterizedContext } from 'koa';
+import { ParameterizedContext } from 'koa';
 import { get, pick } from 'lodash';
 import { extension } from 'mime-types';
-import type { SendMailOptions } from 'nodemailer';
+import { SendMailOptions } from 'nodemailer';
 import { Op } from 'sequelize';
 
 import { App, Asset, EmailAuthorization } from '../models';
-import type { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
+import { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
 import { getRemapperContext } from '../utils/app';
 import { renderEmail } from '../utils/email/renderEmail';
 import { readPackageJson } from '../utils/readPackageJson';

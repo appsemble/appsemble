@@ -1,6 +1,4 @@
-export interface ContentSecurityPolicy {
-  [key: string]: (false | string)[];
-}
+export type ContentSecurityPolicy = Record<string, (false | string)[]>;
 
 /**
  * Convert a CSP key / values pair object into a real content security policy string.

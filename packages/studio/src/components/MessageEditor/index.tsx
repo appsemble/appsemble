@@ -17,7 +17,7 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import type { AppMessages } from '@appsemble/types';
+import { AppMessages } from '@appsemble/types';
 import { getLanguageDisplayName, iterApp, langmap } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';

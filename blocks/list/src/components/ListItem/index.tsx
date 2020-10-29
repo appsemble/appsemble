@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Item } from '../../../block';
+import { Item } from '../../../block';
 import { ListItemWrapper } from '../ListItemWrapper';
 import styles from './index.css';
 

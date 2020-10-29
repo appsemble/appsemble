@@ -1,8 +1,8 @@
-import type { BaseAction } from '@appsemble/sdk';
-import type { EmailActionDefinition } from '@appsemble/types';
+import { BaseAction } from '@appsemble/sdk';
+import { EmailActionDefinition } from '@appsemble/types';
 import axios from 'axios';
 
-import type { MakeActionParameters } from '../../types';
+import { MakeActionParameters } from '../../types';
 import { apiUrl, appId } from '../settings';
 
 export function email({

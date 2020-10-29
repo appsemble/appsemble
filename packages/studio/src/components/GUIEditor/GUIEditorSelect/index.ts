@@ -1,7 +1,7 @@
 import { editor, Position, Range } from 'monaco-editor';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 
-import type { EditLocation } from '../types';
+import { EditLocation } from '../types';
 import styles from './index.css';
 
 interface GUIEditorSelectProps {

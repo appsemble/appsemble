@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 
 interface ServeIconOptions {
   background?: string;

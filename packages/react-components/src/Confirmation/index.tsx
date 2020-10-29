@@ -1,4 +1,4 @@
-import type { BulmaColor } from '@appsemble/sdk';
+import { BulmaColor } from '@appsemble/sdk';
 import React, {
   createContext,
   ReactElement,
@@ -7,7 +7,7 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import type { PromiseValue } from 'type-fest';
+import { PromiseValue } from 'type-fest';
 
 import { CardFooterButton, Modal } from '..';
 

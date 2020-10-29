@@ -1,8 +1,8 @@
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { readPackageJson } from '../lib/readPackageJson';
 import { serverImport } from '../lib/serverImport';
-import type { BaseArguments } from '../types';
+import { BaseArguments } from '../types';
 
 export const command = 'migrate [to]';
 export const description = 'Migrate the Appsemble database';

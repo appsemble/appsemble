@@ -15,14 +15,14 @@ import {
   useObjectURL,
   useToggle,
 } from '@appsemble/react-components';
-import type { OrganizationInvite } from '@appsemble/types';
+import { OrganizationInvite } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import type { Member } from '../../types';
+import { Member } from '../../types';
 import { checkRole } from '../../utils/checkRole';
 import { HeaderControl } from '../HeaderControl';
 import { useUser } from '../UserProvider';

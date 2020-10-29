@@ -1,7 +1,7 @@
-import type { Action } from '@appsemble/sdk';
-import type { ActionDefinition } from '@appsemble/types';
+import { Action } from '@appsemble/sdk';
+import { ActionDefinition } from '@appsemble/types';
 
-import type { MakeActionParameters } from '../../types';
+import { MakeActionParameters } from '../../types';
 import { dialog } from './dialog';
 import { email } from './email';
 import { event } from './event';

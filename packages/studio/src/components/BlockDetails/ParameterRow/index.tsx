@@ -1,8 +1,8 @@
 import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import React, { Fragment, ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import type { Definition } from 'typescript-json-schema';
+import { Definition } from 'typescript-json-schema';
 
 interface ParameterRowProps {
   /**

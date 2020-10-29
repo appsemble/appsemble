@@ -5,7 +5,7 @@ import { isPast, parseISO } from 'date-fns';
 import { Op } from 'sequelize';
 
 import { OAuth2ClientCredentials } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 
 interface Params {
   clientId: string;

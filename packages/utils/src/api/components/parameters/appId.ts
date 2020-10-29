@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 export const appId: OpenAPIV3.ParameterObject = {
   name: 'appId',

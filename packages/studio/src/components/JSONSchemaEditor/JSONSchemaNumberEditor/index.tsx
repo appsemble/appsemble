@@ -1,9 +1,9 @@
 import { InputField, MarkdownContent } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement } from 'react';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
-import type { CommonJSONSchemaEditorProps } from '../types';
+import { CommonJSONSchemaEditorProps } from '../types';
 
 export function JSONSchemaNumberEditor({
   disabled,

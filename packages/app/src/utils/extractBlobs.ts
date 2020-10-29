@@ -16,7 +16,8 @@ export type RecursiveValue<T = never> =
   | RecursiveObject<T>
   | RecursiveArray<T>;
 
-interface RecursiveObject<T = never> {
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+export interface RecursiveObject<T = never> {
   [key: string]: RecursiveValue<T>;
 }
 

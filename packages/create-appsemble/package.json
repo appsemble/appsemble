@@ -34,8 +34,8 @@
     "@appsemble/node-utils": "0.15.4",
     "fs-extra": "^9.0.1",
     "inquirer": "^7.3.3",
-    "type-fest": "^0.16.0",
-    "yargs": "^15.4.1"
+    "type-fest": "^0.18.0",
+    "yargs": "^16.1.0"
   },
   "engines": {
     "node": ">=12.0.0"

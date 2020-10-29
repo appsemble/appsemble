@@ -12,7 +12,7 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import type { Organization } from '@appsemble/types';
+import { Organization } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';

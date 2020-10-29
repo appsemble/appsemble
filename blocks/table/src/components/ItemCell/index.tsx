@@ -3,7 +3,7 @@ import { Dropdown } from '@appsemble/preact-components';
 import { ComponentProps, Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Dropdown as DropdownType, Field } from '../../../block';
+import { Dropdown as DropdownType, Field } from '../../../block';
 import { DropdownOption } from '../DropdownOption';
 import styles from './index.css';
 

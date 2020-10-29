@@ -6,7 +6,6 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "importsNotUsedAsValues": "error",
     "jsx": "react",
     "lib": ["esnext"],
     "module": "es2020",

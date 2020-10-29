@@ -1,4 +1,4 @@
-import type { ActionType, EventType } from '@appsemble/types';
+import { ActionType, EventType } from '@appsemble/types';
 import {
   AllowNull,
   BelongsTo,
@@ -12,7 +12,7 @@ import {
   Table,
   Unique,
 } from 'sequelize-typescript';
-import type { Definition } from 'typescript-json-schema';
+import { Definition } from 'typescript-json-schema';
 
 import { BlockAsset, Organization } from '.';
 
@@ -55,12 +55,12 @@ export class BlockVersion extends Model<BlockVersion> {
   resources: any;
 
   @Column(DataType.JSON)
-  actions?: { [key: string]: ActionType };
+  actions?: Record<string, ActionType>;
 
   @Column(DataType.JSON)
   events: {
-    listen?: { [key: string]: EventType };
-    emit?: { [key: string]: EventType };
+    listen?: Record<string, EventType>;
+    emit?: Record<string, EventType>;
   };
 
   @BelongsTo(() => Organization)

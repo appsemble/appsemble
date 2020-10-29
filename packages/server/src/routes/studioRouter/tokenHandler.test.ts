@@ -4,7 +4,7 @@ import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { decode } from 'jsonwebtoken';
-import type Koa from 'koa';
+import Koa from 'koa';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
 import { createServer } from '../../utils/createServer';
@@ -265,8 +265,8 @@ describe('authorization_code', () => {
     const payload = decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'app:1',
-      exp: 946688400,
-      iat: 946684800,
+      exp: 946_688_400,
+      iat: 946_684_800,
       iss: 'http://localhost',
       scope: 'openid',
       sub: user.id,
@@ -380,8 +380,8 @@ describe('client_credentials', () => {
     const payload = decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'testClientId',
-      exp: 946688400,
-      iat: 946684800,
+      exp: 946_688_400,
+      iat: 946_684_800,
       iss: 'http://localhost',
       scope: 'blocks:write',
       sub: user.id,
@@ -428,8 +428,8 @@ describe('refresh_token', () => {
     const payload = decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'http://localhost',
-      exp: 946688400,
-      iat: 946684800,
+      exp: 946_688_400,
+      iat: 946_684_800,
       iss: 'http://localhost',
       sub: user.id,
     });

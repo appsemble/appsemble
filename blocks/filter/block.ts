@@ -1,6 +1,6 @@
-import type { Remapper } from '@appsemble/sdk';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
-import type { h } from 'preact';
+import { Remapper } from '@appsemble/sdk';
+import { IconName } from '@fortawesome/fontawesome-common-types';
+import { h } from 'preact';
 
 export interface EnumOption {
   /**
@@ -100,9 +100,7 @@ export type Field = ButtonsField | DateField | DateRangeField | EnumField | Stri
 
 export type FilterValue = Field['defaultValue'];
 
-export interface FilterValues {
-  [name: string]: FilterValue;
-}
+export type FilterValues = Record<string, FilterValue>;
 
 export interface FieldComponentProps<F extends Field, T = F['defaultValue']> {
   className?: string;
