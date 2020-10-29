@@ -3,12 +3,29 @@ import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { sign } from 'jsonwebtoken';
 
-import { getAccessToken, getUserInfo } from './oauth2';
+import { getAccessToken, getUserInfo, hasScope } from './oauth2';
 
 const mock = new MockAdapter(axios);
 
 afterEach(() => {
   mock.reset();
+});
+
+describe('hasScope', () => {
+  it('should return true if the scopes are an exact match', () => {
+    const result = hasScope('foo', 'foo');
+    expect(result).toBe(true);
+  });
+
+  it('should return true if all required scopes exist in the granted scopes', () => {
+    const result = hasScope('foo bar', 'foo');
+    expect(result).toBe(true);
+  });
+
+  it('should return false if some of the required scopes aren’t granted', () => {
+    const result = hasScope('foo', 'foo bar');
+    expect(result).toBe(false);
+  });
 });
 
 describe('getAccessToken', () => {
