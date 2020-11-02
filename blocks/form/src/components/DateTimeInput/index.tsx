@@ -4,6 +4,7 @@ import { h, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
 import { DateTimeField, InputProps } from '../../../block';
+import { extractDate } from '../../utils/extractDate';
 import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
 
 type DateTimeInputProps = InputProps<string, DateTimeField>;
@@ -34,14 +35,8 @@ export function DateTimeInput({
     [onChange],
   );
 
-  const maxDate = useMemo(() => {
-    const d = getMaxDate(field);
-    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
-  }, [field]);
-  const minDate = useMemo(() => {
-    const d = getMinDate(field);
-    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
-  }, [field]);
+  const maxDate = useMemo(() => extractDate(getMaxDate(field)), [field]);
+  const minDate = useMemo(() => extractDate(getMinDate(field)), [field]);
 
   return (
     <DateTimeComponent
