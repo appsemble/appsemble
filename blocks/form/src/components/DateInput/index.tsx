@@ -3,15 +3,15 @@ import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components
 import { h, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
-import { DateTimeField, InputProps } from '../../../block';
+import { DateField, InputProps } from '../../../block';
 import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
 
-type DateTimeInputProps = InputProps<string, DateTimeField>;
+type DateTimeInputProps = InputProps<string, DateField>;
 
 /**
- * An input element for a date/time value.
+ * An input element for a date value.
  */
-export function DateTimeInput({
+export function DateInput({
   dirty,
   disabled,
   error,
@@ -30,7 +30,10 @@ export function DateTimeInput({
   const required = isRequired(field);
 
   const handleOnChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement, Event>, v: string): void => onChange(event, v),
+    (event: h.JSX.TargetedEvent<HTMLInputElement>, v: string): void => {
+      const date = new Date(v);
+      onChange(event, `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`);
+    },
     [onChange],
   );
 
@@ -40,10 +43,8 @@ export function DateTimeInput({
   return (
     <DateTimeComponent
       disabled={disabled}
-      enableTime={field.type === 'date-time'}
       error={dirty && error && utils.remap(invalidLabel, value)}
       id={name}
-      iso
       label={checkboxLabel}
       maxDate={maxDate}
       minDate={minDate}

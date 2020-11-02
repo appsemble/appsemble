@@ -206,7 +206,19 @@ export interface DateTimeField extends AbstractField {
   /**
    * The type of the field.
    */
-  type: 'date-time' | 'date';
+  type: 'date-time';
+
+  requirements?: DateTimeRequirement[];
+}
+
+/**
+ * A date/time picker that results in an exact date and time.
+ */
+export interface DateField extends AbstractField {
+  /**
+   * The type of the field.
+   */
+  type: 'date';
 
   requirements?: DateTimeRequirement[];
 }
@@ -504,6 +516,7 @@ export type Field =
   | StringField
   | RadioField
   | DateTimeField
+  | DateField
   | ObjectField;
 
 export type Values = Record<string, unknown>;
