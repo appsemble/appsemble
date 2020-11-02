@@ -34,8 +34,14 @@ export function DateTimeInput({
     [onChange],
   );
 
-  const maxDate = useMemo(() => getMaxDate(field), [field]);
-  const minDate = useMemo(() => getMinDate(field), [field]);
+  const maxDate = useMemo(() => {
+    const d = getMaxDate(field);
+    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+  }, [field]);
+  const minDate = useMemo(() => {
+    const d = getMinDate(field);
+    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+  }, [field]);
 
   return (
     <DateTimeComponent
