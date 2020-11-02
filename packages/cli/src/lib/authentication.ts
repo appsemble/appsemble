@@ -4,7 +4,7 @@ import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import { prompt } from 'inquirer';
 
-import type { BaseArguments } from '../types';
+import { BaseArguments } from '../types';
 
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 

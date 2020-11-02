@@ -1,8 +1,8 @@
-import type { Boom } from '@hapi/boom';
+import { Boom } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { tinyRouter } from './tinyRouter';
 
 let app: Koa;

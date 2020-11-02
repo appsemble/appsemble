@@ -1,7 +1,7 @@
 import { notFound } from '@hapi/boom';
 
 import { AppBlockStyle } from '../../models';
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 
 interface Params {

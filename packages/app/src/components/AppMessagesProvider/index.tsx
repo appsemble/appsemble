@@ -5,7 +5,7 @@ import {
   nl as nlReactComponentMessages,
   useLocationString,
 } from '@appsemble/react-components';
-import type { AppMessages } from '@appsemble/types';
+import { AppMessages } from '@appsemble/types';
 import { detectLocale, IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
 import axios from 'axios';
 import memoizeIntlConstructor from 'intl-format-cache';
@@ -44,7 +44,7 @@ const formatters = {
   getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
 };
 
-const providedMessages: { [language: string]: { [messageId: string]: string } } = {
+const providedMessages: Record<string, Record<string, string>> = {
   nl: { ...nlReactComponentMessages, ...nlAppMessages },
 };
 

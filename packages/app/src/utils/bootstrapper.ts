@@ -1,6 +1,6 @@
-import type { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@appsemble/sdk';
-import type { BlockManifest } from '@appsemble/types';
-import type { Promisable } from 'type-fest';
+import { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@appsemble/sdk';
+import { BlockManifest } from '@appsemble/types';
+import { Promisable } from 'type-fest';
 
 import { prefixBlockURL } from './prefixBlockURL';
 

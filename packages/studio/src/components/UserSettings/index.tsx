@@ -21,7 +21,7 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import type { UserEmail } from '../../types';
+import { UserEmail } from '../../types';
 import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import styles from './index.css';

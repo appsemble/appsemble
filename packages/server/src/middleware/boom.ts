@@ -1,6 +1,6 @@
-import type { Boom } from '@hapi/boom';
+import { Boom } from '@hapi/boom';
 
-import type { KoaMiddleware } from '../types';
+import { KoaMiddleware } from '../types';
 
 /**
  * Koa middleware for handling Boom errors.
@@ -22,7 +22,7 @@ export function boomMiddleware(): KoaMiddleware {
       if (err.data) {
         ctx.body.data = err.data;
       }
-      ctx.set(output.headers as { [key: string]: string });
+      ctx.set(output.headers as Record<string, string>);
     }
   };
 }

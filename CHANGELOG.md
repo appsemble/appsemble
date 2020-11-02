@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.4] - 2020-10-26
+
+### Added
+
+- Server: Add support for organization logos.
+
 ## [0.15.3] - 2020-10-22
 
 ### Added

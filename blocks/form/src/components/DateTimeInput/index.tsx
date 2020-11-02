@@ -3,7 +3,7 @@ import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components
 import { h, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
-import type { DateTimeField, InputProps } from '../../../block';
+import { DateTimeField, InputProps } from '../../../block';
 import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
 
 type DateTimeInputProps = InputProps<string, DateTimeField>;

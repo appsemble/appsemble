@@ -8,7 +8,7 @@ bootstrap(
     parameters: { loadErrorMessage = 'Failed to load data', skipInitialLoad = false },
     utils,
   }) => {
-    async function loadData(d?: { [key: string]: unknown }): Promise<void> {
+    async function loadData(d?: Record<string, unknown>): Promise<void> {
       try {
         const result = await actions.onLoad.dispatch({ ...pageParameters, ...d });
         events.emit.data(result);

@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 import toIco from 'to-ico';
 
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 import { readAsset } from '../../utils/readAsset';
 
 const sizes = [16, 32, 48, 64, 128, 256];

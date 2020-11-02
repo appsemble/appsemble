@@ -6,7 +6,7 @@ import { Op, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, Organization, OrganizationInvite, User } from '../models';
 import { serveIcon } from '../routes/serveIcon';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { readAsset } from '../utils/readAsset';
 

@@ -16,7 +16,7 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import type { Organization } from '../../types';
+import { Organization } from '../../types';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';

@@ -1,4 +1,4 @@
-import type { ComponentType, h } from 'preact';
+import { ComponentType, h } from 'preact';
 
 /**
  * A valid HTML or SVG element type or a functional or class component.

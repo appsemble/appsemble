@@ -8,11 +8,11 @@ import {
   Title,
   useData,
 } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import React, { Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
-import type { Definition } from 'typescript-json-schema';
+import { Definition } from 'typescript-json-schema';
 
 import { HelmetIntl } from '../HelmetIntl';
 import { ActionTable } from './ActionTable';

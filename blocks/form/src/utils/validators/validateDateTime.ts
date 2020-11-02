@@ -1,6 +1,6 @@
-import type { Remapper } from '@appsemble/sdk';
+import { Remapper } from '@appsemble/sdk';
 
-import type { DateTimeField, DateTimeRequirement } from '../../../block';
+import { DateTimeField, DateTimeRequirement } from '../../../block';
 import { isValidDate } from '../requirements';
 
 /**
@@ -14,7 +14,7 @@ import { isValidDate } from '../requirements';
 export function validateDateTime(
   field: DateTimeField,
   value: string,
-  remap: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any,
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
 ): DateTimeRequirement {
   return field.requirements?.find((requirement) => {
     if ('required' in requirement && !value) {

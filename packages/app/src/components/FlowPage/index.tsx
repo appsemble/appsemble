@@ -1,12 +1,12 @@
-import type { EventEmitter } from 'events';
+import { EventEmitter } from 'events';
 
 import { useMessages } from '@appsemble/react-components';
-import type { BootstrapParams } from '@appsemble/sdk';
-import type { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
+import { BootstrapParams } from '@appsemble/sdk';
+import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
 import React, { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import type { ShowDialogAction } from '../../types';
+import { ShowDialogAction } from '../../types';
 import { makeActions } from '../../utils/makeActions';
 import { BlockList } from '../BlockList';
 import { DotProgressBar } from '../DotProgressBar';
@@ -17,7 +17,7 @@ interface FlowPageProps {
   ee: EventEmitter;
   page: FlowPageDefinition;
   prefix: string;
-  remap: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showDialog: ShowDialogAction;
 }
 

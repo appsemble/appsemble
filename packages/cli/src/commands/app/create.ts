@@ -1,11 +1,11 @@
 import { logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
 import { createApp } from '../../lib/createApp';
-import type { BaseArguments } from '../../types';
+import { BaseArguments } from '../../types';
 
 interface CreateAppArguments extends BaseArguments {
   paths: string[];

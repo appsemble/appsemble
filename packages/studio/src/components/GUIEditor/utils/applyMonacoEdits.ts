@@ -1,4 +1,4 @@
-import type { editor } from 'monaco-editor';
+import { editor } from 'monaco-editor';
 
 export function applyMonacoEdits(
   ed: editor.IStandaloneCodeEditor,

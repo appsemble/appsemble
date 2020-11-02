@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact-components",
-  "version": "0.15.3",
+  "version": "0.15.4",
   "private": true,
   "description": "Reusable Preact components for internal use",
   "keywords": [
@@ -26,14 +26,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.15.3",
-    "@appsemble/sdk": "0.15.3",
-    "@fortawesome/fontawesome-common-types": "^0.2.30",
+    "@appsemble/preact": "0.15.4",
+    "@appsemble/sdk": "0.15.4",
+    "@fortawesome/fontawesome-common-types": "^0.2.32",
     "classnames": "^2.2.6",
     "flatpickr": "^4.6.6",
-    "leaflet": "~1.5.1"
-  },
-  "peerDependencies": {
-    "preact": "^10.0.4"
+    "leaflet": "~1.5.1",
+    "preact": "^10.5.5"
   }
 }

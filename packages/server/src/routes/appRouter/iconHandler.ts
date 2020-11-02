@@ -1,6 +1,6 @@
-import type { Theme } from '@appsemble/types';
+import { Theme } from '@appsemble/types';
 
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { readAsset } from '../../utils/readAsset';
 import { serveIcon } from '../serveIcon';

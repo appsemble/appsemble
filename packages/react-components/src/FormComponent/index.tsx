@@ -1,4 +1,4 @@
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import React, { cloneElement, isValidElement, ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';

@@ -5,7 +5,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import { appRouter } from '.';
-import type { App } from '../../models';
+import { App } from '../../models';
 import * as appUtils from '../../utils/app';
 
 function readIcon(): Promise<Buffer> {

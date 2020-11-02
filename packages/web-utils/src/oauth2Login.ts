@@ -1,4 +1,4 @@
-import type { OAuth2Provider } from '@appsemble/types';
+import { OAuth2Provider } from '@appsemble/types';
 
 import { randomString } from './randomString';
 
@@ -51,7 +51,7 @@ export interface OAuth2LoginOptions
  */
 export function startOAuth2Login(
   { authorizationUrl, clientId, redirect, redirectUrl, scope }: OAuth2LoginOptions,
-  data?: { [key: string]: unknown },
+  data?: Record<string, unknown>,
 ): void {
   const url = new URL(authorizationUrl);
   const state = randomString();
@@ -85,7 +85,7 @@ export function loadOAuth2State<T extends OAuth2State = OAuth2State>(): T {
  *
  * @param extras - The extra data to store.
  */
-export function appendOAuth2State(extras: { [key: string]: unknown }): void {
+export function appendOAuth2State(extras: Record<string, unknown>): void {
   const session = loadOAuth2State();
   if (session) {
     sessionStorage.setItem(storageKey, JSON.stringify({ ...extras, ...session }));

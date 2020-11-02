@@ -1,4 +1,4 @@
-import type { AppDefinition } from '@appsemble/types';
+import { AppDefinition } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 
 export function shouldShowMenu(app: AppDefinition, userRole: string): boolean {

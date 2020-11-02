@@ -1,8 +1,6 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
-const sharedProperties: {
-  [property: string]: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject;
-} = {
+const sharedProperties: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject> = {
   name: {
     type: 'string',
     maxLength: 50,

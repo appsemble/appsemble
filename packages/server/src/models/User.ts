@@ -48,10 +48,6 @@ export class User extends Model<User> {
   @Column
   locale: string;
 
-  AppMember: AppMember;
-
-  Member: Member;
-
   @BelongsToMany(() => Organization, () => Member)
   Organizations: Organization[];
 
@@ -84,4 +80,8 @@ export class User extends Model<User> {
 
   @DeletedAt
   deleted: Date;
+
+  AppMember: AppMember;
+
+  Member: Member;
 }

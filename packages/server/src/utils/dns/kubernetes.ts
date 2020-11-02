@@ -9,7 +9,7 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { Op } from 'sequelize';
 
 import { App, Organization } from '../../models';
-import type { Argv } from '../../types';
+import { Argv } from '../../types';
 import { iterTable } from '../database';
 import { readPackageJson } from '../readPackageJson';
 

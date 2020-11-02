@@ -3,7 +3,7 @@ import { and, col, fn, json, Op, or, Order, where, WhereOptions } from 'sequeliz
 import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata';
 
 describe('odataFilterToSequelize', () => {
-  const cases: { [key: string]: WhereOptions } = {
+  const cases: Record<string, WhereOptions> = {
     //
     // 5.1.1.1 Logical Operators
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_LogicalOperators
@@ -300,7 +300,7 @@ describe('odataFilterToSequelize', () => {
 });
 
 describe('odataOrderbyToSequelize', () => {
-  const cases: { [orderby: string]: Order } = {
+  const cases: Record<string, Order> = {
     foo: [['foo', 'ASC']],
     'foo asc': [['foo', 'ASC']],
     'foo desc': [['foo', 'DESC']],

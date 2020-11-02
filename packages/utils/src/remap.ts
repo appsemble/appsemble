@@ -1,7 +1,7 @@
-import type { Remapper, Remappers, UserInfo } from '@appsemble/types';
+import { Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
-import type { IntlMessageFormat } from 'intl-messageformat';
+import { IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
 import { mapValues } from './mapValues';
@@ -16,7 +16,7 @@ export type MessageGetter = (msg: IntlMessage) => IntlMessageFormat;
 export interface RemapperContext {
   getMessage: (msg: IntlMessage) => IntlMessageFormat;
   userInfo: UserInfo;
-  context: { [key: string]: any };
+  context: Record<string, any>;
 }
 
 interface InternalContext extends RemapperContext {
@@ -102,7 +102,7 @@ const mapperImplementations: MapperImplementations = {
 
   static: (input) => input,
 
-  prop: (prop, obj: { [key: string]: unknown }) =>
+  prop: (prop, obj: Record<string, unknown>) =>
     String(prop)
       .split('.')
       .reduce((acc, p) => acc?.[p] ?? null, obj),

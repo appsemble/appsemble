@@ -1,5 +1,3 @@
-import os from 'os';
-
 import { logger } from '@appsemble/node-utils';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import axios, { AxiosInstance } from 'axios';
@@ -16,6 +14,8 @@ function h(content: string): string {
 let instance: AxiosInstance;
 let mock: MockAdapter;
 let clock: InstalledClock;
+
+jest.mock('os');
 
 beforeEach(() => {
   clock = install();
@@ -91,8 +91,6 @@ describe('configureAxios', () => {
   beforeEach(() => {
     jest.spyOn(axios.interceptors.request, 'use').mockImplementation();
     jest.spyOn(axios.interceptors.response, 'use').mockImplementation();
-    jest.spyOn(os, 'type').mockReturnValue('Linux');
-    jest.spyOn(os, 'arch').mockReturnValue('x64');
   });
 
   it('should set the correct user agent', () => {

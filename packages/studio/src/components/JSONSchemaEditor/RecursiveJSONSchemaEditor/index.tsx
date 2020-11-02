@@ -7,7 +7,7 @@ import { JSONSchemaNumberEditor } from '../JSONSchemaNumberEditor';
 import { JSONSchemaObjectEditor } from '../JSONSchemaObjectEditor';
 import { JSONSchemaStringEditor } from '../JSONSchemaStringEditor';
 import { JSONSchemaUnknownEditor } from '../JSONSchemaUnknownEditor';
-import type { CommonJSONSchemaEditorProps } from '../types';
+import { CommonJSONSchemaEditorProps } from '../types';
 
 export function RecursiveJSONSchemaEditor(props: CommonJSONSchemaEditorProps<any>): ReactElement {
   const { schema } = props;

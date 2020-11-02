@@ -1,6 +1,6 @@
 import { remap } from '@appsemble/utils';
 
-import type { DateTimeField } from '../../../block';
+import { DateTimeField } from '../../../block';
 import { validateDateTime } from './validateDateTime';
 
 describe('validateDateTime', () => {

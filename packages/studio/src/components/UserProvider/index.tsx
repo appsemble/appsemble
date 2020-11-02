@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import type { JwtPayload, Organization, TokenResponse, UserInfo } from '@appsemble/types';
+import { JwtPayload, Organization, TokenResponse, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import React, {
@@ -13,7 +13,7 @@ import React, {
   useState,
 } from 'react';
 
-import type { Role } from '../../types';
+import { Role } from '../../types';
 
 interface UserProviderProps {
   children: ReactNode;

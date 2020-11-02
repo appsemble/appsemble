@@ -1,6 +1,6 @@
 import { h, VNode } from 'preact';
 
-import type {
+import {
   ButtonsField,
   DateField,
   DateRangeField,

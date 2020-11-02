@@ -1,4 +1,4 @@
-import type { FindOptions, Model, ModelCtor } from 'sequelize';
+import { FindOptions, Model, ModelCtor } from 'sequelize';
 
 interface IterTableOptions extends Omit<FindOptions, 'limit' | 'offset'> {
   /**

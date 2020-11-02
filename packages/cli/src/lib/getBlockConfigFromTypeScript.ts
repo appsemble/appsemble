@@ -1,7 +1,7 @@
 import { relative } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import {
   createProgram,
   findConfigFile,
@@ -25,7 +25,7 @@ import {
 } from 'typescript';
 import { buildGenerator, Definition } from 'typescript-json-schema';
 
-import type { BlockConfig } from '../types';
+import { BlockConfig } from '../types';
 
 /**
  * Get the tsdoc comment for a TypeScript node.

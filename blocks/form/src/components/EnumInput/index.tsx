@@ -3,7 +3,7 @@ import { SelectField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
-import type { EnumField, InputProps } from '../../../block';
+import { EnumField, InputProps } from '../../../block';
 import { isRequired } from '../../utils/requirements';
 import styles from './index.css';
 

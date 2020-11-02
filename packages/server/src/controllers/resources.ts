@@ -2,7 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import { checkAppRole, Permission, SchemaValidationError, validate } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
 import { Op, Order, WhereOptions } from 'sequelize';
 
@@ -14,7 +14,7 @@ import {
   ResourceSubscription,
   User,
 } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
 import { processHooks, processReferenceHooks, renameOData } from '../utils/resource';

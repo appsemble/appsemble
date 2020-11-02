@@ -6,7 +6,7 @@ import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
 import { App, AppMessages, Resource } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
 

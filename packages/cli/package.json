@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.15.3",
+  "version": "0.15.4",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -33,9 +33,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.15.3",
-    "@appsemble/types": "0.15.3",
-    "axios": "^0.19.2",
+    "@appsemble/node-utils": "0.15.4",
+    "@appsemble/types": "0.15.4",
+    "@fortawesome/fontawesome-common-types": "^0.2.32",
+    "axios": "^0.21.0",
     "chalk": "^4.1.0",
     "cosmiconfig": "^7.0.0",
     "fast-glob": "^3.2.4",
@@ -46,24 +47,24 @@
     "klaw": "^3.0.0",
     "normalize-path": "^3.0.0",
     "postcss": "^7.0.32",
-    "postcss-import": "^12.0.1",
-    "postcss-load-config": "^2.1.0",
-    "postcss-url": "^8.0.0",
+    "postcss-import": "^13.0.0",
+    "postcss-load-config": "^3.0.0",
+    "postcss-url": "^10.0.0",
     "read-pkg-up": "^7.0.1",
-    "type-fest": "^0.16.0",
-    "typescript": "^4.0.2",
+    "type-fest": "^0.18.0",
+    "typescript": "^4.0.5",
     "typescript-json-schema": "^0.43.0",
-    "yargs": "^15.4.1"
+    "yargs": "^16.1.0"
   },
   "devDependencies": {
-    "@appsemble/types": "0.15.3",
+    "@appsemble/types": "0.15.4",
     "concat-stream": "^2.0.0"
   },
   "peerDependencies": {
-    "webpack": "^4.41.2"
+    "webpack": "^4"
   },
   "optionalDependencies": {
-    "keytar": "^6.0.1"
+    "keytar": "^7.0.0"
   },
   "engines": {
     "node": ">=12.0.0"

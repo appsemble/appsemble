@@ -1,4 +1,4 @@
-import type { StringField } from 'blocks/form/block';
+import { StringField } from 'blocks/form/block';
 
 import { validateString } from './validateString';
 

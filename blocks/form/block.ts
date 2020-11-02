@@ -1,5 +1,5 @@
-import type { Remapper } from '@appsemble/sdk';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { Remapper } from '@appsemble/sdk';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 
 /**
  * Properties that are shared between all requirements.
@@ -506,14 +506,14 @@ export type Field =
   | DateTimeField
   | ObjectField;
 
-export interface Values {
-  [key: string]: unknown;
-}
+export type Values = Record<string, unknown>;
 
 export type FieldError = boolean | string | FieldErrorMap | FieldError[];
 
+// Not using an interface causes an invalid circular reference.
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface FieldErrorMap {
-  [field: string]: FieldError;
+  [key: string]: FieldError;
 }
 
 export interface InputProps<T, F extends Field> {

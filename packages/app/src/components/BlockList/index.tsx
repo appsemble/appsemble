@@ -1,13 +1,13 @@
-import type { EventEmitter } from 'events';
+import { EventEmitter } from 'events';
 
 import { Loader, useLocationString } from '@appsemble/react-components';
-import type { BlockDefinition, PageDefinition, Remapper, Security } from '@appsemble/types';
+import { BlockDefinition, PageDefinition, Remapper, Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import type { ShowDialogAction } from '../../types';
-import type { ActionCreators } from '../../utils/actions';
+import { ShowDialogAction } from '../../types';
+import { ActionCreators } from '../../utils/actions';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { Block } from '../Block';
 import { useUser } from '../UserProvider';
@@ -20,7 +20,7 @@ interface BlockListProps {
   flowActions?: {};
   page: PageDefinition;
   prefix: string;
-  remap: (remapper: Remapper, data: any, context: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   showDialog: ShowDialogAction;
 }
 

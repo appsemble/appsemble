@@ -1,7 +1,7 @@
 import { notFound } from '@hapi/boom';
 
 import { App, AppRating, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 
 interface Params {
   appId: number;

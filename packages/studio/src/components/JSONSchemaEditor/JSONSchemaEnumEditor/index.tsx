@@ -1,10 +1,10 @@
 import { MarkdownContent, SelectField } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
-import type { CommonJSONSchemaEditorProps } from '../types';
+import { CommonJSONSchemaEditorProps } from '../types';
 import { messages } from './messages';
 
 export function JSONSchemaEnumEditor({

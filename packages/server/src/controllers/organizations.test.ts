@@ -4,7 +4,7 @@ import { join } from 'path';
 
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
-import type * as Koa from 'koa';
+import * as Koa from 'koa';
 
 import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
 import { createServer } from '../utils/createServer';

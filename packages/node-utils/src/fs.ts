@@ -1,7 +1,7 @@
 import { Dirent, promises as fs, Stats } from 'fs';
 import { join } from 'path';
 
-import type { Promisable } from 'type-fest';
+import { Promisable } from 'type-fest';
 
 import { AppsembleError } from '.';
 

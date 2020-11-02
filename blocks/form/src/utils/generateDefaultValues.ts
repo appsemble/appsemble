@@ -1,4 +1,4 @@
-import type { Field, Values } from '../../block';
+import { Field, Values } from '../../block';
 import { getMinLength } from './requirements';
 
 function generateDefaultValue(field: Field): unknown {

@@ -1,7 +1,7 @@
 import readPkgUp from 'read-pkg-up';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
-import type { BaseArguments, MonoRepoPackageJson } from '../../types';
+import { BaseArguments, MonoRepoPackageJson } from '../../types';
 
 interface ConfigGetArguments extends BaseArguments {
   key: string;

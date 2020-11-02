@@ -6,7 +6,7 @@ import { logger } from '@appsemble/node-utils';
 import FormData from 'form-data';
 import klaw from 'klaw';
 
-import type { BlockConfig } from '../types';
+import { BlockConfig } from '../types';
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
 /**

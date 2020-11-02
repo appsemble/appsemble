@@ -1,6 +1,6 @@
 import { URL } from 'url';
 
-import type { EmailActionDefinition } from '@appsemble/types';
+import { EmailActionDefinition } from '@appsemble/types';
 import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
 

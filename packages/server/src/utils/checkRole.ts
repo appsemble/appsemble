@@ -1,9 +1,9 @@
 import { Permission, roles } from '@appsemble/utils';
 import { forbidden, unauthorized } from '@hapi/boom';
-import type { FindOptions } from 'sequelize';
+import { FindOptions } from 'sequelize';
 
 import { Member } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 
 /**
  * Check if the authenticated user has permission to perform an action within an organization.

@@ -10,7 +10,7 @@ interface IntlMessagesProviderProps {
   children: ReactNode;
 }
 
-const providedMessages: { [language: string]: { [messageId: string]: string } } = {
+const providedMessages: Record<string, Record<string, string>> = {
   nl,
 };
 

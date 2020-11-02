@@ -1,4 +1,4 @@
-import type { NumberField } from 'blocks/form/block';
+import { NumberField } from 'blocks/form/block';
 
 import { validateNumber } from './validateNumber';
 

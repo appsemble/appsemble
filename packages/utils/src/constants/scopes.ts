@@ -1,5 +1,5 @@
 /**
- * All known OAuth2 scopes.
+ * All known OAuth2 scopes for client credentials.
  */
 export const scopes = [
   'apps:write',

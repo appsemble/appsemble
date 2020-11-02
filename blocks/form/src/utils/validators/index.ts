@@ -1,13 +1,13 @@
-import type { Remapper, Utils } from '@appsemble/sdk';
+import { Remapper, Utils } from '@appsemble/sdk';
 
-import type { BaseRequirement, Field } from '../../../block';
+import { BaseRequirement, Field } from '../../../block';
 import { validateDateTime } from './validateDateTime';
 import { validateEnum, validateRadio } from './validateEnum';
 import { validateFile } from './validateFile';
 import { validateNumber } from './validateNumber';
 import { validateString } from './validateString';
 
-export const validators: { [name: string]: Validator } = {
+export const validators: Record<string, Validator> = {
   date: validateDateTime,
   'date-time': validateDateTime,
   enum: validateEnum,
@@ -23,7 +23,7 @@ export const validators: { [name: string]: Validator } = {
 type Validator = (
   field: Field,
   value: unknown,
-  remap?: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any,
+  remap?: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
 ) => BaseRequirement;
 
 export function validate(field: Field, value: any, utils: Utils): boolean | string {

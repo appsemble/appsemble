@@ -31,7 +31,7 @@ attach((params) => {
     color: primaryColor,
   });
   const {
-    defaultLocation = [51.476852, 0],
+    defaultLocation = [51.476_852, 0],
     locationError = 'Couldn’t find your location. Are location services enabled?',
   } = parameters;
 

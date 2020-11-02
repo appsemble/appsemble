@@ -1,10 +1,8 @@
-import type * as fs from 'fs';
+import { DefaultState, ParameterizedContext } from 'koa';
+import * as compose from 'koa-compose';
 
-import type { ParameterizedContext } from 'koa';
-import type * as compose from 'koa-compose';
-
-import type { User } from './models';
-import type { Mailer } from './utils/email/Mailer';
+import { User } from './models';
+import { Mailer } from './utils/email/Mailer';
 
 declare module 'koa' {
   interface Request {
@@ -51,10 +49,8 @@ export interface Argv {
   to?: string;
 }
 
-export interface AppsembleState {
-  fs: typeof fs;
-
-  render: (template: string, params: { [key: string]: unknown }) => Promise<string>;
+export interface AppsembleState extends DefaultState {
+  render: (template: string, params: Record<string, unknown>) => Promise<string>;
 }
 
 export interface AppsembleContext<P = unknown> {

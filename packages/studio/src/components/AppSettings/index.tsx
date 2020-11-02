@@ -13,7 +13,7 @@ import {
   useMessages,
   useObjectURL,
 } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import { domainPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';

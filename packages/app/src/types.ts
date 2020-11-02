@@ -1,8 +1,8 @@
-import type { EventEmitter } from 'events';
+import { EventEmitter } from 'events';
 
-import type { ShowMessage } from '@appsemble/react-components';
-import type { Action } from '@appsemble/sdk';
-import type {
+import { ShowMessage } from '@appsemble/react-components';
+import { Action } from '@appsemble/sdk';
+import {
   ActionDefinition,
   AppDefinition,
   AppOAuth2Secret,
@@ -11,22 +11,26 @@ import type {
   Remapper,
   UserInfo,
 } from '@appsemble/types';
-import type { match as Match, RouteComponentProps } from 'react-router-dom';
-import type { JsonValue } from 'type-fest';
+import { match as Match, RouteComponentProps } from 'react-router-dom';
+import { JsonValue } from 'type-fest';
 
 declare module '@appsemble/sdk' {
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   interface Actions {
     [K: string]: ActionDefinition;
   }
 
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   interface EventEmitters {
     [K: string]: never;
   }
 
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   interface EventListeners {
     [K: string]: never;
   }
 
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   interface Parameters {
     [K: string]: JsonValue;
   }
@@ -60,7 +64,7 @@ declare global {
 }
 
 export interface ShowDialogParams {
-  actionCreators: { [key: string]: () => Action };
+  actionCreators: Record<string, () => Action>;
   blocks: BlockDefinition[];
   closable?: boolean;
   data: any;
@@ -89,7 +93,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
-  remap: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showMessage: ShowMessage;
 }
 

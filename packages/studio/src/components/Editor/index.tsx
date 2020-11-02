@@ -6,7 +6,7 @@ import {
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
-import type { AppDefinition, BlockManifest } from '@appsemble/types';
+import { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
   api,
   filterBlocks,
@@ -18,8 +18,8 @@ import {
 import axios, { AxiosError } from 'axios';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
-import type { editor } from 'monaco-editor';
-import type { OpenAPIV3 } from 'openapi-types';
+import { editor } from 'monaco-editor';
+import { OpenAPIV3 } from 'openapi-types';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';

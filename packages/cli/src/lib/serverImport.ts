@@ -25,7 +25,7 @@ export async function serverImport(member: 'migrate' | 'start' | 'cleanupResourc
   } catch (error: unknown) {
     if (
       (error as any).code !== 'MODULE_NOT_FOUND' ||
-      (error as any).requireStack[0] !== __filename
+      (error as any).requireStack?.[0] !== __filename
     ) {
       throw error;
     }

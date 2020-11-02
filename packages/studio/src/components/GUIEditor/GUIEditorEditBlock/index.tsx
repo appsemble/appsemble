@@ -1,13 +1,13 @@
 import { Content, Loader, Message, Tab, Tabs, Title, useData } from '@appsemble/react-components';
-import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
+import { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
-import type { NamedEvent } from '@appsemble/web-utils';
+import { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { JSONSchemaEditor } from '../../JSONSchemaEditor';
 import { ActionsEditor } from '../ActionsEditor';
-import type { EditLocation } from '../types';
+import { EditLocation } from '../types';
 import styles from './index.css';
 import { messages } from './messages';
 

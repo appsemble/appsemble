@@ -1,9 +1,9 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
-import type { BaseArguments } from '../../types';
+import { BaseArguments } from '../../types';
 
 interface CreateOrganizationArguments extends BaseArguments {
   id: string;

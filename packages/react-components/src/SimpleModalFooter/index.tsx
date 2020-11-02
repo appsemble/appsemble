@@ -1,4 +1,4 @@
-import type { BulmaColor } from '@appsemble/sdk';
+import { BulmaColor } from '@appsemble/sdk';
 import React, { MouseEventHandler, ReactElement, ReactNode } from 'react';
 
 import { CardFooterButton, useSimpleForm } from '..';

@@ -1,13 +1,13 @@
 import { basename, dirname, join, relative } from 'path';
 
 import { getWorkspaces, logger, opendirSafe } from '@appsemble/node-utils';
-import type { Config } from '@jest/types';
+import { Config } from '@jest/types';
 import extractMessages from 'extract-react-intl-messages';
 import { readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
-import type { PackageJson } from 'type-fest';
+import { PackageJson } from 'type-fest';
 
 export const command = 'validate';
 export const description = 'Validate all workspaces have a proper configuration';
@@ -125,7 +125,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
       isEqual(locales.sort(), translated.sort()),
       '',
       'should have translations for each supported language',
-      `packages\\${workspace}`,
+      `packages/${workspace}`,
     );
   }
 }

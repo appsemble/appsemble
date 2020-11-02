@@ -1,4 +1,4 @@
-import type { BlockDefinition } from '@appsemble/types';
+import { BlockDefinition } from '@appsemble/types';
 
 export type IdentifiableBlock = Pick<BlockDefinition, 'type' | 'version'>;
 

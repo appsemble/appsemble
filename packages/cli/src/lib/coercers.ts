@@ -1,4 +1,4 @@
-import type { ReadStream } from 'fs';
+import { ReadStream } from 'fs';
 import { URL } from 'url';
 
 import { createReadStream } from 'fs-extra';

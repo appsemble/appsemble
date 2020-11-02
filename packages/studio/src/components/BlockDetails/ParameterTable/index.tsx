@@ -1,6 +1,6 @@
 import { Table } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
-import type { Definition } from 'typescript-json-schema';
+import { Definition } from 'typescript-json-schema';
 
 import { ParameterRow } from '../ParameterRow';
 import { messages } from './messages';

@@ -4,9 +4,9 @@ import { URL } from 'url';
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { createJWTResponse } from '../utils/createJWTResponse';
-import type { Recipient } from '../utils/email/Mailer';
+import { Recipient } from '../utils/email/Mailer';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
 import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
 
@@ -79,17 +79,15 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   } else {
     // Otherwise, register an authorization object and ask the user if this is the account they want
     // to use.
-    if (authorization) {
-      await authorization.update({ accessToken, code, refreshToken });
-    } else {
-      await OAuthAuthorization.create({
-        accessToken,
-        authorizationUrl: preset.authorizationUrl,
-        code,
-        refreshToken,
-        sub,
-      });
-    }
+    await (authorization
+      ? authorization.update({ accessToken, code, refreshToken })
+      : OAuthAuthorization.create({
+          accessToken,
+          authorizationUrl: preset.authorizationUrl,
+          code,
+          refreshToken,
+          sub,
+        }));
     ctx.body = userInfo;
   }
 }

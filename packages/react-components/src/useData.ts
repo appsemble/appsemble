@@ -47,7 +47,7 @@ const initialState: AxiosState<any> = { data: null, loading: true, error: null }
 export function useData<T>(url: string): UseAxiosResult<T> {
   const [state, setState] = useState<AxiosState<T>>(initialState);
 
-  const [refresher, setRefresher] = useState<{ [key: string]: unknown }>();
+  const [refresher, setRefresher] = useState<Record<string, unknown>>();
 
   const refresh = useCallback(() => setRefresher({}), []);
 

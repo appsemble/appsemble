@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { logger } from '@appsemble/node-utils';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import {
   AppsembleValidationError,
   BlockMap,
@@ -15,7 +15,7 @@ import {
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
-import type { File } from 'koas-body-parser';
+import { File } from 'koas-body-parser';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -32,7 +32,7 @@ import {
   Resource,
   transactional,
 } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
@@ -598,17 +598,15 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
 
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
 
-    if (css.length) {
-      await AppBlockStyle.upsert({
-        style: css,
-        AppId: app.id,
-        block: `@${block.OrganizationId}/${block.name}`,
-      });
-    } else {
-      await AppBlockStyle.destroy({
-        where: { AppId: app.id, block: `@${block.OrganizationId}/${block.name}` },
-      });
-    }
+    await (css.length
+      ? AppBlockStyle.upsert({
+          style: css,
+          AppId: app.id,
+          block: `@${block.OrganizationId}/${block.name}`,
+        })
+      : AppBlockStyle.destroy({
+          where: { AppId: app.id, block: `@${block.OrganizationId}/${block.name}` },
+        }));
 
     ctx.status = 204;
   } catch (error: unknown) {

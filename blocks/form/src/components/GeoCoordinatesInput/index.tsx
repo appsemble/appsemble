@@ -5,10 +5,10 @@ import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 import { h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import type { GeoCoordinatesField, InputProps } from '../../../block';
+import { GeoCoordinatesField, InputProps } from '../../../block';
 import styles from './index.css';
 
-type GeoCoordinatesInputProps = InputProps<{ [key: string]: number }, GeoCoordinatesField>;
+type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField>;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
@@ -25,7 +25,7 @@ export function GeoCoordinatesInput({
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
 
   const {
-    defaultLocation: [defaultLat = 51.476852, defaultLng = 0] = [],
+    defaultLocation: [defaultLat = 51.476_852, defaultLng = 0] = [],
     locationError = 'Couldn’t find your location. Are location services enabled?',
   } = field;
 

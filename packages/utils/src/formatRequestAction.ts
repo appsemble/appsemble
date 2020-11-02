@@ -1,13 +1,11 @@
-import type { RequestLikeActionDefinition } from '@appsemble/types';
-import type { AxiosRequestConfig } from 'axios';
+import { RequestLikeActionDefinition } from '@appsemble/types';
+import { AxiosRequestConfig } from 'axios';
 
 import { compileFilters, MapperFunction } from './legacyRemap';
 
 const regex = /{(.+?)}/g;
 
-interface Mapper {
-  [filter: string]: MapperFunction;
-}
+type Mapper = Record<string, MapperFunction>;
 
 export function formatRequestAction(
   { method = 'GET', query, url }: RequestLikeActionDefinition,
@@ -20,7 +18,7 @@ export function formatRequestAction(
 
   const queryMappers =
     query &&
-    Object.entries(query).reduce<{ [k: string]: Mapper }>((acc, [queryKey, queryValue]) => {
+    Object.entries(query).reduce<Record<string, Mapper>>((acc, [queryKey, queryValue]) => {
       const queryMatch = String(queryValue).match(regex);
       if (queryMatch) {
         acc[queryKey] = queryMatch

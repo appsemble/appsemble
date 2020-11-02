@@ -1,4 +1,4 @@
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import React, { ChangeEvent, ReactElement, ReactNode } from 'react';
 
 import { FormComponent, Icon } from '..';

@@ -1,4 +1,4 @@
-import type { AppMessages, Remapper, UserInfo } from '@appsemble/types';
+import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
 import FakeTimers from '@sinonjs/fake-timers';
 import { IntlMessageFormat } from 'intl-messageformat';
 
@@ -10,10 +10,10 @@ interface TestCase {
   expected: any;
   messages?: AppMessages['messages'];
   userInfo?: UserInfo;
-  context?: { [key: string]: any };
+  context?: Record<string, any>;
 }
 
-function runTests(tests: { [description: string]: TestCase }): void {
+function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
     (_, { context, expected, input, mappers, messages, userInfo }) => {
