@@ -1,20 +1,42 @@
 import { logger } from '@appsemble/node-utils';
+import { remap } from '@appsemble/utils/src';
 import { parseExpression } from 'cron-parser';
 import { Op } from 'sequelize';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { App, initDB } from '../models';
-import type { Argv as Args } from '../types';
+import { Argv as Args } from '../types';
+import { actions, ServerActionParameters } from '../utils/actions';
 import { iterTable } from '../utils/database';
+import { Mailer } from '../utils/email/Mailer';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';
 
 export const command = 'run-cronjobs';
-export const description = 'Deletes all expired resources from the database.';
+export const description = 'Runs all cronjobs associated with apps.';
+
+async function handleAction(
+  action: (params: ServerActionParameters) => Promise<unknown>,
+  params: ServerActionParameters,
+): Promise<void> {
+  let data = remap(params.action.remap, params.data, null);
+
+  try {
+    data = await action({ ...params, data });
+    if (params.action.onSuccess) {
+      await handleAction(actions[params.action.onSuccess.type], { ...params, data });
+    }
+  } catch {
+    if (params.action.onError) {
+      await handleAction(actions[params.action.onError.type], { ...params, data });
+    }
+  }
+}
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs);
 }
+
 export async function handler(argv: Args): Promise<void> {
   let db;
 
@@ -59,7 +81,11 @@ export async function handler(argv: Args): Promise<void> {
         }
 
         logger.info(`Running cronjob ${id}. Last schedule: ${schedule.prev().toISOString()}`);
-        // XXX Run actions
+        const action = actions[job.action.type];
+        const data = remap(job.action.remap, null, null);
+        const mailer = new Mailer(argv);
+
+        await handleAction(action, { app, user: null, action: job.action, mailer, data });
       }
     } catch (error: unknown) {
       logger.error(`Failed to run ${lastId} for app ${app.id}`);

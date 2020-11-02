@@ -1,22 +1,22 @@
-import type { EmailActionDefinition } from '@appsemble/types';
+import { EmailActionDefinition } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
 import { extension } from 'mime-types';
-import type { SendMailOptions } from 'nodemailer';
+import { SendMailOptions } from 'nodemailer';
 import { Op } from 'sequelize/types';
 
-import { App, Asset, EmailAuthorization, User } from '../../models';
+import { ServerActionParameters } from '.';
+import { Asset, EmailAuthorization } from '../../models';
 import { getRemapperContext } from '../app';
-import type { Mailer } from '../email/Mailer';
 import { renderEmail } from '../email/renderEmail';
 
-export async function email(
-  app: App,
-  action: EmailActionDefinition,
-  user: User,
-  mailer: Mailer,
-  data: any,
-): Promise<any> {
+export async function email({
+  action,
+  app,
+  data,
+  mailer,
+  user,
+}: ServerActionParameters<EmailActionDefinition>): Promise<any> {
   await user?.reload({
     attributes: ['primaryEmail', 'name'],
     include: [
@@ -52,7 +52,7 @@ export async function email(
 
   if (!to && !cc?.length && !bcc?.length) {
     // Continue as normal without doing anything
-    return false;
+    return data;
   }
 
   if (!sub || !body) {
@@ -86,5 +86,5 @@ export async function email(
     attachments,
   });
 
-  return true;
+  return data;
 }

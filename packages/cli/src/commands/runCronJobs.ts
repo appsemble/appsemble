@@ -1,7 +1,7 @@
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { serverImport } from '../lib/serverImport';
-import type { BaseArguments } from '../types';
+import { BaseArguments } from '../types';
 
 export const command = 'run-cronjobs';
 export const description = 'Runs all cronjobs associated with apps.';

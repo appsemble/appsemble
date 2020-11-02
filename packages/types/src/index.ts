@@ -704,6 +704,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.next'>
   | BaseActionDefinition<'email'>
   | BaseActionDefinition<'noop'>
+  | BaseActionDefinition<'throw'>
   | DialogActionDefinition
   | EventActionDefinition
   | LinkActionDefinition
