@@ -1,4 +1,4 @@
-import type { EnumField, RadioField, RequiredRequirement } from '../../../block';
+import { EnumField, RadioField, RequiredRequirement } from '../../../block';
 
 /**
  * Validates an enum picker based on a set of requirements.
