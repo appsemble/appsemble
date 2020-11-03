@@ -1,9 +1,14 @@
-import { ActionDefinition, BaseActionDefinition } from '@appsemble/types';
+import { ActionDefinition } from '@appsemble/types';
 
 import { App, User } from '../../models';
 import { Mailer } from '../email/Mailer';
+import { email } from './email';
+import { noop } from './noop';
+import { request } from './request';
+import { staticAction } from './static';
+import { throwAction } from './throw';
 
-export interface ServerActionParameters<T extends ActionDefinition = BaseActionDefinition<'noop'>> {
+export interface ServerActionParameters<T extends ActionDefinition = ActionDefinition> {
   app: App;
   action: T;
   user: User;
@@ -11,31 +16,10 @@ export interface ServerActionParameters<T extends ActionDefinition = BaseActionD
   data: unknown;
 }
 
-function noop({ data }: ServerActionParameters): any {
-  return data;
-}
-
-function throwAction({ data }: ServerActionParameters): never {
-  throw data;
-}
-
 export const actions = {
-  throw: throwAction,
-  noop,
-  request: noop,
-  email: noop,
   dialog: noop,
+  email,
   event: noop,
-  static: noop,
-  'resource.get': noop,
-  'resource.query': noop,
-  'resource.update': noop,
-  'resource.delete': noop,
-  'resource.create': noop,
-  'resource.subscription.subscribe': noop,
-  'resource.subscription.unsubscribe': noop,
-  'resource.subscription.status': noop,
-  'resource.subscription.toggle': noop,
   'flow.back': noop,
   'flow.cancel': noop,
   'flow.finish': noop,
@@ -43,4 +27,17 @@ export const actions = {
   link: noop,
   log: noop,
   message: noop,
+  noop,
+  request,
+  'resource.create': request,
+  'resource.delete': request,
+  'resource.get': request,
+  'resource.query': request,
+  'resource.update': request,
+  'resource.subscription.status': noop,
+  'resource.subscription.subscribe': noop,
+  'resource.subscription.toggle': noop,
+  'resource.subscription.unsubscribe': noop,
+  static: staticAction,
+  throw: throwAction,
 };

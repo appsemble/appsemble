@@ -3,7 +3,7 @@ import { remap } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
 import { extension } from 'mime-types';
 import { SendMailOptions } from 'nodemailer';
-import { Op } from 'sequelize/types';
+import { Op } from 'sequelize';
 
 import { ServerActionParameters } from '.';
 import { Asset, EmailAuthorization } from '../../models';

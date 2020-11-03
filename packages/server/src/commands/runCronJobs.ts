@@ -19,22 +19,56 @@ async function handleAction(
   action: (params: ServerActionParameters) => Promise<unknown>,
   params: ServerActionParameters,
 ): Promise<void> {
-  let data = remap(params.action.remap, params.data, null);
+  let data = 'remap' in params.action ? remap(params.action.remap, params.data, null) : params.data;
 
   try {
     data = await action({ ...params, data });
     if (params.action.onSuccess) {
-      await handleAction(actions[params.action.onSuccess.type], { ...params, data });
+      await handleAction(actions[params.action.onSuccess.type], {
+        ...params,
+        action: params.action.onSuccess,
+        data,
+      });
     }
-  } catch {
+  } catch (error: unknown) {
     if (params.action.onError) {
-      await handleAction(actions[params.action.onError.type], { ...params, data });
+      await handleAction(actions[params.action.onError.type], {
+        ...params,
+        action: params.action.onError,
+        data,
+      });
+    } else {
+      throw error;
     }
   }
 }
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs);
+  return databaseBuilder(yargs)
+    .option('smtp-host', {
+      desc: 'The host of the SMTP server to connect to.',
+    })
+    .option('smtp-port', {
+      desc: 'The port of the SMTP server to connect to.',
+      type: 'number',
+    })
+    .option('smtp-secure', {
+      desc: 'Use TLS when connecting to the SMTP server.',
+      type: 'boolean',
+      default: false,
+    })
+    .option('smtp-user', {
+      desc: 'The user to use to login to the SMTP server.',
+      implies: ['smtp-pass', 'smtp-from'],
+    })
+    .option('smtp-pass', {
+      desc: 'The password to use to login to the SMTP server.',
+      implies: ['smtp-user', 'smtp-from'],
+    })
+    .option('smtp-from', {
+      desc: 'The address to use when sending emails.',
+      implies: ['smtp-user', 'smtp-pass'],
+    });
 }
 
 export async function handler(argv: Args): Promise<void> {
@@ -53,6 +87,8 @@ export async function handler(argv: Args): Promise<void> {
   } catch (error: unknown) {
     handleDBError(error as Error);
   }
+
+  const mailer = new Mailer(argv);
 
   // 1 hour ago
   const startDate = Date.now() - 60 * 60 * 1e3;
@@ -82,10 +118,7 @@ export async function handler(argv: Args): Promise<void> {
 
         logger.info(`Running cronjob ${id}. Last schedule: ${schedule.prev().toISOString()}`);
         const action = actions[job.action.type];
-        const data = remap(job.action.remap, null, null);
-        const mailer = new Mailer(argv);
-
-        await handleAction(action, { app, user: null, action: job.action, mailer, data });
+        await handleAction(action, { app, user: null, action: job.action, mailer, data: null });
       }
     } catch (error: unknown) {
       logger.error(`Failed to run ${lastId} for app ${app.id}`);
