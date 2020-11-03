@@ -2,16 +2,19 @@ const { readdirSync } = require('fs');
 
 const puppeteer = require('puppeteer');
 
+const { CI, CI_COMMIT_TAG, CI_MERGE_REQUEST_ID } = process.env;
+const domain = CI_COMMIT_TAG
+  ? 'appsemble.app'
+  : `${CI_MERGE_REQUEST_ID || 'staging'}.appsemble.review`;
+
 module.exports = {
   ci: {
     collect: {
       chromePath: puppeteer.executablePath(),
       settings: {
-        chromeFlags: ['--headless', 'CI' in process.env && '--no-sandbox']
-          .filter(Boolean)
-          .join(' '),
+        chromeFlags: ['--headless', CI && '--no-sandbox'].filter(Boolean).join(' '),
       },
-      url: readdirSync('apps').map((path) => `https://${path}.appsemble.staging.appsemble.review`),
+      url: readdirSync('apps').map((path) => `https://${path}.appsemble.${domain}`),
     },
     assert: {
       assertions: {

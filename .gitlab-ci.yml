@@ -423,8 +423,6 @@ lighthouse:
   dependencies: []
   needs:
     - provision staging
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies
