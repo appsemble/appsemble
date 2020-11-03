@@ -2,10 +2,10 @@ const { readdirSync } = require('fs');
 
 const puppeteer = require('puppeteer');
 
-const { CI, CI_COMMIT_TAG, CI_MERGE_REQUEST_ID } = process.env;
+const { CI, CI_COMMIT_TAG, CI_MERGE_REQUEST_IID } = process.env;
 const domain = CI_COMMIT_TAG
   ? 'appsemble.app'
-  : `${CI_MERGE_REQUEST_ID || 'staging'}.appsemble.review`;
+  : `${CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
 
 module.exports = {
   ci: {
