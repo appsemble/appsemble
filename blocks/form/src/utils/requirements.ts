@@ -1,3 +1,5 @@
+import { remap } from '@appsemble/utils';
+
 import { Field } from '../../block';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
@@ -10,6 +12,48 @@ type FieldWithRequirements = Field & { requirements?: any[] };
  */
 export function isRequired(field: FieldWithRequirements): boolean {
   return Boolean(field.requirements?.some(({ required }) => required));
+}
+
+/**
+ * Check if a given date is a valid.
+ *
+ * @param date - The date to check
+ * @returns Whether the date is a valid date object.
+ */
+export function isValidDate(date: Date): boolean {
+  return date instanceof Date && !Number.isNaN(date);
+}
+
+/**
+ * Get the earliest date of a field.
+ *
+ * @param field - The field to check.
+ * @returns A date object matching the earliest date.
+ */
+export function getMinDate(field: FieldWithRequirements): Date | undefined {
+  const minDates = field.requirements
+    ?.filter((r) => 'from' in r)
+    .map((r) => new Date(remap(r.from, null, null) as any))
+    .filter(isValidDate);
+  if (minDates?.length) {
+    return minDates.sort()[0];
+  }
+}
+
+/**
+ * Get the last date of a field.
+ *
+ * @param field - The field to check.
+ * @returns A date object matching the last date.
+ */
+export function getMaxDate(field: FieldWithRequirements): Date | undefined {
+  const maxDates = field.requirements
+    ?.filter((r) => 'to' in r)
+    .map((r) => new Date(remap(r.to, null, null) as any))
+    .filter(isValidDate);
+  if (maxDates?.length) {
+    return maxDates.sort()[maxDates.length - 1];
+  }
 }
 
 /**
@@ -45,9 +89,9 @@ export function getMaxLength(field: FieldWithRequirements): number | undefined {
  * @returns The minumum value of the field.
  */
 export function getMin(field: FieldWithRequirements): number | undefined {
-  const minimumss = field.requirements?.map((r) => r.min).filter(Number.isFinite);
-  if (minimumss?.length) {
-    return Math.max(...minimumss);
+  const minimums = field.requirements?.map((r) => r.min).filter(Number.isFinite);
+  if (minimums?.length) {
+    return Math.max(...minimums);
   }
 }
 

@@ -8,7 +8,7 @@ import { FormComponent, Input, SharedFormComponentProps } from '..';
 
 type DateTimeFieldProps = SharedFormComponentProps &
   Omit<ComponentProps<typeof Input>, 'error'> &
-  Pick<flatpickr.Options.Options, 'enableTime' | 'noCalendar' | 'mode'> & {
+  Pick<flatpickr.Options.Options, 'enableTime' | 'noCalendar' | 'mode' | 'minDate' | 'maxDate'> & {
     /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
      * used.
@@ -47,6 +47,8 @@ export function DateTimeField({
   required,
   tag,
   value,
+  minDate,
+  maxDate,
   id = name,
   ...props
 }: DateTimeFieldProps): VNode {
@@ -76,6 +78,8 @@ export function DateTimeField({
       positionElement: positionElement.current,
       time_24hr: true,
       wrap: true,
+      minDate,
+      maxDate,
     });
 
     setPicker(p);
@@ -84,7 +88,7 @@ export function DateTimeField({
       p.destroy();
       setPicker(null);
     };
-  }, [disabled, enableTime, mode, noCalendar]);
+  }, [disabled, enableTime, maxDate, minDate, mode, noCalendar]);
 
   useEffect(() => {
     picker?.setDate(value);

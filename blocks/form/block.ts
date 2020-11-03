@@ -109,6 +109,21 @@ interface AcceptRequirement extends BaseRequirement {
 }
 
 /**
+ * A requirement used to enforce the range of available dates.
+ */
+interface RangeRequirement extends BaseRequirement {
+  /**
+   * The minimum date that can be picked.
+   */
+  from?: Remapper;
+
+  /**
+   * The maximum date that can be picked.
+   */
+  to?: Remapper;
+}
+
+/**
  * All requirements applicable to string fields.
  */
 export type StringRequirement = RegexRequirement | LengthRequirement | RequiredRequirement;
@@ -126,7 +141,7 @@ export type FileRequirement = AcceptRequirement | RequiredRequirement | LengthRe
 /**
  * All requirements applicable to date-time fields.
  */
-export type DateTimeRequirement = RequiredRequirement;
+export type DateTimeRequirement = RequiredRequirement | RangeRequirement;
 
 /**
  * All requirements applicable to object fields.
@@ -191,9 +206,21 @@ export interface DateTimeField extends AbstractField {
   /**
    * The type of the field.
    */
-  type: 'date-time' | 'date';
+  type: 'date-time';
 
-  requirements?: RequiredRequirement[];
+  requirements?: DateTimeRequirement[];
+}
+
+/**
+ * A date/time picker that results in an exact date and time.
+ */
+export interface DateField extends AbstractField {
+  /**
+   * The type of the field.
+   */
+  type: 'date';
+
+  requirements?: DateTimeRequirement[];
 }
 
 /**
@@ -489,6 +516,7 @@ export type Field =
   | StringField
   | RadioField
   | DateTimeField
+  | DateField
   | ObjectField;
 
 export type Values = Record<string, unknown>;

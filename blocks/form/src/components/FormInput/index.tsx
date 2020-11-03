@@ -5,6 +5,7 @@ import { useCallback, useState } from 'preact/hooks';
 import { Field, FieldError, InputProps } from '../../../block';
 import { validate } from '../../utils/validators';
 import { BooleanInput } from '../BooleanInput';
+import { DateInput } from '../DateInput';
 import { DateTimeInput } from '../DateTimeInput';
 import { EnumInput } from '../EnumInput';
 import { FileInput } from '../FileInput';
@@ -32,8 +33,9 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
   );
 
   switch (field.type) {
-    case 'date-time':
     case 'date':
+      return <DateInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
+    case 'date-time':
       return <DateTimeInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'enum':
       return <EnumInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
