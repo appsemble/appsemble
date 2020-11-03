@@ -421,8 +421,6 @@ lighthouse:
   interruptible: true
   stage: end 2 end
   dependencies: []
-  needs:
-    - provision staging
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies
