@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.5] - 2020-11-03
+
+### Added
+
+- Utils: Add `date.now` and `date.add` remappers.
+- Utils: Add `object.assign` remapper.
+
+### Security
+
+- Server: Add action handler security definition, allowing actions to access a logged in user.
+- Server: Fix the check for which OAuth2 scopes are granted when requesting an access token.
+
 ## [0.15.4] - 2020-10-26
 
 ### Added
