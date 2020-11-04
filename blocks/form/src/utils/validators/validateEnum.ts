@@ -11,7 +11,7 @@ export function validateEnum(field: EnumField, value: any): RequiredRequirement 
   return field.requirements?.find((requirement) => {
     if (
       'required' in requirement &&
-      (!value || !field.enum.find((choice) => choice.value === value))
+      (value === undefined || !field.enum.find((choice) => choice.value === value))
     ) {
       return true;
     }
@@ -29,7 +29,7 @@ export function validateRadio(field: RadioField, value: any): RequiredRequiremen
   return field.requirements?.find((requirement) => {
     if (
       'required' in requirement &&
-      (!value || !field.options.find((choice) => choice.value === value))
+      (value === undefined || !field.options.find((choice) => choice.value === value))
     ) {
       return true;
     }
