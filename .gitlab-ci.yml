@@ -431,7 +431,6 @@ lighthouse:
     when: always
     paths:
       - .lighthouseci
-    expire_in: 7 days
 
 # Test 10 Second Dance in the staging environment.
 10 second dance:
