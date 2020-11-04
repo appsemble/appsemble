@@ -428,6 +428,7 @@ lighthouse:
     - yarn lhci assert
   artifacts:
     expose_as: Lighthouse reports
+    when: always
     paths:
       - .lighthouseci
     expire_in: 7 days
