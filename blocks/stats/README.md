@@ -4,4 +4,4 @@ This can be used to represent data in a friendly manner with an icon and a label
 
 ### Images
 
-![Stats screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.15.5/docs/images/stats.png)
+![Stats screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.15.6/docs/images/stats.png)
