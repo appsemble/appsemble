@@ -1,0 +1,12 @@
+.loading {
+  text-align: center;
+}
+
+.loader {
+  height: initial;
+
+  &::after {
+    height: 6em;
+    width: 6em;
+  }
+}

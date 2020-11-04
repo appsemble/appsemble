@@ -1,0 +1,26 @@
+.wrapper {
+  align-items: center;
+  background-color: white;
+  border: 1px solid hsl(0, 0%, 96%);
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  transition: 100ms linear;
+  width: 100%;
+
+  &:focus,
+  &:hover {
+    background: hsl(217, 71%, 53%, 5%);
+  }
+}
+
+.figure {
+  align-items: center;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.content {
+  flex: 1 0 auto;
+  text-align: left;
+}
