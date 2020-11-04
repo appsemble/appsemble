@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.6] - 2020-11-04
+
+### Fixed
+
+- App: Fixed the OAuth2 login scope used to request an access token.
+
 ## [0.15.5] - 2020-11-03
 
 ### Added
