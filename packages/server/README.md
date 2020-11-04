@@ -52,6 +52,20 @@ services.
 When using social login, the `HOST` variable is required. This should be the full host on which the
 Appsemble server is available.
 
+### GitHub
+
+Go to your [GitHub OAuth2 Apps](https://github.com/settings/developers) under _Developer settings_.
+
+Add the following Authorization callback URL, where `HOST` is the actual value `HOST` variable.
+
+```
+{HOST}/callback
+```
+
+**Example**: `https://example.com/callback`.
+
+Click _Register application_.
+
 ### GitLab
 
 Go to your [GitLab profile applications page](https://gitlab.com/profile/applications).
@@ -59,10 +73,10 @@ Go to your [GitLab profile applications page](https://gitlab.com/profile/applica
 Add the following redirect URL, where `HOST` is the actual value `HOST` variable.
 
 ```
-{HOST}/api/oauth/connect/gitlab/callback
+{HOST}/callback
 ```
 
-**Example**: `https://example.com/api/oauth/connect/gitlab/callback`.
+**Example**: `https://example.com/callback`.
 
 Check the `read_user` scope, and click _Save application_.
 
@@ -79,9 +93,9 @@ _Create credentials_ → _OAuth client ID_ → _Web application_. Add the `HOST`
 _**Authorized JavaScript origins**_. Under _**Authorized redirect URIs**_, add the following URI.
 
 ```
-{HOST}/api/oauth/connect/google/callback
+{HOST}/callback
 ```
 
-**Example**: `https://example.com/api/oauth/connect/google/callback`.
+**Example**: `https://example.com/callback`.
 
 Check the `read_user` scope, and click _Save application_.
