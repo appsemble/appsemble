@@ -2,6 +2,7 @@ import { Content, OAuth2LoginButton, useQuery, useToggle } from '@appsemble/reac
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { oauth2Scope } from '../../utils/constants';
 import { apiUrl, appId, definition, logins } from '../../utils/settings';
 import { Main } from '../Main';
 import { TitleBar } from '../TitleBar';
@@ -17,7 +18,7 @@ export function OpenIDLogin(): ReactElement {
     clientId: `app:${appId}`,
     onClick: busy.enable,
     redirectUrl: '/Callback',
-    scope: 'email openid profile resources:manage',
+    scope: oauth2Scope,
     redirect: qs.get('redirect'),
   };
 
