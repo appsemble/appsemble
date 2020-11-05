@@ -62,7 +62,7 @@ export function OAuth2Secrets(): ReactElement {
         }
         level={2}
       >
-        <FormattedMessage {...messages.oauth2Title} />
+        <FormattedMessage {...messages.title} />
       </HeaderControl>
       <AsyncDataView
         emptyMessage={<FormattedMessage {...messages.noSecrets} />}
