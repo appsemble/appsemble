@@ -53,10 +53,10 @@ export async function email({
   const bcc = remap(action.bcc, data, context) as string | string[];
   const body = remap(action.body, data, context) as string;
   const sub = remap(action.subject, data, context) as string;
-  const attachmentUrls = (remap(action.attachments, data, context) as (
-    | string
-    | Attachment
-  )[]).map((a) => (typeof a === 'object' ? a : { target: String(a) }));
+  const attachmentUrls = []
+    .concat(remap(action.attachments, data, context) as (string | Attachment)[])
+    .map((a) => (typeof a === 'object' ? a : { target: String(a) }))
+    .filter(Boolean);
   const attachments: SendMailOptions['attachments'] = [];
 
   if (!to && !cc?.length && !bcc?.length) {
@@ -69,8 +69,8 @@ export async function email({
   }
 
   if (attachmentUrls?.length) {
-    const assetIds = attachmentUrls.filter((a) => !a.target.startsWith('http'));
-    const assetUrls = attachmentUrls.filter((a) => a.target.startsWith('http'));
+    const assetIds = attachmentUrls.filter((a) => !String(a.target).startsWith('http'));
+    const assetUrls = attachmentUrls.filter((a) => String(a.target).startsWith('http'));
     const assets = await Asset.findAll({
       where: { AppId: app.id, id: assetIds.map((a) => a.target) },
     });
@@ -78,9 +78,9 @@ export async function email({
     attachments.push(
       ...assets.map((a) => {
         const attachment = assetIds.find((aId) => aId.target === String(a.id));
-        const ext = extension(attachment.accept || a.mime);
+        const ext = extension(attachment?.accept || a.mime);
         const filename =
-          attachment.filename || a.filename || (ext ? `${a.id}.${ext}` : String(a.id));
+          attachment?.filename || a.filename || (ext ? `${a.id}.${ext}` : String(a.id));
         return { content: a.data, filename };
       }),
     );
