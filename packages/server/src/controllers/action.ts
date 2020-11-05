@@ -4,19 +4,16 @@ import {
   EmailActionDefinition,
   RequestLikeActionDefinition,
 } from '@appsemble/types';
-import { formatRequestAction, remap } from '@appsemble/utils';
+import { formatRequestAction } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
 import { ParameterizedContext } from 'koa';
 import { get, pick } from 'lodash';
-import { extension } from 'mime-types';
-import { SendMailOptions } from 'nodemailer';
 import { Op } from 'sequelize';
 
-import { App, Asset, EmailAuthorization } from '../models';
+import { App, EmailAuthorization } from '../models';
 import { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
-import { getRemapperContext } from '../utils/app';
-import { renderEmail } from '../utils/email/renderEmail';
+import { email } from '../utils/actions/email';
 import { readPackageJson } from '../utils/readPackageJson';
 
 interface Params {
@@ -67,61 +64,7 @@ async function handleEmail(
     ],
   });
 
-  const context = await getRemapperContext(
-    app,
-    app.definition.defaultLanguage || 'en-us',
-    user && {
-      sub: user.id,
-      name: user.name,
-      email: user.primaryEmail,
-      email_verified: user.EmailAuthorizations[0].verified,
-    },
-  );
-  const to = remap(action.to, data, context) as string;
-  const cc = remap(action.cc, data, context) as string | string[];
-  const bcc = remap(action.bcc, data, context) as string | string[];
-  const body = remap(action.body, data, context) as string;
-  const sub = remap(action.subject, data, context) as string;
-  const attachmentUrls = remap(action.attachments, data, context) as string[];
-  const attachments: SendMailOptions['attachments'] = [];
-
-  if (!to && !cc?.length && !bcc?.length) {
-    // Continue as normal without doing anything
-    ctx.status = 204;
-    return;
-  }
-
-  if (!sub || !body) {
-    throw badRequest('Fields “subject” and “body” must be a valid string');
-  }
-
-  if (attachmentUrls?.length) {
-    const assetIds = attachmentUrls.filter((a) => !String(a).startsWith('http'));
-    const assetUrls = attachmentUrls.filter((a) => String(a).startsWith('http'));
-
-    const assets = await Asset.findAll({ where: { AppId: app.id, id: assetIds } });
-
-    attachments.push(
-      ...assets.map((a) => {
-        const ext = extension(a.mime);
-        const filename = a.filename || (ext ? `${a.id}.${ext}` : String(a.id));
-        return { content: a.data, filename };
-      }),
-    );
-    attachments.push(...assetUrls.map((a) => ({ path: a })));
-  }
-
-  const { html, subject, text } = await renderEmail(body, {}, sub);
-  await mailer.sendEmail({
-    ...(to && { to }),
-    ...(cc && { cc }),
-    ...(bcc && { bcc }),
-    subject,
-    html,
-    text,
-    attachments,
-  });
-
+  await email({ action, app, data, mailer, user });
   ctx.status = 204;
 }
 

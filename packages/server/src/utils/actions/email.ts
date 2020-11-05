@@ -10,6 +10,12 @@ import { Asset, EmailAuthorization } from '../../models';
 import { getRemapperContext } from '../app';
 import { renderEmail } from '../email/renderEmail';
 
+interface Attachment {
+  filename?: string;
+  accept?: string;
+  target: string;
+}
+
 export async function email({
   action,
   app,
@@ -47,7 +53,10 @@ export async function email({
   const bcc = remap(action.bcc, data, context) as string | string[];
   const body = remap(action.body, data, context) as string;
   const sub = remap(action.subject, data, context) as string;
-  const attachmentUrls = remap(action.attachments, data, context) as string[];
+  const attachmentUrls = (remap(action.attachments, data, context) as (
+    | string
+    | Attachment
+  )[]).map((a) => (typeof a === 'object' ? a : { target: String(a) }));
   const attachments: SendMailOptions['attachments'] = [];
 
   if (!to && !cc?.length && !bcc?.length) {
@@ -60,19 +69,28 @@ export async function email({
   }
 
   if (attachmentUrls?.length) {
-    const assetIds = attachmentUrls.filter((a) => !String(a).startsWith('http'));
-    const assetUrls = attachmentUrls.filter((a) => String(a).startsWith('http'));
-
-    const assets = await Asset.findAll({ where: { AppId: app.id, id: assetIds } });
+    const assetIds = attachmentUrls.filter((a) => !a.target.startsWith('http'));
+    const assetUrls = attachmentUrls.filter((a) => a.target.startsWith('http'));
+    const assets = await Asset.findAll({
+      where: { AppId: app.id, id: assetIds.map((a) => a.target) },
+    });
 
     attachments.push(
       ...assets.map((a) => {
-        const ext = extension(a.mime);
-        const filename = a.filename || (ext ? `${a.id}.${ext}` : String(a.id));
+        const attachment = assetIds.find((aId) => aId.target === String(a.id));
+        const ext = extension(attachment.accept || a.mime);
+        const filename =
+          attachment.filename || a.filename || (ext ? `${a.id}.${ext}` : String(a.id));
         return { content: a.data, filename };
       }),
     );
-    attachments.push(...assetUrls.map((a) => ({ path: a })));
+    attachments.push(
+      ...assetUrls.map((a) => ({
+        path: a.target,
+        ...(a.filename && { filename: a.filename }),
+        ...(a.accept && { httpHeaders: { accept: a.accept } }),
+      })),
+    );
   }
 
   const { html, subject, text } = await renderEmail(body, {}, sub);
