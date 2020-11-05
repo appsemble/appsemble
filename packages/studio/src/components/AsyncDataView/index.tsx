@@ -60,12 +60,14 @@ export function AsyncDataView<T>({
   }
 
   if (error) {
-    <Message className="my-3" color="danger">
-      <div className="mb-3">{errorMessage}</div>
-      <Button color="danger" onClick={refresh}>
-        <FormattedMessage {...messages.retry} />
-      </Button>
-    </Message>;
+    return (
+      <Message className="my-3" color="danger">
+        <div className="mb-3">{errorMessage}</div>
+        <Button color="danger" onClick={refresh}>
+          <FormattedMessage {...messages.retry} />
+        </Button>
+      </Message>
+    );
   }
 
   if (Array.isArray(data) && !data.length) {
