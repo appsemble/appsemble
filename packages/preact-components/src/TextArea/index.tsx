@@ -11,6 +11,11 @@ export interface TextAreaProps
   error?: boolean;
 
   /**
+   * Indicate the text area is in a loading state.
+   */
+  loading?: boolean;
+
+  /**
    * This is fired when the input value has changed.
    */
   onChange?: (event: h.JSX.TargetedEvent<HTMLTextAreaElement>, value: string) => void;
@@ -20,7 +25,7 @@ export interface TextAreaProps
  * A Bulma styled textarea element.
  */
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ error, name, onChange, id = name, ...props }, ref) => {
+  ({ error, name, loading, onChange, readOnly, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: h.JSX.TargetedEvent<HTMLTextAreaElement>) => {
         onChange(event, event.currentTarget.value);
@@ -31,10 +36,15 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     return (
       <textarea
         {...props}
-        className={classNames('textarea', { 'is-danger': error })}
+        className={classNames('textarea', {
+          'has-background-white-bis': readOnly,
+          'is-danger': error,
+          'is-loading': loading,
+        })}
         id={id}
         name={name}
         onChange={handleChange}
+        readOnly={readOnly}
         ref={ref}
       />
     );
