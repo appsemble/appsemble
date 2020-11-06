@@ -4,7 +4,7 @@ import {
   EmailActionDefinition,
   RequestLikeActionDefinition,
 } from '@appsemble/types';
-import { formatRequestAction } from '@appsemble/utils';
+import { formatRequestAction, remap } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
 import { ParameterizedContext } from 'koa';
@@ -14,6 +14,7 @@ import { Op } from 'sequelize';
 import { App, EmailAuthorization } from '../models';
 import { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
 import { email } from '../utils/actions/email';
+import { getRemapperContext } from '../utils/app';
 import { readPackageJson } from '../utils/readPackageJson';
 
 interface Params {
@@ -70,6 +71,7 @@ async function handleEmail(
 
 async function handleRequestProxy(
   ctx: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
+  app: App,
   action: RequestLikeActionDefinition,
   useBody: boolean,
 ): Promise<void> {
@@ -77,6 +79,7 @@ async function handleRequestProxy(
     method,
     query,
     request: { body },
+    user,
   } = ctx;
 
   let data;
@@ -90,7 +93,33 @@ async function handleRequestProxy(
     }
   }
 
-  const axiosConfig = formatRequestAction(action, data);
+  await user?.reload({
+    attributes: ['primaryEmail', 'name'],
+    include: [
+      {
+        required: false,
+        model: EmailAuthorization,
+        attributes: ['verified'],
+        where: {
+          email: { [Op.col]: 'User.primaryEmail' },
+        },
+      },
+    ],
+  });
+
+  const context = await getRemapperContext(
+    app,
+    app.definition.defaultLanguage || 'en-us',
+    user && {
+      sub: user.id,
+      name: user.name,
+      email: user.primaryEmail,
+      email_verified: user.EmailAuthorizations[0].verified,
+    },
+  );
+  const axiosConfig = formatRequestAction(action, data, (remapper, d) =>
+    remap(remapper, d, context),
+  );
 
   if (axiosConfig.method.toUpperCase() !== method) {
     throw badRequest('Method does match the request action method');
@@ -134,7 +163,7 @@ function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
       case 'email':
         return handleEmail(ctx, app, appAction as EmailActionDefinition);
       case 'request':
-        return handleRequestProxy(ctx, appAction as RequestLikeActionDefinition, useBody);
+        return handleRequestProxy(ctx, app, appAction as RequestLikeActionDefinition, useBody);
       default:
         throw badRequest('path does not point to a proxyable action');
     }

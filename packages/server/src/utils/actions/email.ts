@@ -55,8 +55,8 @@ export async function email({
   const sub = remap(action.subject, data, context) as string;
   const attachmentUrls = []
     .concat(remap(action.attachments, data, context) as (string | Attachment)[])
-    .map((a) => (typeof a === 'object' ? a : { target: String(a) }))
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((a) => (typeof a === 'object' ? a : { target: String(a) }));
   const attachments: SendMailOptions['attachments'] = [];
 
   if (!to && !cc?.length && !bcc?.length) {

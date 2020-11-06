@@ -4,6 +4,8 @@
  * {@link @appsemble/sdk}.
  */
 
+import { Remapper } from '.';
+
 /**
  * Common HTTP methods, but either all upper case or all lower case.
  */
@@ -61,7 +63,7 @@ export interface RequestLikeAction<T extends RequestLikeActionTypes> extends Bas
   /**
    * The URL to which the request will be made.
    */
-  url: string;
+  url: Remapper;
 }
 
 export type RequestAction = RequestLikeAction<'request'>;

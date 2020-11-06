@@ -12,6 +12,7 @@ import { xmlToJson } from '../xmlToJson';
 export function requestLikeAction<T extends RequestLikeActionTypes>({
   definition,
   prefix,
+  remap,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
   const { base, blobs = {}, method = 'GET', proxy = true, schema, url, serialize } = definition;
 
@@ -24,7 +25,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
             method: methodUpper,
             url: `${apiUrl}/api/apps/${appId}/action/${prefix}`,
           }
-        : formatRequestAction(definition, data);
+        : formatRequestAction(definition, data, remap);
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
         let body;

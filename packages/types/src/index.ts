@@ -622,7 +622,7 @@ export interface RequestLikeActionDefinition<
   /**
    * The URL to which to make the request.
    */
-  url?: string;
+  url?: Remapper;
 
   /**
    * How to serialize the request body.
