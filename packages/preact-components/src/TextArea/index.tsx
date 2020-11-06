@@ -4,7 +4,7 @@ import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
 export interface TextAreaProps
-  extends Omit<ComponentProps<'textarea'>, 'label' | 'onChange' | 'onInput'> {
+  extends Omit<ComponentProps<'textarea'>, 'label' | 'loading' | 'onChange' | 'onInput'> {
   /**
    * Whether to render the input in an error state.
    */
