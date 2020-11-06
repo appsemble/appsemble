@@ -1,0 +1,53 @@
+import { logger } from '@appsemble/node-utils';
+import { DataTypes, Sequelize } from 'sequelize';
+
+export const key = '0.15.7';
+
+/**
+ * Symmary:
+ * - Create table `AppSamlSecret`
+ *
+ * @param db - The sequelize database.
+ */
+export async function up(db: Sequelize): Promise<void> {
+  const queryInterface = db.getQueryInterface();
+
+  logger.info('Creating table to AppSamlSecret');
+  await queryInterface.createTable('AppSamlSecret', {
+    id: {
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+    },
+    AppId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+      references: { key: 'id', model: 'App' },
+    },
+    name: { type: DataTypes.TEXT, allowNull: false },
+    idpCertificate: { type: DataTypes.TEXT, allowNull: false },
+    entityId: { type: DataTypes.STRING, allowNull: false },
+    ssoUrl: { type: DataTypes.STRING, allowNull: false },
+    icon: { type: DataTypes.STRING, allowNull: false },
+    spPrivateKey: { type: DataTypes.TEXT, allowNull: false },
+    spPublicKey: { type: DataTypes.TEXT, allowNull: false },
+    spCertificate: { type: DataTypes.TEXT, allowNull: false },
+    created: { type: DataTypes.DATE, allowNull: false },
+    updated: { type: DataTypes.DATE, allowNull: false },
+  });
+}
+
+/**
+ * Symmary:
+ * - Drop table `AppSamlSecret`
+ *
+ * @param db - The sequelize database.
+ */
+export async function down(db: Sequelize): Promise<void> {
+  const queryInterface = db.getQueryInterface();
+
+  logger.warn('Deleting table AppSamlSecret');
+  await queryInterface.dropTable('AppSamlSecret');
+}

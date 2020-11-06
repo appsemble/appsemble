@@ -14,5 +14,6 @@ export * from './blocks';
 export * from './health';
 export * from './organizations';
 export * from './resources';
+export * from './saml';
 export * from './templates';
 export * from './user';

@@ -5,7 +5,7 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['secret'],
-      operationId: 'createAppOAuth2Secret',
+      operationId: 'createSamlSecret',
       requestBody: {
         content: {
           'application/json': {

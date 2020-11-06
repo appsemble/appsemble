@@ -76,6 +76,7 @@
     "@types/mermaid": "^8.2.1",
     "@types/mime-types": "^2.1.0",
     "@types/mustache": "^4.0.1",
+    "@types/node-forge": "^0.9.5",
     "@types/node-sass": "^4.11.1",
     "@types/nodemailer": "^6.4.0",
     "@types/normalize-path": "^3.0.0",

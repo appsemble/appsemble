@@ -9,6 +9,7 @@ import { AppMessages } from './AppMessages';
 import { AppOAuth2Authorization } from './AppOAuth2Authorization';
 import { AppOAuth2Secret } from './AppOAuth2Secret';
 import { AppRating } from './AppRating';
+import { AppSamlSecret } from './AppSamlSecret';
 import { AppScreenshot } from './AppScreenshot';
 import { AppSubscription } from './AppSubscription';
 import { Asset } from './Asset';
@@ -47,6 +48,7 @@ export {
   AppOAuth2Authorization,
   AppOAuth2Secret,
   AppRating,
+  AppSamlSecret,
   AppScreenshot,
   AppSubscription,
   AppMessages,
@@ -91,6 +93,7 @@ export function initDB({
       AppOAuth2Authorization,
       AppOAuth2Secret,
       AppRating,
+      AppSamlSecret,
       AppScreenshot,
       AppSubscription,
       AppMessages,

@@ -1209,3 +1209,40 @@ export interface AppOAuth2Secret extends OAuth2Provider {
    */
   remapper: Remapper;
 }
+
+export interface WritableAppSamlSecret {
+  /**
+   * The name that will be displayed on the login button.
+   */
+  name: string;
+
+  /**
+   * The icon that will be displayed on the login button.
+   */
+  icon: IconName;
+
+  /**
+   * The certificate of the identity provider.
+   */
+  idpCertificate: string;
+
+  /**
+   * The URL of the identity provider where SAML metadata is hosted.
+   */
+  entityId: string;
+
+  /**
+   * The URL of the identity provider where the user will be redirected to in order to login.
+   */
+  ssoUrl: string;
+}
+
+export interface AppSamlSecret extends WritableAppSamlSecret {
+  // XXX figure out readonly types.
+  id?: number;
+
+  /**
+   * The SAML service provider certificate.
+   */
+  spCertificate?: string;
+}

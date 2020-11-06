@@ -1,7 +1,7 @@
 import { setLogLevel } from '@appsemble/node-utils';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
-setLogLevel(0);
+setLogLevel('info');
 
 expect.extend({ toMatchImageSnapshot });
 
