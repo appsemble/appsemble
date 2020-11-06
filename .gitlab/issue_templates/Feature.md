@@ -9,32 +9,6 @@
 
 - [ ] Example requirement.
 
-<!--
-If relevant, add an example API request and response.
-
-**Request**
-
-```http
-PUT /api HTTP/1.1
-Content-Type: application/json
-
-{
-
-}
-```
-
-**Response**
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{
-
-}
-```
--->
-
 <!-- Remove the labels that don’t apply. -->
 
 /label ~App ~Block ~CLI ~Docker ~Server ~Studio
