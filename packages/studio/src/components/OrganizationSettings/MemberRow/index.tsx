@@ -10,7 +10,7 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import type { Member } from '../../../types';
+import { Member } from '../../../types';
 import { useUser } from '../../UserProvider';
 import { messages } from './messages';
 

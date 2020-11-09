@@ -1,6 +1,6 @@
-import type { BlockManifest } from '@appsemble/types';
-import type { PackageJson } from 'read-pkg-up';
-import type { JsonObject } from 'type-fest';
+import { BlockManifest } from '@appsemble/types';
+import { PackageJson } from 'read-pkg-up';
+import { JsonObject } from 'type-fest';
 
 /**
  * THe base arguments from the command line.

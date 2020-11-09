@@ -1,4 +1,6 @@
-import type { AppOAuth2Secret as Interface, Remapper } from '@appsemble/types';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import type { Remapper } from '@appsemble/types';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import {
   AllowNull,
@@ -17,7 +19,7 @@ import {
 import { App } from '.';
 
 @Table({ tableName: 'AppOAuth2Secret' })
-export class AppOAuth2Secret extends Model<AppOAuth2Secret> implements Interface {
+export class AppOAuth2Secret extends Model<AppOAuth2Secret> {
   @PrimaryKey
   @AutoIncrement
   @Column

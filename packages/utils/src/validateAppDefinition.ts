@@ -1,8 +1,8 @@
-import type { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
+import { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
 // eslint-disable-next-line import/no-named-as-default
 import Ajv from 'ajv';
 import languageTags from 'language-tags';
-import type { Promisable } from 'type-fest';
+import { Promisable } from 'type-fest';
 
 import { BlockMap, getAppBlocks } from './getAppBlocks';
 
@@ -31,7 +31,7 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
     }
     blockVersionMap.get(version.name).set(version.version, version);
   });
-  const errors = Object.entries(blocks).reduce((acc, [loc, block]) => {
+  const errors = Object.entries(blocks).reduce<Record<string, string>>((acc, [loc, block]) => {
     const type = block.type.startsWith('@') ? block.type : `@appsemble/${block.type}`;
     const versions = blockVersionMap.get(type);
     if (!versions) {
@@ -86,7 +86,7 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
     });
 
     return acc;
-  }, {} as { [error: string]: string });
+  }, {});
   if (Object.keys(errors).length) {
     throw new AppsembleValidationError('Block validation failed', errors);
   }

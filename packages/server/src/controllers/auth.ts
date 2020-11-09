@@ -6,7 +6,7 @@ import { hash } from 'bcrypt';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { createJWTResponse } from '../utils/createJWTResponse';
 
 function mayRegister({ argv }: KoaContext): void {

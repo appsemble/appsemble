@@ -2,7 +2,7 @@ import { Button, Content, Loader, Message, useQuery } from '@appsemble/react-com
 import axios from 'axios';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../utils/oauth2Utils';
 import { HelmetIntl } from '../HelmetIntl';
@@ -14,6 +14,7 @@ import { messages } from './messages';
  */
 export function OpenIDLogin(): ReactElement {
   const qs = useQuery();
+  const { lang } = useParams<{ lang: string }>();
 
   const [appLoading, setAppLoading] = useState(true);
   const [appName, setAppName] = useState<string>();
@@ -127,7 +128,7 @@ export function OpenIDLogin(): ReactElement {
             {...messages.prompt}
             values={{
               app: (
-                <Link className="has-text-weight-bold is-italic" to={`/apps/${appId}`}>
+                <Link className="has-text-weight-bold is-italic" to={`${lang}/apps/${appId}`}>
                   {appName}
                 </Link>
               ),

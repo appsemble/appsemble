@@ -1,6 +1,6 @@
 import { getWorkspaces } from '@appsemble/node-utils';
 
-import type { BlockConfig } from '../types';
+import { BlockConfig } from '../types';
 import { getBlockConfig } from './getBlockConfig';
 
 /**

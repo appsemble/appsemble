@@ -1,6 +1,6 @@
-import type { NamedEvent } from '@appsemble/web-utils';
-import type { OpenAPIV3 } from 'openapi-types';
-import type { Definition } from 'typescript-json-schema';
+import { NamedEvent } from '@appsemble/web-utils';
+import { OpenAPIV3 } from 'openapi-types';
+import { Definition } from 'typescript-json-schema';
 
 export interface CommonJSONSchemaEditorProps<T = never> {
   /**

@@ -1,7 +1,7 @@
 import querystring from 'querystring';
 import { URL } from 'url';
 
-import type { JwtPayload } from '@appsemble/types';
+import { JwtPayload } from '@appsemble/types';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import { verify } from 'jsonwebtoken';
@@ -13,9 +13,10 @@ import {
   OAuth2ClientCredentials,
   User,
 } from '../../models';
-import type { KoaContext } from '../../types';
+import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { createJWTResponse } from '../../utils/createJWTResponse';
+import { hasScope } from '../../utils/oauth2';
 
 class GrantError extends Error {
   status: number;
@@ -36,9 +37,9 @@ class GrantError extends Error {
 }
 
 function checkTokenRequestParameters(
-  query: { [parameter: string]: string | string[] },
+  query: Record<string, string | string[]>,
   allowed: string[],
-): { [parameter: string]: string } {
+): Record<string, string> {
   Object.entries(query).forEach(([key, value]) => {
     if (allowed.includes(key)) {
       return;
@@ -47,7 +48,7 @@ function checkTokenRequestParameters(
       throw new GrantError('invalid_request');
     }
   });
-  return query as { [parameter: string]: string };
+  return query as Record<string, string>;
 }
 
 /**
@@ -61,7 +62,7 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
   const { argv, header } = ctx;
   let aud: string;
   let refreshToken: boolean;
-  let scope: string[] | string;
+  let scope: string;
   let sub: string;
 
   try {
@@ -78,7 +79,8 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
           client_id: clientId,
           code,
           redirect_uri: redirectUri,
-        } = checkTokenRequestParameters(query, ['client_id', 'code', 'redirect_uri']);
+          scope: requestedScope,
+        } = checkTokenRequestParameters(query, ['client_id', 'code', 'redirect_uri', 'scope']);
         try {
           const referer = new URL(header.referer);
           const redirect = new URL(redirectUri);
@@ -105,9 +107,12 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         if (isPast(authorizationCode.expires)) {
           throw new GrantError('invalid_grant');
         }
+        if (!hasScope(authorizationCode.scope || '', requestedScope || '')) {
+          throw new GrantError('invalid_scope');
+        }
         aud = clientId;
         refreshToken = true;
-        ({ scope } = authorizationCode);
+        scope = requestedScope;
         sub = authorizationCode.UserId;
         break;
       }
@@ -135,17 +140,13 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         if (client.expires && isPast(client.expires)) {
           throw new GrantError('invalid_grant');
         }
-        const clientScopes = client.scopes.split(' ');
-        if (!requestedScope) {
-          throw new GrantError('invalid_scope');
-        }
-        scope = requestedScope.split(' ').sort();
-        if (!scope.every((s) => clientScopes.includes(s))) {
+        if (!hasScope(client.scopes, requestedScope || '')) {
           throw new GrantError('invalid_scope');
         }
         aud = client.id;
-        sub = client.UserId;
         refreshToken = false;
+        scope = requestedScope;
+        sub = client.UserId;
         break;
       }
       // XXX The password grant type is supported for now for legacy apps.
@@ -175,7 +176,7 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
           throw new GrantError('invalid_grant');
         }
 
-        scope = [requestedScope];
+        scope = requestedScope;
         aud = `app:${app.id}`;
         sub = emailAuth.User.id;
         refreshToken = true;
@@ -204,5 +205,5 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
     throw error;
   }
 
-  ctx.body = createJWTResponse(sub, argv, { aud, refreshToken, scope: scope as string });
+  ctx.body = createJWTResponse(sub, argv, { aud, refreshToken, scope });
 }

@@ -1,6 +1,6 @@
 import { Title } from '@appsemble/react-components';
-import type { ActionType, App } from '@appsemble/types';
-import type { NamedEvent } from '@appsemble/web-utils';
+import { ActionType, App } from '@appsemble/types';
+import { NamedEvent } from '@appsemble/web-utils';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -9,7 +9,7 @@ import { ActionEditorTypeSelect } from './ActionEditorTypeSelect';
 import { messages } from './messages';
 
 interface ActionEditorProps {
-  actions: { [action: string]: ActionType };
+  actions: Record<string, ActionType>;
   app: App;
   onChange: (event: NamedEvent, value?: any) => void;
   value: any;

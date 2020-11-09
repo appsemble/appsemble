@@ -1,4 +1,4 @@
-import type { StringField, StringRequirement } from '../../../block';
+import { StringField, StringRequirement } from '../../../block';
 
 /**
  * Validates a string based on a set of requirements.

@@ -1,19 +1,16 @@
-import type { EventEmitter } from 'events';
+import { EventEmitter } from 'events';
 
 import { Loader, useLocationString } from '@appsemble/react-components';
-import type { BlockDefinition, PageDefinition, Remapper, Security } from '@appsemble/types';
-import { checkAppRole, normalizeBlockName } from '@appsemble/utils';
-import classNames from 'classnames';
+import { BlockDefinition, PageDefinition, Remapper, Security } from '@appsemble/types';
+import { checkAppRole } from '@appsemble/utils';
 import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import type { ShowDialogAction } from '../../types';
-import type { ActionCreators } from '../../utils/actions';
+import { ShowDialogAction } from '../../types';
+import { ActionCreators } from '../../utils/actions';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { Block } from '../Block';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
 
 interface BlockListProps {
   blocks: BlockDefinition[];
@@ -23,9 +20,8 @@ interface BlockListProps {
   flowActions?: {};
   page: PageDefinition;
   prefix: string;
-  remap: (remapper: Remapper, data: any, context: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   showDialog: ShowDialogAction;
-  transitions?: boolean;
 }
 
 function filterBlocks(
@@ -53,9 +49,8 @@ export function BlockList({
   prefix,
   remap,
   showDialog,
-  transitions,
 }: BlockListProps): ReactElement {
-  const { blockManifests, definition, revision } = useAppDefinition();
+  const { definition, revision } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
   const redirect = useLocationString();
 
@@ -98,68 +93,26 @@ export function BlockList({
     return <Redirect to="/" />;
   }
 
-  const list = blockList.map(([block, index]) => {
-    const manifest = blockManifests.find(
-      (m) => m.name === normalizeBlockName(block.type) && m.version === block.version,
-    );
-
-    const key = `${prefix}.${index}-${revision}`;
-
-    const layout = manifest.layout || 'grow';
-
-    const content = (
-      <Block
-        // As long as blocks are in a static list, using the index as a key should be fine.
-        block={block}
-        className={classNames(styles[layout], {
-          'is-hidden': isLoading,
-          [styles.transitionWrapper]: transitions,
-        })}
-        data={data}
-        ee={ee}
-        extraCreators={extraCreators}
-        flowActions={flowActions}
-        key={key}
-        page={page}
-        pageReady={pageReady}
-        prefix={`${prefix}.${index}`}
-        ready={ready}
-        remap={remap}
-        showDialog={showDialog}
-      />
-    );
-
-    if (layout === 'float' || layout === 'hidden') {
-      return content;
-    }
-
-    return transitions ? (
-      <CSSTransition
-        // Since blocks are in a static list, using the index as a key should be fine.
-        classNames={{
-          enter: styles.pageEnter,
-          enterActive: styles.pageEnterActive,
-          exit: styles.pageExit,
-          exitActive: styles.pageExitActive,
-        }}
-        key={key}
-        timeout={300}
-      >
-        {content}
-      </CSSTransition>
-    ) : (
-      content
-    );
-  });
-
   return (
     <>
       {isLoading && <Loader />}
-      {transitions ? (
-        <TransitionGroup className={styles.transitionGroup}>{list}</TransitionGroup>
-      ) : (
-        list
-      )}
+      {blockList.map(([block, index]) => (
+        <Block
+          // As long as blocks are in a static list, using the index as a key should be fine.
+          block={block}
+          data={data}
+          ee={ee}
+          extraCreators={extraCreators}
+          flowActions={flowActions}
+          key={`${prefix}.${index}-${revision}`}
+          page={page}
+          pageReady={pageReady}
+          prefix={`${prefix}.${index}`}
+          ready={ready}
+          remap={remap}
+          showDialog={showDialog}
+        />
+      ))}
     </>
   );
 }

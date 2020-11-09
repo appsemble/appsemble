@@ -1,7 +1,7 @@
 import { ComponentChildren, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Field, FieldError, FieldErrorMap, Values } from '../../../block';
+import { Field, FieldError, FieldErrorMap, Values } from '../../../block';
 import { FormInput } from '../FormInput';
 
 interface FieldGroupProps {

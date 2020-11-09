@@ -3,7 +3,7 @@ import { Loader, Message } from '@appsemble/preact-components';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import type { Item } from '../block';
+import { Item } from '../block';
 import { ListItem } from './components/ListItem';
 
 bootstrap(

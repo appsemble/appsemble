@@ -1,4 +1,4 @@
-import type { AppDefinition } from '@appsemble/types/src';
+import { AppDefinition } from '@appsemble/types';
 
 export function getDefaultPageName(
   isLoggedIn: boolean,

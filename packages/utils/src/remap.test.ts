@@ -1,4 +1,5 @@
-import type { AppMessages, Remapper, UserInfo } from '@appsemble/types';
+import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
+import FakeTimers from '@sinonjs/fake-timers';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 import { remap } from './remap';
@@ -9,10 +10,10 @@ interface TestCase {
   expected: any;
   messages?: AppMessages['messages'];
   userInfo?: UserInfo;
-  context?: { [key: string]: any };
+  context?: Record<string, any>;
 }
 
-function runTests(tests: { [description: string]: TestCase }): void {
+function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
     (_, { context, expected, input, mappers, messages, userInfo }) => {
@@ -86,6 +87,71 @@ describe('context', () => {
   });
 });
 
+describe('date.now', () => {
+  let clock: FakeTimers.InstalledClock;
+
+  beforeEach(() => {
+    clock = FakeTimers.install();
+  });
+
+  afterEach(() => {
+    clock.uninstall();
+  });
+
+  runTests({
+    'return the current date': {
+      input: 'whatever',
+      mappers: { 'date.now': {} },
+      expected: new Date(0),
+    },
+  });
+});
+
+describe('date.add', () => {
+  let clock: FakeTimers.InstalledClock;
+
+  beforeEach(() => {
+    clock = FakeTimers.install();
+  });
+
+  afterEach(() => {
+    clock.uninstall();
+  });
+
+  runTests({
+    'add 3 days to the given date': {
+      input: 'whatever',
+      mappers: [{ 'date.now': {} }, { 'date.add': '3d' }],
+      expected: new Date(3 * 24 * 60 * 60 * 1e3),
+    },
+    'add 3 days to the given date as number': {
+      input: 20e3,
+      mappers: [{ 'date.add': '3d' }],
+      expected: new Date(3 * 24 * 60 * 60 * 1e3 + 20e3),
+    },
+    'subtract 1 day from the given date': {
+      input: 'whatever',
+      mappers: [{ 'date.now': {} }, { 'date.add': '-1d' }],
+      expected: new Date(-(24 * 60 * 60 * 1e3)),
+    },
+    'return input when input is nothing': {
+      input: undefined,
+      mappers: [{ 'date.add': '3d' }],
+      expected: undefined,
+    },
+    'return input when input is not a date': {
+      input: 'whatever',
+      mappers: [{ 'date.add': '3d' }],
+      expected: 'whatever',
+    },
+    'return input date when duration is invalid': {
+      input: new Date(1000),
+      mappers: [{ 'date.add': '3dd' }],
+      expected: new Date(1000),
+    },
+  });
+});
+
 describe('equals', () => {
   runTests({
     'return true if all values are equal': {
@@ -155,6 +221,22 @@ describe('object.from', () => {
       },
 
       expected: { firstName: 'Patrick', lastName: 'Star' },
+    },
+  });
+});
+
+describe('object.assign', () => {
+  runTests({
+    'assign to an object from remappers': {
+      input: { givenName: 'Patrick', familyName: 'Star' },
+      mappers: {
+        'object.assign': {
+          familyName: [{ prop: 'familyName' }, { 'string.case': 'lower' }],
+          species: 'Starfish',
+        },
+      },
+
+      expected: { givenName: 'Patrick', familyName: 'star', species: 'Starfish' },
     },
   });
 });

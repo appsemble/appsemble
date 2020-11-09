@@ -1,4 +1,4 @@
-import type { UserInfo } from '@appsemble/types/src';
+import { UserInfo } from '@appsemble/types';
 
 import { App, AppMessages, Organization } from '../models';
 import { getApp, getRemapperContext } from './app';

@@ -10,7 +10,7 @@ export const messages = defineMessages({
   register: 'Register',
   created: 'Created',
   deleteTitle: 'Delete client credentials',
-  deleteBody: 'Are you sure you want to delete these client credentia;s?',
+  deleteBody: 'Are you sure you want to delete these client credentials?',
   deleteCancel: 'Cancel',
   deleteConfirm: 'Delete',
   description: 'Description',

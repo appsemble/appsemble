@@ -1,5 +1,5 @@
 import { Content, Loader, Message, useLocationString, useQuery } from '@appsemble/react-components';
-import type { AppOAuth2Secret } from '@appsemble/types';
+import { AppOAuth2Secret } from '@appsemble/types';
 import { startOAuth2Login } from '@appsemble/web-utils';
 import axios from 'axios';
 import React, { ReactElement, useEffect, useState } from 'react';

@@ -1,11 +1,11 @@
 import { randomBytes } from 'crypto';
 
-import type { JwtPayload } from '@appsemble/types';
+import { JwtPayload } from '@appsemble/types';
 import { conflict, notAcceptable, notFound } from '@hapi/boom';
 import { verify } from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { createJWTResponse } from '../utils/createJWTResponse';
 
 export async function getUser(ctx: KoaContext): Promise<void> {
@@ -28,12 +28,17 @@ export async function getUser(ctx: KoaContext): Promise<void> {
     id: dbUser.id,
     name: dbUser.name,
     primaryEmail: dbUser.primaryEmail,
-    organizations: dbUser.Organizations.map(({ id, name }) => ({ id, name })),
+    organizations: dbUser.Organizations.map(({ id, name }) => ({
+      id,
+      name,
+      iconUrl: `/api/organizations/${id}/icon`,
+    })),
     emails: dbUser.EmailAuthorizations.map(({ email, verified }) => ({
       email,
       verified,
       primary: dbUser.primaryEmail === email,
     })),
+    locale: dbUser.locale,
   };
 }
 
@@ -54,13 +59,14 @@ export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
     id: org.id,
     name: org.name,
     role: org.Member.role,
+    iconUrl: `/api/organizations/${org.id}/icon`,
   }));
 }
 
 export async function updateUser(ctx: KoaContext): Promise<void> {
   const {
     request: {
-      body: { email, name },
+      body: { email, locale, name },
     },
     user,
   } = ctx;
@@ -88,13 +94,14 @@ export async function updateUser(ctx: KoaContext): Promise<void> {
     }
   }
 
-  await dbUser.update({ name, primaryEmail: email });
+  await dbUser.update({ name, primaryEmail: email, locale });
 
   ctx.body = {
     id: dbUser.id,
     name,
     email,
     email_verified: true,
+    locale: dbUser.locale,
   };
 }
 

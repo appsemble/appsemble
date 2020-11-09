@@ -36,7 +36,7 @@ type SimpleFormFieldProps<C extends ComponentType> = Omit<
   disabled?: boolean;
   name: string;
   onChange?: (event: ChangeEvent<MinimalHTMLElement>, value: any) => void;
-  preprocess?: (newValue: any, oldValues: { [field: string]: any }) => any;
+  preprocess?: (newValue: any, oldValues: Record<string, any>) => any;
   validityMessages?: ValidityMessages;
 };
 

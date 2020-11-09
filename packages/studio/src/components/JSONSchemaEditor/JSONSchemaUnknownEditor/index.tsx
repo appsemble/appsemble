@@ -2,7 +2,7 @@ import { JSONField, MarkdownContent } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
-import type { CommonJSONSchemaEditorProps } from '../types';
+import { CommonJSONSchemaEditorProps } from '../types';
 
 export function JSONSchemaUnknownEditor({
   name,

@@ -5,8 +5,8 @@ import {
   nl as nlReactComponentMessages,
   useLocationString,
 } from '@appsemble/react-components';
-import type { AppMessages } from '@appsemble/types';
-import { IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
+import { AppMessages } from '@appsemble/types';
+import { detectLocale, IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
 import axios from 'axios';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
@@ -24,7 +24,6 @@ import { IntlProvider } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
 import nlAppMessages from '../../../translations/nl.json';
-import { detectLocale } from '../../utils/i18n';
 import { apiUrl, appId, languages } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 
@@ -45,7 +44,7 @@ const formatters = {
   getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
 };
 
-const providedMessages: { [language: string]: { [messageId: string]: string } } = {
+const providedMessages: Record<string, Record<string, string>> = {
   nl: { ...nlReactComponentMessages, ...nlAppMessages },
 };
 

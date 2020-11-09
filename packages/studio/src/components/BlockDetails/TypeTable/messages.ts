@@ -1,7 +1,5 @@
-import { defineMessages } from 'react-intl';
-
-export const messages = defineMessages({
+export const messages = {
   type: 'Type',
   format: 'Format',
   enum: 'Options',
-});
+};

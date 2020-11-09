@@ -1,4 +1,4 @@
-import type { Transporter } from 'nodemailer';
+import { Transporter } from 'nodemailer';
 
 import { Mailer } from './Mailer';
 

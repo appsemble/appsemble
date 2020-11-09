@@ -1,4 +1,4 @@
-import type { Migration } from '../utils/migrate';
+import { Migration } from '../utils/migrate';
 import * as m4 from './0.10.0';
 import * as m5 from './0.11.0';
 import * as m6 from './0.11.3';
@@ -15,6 +15,8 @@ import * as m13 from './0.13.5';
 import * as m14 from './0.13.6';
 import * as m15 from './0.13.9';
 import * as m19 from './0.15.2';
+import * as m20 from './0.15.3';
+import * as m21 from './0.15.4';
 import * as m1 from './0.9.0';
 import * as m2 from './0.9.3';
 import * as m3 from './0.9.4';
@@ -39,4 +41,6 @@ export const migrations: Migration[] = [
   m17,
   m18,
   m19,
+  m20,
+  m21,
 ];

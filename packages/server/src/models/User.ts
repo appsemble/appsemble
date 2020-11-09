@@ -45,9 +45,8 @@ export class User extends Model<User> {
   @Column
   password: string;
 
-  AppMember: AppMember;
-
-  Member: Member;
+  @Column
+  locale: string;
 
   @BelongsToMany(() => Organization, () => Member)
   Organizations: Organization[];
@@ -81,4 +80,8 @@ export class User extends Model<User> {
 
   @DeletedAt
   deleted: Date;
+
+  AppMember: AppMember;
+
+  Member: Member;
 }

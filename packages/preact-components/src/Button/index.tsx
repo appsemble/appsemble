@@ -1,5 +1,5 @@
-import type { BulmaColor } from '@appsemble/sdk';
-import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
+import { BulmaColor } from '@appsemble/sdk';
+import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentProps, Fragment, h, VNode } from 'preact';
 

@@ -1,9 +1,11 @@
 import { useBlock } from '@appsemble/preact';
 import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
+import { useCallback, useMemo } from 'preact/hooks';
 
-import type { DateTimeField, InputProps } from '../../../block';
-import { isRequired } from '../../utils/requirements';
+import { DateTimeField, InputProps } from '../../../block';
+import { extractDate } from '../../utils/extractDate';
+import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
 
 type DateTimeInputProps = InputProps<string, DateTimeField>;
 
@@ -28,16 +30,26 @@ export function DateTimeInput({
 
   const required = isRequired(field);
 
+  const handleOnChange = useCallback(
+    (event: h.JSX.TargetedEvent<HTMLInputElement, Event>, v: string): void => onChange(event, v),
+    [onChange],
+  );
+
+  const maxDate = useMemo(() => extractDate(getMaxDate(field)), [field]);
+  const minDate = useMemo(() => extractDate(getMinDate(field)), [field]);
+
   return (
     <DateTimeComponent
       disabled={disabled}
-      enableTime
+      enableTime={field.type === 'date-time'}
       error={dirty && error && utils.remap(invalidLabel, value)}
       id={name}
       iso
       label={checkboxLabel}
+      maxDate={maxDate}
+      minDate={minDate}
       name={name}
-      onChange={onChange}
+      onChange={handleOnChange}
       optionalLabel={utils.remap(optionalLabel, value)}
       placeholder={utils.remap(placeholder, value)}
       readOnly={readOnly}

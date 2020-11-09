@@ -1,6 +1,6 @@
 import { URL } from 'url';
 
-import type { UserInfo } from '@appsemble/types/src';
+import { UserInfo } from '@appsemble/types';
 import { objectCache, RemapperContext } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
@@ -8,7 +8,7 @@ import { IntlMessageFormat } from 'intl-messageformat';
 import { FindOptions, Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 
 const formatters = {
   getNumberFormat: memoizeIntlConstructor(Intl.NumberFormat),

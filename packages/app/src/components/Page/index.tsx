@@ -1,13 +1,14 @@
 import { EventEmitter } from 'events';
 
 import { Button, Content, Message, useLocationString } from '@appsemble/react-components';
-import type { PageDefinition, Remapper } from '@appsemble/types';
+import { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, normalize, remap } from '@appsemble/utils';
+import classNames from 'classnames';
 import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
-import type { ShowDialogParams } from '../../types';
+import { ShowDialogParams } from '../../types';
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -57,7 +58,7 @@ export function Page(): ReactElement {
   const prefix = index === -1 ? null : `pages.${index}`;
 
   const remapWithContext = useCallback(
-    (mappers: Remapper, input: any, context: { [key: string]: any }) =>
+    (mappers: Remapper, input: any, context: Record<string, any>) =>
       remap(mappers, input, { getMessage, userInfo, context, root: input }),
     [getMessage, userInfo],
   );
@@ -100,7 +101,12 @@ export function Page(): ReactElement {
     }
 
     return (
-      <main className={styles.root} data-path={prefix}>
+      <main
+        className={classNames(styles.root, {
+          [styles.hasBottomNavigation]: definition.navigation === 'bottom',
+        })}
+        data-path={prefix}
+      >
         <TitleBar>{msg.format() as string}</TitleBar>
         {page.type === 'tabs' ? (
           <TabsPage

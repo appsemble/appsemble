@@ -1,11 +1,18 @@
 import { URLSearchParams } from 'url';
 
 import { AppsembleError, basicAuth } from '@appsemble/node-utils';
-import type { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
+import { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { decode } from 'jsonwebtoken';
 
+/**
+ * Check if all required scopes are granted.
+ *
+ * @param grantedScopes - The scopes that have been granted to the client.
+ * @param requiredScopes - The scopes that are required to perform an operation.
+ * @returns If the client is allowed to perform the operation based on the scopes.
+ */
 export function hasScope(grantedScopes: string, requiredScopes: string): boolean {
   const granted = grantedScopes.split(' ');
   const required = requiredScopes.split(' ');
@@ -78,6 +85,7 @@ export async function getUserInfo(
   let profile: string;
   let picture: string;
   let sub: string;
+  let locale: string;
 
   function assign(info: UserInfo): void {
     email = email ?? info.email;
@@ -85,6 +93,7 @@ export async function getUserInfo(
     name = name ?? info.name;
     profile = profile ?? info.profile;
     picture = picture ?? info.picture;
+    locale = locale ?? info.locale;
     // The returned subject may be a number for non OpenID compliant services, e.g. GitHub.
     sub = sub ?? (typeof info.sub === 'number' ? String(info.sub) : info.sub);
   }
@@ -123,5 +132,5 @@ export async function getUserInfo(
     throw new AppsembleError('No subject could be found while logging in using OAuth2');
   }
 
-  return { email, email_verified: Boolean(emailVerified), name, picture, profile, sub };
+  return { email, email_verified: Boolean(emailVerified), name, picture, profile, sub, locale };
 }

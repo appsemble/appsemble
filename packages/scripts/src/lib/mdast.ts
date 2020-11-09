@@ -1,4 +1,4 @@
-import type {
+import {
   BlockContent,
   Heading,
   LinkReference,
@@ -8,6 +8,7 @@ import type {
   Root,
   StaticPhrasingContent,
   Text,
+  // eslint-disable-next-line import/no-extraneous-dependencies
 } from 'mdast';
 import prettier from 'prettier';
 import remark from 'remark';

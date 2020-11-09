@@ -1,5 +1,5 @@
-import type { Remapper } from '@appsemble/sdk';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { Remapper } from '@appsemble/sdk';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 
 /**
  * Properties that are shared between all requirements.
@@ -109,6 +109,21 @@ interface AcceptRequirement extends BaseRequirement {
 }
 
 /**
+ * A requirement used to enforce the range of available dates.
+ */
+interface RangeRequirement extends BaseRequirement {
+  /**
+   * The minimum date that can be picked.
+   */
+  from?: Remapper;
+
+  /**
+   * The maximum date that can be picked.
+   */
+  to?: Remapper;
+}
+
+/**
  * All requirements applicable to string fields.
  */
 export type StringRequirement = RegexRequirement | LengthRequirement | RequiredRequirement;
@@ -126,7 +141,7 @@ export type FileRequirement = AcceptRequirement | RequiredRequirement | LengthRe
 /**
  * All requirements applicable to date-time fields.
  */
-export type DateTimeRequirement = RequiredRequirement;
+export type DateTimeRequirement = RequiredRequirement | RangeRequirement;
 
 /**
  * All requirements applicable to object fields.
@@ -193,7 +208,19 @@ export interface DateTimeField extends AbstractField {
    */
   type: 'date-time';
 
-  requirements?: RequiredRequirement[];
+  requirements?: DateTimeRequirement[];
+}
+
+/**
+ * A date/time picker that results in an exact date and time.
+ */
+export interface DateField extends AbstractField {
+  /**
+   * The type of the field.
+   */
+  type: 'date';
+
+  requirements?: DateTimeRequirement[];
 }
 
 /**
@@ -489,16 +516,17 @@ export type Field =
   | StringField
   | RadioField
   | DateTimeField
+  | DateField
   | ObjectField;
 
-export interface Values {
-  [key: string]: unknown;
-}
+export type Values = Record<string, unknown>;
 
 export type FieldError = boolean | string | FieldErrorMap | FieldError[];
 
+// Not using an interface causes an invalid circular reference.
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface FieldErrorMap {
-  [field: string]: FieldError;
+  [key: string]: FieldError;
 }
 
 export interface InputProps<T, F extends Field> {

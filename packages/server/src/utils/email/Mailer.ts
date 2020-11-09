@@ -1,8 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
-import type { Options } from 'nodemailer/lib/smtp-connection';
+import { Options } from 'nodemailer/lib/smtp-connection';
 
-import type { Argv } from '../../types';
+import { Argv } from '../../types';
 import { readAsset } from '../readAsset';
 import { renderEmail } from './renderEmail';
 
@@ -103,7 +103,7 @@ export class Mailer {
   async sendTemplateEmail(
     to: Recipient,
     templateName: string,
-    values: { [key: string]: string },
+    values: Record<string, string>,
   ): Promise<void> {
     const template = (await readAsset(`email/${templateName}.md`, 'utf-8')) as string;
     const { html, subject, text } = await renderEmail(template, {

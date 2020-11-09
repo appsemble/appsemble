@@ -1,9 +1,9 @@
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 import { discoverBlocks } from '../lib/discoverBlocks';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig';
 import { serverImport } from '../lib/serverImport';
-import type { BaseArguments } from '../types';
+import { BaseArguments } from '../types';
 
 export const command = 'start';
 export const description = 'Start the Appsemble development server.';

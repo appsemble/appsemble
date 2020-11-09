@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, Input, Location } from '@appsemble/preact-components';
-import type { DivIcon, Icon } from 'leaflet';
+import { DivIcon, Icon } from 'leaflet';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 

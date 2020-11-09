@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/filter",
-  "version": "0.15.2",
+  "version": "0.15.6",
   "private": true,
   "description": "A block that allows users to filter data.",
   "homepage": "https://appsemble.app",
@@ -16,11 +16,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.15.2",
-    "@appsemble/preact-components": "0.15.2",
-    "@appsemble/sdk": "0.15.2",
-    "@appsemble/utils": "0.15.2",
+    "@appsemble/preact": "0.15.6",
+    "@appsemble/preact-components": "0.15.6",
+    "@appsemble/sdk": "0.15.6",
+    "@appsemble/utils": "0.15.6",
+    "@fortawesome/fontawesome-common-types": "^0.2.30",
     "classnames": "^2.2.6",
-    "preact": "^10.4.8"
+    "preact": "^10.5.5"
   }
 }

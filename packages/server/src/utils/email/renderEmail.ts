@@ -1,5 +1,6 @@
 import yaml from 'js-yaml';
-import type { InlineCode, Link, Parent } from 'mdast';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { InlineCode, Link, Parent } from 'mdast';
 import rehypeDocument from 'rehype-document';
 import rehypeStringify from 'rehype-stringify';
 import frontmatter, { YamlNode } from 'remark-frontmatter';
@@ -30,7 +31,7 @@ interface Email {
  */
 export async function renderEmail(
   template: string,
-  values: { [key: string]: string },
+  values: Record<string, string>,
   sub?: string,
 ): Promise<Email> {
   let subject = sub;

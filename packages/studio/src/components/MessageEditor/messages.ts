@@ -11,7 +11,7 @@ export const messages = defineMessages({
   add: 'Add',
   addSuccess: 'Successfully added language',
   uploadError: 'Something went wrong when trying to upload messages for this language.',
-  addError: 'Sometihng went wrong when trying to add tihs language.',
+  addError: 'Something went wrong when trying to add this language.',
   deleteTitle: 'Deleting translations for {language}',
   deleteBody:
     'Are you sure you wish to delete the translations for this language? These can not be restored.',

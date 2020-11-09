@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 import { partialNormalized } from '../../../constants';
 
@@ -29,6 +29,11 @@ export const Block: OpenAPIV3.NonArraySchemaObject = {
       $ref: '#/components/schemas/BlockVersion/properties/version',
       description: 'The block version to use.',
     },
+    layout: {
+      type: 'string',
+      description: 'An override of the block’s default.',
+      enum: ['float', 'grow', 'static'],
+    },
     // XXX: Reimplement this and remove additionalProperties once remappers have defined types.
     // anyOf: [
     //   {
@@ -54,6 +59,20 @@ export const Block: OpenAPIV3.NonArraySchemaObject = {
       items: {
         type: 'string',
       },
+    },
+    position: {
+      description: 'For floating blocks this propert defines where the block should float.',
+      default: 'bottom right',
+      enum: [
+        'top left',
+        'top',
+        'top right',
+        'left',
+        'right',
+        'bottom left',
+        'bottom',
+        'bottom right',
+      ],
     },
     parameters: {
       type: 'object',

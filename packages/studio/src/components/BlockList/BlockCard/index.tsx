@@ -1,7 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import React, { ReactElement } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import styles from './index.css';
@@ -24,7 +23,6 @@ interface BlockCardProps {
  */
 export function BlockCard({ block, className }: BlockCardProps): ReactElement {
   const { url } = useRouteMatch();
-  const { formatMessage } = useIntl();
   const [org, ...name] = block.name.split('/');
 
   return (
@@ -35,7 +33,7 @@ export function BlockCard({ block, className }: BlockCardProps): ReactElement {
             <figure className="media-left">
               <p className="image is-64x64">
                 <img
-                  alt={formatMessage(messages.blockLogo, { name: `@${org}${name}` })}
+                  alt={`@${org}${name} ${messages.blockLogo}`}
                   src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
                 />
               </p>
@@ -54,15 +52,13 @@ export function BlockCard({ block, className }: BlockCardProps): ReactElement {
         <div className="card-content">
           <div className="content mb-3">
             {block.description ?? (
-              <span className="has-text-grey-light">
-                <FormattedMessage {...messages.noDescription} />
-              </span>
+              <span className="has-text-grey-light">{messages.noDescription}</span>
             )}
           </div>
         </div>
         <footer className="card-footer">
           <Link className="card-footer-item" to={`${url}/${block.name}`}>
-            <FormattedMessage {...messages.buttonDetails} />
+            {messages.buttonDetails}
           </Link>
         </footer>
       </div>

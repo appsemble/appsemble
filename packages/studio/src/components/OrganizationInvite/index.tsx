@@ -14,9 +14,9 @@ import {
 import axios, { AxiosError } from 'axios';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
-import type { Organization } from '../../types';
+import { Organization } from '../../types';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
@@ -27,6 +27,7 @@ export function OrganizationInvite(): ReactElement {
   const qs = useQuery();
   const { logout, organizations, setOrganizations, userInfo } = useUser();
   const redirect = useLocationString();
+  const { lang } = useParams<{ lang: string }>();
 
   const [success, setSuccess] = useState(false);
   const { data: organization, error, loading } = useData<Organization>(
@@ -72,7 +73,6 @@ export function OrganizationInvite(): ReactElement {
   );
 
   const onAcceptClick = useCallback(() => sendResponse(true), [sendResponse]);
-
   const onDeclineClick = useCallback(() => sendResponse(false), [sendResponse]);
 
   if (loading) {
@@ -87,7 +87,7 @@ export function OrganizationInvite(): ReactElement {
           <FormattedMessage
             {...messages.noInvite}
             values={{
-              link: (text: string) => <Link to="/apps">{text}</Link>,
+              link: (text: string) => <Link to={`/${lang}/apps`}>{text}</Link>,
             }}
           />
         </p>
@@ -117,7 +117,10 @@ export function OrganizationInvite(): ReactElement {
         <p>
           <FormattedMessage {...messages.loginPrompt} />
         </p>
-        <Link className="button is-primary my-3" to={{ pathname: '/login', search: `?${search}` }}>
+        <Link
+          className="button is-primary my-3"
+          to={{ pathname: `${lang}/login`, search: `?${search}` }}
+        >
           <Icon icon="sign-in-alt" />
           <span>
             <FormattedMessage {...messages.login} />
@@ -136,9 +139,9 @@ export function OrganizationInvite(): ReactElement {
               {...messages.successJoined}
               values={{
                 organization: <strong>{organization.name || organization.id}</strong>,
-                makeApps: (link: string) => <Link to="/apps">{link}</Link>,
+                makeApps: (link: string) => <Link to={`/${lang}/apps`}>{link}</Link>,
                 viewOrganization: (link: string) => (
-                  <Link to="/settings/organizations">{link}</Link>
+                  <Link to={`${lang}/settings/organizations`}>{link}</Link>
                 ),
               }}
             />
@@ -148,7 +151,7 @@ export function OrganizationInvite(): ReactElement {
             <FormattedMessage
               {...messages.successDeclined}
               values={{
-                makeApps: (link: string) => <Link to="/apps">{link}</Link>,
+                makeApps: (link: string) => <Link to={`/${lang}/apps`}>{link}</Link>,
               }}
             />
           </Message>

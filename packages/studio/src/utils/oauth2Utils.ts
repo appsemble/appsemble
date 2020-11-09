@@ -1,6 +1,6 @@
 import { getOneSearchParam } from '@appsemble/web-utils';
 
-export function oauth2Redirect(qs: URLSearchParams, params: { [key: string]: string }): void {
+export function oauth2Redirect(qs: URLSearchParams, params: Record<string, string>): void {
   const redirectUri = new URL(getOneSearchParam(qs, 'redirect_uri'));
   const state = getOneSearchParam(qs, 'state');
 

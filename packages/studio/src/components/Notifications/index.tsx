@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import { HelmetIntl } from '../HelmetIntl';
@@ -18,6 +18,7 @@ import { messages } from './messages';
 
 export function Notifications(): ReactElement {
   const { app } = useApp();
+  const { lang } = useParams<{ lang: string }>();
 
   const { formatMessage } = useIntl();
   const push = useMessages();
@@ -49,16 +50,14 @@ export function Notifications(): ReactElement {
             <FormattedMessage
               {...messages.enableInstructions}
               values={{
-                appDefinition: (
-                  <Link to={`/apps/${app.id}/edit#editor`}>
-                    <FormattedMessage {...messages.appDefinition} />
-                  </Link>
+                link: (link: string) => (
+                  <Link to={`/${lang}/apps/${app.id}/edit#editor`}>{link}</Link>
                 ),
                 navigation: (
                   <Link
                     rel="noopener noreferrer"
                     target="_blank"
-                    to="/docs/reference/app#notification"
+                    to={`/${lang}/docs/reference/app#notification`}
                   >
                     <code>notifications</code>
                   </Link>

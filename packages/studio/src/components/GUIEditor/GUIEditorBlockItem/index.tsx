@@ -1,5 +1,5 @@
 import { Icon, useValuePicker } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import React, { ReactElement, useCallback } from 'react';

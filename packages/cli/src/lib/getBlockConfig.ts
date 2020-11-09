@@ -7,7 +7,7 @@ import { cyan, green, underline } from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
 import { readJSON } from 'fs-extra';
 
-import type { BlockConfig } from '../types';
+import { BlockConfig } from '../types';
 
 /**
  * Get the block configuration from a block directory.

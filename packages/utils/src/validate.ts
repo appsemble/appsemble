@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import ZSchema from 'z-schema';
 
 const validator = new ZSchema({
@@ -8,12 +8,12 @@ const validator = new ZSchema({
 });
 
 export class SchemaValidationError extends Error {
+  data: Record<string, unknown>;
+
   constructor(message: string) {
     super(message);
     this.name = 'SchemaValidationError';
   }
-
-  data: { [key: string]: unknown };
 }
 
 export function validate(schema: OpenAPIV3.SchemaObject, data: unknown): Promise<void> {
@@ -24,7 +24,7 @@ export function validate(schema: OpenAPIV3.SchemaObject, data: unknown): Promise
         return;
       }
       const err = new SchemaValidationError('Schema Validation Failed');
-      err.data = errors.reduce((acc: { [key: string]: any }, error: any) => {
+      err.data = errors.reduce((acc: Record<string, any>, error: any) => {
         const path = error.path.join('.');
 
         switch (error.code) {

@@ -1,5 +1,5 @@
-import type { BulmaColor, BulmaSize, Remapper } from '@appsemble/sdk';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { BulmaColor, BulmaSize, Remapper } from '@appsemble/sdk';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 
 export interface Button {
   /**

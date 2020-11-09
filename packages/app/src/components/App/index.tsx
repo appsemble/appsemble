@@ -4,8 +4,8 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 import { AppDefinitionProvider } from '../AppDefinitionProvider';
 import { AppMessagesProvider } from '../AppMessagesProvider';
+import { AppRoutes } from '../AppRoutes';
 import { ErrorFallback } from '../ErrorFallback';
-import { Main } from '../Main';
 import { MenuProvider } from '../MenuProvider';
 import { Navigation } from '../Navigation';
 import { PermissionRequest } from '../PermissionRequest';
@@ -35,7 +35,7 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElemen
                   <UserProvider>
                     <MenuProvider>
                       <PermissionRequest />
-                      <Main />
+                      <AppRoutes />
                       <Navigation />
                     </MenuProvider>
                   </UserProvider>

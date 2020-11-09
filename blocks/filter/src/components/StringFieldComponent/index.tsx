@@ -1,7 +1,7 @@
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import type { FieldComponentProps, StringField } from '../../../block';
+import { FieldComponentProps, StringField } from '../../../block';
 
 export function StringFieldComponent({
   className,

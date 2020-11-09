@@ -20,9 +20,7 @@ const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   minute: '2-digit',
 });
 
-interface Filters {
-  [key: string]: (context: RemapperContext, parameter?: string) => MapperFunction;
-}
+type Filters = Record<string, (context: RemapperContext, parameter?: string) => MapperFunction>;
 
 const filters: Filters = {
   // eslint-disable-next-line unicorn/consistent-function-scoping

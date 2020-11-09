@@ -1,7 +1,6 @@
 import { Icon, Table } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import React, { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages';
 
@@ -20,21 +19,15 @@ export function ActionTable({ manifest }: ActionTableProps): ReactElement {
     <Table>
       <thead>
         <tr>
-          <th>
-            <FormattedMessage {...messages.name} />
-          </th>
-          <th>
-            <FormattedMessage {...messages.required} />
-          </th>
-          <th>
-            <FormattedMessage {...messages.description} />
-          </th>
+          <th>{messages.name}</th>
+          <th>{messages.required}</th>
+          <th>{messages.description}</th>
         </tr>
       </thead>
       <tbody>
         {Object.entries(manifest.actions).map(([key, value]) => (
           <tr key={key}>
-            <td>{key === '$any' ? <FormattedMessage {...messages.anyAction} /> : key}</td>
+            <td>{key === '$any' ? messages.anyAction : key}</td>
             <td>{value.required && <Icon className="has-text-success" icon="check" />}</td>
             <td>{value.description}</td>
           </tr>

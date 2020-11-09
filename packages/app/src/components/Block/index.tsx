@@ -1,15 +1,15 @@
-import type { EventEmitter } from 'events';
+import { EventEmitter } from 'events';
 
-import { useMessages } from '@appsemble/react-components';
-import type { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
+import { Title, useMessages } from '@appsemble/react-components';
+import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 
-import type { ShowDialogAction } from '../../types';
-import type { ActionCreators } from '../../utils/actions';
+import { ShowDialogAction } from '../../types';
+import { ActionCreators } from '../../utils/actions';
 import { callBootstrap } from '../../utils/bootstrapper';
 import { injectCSS } from '../../utils/injectCSS';
 import { makeActions } from '../../utils/makeActions';
@@ -25,7 +25,6 @@ const FA_URL = [...document.styleSheets]
 
 interface BlockProps {
   data?: any;
-  className?: string;
   ee: EventEmitter;
 
   /**
@@ -46,7 +45,7 @@ interface BlockProps {
 
   showDialog: ShowDialogAction;
   ready: (block: BlockDefinition) => void;
-  remap: (remapper: Remapper, data: any, context?: { [key: string]: any }) => any;
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   pageReady: Promise<void>;
   prefix: string;
 }
@@ -59,7 +58,6 @@ interface BlockProps {
  */
 export function Block({
   block,
-  className,
   data,
   ee,
   extraCreators,
@@ -234,30 +232,47 @@ export function Block({
     showDialog,
   ]);
 
+  const { layout = manifest.layout } = block;
+
+  if (layout === 'hidden') {
+    return null;
+  }
+
   const header = block.header ? (
-    <h6 className={classNames('title is-6', styles.title)}>
+    <Title className={styles.title} level={6}>
       {remap(block.header, { ...data, ...params })}
-    </h6>
+    </Title>
   ) : null;
 
-  switch (manifest.layout) {
-    case 'float':
-      return createPortal(
-        <div className={className} data-block={blockName} data-path={prefix} ref={ref} />,
-        document.body,
-      );
-    case 'hidden':
-      return null;
-    default:
-      return (
-        <div
-          className={`${className} ${styles.blockRoot}`}
-          data-block={blockName}
-          data-path={prefix}
-        >
-          {header}
-          <div ref={ref} />
-        </div>
-      );
+  if (layout === 'float') {
+    const { position = 'bottom right' } = block;
+    return createPortal(
+      <div
+        className={classNames(`is-flex ${styles.root} ${styles.float}`, {
+          [styles.top]: position.includes('top'),
+          [styles.bottom]: position.includes('bottom'),
+          [styles.left]: position.includes('left'),
+          [styles.right]: position.includes('right'),
+          [styles.hasBottomNav]: definition.navigation === 'bottom',
+        })}
+        data-block={blockName}
+        data-path={prefix}
+      >
+        {header}
+        <div className={styles.host} ref={ref} />
+      </div>,
+      document.body,
+    );
   }
+
+  return (
+    <div
+      className={`is-flex ${styles.root} ${layout === 'static' ? styles.static : styles.grow}`}
+      data-block={blockName}
+      data-path={prefix}
+    >
+      {header}
+      <div className={styles.host} ref={ref} />
+    </div>
+  );
 }

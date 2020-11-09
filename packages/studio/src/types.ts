@@ -1,5 +1,5 @@
-import type { OAuth2Provider, UserInfo } from '@appsemble/types';
-import type { OAuth2State } from '@appsemble/web-utils';
+import { OAuth2Provider, UserInfo } from '@appsemble/types';
+import { OAuth2State } from '@appsemble/web-utils';
 
 /**
  * A user email registration.
@@ -38,6 +38,7 @@ export interface Organization {
   id: string;
   name: string;
   role: Role;
+  iconUrl: string;
 }
 
 /**

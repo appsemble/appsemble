@@ -1,5 +1,5 @@
 import { commandDirOptions } from '@appsemble/node-utils';
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 
 export const command = 'config';
 export const description = 'Commands related to local configurations.';

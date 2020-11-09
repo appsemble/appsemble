@@ -1,4 +1,4 @@
-import type { Range } from 'monaco-editor';
+import { Range } from 'monaco-editor';
 
 export interface EditLocation {
   /**

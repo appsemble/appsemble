@@ -3,14 +3,14 @@ import https from 'https';
 
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
-import * as Sentry from '@sentry/node';
+import { captureException, init, withScope } from '@sentry/node';
 import Koa from 'koa';
-import type { Configuration } from 'webpack';
-import type { Argv } from 'yargs';
+import { Configuration } from 'webpack';
+import { Argv } from 'yargs';
 
 import { migrations } from '../migrations';
 import { initDB } from '../models';
-import type { Argv as Args } from '../types';
+import { Argv as Args } from '../types';
 import { createServer } from '../utils/createServer';
 import { configureDNS } from '../utils/dns';
 import { migrate } from '../utils/migrate';
@@ -142,7 +142,7 @@ export async function handler(
   await configureDNS(argv);
 
   if (argv.sentryDsn) {
-    Sentry.init({ dsn: argv.sentryDsn });
+    init({ dsn: argv.sentryDsn });
   }
 
   const app = await createServer({ argv, webpackConfigs });
@@ -153,13 +153,13 @@ export async function handler(
       return;
     }
     logger.error(err);
-    Sentry.withScope((scope) => {
+    withScope((scope) => {
       scope.setTag('ip', ctx.ip);
       scope.setTag('level', 'error');
       scope.setTag('method', ctx.method);
       scope.setTag('url', String(ctx.URL));
       scope.setTag('User-Agent', ctx.headers['user-agent']);
-      Sentry.captureException(err);
+      captureException(err);
     });
   });
 

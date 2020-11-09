@@ -1,7 +1,7 @@
 import { configureAxios, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
-import type { BaseArguments } from '../types';
+import { BaseArguments } from '../types';
 import { readPackageJson } from './readPackageJson';
 
 /**

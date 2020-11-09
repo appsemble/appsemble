@@ -3,7 +3,7 @@ import { Button, FormButtons } from '@appsemble/preact-components';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { FieldError, FieldErrorMap, InputProps, ObjectField, Values } from '../../../block';
+import { FieldError, FieldErrorMap, InputProps, ObjectField, Values } from '../../../block';
 import { generateDefaultValidity } from '../../utils/generateDefaultValidity';
 import { generateDefaultValues } from '../../utils/generateDefaultValues';
 import { getMaxLength, getMinLength } from '../../utils/requirements';

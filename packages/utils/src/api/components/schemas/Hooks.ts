@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 export const Hooks: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

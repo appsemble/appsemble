@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { Select } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import type { EnumField, FieldComponentProps } from '../../../block';
+import { EnumField, FieldComponentProps } from '../../../block';
 
 export function EnumFieldComponent({
   className,

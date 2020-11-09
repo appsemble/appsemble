@@ -1,9 +1,4 @@
-import type {
-  ActionDefinition,
-  AppDefinition,
-  BlockDefinition,
-  PageDefinition,
-} from '@appsemble/types';
+import { ActionDefinition, AppDefinition, BlockDefinition, PageDefinition } from '@appsemble/types';
 
 import { iterAction, iterApp, iterBlock, iterBlockList, iterPage } from './iterApp';
 

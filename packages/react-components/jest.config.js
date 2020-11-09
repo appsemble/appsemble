@@ -8,7 +8,6 @@ module.exports = {
   },
   moduleNameMapper: {
     [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src',
-    '@creativebulma/bulma-tagsinput$': '@creativebulma/bulma-tagsinput/dist/js/bulma-tagsinput.js',
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   preset: 'ts-jest',

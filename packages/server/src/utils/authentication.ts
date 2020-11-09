@@ -1,11 +1,11 @@
-import type { JwtPayload } from '@appsemble/types';
+import { JwtPayload } from '@appsemble/types';
 import { compare } from 'bcrypt';
 import { verify } from 'jsonwebtoken';
-import type { GetApiKeyUser, GetHttpUser, GetOAuth2User } from 'koas-security';
+import { GetApiKeyUser, GetHttpUser, GetOAuth2User } from 'koas-security';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models';
-import type { Argv } from '../types';
+import { Argv } from '../types';
 
 interface LoggedInUser {
   id: string | number;

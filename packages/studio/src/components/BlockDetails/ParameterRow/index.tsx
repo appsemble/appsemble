@@ -1,8 +1,8 @@
 import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 import React, { Fragment, ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import type { Definition } from 'typescript-json-schema';
+import { Definition } from 'typescript-json-schema';
 
 interface ParameterRowProps {
   /**
@@ -35,7 +35,10 @@ interface ParameterRowProps {
  * array.
  */
 export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps): ReactElement {
-  const { url } = useRouteMatch();
+  const {
+    params: { lang },
+    url,
+  } = useRouteMatch<{ lang: string }>();
 
   if (value.type === 'array' && recurse) {
     return (
@@ -123,7 +126,7 @@ export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps
       </td>
       <td>
         {value.format === 'remapper' ? (
-          <Link rel="noopener noreferrer" target="_blank" to="/docs/guide/remappers">
+          <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/guide/remappers`}>
             Remapper
           </Link>
         ) : (

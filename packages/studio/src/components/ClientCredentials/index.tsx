@@ -23,7 +23,7 @@ import axios from 'axios';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
-import type { OAuth2ClientCredentials } from '../../types';
+import { OAuth2ClientCredentials } from '../../types';
 import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
 import { messages } from './messages';

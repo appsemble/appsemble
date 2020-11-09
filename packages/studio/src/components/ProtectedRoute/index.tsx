@@ -1,9 +1,9 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
-import type { Permission } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { Redirect, Route, RouteProps, useRouteMatch } from 'react-router-dom';
 
-import type { Organization } from '../../types';
+import { Organization } from '../../types';
 import { checkRole } from '../../utils/checkRole';
 import { useUser } from '../UserProvider';
 
@@ -20,12 +20,15 @@ export function ProtectedRoute({
   const redirect = useLocationString();
   const { userInfo } = useUser();
   const qs = useQuery();
-  const { url } = useRouteMatch();
+  const {
+    params: { lang },
+    url,
+  } = useRouteMatch<{ lang: string }>();
 
   if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', redirect);
-    return <Redirect to={{ pathname: '/login', search: `?${search}` }} />;
+    return <Redirect to={{ pathname: `/${lang}/login`, search: `?${search}` }} />;
   }
 
   if (permission) {

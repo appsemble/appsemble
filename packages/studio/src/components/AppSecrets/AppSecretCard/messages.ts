@@ -4,7 +4,7 @@ export const messages = defineMessages({
   nameLabel: 'Name',
   nameHelp: 'The name that will be displayed on the login button',
   iconLabel: 'Icon',
-  iconHelp: 'The Fontawesome icon that will be displayed on the login button',
+  iconHelp: 'The FontAwesome icon that will be displayed on the login button',
   redirectUrlLabel: 'Redirect URL',
   redirectUrlHelp: 'Copy this into the callback URI field of the provider',
   redirectUrlCopySuccess: 'Redirect URL copied to clipboard',
@@ -23,6 +23,6 @@ export const messages = defineMessages({
   userInfoUrlHelp: 'The URL from which Appsemble should fetch user information',
   remapperLabel: 'User info remapper',
   remapperHelp: 'A remapper that is applied on the user info object',
-  badUrl: 'This mustbe a valid URL',
+  badUrl: 'This must be a valid URL',
   save: 'Save secret',
 });

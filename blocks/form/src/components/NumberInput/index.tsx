@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { InputField } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import type { InputProps, NumberField } from '../../../block';
+import { InputProps, NumberField } from '../../../block';
 import { getMax, getMin, getStep, isRequired } from '../../utils/requirements';
 
 type NumberInputProps = InputProps<number, NumberField>;

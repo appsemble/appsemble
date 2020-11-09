@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
-import type { FileField, RendererProps } from '../../../block';
+import { FileField, RendererProps } from '../../../block';
 import { ImageField } from '../ImageField';
 import styles from './index.css';
 

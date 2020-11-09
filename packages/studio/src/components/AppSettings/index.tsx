@@ -13,12 +13,12 @@ import {
   useMessages,
   useObjectURL,
 } from '@appsemble/react-components';
-import type { App } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import { domainPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import styles from './index.css';
@@ -44,6 +44,7 @@ export function AppSettings(): ReactElement {
   const push = useMessages();
   const iconUrl = useObjectURL(icon || app.iconUrl);
   const history = useHistory();
+  const { lang } = useParams<{ lang: string }>();
 
   // This is needed, because the app domain may be null.
   const defaultValues = useMemo(() => ({ ...app, domain: app.domain ?? '' }), [app]);
@@ -133,9 +134,9 @@ export function AppSettings(): ReactElement {
               <FormattedMessage
                 {...messages.domainDescription}
                 values={{
-                  documentation: (
-                    <Link rel="noopener noreferrer" target="_blank" to="/docs/dns">
-                      <FormattedMessage {...messages.documentation} />
+                  link: (link: string) => (
+                    <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/dns`}>
+                      {link}
                     </Link>
                   ),
                 }}

@@ -7,7 +7,7 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import type { Promisable } from 'type-fest';
+import { Promisable } from 'type-fest';
 
 import { Form } from '..';
 
@@ -20,13 +20,9 @@ interface SimpleFormProps<T>
   resetOnSuccess?: boolean;
 }
 
-interface FormErrors {
-  [field: string]: ReactNode;
-}
+type FormErrors = Record<string, ReactNode>;
 
-interface FormValues {
-  [field: string]: any;
-}
+type FormValues = Record<string, any>;
 
 interface SimpleFormContext {
   formErrors: FormErrors;

@@ -1,6 +1,6 @@
-import type { Utils } from '@appsemble/sdk';
+import { Utils } from '@appsemble/sdk';
 
-import type { Field, FieldErrorMap } from '../../block';
+import { Field, FieldErrorMap } from '../../block';
 import { validate } from './validators';
 
 export function generateDefaultValidity(fields: Field[], data: any, utils: Utils): FieldErrorMap {

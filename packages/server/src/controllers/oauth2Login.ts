@@ -1,14 +1,14 @@
 import { randomBytes } from 'crypto';
+import { URL } from 'url';
 
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { createJWTResponse } from '../utils/createJWTResponse';
-import type { Recipient } from '../utils/email/Mailer';
+import { Recipient } from '../utils/email/Mailer';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
 import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
-import { trimUrl } from '../utils/trimUrl';
 
 export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   const {
@@ -18,8 +18,14 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
       headers,
     },
   } = ctx;
-  const referer = trimUrl(headers.referer);
-  if (!referer) {
+  // XXX Replace this with an imported language array when supporting more languages
+  let referer: URL;
+  try {
+    referer = new URL(headers.referer);
+  } catch {
+    throw badRequest('The referer header is invalid');
+  }
+  if (referer.origin !== new URL(argv.host).origin) {
     throw badRequest('The referer header is invalid');
   }
 
@@ -47,7 +53,13 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
     access_token: accessToken,
     id_token: idToken,
     refresh_token: refreshToken,
-  } = await getAccessToken(preset.tokenUrl, code, referer, clientId, clientSecret);
+  } = await getAccessToken(
+    preset.tokenUrl,
+    code,
+    String(new URL('/callback', argv.host)),
+    clientId,
+    clientSecret,
+  );
 
   const { sub, ...userInfo } = await getUserInfo(
     accessToken,
@@ -67,17 +79,15 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   } else {
     // Otherwise, register an authorization object and ask the user if this is the account they want
     // to use.
-    if (authorization) {
-      await authorization.update({ accessToken, code, refreshToken });
-    } else {
-      await OAuthAuthorization.create({
-        accessToken,
-        authorizationUrl: preset.authorizationUrl,
-        code,
-        refreshToken,
-        sub,
-      });
-    }
+    await (authorization
+      ? authorization.update({ accessToken, code, refreshToken })
+      : OAuthAuthorization.create({
+          accessToken,
+          authorizationUrl: preset.authorizationUrl,
+          code,
+          refreshToken,
+          sub,
+        }));
     ctx.body = userInfo;
   }
 }

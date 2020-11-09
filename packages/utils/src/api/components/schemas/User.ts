@@ -1,4 +1,4 @@
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 export const User: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -17,6 +17,10 @@ export const User: OpenAPIV3.NonArraySchemaObject = {
     email: {
       type: 'string',
       description: 'The primary email used for communication.',
+    },
+    locale: {
+      type: 'string',
+      description: 'The locale of the user.',
     },
   },
 };

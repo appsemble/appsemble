@@ -1,6 +1,6 @@
 import { h, VNode } from 'preact';
 
-import type { Field as FieldType, RendererProps } from '../../../block';
+import { Field as FieldType, RendererProps } from '../../../block';
 import { FileRenderer } from '../FileRenderer';
 import { GeoCoordinatesRenderer } from '../GeoCoordinatesRenderer';
 import { StringRenderer } from '../StringRenderer';

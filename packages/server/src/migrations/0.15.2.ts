@@ -4,17 +4,19 @@ import { DataTypes, Sequelize } from 'sequelize';
 export const key = '0.15.2';
 
 /**
- * Symmary:
+ * Summary:
  * - Add the `OAuth2Consent` table.
  *
  * @param db - The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
   logger.info('Adding table OAuth2Consent');
   await queryInterface.createTable('OAuth2Consent', {
     AppId: {
       type: DataTypes.INTEGER,
+      primaryKey: true,
       onDelete: 'cascade',
       onUpdate: 'cascade',
       allowNull: false,
@@ -22,6 +24,7 @@ export async function up(db: Sequelize): Promise<void> {
     },
     UserId: {
       type: DataTypes.UUID,
+      primaryKey: true,
       onDelete: 'cascade',
       onUpdate: 'cascade',
       allowNull: false,
@@ -34,13 +37,14 @@ export async function up(db: Sequelize): Promise<void> {
 }
 
 /**
- * Symmary:
+ * Summary:
  * - Drop the `OAuth2Consent` table.
  *
  * @param db - The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
   logger.info('Removing table OAuth2Consent');
   await queryInterface.dropTable('OAuth2Consent');
 }

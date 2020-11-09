@@ -1,6 +1,6 @@
 import { defaultParser, Token, TokenType } from '@odata/parser';
 import { col, fn, json, Model, Op, Order, where, WhereOptions, WhereValue } from 'sequelize';
-import type { Col, Fn, Json, Where } from 'sequelize/types/lib/utils';
+import { Col, Fn, Json, Where } from 'sequelize/types/lib/utils';
 
 type PartialModel = Pick<typeof Model, 'tableName'>;
 
@@ -55,7 +55,7 @@ function fnFunction(name: string): (...args: any[]) => Fn {
   return (...args) => fn(name, ...args);
 }
 
-const functions: { [key: string]: MethodConverter } = {
+const functions: Record<string, MethodConverter> = {
   // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_concat
   contains: [[Edm.String, Edm.String], whereFunction(Op.substring)],
 
@@ -239,7 +239,6 @@ export function odataFilterToSequelize(
   if (!query) {
     return {};
   }
-  // eslint-disable-next-line unicorn/no-fn-reference-in-iterator
   const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
   return processLogicalExpression(ast, model, rename);
 }

@@ -1,9 +1,9 @@
 import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { GUIEditorToolboxBlock } from '../GUIEditorToolboxBlock';
 import styles from './index.css';
@@ -19,6 +19,7 @@ export function GUIEditorToolbox({
   setSelectedBlock,
 }: GUIEditorToolboxProps): ReactElement {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
+  const { lang } = useParams<{ lang: string }>();
 
   const onChange = useCallback(
     (_event: ChangeEvent, block: BlockManifest): void => {
@@ -60,7 +61,11 @@ export function GUIEditorToolbox({
               {selectedBlock.description}
             </div>
             <div className="media-right">
-              <Link rel="noopener noreferrer" target="_blank" to={`/blocks/${selectedBlock.name}`}>
+              <Link
+                rel="noopener noreferrer"
+                target="_blank"
+                to={`${lang}/blocks/${selectedBlock.name}`}
+              >
                 <FormattedMessage {...messages.moreInfo} />
               </Link>
             </div>

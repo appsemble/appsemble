@@ -4,7 +4,7 @@ import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
-import type { KoaContext } from '../types';
+import { KoaContext } from '../types';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 import { hasScope } from '../utils/oauth2';
 
@@ -38,7 +38,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
   } = ctx;
 
   const user = await User.findOne({
-    attributes: ['primaryEmail', 'name'],
+    attributes: ['primaryEmail', 'name', 'locale'],
     include: [
       {
         required: false,
@@ -69,6 +69,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
     name: user.name,
     picture,
     sub: id,
+    locale: user.locale,
   };
 }
 
@@ -109,7 +110,10 @@ export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void
     });
   }
 
-  ctx.body = await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user);
+  ctx.body = {
+    ...(await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user)),
+    isAllowed: true,
+  };
 }
 
 export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {

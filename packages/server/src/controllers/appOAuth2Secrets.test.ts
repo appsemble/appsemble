@@ -212,11 +212,35 @@ describe('verifyAppOAuth2SecretCode', () => {
     });
   });
 
-  it('should throw 404 if no app is found', async () => {
+  it('should throw 400 if the referer is missing', async () => {
     const response = await request.post(
       `/api/apps/9999/secrets/oauth2/${secret.id}/verify`,
       { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
       { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: { error: 'Bad Request', message: 'The referer header is invalid', statusCode: 400 },
+    });
+  });
+
+  it('should throw 400 if the referer is invalid', async () => {
+    const response = await request.post(
+      `/api/apps/9999/secrets/oauth2/${secret.id}/verify`,
+      { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
+      { headers: { authorization, referer: 'http://invalid.example' } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: { error: 'Bad Request', message: 'The referer header is invalid', statusCode: 400 },
+    });
+  });
+
+  it('should throw 404 if no app is found', async () => {
+    const response = await request.post(
+      `/api/apps/9999/secrets/oauth2/${secret.id}/verify`,
+      { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
+      { headers: { authorization, referer: 'http://localhost' } },
     );
     expect(response).toMatchObject({
       status: 404,
@@ -228,7 +252,7 @@ describe('verifyAppOAuth2SecretCode', () => {
     const response = await request.post(
       `/api/apps/${app.id}/secrets/oauth2/9999/verify`,
       { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
-      { headers: { authorization } },
+      { headers: { authorization, referer: 'http://localhost' } },
     );
     expect(response).toMatchObject({
       status: 404,
@@ -262,7 +286,7 @@ describe('verifyAppOAuth2SecretCode', () => {
         redirectUri: 'http://app.appsemble.localhost',
         scope: 'resources:manage',
       },
-      { headers: { authorization } },
+      { headers: { authorization, referer: 'http://localhost' } },
     );
     expect(response).toMatchObject({
       status: 200,

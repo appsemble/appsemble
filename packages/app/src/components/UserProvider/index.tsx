@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import type { AppMember, UserInfo } from '@appsemble/types';
+import { AppMember, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import React, {
@@ -12,6 +12,7 @@ import React, {
   useState,
 } from 'react';
 
+import { oauth2Scope } from '../../utils/constants';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 
@@ -100,7 +101,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
    * @param grantType - The grant type to authenticate with
    * @param params - Additional parameters, which depend on the grant type.
    */
-  const fetchToken = useCallback(async (grantType: string, params: { [key: string]: string }) => {
+  const fetchToken = useCallback(async (grantType: string, params: Record<string, string>) => {
     const {
       data: { access_token: accessToken, refresh_token: rt },
     } = await axios.post<TokenResponse>(
@@ -108,7 +109,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       new URLSearchParams({
         client_id: `app:${appId}`,
         grant_type: grantType,
-        scope: 'openid',
+        scope: oauth2Scope,
         ...params,
       }),
     );

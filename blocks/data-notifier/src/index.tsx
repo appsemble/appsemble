@@ -4,9 +4,7 @@ import { h } from 'mini-jsx';
 
 import styles from './index.css';
 
-interface Item {
-  [key: string]: unknown;
-}
+type Item = Record<string, unknown>;
 
 type Data = Item | Item[];
 
@@ -24,17 +22,20 @@ attach(
   }) => {
     let oldData: Data;
     let pendingData: Data;
+    let message: HTMLElement;
     let messageText: HTMLElement;
     let messageBody: HTMLElement;
 
-    const setPending = (newData: Data, message: Remapper, count: number): void => {
+    const setPending = (newData: Data, msg: Remapper, count: number): void => {
       pendingData = newData;
-      messageText.textContent = utils.remap(message, { count });
+      messageText.textContent = utils.remap(msg, { count });
       messageBody.classList.remove(styles.hidden, 'py-0');
+      message.classList.add('my-3');
     };
 
     const onClick = (): void => {
       messageBody.classList.add(styles.hidden, 'py-0');
+      message.classList.remove('my-3');
       oldData = pendingData;
       events.emit.data(pendingData);
     };
@@ -82,7 +83,12 @@ attach(
     });
 
     return (
-      <div className={`message mx-3 my-3 is-${color}`}>
+      <div
+        className={`message mx-3 is-${color} ${styles.message}`}
+        ref={(node) => {
+          message = node;
+        }}
+      >
         <div
           className={`message-body is-clipped is-flex py-0 ${styles.messageBody} ${styles.hidden}`}
           ref={(node) => {

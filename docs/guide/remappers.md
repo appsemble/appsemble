@@ -79,6 +79,14 @@ Create a new object given some predefined mapper keys.
 
 A key / value pair object keys and remappers.
 
+### `object.assign`
+
+Assign properties to an existing object given some predefined mapper keys.
+
+#### Parameters
+
+A key / value pair object keys and remappers.
+
 ### `array.map`
 
 Map an array based on a given array of data and a list of remappers.
@@ -147,6 +155,10 @@ Replace parts of a string based on regex.
 | ------------------------ | --------------------------------------------------------------------------------------- |
 | `[key containing regex]` | The regex to match with. The value will be what this regex will replace its match with. |
 
+### `date.now`
+
+Return the current date.
+
 ### `date.parse`
 
 Parse a string into a date using the given format.
@@ -157,6 +169,32 @@ The format used to parse the date. The tokens that can be used can be found
 [here](https://date-fns.org/v2.12.0/docs/parse).
 
 If empty, the string will be parsed as an ISO date string.
+
+### `date.add`
+
+Add a given duration string to the given date.
+
+If the duration string or input is invalid, the original input is returned instead.
+
+#### Parameters
+
+The syntax used for the duration supports the following units, which can be combined:
+
+```
+seconds (s, sec)
+minutes (m, min)
+hours (h, hr)
+days (d)
+weeks (w, wk)
+months
+years (y, yr)
+
+Examples:
+1h20m - add 1 hour and 20 minutes
+2 hr 20 min - add 2 hours and 20 minutes
+1y 22w 40min - add 1 year, 22 weeks, and 40 minutes
+-3d - subtract 3 days
+```
 
 ### `user`
 

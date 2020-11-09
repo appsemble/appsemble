@@ -1,5 +1,5 @@
 import { AsyncButton, useConfirmation, useMessages } from '@appsemble/react-components';
-import type { OrganizationInvite } from '@appsemble/types';
+import { OrganizationInvite } from '@appsemble/types';
 import axios from 'axios';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

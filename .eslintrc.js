@@ -16,7 +16,8 @@ module.exports = {
   },
   rules: {
     camelcase: ['error', { properties: 'never' }],
-    'no-shadow': ['error', { hoist: 'functions' }],
+
+    'jest/no-restricted-matchers': 'off',
 
     'jsdoc/require-jsdoc': 'off',
     'jsdoc/check-tag-names': [
@@ -38,7 +39,6 @@ module.exports = {
             extendDefaults: false,
             types: {
               'JSX.Element': 'Use ReactElement for React contexts and VNode for Preact contexts',
-              Record: 'Use a mapped type instead',
               Context: {
                 message:
                   'The builtin Koa Context type is too loose. Use the custom KoaContext instead.',
@@ -55,27 +55,18 @@ module.exports = {
         '@typescript-eslint/naming-convention': 'off',
         '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-shadow': ['error', { hoist: 'functions' }],
 
         'node/no-unsupported-features/es-syntax': 'off',
-      },
-    },
-    {
-      files: ['**/__mocks__/**', '*.test.*', 'jest.*'],
-      rules: {
-        // We don’t need browser compatibility checks on our tests.
-        'compat/compat': 'off',
-        'node/no-unpublished-import': 'off',
       },
     },
     {
       files: ['packages/create-appsemble/templates/**'],
       rules: {
         '@typescript-eslint/no-unused-vars': 'off',
+
+        'import/no-extraneous-dependencies': 'off',
       },
-    },
-    {
-      files: ['**/*.config.*', '**/jest.setup.ts', '**/*.test.*'],
-      extends: ['remcohaszing/dev'],
     },
   ],
 };

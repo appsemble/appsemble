@@ -1,24 +1,23 @@
 import sharp from 'sharp';
 
-import type { KoaContext } from '../types';
-import { readAsset } from '../utils/readAsset';
+import { KoaContext } from '../types';
 
 interface ServeIconOptions {
   background?: string;
-  format: string;
-  height: number;
-  icon?: Buffer;
-  width: number;
+  format?: string;
+  height?: number;
+  icon: Buffer;
+  width?: number;
 }
 
 export async function serveIcon(
   ctx: KoaContext,
-  { background, format, height, icon, width }: ServeIconOptions,
+  { background, height, icon, width, ...options }: ServeIconOptions,
 ): Promise<void> {
   // Allow icon to be null.
-  const finalIcon = icon || (await readAsset('appsemble.svg'));
-  let img = sharp(finalIcon);
+  let img = sharp(icon);
   const metadata = await img.metadata();
+  const format = options.format ?? metadata.format;
   // SVG images can be resized with a density much better than its metadata specified.
   if (metadata.format === 'svg') {
     const density = Math.max(
@@ -26,13 +25,16 @@ export async function serveIcon(
       // This is the maximum allowed value density allowed by sharp.
       2400,
     );
-    img = sharp(finalIcon, { density });
+    img = sharp(icon, { density });
   }
-  img.resize(width, height);
+  if (width || height) {
+    img.resize({ width, height });
+  }
   if (background) {
     img.flatten({ background });
   }
   img.toFormat(format);
+
   ctx.body = await img.toBuffer();
   ctx.type = format;
 }

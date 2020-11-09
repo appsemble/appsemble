@@ -1,4 +1,4 @@
-import type {
+import {
   Action,
   BaseMessage,
   HTTPMethods,
@@ -6,12 +6,12 @@ import type {
   RequestLikeActionTypes,
   Theme,
 } from '@appsemble/sdk/src/types';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
-import type { OpenAPIV3 } from 'openapi-types';
-import type { JsonObject, RequireExactlyOne } from 'type-fest';
-import type { Definition } from 'typescript-json-schema';
+import { IconName } from '@fortawesome/fontawesome-common-types';
+import { OpenAPIV3 } from 'openapi-types';
+import { JsonObject, RequireExactlyOne } from 'type-fest';
+import { Definition } from 'typescript-json-schema';
 
-export type { Theme };
+export { Theme };
 
 /**
  * A representation of a generated OAuth2 authorization code response.
@@ -56,6 +56,24 @@ export interface BlockDefinition {
   header?: string;
 
   /**
+   * An override of the block’s default layout.
+   */
+  layout?: 'float' | 'grow' | 'static';
+
+  /**
+   * For floating blocks this propert defines where the block should float.
+   */
+  position?:
+    | 'top left'
+    | 'top'
+    | 'top right'
+    | 'left'
+    | 'right'
+    | 'bottom left'
+    | 'bottom'
+    | 'bottom right';
+
+  /**
    * The theme of the block.
    */
   theme?: Partial<Theme>;
@@ -72,7 +90,7 @@ export interface BlockDefinition {
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  actions?: { [action: string]: ActionDefinition };
+  actions?: Record<string, ActionDefinition>;
 
   /**
    * Mapping of the events the block can listen to and emit.
@@ -80,8 +98,8 @@ export interface BlockDefinition {
    * The exact meaning of the parameters depends on the block type.
    */
   events?: {
-    listen?: { [listener: string]: string };
-    emit?: { [emitter: string]: string };
+    listen?: Record<string, string>;
+    emit?: Record<string, string>;
   };
 
   /**
@@ -128,6 +146,11 @@ export interface UserInfo {
    * A URL that links to the user profile.
    */
   profile?: string;
+
+  /**
+   * The end-user’s locale, represented as a BCP47 language tag.
+   */
+  locale?: string;
 }
 
 /**
@@ -188,6 +211,16 @@ export interface Remappers {
   'date.parse': string;
 
   /**
+   * Returns the current date.
+   */
+  'date.now': unknown;
+
+  /**
+   * Adds to a date.
+   */
+  'date.add': string;
+
+  /**
    * Compare all computed remapper values against each other.
    *
    * Returns `true` if all entries are equal, otherwise `false`.
@@ -220,9 +253,12 @@ export interface Remappers {
   /**
    * Create a new object given some predefined mapper keys.
    */
-  'object.from': {
-    [key: string]: Remapper;
-  };
+  'object.from': Record<string, Remapper>;
+
+  /**
+   * Assign properties to an existing object given some predefined mapper keys.
+   */
+  'object.assign': Record<string, Remapper>;
 
   /**
    * Use a static value.
@@ -261,17 +297,13 @@ export interface Remappers {
     /**
      * A set of remappers to convert the input to usable values.
      */
-    values: {
-      [key: string]: Remapper;
-    };
+    values: Record<string, Remapper>;
   };
 
   /**
    * Match the content with the regex in the key, and replace it with its value.
    */
-  'string.replace': {
-    [regex: string]: string;
-  };
+  'string.replace': Record<string, string>;
 
   user: keyof UserInfo;
 }
@@ -287,17 +319,16 @@ export interface SubscriptionResponseResource {
   create: boolean;
   update: boolean;
   delete: boolean;
-  subscriptions?: {
-    [id: string]: {
+  subscriptions?: Record<
+    string,
+    {
       update: boolean;
       delete: boolean;
-    };
-  };
+    }
+  >;
 }
 
-export interface SubscriptionResponse {
-  [type: string]: SubscriptionResponseResource;
-}
+export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
 export interface Security {
   login?: 'password';
@@ -305,13 +336,14 @@ export interface Security {
     role: string;
     policy?: 'everyone' | 'organization' | 'invite';
   };
-  roles: {
-    [role: string]: {
+  roles: Record<
+    string,
+    {
       description?: string;
       inherits?: string[];
       defaultPage?: string;
-    };
-  };
+    }
+  >;
 }
 
 export type Navigation = 'bottom' | 'left-menu' | 'hidden';
@@ -353,7 +385,7 @@ export interface ResourceCall {
   /**
    * Query parameters to pass along with the request.
    */
-  query?: { [key: string]: string };
+  query?: Record<string, string>;
 
   /**
    * THe roles that are allowed to perform this action.
@@ -429,7 +461,7 @@ export interface ResourceDefinition {
   /**
    * The references this resources has to other resources.
    */
-  references?: { [property: string]: ResourceReference };
+  references?: Record<string, ResourceReference>;
 
   /**
    * A time string representing when a resource should expire.
@@ -541,7 +573,7 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
   /**
    * Parameters to use for formatting the link.
    */
-  parameters?: { [key: string]: any };
+  parameters?: Record<string, any>;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
@@ -586,7 +618,7 @@ export interface RequestLikeActionDefinition<
   /**
    * Query parameters to pass along with the request.
    */
-  query?: { [key: string]: string };
+  query?: Record<string, string>;
 
   /**
    * The URL to which to make the request.
@@ -753,14 +785,14 @@ export interface BlockManifest {
   /**
    * The actions that are supported by a block.
    */
-  actions?: { [key: string]: ActionType };
+  actions?: Record<string, ActionType>;
 
   /**
    * The events that are supported by a block.
    */
   events?: {
-    listen?: { [key: string]: EventType };
-    emit?: { [key: string]: EventType };
+    listen?: Record<string, EventType>;
+    emit?: Record<string, EventType>;
   };
 
   /**
@@ -806,13 +838,6 @@ export interface BasePageDefinition {
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
-
-  /**
-   * The navigation type to use.
-   *
-   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
-   */
-  navigation?: Navigation;
 
   /**
    * Whether or not the page should be displayed in navigational menus.
@@ -934,12 +959,19 @@ export interface AppDefinition {
   /**
    * Resource definitions that may be used by the app.
    */
-  resources?: { [key: string]: ResourceDefinition };
+  resources?: Record<string, ResourceDefinition>;
 
   /**
    * The global theme for the app.
    */
   theme?: Partial<Theme>;
+
+  /**
+   * Helper property that can be used to store YAML anchors.
+   *
+   * This is omitted any time the API serves the app definition.
+   */
+  anchors?: any[];
 }
 
 export interface App {
@@ -1055,6 +1087,11 @@ export interface Organization {
    * The display name of the organization.
    */
   name: string;
+
+  /**
+   * The URL at which the organization’s icon can be found.
+   */
+  iconUrl: string;
 }
 
 /**
@@ -1089,7 +1126,7 @@ export interface AppMessages {
   /**
    * A mapping of message id to message content.
    */
-  messages: { [messageId: string]: string };
+  messages: Record<string, string>;
 }
 
 /**

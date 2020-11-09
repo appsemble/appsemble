@@ -7,7 +7,7 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import type { AppOAuth2Secret } from '@appsemble/types';
+import { AppOAuth2Secret } from '@appsemble/types';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 

@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 
-import type { PackageJson } from 'type-fest';
+import { PackageJson } from 'type-fest';
 
 /**
  * Read package.json

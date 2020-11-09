@@ -5,8 +5,10 @@ import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/
 import { Op, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, Organization, OrganizationInvite, User } from '../models';
-import type { KoaContext } from '../types';
+import { serveIcon } from '../routes/serveIcon';
+import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
+import { readAsset } from '../utils/readAsset';
 
 interface Params {
   blockId: string;
@@ -29,6 +31,59 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = {
     id: organization.id,
     name: organization.name,
+    iconUrl: `/api/organizations/${organization.id}/icon`,
+  };
+}
+
+export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { organizationId },
+  } = ctx;
+
+  const organization = await Organization.findOne({
+    where: { id: organizationId },
+    attributes: ['icon'],
+    raw: true,
+  });
+
+  if (!organization) {
+    throw notFound('Organization not found.');
+  }
+
+  await serveIcon(ctx, {
+    icon: organization.icon ?? ((await readAsset('appsemble.svg')) as Buffer),
+    ...(!organization.icon && { width: 128, height: 128, format: 'png' }),
+  });
+}
+
+export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { organizationId },
+    request: {
+      body: { icon, name },
+    },
+  } = ctx;
+
+  const member = await checkRole(ctx, organizationId, Permission.EditOrganization, {
+    include: { model: Organization },
+  });
+  const organization = member.Organization;
+
+  const result: Partial<Organization> = {};
+  if (name) {
+    result.name = name;
+  }
+
+  if (icon) {
+    result.icon = icon.contents;
+  }
+
+  await organization.update(result);
+
+  ctx.body = {
+    id: organization.id,
+    name: name || organization.name,
+    iconUrl: `/api/organizations/${organization.id}/icon`,
   };
 }
 
@@ -69,6 +124,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
     ctx.body = {
       id: organization.id,
       name: organization.name,
+      iconUrl: `/api/organizations/${organization.id}/icon`,
       members: organization.Users.map((u) => ({
         id: u.id,
         name: u.name,
@@ -138,7 +194,11 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   const organization = await Organization.findByPk(invite.OrganizationId, { raw: true });
 
-  ctx.body = { id: organization.id, name: organization.name };
+  ctx.body = {
+    id: organization.id,
+    name: organization.name,
+    iconUrl: `/api/organizations/${organization.id}/icon`,
+  };
 }
 
 export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> {
