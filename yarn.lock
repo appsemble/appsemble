@@ -1815,6 +1815,19 @@
   dependencies:
     "@types/node" "*"
 
+"@types/xml-crypto@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@types/xml-crypto/-/xml-crypto-1.4.1.tgz#30824290c0b867302269e7ff31fc62fb6494ce18"
+  integrity sha512-w7pI4Gq1buWinzLsDopd4du0sUzlSltT7QfHqknLu+hVuFWTXLzJnAOmYKuD20ncx3XCkYNwSRr2sKeYiwCvZw==
+  dependencies:
+    "@types/node" "*"
+    xpath "0.0.27"
+
+"@types/xmldom@^0.1.30":
+  version "0.1.30"
+  resolved "https://registry.yarnpkg.com/@types/xmldom/-/xmldom-0.1.30.tgz#d36d9a7d64af4693d3b18d5dc02ce432a95be12e"
+  integrity sha512-edqgAFXMEtVvaBZ3YnhamvmrHjoYpuxETmnb0lbTZmf/dXpAsO9ZKotUO4K2rn2SIZBDFCMOuA7fOe0H6dRZcA==
+
 "@types/yargs-parser@*":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-15.0.0.tgz#cb3f9f741869e20cce330ffbeb9271590483882d"
@@ -16728,6 +16741,14 @@ xhr@^2.0.1:
     parse-headers "^2.0.0"
     xtend "^4.0.0"
 
+xml-crypto@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/xml-crypto/-/xml-crypto-2.0.0.tgz#54cd268ad9d31930afcf7092cbb664258ca9e826"
+  integrity sha512-/a04qr7RpONRZHOxROZ6iIHItdsQQjN3sj8lJkYDDss8tAkEaAs0VrFjb3tlhmS5snQru5lTs9/5ISSMdPDHlg==
+  dependencies:
+    xmldom "0.1.27"
+    xpath "0.0.27"
+
 xml-name-validator@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/xml-name-validator/-/xml-name-validator-3.0.0.tgz#6ae73e06de4d8c6e47f9fb181f78d648ad457c6a"
@@ -16765,6 +16786,21 @@ xmldom@0.1.19:
   version "0.1.19"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.19.tgz#631fc07776efd84118bf25171b37ed4d075a0abc"
   integrity sha1-Yx/Ad3bv2EEYvyUXGzftTQdaCrw=
+
+xmldom@0.1.27:
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
+  integrity sha1-1QH5ezvbQDr4757MIFcxh6rawOk=
+
+xmldom@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.4.0.tgz#8771e482a333af44587e30ce026f0998c23f3830"
+  integrity sha512-2E93k08T30Ugs+34HBSTQLVtpi6mCddaY8uO+pMNk1pqSjV5vElzn4mmh6KLxN3hki8rNcHSYzILoh3TEWORvA==
+
+xpath@0.0.27:
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/xpath/-/xpath-0.0.27.tgz#dd3421fbdcc5646ac32c48531b4d7e9d0c2cfa92"
+  integrity sha512-fg03WRxtkCV6ohClePNAECYsmpKKTv5L8y/X3Dn1hQrec3POx2jHZ/0P2qQ6HvsrU1BmeqXcof3NGGueG6LxwQ==
 
 "xtend@>=4.0.0 <4.1.0-0", xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.1:
   version "4.0.2"

@@ -9,7 +9,7 @@ import { useParams } from 'react-router-dom';
 import { messages } from './messages';
 
 export function ForwardOAuth2Login(): ReactElement {
-  const { id } = useParams<{ id: string }>();
+  const { id, type } = useParams<{ id: string; type: 'oauth2' | 'saml' }>();
   const qs = useQuery();
   const location = useLocationString();
 
@@ -18,16 +18,23 @@ export function ForwardOAuth2Login(): ReactElement {
   useEffect(() => {
     const clientId = qs.get('client_id');
     const [, appId] = clientId.split(':');
-    axios
-      .get<AppOAuth2Secret>(`/api/apps/${appId}/secrets/oauth2/${id}`)
-      .then(({ data }) =>
-        startOAuth2Login(
-          { ...data, redirect: location, redirectUrl: '/callback' },
-          { appRequest: String(qs), id },
-        ),
-      )
-      .catch(() => setError(true));
-  }, [id, location, qs]);
+    if (type === 'oauth2') {
+      axios
+        .get<AppOAuth2Secret>(`/api/apps/${appId}/secrets/oauth2/${id}`)
+        .then(({ data }) =>
+          startOAuth2Login(
+            { ...data, redirect: location, redirectUrl: '/callback' },
+            { appRequest: String(qs), id },
+          ),
+        )
+        .catch(() => setError(true));
+    } else if (type === 'saml') {
+      axios
+        .post<{ redirect: string }>(`/api/apps/${appId}/saml/${id}/authn`)
+        .then(({ data }) => window.location.replace(data.redirect))
+        .catch(() => setError(true));
+    }
+  }, [id, location, qs, type]);
 
   if (hasError) {
     return (

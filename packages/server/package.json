@@ -98,6 +98,8 @@
     "unist-util-visit": "^2.0.3",
     "uuid": "^8.3.1",
     "web-push": "^3.4.4",
+    "xml-crypto": "^2.0.0",
+    "xmldom": "^0.4.0",
     "yargs": "^16.1.0"
   },
   "devDependencies": {

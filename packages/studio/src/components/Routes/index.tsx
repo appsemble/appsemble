@@ -43,7 +43,7 @@ export function Routes(): ReactElement {
       <ProtectedRoute exact path={`${path}/connect/authorize`}>
         <OpenIDLogin />
       </ProtectedRoute>
-      <Route exact path={`${path}/connect/authorize/:id`}>
+      <Route exact path={`${path}/connect/authorize/:type/:id`}>
         <ForwardOAuth2Login />
       </Route>
       <Route path={`${path}/apps/:id(\\d+)`}>

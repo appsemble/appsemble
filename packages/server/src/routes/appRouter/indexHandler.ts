@@ -4,7 +4,13 @@ import { URLSearchParams } from 'url';
 import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
-import { AppMessages, AppOAuth2Secret, BlockAsset, BlockVersion } from '../../models';
+import {
+  AppMessages,
+  AppOAuth2Secret,
+  AppSamlSecret,
+  BlockAsset,
+  BlockVersion,
+} from '../../models';
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { createSettings } from '../../utils/createSettings';
@@ -34,6 +40,10 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
       {
         attributes: ['language'],
         model: AppMessages,
+      },
+      {
+        attributes: ['icon', 'id', 'name'],
+        model: AppSamlSecret,
       },
     ],
   });
@@ -90,7 +100,10 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
         app.definition.defaultLanguage || 'en-us',
       ]),
     ].sort(),
-    logins: app.AppOAuth2Secrets,
+    logins: [
+      ...app.AppOAuth2Secrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'oauth2' })),
+      ...app.AppSamlSecrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'saml' })),
+    ],
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
     sentryDsn,
