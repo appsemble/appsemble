@@ -4,11 +4,16 @@ import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
 export interface TextAreaProps
-  extends Omit<ComponentProps<'textarea'>, 'label' | 'onChange' | 'onInput'> {
+  extends Omit<ComponentProps<'textarea'>, 'label' | 'loading' | 'onChange' | 'onInput'> {
   /**
    * Whether to render the input in an error state.
    */
   error?: boolean;
+
+  /**
+   * Indicate the text area is in a loading state.
+   */
+  loading?: boolean;
 
   /**
    * This is fired when the input value has changed.
@@ -20,7 +25,7 @@ export interface TextAreaProps
  * A Bulma styled textarea element.
  */
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ error, name, onChange, id = name, ...props }, ref) => {
+  ({ error, name, loading, onChange, readOnly, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: h.JSX.TargetedEvent<HTMLTextAreaElement>) => {
         onChange(event, event.currentTarget.value);
@@ -31,10 +36,15 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     return (
       <textarea
         {...props}
-        className={classNames('textarea', { 'is-danger': error })}
+        className={classNames('textarea', {
+          'has-background-white-bis': readOnly,
+          'is-danger': error,
+          'is-loading': loading,
+        })}
         id={id}
         name={name}
         onChange={handleChange}
+        readOnly={readOnly}
         ref={ref}
       />
     );
