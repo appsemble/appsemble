@@ -253,7 +253,7 @@ export function Block({
           [styles.bottom]: position.includes('bottom'),
           [styles.left]: position.includes('left'),
           [styles.right]: position.includes('right'),
-          [styles.hasBottomNav]: definition.navigation === 'bottom',
+          [styles.hasBottomNav]: definition?.layout?.navigation === 'bottom',
         })}
         data-block={blockName}
         data-path={prefix}
