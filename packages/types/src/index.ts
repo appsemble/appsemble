@@ -953,7 +953,7 @@ export interface AppDefinition {
   /**
    * Cron jobs associated with the app.
    */
-  cron?: { [key: string]: CronDefinition };
+  cron?: Record<string, CronDefinition>;
 }
 
 /**

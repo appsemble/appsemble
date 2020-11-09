@@ -68,9 +68,9 @@ describe('convertToCsv', () => {
     expect(convertToCsv(input)).toStrictEqual(output);
   });
 
-  it('should return newline on empty results', () => {
+  it('should return null on empty results', () => {
     const input: any[] = [];
-    const output = '\r\n';
+    const output: any = null;
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });
