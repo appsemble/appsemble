@@ -128,7 +128,7 @@ export function OpenIDLogin(): ReactElement {
             {...messages.prompt}
             values={{
               app: (
-                <Link className="has-text-weight-bold is-italic" to={`${lang}/apps/${appId}`}>
+                <Link className="has-text-weight-bold is-italic" to={`/${lang}/apps/${appId}`}>
                   {appName}
                 </Link>
               ),

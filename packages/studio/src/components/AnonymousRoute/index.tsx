@@ -15,5 +15,5 @@ export function AnonymousRoute(props: RouteProps): ReactElement {
   const qs = useQuery();
   const { lang } = useParams<{ lang: string }>();
 
-  return userInfo ? <Redirect to={qs.get('redirect') || `${lang}/apps`} /> : <Route {...props} />;
+  return userInfo ? <Redirect to={qs.get('redirect') || `/${lang}/apps`} /> : <Route {...props} />;
 }
