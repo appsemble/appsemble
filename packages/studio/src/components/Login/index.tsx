@@ -83,7 +83,7 @@ export function Login(): ReactElement {
             {enableRegistration && (
               <Link
                 className="is-block"
-                to={{ pathname: `${lang}/register`, search: location.search, hash: location.hash }}
+                to={{ pathname: `/${lang}/register`, search: location.search, hash: location.hash }}
               >
                 <FormattedMessage {...messages.registerLink} />
               </Link>
