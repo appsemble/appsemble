@@ -94,7 +94,7 @@ export function Roles(): ReactElement {
           {...messages.inviteOrganization}
           values={{
             link: (text: string) => (
-              <Link to={`${lang}/settings/organizations/${app.OrganizationId}`}>{text}</Link>
+              <Link to={`/${lang}/settings/organizations/${app.OrganizationId}`}>{text}</Link>
             ),
           }}
         />
