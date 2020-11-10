@@ -70,6 +70,28 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
+    put: {
+      tags: ['secret'],
+      operationId: 'updateAppOAuth2Secret',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/AppOAuth2Secret' },
+          },
+        },
+      },
+      security: [{ studio: [] }],
+      responses: {
+        200: {
+          description: 'The updated OAuth2 secret.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/AppOAuth2Secret' },
+            },
+          },
+        },
+      },
+    },
   },
   '/api/apps/{appId}/secrets/oauth2/{appOAuth2SecretId}/verify': {
     parameters: [
