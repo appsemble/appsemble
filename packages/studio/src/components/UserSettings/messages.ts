@@ -23,7 +23,7 @@ export const messages = defineMessages({
   submitError: 'Something went wrong trying to update your profile.',
   setPrimaryEmail: 'Set as primary',
   primaryEmailSuccess: 'Successfully set {email} as your primary email address.',
-  resendVerification: 'Resend verification mail',
+  resendVerification: 'Resend verification email',
   resendVerificationSent: 'Resent verification mail',
   verified: 'Verified',
   unverified: 'Not verified',

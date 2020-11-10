@@ -461,7 +461,7 @@
   "studio.src.components.UserSettings.primary": "Primary",
   "studio.src.components.UserSettings.primaryEmailSuccess": "Successfully set {email} as your primary email address.",
   "studio.src.components.UserSettings.profile": "Public profile",
-  "studio.src.components.UserSettings.resendVerification": "Resend verification mail",
+  "studio.src.components.UserSettings.resendVerification": "Resend verification email",
   "studio.src.components.UserSettings.resendVerificationSent": "Resent verification mail",
   "studio.src.components.UserSettings.saveProfile": "Save Profile",
   "studio.src.components.UserSettings.setPrimaryEmail": "Set as primary",
