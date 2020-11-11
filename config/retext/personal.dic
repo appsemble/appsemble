@@ -33,7 +33,7 @@ Cloudflare
 CNAME
 CSS
 CSV
-cronjobs
+cronjob/job
 DNS
 Dnsmasq
 DOM
