@@ -53,6 +53,7 @@ export async function updateApp({
     logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
   } catch (error: unknown) {
     if (error instanceof yaml.YAMLException) {
+      logger.error(error);
       logger.error(`The YAML in ${path} is invalid.`);
       logger.error(`Message: ${error.message}`);
       return;
