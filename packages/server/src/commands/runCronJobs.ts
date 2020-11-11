@@ -93,9 +93,6 @@ export async function handler(argv: Args): Promise<void> {
   // 1 hour ago
   const startDate = Date.now() - 60 * 60 * 1e3;
 
-  const apps = await App.findAll({ where: { definition: { cron: { [Op.not]: null } } } });
-  logger.info(`Found ${apps.length} apps with cron jobs.`);
-
   for await (const app of iterTable(App, {
     attributes: ['definition', 'id'],
     where: { definition: { cron: { [Op.not]: null } } },
