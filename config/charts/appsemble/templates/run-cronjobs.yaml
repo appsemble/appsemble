@@ -2,7 +2,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ include "appsemble.fullname" . }}-cronjob
+  name: {{ include "appsemble.fullname" . }}-run-cronjobs
   labels:
     app: {{ .Values.app }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     helm.sh/chart: {{ include "appsemble.chart" . }}
 spec:
-  schedule: 0 23 * * * # Run every day at 23:00:00
+  schedule: 0 * * * * # Run every hour
   jobTemplate:
     spec:
       template:
@@ -24,7 +24,7 @@ spec:
               command:
                 - node
                 - packages/server/dist
-                - cleanup-resources
+                - run-cronjobs
                 - -vv
               env:
                 - name: DATABASE_HOST
@@ -44,4 +44,36 @@ spec:
                     secretKeyRef:
                       name: {{ .Values.global.postgresql.existingSecret }}
                       key: postgresql-password
+                {{- with .Values.smtpSecret }}
+                - name: SMTP_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: host
+                - name: SMTP_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: port
+                - name: SMTP_SECURE
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: secure
+                - name: SMTP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: user
+                - name: SMTP_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: pass
+                - name: SMTP_FROM
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: from
+                {{- end }}
 {{ end }}

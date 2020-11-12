@@ -1,6 +1,7 @@
 import { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
 // eslint-disable-next-line import/no-named-as-default
 import Ajv from 'ajv';
+import { parseExpression } from 'cron-parser';
 import languageTags from 'language-tags';
 import { Promisable } from 'type-fest';
 
@@ -238,6 +239,18 @@ export function validateDefaultPage({ defaultPage, pages }: AppDefinition): void
   }
 }
 
+export function validateCronJobs({ cron }: AppDefinition): void {
+  Object.entries(cron).forEach(([id, job]) => {
+    try {
+      parseExpression(job.schedule);
+    } catch {
+      throw new AppsembleValidationError(
+        `Cronjob ${id} contains an invalid expression: ${job.schedule}`,
+      );
+    }
+  });
+}
+
 export async function validateAppDefinition(
   definition: AppDefinition,
   getBlockVersions: (blockMap: BlockMap) => Promisable<BlockManifest[]>,
@@ -258,6 +271,10 @@ export async function validateAppDefinition(
   if (definition.resources) {
     validateReferences(definition);
     validateHooks(definition);
+  }
+
+  if (definition.cron) {
+    validateCronJobs(definition);
   }
 
   checkBlocks(blocks, blockVersions);

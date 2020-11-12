@@ -67,4 +67,11 @@ describe('convertToCsv', () => {
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });
+
+  it('should return null on empty results', () => {
+    const input: any[] = [];
+    const output: any = null;
+
+    expect(convertToCsv(input)).toStrictEqual(output);
+  });
 });

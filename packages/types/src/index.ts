@@ -622,7 +622,7 @@ export interface RequestLikeActionDefinition<
   /**
    * The URL to which to make the request.
    */
-  url?: string;
+  url?: Remapper;
 
   /**
    * How to serialize the request body.
@@ -704,6 +704,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.next'>
   | BaseActionDefinition<'email'>
   | BaseActionDefinition<'noop'>
+  | BaseActionDefinition<'throw'>
   | DialogActionDefinition
   | EventActionDefinition
   | LinkActionDefinition
@@ -948,6 +949,19 @@ export interface AppDefinition {
    * This is omitted any time the API serves the app definition.
    */
   anchors?: any[];
+
+  /**
+   * Cron jobs associated with the app.
+   */
+  cron?: Record<string, CronDefinition>;
+}
+
+/**
+ * The definition of a cron job for an app.
+ */
+export interface CronDefinition {
+  schedule: string;
+  action: ActionDefinition;
 }
 
 export interface App {

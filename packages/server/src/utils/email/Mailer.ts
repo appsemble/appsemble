@@ -64,7 +64,8 @@ export class Mailer {
   /**
    * @param argv - The CLI arguments passed to the Appsemble server.
    */
-  constructor({ smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser }: Argv) {
+  constructor(argv: Argv) {
+    const { smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser } = argv;
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
       this.transport = createTransport(

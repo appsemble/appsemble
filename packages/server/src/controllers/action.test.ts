@@ -438,6 +438,53 @@ describe('handleEmail', () => {
     spy.mockRestore();
   });
 
+  it('should attach using objects', async () => {
+    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const buffer = Buffer.from(JSON.stringify({ test: 'test' }));
+    const asset = await Asset.create({
+      AppId: 1,
+      mime: 'application/json',
+      filename: 'test.json',
+      data: buffer,
+    });
+    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      to: 'test@example.com',
+      body: 'Body',
+      attachments: [
+        { target: 'https://via.placeholder.com/150', accept: 'text/csv', filename: 'example.csv' },
+        { target: asset.id, filename: 'test.json' },
+      ],
+    });
+
+    expect(response.status).toBe(204);
+    expect(spy).toHaveBeenCalledWith({
+      to: 'test@example.com',
+      subject: 'Test title',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Test title</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Body</p>
+</body>
+</html>
+`,
+      text: 'Body\n',
+      attachments: [
+        { content: buffer, filename: 'test.json' },
+        {
+          filename: 'example.csv',
+          httpHeaders: { accept: 'text/csv' },
+          path: 'https://via.placeholder.com/150',
+        },
+      ],
+    });
+    spy.mockRestore();
+  });
+
   it('should attach existing assets', async () => {
     const spy = jest.spyOn(server.context.mailer, 'sendEmail');
     const buffer = Buffer.from('test');

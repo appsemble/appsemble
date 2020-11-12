@@ -5,6 +5,13 @@
  */
 
 /**
+ * A user defined remapper function.
+ *
+ * @format remapper
+ */
+export type Remapper = string | number | boolean | object | object[];
+
+/**
  * Common HTTP methods, but either all upper case or all lower case.
  */
 export type HTTPMethods =
@@ -61,7 +68,7 @@ export interface RequestLikeAction<T extends RequestLikeActionTypes> extends Bas
   /**
    * The URL to which the request will be made.
    */
-  url: string;
+  url: Remapper;
 }
 
 export type RequestAction = RequestLikeAction<'request'>;

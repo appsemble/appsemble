@@ -1,6 +1,6 @@
 import { Promisable } from 'type-fest';
 
-import { Action, Message, Theme } from './types';
+import { Action, Message, Remapper, Theme } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 export * from './types';
@@ -72,13 +72,6 @@ export interface EventListeners {}
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Parameters {}
-
-/**
- * A user defined remapper function.
- *
- * @format remapper
- */
-export type Remapper = string | number | boolean | object | object[];
 
 export type PageParameters = Record<string, string>;
 

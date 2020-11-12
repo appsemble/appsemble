@@ -1,4 +1,4 @@
-export {};
+import { Remapper } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Parameters {

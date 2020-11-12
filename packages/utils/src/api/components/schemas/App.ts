@@ -124,6 +124,11 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
         theme: {
           $ref: '#/components/schemas/Theme',
         },
+        cron: {
+          type: 'object',
+          description: 'A list of cron jobs that are associated with this app.',
+          additionalProperties: { $ref: '#/components/schemas/CronDefinition' },
+        },
         anchors: {
           type: 'array',
           minItems: 1,
