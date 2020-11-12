@@ -54,8 +54,6 @@ export async function updateApp({
   } catch (error: unknown) {
     if (error instanceof yaml.YAMLException) {
       logger.error(`The YAML in ${path} is invalid.`);
-      logger.error(`Message: ${error.message}`);
-      return;
     }
 
     throw error;

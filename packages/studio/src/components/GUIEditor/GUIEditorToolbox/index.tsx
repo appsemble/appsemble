@@ -64,7 +64,7 @@ export function GUIEditorToolbox({
               <Link
                 rel="noopener noreferrer"
                 target="_blank"
-                to={`${lang}/blocks/${selectedBlock.name}`}
+                to={`/${lang}/blocks/${selectedBlock.name}`}
               >
                 <FormattedMessage {...messages.moreInfo} />
               </Link>
