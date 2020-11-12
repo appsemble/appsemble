@@ -3,6 +3,11 @@ import React, { ReactElement, useEffect, useRef } from 'react';
 
 interface CodeBlockProps {
   /**
+   * A class name to add to the `pre` element.
+   */
+  className?: string;
+
+  /**
    * The code to render.
    */
   code: string;
@@ -16,17 +21,17 @@ interface CodeBlockProps {
 /**
  * Render a code block using syntax highlighting based on Monaco editor.
  */
-export function CodeBlock({ code, language }: CodeBlockProps): ReactElement {
+export function CodeBlock({ className, code, language }: CodeBlockProps): ReactElement {
   const ref = useRef<HTMLPreElement>();
 
   useEffect(() => {
     if (language) {
-      editor.colorizeElement(ref.current, { theme: 'vs' });
+      editor.colorizeElement(ref.current, { mimeType: language, theme: 'vs' });
     }
   }, [language]);
 
   return (
-    <pre data-lang={language} ref={ref}>
+    <pre className={className} ref={ref}>
       {code}
     </pre>
   );
