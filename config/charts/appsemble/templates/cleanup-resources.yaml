@@ -2,7 +2,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-resources
+  name: {{ include "appsemble.fullname" . }}-cleanup-resources
   labels:
     app: {{ .Values.app }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -44,36 +44,4 @@ spec:
                     secretKeyRef:
                       name: {{ .Values.global.postgresql.existingSecret }}
                       key: postgresql-password
-                {{- with .Values.smtpSecret }}
-                - name: SMTP_HOST
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ . | quote }}
-                      key: host
-                - name: SMTP_PORT
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ . | quote }}
-                      key: port
-                - name: SMTP_SECURE
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ . | quote }}
-                      key: secure
-                - name: SMTP_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ . | quote }}
-                      key: user
-                - name: SMTP_PASS
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ . | quote }}
-                      key: pass
-                - name: SMTP_FROM
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ . | quote }}
-                      key: from
-                {{- end }}
 {{ end }}
