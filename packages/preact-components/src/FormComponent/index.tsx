@@ -1,6 +1,6 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { cloneElement, ComponentChild, h, VNode } from 'preact';
+import { cloneElement, ComponentChild, h, isValidElement, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { Icon } from '..';
@@ -101,7 +101,9 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
   ) => {
     const helpContent = (
       <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>
-        {error || help}
+        {isValidElement(error) || typeof error === 'string' || Number.isFinite(error)
+          ? error
+          : help}
       </span>
     );
 
