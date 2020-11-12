@@ -4,7 +4,12 @@
  * {@link @appsemble/sdk}.
  */
 
-import { Remapper } from '.';
+/**
+ * A user defined remapper function.
+ *
+ * @format remapper
+ */
+export type Remapper = string | number | boolean | object | object[];
 
 /**
  * Common HTTP methods, but either all upper case or all lower case.
