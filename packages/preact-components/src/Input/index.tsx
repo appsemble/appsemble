@@ -41,7 +41,7 @@ export interface InputProps
  * A Bulma styled form input element.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ error, loading, name, onChange, pattern, type, id = name, ...props }, ref) => {
+  ({ error, loading, name, onChange, pattern, readOnly, type, id = name, ...props }, ref) => {
     const handleChange = useCallback(
       (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
@@ -53,11 +53,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         {...props}
-        className={classNames('input', { 'is-danger': error, 'is-loading': loading })}
+        className={classNames('input', {
+          'has-background-white-bis': readOnly,
+          'is-danger': error,
+          'is-loading': loading,
+        })}
         id={id}
         name={name}
         onInput={handleChange}
         pattern={pattern instanceof RegExp ? pattern.source : pattern}
+        readOnly={readOnly}
         ref={ref}
         type={type}
       />

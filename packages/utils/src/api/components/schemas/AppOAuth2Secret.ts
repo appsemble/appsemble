@@ -50,5 +50,15 @@ export const AppOAuth2Secret: OpenAPIV3.NonArraySchemaObject = {
       description: 'A remapper to apply on retrieved user information from the user info endpoint.',
       items: {},
     },
+    created: {
+      type: 'string',
+      format: 'date-time',
+      description: 'When the secret was created originally.',
+    },
+    updated: {
+      type: 'string',
+      format: 'date-time',
+      description: 'When the secret was last updated.',
+    },
   },
 };

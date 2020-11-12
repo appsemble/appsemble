@@ -14,7 +14,6 @@ export async function up(db: Sequelize): Promise<void> {
   logger.info('Adding new table AppScreenshot');
   await queryInterface.createTable('AppScreenshot', {
     AppId: {
-      primaryKey: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       onDelete: 'cascade',
@@ -24,7 +23,7 @@ export async function up(db: Sequelize): Promise<void> {
         model: 'App',
       },
     },
-    id: { type: DataTypes.INTEGER, primaryKey: true, allowNull: false },
+    id: { type: DataTypes.INTEGER, primaryKey: true, allowNull: false, autoIncrement: true },
     screenshot: { type: DataTypes.BLOB, allowNull: false },
     created: { type: DataTypes.DATE, allowNull: false },
     updated: { type: DataTypes.DATE, allowNull: false },

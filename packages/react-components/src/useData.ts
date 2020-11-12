@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 
-interface AxiosState<T> {
+export interface UseAxiosResult<T> {
   /**
    * The current data, if it has been loaded and no error has occurred.
    */
@@ -16,9 +16,7 @@ interface AxiosState<T> {
    * An indicator whether the data is still being loading.
    */
   loading: boolean;
-}
 
-interface UseAxiosResult<T> extends AxiosState<T> {
   /**
    * A function to reload the data.
    */
@@ -30,10 +28,8 @@ interface UseAxiosResult<T> extends AxiosState<T> {
    * This may be useful if the data has been updated because of user interaction. E.g. a resource
    * has been updated or deleted.
    */
-  setData: (data: T) => void;
+  setData: Dispatch<SetStateAction<T>>;
 }
-
-const initialState: AxiosState<any> = { data: null, loading: true, error: null };
 
 /**
  * Use data fetched from a temote API.
@@ -45,35 +41,50 @@ const initialState: AxiosState<any> = { data: null, loading: true, error: null }
  * @returns A state which holds the Axios data and some utility functions.
  */
 export function useData<T>(url: string): UseAxiosResult<T> {
-  const [state, setState] = useState<AxiosState<T>>(initialState);
+  const [error, setError] = useState<AxiosError>(null);
+  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState<T>(null);
 
   const [refresher, setRefresher] = useState<Record<string, unknown>>();
 
   const refresh = useCallback(() => setRefresher({}), []);
 
-  const setData = useCallback((data: T) => {
-    setState({
-      data,
-      error: null,
-      loading: false,
-    });
-  }, []);
-
   useEffect(() => {
     const source = axios.CancelToken.source();
-    setState(initialState);
+    setLoading(true);
+    setError(null);
+    setResult(null);
 
     axios
       .get(url, { cancelToken: source.token })
-      .then(({ data }) => setState({ data, error: null, loading: false }))
-      .catch((error) => {
-        if (!axios.isCancel(error)) {
-          setState({ data: null, error, loading: false });
+      .then(({ data }) => {
+        setResult(data);
+        setError(null);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!axios.isCancel(err)) {
+          setResult(null);
+          setError(err);
+          setLoading(false);
         }
       });
 
     return source.cancel;
   }, [refresher, url]);
 
-  return useMemo(() => ({ ...state, refresh, setData }), [refresh, setData, state]);
+  return useMemo(
+    () => ({
+      loading,
+      error,
+      data: result,
+      refresh,
+      setData(data: T) {
+        setResult(data);
+        setError(null);
+        setLoading(false);
+      },
+    }),
+    [error, loading, refresh, result],
+  );
 }

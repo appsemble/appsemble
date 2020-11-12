@@ -101,7 +101,9 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
   ) => {
     const helpContent = (
       <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>
-        {isValidElement(error) ? error : help}
+        {isValidElement(error) || typeof error === 'string' || Number.isFinite(error)
+          ? error
+          : help}
       </span>
     );
 

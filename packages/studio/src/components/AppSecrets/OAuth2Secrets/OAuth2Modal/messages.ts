@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  modalTitle: 'OAuth2 Secret',
   nameLabel: 'Name',
   nameHelp: 'The name that will be displayed on the login button',
   iconLabel: 'Icon',
@@ -24,5 +25,6 @@ export const messages = defineMessages({
   remapperLabel: 'User info remapper',
   remapperHelp: 'A remapper that is applied on the user info object',
   badUrl: 'This must be a valid URL',
+  close: 'Close',
   save: 'Save secret',
 });
