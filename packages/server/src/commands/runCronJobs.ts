@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { remap } from '@appsemble/utils/src';
+import { remap } from '@appsemble/utils';
 import { parseExpression } from 'cron-parser';
 import { Op } from 'sequelize';
 import { Argv } from 'yargs';
