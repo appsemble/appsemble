@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.7] - 2020-11-13
+
+### Added
+
+- Server: Add support for running cronjobs for apps.
+
+### Fixed
+
+- Block(`form`): Check for `undefined` in `enum` and `radio` fields.
+- Preact-components: Fix error messages not showing up when they should.
+
 ## [0.15.6] - 2020-11-04
 
 ### Fixed
