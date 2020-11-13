@@ -1,12 +1,14 @@
-import { Icon } from '@appsemble/react-components';
+import { Button, Icon } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { SideMenu } from '../SideMenu';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
 
@@ -20,6 +22,10 @@ interface SideNavigationProps {
 export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { getMessage } = useAppMessages();
+  const {
+    definition: { layout, security: showLogin },
+  } = useAppDefinition();
+  const { isLoggedIn, logout } = useUser();
 
   return (
     <SideMenu>
@@ -40,14 +46,31 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
               </li>
             );
           })}
-          <li>
-            <NavLink activeClassName={styles.active} to={`${url}/Settings`}>
-              <Icon className={styles.icon} icon="wrench" />
-              <span>
-                <FormattedMessage {...messages.settings} />
-              </span>
-            </NavLink>
-          </li>
+          {layout?.settings === 'navigation' && (
+            <li>
+              <NavLink activeClassName={styles.active} to={`${url}/Settings`}>
+                <Icon className={styles.icon} icon="wrench" />
+                <span>
+                  <FormattedMessage {...messages.settings} />
+                </span>
+              </NavLink>
+            </li>
+          )}
+
+          {showLogin && layout?.login === 'navigation' && (
+            <li>
+              {isLoggedIn ? (
+                <Button className={styles.button} icon="sign-out-alt" onClick={logout}>
+                  <FormattedMessage {...messages.logout} />
+                </Button>
+              ) : (
+                <NavLink to={`${url}/Login`}>
+                  <Icon className={styles.icon} icon="sign-in-alt" />
+                  <FormattedMessage {...messages.login} />
+                </NavLink>
+              )}
+            </li>
+          )}
         </ul>
       </nav>
     </SideMenu>
