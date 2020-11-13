@@ -1,8 +1,8 @@
 import { Permission } from './Permission';
 
-const Member = [Permission.ViewApps];
+const member = [Permission.ViewApps];
 const AppEditor = [
-  ...Member,
+  ...member,
   Permission.EditApps,
   Permission.PushNotifications,
   Permission.ManageResources,
@@ -25,10 +25,15 @@ const Owner = [
 ];
 
 export const roles = {
-  Member,
+  Member: member,
   AppEditor,
   Maintainer,
   Owner,
 } as const;
 
 export type Role = keyof typeof roles;
+
+export enum TeamRole {
+  Member = 'member',
+  Manager = 'manager',
+}
