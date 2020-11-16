@@ -103,7 +103,7 @@ export function Page(): ReactElement {
     return (
       <main
         className={classNames(styles.root, {
-          [styles.hasBottomNavigation]: definition.layout.navigation === 'bottom',
+          [styles.hasBottomNavigation]: definition.layout?.navigation === 'bottom',
         })}
         data-path={prefix}
       >
