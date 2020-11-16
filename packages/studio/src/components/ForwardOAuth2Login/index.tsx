@@ -30,7 +30,11 @@ export function ForwardOAuth2Login(): ReactElement {
         .catch(() => setError(true));
     } else if (type === 'saml') {
       axios
-        .post<{ redirect: string }>(`/api/apps/${appId}/saml/${id}/authn`)
+        .post<{ redirect: string }>(`/api/apps/${appId}/saml/${id}/authn`, {
+          redirectUri: qs.get('redirect_uri'),
+          scope: qs.get('scope'),
+          state: qs.get('state'),
+        })
         .then(({ data }) => window.location.replace(data.redirect))
         .catch(() => setError(true));
     }

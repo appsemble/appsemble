@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, Sequelize } from 'sequelize';
 
-export const key = '0.15.7';
+export const key = '0.15.8';
 
 /**
  * Symmary:
@@ -37,6 +37,29 @@ export async function up(db: Sequelize): Promise<void> {
     created: { type: DataTypes.DATE, allowNull: false },
     updated: { type: DataTypes.DATE, allowNull: false },
   });
+
+  logger.info('Creating table to SamlLoginRequest');
+  await queryInterface.createTable('SamlLoginRequest', {
+    id: {
+      primaryKey: true,
+      type: DataTypes.STRING,
+    },
+    AppSamlSecretId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+      references: { key: 'id', model: 'AppSamlSecret' },
+    },
+    UserId: {
+      type: DataTypes.UUID,
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+      references: { key: 'id', model: 'User' },
+    },
+    created: { type: DataTypes.DATE, allowNull: false },
+    updated: { type: DataTypes.DATE, allowNull: false },
+  });
 }
 
 /**
@@ -47,6 +70,9 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.warn('Deleting table SamlLoginRequest');
+  await queryInterface.dropTable('SamlLoginRequest');
 
   logger.warn('Deleting table AppSamlSecret');
   await queryInterface.dropTable('AppSamlSecret');

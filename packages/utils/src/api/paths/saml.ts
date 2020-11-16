@@ -10,6 +10,20 @@ export const paths: OpenAPIV3.PathsObject = {
       tags: ['secret'],
       operationId: 'createAuthnRequest',
       security: [{ studio: [] }, {}],
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                redirectUri: { type: 'string' },
+                scope: { type: 'string' },
+                state: { type: 'string' },
+              },
+            },
+          },
+        },
+      },
       responses: {
         201: {
           description: 'A list of the Saml secrets for the app.',
@@ -45,7 +59,7 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       responses: {
-        201: {
+        302: {
           description: 'A list of the Saml secrets for the app.',
           content: {
             'application/json': {

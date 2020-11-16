@@ -27,6 +27,7 @@ import { OrganizationInvite } from './OrganizationInvite';
 import { ResetPasswordToken } from './ResetPasswordToken';
 import { Resource } from './Resource';
 import { ResourceSubscription } from './ResourceSubscription';
+import { SamlLoginRequest } from './SamlLoginRequest';
 import { User } from './User';
 
 let db: Sequelize;
@@ -67,6 +68,7 @@ export {
   ResetPasswordToken,
   Resource,
   ResourceSubscription,
+  SamlLoginRequest,
   User,
 };
 
@@ -112,6 +114,7 @@ export function initDB({
       ResetPasswordToken,
       Resource,
       ResourceSubscription,
+      SamlLoginRequest,
       User,
     ],
   };

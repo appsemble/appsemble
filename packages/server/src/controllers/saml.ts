@@ -10,9 +10,11 @@ import { v4 } from 'uuid';
 import { SignedXml, xpath } from 'xml-crypto';
 import { DOMImplementation, DOMParser, XMLSerializer } from 'xmldom';
 
-import { App, AppSamlSecret } from '../models';
+import { App, AppSamlSecret, User } from '../models';
+import { SamlLoginRequest } from '../models/SamlLoginRequest';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
+import { createOAuth2AuthorizationCode } from '../utils/model';
 
 interface Params {
   appId: number;
@@ -131,6 +133,10 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   const {
     argv: { host },
     params: { appId, appSamlSecretId },
+    request: {
+      body: { redirectUri, scope, state },
+    },
+    user,
   } = ctx;
 
   const secret = await AppSamlSecret.findOne({
@@ -138,7 +144,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
     where: { AppId: appId, id: appSamlSecretId },
   });
 
-  const loginID = `id${v4()}`;
+  const loginId = `id${v4()}`;
   const doc = dom.createDocument(samlp, 'samlp:AuthnRequest', null);
   const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, host);
 
@@ -146,7 +152,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   authnRequest.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:saml', saml);
   authnRequest.setAttribute('AssertionConsumerServiceURL', `${samlUrl}/acs`);
   authnRequest.setAttribute('Destination', secret.ssoUrl);
-  authnRequest.setAttribute('ID', loginID);
+  authnRequest.setAttribute('ID', loginId);
   authnRequest.setAttribute('Version', '2.0');
   authnRequest.setAttribute('IssueInstant', new Date().toISOString());
   authnRequest.setAttribute('IsPassive', 'true');
@@ -175,16 +181,30 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   const signature = Buffer.from(signatureBinary).toString('base64');
   redirect.searchParams.set('Signature', signature);
 
+  await SamlLoginRequest.create({
+    id: loginId,
+    AppSamlSecretId: secret.id,
+    UserId: user.id,
+    redirectUri,
+    state,
+    scope,
+  });
+
   ctx.body = { redirect: String(redirect) };
 }
 
-export async function assertConsumerService(ctx: KoaContext): Promise<void> {
+export async function assertConsumerService(ctx: KoaContext<Params>): Promise<void> {
   const {
+    argv,
     params: { appId, appSamlSecretId },
     request: {
       body: { RelayState, SAMLResponse },
     },
   } = ctx;
+
+  if (RelayState !== argv.host) {
+    throw badRequest('Invalid RelatState');
+  }
 
   const secret = await AppSamlSecret.findOne({
     attributes: ['idpCertificate'],
@@ -194,16 +214,20 @@ export async function assertConsumerService(ctx: KoaContext): Promise<void> {
   const buf = Buffer.from(SAMLResponse, 'base64');
   const xml = buf.toString('utf-8');
   const doc = parser.parseFromString(xml);
-  const x = (selector: string, element: Node = doc): Element =>
-    xpath(element, selector)?.[0] as Element;
+  const x = (localName: string, namespace: string, element: Node = doc): Element =>
+    xpath(
+      element,
+      `//*[local-name(.)="${localName}" and namespace-uri(.)="${namespace}"]`,
+    )?.[0] as Element;
+
   const sig = new SignedXml();
 
-  const status = x(`//*[local-name(.)="StatusCode" and namespace-uri(.)="${samlp}"]`);
+  const status = x('StatusCode', samlp);
   if (status.getAttribute('Value') !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
     throw badRequest('Status code is unsuccesful');
   }
 
-  const signature = x(`//*[local-name(.)="Signature" and namespace-uri(.)="${ds}"]`);
+  const signature = x('Signature', ds);
 
   sig.keyInfoProvider = {
     file: null,
@@ -215,15 +239,47 @@ export async function assertConsumerService(ctx: KoaContext): Promise<void> {
   if (!res) {
     throw badRequest('Bad signature');
   }
+  logger.info(xml);
 
-  const subject = x(`//*[local-name(.)="Subject" and namespace-uri(.)="${saml}"]`);
+  const subject = x('Subject', saml);
   if (!subject) {
     throw badRequest('No subject could be found');
   }
 
-  const nameId = x(`//*[local-name(.)="NameID" and namespace-uri(.)="${saml}"]`)?.textContent;
+  const nameId = x('NameID', saml, subject)?.textContent;
   if (!nameId) {
     throw badRequest('Unsupported NameID');
   }
-  ctx.redirect('/callback');
+
+  const loginId = x('SubjectConfirmationData', saml, subject)?.getAttribute('InResponseTo');
+  if (!loginId) {
+    throw badRequest('Invalid subject confirmation data');
+  }
+
+  const loginRequest = await SamlLoginRequest.findOne({
+    where: { id: loginId },
+    include: [
+      {
+        model: AppSamlSecret,
+        include: [{ model: App, attributes: ['domain', 'id', 'path', 'OrganizationId'] }],
+      },
+      { model: User, attributes: ['id'] },
+    ],
+  });
+  if (!loginRequest) {
+    throw badRequest('Invalid subject confirmation data');
+  }
+
+  const { code } = await createOAuth2AuthorizationCode(
+    argv,
+    loginRequest.AppSamlSecret.App,
+    loginRequest.redirectUri,
+    loginRequest.scope,
+    loginRequest.User,
+  );
+  const location = new URL(loginRequest.redirectUri);
+  location.searchParams.set('code', code);
+  location.searchParams.set('state', loginRequest.state);
+  ctx.redirect(String(location));
+  ctx.body = `Redirecting to ${location}`;
 }
