@@ -1,9 +1,9 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Saml',
-  error: 'There was a problem loading the Saml secrets.',
-  loading: 'Loading Saml secrets…',
-  noSecrets: 'No Saml secrets have been configured yet.',
+  title: 'SAML',
+  error: 'There was a problem loading the SAML secrets.',
+  loading: 'Loading SAML secrets…',
+  noSecrets: 'No SAML secrets have been configured yet.',
   addNew: 'Add new secret',
 });

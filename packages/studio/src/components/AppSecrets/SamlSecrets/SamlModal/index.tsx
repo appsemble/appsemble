@@ -11,6 +11,7 @@ import { AppSamlSecret } from '@appsemble/types';
 import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { useApp } from '../../../AppContext';
 import styles from './index.css';
 import { messages } from './messages';
 
@@ -49,6 +50,9 @@ function processCertificate(value: string): string {
  */
 export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): ReactElement {
   const { formatMessage } = useIntl();
+  const { app } = useApp();
+
+  const urlPrefix = `${window.location.origin}/api/apps/${app.id}/saml/${secret.id}`;
 
   return (
     <Modal
@@ -118,8 +122,9 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         icon="user"
         label={<FormattedMessage {...messages.acsUrlLabel} />}
         name="acsUrl"
+        placeholder={formatMessage(messages.acsUrlPlaceholder)}
         type="url"
-        value={`${window.location.origin}/api/saml/acs`}
+        value={secret.id ? `${urlPrefix}/acs` : ''}
       />
       <FormOutput
         copyErrorMessage={formatMessage(messages.spEntityIdCopyError)}
@@ -128,7 +133,8 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         icon="route"
         label={<FormattedMessage {...messages.spEntityIdLabel} />}
         name="redirectUri"
-        value={`${window.location.origin}/api/saml/metadata.xml`}
+        placeholder={formatMessage(messages.spEntityIdPlaceholder)}
+        value={secret.id ? `${urlPrefix}/metadata.xml` : ''}
       />
       <SimpleFormField
         className={styles.certificate}
@@ -139,6 +145,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         label={<FormattedMessage {...messages.spCertificateLabel} />}
         multiline
         name="spCertificate"
+        placeholder={formatMessage(messages.spCertificatePlaceholder)}
         // @ts-expect-error This can’t be properly typed.
         rows={certificateRows + 4}
       />
