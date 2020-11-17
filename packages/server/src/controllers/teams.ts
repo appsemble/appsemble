@@ -27,7 +27,7 @@ async function checkTeamPermission(ctx: KoaContext<Params>, team: Team): Promise
     }));
 
   if (!teamMember || teamMember.role !== TeamRole.Manager) {
-    throw forbidden('User does not have sufficient permissions');
+    throw forbidden('User does not have sufficient permissions.');
   }
 }
 
@@ -146,6 +146,8 @@ export async function deleteTeam(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Team not found.');
   }
 
+  await checkRole(ctx, organizationId, Permission.ManageMembers);
+
   await team.destroy();
 }
 
@@ -156,7 +158,7 @@ export async function getTeamMembers(ctx: KoaContext<Params>): Promise<void> {
 
   const team = await Team.findOne({
     where: { id: teamId, OrganizationId: organizationId },
-    include: [{ model: User, include: [{ model: TeamMember }] }],
+    include: [{ model: User }],
   });
 
   if (!team) {
@@ -167,7 +169,7 @@ export async function getTeamMembers(ctx: KoaContext<Params>): Promise<void> {
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
-    role: user.Member.role,
+    role: user.TeamMember.role,
   }));
 }
 
@@ -182,7 +184,7 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
   const team = await Team.findOne({
     where: { id: teamId, OrganizationId: organizationId },
     include: [
-      { model: User, where: { id } },
+      { model: User, where: { id }, required: false },
       { model: Organization, include: [{ model: User, where: { id }, required: false }] },
     ],
   });
@@ -191,7 +193,9 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Team not found.');
   }
 
-  if (!(await checkRole(ctx, organizationId, Permission.InviteMember))) {
+  try {
+    await checkRole(ctx, organizationId, Permission.InviteMember);
+  } catch {
     await checkTeamPermission(ctx, team);
   }
 
@@ -215,22 +219,21 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
 
 export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { organizationId, teamId },
-    request: {
-      body: { id },
-    },
+    params: { memberId, organizationId, teamId },
   } = ctx;
 
   const team = await Team.findOne({
     where: { id: teamId, OrganizationId: organizationId },
-    include: [{ model: User, where: { id } }],
+    include: [{ model: User, where: { id: memberId }, required: false }],
   });
 
   if (!team) {
     throw notFound('Team not found.');
   }
 
-  if (!(await checkRole(ctx, organizationId, Permission.InviteMember))) {
+  try {
+    await checkRole(ctx, organizationId, Permission.InviteMember);
+  } catch {
     await checkTeamPermission(ctx, team);
   }
 
@@ -238,7 +241,7 @@ export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
     throw badRequest('This user is not a member of this team.');
   }
 
-  await TeamMember.destroy({ where: { UserId: id, TeamId: team.id } });
+  await TeamMember.destroy({ where: { UserId: memberId, TeamId: team.id } });
 }
 
 export async function updateTeamMember(ctx: KoaContext<Params>): Promise<void> {
@@ -251,14 +254,16 @@ export async function updateTeamMember(ctx: KoaContext<Params>): Promise<void> {
 
   const team = await Team.findOne({
     where: { id: teamId, OrganizationId: organizationId },
-    include: [{ model: User, where: { id: memberId } }],
+    include: [{ model: User, where: { id: memberId }, required: false }],
   });
 
   if (!team) {
     throw notFound('Team not found.');
   }
 
-  if (!(await checkRole(ctx, organizationId, Permission.InviteMember))) {
+  try {
+    await checkRole(ctx, organizationId, Permission.InviteMember);
+  } catch {
     await checkTeamPermission(ctx, team);
   }
 
@@ -266,10 +271,7 @@ export async function updateTeamMember(ctx: KoaContext<Params>): Promise<void> {
     throw badRequest('This user is not a member of this team.');
   }
 
-  await TeamMember.update(
-    { role },
-    { where: { UserId: memberId, OrganizationId: organizationId } },
-  );
+  await TeamMember.update({ role }, { where: { UserId: memberId, TeamId: team.id } });
 
   const [user] = team.Users;
 

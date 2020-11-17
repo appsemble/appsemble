@@ -557,7 +557,11 @@ export const paths: OpenAPIV3.PathsObject = {
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/User/properties/id',
+              type: 'object',
+              required: ['id'],
+              properties: {
+                id: { $ref: '#/components/schemas/User/properties/id' },
+              },
             },
           },
         },
@@ -601,7 +605,7 @@ export const paths: OpenAPIV3.PathsObject = {
               type: 'object',
               required: ['role'],
               properties: {
-                name: {
+                role: {
                   type: 'string',
                   enum: Object.values(TeamRole),
                 },

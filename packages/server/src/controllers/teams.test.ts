@@ -25,6 +25,7 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
+
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 });
 
@@ -206,6 +207,49 @@ describe('updateTeam', () => {
     expect(response).toMatchObject({ status: 200, data: { id: team.id, name: 'B' } });
     expect(responseB.data.name).toStrictEqual('B');
   });
+
+  it('should not update without sufficient permissions', async () => {
+    await Member.update(
+      { role: 'Maintainer' },
+      { where: { UserId: user.id, OrganizationId: organization.id } },
+    );
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    const response = await request.put(
+      `/api/organizations/testorganization/teams/${team.id}`,
+      { name: 'B' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'User does not have sufficient permissions.' },
+    });
+  });
+
+  it('should not update a non-existent team', async () => {
+    const response = await request.put(
+      '/api/organizations/testorganization/teams/80000',
+      { name: 'B' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({ status: 404, data: { message: 'Team not found.' } });
+  });
+
+  it('should not update a team from another organization', async () => {
+    await Organization.create({
+      id: 'appsemble',
+      name: 'Appsemble',
+    });
+    const team = await Team.create({ name: 'A', OrganizationId: 'appsemble' });
+    const response = await request.put(
+      `/api/organizations/testorganization/teams/${team.id}`,
+      { name: 'B' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({ status: 404, data: { message: 'Team not found.' } });
+  });
 });
 
 describe('deleteTeam', () => {
@@ -220,5 +264,412 @@ describe('deleteTeam', () => {
 
     expect(response.status).toStrictEqual(204);
     expect(responseB.data).toStrictEqual([]);
+  });
+
+  it('should not delete without sufficient permissions', async () => {
+    await Member.update(
+      { role: 'Maintainer' },
+      { where: { UserId: user.id, OrganizationId: organization.id } },
+    );
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    const response = await request.delete(`/api/organizations/testorganization/teams/${team.id}`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'User does not have sufficient permissions.' },
+    });
+  });
+
+  it('should not delete teams from other organizations', async () => {
+    await Organization.create({
+      id: 'appsemble',
+      name: 'Appsemble',
+    });
+    const team = await Team.create({ name: 'A', OrganizationId: 'appsemble' });
+    const response = await request.delete(`/api/organizations/testorganization/teams/${team.id}`, {
+      headers: { authorization },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: { message: 'Team not found.' },
+    });
+  });
+});
+
+describe('getTeamMembers', () => {
+  it('should return an empty array', async () => {
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    const response = await request.get(
+      `/api/organizations/testorganization/teams/${team.id}/members`,
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({ status: 200, data: [] });
+  });
+
+  it('should return a list of team members', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const response = await request.get(
+      `/api/organizations/testorganization/teams/${team.id}/members`,
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        { id: user.id, name: user.name, primaryEmail: user.primaryEmail, role: TeamRole.Manager },
+        { id: userB.id, name: userB.name, primaryEmail: userB.primaryEmail, role: TeamRole.Member },
+      ],
+    });
+  });
+
+  it('should not fetch members of non-existent teams', async () => {
+    const response = await request.get('/api/organizations/testorganization/teams/80000/members', {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: { message: 'Team not found.' },
+    });
+  });
+});
+
+describe('addTeamMember', () => {
+  it('should add an organization member to a team', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    const response = await request.post(
+      `/api/organizations/testorganization/teams/${team.id}/members`,
+      { id: userB.id },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: userB.id,
+        name: userB.name,
+        primaryEmail: userB.primaryEmail,
+        role: TeamRole.Member,
+      },
+    });
+  });
+
+  it('should add an organization member to a team if user has manager role', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await Member.update(
+      { role: 'Member' },
+      { where: { UserId: user.id, OrganizationId: organization.id } },
+    );
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Manager });
+    const response = await request.post(
+      `/api/organizations/testorganization/teams/${team.id}/members`,
+      { id: userB.id },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: userB.id,
+        name: userB.name,
+        primaryEmail: userB.primaryEmail,
+        role: TeamRole.Member,
+      },
+    });
+  });
+
+  it('should not add an organization member if user has insufficient permissions', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await Member.update(
+      { role: 'Member' },
+      { where: { UserId: user.id, OrganizationId: organization.id } },
+    );
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Member });
+    const response = await request.post(
+      `/api/organizations/testorganization/teams/${team.id}/members`,
+      { id: userB.id },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'User does not have sufficient permissions.' },
+    });
+  });
+
+  it('should not add an organization member to a team twice', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await request.post(
+      `/api/organizations/testorganization/teams/${team.id}/members`,
+      { id: userB.id },
+      { headers: { authorization } },
+    );
+    const response = await request.post(
+      `/api/organizations/testorganization/teams/${team.id}/members`,
+      { id: userB.id },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message: 'This user is already a member of this team.',
+      },
+    });
+  });
+
+  it("should not add a member who isn't part of the team's organization", async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    const response = await request.post(
+      `/api/organizations/testorganization/teams/${team.id}/members`,
+      { id: userB.id },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        message: `User with id ${userB.id} is not part of this team’s organization.`,
+      },
+    });
+  });
+});
+
+describe('removeTeamMember', () => {
+  it('should remove a team member from a team', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
+
+    const response = await request.delete(
+      `/api/organizations/testorganization/teams/${team.id}/members/${userB.id}`,
+      { headers: { authorization } },
+    );
+    expect(response.status).toStrictEqual(204);
+  });
+
+  it('should remove a team member from a team if the user has the manager role', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await Member.update(
+      { role: 'Member' },
+      { where: { UserId: user.id, OrganizationId: organization.id } },
+    );
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
+    await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Manager });
+
+    const response = await request.delete(
+      `/api/organizations/testorganization/teams/${team.id}/members/${userB.id}`,
+      { headers: { authorization } },
+    );
+    expect(response.status).toStrictEqual(204);
+  });
+
+  it('should not remove a team member from a team if the user has insufficient permissions', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await Member.update(
+      { role: 'Member' },
+      { where: { UserId: user.id, OrganizationId: organization.id } },
+    );
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
+
+    const response = await request.delete(
+      `/api/organizations/testorganization/teams/${team.id}/members/${userB.id}`,
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'User does not have sufficient permissions.' },
+    });
+  });
+
+  it('should not remove a member who isn’t part of the team', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+
+    const response = await request.delete(
+      `/api/organizations/testorganization/teams/${team.id}/members/${userB.id}`,
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'This user is not a member of this team.' },
+    });
+  });
+});
+
+describe('updateTeamMember', () => {
+  it('should update the role of a team member', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
+
+    const response = await request.put(
+      `/api/organizations/testorganization/teams/${team.id}/members/${userB.id}`,
+      { role: TeamRole.Manager },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: userB.id,
+        name: userB.name,
+        primaryEmail: userB.primaryEmail,
+        role: TeamRole.Manager,
+      },
+    });
+  });
+
+  it('should update the role of a team member if the user is a manager', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await Member.update(
+      { role: 'Member' },
+      { where: { UserId: user.id, OrganizationId: organization.id } },
+    );
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
+    await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Manager });
+
+    const response = await request.put(
+      `/api/organizations/testorganization/teams/${team.id}/members/${userB.id}`,
+      { role: TeamRole.Manager },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: userB.id,
+        name: userB.name,
+        primaryEmail: userB.primaryEmail,
+        role: TeamRole.Manager,
+      },
+    });
+  });
+
+  it('should not update the role of a team member if the user has insufficient permissions', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    await Member.update(
+      { role: 'Member' },
+      { where: { UserId: user.id, OrganizationId: organization.id } },
+    );
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+    await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
+
+    const response = await request.put(
+      `/api/organizations/testorganization/teams/${team.id}/members/${userB.id}`,
+      { role: TeamRole.Manager },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        message: 'User does not have sufficient permissions.',
+      },
+    });
+  });
+
+  it('should not update the role of a non-existent team member', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', OrganizationId: organization.id });
+
+    const response = await request.put(
+      `/api/organizations/testorganization/teams/${team.id}/members/${userB.id}`,
+      { role: TeamRole.Manager },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        message: 'This user is not a member of this team.',
+      },
+    });
   });
 });
