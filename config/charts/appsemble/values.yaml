@@ -44,6 +44,9 @@ oauthSecret: null
 
 secretSecret: appsemble
 
+cronjob:
+  jobsHistoryLimit: 3
+
 migrateTo: {}
 
 proxy: false
