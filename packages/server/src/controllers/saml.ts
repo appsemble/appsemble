@@ -21,13 +21,19 @@ interface Params {
   appSamlSecretId: number;
 }
 
+/**
+ * An enum for managing known XML namespaces.
+ */
+enum NS {
+  ds = 'http://www.w3.org/2000/09/xmldsig#',
+  saml = 'urn:oasis:names:tc:SAML:2.0:assertion',
+  samlp = 'urn:oasis:names:tc:SAML:2.0:protocol',
+}
+
 const deflate = promisify(deflateRaw);
 const dom = new DOMImplementation();
 const parser = new DOMParser();
 const serializer = new XMLSerializer();
-const ds = 'http://www.w3.org/2000/09/xmldsig#';
-const saml = 'urn:oasis:names:tc:SAML:2.0:assertion';
-const samlp = 'urn:oasis:names:tc:SAML:2.0:protocol';
 
 export async function createAppSamlSecret(ctx: KoaContext<Params>): Promise<void> {
   const {
@@ -145,11 +151,11 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   });
 
   const loginId = `id${v4()}`;
-  const doc = dom.createDocument(samlp, 'samlp:AuthnRequest', null);
+  const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
   const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, host);
 
   const authnRequest = doc.documentElement;
-  authnRequest.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:saml', saml);
+  authnRequest.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:saml', NS.saml);
   authnRequest.setAttribute('AssertionConsumerServiceURL', `${samlUrl}/acs`);
   authnRequest.setAttribute('Destination', secret.ssoUrl);
   authnRequest.setAttribute('ID', loginId);
@@ -157,12 +163,12 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   authnRequest.setAttribute('IssueInstant', new Date().toISOString());
   authnRequest.setAttribute('IsPassive', 'true');
 
-  const issuer = doc.createElementNS(saml, 'saml:Issuer');
+  const issuer = doc.createElementNS(NS.saml, 'saml:Issuer');
   issuer.textContent = `${samlUrl}/metadata.xml`;
   // eslint-disable-next-line unicorn/prefer-node-append
   authnRequest.appendChild(issuer);
 
-  const nameIDPolicy = doc.createElementNS(samlp, 'samlp:NameIDPolicy');
+  const nameIDPolicy = doc.createElementNS(NS.samlp, 'samlp:NameIDPolicy');
   nameIDPolicy.setAttribute('Format', 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress');
   // eslint-disable-next-line unicorn/prefer-node-append
   authnRequest.appendChild(nameIDPolicy);
@@ -214,7 +220,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   const buf = Buffer.from(SAMLResponse, 'base64');
   const xml = buf.toString('utf-8');
   const doc = parser.parseFromString(xml);
-  const x = (localName: string, namespace: string, element: Node = doc): Element =>
+  const x = (localName: string, namespace: NS, element: Node = doc): Element =>
     xpath(
       element,
       `//*[local-name(.)="${localName}" and namespace-uri(.)="${namespace}"]`,
@@ -222,12 +228,12 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
 
   const sig = new SignedXml();
 
-  const status = x('StatusCode', samlp);
+  const status = x('StatusCode', NS.samlp);
   if (status.getAttribute('Value') !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
     throw badRequest('Status code is unsuccesful');
   }
 
-  const signature = x('Signature', ds);
+  const signature = x('Signature', NS.ds);
 
   sig.keyInfoProvider = {
     file: null,
@@ -241,17 +247,17 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   }
   logger.info(xml);
 
-  const subject = x('Subject', saml);
+  const subject = x('Subject', NS.saml);
   if (!subject) {
     throw badRequest('No subject could be found');
   }
 
-  const nameId = x('NameID', saml, subject)?.textContent;
+  const nameId = x('NameID', NS.saml, subject)?.textContent;
   if (!nameId) {
     throw badRequest('Unsupported NameID');
   }
 
-  const loginId = x('SubjectConfirmationData', saml, subject)?.getAttribute('InResponseTo');
+  const loginId = x('SubjectConfirmationData', NS.saml, subject)?.getAttribute('InResponseTo');
   if (!loginId) {
     throw badRequest('Invalid subject confirmation data');
   }
