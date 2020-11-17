@@ -3,6 +3,7 @@ import {
   BelongsTo,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -24,18 +25,21 @@ export class SamlLoginRequest extends Model<SamlLoginRequest> {
   /**
    * The OAuth2 scope the app requested in the login request.
    */
+  @AllowNull(false)
   @Column
   scope: string;
 
   /**
    * The OAuth2 state the app specified in the login request.
    */
+  @AllowNull(false)
   @Column
   state: string;
 
   /**
    * The OAuth2 redirect URI the app specified in the login request.
    */
+  @AllowNull(false)
   @Column
   redirectUri: string;
 
@@ -57,7 +61,7 @@ export class SamlLoginRequest extends Model<SamlLoginRequest> {
    * An optional ID of the user who’s logged in to Appsemble Studio at the time of the request.
    */
   @ForeignKey(() => User)
-  @Column
+  @Column(DataType.UUID)
   UserId: string;
 
   /**

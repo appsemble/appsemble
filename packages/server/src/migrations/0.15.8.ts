@@ -40,10 +40,10 @@ export async function up(db: Sequelize): Promise<void> {
 
   logger.info('Creating table to SamlLoginRequest');
   await queryInterface.createTable('SamlLoginRequest', {
-    id: {
-      primaryKey: true,
-      type: DataTypes.STRING,
-    },
+    id: { primaryKey: true, type: DataTypes.STRING },
+    scope: { type: DataTypes.STRING, allowNull: false },
+    state: { type: DataTypes.STRING, allowNull: false },
+    redirectUri: { type: DataTypes.STRING, allowNull: false },
     AppSamlSecretId: {
       type: DataTypes.INTEGER,
       allowNull: false,
