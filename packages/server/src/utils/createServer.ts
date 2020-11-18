@@ -130,7 +130,12 @@ export async function createServer({
               '*/*': bufferParser,
             },
           }),
-          serializer({ serializers: { 'text/csv': convertToCsv } }),
+          serializer({
+            serializers: {
+              'application/xml': (body: string) => body,
+              'text/csv': convertToCsv,
+            },
+          }),
           statusCode(),
           operations({ controllers }),
         ]),

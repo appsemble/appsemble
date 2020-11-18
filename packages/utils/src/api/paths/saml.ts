@@ -70,4 +70,24 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
+  '/api/apps/{appId}/saml/{appSamlSecretId}/metadata.xml': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/appSamlSecretId' },
+    ],
+    get: {
+      tags: ['secret'],
+      operationId: 'getEntityId',
+      responses: {
+        200: {
+          description: 'Get the SAML entity ID metadata',
+          content: {
+            'application/xml': {
+              schema: {},
+            },
+          },
+        },
+      },
+    },
+  },
 };

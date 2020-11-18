@@ -8,6 +8,7 @@ import {
   Toggle,
 } from '@appsemble/react-components';
 import { AppSamlSecret } from '@appsemble/types';
+import { stripPem, wrapPem } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -38,11 +39,7 @@ interface AppSecretCardProps {
 const certificateRows = 14;
 
 function processCertificate(value: string): string {
-  return `-----BEGIN CERTIFICATE-----\n${value
-    .replace(/^[\s-]*BEGIN CERTIFICATE[\s-]*/g, '')
-    .replace(/[\s-]*END CERTIFICATE[\s-]*$/g, '')
-    .replace(/\r?\n/g, '\n')
-    .trim()}\n-----END CERTIFICATE-----`;
+  return wrapPem(stripPem(value), 'CERTIFICATE');
 }
 
 /**

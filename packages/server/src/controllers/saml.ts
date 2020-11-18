@@ -2,7 +2,7 @@ import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 
 import { logger } from '@appsemble/node-utils';
-import { Permission } from '@appsemble/utils';
+import { Permission, stripPem, wrapPem } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import axios from 'axios';
 import { addYears } from 'date-fns';
@@ -28,8 +28,11 @@ interface Params {
  */
 enum NS {
   ds = 'http://www.w3.org/2000/09/xmldsig#',
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  md = 'urn:oasis:names:tc:SAML:2.0:metadata',
   saml = 'urn:oasis:names:tc:SAML:2.0:assertion',
   samlp = 'urn:oasis:names:tc:SAML:2.0:protocol',
+  xmlns = 'http://www.w3.org/2000/xmlns/',
 }
 
 const deflate = promisify(deflateRaw);
@@ -157,7 +160,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, host);
 
   const authnRequest = doc.documentElement;
-  authnRequest.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:saml', NS.saml);
+  authnRequest.setAttributeNS(NS.xmlns, 'xmlns:saml', NS.saml);
   authnRequest.setAttribute('AssertionConsumerServiceURL', `${samlUrl}/acs`);
   authnRequest.setAttribute('Destination', secret.ssoUrl);
   authnRequest.setAttribute('ID', loginId);
@@ -243,7 +246,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
       const metadata = parser.parseFromString(data);
       const cert = x('X509Certificate', NS.ds, metadata)?.textContent;
       if (cert) {
-        idpCertificate = `-----BEGIN CERTIFICATE-----\n${cert}\n-----END CERTIFICATE-----`;
+        idpCertificate = wrapPem(cert, 'CERTIFICATE');
       }
     } catch {
       // Fall back to the secret IDP certificate
@@ -335,4 +338,68 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   location.searchParams.set('state', loginRequest.state);
   ctx.redirect(String(location));
   ctx.body = `Redirecting to ${location}`;
+}
+
+export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    argv: { host },
+    params: { appId, appSamlSecretId },
+    url,
+  } = ctx;
+
+  const secret = await AppSamlSecret.findOne({
+    attributes: ['spCertificate'],
+    where: { AppId: appId, id: appSamlSecretId },
+  });
+
+  const doc = dom.createDocument(NS.md, 'md:EntityDescriptor', null);
+  const entityDescriptor = doc.documentElement;
+  entityDescriptor.setAttributeNS(NS.xmlns, 'xmlns:md', NS.md);
+  entityDescriptor.setAttribute('entityId', url);
+
+  const spssoDescriptor = doc.createElementNS(NS.md, 'md:SPSSODescriptor');
+  spssoDescriptor.setAttribute('AuthnRequestsSigned', 'true');
+  spssoDescriptor.setAttribute('WantAssertionsSigned', 'true');
+  spssoDescriptor.setAttribute('protocolSupportEnumeration', NS.samlp);
+  // eslint-disable-next-line unicorn/prefer-node-append
+  entityDescriptor.appendChild(spssoDescriptor);
+
+  const createKeyDescriptor = (use: string): void => {
+    const keyDescriptor = doc.createElementNS(NS.md, 'md:KeyDescriptor');
+    keyDescriptor.setAttribute('use', use);
+    // eslint-disable-next-line unicorn/prefer-node-append
+    spssoDescriptor.appendChild(keyDescriptor);
+
+    const keyInfo = doc.createElementNS(NS.ds, 'ds:KeyInfo');
+    keyInfo.setAttributeNS(NS.xmlns, 'xmlns:ds', NS.ds);
+    // eslint-disable-next-line unicorn/prefer-node-append
+    entityDescriptor.appendChild(keyInfo);
+
+    const x509Data = doc.createElementNS(NS.ds, 'ds:X509Data');
+    // eslint-disable-next-line unicorn/prefer-node-append
+    keyInfo.appendChild(x509Data);
+
+    const x509Certificate = doc.createElementNS(NS.ds, 'ds:X509Certificate');
+    // XXX strip PEM data
+    x509Certificate.textContent = stripPem(secret.spCertificate, true);
+    // eslint-disable-next-line unicorn/prefer-node-append
+    x509Data.appendChild(x509Certificate);
+  };
+
+  createKeyDescriptor('signing');
+  createKeyDescriptor('encryption');
+
+  const assertionConsumerService = doc.createElementNS(NS.md, 'md:AssertionConsumerService');
+  assertionConsumerService.setAttribute(
+    'Binding',
+    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+  );
+  assertionConsumerService.setAttribute(
+    'Location',
+    String(new URL(`/api/apps/${appId}/saml/${appSamlSecretId}/acs`, host)),
+  );
+  // eslint-disable-next-line unicorn/prefer-node-append
+  entityDescriptor.appendChild(assertionConsumerService);
+
+  ctx.body = serializer.serializeToString(doc);
 }
