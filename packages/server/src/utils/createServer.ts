@@ -51,8 +51,6 @@ async function xWwwFormUrlencodedParser(
 ): Promise<any> {
   const buffer = await bufferParser(body, mediaTypeObject, ctx);
   const data = parse(String(buffer));
-  // eslint-disable-next-line no-console
-  console.log('Parsed…');
   return data;
 }
 
