@@ -4,6 +4,7 @@ import { deflateRaw } from 'zlib';
 import { logger } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
+import axios from 'axios';
 import { addYears } from 'date-fns';
 import { md, pki } from 'node-forge';
 import { v4 } from 'uuid';
@@ -214,7 +215,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   }
 
   const secret = await AppSamlSecret.findOne({
-    attributes: ['idpCertificate'],
+    attributes: ['entityId', 'idpCertificate'],
     where: { AppId: appId, id: appSamlSecretId },
   });
 
@@ -235,11 +236,24 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   }
 
   const signature = x('Signature', NS.ds);
+  let idpCertificate: string;
+  if (secret.entityId) {
+    try {
+      const { data } = await axios.get(secret.entityId);
+      const metadata = parser.parseFromString(data);
+      const cert = x('X509Certificate', NS.ds, metadata)?.textContent;
+      if (cert) {
+        idpCertificate = `-----BEGIN CERTIFICATE-----\n${cert}\n-----END CERTIFICATE-----`;
+      }
+    } catch {
+      // Fall back to the secret IDP certificate
+    }
+  }
 
   sig.keyInfoProvider = {
     file: null,
     getKeyInfo: null,
-    getKey: () => Buffer.from(secret.idpCertificate),
+    getKey: () => Buffer.from(idpCertificate || secret.idpCertificate),
   };
   sig.loadSignature(signature);
   const res = sig.checkSignature(xml);
