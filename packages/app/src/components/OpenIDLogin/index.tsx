@@ -40,7 +40,7 @@ export function OpenIDLogin(): ReactElement {
           <OAuth2LoginButton
             authorizationUrl={String(new URL(`/connect/authorize/${type}/${id}`, apiUrl))}
             icon={icon}
-            key={id}
+            key={`${type} ${id}`}
             {...buttonProps}
           >
             <FormattedMessage {...messages.loginWith} values={{ name }} />

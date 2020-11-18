@@ -10,7 +10,8 @@ import { v4 } from 'uuid';
 import { SignedXml, xpath } from 'xml-crypto';
 import { DOMImplementation, DOMParser, XMLSerializer } from 'xmldom';
 
-import { App, AppSamlSecret, User } from '../models';
+import { App, AppMember, AppSamlSecret, transactional, User } from '../models';
+import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
 import { SamlLoginRequest } from '../models/SamlLoginRequest';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
@@ -190,7 +191,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   await SamlLoginRequest.create({
     id: loginId,
     AppSamlSecretId: secret.id,
-    UserId: user.id,
+    UserId: user?.id,
     redirectUri,
     state,
     scope,
@@ -267,7 +268,9 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     include: [
       {
         model: AppSamlSecret,
-        include: [{ model: App, attributes: ['domain', 'id', 'path', 'OrganizationId'] }],
+        include: [
+          { model: App, attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'] },
+        ],
       },
       { model: User, attributes: ['id'] },
     ],
@@ -276,12 +279,42 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     throw badRequest('Invalid subject confirmation data');
   }
 
+  const app = loginRequest.AppSamlSecret.App;
+  const authorization = await AppSamlAuthorization.findOne({
+    where: { nameId, AppSamlSecretId: appSamlSecretId },
+    include: [{ model: User }],
+  });
+
+  let user: User;
+  if (authorization) {
+    // If the user is already linked to a known SAML authorization, use that account.
+    user = authorization.User;
+  } else {
+    await transactional(async (transaction) => {
+      // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
+      // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
+      // account.
+      user = loginRequest.User || (await User.create({}, { transaction }));
+
+      // The logged in account is linked to a new SAML authorization for next time.
+      await AppSamlAuthorization.create(
+        { nameId, AppSamlSecretId: appSamlSecretId, UserId: user.id },
+        { transaction },
+      );
+
+      const { role } = app.definition.security.default;
+      if (role) {
+        await AppMember.create({ UserId: user.id, AppId: appId, role }, { transaction });
+      }
+    });
+  }
+
   const { code } = await createOAuth2AuthorizationCode(
     argv,
-    loginRequest.AppSamlSecret.App,
+    app,
     loginRequest.redirectUri,
     loginRequest.scope,
-    loginRequest.User,
+    user,
   );
   const location = new URL(loginRequest.redirectUri);
   location.searchParams.set('code', code);

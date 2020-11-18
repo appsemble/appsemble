@@ -1,11 +1,13 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, Sequelize } from 'sequelize';
 
-export const key = '0.15.8';
+export const key = '0.15.9';
 
 /**
- * Symmary:
+ * Summary:
  * - Create table `AppSamlSecret`
+ * - Create table `SamlLoginRequest`
+ * - Create table `AppSamlAuthorization`
  *
  * @param db - The sequelize database.
  */
@@ -60,16 +62,43 @@ export async function up(db: Sequelize): Promise<void> {
     created: { type: DataTypes.DATE, allowNull: false },
     updated: { type: DataTypes.DATE, allowNull: false },
   });
+
+  logger.info('Creating table to AppSamlAuthorization');
+  await queryInterface.createTable('AppSamlAuthorization', {
+    nameId: { type: DataTypes.STRING, primaryKey: true },
+    AppSamlSecretId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      allowNull: false,
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+      references: { key: 'id', model: 'AppSamlSecret' },
+    },
+    UserId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
+      references: { key: 'id', model: 'User' },
+    },
+    created: { type: DataTypes.DATE, allowNull: false },
+    updated: { type: DataTypes.DATE, allowNull: false },
+  });
 }
 
 /**
- * Symmary:
+ * Summary:
+ * - Drop table `AppSamlAuthorization`
+ * - Drop table `SamlLoginRequest`
  * - Drop table `AppSamlSecret`
  *
  * @param db - The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.warn('Deleting table AppSamlAuthorization');
+  await queryInterface.dropTable('AppSamlAuthorization');
 
   logger.warn('Deleting table SamlLoginRequest');
   await queryInterface.dropTable('SamlLoginRequest');
