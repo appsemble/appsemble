@@ -13,7 +13,7 @@ export function Organizations(): ReactElement {
   return (
     <Switch>
       <Route component={OrganizationsList} exact path={url} />
-      <Route component={OrganizationSettings} exact path={`${url}/:organizationId`} />
+      <Route component={OrganizationSettings} path={`${url}/:organizationId`} />
       <Redirect to={url} />
     </Switch>
   );

@@ -1,4 +1,5 @@
 import { OAuth2Provider, UserInfo } from '@appsemble/types';
+import { TeamRole } from '@appsemble/utils/src';
 import { OAuth2State } from '@appsemble/web-utils';
 
 /**
@@ -32,6 +33,13 @@ export interface Member {
   name?: string;
   primaryEmail?: string;
   role: Role;
+}
+
+export interface TeamMember {
+  id: string;
+  name?: string;
+  primaryEmail?: string;
+  role: TeamRole;
 }
 
 export interface Organization {
