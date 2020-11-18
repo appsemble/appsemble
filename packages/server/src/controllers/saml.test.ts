@@ -44,9 +44,24 @@ describe('createSamlSecret', () => {
         acsUrl: 'https://example.com/saml/acs',
         ssoUrl: 'https://example.com/saml/login',
         idpCertificate: '',
+        icon: '',
+        name: '',
       },
       { headers: { authorization } },
     );
-    expect(response).toMatchObject({ status: 200 });
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        AppId: app.id,
+        entityId: 'https://example.com/saml/metadata.xml',
+        icon: '',
+        id: 1,
+        idpCertificate: '',
+        name: '',
+        spCertificate: expect.any(String),
+        spPublicKey: expect.any(String),
+        ssoUrl: 'https://example.com/saml/login',
+      },
+    });
   });
 });

@@ -246,7 +246,7 @@ describe('createAsset', () => {
 
   it('should associate the user if the user is authenticated', async () => {
     const response = await request.post(`/api/apps/${app.id}/assets`, Buffer.alloc(0), {
-      headers: { authorization },
+      headers: { authorization, 'content-type': 'application/octet-stream' },
     });
     const asset = await Asset.findByPk(response.data.id);
 
