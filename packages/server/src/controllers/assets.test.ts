@@ -227,7 +227,9 @@ describe('createAsset', () => {
   });
 
   it('should accept empty files', async () => {
-    const response = await request.post(`/api/apps/${app.id}/assets`, Buffer.alloc(0));
+    const response = await request.post(`/api/apps/${app.id}/assets`, Buffer.alloc(0), {
+      headers: { 'content-type': 'application/octet-stream' },
+    });
     expect(response).toMatchObject({
       status: 201,
       data: { id: expect.any(Number) },
