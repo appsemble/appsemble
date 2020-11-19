@@ -48,15 +48,14 @@ export async function createAppSamlSecret(ctx: KoaContext<Params>): Promise<void
   cert.setIssuer(attrs);
   cert.sign(privateKey);
 
-  const secret = {
-    ...body,
+  const secret = { ...body, spCertificate: pki.certificateToPem(cert).trim() };
+  const { id } = await AppSamlSecret.create({
+    ...secret,
     AppId: appId,
     spPrivateKey: pki.privateKeyToPem(privateKey).trim(),
     spPublicKey: pki.publicKeyToPem(publicKey).trim(),
-    spCertificate: pki.certificateToPem(cert).trim(),
-  };
-
-  ctx.body = await AppSamlSecret.create(secret);
+  });
+  ctx.body = { ...secret, id };
 }
 
 export async function getAppSamlSecrets(ctx: KoaContext<Params>): Promise<void> {
@@ -88,7 +87,7 @@ export async function updateAppSamlSecret(ctx: KoaContext<Params>): Promise<void
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [{ model: AppSamlSecret, where: { id: appSamlSecretId } }],
+    include: [{ model: AppSamlSecret, required: false, where: { id: appSamlSecretId } }],
   });
 
   if (!app) {
@@ -100,7 +99,7 @@ export async function updateAppSamlSecret(ctx: KoaContext<Params>): Promise<void
   const [secret] = app.AppSamlSecrets;
 
   if (!secret) {
-    throw notFound('SAML secret nof found');
+    throw notFound('SAML secret not found');
   }
 
   ctx.body = await secret.update({
