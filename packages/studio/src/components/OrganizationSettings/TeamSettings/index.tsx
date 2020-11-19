@@ -65,6 +65,18 @@ export function TeamSettings(): ReactElement {
     [organizationId, memberResult, teamId],
   );
 
+  const onAdd = useCallback(
+    async (id: string) => {
+      const { data: newMember } = await axios.post<TeamMember>(
+        `/api/organizations/${organizationId}/teams/${teamId}/members`,
+        { id },
+      );
+      memberResult.setData((members) => [...members, newMember]);
+      addModal.disable();
+    },
+    [addModal, memberResult, organizationId, teamId],
+  );
+
   const onRemove = useCallback(
     async ({ id }: TeamMember) => {
       await axios.delete(`/api/organizations/${organizationId}/teams/${teamId}/members/${id}`);
@@ -101,7 +113,7 @@ export function TeamSettings(): ReactElement {
 
       <HeaderControl
         control={
-          <Button onClick={editModal.enable}>
+          <Button onClick={addModal.enable}>
             <FormattedMessage {...messages.addMember} />
           </Button>
         }
@@ -116,32 +128,29 @@ export function TeamSettings(): ReactElement {
         result={memberResult}
       >
         {(members) => (
-          <>
-            <Table>
-              <thead>
-                <tr>
-                  <th>
-                    <FormattedMessage {...messages.name} />
-                  </th>
-                  <th align="right">
-                    <FormattedMessage {...messages.actions} />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {members.map((member) => (
-                  <TeamMemberRow
-                    key={member.id}
-                    mayInvite={mayInvite}
-                    member={member}
-                    onEdit={onEdit}
-                    onRemove={onRemove}
-                  />
-                ))}
-              </tbody>
-            </Table>
-            {mayInvite && <AddTeamMemberModal teamMembers={memberResult.data} toggle={addModal} />}
-          </>
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.name} />
+                </th>
+                <th align="right">
+                  <FormattedMessage {...messages.actions} />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <TeamMemberRow
+                  key={member.id}
+                  mayInvite={mayInvite}
+                  member={member}
+                  onEdit={onEdit}
+                  onRemove={onRemove}
+                />
+              ))}
+            </tbody>
+          </Table>
         )}
       </AsyncDataView>
       {mayEditTeam && (
@@ -168,6 +177,9 @@ export function TeamSettings(): ReactElement {
             required
           />
         </Modal>
+      )}
+      {mayInvite && (
+        <AddTeamMemberModal onAdd={onAdd} teamMembers={memberResult.data} toggle={addModal} />
       )}
     </>
   );
