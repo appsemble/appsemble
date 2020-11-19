@@ -16,6 +16,6 @@ export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
   const background = opaque && '#ffffff';
 
-  const icon = (await readAsset('appsemble.svg')) as Buffer;
+  const icon = await readAsset('appsemble.svg');
   await serveIcon(ctx, { background, format: format ?? 'png', height, width, icon });
 }

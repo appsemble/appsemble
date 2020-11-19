@@ -106,7 +106,7 @@ export class Mailer {
     templateName: string,
     values: Record<string, string>,
   ): Promise<void> {
-    const template = (await readAsset(`email/${templateName}.md`, 'utf-8')) as string;
+    const template = await readAsset(`email/${templateName}.md`, 'utf-8');
     const { html, subject, text } = await renderEmail(template, {
       ...values,
       greeting: to.name ? `Hello ${to.name}` : 'Hello',
