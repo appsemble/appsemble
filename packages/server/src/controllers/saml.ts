@@ -2,10 +2,9 @@ import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 
 import { logger } from '@appsemble/node-utils';
-import { Permission, stripPem, wrapPem } from '@appsemble/utils';
-import { badRequest, notFound } from '@hapi/boom';
+import { stripPem, wrapPem } from '@appsemble/utils';
+import { badRequest } from '@hapi/boom';
 import axios from 'axios';
-import { addYears } from 'date-fns';
 import { md, pki } from 'node-forge';
 import { v4 } from 'uuid';
 import { SignedXml, xpath } from 'xml-crypto';
@@ -15,7 +14,6 @@ import { App, AppMember, AppSamlSecret, transactional, User } from '../models';
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
 import { SamlLoginRequest } from '../models/SamlLoginRequest';
 import { KoaContext } from '../types';
-import { checkRole } from '../utils/checkRole';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 
 interface Params {
@@ -39,106 +37,6 @@ const deflate = promisify(deflateRaw);
 const dom = new DOMImplementation();
 const parser = new DOMParser();
 const serializer = new XMLSerializer();
-
-export async function createAppSamlSecret(ctx: KoaContext<Params>): Promise<void> {
-  const {
-    argv: { host },
-    params: { appId },
-    request: { body },
-  } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
-    include: [{ model: AppSamlSecret }],
-  });
-
-  if (!app) {
-    throw notFound('App not found');
-  }
-
-  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
-
-  const { privateKey, publicKey } = await new Promise<pki.rsa.KeyPair>((resolve, reject) => {
-    pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>
-      error ? reject(error) : resolve(result),
-    );
-  });
-  const cert = pki.createCertificate();
-  cert.publicKey = publicKey;
-  cert.privateKey = privateKey;
-  cert.validity.notBefore = new Date();
-  cert.validity.notAfter = addYears(new Date(), 10);
-  const attrs = [
-    { shortName: 'CN', value: host },
-    { shortName: 'O', value: 'Appsemble' },
-  ];
-  cert.setSubject(attrs);
-  cert.setIssuer(attrs);
-  cert.sign(privateKey);
-
-  const secret = {
-    ...body,
-    AppId: appId,
-    spPrivateKey: pki.privateKeyToPem(privateKey).trim(),
-    spPublicKey: pki.publicKeyToPem(publicKey).trim(),
-    spCertificate: pki.certificateToPem(cert).trim(),
-  };
-
-  ctx.body = await AppSamlSecret.create(secret);
-}
-
-export async function getAppSamlSecrets(ctx: KoaContext<Params>): Promise<void> {
-  const {
-    params: { appId },
-  } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
-    include: [{ model: AppSamlSecret }],
-  });
-
-  if (!app) {
-    throw notFound('App not found');
-  }
-
-  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
-
-  ctx.body = app.AppSamlSecrets;
-}
-
-export async function updateAppSamlSecret(ctx: KoaContext<Params>): Promise<void> {
-  const {
-    params: { appId, appSamlSecretId },
-    request: {
-      body: { entityId, icon, idpCertificate, name, ssoUrl },
-    },
-  } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
-    include: [{ model: AppSamlSecret, where: { id: appSamlSecretId } }],
-  });
-
-  if (!app) {
-    throw notFound('App not found');
-  }
-
-  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
-
-  const [secret] = app.AppSamlSecrets;
-
-  if (!secret) {
-    throw notFound('SAML secret nof found');
-  }
-
-  ctx.body = await secret.update({
-    entityId,
-    icon,
-    idpCertificate,
-    name,
-    ssoUrl,
-  });
-}
 
 export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void> {
   const {
