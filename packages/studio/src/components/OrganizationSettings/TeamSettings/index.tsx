@@ -1,6 +1,4 @@
 import {
-  AsyncButton,
-  AsyncSelect,
   Button,
   Loader,
   Modal,
@@ -15,24 +13,25 @@ import { Team } from '@appsemble/types';
 import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { TeamMember } from '../../../types';
 import { checkRole } from '../../../utils/checkRole';
+import { AsyncDataView } from '../../AsyncDataView';
 import { HeaderControl } from '../../HeaderControl';
 import { useUser } from '../../UserProvider';
+import { TeamMemberRow } from '../TeamMemberRow';
 import { messages } from './messages';
 
 export function TeamSettings(): ReactElement {
   const { organizationId, teamId } = useParams<{ organizationId: string; teamId: string }>();
   const { organizations, userInfo } = useUser();
-  const { formatMessage } = useIntl();
 
   const { data: team, loading, setData: setTeam } = useData<Team>(
     `/api/organizations/${organizationId}/teams/${teamId}`,
   );
-  const { data: members, loading: membersLoading, setData: setMembers } = useData<TeamMember[]>(
+  const memberResult = useData<TeamMember[]>(
     `/api/organizations/${organizationId}/teams/${teamId}/members`,
   );
   const modal = useToggle();
@@ -51,31 +50,33 @@ export function TeamSettings(): ReactElement {
     [modal, organizationId, setTeam, teamId],
   );
 
-  const editRole = useCallback(
+  const onEdit = useCallback(
     async ({ id }: TeamMember, role: TeamRole) => {
       const { data: updated } = await axios.put<TeamMember>(
         `/api/organizations/${organizationId}/teams/${teamId}/members/${id}`,
         { role },
       );
-      setMembers((mem) => mem.map((m) => (m.id === id ? updated : m)));
+      memberResult.setData((members) =>
+        members.map((member) => (member.id === id ? updated : member)),
+      );
     },
-    [organizationId, setMembers, teamId],
+    [organizationId, memberResult, teamId],
   );
 
-  const removeMember = useCallback(
+  const onRemove = useCallback(
     async ({ id }: TeamMember) => {
       await axios.delete(`/api/organizations/${organizationId}/teams/${teamId}/members/${id}`);
-      setMembers((mem) => mem.filter((m) => m.id !== id));
+      memberResult.setData((members) => members.filter((member) => member.id !== id));
     },
-    [organizationId, setMembers, teamId],
+    [memberResult, organizationId, teamId],
   );
 
-  if (loading || membersLoading) {
+  if (loading || memberResult.loading) {
     return <Loader />;
   }
 
   const organization = organizations.find((o) => o.id === organizationId);
-  const me = members.find((member) => member.id === userInfo.sub);
+  const me = memberResult.data.find((member) => member.id === userInfo.sub);
   const mayEditTeam = organization && checkRole(organization.role, Permission.ManageMembers);
   const mayInvite =
     (me && me.role === TeamRole.Manager) ||
@@ -106,51 +107,38 @@ export function TeamSettings(): ReactElement {
       >
         <FormattedMessage {...messages.teamMembers} />
       </HeaderControl>
-      <Table>
-        <thead>
-          <tr>
-            <th>
-              <FormattedMessage {...messages.name} />
-            </th>
-            <th align="right">
-              <FormattedMessage {...messages.actions} />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((member) => (
-            <tr key={member.id}>
-              <td>{member.name || member.primaryEmail || member.id}</td>
-              <td align="right">
-                {mayInvite ? (
-                  <AsyncSelect
-                    name="role"
-                    onChange={(event, role) => editRole(member, role as TeamRole)}
-                    value={member.role}
-                  >
-                    {Object.values(TeamRole).map((role) => (
-                      <option key={role} value={role}>
-                        {formatMessage(messages[role])}
-                      </option>
-                    ))}
-                  </AsyncSelect>
-                ) : (
-                  <FormattedMessage {...messages[member.role]} />
-                )}
-                {mayInvite && (
-                  <AsyncButton
-                    className="ml-2"
-                    color="danger"
-                    icon="trash-alt"
-                    onClick={() => removeMember(member)}
-                    title={formatMessage(messages.removeMember)}
-                  />
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <AsyncDataView
+        emptyMessage={<FormattedMessage {...messages.noMembers} />}
+        errorMessage={<FormattedMessage {...messages.memberError} />}
+        loadingMessage={<FormattedMessage {...messages.loadingMembers} />}
+        result={memberResult}
+      >
+        {(members) => (
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.name} />
+                </th>
+                <th align="right">
+                  <FormattedMessage {...messages.actions} />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <TeamMemberRow
+                  key={member.id}
+                  mayInvite={mayInvite}
+                  member={member}
+                  onEdit={onEdit}
+                  onRemove={onRemove}
+                />
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </AsyncDataView>
       {mayEditTeam && (
         <Modal
           component={SimpleForm}
