@@ -12,6 +12,8 @@ metadata:
     helm.sh/chart: {{ include "appsemble.chart" . }}
 spec:
   schedule: 0 * * * * # Run every hour
+  successfulJobsHistoryLimit: {{ mul 24 .Values.cronjob.jobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ mul 24 .Values.cronjob.jobsHistoryLimit }}
   jobTemplate:
     spec:
       template:

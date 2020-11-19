@@ -8,8 +8,12 @@ import { appRouter } from '.';
 import { App } from '../../models';
 import * as appUtils from '../../utils/app';
 
+function readFixture(name: string): Promise<Buffer> {
+  return fs.readFile(join(__dirname, '__fixtures__', name));
+}
+
 function readIcon(): Promise<Buffer> {
-  return fs.readFile(join(__dirname, '__fixtures__', 'tux.png'));
+  return readFixture('tux.png');
 }
 
 beforeAll(async () => {
@@ -66,8 +70,19 @@ it('should fall back to a white background if theme is undefined', async () => {
   expect(response.data).toMatchImageSnapshot();
 });
 
-it('should fall back to the Appsemble icon if no app icon is defined', async () => {
-  jest.spyOn(appUtils, 'getApp').mockResolvedValue(({} as Partial<App>) as App);
+it('should fall back to the organization icon if no app app icon is defined', async () => {
+  jest.spyOn(appUtils, 'getApp').mockResolvedValue(({
+    Organization: {
+      icon: await readFixture('nodejs-logo.png'),
+    },
+  } as Partial<App>) as App);
+  const response = await request.get('/icon-42.png');
+  expect(response.headers['content-type']).toBe('image/png');
+  expect(response.data).toMatchImageSnapshot();
+});
+
+it('should fall back to the Appsemble icon if no app or organization icon is defined', async () => {
+  jest.spyOn(appUtils, 'getApp').mockResolvedValue(({ Organization: {} } as Partial<App>) as App);
   const response = await request.get('/icon-42.png');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();

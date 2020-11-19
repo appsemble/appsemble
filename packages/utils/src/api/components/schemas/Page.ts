@@ -39,7 +39,7 @@ const sharedProperties: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.Sch
     $ref: '#/components/schemas/Theme',
   },
   navigation: {
-    $ref: '#/components/schemas/App/properties/definition/properties/navigation',
+    $ref: '#/components/schemas/App/properties/definition/properties/layout/properties/navigation',
   },
   hideFromMenu: {
     type: 'boolean',

@@ -1,5 +1,6 @@
 import { Theme } from '@appsemble/types';
 
+import { Organization } from '../../models';
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { readAsset } from '../../utils/readAsset';
@@ -15,8 +16,9 @@ export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const { params } = ctx;
   const app = await getApp(ctx, {
     attributes: ['definition', 'icon'],
-    raw: true,
+    include: [{ model: Organization, attributes: ['icon'] }],
   });
+  const icon = app.icon || app.Organization.icon || (await readAsset('appsemble.svg'));
   const width = Number(params.width);
   const height = Number(params.height || params.width);
   const { format } = params;
@@ -29,6 +31,5 @@ export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
     background = splashColor;
   }
 
-  const icon = app.icon ?? ((await readAsset('appsemble.svg')) as Buffer);
   await serveIcon(ctx, { background, format, height, icon, width });
 }

@@ -51,7 +51,7 @@ export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void
   }
 
   await serveIcon(ctx, {
-    icon: organization.icon ?? ((await readAsset('appsemble.svg')) as Buffer),
+    icon: organization.icon ?? (await readAsset('appsemble.svg')),
     ...(!organization.icon && { width: 128, height: 128, format: 'png' }),
   });
 }
