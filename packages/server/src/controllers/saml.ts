@@ -3,7 +3,7 @@ import { deflateRaw } from 'zlib';
 
 import { logger } from '@appsemble/node-utils';
 import { stripPem, wrapPem } from '@appsemble/utils';
-import { badRequest } from '@hapi/boom';
+import { badRequest, notFound } from '@hapi/boom';
 import axios from 'axios';
 import { md, pki } from 'node-forge';
 import { v4 } from 'uuid';
@@ -48,10 +48,27 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
     user,
   } = ctx;
 
-  const secret = await AppSamlSecret.findOne({
-    attributes: ['ssoUrl', 'spPrivateKey'],
-    where: { AppId: appId, id: appSamlSecretId },
+  const app = await App.findOne({
+    where: { id: appId },
+    include: [
+      {
+        model: AppSamlSecret,
+        attributes: ['ssoUrl', 'spPrivateKey'],
+        where: { id: appSamlSecretId },
+        required: false,
+      },
+    ],
   });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  const [secret] = app.AppSamlSecrets;
+
+  if (!secret) {
+    throw notFound('SAML secret not found');
+  }
 
   const loginId = `id${v4()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
@@ -92,7 +109,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
 
   await SamlLoginRequest.create({
     id: loginId,
-    AppSamlSecretId: secret.id,
+    AppSamlSecretId: appSamlSecretId,
     UserId: user?.id,
     redirectUri,
     state,
