@@ -21,6 +21,7 @@ import { checkRole } from '../../../utils/checkRole';
 import { AsyncDataView } from '../../AsyncDataView';
 import { HeaderControl } from '../../HeaderControl';
 import { useUser } from '../../UserProvider';
+import { AddTeamMemberModal } from '../AddTeamMemberModal';
 import { TeamMemberRow } from '../TeamMemberRow';
 import { messages } from './messages';
 
@@ -34,7 +35,8 @@ export function TeamSettings(): ReactElement {
   const memberResult = useData<TeamMember[]>(
     `/api/organizations/${organizationId}/teams/${teamId}/members`,
   );
-  const modal = useToggle();
+  const editModal = useToggle();
+  const addModal = useToggle();
 
   const submitTeam = useCallback(
     async ({ name }: Team) => {
@@ -45,9 +47,9 @@ export function TeamSettings(): ReactElement {
         },
       );
       setTeam(data);
-      modal.disable();
+      editModal.disable();
     },
-    [modal, organizationId, setTeam, teamId],
+    [editModal, organizationId, setTeam, teamId],
   );
 
   const onEdit = useCallback(
@@ -87,7 +89,7 @@ export function TeamSettings(): ReactElement {
       {mayEditTeam && (
         <HeaderControl
           control={
-            <Button onClick={modal.enable}>
+            <Button onClick={editModal.enable}>
               <FormattedMessage {...messages.editButton} />
             </Button>
           }
@@ -99,7 +101,7 @@ export function TeamSettings(): ReactElement {
 
       <HeaderControl
         control={
-          <Button onClick={modal.enable}>
+          <Button onClick={editModal.enable}>
             <FormattedMessage {...messages.addMember} />
           </Button>
         }
@@ -114,29 +116,32 @@ export function TeamSettings(): ReactElement {
         result={memberResult}
       >
         {(members) => (
-          <Table>
-            <thead>
-              <tr>
-                <th>
-                  <FormattedMessage {...messages.name} />
-                </th>
-                <th align="right">
-                  <FormattedMessage {...messages.actions} />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {members.map((member) => (
-                <TeamMemberRow
-                  key={member.id}
-                  mayInvite={mayInvite}
-                  member={member}
-                  onEdit={onEdit}
-                  onRemove={onRemove}
-                />
-              ))}
-            </tbody>
-          </Table>
+          <>
+            <Table>
+              <thead>
+                <tr>
+                  <th>
+                    <FormattedMessage {...messages.name} />
+                  </th>
+                  <th align="right">
+                    <FormattedMessage {...messages.actions} />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((member) => (
+                  <TeamMemberRow
+                    key={member.id}
+                    mayInvite={mayInvite}
+                    member={member}
+                    onEdit={onEdit}
+                    onRemove={onRemove}
+                  />
+                ))}
+              </tbody>
+            </Table>
+            {mayInvite && <AddTeamMemberModal teamMembers={memberResult.data} toggle={addModal} />}
+          </>
         )}
       </AsyncDataView>
       {mayEditTeam && (
@@ -146,12 +151,12 @@ export function TeamSettings(): ReactElement {
           footer={
             <SimpleModalFooter
               cancelLabel={<FormattedMessage {...messages.cancelLabel} />}
-              onClose={modal.disable}
+              onClose={editModal.disable}
               submitLabel={<FormattedMessage {...messages.editButton} />}
             />
           }
-          isActive={modal.enabled}
-          onClose={modal.disable}
+          isActive={editModal.enabled}
+          onClose={editModal.disable}
           onSubmit={submitTeam}
           resetOnSuccess
           title={<FormattedMessage {...messages.editingTeam} />}
