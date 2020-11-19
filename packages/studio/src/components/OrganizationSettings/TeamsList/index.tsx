@@ -92,7 +92,7 @@ export function TeamsList(): ReactElement {
                   alt={formatMessage(messages.logo)}
                   icon="users"
                   key={team.id}
-                  subtitle={<FormattedMessage {...messages[team?.role]} />}
+                  subtitle={team?.role ? <FormattedMessage {...messages[team.role]} /> : ''}
                   title={team.name || team.id}
                   to={`${url}/${team.id}`}
                 />
