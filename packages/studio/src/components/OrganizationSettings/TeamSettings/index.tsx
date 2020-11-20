@@ -6,6 +6,7 @@ import {
   SimpleFormField,
   SimpleModalFooter,
   Table,
+  useConfirmation,
   useData,
   useToggle,
 } from '@appsemble/react-components';
@@ -13,8 +14,8 @@ import { Team } from '@appsemble/types';
 import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { useParams } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { TeamMember } from '../../../types';
 import { checkRole } from '../../../utils/checkRole';
@@ -28,6 +29,8 @@ import { messages } from './messages';
 export function TeamSettings(): ReactElement {
   const { organizationId, teamId } = useParams<{ organizationId: string; teamId: string }>();
   const { organizations, userInfo } = useUser();
+  const history = useHistory();
+  const { formatMessage } = useIntl();
 
   const { data: team, loading, setData: setTeam } = useData<Team>(
     `/api/organizations/${organizationId}/teams/${teamId}`,
@@ -77,7 +80,20 @@ export function TeamSettings(): ReactElement {
     [addModal, memberResult, organizationId, teamId],
   );
 
-  const onRemove = useCallback(
+  const onDelete = useCallback(async () => {
+    await axios.delete(`/api/organizations/${organizationId}/teams/${teamId}`);
+    history.replace(history.location.pathname.replace(`/teams/${teamId}`, '/teams'));
+  }, [history, organizationId, teamId]);
+
+  const onDeleteClick = useConfirmation({
+    title: <FormattedMessage {...messages.deletingTeam} />,
+    body: <FormattedMessage {...messages.deleteWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancelLabel} />,
+    confirmLabel: <FormattedMessage {...messages.deleteTeam} />,
+    action: onDelete,
+  });
+
+  const onRemoveTeamMember = useCallback(
     async ({ id }: TeamMember) => {
       await axios.delete(`/api/organizations/${organizationId}/teams/${teamId}/members/${id}`);
       memberResult.setData((members) => members.filter((member) => member.id !== id));
@@ -101,9 +117,18 @@ export function TeamSettings(): ReactElement {
       {mayEditTeam && (
         <HeaderControl
           control={
-            <Button onClick={editModal.enable}>
-              <FormattedMessage {...messages.editButton} />
-            </Button>
+            <div>
+              <Button onClick={editModal.enable}>
+                <FormattedMessage {...messages.editButton} />
+              </Button>
+              <Button
+                className="ml-2"
+                color="danger"
+                icon="trash-alt"
+                onClick={onDeleteClick}
+                title={formatMessage(messages.deleteTeam)}
+              />
+            </div>
           }
           level={4}
         >
@@ -146,7 +171,7 @@ export function TeamSettings(): ReactElement {
                   mayInvite={mayInvite}
                   member={member}
                   onEdit={onEdit}
-                  onRemove={onRemove}
+                  onRemove={onRemoveTeamMember}
                 />
               ))}
             </tbody>
