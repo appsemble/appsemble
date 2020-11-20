@@ -40,15 +40,9 @@ sequenceDiagram
   Note right of App: User presses login button
   App->>Appsemble Studio: User is redirected
   Note right of Appsemble Studio: Studio prepares user login
-  Appsemble Studio->>+IDP: User is redirected
-  IDP->>-SP: User is returned with provider login code
+  Appsemble Studio->>+IDP: User is redirected to the IDP
   Note right of IDP: User approves login
-  rect hsla(30, 30%, 30%, 0.5)
-    Note over Appsemble Studio,IDP: This happens below the surface.
-    Appsemble Studio-->>IDP: Get provider token and user info
-    IDP-->>Appsemble Studio: Return provider token and user info
-    Note right of Appsemble Studio: The logged in Appsemble account is linked<br/>if available, else a new account is created.
-  end
+  IDP->>+Appsemble Studio: User is redirected to Appsemble Studio
   Appsemble Studio->>App: User is returned with Appsemble login code
   rect hsla(30, 30%, 30%, 0.5)
     Note over App,Appsemble Studio: This happens below the surface.
