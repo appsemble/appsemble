@@ -233,7 +233,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
       // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
       // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
       // account.
-      user = loginRequest.User || (await User.create({}, { transaction }));
+      user = loginRequest.User || (await User.create({ name: nameId }, { transaction }));
 
       // The logged in account is linked to a new SAML authorization for next time.
       await AppSamlAuthorization.create(
