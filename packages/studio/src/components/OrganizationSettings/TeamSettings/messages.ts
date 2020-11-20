@@ -9,7 +9,6 @@ export const messages = defineMessages({
   name: 'Name',
   actions: 'Actions',
   addMember: 'Add member',
-  removeMember: 'Remove member',
   noMembers: 'This team currently has no members.',
   memberError: 'There was a problem loading this team’s members.',
   loadingMembers: 'Loading members…',

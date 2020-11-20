@@ -9,7 +9,7 @@ export const messages = defineMessages({
   teams: 'Teams',
   error: 'There was a problem loading the teams.',
   loading: 'Loading teams…',
-  noSecrets: 'No teams have been created yet.',
+  noTeams: 'No teams have been created yet.',
   manager: 'Manager',
   member: 'Member',
 });

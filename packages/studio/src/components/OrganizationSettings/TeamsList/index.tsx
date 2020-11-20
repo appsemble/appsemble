@@ -80,7 +80,7 @@ export function TeamsList(): ReactElement {
       )}
       <Content fullwidth main padding>
         <AsyncDataView
-          emptyMessage={<FormattedMessage {...messages.noSecrets} />}
+          emptyMessage={<FormattedMessage {...messages.noTeams} />}
           errorMessage={<FormattedMessage {...messages.error} />}
           loadingMessage={<FormattedMessage {...messages.loading} />}
           result={result}
