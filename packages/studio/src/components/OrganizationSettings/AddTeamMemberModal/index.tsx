@@ -70,6 +70,7 @@ export function AddTeamMemberModal({
             id="id"
             label={<FormattedMessage {...messages.member} />}
             onChange={handleChange}
+            required
             value={selectedMember}
           >
             {members

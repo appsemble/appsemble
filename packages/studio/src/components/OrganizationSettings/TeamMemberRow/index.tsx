@@ -1,9 +1,9 @@
-import { AsyncButton, AsyncSelect, useConfirmation } from '@appsemble/react-components/src';
-import { TeamRole } from '@appsemble/utils/src';
-import { TeamMember } from 'packages/studio/src/types';
+import { AsyncSelect, Button, useConfirmation } from '@appsemble/react-components';
+import { TeamRole } from '@appsemble/utils';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { TeamMember } from '../../../types';
 import { messages } from './messages';
 
 interface TeamMemberRowProps {
@@ -47,7 +47,7 @@ export function TeamMemberRow({
           <FormattedMessage {...messages[member.role]} />
         )}
         {mayInvite && (
-          <AsyncButton
+          <Button
             className="ml-2"
             color="danger"
             icon="trash-alt"

@@ -122,6 +122,7 @@ export function TeamsList(): ReactElement {
           icon="briefcase"
           label={<FormattedMessage {...messages.teamName} />}
           name="name"
+          required
         />
       </Modal>
     </>
