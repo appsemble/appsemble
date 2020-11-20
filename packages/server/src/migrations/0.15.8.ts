@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, Sequelize } from 'sequelize';
 
-export const key = '0.15.9';
+export const key = '0.15.8';
 
 /**
  * Summary:
