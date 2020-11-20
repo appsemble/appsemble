@@ -16,7 +16,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
       responses: {
         201: {
-          description: 'A list of the Saml secrets for the app.',
+          description: 'A list of the SAML secrets for the app.',
           content: {
             'application/json': {
               schema: {},
