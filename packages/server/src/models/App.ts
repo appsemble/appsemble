@@ -25,6 +25,7 @@ import {
   AppMessages,
   AppOAuth2Secret,
   AppRating,
+  AppSamlSecret,
   AppScreenshot,
   AppSubscription,
   Asset,
@@ -107,6 +108,9 @@ export class App extends Model<App> {
 
   @HasMany(() => AppOAuth2Secret)
   AppOAuth2Secrets: AppOAuth2Secret[];
+
+  @HasMany(() => AppSamlSecret)
+  AppSamlSecrets: AppSamlSecret[];
 
   @BelongsTo(() => Organization)
   Organization: Organization;

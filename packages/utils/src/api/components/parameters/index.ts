@@ -3,6 +3,7 @@ export * from './$orderby';
 export * from './$top';
 export * from './appId';
 export * from './appOAuth2SecretId';
+export * from './appSamlSecretId';
 export * from './assetId';
 export * from './blockId';
 export * from './blockVersion';

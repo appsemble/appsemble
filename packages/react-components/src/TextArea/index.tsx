@@ -9,7 +9,7 @@ export interface TextAreaProps
   error?: boolean;
 
   /**
-   * Indicate the select box is in a loading state.
+   * Indicate the text area is in a loading state.
    */
   loading?: boolean;
 

@@ -53,7 +53,8 @@ export function remap(
     }
     const [[name, args]] = entries;
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    return mapperImplementations[name](args, acc, { root: input, ...context });
+    const implementation = mapperImplementations[name] as any;
+    return implementation(args, acc, { root: input, ...context });
   }, input);
 }
 

@@ -12,6 +12,7 @@ export * from './getAppBlocks';
 export * from './iterApp';
 export * from './mapValues';
 export * from './objectCache';
+export * from './pem';
 export * from './remap';
 export * from './validateAppDefinition';
 export * from './langmap';
