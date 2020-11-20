@@ -241,7 +241,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
         { transaction },
       );
 
-      const { role } = app.definition.security.default;
+      const role = app.definition.security?.default?.role;
       if (role) {
         await AppMember.create({ UserId: user.id, AppId: appId, role }, { transaction });
       }
@@ -302,7 +302,6 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
     keyInfo.appendChild(x509Data);
 
     const x509Certificate = doc.createElementNS(NS.ds, 'ds:X509Certificate');
-    // XXX strip PEM data
     x509Certificate.textContent = stripPem(secret.spCertificate, true);
     // eslint-disable-next-line unicorn/prefer-node-append
     x509Data.appendChild(x509Certificate);

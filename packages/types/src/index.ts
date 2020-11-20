@@ -1240,7 +1240,9 @@ export interface WritableAppSamlSecret {
 }
 
 export interface AppSamlSecret extends WritableAppSamlSecret {
-  // XXX figure out readonly types.
+  /**
+   * The unique ID of the secret.
+   */
   id?: number;
 
   /**

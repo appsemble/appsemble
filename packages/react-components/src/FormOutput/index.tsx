@@ -17,6 +17,9 @@ interface FormOutputProps
    */
   copySuccessMessage: string;
 
+  /**
+   * If true, a textarea element will be rendered instead of an input element.
+   */
   multiline?: boolean;
 }
 
