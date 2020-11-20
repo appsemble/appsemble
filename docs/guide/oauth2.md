@@ -51,7 +51,7 @@ provider.
 
 ## Login flow
 
-The following diagram describes the login flow to Appsemble apps using third party providers.
+The following diagram describes the login flow to Appsemble apps using third party OAuth2 providers.
 
 ```mermaid
 sequenceDiagram
