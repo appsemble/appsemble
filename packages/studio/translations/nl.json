@@ -111,6 +111,7 @@
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.spEntityIdPlaceholder": "Dit wordt gegenereerd wanneer het geheim wordt opgeslagen",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.ssoUrlHelp": "De gebruiker wordt hierheen geleid om in te loggen wanneer deze op de inlogknop drukt",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.ssoUrlLabel": "Login link",
+  "studio.src.components.AppSecrets.SamlSecrets.SamlSecretItem.certificateUploaded": "Certificaat geüpload",
   "studio.src.components.AppSecrets.SamlSecrets.addNew": "Nieuw geheim toevoegen",
   "studio.src.components.AppSecrets.SamlSecrets.error": "Er was een probleem met het inladen van de SAML geheimen.",
   "studio.src.components.AppSecrets.SamlSecrets.loading": "De SAML geheimen worden ingeladen…",

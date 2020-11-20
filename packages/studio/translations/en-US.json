@@ -111,6 +111,7 @@
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.spEntityIdPlaceholder": "This will be generated once this secret is saved",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.ssoUrlHelp": "This is where the user will be redirected when they press the login button",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.ssoUrlLabel": "Login endpoint",
+  "studio.src.components.AppSecrets.SamlSecrets.SamlSecretItem.certificateUploaded": "Certificate uploaded",
   "studio.src.components.AppSecrets.SamlSecrets.addNew": "Add new secret",
   "studio.src.components.AppSecrets.SamlSecrets.error": "There was a problem loading the SAML secrets.",
   "studio.src.components.AppSecrets.SamlSecrets.loading": "Loading SAML secrets…",

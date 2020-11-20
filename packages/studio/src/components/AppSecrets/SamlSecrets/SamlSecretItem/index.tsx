@@ -2,10 +2,12 @@ import { useToggle } from '@appsemble/react-components';
 import { AppSamlSecret } from '@appsemble/types';
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
+import { useIntl } from 'react-intl';
 
 import { useApp } from '../../../AppContext';
 import { ListButton } from '../../../List/ListButton';
 import { SamlModal } from '../SamlModal';
+import { messages } from './messages';
 
 interface SamlSecretItemProps {
   /**
@@ -26,6 +28,7 @@ interface SamlSecretItemProps {
  * Render an Saml app secret that may be updated.
  */
 export function SamlSecretItem({ onUpdated, secret }: SamlSecretItemProps): ReactElement {
+  const { formatMessage } = useIntl();
   const modal = useToggle();
   const { app } = useApp();
 
@@ -42,12 +45,18 @@ export function SamlSecretItem({ onUpdated, secret }: SamlSecretItemProps): Reac
   );
 
   const ssoUrl = new URL(secret.ssoUrl);
-  const entityId = new URL(secret.entityId);
+  const entityId = secret.entityId ? new URL(secret.entityId) : null;
 
   return (
     <>
       <ListButton
-        description={entityId.origin === ssoUrl.origin ? ssoUrl.pathname : secret.ssoUrl}
+        description={
+          entityId
+            ? entityId.origin === ssoUrl.origin
+              ? entityId.pathname
+              : secret.entityId
+            : formatMessage(messages.certificateUploaded)
+        }
         icon={secret.icon}
         onClick={modal.enable}
         subtitle={ssoUrl.origin}
