@@ -129,7 +129,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   } = ctx;
 
   if (RelayState !== argv.host) {
-    throw badRequest('Invalid RelatState');
+    throw badRequest('Invalid RelayState');
   }
 
   const secret = await AppSamlSecret.findOne({
