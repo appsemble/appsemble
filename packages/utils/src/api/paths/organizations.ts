@@ -568,7 +568,14 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       responses: {
         201: {
-          $ref: '#/components/schemas/Member',
+          description: 'The added member',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
         },
       },
       security: [{ studio: [] }],
@@ -616,7 +623,14 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       responses: {
         200: {
-          $ref: '#/components/schemas/Member',
+          description: 'The updated member',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
         },
       },
       security: [{ studio: [] }],
