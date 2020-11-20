@@ -342,14 +342,14 @@ describe('createAuthnRequest', () => {
       RelayState: 'http://localhost',
       SigAlg: 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
       SAMLRequest:
-        'jVHbasMwDP2V4PckTnfpapJAWBkUulHabQ970xx1NfiSWU7p/n52ymB72BjIWByfoyNLNYHRg+jGcLBbfB+RQnYy2pJIDw0bvRUOSJGwYJBEkGLX3a/FrOACiNAH5SzLuq/01lkaDfod+qOS+LRdN+wQwiDKUjsJ+uAolDCoeAYqqzK5xAsksWwZzZWFVOYsoqjCE5hBYyGdOZO1e1PRcbVsmOp5Nbu4vLqe5zcLeM1lj/s8QXnCEpQQlj2jp6lo7DoqiUZcWQpgQ8OqxZxHTYxHzsUUBef8JfE28YfqiA0LfkT2bS7D34MZvAtOOs3aOrHF5Ojbf8zBYIAeAhTRqy6/i+vzoh6i2Wq5cVrJj+zOeQPh916qopoQ1ef7iSrQgNJd33skYmV7tvi5/vYT',
+        'jVHbSgMxEP2VJe/di4jSsLuwWIRCldKqD74N2dEGcjMzW+rfm92tUB8Uh8nkds6cZKYmsCbIbuCD2+HHgMTZyRpHcrxoxBCd9ECapAOLJFnJffewkVd5KYEII2vvRNZ9L++8o8Fi3GM8aoXPu00jDsxBFoXxCszBExcQdBqBiqoYVdIEikS2SuLawZhmJlFi4QlsMJgrb2ew8e86Ka5XjdB9ebbFFK7HAHDeznazFNkLRpqSplcnJtGAa0cMjhtRLW8TvEr+VJZy8jzRXkfcNv1QH7ERHAcUF3UJfxcmRM9eeSPaekTLSTG2/6iDRYYeGPKkVReX5Hpu1GMSW6+23mj1md37aIF/f0uVV9OJ7hdvE1SiBW26vo9IJIp2lvjZ/vYL',
       Signature:
-        'JsOpEMKEwrrDnwtuf8O/wonCocKIw5JWw4zDnsONW8KCwrvCiSfCj8OONcOPwqANWMK1wqoaw6V0R8O7Hh9YBsKIwocgwobDjsODw7ARwqIxw7PDmMO4GRrDmCvCkXzDv8KBw7R3w5NpGsKDGcKLwp7Doxhpwr3CrcOKw6TDsHTDti7Dr8KSwqscSMK4w6ggQcKVR8KRw5g1Y2tcw5Frw5jDksKyw7DCiMKbworDlFjDk8Odw6LDvnN8wpnCsWspwojCosOUUsKrP2dvw5rDrsKEw7J2wrvCrMKAMETDh0R7wpfDi8OICmDDiXYkwrbDsBEKF8ObwpXDrMO/FBzDksKJwqtIO8Obw5xowqnDqcOePVfCrsO+YsKAYhPDosOpw6HDjsKbO8Kdw6B5w7HCmnsZw5NZVgMzADttwpxBA0wGw4pXwpcwcsOfccOswpLDkMOJcn3DtyQpFMK3wr3DqArDkcKvw7rCggEfbWPCjsOhwpsGc3HDo03Dh8ODwrZkSmYiwpzCsGVnGRvDsw==',
+        'XsKUwrfDghREwqgVwq9Jw4xzU1XDnVZnJh8obsOgwo3DuGQCCB/Chx0ewoILw73Dj8O6NsOqKivDnE/DnsKwKRhhwpgJPMOSIljChUHCmSJZw45/ZsOMJMOlAcKUQhlJHDs7w5c+aAQaGyrCgWHCpETCuMOow7BpejPCiSXDvMKhCht6WsKUwpgZIMKnN1vDhzJUUsOCw59sNAZAw4RowokkRcKiwrrDgTtBwoUNw5d+w6BVw6rCgcOEE8Kpw7TCvQAhZMK/wpFCw5jCu357w7tqJ8OhSsK7VHzDvsOywpRzZsKCw6tUb8KPwpclwq7DqUbCtMKgwr7Cuk5gKV3DkDrDpnIVISsow4A2bcK9w6HDmcOPeXlzVcOGwoAPF8O+OQgzw5rCrEPCusO4R8KyfgUcYMOMPQPChsOlw4PDiMOiw6DCn8K5w6jCvUpOPF5YZDLDgMK3F13DrMKAVsOFCX81bjVew5FDZDbDtsKu',
     });
 
     const loginRequest = await SamlLoginRequest.findOne();
     expect(loginRequest).toMatchObject({
-      id: 'id01234567-89ab-cdef-0123-456789abcdef',
+      id: 'id00000000-0000-4000-aa00-000000000069',
       AppSamlSecretId: secret.id,
       UserId: user.id,
       redirectUri: 'https://app.example',

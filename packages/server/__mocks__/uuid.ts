@@ -1,6 +1,11 @@
-export = {
-  /**
-   * Return a consistent uuid.
-   */
-  v4: () => '01234567-89ab-cdef-0123-456789abcdef',
-};
+let count = 0;
+
+/**
+ * Return an consistent uuid.
+ *
+ * @returns A consistend v4 compatible uuid.
+ */
+export function v4(): string {
+  count += 1;
+  return `00000000-0000-4000-aa00-${String(count).padStart(12, '0')}`;
+}
