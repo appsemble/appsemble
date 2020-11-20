@@ -109,7 +109,9 @@
     "axios-test-instance": "^3.2.1",
     "jest-image-snapshot": "^4.2.0",
     "koa-webpack": "^6.0.0",
-    "memfs": "^3.1.3"
+    "memfs": "^3.1.3",
+    "xast-util-to-xml": "^2.0.1",
+    "xastscript": "^2.1.0"
   },
   "peerDependencies": {
     "webpack": "^4"

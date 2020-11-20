@@ -1,7 +1,9 @@
-import { URL } from 'url';
+import { URL, URLSearchParams } from 'url';
 
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import toXml from 'xast-util-to-xml';
+import x from 'xastscript';
 
 import { App, AppSamlSecret, Organization, SamlLoginRequest, User } from '../models';
 import { createServer } from '../utils/createServer';
@@ -14,6 +16,21 @@ let clock: InstalledClock;
 let secret: AppSamlSecret;
 let user: User;
 
+const idpCertificate = `-----BEGIN CERTIFICATE-----
+MIICKzCCAdWgAwIBAgIJAM8DxRNtPj90MA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNV
+BAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBX
+aWRnaXRzIFB0eSBMdGQwHhcNMTEwODEyMjA1MTIzWhcNMTIwODExMjA1MTIzWjBF
+MQswCQYDVQQGEwJBVTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50
+ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANcN
+mgm4YlSUAr2xdWei5aRU/DbWtsQ47gjkv28Ekje3ob+6q0M+D5phwYDcv9ygYmuJ
+5wOi1cPprsWdFWmvSusCAwEAAaOBpzCBpDAdBgNVHQ4EFgQUzyBR9+vE8bygqvD6
+CZ/w6aQPikMwdQYDVR0jBG4wbIAUzyBR9+vE8bygqvD6CZ/w6aQPikOhSaRHMEUx
+CzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRl
+cm5ldCBXaWRnaXRzIFB0eSBMdGSCCQDPA8UTbT4/dDAMBgNVHRMEBTADAQH/MA0G
+CSqGSIb3DQEBBQUAA0EAIQuPLA/mlMJAMF680kL7reX5WgyRwAtRzJK6FgNjE7kR
+aLZQ79UKYVYa0VAyrRdoNEyVhG4tJFEiQJzaLWsl/A==
+-----END CERTIFICATE-----
+`;
 const spCertificate = `-----BEGIN CERTIFICATE-----
 MIIC4TCCAcmgAwIBAgIBADANBgkqhkiG9w0BAQUFADA0MR4wHAYDVQQDExVodHRw
 Oi8vbG9jYWxob3N0Ojk5OTkxEjAQBgNVBAoTCUFwcHNlbWJsZTAeFw0yMDExMDYx
@@ -72,6 +89,196 @@ nwIDAQAB
 -----END PUBLIC KEY-----
 `;
 
+interface CreateSamlResponseOptions {
+  statusCode?: string;
+  subject?: { nameId?: string; loginId?: string };
+  digest?: string;
+}
+
+/**
+ * Create SAML response object for testing.
+ *
+ * The response was generated using `flask-saml2`. The response was then converted to hyperscript
+ * using Babel.
+ *
+ * @param options - Options for the SAML response
+ * @returns the base64 encoded SAML response object.
+ */
+function createSamlResponse({
+  statusCode = 'urn:oasis:names:tc:SAML:2.0:status:Success',
+  subject = { nameId: 'user@idp.example', loginId: 'id00000000-0000-0000-0000-000000000000' },
+  digest = 'QZii75yFqDTK8/RwecJX1RFca8o=',
+}: CreateSamlResponseOptions = {}): string {
+  const tree = x(
+    'samlp:Response',
+    {
+      'xmlns:samlp': 'urn:oasis:names:tc:SAML:2.0:protocol',
+      Destination: 'http://localhost:9999/api/apps/7/saml/1/acs',
+      ID: '_5190f0683c9e4b77a4e0a8ffd4d4a4dd',
+      InResponseTo: 'id27748888-5253-48bf-8cf5-b65f793b7643',
+      IssueInstant: '2020-11-20T10:26:11.008603+00:00',
+      Version: '2.0',
+    },
+    x(
+      'saml:Issuer',
+      { 'xmlns:saml': 'urn:oasis:names:tc:SAML:2.0:assertion' },
+      'http://localhost:8000/saml/metadata.xml',
+    ),
+    x(
+      'ds:Signature',
+      { 'xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#' },
+      x(
+        'ds:SignedInfo',
+        null,
+        x('ds:CanonicalizationMethod', { Algorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#' }),
+        x('ds:SignatureMethod', { Algorithm: 'http://www.w3.org/2000/09/xmldsig#rsa-sha1' }),
+        x(
+          'ds:Reference',
+          { URI: '#_5190f0683c9e4b77a4e0a8ffd4d4a4dd' },
+          x(
+            'ds:Transforms',
+            null,
+            x('ds:Transform', {
+              Algorithm: 'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
+            }),
+            x('ds:Transform', { Algorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#' }),
+          ),
+          x('ds:DigestMethod', { Algorithm: 'http://www.w3.org/2000/09/xmldsig#sha1' }),
+          x('ds:DigestValue', null, digest),
+        ),
+      ),
+      x(
+        'ds:SignatureValue',
+        null,
+        'GKQRfvJ0BR1geBqUttE6eXZCj9Ac+n1KPrN7R9odfrL8mXaU71aqW+rkNRCRV8NrY019bHDNDlWBpYDMLwsqcA==',
+      ),
+      x(
+        'ds:KeyInfo',
+        null,
+        x(
+          'ds:X509Data',
+          null,
+          x(
+            'ds:X509Certificate',
+            null,
+            'MIICKzCCAdWgAwIBAgIJAM8DxRNtPj90MA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwHhcNMTEwODEyMjA1MTIzWhcNMTIwODExMjA1MTIzWjBFMQswCQYDVQQGEwJBVTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANcNmgm4YlSUAr2xdWei5aRU/DbWtsQ47gjkv28Ekje3ob+6q0M+D5phwYDcv9ygYmuJ5wOi1cPprsWdFWmvSusCAwEAAaOBpzCBpDAdBgNVHQ4EFgQUzyBR9+vE8bygqvD6CZ/w6aQPikMwdQYDVR0jBG4wbIAUzyBR9+vE8bygqvD6CZ/w6aQPikOhSaRHMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGSCCQDPA8UTbT4/dDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA0EAIQuPLA/mlMJAMF680kL7reX5WgyRwAtRzJK6FgNjE7kRaLZQ79UKYVYa0VAyrRdoNEyVhG4tJFEiQJzaLWsl/A==',
+          ),
+        ),
+      ),
+    ),
+    x('samlp:Status', null, x('samlp:StatusCode', { Value: statusCode })),
+    x(
+      'saml:Assertion',
+      {
+        'xmlns:saml': 'urn:oasis:names:tc:SAML:2.0:assertion',
+        ID: '_2d1e69f46b0b4e569928a2a0861ff2a4',
+        IssueInstant: '2020-11-20T10:26:11.008603+00:00',
+        Version: '2.0',
+      },
+      x('saml:Issuer', null, 'http://localhost:8000/saml/metadata.xml'),
+      x(
+        'ds:Signature',
+        { 'xmlns:ds': 'http://www.w3.org/2000/09/xmldsig#' },
+        x(
+          'ds:SignedInfo',
+          null,
+          x('ds:CanonicalizationMethod', { Algorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#' }),
+          x('ds:SignatureMethod', { Algorithm: 'http://www.w3.org/2000/09/xmldsig#rsa-sha1' }),
+          x(
+            'ds:Reference',
+            { URI: '#_2d1e69f46b0b4e569928a2a0861ff2a4' },
+            x(
+              'ds:Transforms',
+              null,
+              x('ds:Transform', {
+                Algorithm: 'http://www.w3.org/2000/09/xmldsig#enveloped-signature',
+              }),
+              x('ds:Transform', { Algorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#' }),
+            ),
+            x('ds:DigestMethod', { Algorithm: 'http://www.w3.org/2000/09/xmldsig#sha1' }),
+            x('ds:DigestValue', null, 'aeMoD3gP962UNfpc8Qxd0aAELMo='),
+          ),
+        ),
+        x(
+          'ds:SignatureValue',
+          null,
+          'Y+4rrPo0doC1Tos1zsGZJr7IgNtkbf4kVKE/Au/+RNCSSLrDSOur5D5Ic5cYMhRRzidZh1xqcxaliRjgXZK4Lg==',
+        ),
+        x(
+          'ds:KeyInfo',
+          null,
+          x(
+            'ds:X509Data',
+            null,
+            x(
+              'ds:X509Certificate',
+              null,
+              'MIICKzCCAdWgAwIBAgIJAM8DxRNtPj90MA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwHhcNMTEwODEyMjA1MTIzWhcNMTIwODExMjA1MTIzWjBFMQswCQYDVQQGEwJBVTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANcNmgm4YlSUAr2xdWei5aRU/DbWtsQ47gjkv28Ekje3ob+6q0M+D5phwYDcv9ygYmuJ5wOi1cPprsWdFWmvSusCAwEAAaOBpzCBpDAdBgNVHQ4EFgQUzyBR9+vE8bygqvD6CZ/w6aQPikMwdQYDVR0jBG4wbIAUzyBR9+vE8bygqvD6CZ/w6aQPikOhSaRHMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGSCCQDPA8UTbT4/dDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA0EAIQuPLA/mlMJAMF680kL7reX5WgyRwAtRzJK6FgNjE7kRaLZQ79UKYVYa0VAyrRdoNEyVhG4tJFEiQJzaLWsl/A==',
+            ),
+          ),
+        ),
+      ),
+      subject &&
+        x(
+          'saml:Subject',
+          null,
+          subject.nameId &&
+            x(
+              'saml:NameID',
+              {
+                Format: 'urn:oasis:names:tc:SAML:2.0:nameid-format:email',
+                SPNameQualifier: 'http://localhost:9999/api/apps/7/saml/1/metadata.xml',
+              },
+              'alex@example.com',
+            ),
+          subject.loginId &&
+            x(
+              'saml:SubjectConfirmation',
+              { Method: 'urn:oasis:names:tc:SAML:2.0:cm:bearer' },
+              x('saml:SubjectConfirmationData', {
+                InResponseTo: 'id27748888-5253-48bf-8cf5-b65f793b7643',
+                NotOnOrAfter: '2020-11-20T10:41:11.008603+00:00',
+                Recipient: 'http://localhost:9999/api/apps/7/saml/1/acs',
+              }),
+            ),
+        ),
+      x(
+        'saml:Conditions',
+        {
+          NotBefore: '2020-11-20T10:23:11.008603+00:00',
+          NotOnOrAfter: '2020-11-20T10:41:11.008603+00:00',
+        },
+        x(
+          'saml:AudienceRestriction',
+          null,
+          x('saml:Audience', null, 'http://localhost:9999/api/apps/7/saml/1/metadata.xml'),
+        ),
+      ),
+      x(
+        'saml:AuthnStatement',
+        { AuthnInstant: '2020-11-20T10:26:11.008603+00:00' },
+        x(
+          'saml:AuthnContext',
+          null,
+          x('saml:AuthnContextClassRef', null, 'urn:oasis:names:tc:SAML:2.0:ac:classes:Password'),
+        ),
+      ),
+      x(
+        'saml:AttributeStatement',
+        null,
+        x(
+          'saml:Attribute',
+          { Name: 'foo', NameFormat: 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic' },
+          x('saml:AttributeValue', null, 'bar'),
+        ),
+      ),
+    ),
+  );
+  const xml = toXml(tree);
+  const buf = Buffer.from(xml);
+  return buf.toString('base64');
+}
+
 jest.mock('uuid');
 
 beforeAll(createTestSchema('saml'));
@@ -101,7 +308,7 @@ beforeEach(async () => {
     AppId: app.id,
     entityId: 'https://example.com/saml/metadata.xml',
     ssoUrl: 'https://example.com/saml/login',
-    idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+    idpCertificate,
     icon: '',
     name: '',
     spCertificate,
@@ -172,6 +379,53 @@ describe('createAuthnRequest', () => {
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'SAML secret not found', statusCode: 404 },
+    });
+  });
+});
+
+describe('assertConsumerService', () => {
+  it('should handle an invalid relay state', async () => {
+    const response = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse(),
+        RelayState: 'http://invalid.example',
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { statusCode: 400, error: 'Bad Request', message: 'Invalid RelayState' },
+    });
+  });
+
+  it('should handle if no secret can be found', async () => {
+    const response = await request.post(
+      '/api/apps/23/saml/93/acs',
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse(),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: { statusCode: 404, error: 'Not Found', message: 'SAML secret not found' },
+    });
+  });
+
+  it('should handle an invalid status code', async () => {
+    const response = await request.post(
+      `/api/apps/${app.id}/saml/${secret.id}/acs`,
+      new URLSearchParams({
+        SAMLResponse: createSamlResponse({ statusCode: 'Any invalid string' }),
+        RelayState: 'http://localhost',
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { statusCode: 400, error: 'Bad Request', message: 'Status code is unsuccesful' },
     });
   });
 });

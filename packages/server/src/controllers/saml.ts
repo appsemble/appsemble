@@ -137,6 +137,10 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     where: { AppId: appId, id: appSamlSecretId },
   });
 
+  if (!secret) {
+    throw notFound('SAML secret not found');
+  }
+
   const buf = Buffer.from(SAMLResponse, 'base64');
   const xml = buf.toString('utf-8');
   const doc = parser.parseFromString(xml);
@@ -176,6 +180,9 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   sig.loadSignature(signature);
   const res = sig.checkSignature(xml);
   if (!res) {
+    sig.validationErrors.forEach((error) => {
+      logger.warn(error);
+    });
     throw badRequest('Bad signature');
   }
   logger.info(xml);
