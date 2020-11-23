@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.9] - 2020-11-23
+
+### Added
+
+- Server: Add more verbose logging for running app cronjobs.
+
 ## [0.15.8] - 2020-11-20
 
 ### Added
