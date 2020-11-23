@@ -1,8 +1,19 @@
+import { TeamRole } from '@appsemble/utils/src';
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
 
-import { App, AppMember, AppSubscription, Member, Organization, Resource, User } from '../models';
+import {
+  App,
+  AppMember,
+  AppSubscription,
+  Member,
+  Organization,
+  Resource,
+  Team,
+  TeamMember,
+  User,
+} from '../models';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -82,6 +93,14 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
           query: {
             roles: ['Reader'],
           },
+        },
+        testResourceTeam: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+          query: { roles: ['$team:member'] },
         },
         testExpirableResource: {
           expires: '10m',
@@ -329,6 +348,57 @@ describe('queryResources', () => {
         {
           id: resourceA.id,
           foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+  });
+
+  it('should only fetch resources from team members', async () => {
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    const resourceB = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam`, {
+      headers: { authorization },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+        {
+          id: resourceB.id,
+          foo: 'baz',
           $created: new Date(0).toJSON(),
           $updated: new Date(0).toJSON(),
         },
