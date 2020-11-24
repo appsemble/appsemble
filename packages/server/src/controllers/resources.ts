@@ -107,19 +107,15 @@ async function verifyPermission(
     result.push({ UserId: user.id });
   }
 
-  let teamIds: number[] = [];
-
-  if (functionalRoles.find((r) => r.startsWith('$team'))) {
-    teamIds = (
+  if (functionalRoles.includes(`$team:${TeamRole.Member}`)) {
+    const teamIds = (
       await TeamMember.findAll({
-        where: { UserId: user.id },
+        where: { UserId: user.id, role: TeamRole.Member },
         raw: true,
         attributes: ['TeamId'],
       })
     ).map((t) => t.TeamId);
-  }
 
-  if (functionalRoles.includes(`$team:${TeamRole.Member}`)) {
     const userIds = (
       await TeamMember.findAll({
         attributes: ['UserId'],
@@ -131,11 +127,19 @@ async function verifyPermission(
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Manager}`)) {
+    const teamIds = (
+      await TeamMember.findAll({
+        where: { UserId: user.id },
+        raw: true,
+        attributes: ['TeamId'],
+      })
+    ).map((t) => t.TeamId);
+
     const userIds = (
       await TeamMember.findAll({
         attributes: ['UserId'],
         raw: true,
-        where: { TeamId: teamIds, role: TeamRole.Manager },
+        where: { TeamId: teamIds },
       })
     ).map((tm) => tm.UserId);
     result.push({ UserId: { [Op.in]: userIds } });
@@ -626,7 +630,6 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   });
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
-
   verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
