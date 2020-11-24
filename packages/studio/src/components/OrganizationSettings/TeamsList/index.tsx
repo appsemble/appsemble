@@ -100,31 +100,31 @@ export function TeamsList(): ReactElement {
             </ul>
           )}
         </AsyncDataView>
-      </Content>
-      <Modal
-        component={SimpleForm}
-        defaultValues={newTeam}
-        footer={
-          <SimpleModalFooter
-            cancelLabel={<FormattedMessage {...messages.cancelLabel} />}
-            onClose={modal.disable}
-            submitLabel={<FormattedMessage {...messages.createButton} />}
+        <Modal
+          component={SimpleForm}
+          defaultValues={newTeam}
+          footer={
+            <SimpleModalFooter
+              cancelLabel={<FormattedMessage {...messages.cancelLabel} />}
+              onClose={modal.disable}
+              submitLabel={<FormattedMessage {...messages.createButton} />}
+            />
+          }
+          isActive={modal.enabled}
+          onClose={modal.disable}
+          onSubmit={submitTeam}
+          resetOnSuccess
+          title={<FormattedMessage {...messages.creatingNewTeam} />}
+        >
+          <SimpleFormField
+            disabled={!userInfo.email_verified}
+            icon="briefcase"
+            label={<FormattedMessage {...messages.teamName} />}
+            name="name"
+            required
           />
-        }
-        isActive={modal.enabled}
-        onClose={modal.disable}
-        onSubmit={submitTeam}
-        resetOnSuccess
-        title={<FormattedMessage {...messages.creatingNewTeam} />}
-      >
-        <SimpleFormField
-          disabled={!userInfo.email_verified}
-          icon="briefcase"
-          label={<FormattedMessage {...messages.teamName} />}
-          name="name"
-          required
-        />
-      </Modal>
+        </Modal>
+      </Content>
     </>
   );
 }

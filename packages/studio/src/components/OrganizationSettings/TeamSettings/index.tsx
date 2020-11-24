@@ -1,6 +1,5 @@
 import {
   Button,
-  Loader,
   Modal,
   SimpleForm,
   SimpleFormField,
@@ -32,9 +31,7 @@ export function TeamSettings(): ReactElement {
   const history = useHistory();
   const { formatMessage } = useIntl();
 
-  const { data: team, loading, setData: setTeam } = useData<Team>(
-    `/api/organizations/${organizationId}/teams/${teamId}`,
-  );
+  const teamResult = useData<Team>(`/api/organizations/${organizationId}/teams/${teamId}`);
   const memberResult = useData<TeamMember[]>(
     `/api/organizations/${organizationId}/teams/${teamId}/members`,
   );
@@ -49,10 +46,10 @@ export function TeamSettings(): ReactElement {
           name,
         },
       );
-      setTeam(data);
+      teamResult.setData(data);
       editModal.disable();
     },
-    [editModal, organizationId, setTeam, teamId],
+    [editModal, organizationId, teamResult, teamId],
   );
 
   const onEdit = useCallback(
@@ -101,10 +98,6 @@ export function TeamSettings(): ReactElement {
     [memberResult, organizationId, teamId],
   );
 
-  if (loading || memberResult.loading) {
-    return <Loader />;
-  }
-
   const organization = organizations.find((o) => o.id === organizationId);
   const me = memberResult.data.find((member) => member.id === userInfo.sub);
   const mayEditTeam = organization && checkRole(organization.role, Permission.ManageMembers);
@@ -113,101 +106,109 @@ export function TeamSettings(): ReactElement {
     (organization && checkRole(organization.role, Permission.InviteMember));
 
   return (
-    <>
-      <HeaderControl
-        control={
-          mayEditTeam && (
-            <div>
-              <Button onClick={editModal.enable}>
-                <FormattedMessage {...messages.editButton} />
-              </Button>
-              <Button
-                className="ml-2"
-                color="danger"
-                icon="trash-alt"
-                onClick={onDeleteClick}
-                title={formatMessage(messages.deleteTeam)}
-              />
-            </div>
-          )
-        }
-        level={4}
-      >
-        {team.name}
-      </HeaderControl>
-
-      <HeaderControl
-        control={
-          mayInvite && (
-            <Button onClick={addModal.enable}>
-              <FormattedMessage {...messages.addMember} />
-            </Button>
-          )
-        }
-        level={5}
-      >
-        <FormattedMessage {...messages.teamMembers} />
-      </HeaderControl>
-      <AsyncDataView
-        emptyMessage={<FormattedMessage {...messages.noMembers} />}
-        errorMessage={<FormattedMessage {...messages.memberError} />}
-        loadingMessage={<FormattedMessage {...messages.loadingMembers} />}
-        result={memberResult}
-      >
-        {(members) => (
-          <Table>
-            <thead>
-              <tr>
-                <th>
-                  <FormattedMessage {...messages.name} />
-                </th>
-                <th align="right">
-                  <FormattedMessage {...messages.actions} />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {members.map((member) => (
-                <TeamMemberRow
-                  key={member.id}
-                  mayInvite={mayInvite}
-                  member={member}
-                  onEdit={onEdit}
-                  onRemove={onRemoveTeamMember}
+    <AsyncDataView
+      emptyMessage={<FormattedMessage {...messages.noTeam} />}
+      errorMessage={<FormattedMessage {...messages.teamError} />}
+      loadingMessage={<FormattedMessage {...messages.loadingTeam} />}
+      result={teamResult}
+    >
+      {(team) => (
+        <>
+          <HeaderControl
+            control={
+              mayEditTeam && (
+                <div>
+                  <Button onClick={editModal.enable}>
+                    <FormattedMessage {...messages.editButton} />
+                  </Button>
+                  <Button
+                    className="ml-2"
+                    color="danger"
+                    icon="trash-alt"
+                    onClick={onDeleteClick}
+                    title={formatMessage(messages.deleteTeam)}
+                  />
+                </div>
+              )
+            }
+            level={4}
+          >
+            {team.name}
+          </HeaderControl>
+          <HeaderControl
+            control={
+              mayInvite && (
+                <Button onClick={addModal.enable}>
+                  <FormattedMessage {...messages.addMember} />
+                </Button>
+              )
+            }
+            level={5}
+          >
+            <FormattedMessage {...messages.teamMembers} />
+          </HeaderControl>
+          <AsyncDataView
+            emptyMessage={<FormattedMessage {...messages.noMembers} />}
+            errorMessage={<FormattedMessage {...messages.memberError} />}
+            loadingMessage={<FormattedMessage {...messages.loadingMembers} />}
+            result={memberResult}
+          >
+            {(members) => (
+              <Table>
+                <thead>
+                  <tr>
+                    <th>
+                      <FormattedMessage {...messages.name} />
+                    </th>
+                    <th align="right">
+                      <FormattedMessage {...messages.actions} />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {members.map((member) => (
+                    <TeamMemberRow
+                      key={member.id}
+                      mayInvite={mayInvite}
+                      member={member}
+                      onEdit={onEdit}
+                      onRemove={onRemoveTeamMember}
+                    />
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </AsyncDataView>
+          {mayEditTeam && (
+            <Modal
+              component={SimpleForm}
+              defaultValues={team}
+              footer={
+                <SimpleModalFooter
+                  cancelLabel={<FormattedMessage {...messages.cancelLabel} />}
+                  onClose={editModal.disable}
+                  submitLabel={<FormattedMessage {...messages.editButton} />}
                 />
-              ))}
-            </tbody>
-          </Table>
-        )}
-      </AsyncDataView>
-      {mayEditTeam && (
-        <Modal
-          component={SimpleForm}
-          defaultValues={team}
-          footer={
-            <SimpleModalFooter
-              cancelLabel={<FormattedMessage {...messages.cancelLabel} />}
+              }
+              isActive={editModal.enabled}
               onClose={editModal.disable}
-              submitLabel={<FormattedMessage {...messages.editButton} />}
-            />
-          }
-          isActive={editModal.enabled}
-          onClose={editModal.disable}
-          onSubmit={submitTeam}
-          resetOnSuccess
-          title={<FormattedMessage {...messages.editingTeam} />}
-        >
-          <SimpleFormField
-            icon="briefcase"
-            label={<FormattedMessage {...messages.teamName} />}
-            name="name"
-            required
-          />
-        </Modal>
+              onSubmit={submitTeam}
+              resetOnSuccess
+              title={<FormattedMessage {...messages.editingTeam} />}
+            >
+              <SimpleFormField
+                icon="briefcase"
+                label={<FormattedMessage {...messages.teamName} />}
+                name="name"
+                required
+              />
+            </Modal>
+          )}
+          {mayInvite && (
+            <AddTeamMemberModal onAdd={onAdd} teamMembers={memberResult.data} toggle={addModal} />
+          )}
+        </>
       )}
-      {mayInvite && (
-        <AddTeamMemberModal onAdd={onAdd} teamMembers={memberResult.data} toggle={addModal} />
-      )}
-    </>
+    </AsyncDataView>
   );
 }
