@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.15.9] - 2020-11-23
+
+### Added
+
+- Server: Add more verbose logging for running app cronjobs.
+
+## [0.15.8] - 2020-11-20
+
+### Added
+
+- App: Add `layout` property which can be used to determine where various layout elements should be.
+- Server: Add support connecting for SAML2.0 identity providers to apps.
+- Studio: Add support connecting for SAML2.0 identity providers to apps.
+
+### Changed
+
+- App: Move `navigation` to `layout`.
+
 ## [0.15.7] - 2020-11-13
 
 ### Added

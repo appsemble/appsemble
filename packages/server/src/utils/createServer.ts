@@ -1,10 +1,12 @@
 import { dirname } from 'path';
+import { parse } from 'querystring';
 
 import { loggerMiddleware } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
+import { Readable } from 'form-data';
 import Koa from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
@@ -20,6 +22,7 @@ import { serializer } from 'koas-serializer';
 import { specHandler } from 'koas-spec-handler';
 import { statusCode } from 'koas-status-code';
 import { swaggerUI } from 'koas-swagger-ui';
+import { OpenAPIV3 } from 'openapi-types';
 import { Configuration } from 'webpack';
 
 import * as controllers from '../controllers';
@@ -30,7 +33,7 @@ import { frontend } from '../middleware/frontend';
 import { tinyRouter } from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
 import { bulmaHandler } from '../routes/bulmaHandler';
-import { Argv, KoaMiddleware } from '../types';
+import { Argv, KoaContext, KoaMiddleware } from '../types';
 import { authentication } from './authentication';
 import { convertToCsv } from './convertToCsv';
 import { Mailer } from './email/Mailer';
@@ -40,6 +43,16 @@ import { readPackageJson } from './readPackageJson';
 bufferParser.skipValidation = true;
 // @ts-expect-error This is needed due to an upstream bug in Koas
 formdataParser.skipValidation = true;
+
+async function xWwwFormUrlencodedParser(
+  body: Readable,
+  mediaTypeObject: OpenAPIV3.MediaTypeObject,
+  ctx: KoaContext,
+): Promise<any> {
+  const buffer = await bufferParser(body, mediaTypeObject, ctx);
+  const data = parse(String(buffer));
+  return data;
+}
 
 interface CreateServerOptions {
   /**
@@ -109,8 +122,18 @@ export async function createServer({
           swaggerUI({ url: '/api-explorer' }),
           security(authentication(argv) as any),
           parameters(),
-          bodyParser({ parsers: { '*/*': bufferParser } }),
-          serializer({ serializers: { 'text/csv': convertToCsv } }),
+          bodyParser({
+            parsers: {
+              'application/x-www-form-urlencoded': xWwwFormUrlencodedParser,
+              '*/*': bufferParser,
+            },
+          }),
+          serializer({
+            serializers: {
+              'application/xml': (body: string) => body,
+              'text/csv': convertToCsv,
+            },
+          }),
           statusCode(),
           operations({ controllers }),
         ]),

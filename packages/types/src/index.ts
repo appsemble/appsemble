@@ -1165,6 +1165,8 @@ export interface AppMessages {
  * screen.
  */
 export interface OAuth2Provider {
+  type?: 'oauth2';
+
   /**
    * The OAuth2 redirect URL.
    *
@@ -1223,4 +1225,43 @@ export interface AppOAuth2Secret extends OAuth2Provider {
    * The remapper to apply on the user info data.
    */
   remapper: Remapper;
+}
+
+export interface WritableAppSamlSecret {
+  /**
+   * The name that will be displayed on the login button.
+   */
+  name: string;
+
+  /**
+   * The icon that will be displayed on the login button.
+   */
+  icon: IconName;
+
+  /**
+   * The certificate of the identity provider.
+   */
+  idpCertificate: string;
+
+  /**
+   * The URL of the identity provider where SAML metadata is hosted.
+   */
+  entityId: string;
+
+  /**
+   * The URL of the identity provider where the user will be redirected to in order to login.
+   */
+  ssoUrl: string;
+}
+
+export interface AppSamlSecret extends WritableAppSamlSecret {
+  /**
+   * The unique ID of the secret.
+   */
+  id?: number;
+
+  /**
+   * The SAML service provider certificate.
+   */
+  spCertificate?: string;
 }

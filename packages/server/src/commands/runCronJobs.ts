@@ -19,6 +19,7 @@ async function handleAction(
   action: (params: ServerActionParameters) => Promise<unknown>,
   params: ServerActionParameters,
 ): Promise<void> {
+  logger.info(`Running action: ${params.action.type}`);
   let data = 'remap' in params.action ? remap(params.action.remap, params.data, null) : params.data;
 
   try {
@@ -31,16 +32,17 @@ async function handleAction(
       });
     }
   } catch (error: unknown) {
+    logger.error(`Error running action: ${params.action.type}`);
     if (params.action.onError) {
-      await handleAction(actions[params.action.onError.type], {
+      return handleAction(actions[params.action.onError.type], {
         ...params,
         action: params.action.onError,
         data,
       });
-    } else {
-      throw error;
     }
+    throw error;
   }
+  logger.info(`Succesfully ran action: ${params.action.type}`);
 }
 
 export function builder(yargs: Argv): Argv {

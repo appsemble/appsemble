@@ -42,6 +42,7 @@ dropdown
 ESLint
 falsy
 GitLab
+IDP
 JSON
 JSX
 JWT
@@ -57,12 +58,14 @@ OData
 OpenAPI
 OpenID
 OpenStreetMap
+PEM
 Preact
 remapper/mapper
 Redux
 SDK
 SMTP
 SSL
+SSO
 Stylelint
 TSDoc
 util/kitten

@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { HelmetIntl } from '../HelmetIntl';
 import { messages } from './messages';
 import { OAuth2Secrets } from './OAuth2Secrets';
+import { SamlSecrets } from './SamlSecrets';
 
 export function AppSecrets(): ReactElement {
   return (
@@ -14,6 +15,7 @@ export function AppSecrets(): ReactElement {
         <FormattedMessage {...messages.title} />
       </Title>
       <OAuth2Secrets />
+      <SamlSecrets />
     </Content>
   );
 }
