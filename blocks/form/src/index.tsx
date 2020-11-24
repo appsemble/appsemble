@@ -49,6 +49,7 @@ bootstrap(
     const onChange = useCallback(
       async (name: string, value: Values, err: FieldErrorMap) => {
         setValues(value);
+        events.emit.change(value);
         setErrors(err);
 
         if (!requirements?.length) {
@@ -79,11 +80,12 @@ bootstrap(
           return;
         }
         const newValues = Object.assign({}, value, ...patchedValues);
+        events.emit.change(newValues);
         setValues(newValues);
         setErrors(generateDefaultValidity(fields, newValues, utils));
         setFormError(error);
       },
-      [actions, fields, formRequirementError, requirements, utils],
+      [actions, events, fields, formRequirementError, requirements, utils],
     );
 
     const onSubmit = useCallback(() => {
