@@ -594,6 +594,15 @@ declare module '@appsemble/sdk' {
     data: never;
   }
 
+  interface EventEmitters {
+    /**
+     * This event is emitted every time a change is made to the form.
+     *
+     * The data received in the entire form data.
+     */
+    change: never;
+  }
+
   interface Parameters {
     /**
      * A list of objects describing each field that can be entered in the form.
