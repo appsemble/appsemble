@@ -1,12 +1,13 @@
 import {
-  CardFooterButton,
-  Form,
   Modal,
   SelectField,
+  SimpleForm,
+  SimpleFormField,
+  SimpleModalFooter,
   Toggle,
   useData,
 } from '@appsemble/react-components';
-import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -27,32 +28,24 @@ export function AddTeamMemberModal({
 }: AddTeamMemberModalProps): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();
   const result = useData<Member[]>(`/api/organizations/${organizationId}/members`);
-  const [selectedMember, setSelectedMember] = useState(result?.data?.[0]?.id);
+  const onSubmit = useCallback(({ memberId }) => onAdd(memberId), [onAdd]);
 
-  const onSubmit = useCallback(() => {
-    onAdd(
-      selectedMember ||
-        result?.data?.find((member) => !teamMembers.map((tm) => tm.id).includes(member.id))?.id,
-    );
-  }, [onAdd, result.data, selectedMember, teamMembers]);
-
-  const handleChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
-    const memberId = event.currentTarget.value;
-    setSelectedMember(memberId);
-  }, []);
+  const defaultValues = {
+    memberId: result?.data?.find((member) => !teamMembers.map((tm) => tm.id).includes(member.id))
+      ?.id,
+  };
 
   return (
     <Modal
-      component={Form}
+      component={SimpleForm}
+      defaultValues={defaultValues}
       footer={
-        <>
-          <CardFooterButton onClick={toggle.disable}>
-            <FormattedMessage {...messages.cancel} />
-          </CardFooterButton>
-          <CardFooterButton color="primary" type="submit">
-            <FormattedMessage {...messages.addMember} />
-          </CardFooterButton>
-        </>
+        <SimpleModalFooter
+          allowPristine={false}
+          cancelLabel={<FormattedMessage {...messages.cancel} />}
+          onClose={toggle.disable}
+          submitLabel={<FormattedMessage {...messages.addMember} />}
+        />
       }
       isActive={toggle.enabled}
       onClose={toggle.disable}
@@ -66,12 +59,12 @@ export function AddTeamMemberModal({
         result={result}
       >
         {(members) => (
-          <SelectField
-            id="id"
+          <SimpleFormField
+            component={SelectField}
+            defaultValue={members?.[0]?.id}
             label={<FormattedMessage {...messages.member} />}
-            onChange={handleChange}
+            name="memberId"
             required
-            value={selectedMember}
           >
             {members
               .filter((member) => !teamMembers.map((tm) => tm.id).includes(member.id))
@@ -80,7 +73,7 @@ export function AddTeamMemberModal({
                   {member.name || member.primaryEmail || member.id}
                 </option>
               ))}
-          </SelectField>
+          </SimpleFormField>
         )}
       </AsyncDataView>
     </Modal>

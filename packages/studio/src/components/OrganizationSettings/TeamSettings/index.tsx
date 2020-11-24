@@ -114,9 +114,9 @@ export function TeamSettings(): ReactElement {
 
   return (
     <>
-      {mayEditTeam && (
-        <HeaderControl
-          control={
+      <HeaderControl
+        control={
+          mayEditTeam && (
             <div>
               <Button onClick={editModal.enable}>
                 <FormattedMessage {...messages.editButton} />
@@ -129,18 +129,20 @@ export function TeamSettings(): ReactElement {
                 title={formatMessage(messages.deleteTeam)}
               />
             </div>
-          }
-          level={4}
-        >
-          {team.name}
-        </HeaderControl>
-      )}
+          )
+        }
+        level={4}
+      >
+        {team.name}
+      </HeaderControl>
 
       <HeaderControl
         control={
-          <Button onClick={addModal.enable}>
-            <FormattedMessage {...messages.addMember} />
-          </Button>
+          mayInvite && (
+            <Button onClick={addModal.enable}>
+              <FormattedMessage {...messages.addMember} />
+            </Button>
+          )
         }
         level={5}
       >

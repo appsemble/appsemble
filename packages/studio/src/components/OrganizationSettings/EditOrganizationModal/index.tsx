@@ -1,9 +1,9 @@
 import {
-  CardFooterButton,
   FileUpload,
   Modal,
   SimpleForm,
   SimpleFormField,
+  SimpleModalFooter,
   Toggle,
   useObjectURL,
 } from '@appsemble/react-components';
@@ -39,14 +39,11 @@ export function EditOrganizationModal({
         name: organization.name,
       }}
       footer={
-        <>
-          <CardFooterButton onClick={editModal.disable}>
-            <FormattedMessage {...messages.cancel} />
-          </CardFooterButton>
-          <CardFooterButton color="primary" type="submit">
-            <FormattedMessage {...messages.submit} />
-          </CardFooterButton>
-        </>
+        <SimpleModalFooter
+          cancelLabel={<FormattedMessage {...messages.cancel} />}
+          onClose={editModal.disable}
+          submitLabel={<FormattedMessage {...messages.submit} />}
+        />
       }
       isActive={editModal.enabled}
       onClose={editModal.disable}

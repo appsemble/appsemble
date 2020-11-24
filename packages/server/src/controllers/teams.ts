@@ -1,7 +1,7 @@
 import { Permission, TeamRole } from '@appsemble/utils';
-import { badRequest, forbidden, notFound, unauthorized } from '@hapi/boom';
+import { badRequest, forbidden, notFound } from '@hapi/boom';
 
-import { Organization, Team, TeamMember, User } from '../models';
+import { Organization, Team, TeamMember, transactional, User } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 
@@ -16,10 +16,6 @@ async function checkTeamPermission(ctx: KoaContext<Params>, team: Team): Promise
     params: { teamId },
     user,
   } = ctx;
-  if (!user) {
-    throw unauthorized();
-  }
-
   const teamMember =
     team?.Users.find((u) => u.id === user.id)?.TeamMember ??
     (await TeamMember.findOne({
@@ -47,8 +43,14 @@ export async function createTeam(ctx: KoaContext<Params>): Promise<void> {
 
   await checkRole(ctx, organizationId, Permission.ManageMembers);
 
-  const team = await Team.create({ name, OrganizationId: organizationId });
-  await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
+  let team: Team;
+  await transactional(async (transaction) => {
+    team = await Team.create({ name, OrganizationId: organizationId }, { transaction });
+    await TeamMember.create(
+      { TeamId: team.id, UserId: user.id, role: TeamRole.Manager },
+      { transaction },
+    );
+  });
 
   ctx.body = {
     id: team.id,

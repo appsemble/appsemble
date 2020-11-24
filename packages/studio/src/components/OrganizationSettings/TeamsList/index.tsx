@@ -66,18 +66,18 @@ export function TeamsList(): ReactElement {
 
   return (
     <>
-      {mayCreateTeam && (
-        <HeaderControl
-          control={
+      <HeaderControl
+        control={
+          mayCreateTeam && (
             <Button onClick={modal.enable}>
               <FormattedMessage {...messages.createButton} />
             </Button>
-          }
-          level={4}
-        >
-          <FormattedMessage {...messages.teams} />
-        </HeaderControl>
-      )}
+          )
+        }
+        level={4}
+      >
+        <FormattedMessage {...messages.teams} />
+      </HeaderControl>
       <Content fullwidth main padding>
         <AsyncDataView
           emptyMessage={<FormattedMessage {...messages.noTeams} />}
