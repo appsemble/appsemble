@@ -99,7 +99,7 @@ export function TeamSettings(): ReactElement {
   );
 
   const organization = organizations.find((o) => o.id === organizationId);
-  const me = memberResult.data.find((member) => member.id === userInfo.sub);
+  const me = memberResult.data?.find((member) => member.id === userInfo.sub);
   const mayEditTeam = organization && checkRole(organization.role, Permission.ManageMembers);
   const mayInvite =
     (me && me.role === TeamRole.Manager) ||
