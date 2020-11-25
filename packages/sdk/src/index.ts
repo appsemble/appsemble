@@ -116,8 +116,9 @@ export interface Events {
    *
    * @param type - The type of event to emit.
    * @param data - Data to emit with the event.
+   * @returns Boolean indicating whether an emitter is implemented or not.
    */
-  emit: { [K in keyof EventEmitters]: (data: any, error?: string) => void };
+  emit: { [K in keyof EventEmitters]: (data: any, error?: string) => Promise<boolean> };
 
   /**
    * Remove an event listener for an Appsemble event.

@@ -11,6 +11,7 @@ import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-
 import { ShowDialogAction } from '../../types';
 import { ActionCreators } from '../../utils/actions';
 import { callBootstrap } from '../../utils/bootstrapper';
+import { createEvents } from '../../utils/events';
 import { injectCSS } from '../../utils/injectCSS';
 import { makeActions } from '../../utils/makeActions';
 import { prefixBlockURL } from '../../utils/prefixBlockURL';
@@ -100,44 +101,7 @@ export function Block({
 
     const shadowRoot = div?.attachShadow({ mode: 'open' });
 
-    const events = {
-      emit: Object.fromEntries(
-        Object.keys(manifest.events?.emit || {}).map((key) => [
-          key,
-          (d: any, error?: string) =>
-            pageReady.then(
-              block.events?.emit?.[key]
-                ? () => {
-                    ee.emit(block.events.emit[key], d, error === '' ? 'Error' : error);
-                    return true;
-                  }
-                : () => false,
-            ),
-        ]),
-      ),
-      on: Object.fromEntries(
-        Object.keys(manifest.events?.listen || {}).map((key) => [
-          key,
-          block.events?.listen?.[key]
-            ? (callback: (data: any, error?: string) => void) => {
-                ee.on(block.events.listen[key], callback);
-                return true;
-              }
-            : () => false,
-        ]),
-      ),
-      off: Object.fromEntries(
-        Object.keys(manifest.events?.listen || {}).map((key) => [
-          key,
-          block.events?.listen?.[key]
-            ? (callback: (data: any, error?: string) => void) => {
-                ee.off(block.events.listen[key], callback);
-                return true;
-              }
-            : () => false,
-        ]),
-      ),
-    };
+    const events = createEvents(ee, pageReady, manifest.events, block.events);
 
     const actions = makeActions({
       actions: manifest.actions,
