@@ -41,6 +41,11 @@ describe('createEvents', () => {
     expect(ee.emit).not.toHaveBeenCalled();
   });
 
+  it('should cache the event emitter', () => {
+    const events = createEvents(ee, promise, { emit: { foo: {} } });
+    expect(events.emit.foo).toBe(events.emit.foo);
+  });
+
   it('should listen on events', () => {
     const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
     const listener = jest.fn();
@@ -54,6 +59,11 @@ describe('createEvents', () => {
     const events = createEvents(ee, promise, { listen: { foo: {} } });
     const implemented = events.on.foo(() => {});
     expect(implemented).toBe(false);
+  });
+
+  it('should cache the event registration function', () => {
+    const events = createEvents(ee, promise, { emit: { foo: {} } });
+    expect(events.on.foo).toBe(events.on.foo);
   });
 
   it('should be possible to unregister event listeners', () => {
@@ -70,5 +80,10 @@ describe('createEvents', () => {
     const events = createEvents(ee, promise, { listen: { foo: {} } });
     const implemented = events.off.foo(() => {});
     expect(implemented).toBe(false);
+  });
+
+  it('should cache the event unregistration function', () => {
+    const events = createEvents(ee, promise, { emit: { foo: {} } });
+    expect(events.off.foo).toBe(events.off.foo);
   });
 });
