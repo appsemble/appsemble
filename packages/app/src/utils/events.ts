@@ -29,84 +29,59 @@ export function createEvents(
   manifest?: BlockManifest['events'],
   definition?: BlockDefinition['events'],
 ): Events {
-  const emit = new Proxy<Events['emit']>(
-    {},
-    {
-      get(target, key) {
-        if (typeof key !== 'string') {
-          return;
-        }
-        if (has(target, key)) {
-          return target[key];
-        }
-        if (!has(manifest?.emit, key) && !has(manifest?.emit, '$any')) {
-          return;
-        }
-        const handler: Events['emit'][string] = has(definition?.emit, key)
-          ? async (data, error) => {
-              await ready;
-              ee.emit(definition.emit[key], data, error === '' ? 'Error' : error);
-              return true;
-            }
-          : // eslint-disable-next-line require-await
-            async () => false;
-        // eslint-disable-next-line no-param-reassign
-        target[key] = handler;
-        return handler;
+  function createProxy<E extends keyof Events, M extends keyof BlockManifest['events']>(
+    manifestKey: M,
+    createFn: (registered: boolean, key: string) => Events[E][string],
+  ): Events[E] {
+    return new Proxy<Events[E]>(
+      {},
+      {
+        get(target, key) {
+          if (typeof key !== 'string') {
+            return;
+          }
+          if (has(target, key)) {
+            return target[key];
+          }
+          if (!has(manifest?.[manifestKey], key) && !has(manifest?.[manifestKey], '$any')) {
+            return;
+          }
+          const handler: Events[E][string] = createFn(has(definition?.[manifestKey], key), key);
+          // eslint-disable-next-line no-param-reassign
+          target[key as keyof Events[E]] = handler;
+          return handler;
+        },
       },
-    },
+    );
+  }
+
+  const emit = createProxy<'emit', 'emit'>('emit', (x, key) =>
+    x
+      ? async (data, error) => {
+          await ready;
+          ee.emit(definition.emit[key], data, error === '' ? 'Error' : error);
+          return true;
+        }
+      : // eslint-disable-next-line require-await
+        async () => false,
   );
 
-  const on = new Proxy<Events['on']>(
-    {},
-    {
-      get(target, key) {
-        if (typeof key !== 'string') {
-          return;
+  const on = createProxy<'on', 'listen'>('listen', (x, key) =>
+    x
+      ? (callback) => {
+          ee.on(definition.listen[key], callback);
+          return true;
         }
-        if (has(target, key)) {
-          return target[key];
-        }
-        if (!has(manifest?.listen, key) && !has(manifest?.listen, '$any')) {
-          return;
-        }
-        const handler: Events['on'][string] = has(definition?.listen, key)
-          ? (callback) => {
-              ee.on(definition.listen[key], callback);
-              return true;
-            }
-          : () => false;
-        // eslint-disable-next-line no-param-reassign
-        target[key] = handler;
-        return handler;
-      },
-    },
+      : () => false,
   );
 
-  const off = new Proxy<Events['on']>(
-    {},
-    {
-      get(target, key) {
-        if (typeof key !== 'string') {
-          return;
+  const off = createProxy<'off', 'listen'>('listen', (x, key) =>
+    x
+      ? (callback) => {
+          ee.off(definition.listen[key], callback);
+          return true;
         }
-        if (has(target, key)) {
-          return target[key];
-        }
-        if (!has(manifest?.listen, key) && !has(manifest?.listen, '$any')) {
-          return;
-        }
-        const handler: Events['off'][string] = has(definition?.listen, key)
-          ? (callback) => {
-              ee.off(definition.listen[key], callback);
-              return true;
-            }
-          : () => false;
-        // eslint-disable-next-line no-param-reassign
-        target[key] = handler;
-        return handler;
-      },
-    },
+      : () => false,
   );
 
   return { emit, on, off };
