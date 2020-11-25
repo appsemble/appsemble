@@ -10,7 +10,6 @@ const AppEditor = [
 ];
 const Maintainer = [
   ...AppEditor,
-  Permission.EditThemes,
   Permission.PublishBlocks,
   Permission.CreateApps,
   Permission.EditAppSettings,
