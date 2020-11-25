@@ -34,6 +34,13 @@ describe('createEvents', () => {
       expect(ee.emit).toHaveBeenCalledWith('bar', 'test', 'error');
     });
 
+    it('should handle empty string errors', async () => {
+      const events = createEvents(ee, promise, { emit: { foo: {} } }, { emit: { foo: 'bar' } });
+      await ready();
+      events.emit.foo('test', '');
+      expect(ee.emit).toHaveBeenCalledWith('bar', 'test', 'Error');
+    });
+
     it('should not emit events if no emitters have been registered', async () => {
       const events = createEvents(ee, promise, { emit: { foo: {} } });
       const implemented = events.emit.foo('test', 'error');
