@@ -46,6 +46,15 @@ describe('createEvents', () => {
     expect(events.emit.foo).toBe(events.emit.foo);
   });
 
+  it('should support emitting custom events', async () => {
+    const events = createEvents(ee, promise, { emit: { $any: {} } }, { emit: { foo: 'bar' } });
+    const implemented = events.emit.foo('test', 'error');
+    expect(ee.emit).not.toHaveBeenCalled();
+    await ready();
+    expect(await implemented).toBe(true);
+    expect(ee.emit).toHaveBeenCalledWith('bar', 'test', 'error');
+  });
+
   it('should listen on events', () => {
     const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
     const listener = jest.fn();
@@ -64,6 +73,15 @@ describe('createEvents', () => {
   it('should cache the event registration function', () => {
     const events = createEvents(ee, promise, { emit: { foo: {} } });
     expect(events.on.foo).toBe(events.on.foo);
+  });
+
+  it('should support registering custom events', () => {
+    const events = createEvents(ee, promise, { listen: { $any: {} } }, { listen: { foo: 'bar' } });
+    const listener = jest.fn();
+    const implemented = events.on.foo(listener);
+    ee.emit('bar', 'data');
+    expect(implemented).toBe(true);
+    expect(listener).toHaveBeenCalledWith('data');
   });
 
   it('should be possible to unregister event listeners', () => {
@@ -85,5 +103,15 @@ describe('createEvents', () => {
   it('should cache the event unregistration function', () => {
     const events = createEvents(ee, promise, { emit: { foo: {} } });
     expect(events.off.foo).toBe(events.off.foo);
+  });
+
+  it('should support unregistering custom events', () => {
+    const events = createEvents(ee, promise, { listen: { $any: {} } }, { listen: { foo: 'bar' } });
+    const listener = jest.fn();
+    events.on.foo(listener);
+    const implemented = events.off.foo(listener);
+    expect(implemented).toBe(true);
+    ee.emit('bar', 'data');
+    expect(listener).not.toHaveBeenCalled();
   });
 });

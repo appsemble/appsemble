@@ -39,7 +39,7 @@ export function createEvents(
         if (has(target, key)) {
           return target[key];
         }
-        if (!has(manifest?.emit, key)) {
+        if (!has(manifest?.emit, key) && !has(manifest?.emit, '$any')) {
           return;
         }
         const handler: Events['emit'][string] = has(definition?.emit, key)
@@ -67,7 +67,7 @@ export function createEvents(
         if (has(target, key)) {
           return target[key];
         }
-        if (!has(manifest?.listen, key)) {
+        if (!has(manifest?.listen, key) && !has(manifest?.listen, '$any')) {
           return;
         }
         const handler: Events['on'][string] = has(definition?.listen, key)
@@ -93,7 +93,7 @@ export function createEvents(
         if (has(target, key)) {
           return target[key];
         }
-        if (!has(manifest?.listen, key)) {
+        if (!has(manifest?.listen, key) && !has(manifest?.listen, '$any')) {
           return;
         }
         const handler: Events['off'][string] = has(definition?.listen, key)
