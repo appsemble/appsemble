@@ -55,6 +55,13 @@ describe('createEvents', () => {
       expect(await implemented).toBe(true);
       expect(ee.emit).toHaveBeenCalledWith('bar', 'test', 'error');
     });
+
+    it('should handle symbols', () => {
+      const events = createEvents(ee, promise, { emit: { $any: {} } });
+      // @ts-expect-error This type error is introduced for testing purposes.
+      const emitter = events.emit[Symbol('test')];
+      expect(emitter).toBeUndefined();
+    });
   });
 
   describe('on', () => {
@@ -90,6 +97,13 @@ describe('createEvents', () => {
       ee.emit('bar', 'data');
       expect(implemented).toBe(true);
       expect(listener).toHaveBeenCalledWith('data');
+    });
+
+    it('should handle symbols', () => {
+      const events = createEvents(ee, promise, { listen: { $any: {} } });
+      // @ts-expect-error This type error is introduced for testing purposes.
+      const emitter = events.on[Symbol('test')];
+      expect(emitter).toBeUndefined();
     });
   });
 
@@ -128,6 +142,13 @@ describe('createEvents', () => {
       expect(implemented).toBe(true);
       ee.emit('bar', 'data');
       expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should handle symbols', () => {
+      const events = createEvents(ee, promise, { listen: { $any: {} } });
+      // @ts-expect-error This type error is introduced for testing purposes.
+      const emitter = events.off[Symbol('test')];
+      expect(emitter).toBeUndefined();
     });
   });
 });
