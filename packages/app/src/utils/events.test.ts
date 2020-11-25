@@ -62,6 +62,12 @@ describe('createEvents', () => {
       const emitter = events.emit[Symbol('test')];
       expect(emitter).toBeUndefined();
     });
+
+    it('should handle unknown event types', () => {
+      const events = createEvents(ee, promise, null, { emit: { foo: 'bar' } });
+      const emitter = events.emit.foo;
+      expect(emitter).toBeUndefined();
+    });
   });
 
   describe('on', () => {
@@ -81,7 +87,7 @@ describe('createEvents', () => {
     });
 
     it('should cache the event registration function', () => {
-      const events = createEvents(ee, promise, { emit: { foo: {} } });
+      const events = createEvents(ee, promise, { listen: { foo: {} } });
       expect(events.on.foo).toBe(events.on.foo);
     });
 
@@ -105,6 +111,12 @@ describe('createEvents', () => {
       const emitter = events.on[Symbol('test')];
       expect(emitter).toBeUndefined();
     });
+
+    it('should handle unknown event types', () => {
+      const events = createEvents(ee, promise, null, { listen: { foo: 'bar' } });
+      const emitter = events.on.foo;
+      expect(emitter).toBeUndefined();
+    });
   });
 
   describe('off', () => {
@@ -125,7 +137,7 @@ describe('createEvents', () => {
     });
 
     it('should cache the event unregistration function', () => {
-      const events = createEvents(ee, promise, { emit: { foo: {} } });
+      const events = createEvents(ee, promise, { listen: { foo: {} } });
       expect(events.off.foo).toBe(events.off.foo);
     });
 
@@ -148,6 +160,12 @@ describe('createEvents', () => {
       const events = createEvents(ee, promise, { listen: { $any: {} } });
       // @ts-expect-error This type error is introduced for testing purposes.
       const emitter = events.off[Symbol('test')];
+      expect(emitter).toBeUndefined();
+    });
+
+    it('should handle unknown event types', () => {
+      const events = createEvents(ee, promise, null, { listen: { foo: 'bar' } });
+      const emitter = events.off.foo;
       expect(emitter).toBeUndefined();
     });
   });
