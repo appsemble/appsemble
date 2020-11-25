@@ -349,7 +349,7 @@ describe('createAuthnRequest', () => {
 
     const loginRequest = await SamlLoginRequest.findOne();
     expect(loginRequest).toMatchObject({
-      id: 'id00000000-0000-4000-aa00-000000000069',
+      id: 'id00000000-0000-4000-aa00-000000000076',
       AppSamlSecretId: secret.id,
       UserId: user.id,
       redirectUri: 'https://app.example',
