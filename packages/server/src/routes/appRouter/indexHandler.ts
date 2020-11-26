@@ -80,7 +80,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     },
   });
   const nonce = randomBytes(16).toString('base64');
-  const reportUri = sentryDsnToReportUri(sentryDsn);
+  const sentry = sentryDsnToReportUri(sentryDsn);
   const [settingsHash, settings] = createSettings({
     apiUrl: host,
     blockManifests: blockManifests.map(
@@ -109,8 +109,8 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     sentryDsn,
   });
   const csp = {
-    'report-uri': [reportUri],
-    'connect-src': ['*', 'blob:', 'data:'],
+    'report-uri': [sentry?.reportUri],
+    'connect-src': ['*', 'blob:', 'data:', sentry?.origin],
     'default-src': ["'self'"],
     'script-src': [
       "'self'",

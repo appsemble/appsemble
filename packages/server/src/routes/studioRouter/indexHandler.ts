@@ -46,17 +46,17 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     });
   }
   const nonce = randomBytes(16).toString('base64');
-  const reportUri = sentryDsnToReportUri(sentryDsn);
+  const sentry = sentryDsnToReportUri(sentryDsn);
   const [settingsHash, settings] = createSettings({
     enableRegistration: !disableRegistration,
     logins,
     sentryDsn,
   });
   const csp = makeCSP({
-    'report-uri': [reportUri],
+    'report-uri': [sentry?.reportUri],
     // This is needed for Webpack.
     'connect-src': [process.env.NODE_ENV !== 'production' && '*'],
-    'default-src': ["'self'"],
+    'default-src': ["'self'", sentry?.origin],
     'img-src': ['blob:', 'data:', '*'],
     'script-src': [
       "'self'",

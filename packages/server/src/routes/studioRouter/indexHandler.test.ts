@@ -64,7 +64,7 @@ it('should pass login options from argv to the studio', async () => {
     headers: expect.objectContaining({
       'content-security-policy':
         'connect-src *' +
-        "; default-src 'self'" +
+        "; default-src 'self' https://sentry.io" +
         "; font-src 'self' https://fonts.gstatic.com" +
         '; frame-src *.localhost:9999 http://localhost:9999' +
         '; img-src * blob: data:' +
