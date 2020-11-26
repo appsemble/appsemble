@@ -118,7 +118,8 @@ Below is an example of what the query object looks like when in use.
 ```yaml
 person:
   query:
-    $filter: lastName eq 'foo' # Resolves to /resources/person?$filter=lastName eq 'foo'
+    query:
+      $filter: lastName eq 'foo' # Resolves to /resources/person?$filter=lastName eq 'foo'
 
 pages:
   - name: Example Page
