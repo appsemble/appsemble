@@ -45,8 +45,8 @@ export function createEvents(
     );
   }
 
-  const emit = createProxy<'emit', 'emit'>('emit', (x, key) =>
-    x
+  const emit = createProxy<'emit', 'emit'>('emit', (implemented, key) =>
+    implemented
       ? async (data, error) => {
           await ready;
           ee.emit(definition.emit[key], data, error === '' ? 'Error' : error);
@@ -56,8 +56,8 @@ export function createEvents(
         async () => false,
   );
 
-  const on = createProxy<'on', 'listen'>('listen', (x, key) =>
-    x
+  const on = createProxy<'on', 'listen'>('listen', (implemented, key) =>
+    implemented
       ? (callback) => {
           ee.on(definition.listen[key], callback);
           return true;
@@ -65,8 +65,8 @@ export function createEvents(
       : () => false,
   );
 
-  const off = createProxy<'off', 'listen'>('listen', (x, key) =>
-    x
+  const off = createProxy<'off', 'listen'>('listen', (implemented, key) =>
+    implemented
       ? (callback) => {
           ee.off(definition.listen[key], callback);
           return true;
