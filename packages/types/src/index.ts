@@ -430,6 +430,11 @@ export interface ResourceDefinition {
   query?: ResourceCall;
 
   /**
+   * The definition for the `resource.count` action.
+   */
+  count?: ResourceCall;
+
+  /**
    * The definition for the `resource.update` action.
    */
   update?: ResourceCall;

@@ -110,6 +110,24 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
           },
         },
       },
+      count: {
+        type: 'object',
+        description: "Overrides for 'count' requests.",
+        properties: {
+          roles,
+          query,
+          method: {
+            type: 'string',
+            default: 'GET',
+            description: 'HTTP method to use for this type of request.',
+          },
+          url: {
+            type: 'string',
+            default: '/api/apps/{appId}/{resource}/$count',
+            description: 'URL to use for this type of request.',
+          },
+        },
+      },
       create: {
         type: 'object',
         description: "Overrides for 'create' requests.",

@@ -66,7 +66,7 @@ async function verifyAppRole(
   app: App,
   resource: Resource,
   resourceType: string,
-  action: 'create' | 'delete' | 'get' | 'query' | 'update',
+  action: 'create' | 'delete' | 'get' | 'query' | 'update' | 'count',
 ): Promise<WhereOptions> {
   if (!app.definition.resources[resourceType] || !app.definition.resources[resourceType][action]) {
     return;
@@ -94,7 +94,7 @@ async function verifyAppRole(
     throw unauthorized('User is not logged in');
   }
 
-  if (author && user && action === 'query') {
+  if (author && user && (action === 'query' || action === 'count')) {
     return { UserId: user.id };
   }
 
@@ -156,6 +156,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
       ],
     }),
   });
+
   verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyAppRole(ctx, app, null, resourceType, 'query');
 
@@ -214,6 +215,66 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     }),
     ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
   }));
+}
+
+export async function countResources(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, resourceType },
+    query: { $filter },
+    user,
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    ...(user && {
+      include: [
+        { model: Organization, attributes: ['id'] },
+        {
+          model: User,
+          attributes: ['id'],
+          required: false,
+          where: { id: user.id },
+          through: { attributes: ['role'] },
+        },
+      ],
+    }),
+  });
+
+  verifyResourceDefinition(app, resourceType);
+  const userQuery = await verifyAppRole(ctx, app, null, resourceType, 'count');
+
+  let query: WhereOptions;
+  try {
+    query =
+      $filter &&
+      odataFilterToSequelize(
+        $filter
+          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+        Resource,
+        renameOData,
+      );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw badRequest('Unable to process this query', { syntaxError: error.message });
+    }
+    logger.error(error);
+    throw internal('Unable to process this query');
+  }
+  const count = await Resource.count({
+    where: {
+      [Op.and]: [
+        query,
+        {
+          ...userQuery,
+          type: resourceType,
+          AppId: appId,
+          expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
+        },
+      ],
+    },
+  });
+
+  ctx.body = count;
 }
 
 export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
