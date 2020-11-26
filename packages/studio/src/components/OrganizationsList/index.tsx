@@ -86,7 +86,7 @@ export function OrganizationsList(): ReactElement {
             key={org.id}
             subtitle={org.role}
             title={org.name || `@${org.id}`}
-            to={`${url}/${org.id}`}
+            to={`${url}/${org.id}/members`}
           />
         ))}
       </ul>
