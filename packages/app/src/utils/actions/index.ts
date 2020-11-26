@@ -38,6 +38,7 @@ export const actionCreators = {
   'flow.cancel': flow.cancel,
   'resource.get': resource.get,
   'resource.query': resource.query,
+  'resource.count': resource.count,
   'resource.create': resource.create,
   'resource.update': resource.update,
   'resource.delete': resource.remove,
