@@ -2,17 +2,7 @@ import { EventEmitter } from 'events';
 
 import { Events } from '@appsemble/sdk';
 import { BlockDefinition, BlockManifest } from '@appsemble/types';
-
-/**
- * Check if the target has an own property named after the key.
- *
- * @param target - The target that should have the key. Null values are also accepted.
- * @param key - The key to check for on the target.
- * @returns Whether or not the key exists on the target.
- */
-function has(target: object, key: string): boolean {
-  return target && Object.hasOwnProperty.call(target, key);
-}
+import { has } from '@appsemble/utils';
 
 /**
  * Create the events object that is passed to a block.

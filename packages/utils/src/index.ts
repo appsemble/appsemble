@@ -1,6 +1,7 @@
 export * from './api';
 export * from './blockUtils';
 export * from './constants';
+export * from './has';
 export * from './normalize';
 export * from './legacyRemap';
 export * from './validate';
