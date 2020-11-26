@@ -6,15 +6,19 @@ import { MakeActionParameters } from '../../types';
 export function event({
   definition,
   ee,
-}: MakeActionParameters<EventActionDefinition>): BaseAction<'event'> {
-  const { event: eventName } = definition;
+}: Pick<MakeActionParameters<EventActionDefinition>, 'definition' | 'ee'>): BaseAction<'event'> {
+  const { event: eventName, waitFor } = definition;
 
   return {
     type: 'event',
     // eslint-disable-next-line require-await
     async dispatch(data) {
       ee.emit(eventName, data);
-      return data;
+      return waitFor
+        ? new Promise((resolve, reject) => {
+            ee.once(waitFor, (response, error) => (error ? reject(error) : resolve(response)));
+          })
+        : data;
     },
   };
 }

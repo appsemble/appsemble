@@ -194,9 +194,10 @@ This action allows for other blocks to emit data upon triggering the action. Thi
 make blocks interact with each other, such as triggering the `data-loader` block to refresh itself
 by sending an event action that matches the name of what the block is listening to.
 
-| Parameter | Required | Description                    |
-| --------- | -------- | ------------------------------ |
-| event     | true     | The name of the event to emit. |
+| Parameter | Required | Description                                                                                       |
+| --------- | -------- | ------------------------------------------------------------------------------------------------- |
+| event     | true     | The name of the event to emit.                                                                    |
+| waitFor   | false    | If specified, the action will wait for this event to have been emitted and respond with its data. |
 
 ## `static`
 
