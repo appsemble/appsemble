@@ -18,3 +18,4 @@ export * from './resources';
 export * from './saml';
 export * from './templates';
 export * from './user';
+export * from './teams';

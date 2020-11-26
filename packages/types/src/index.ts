@@ -1109,6 +1109,21 @@ export interface Organization {
 }
 
 /**
+ * Represents a team within an organization.
+ */
+export interface Team {
+  /**
+   * The ID of the team.
+   */
+  id: number;
+
+  /**
+   * The display name of the team.
+   */
+  name: string;
+}
+
+/**
  * An invite for an organizaton.
  */
 export interface OrganizationInvite {
