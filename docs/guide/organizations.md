@@ -30,7 +30,7 @@ These roles are the following:
 - `Owner`: Owners are allowed to manage members by assigning roles or removing them from the
   organization, and update the name and icon of the organization.
 
-# Teams
+## Teams
 
 Members within an organization can optionally be subdivided into teams. These are groups of members
 that belong to each other. This allows for more fine control over who has access to specific
