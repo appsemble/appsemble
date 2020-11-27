@@ -1,0 +1,12 @@
+{
+  "react-components.src.ErrorHandler.message": "Une erreur inattendue est survenue.",
+  "react-components.src.ErrorHandler.title": "Erreur",
+  "react-components.src.FormComponent.optional": "Optionnel",
+  "react-components.src.JSONField.error": "Ceci doit être une valeur JSON valide.",
+  "react-components.src.MessagesProvider.dismiss": "Ignorer le message",
+  "react-components.src.Modal.closeDialog": "Fermer le dialogue",
+  "react-components.src.Stepper.back": "Retour",
+  "react-components.src.Stepper.cancel": "Annuler",
+  "react-components.src.Stepper.finish": "Enregistrer",
+  "react-components.src.Stepper.next": "Suivant"
+}
