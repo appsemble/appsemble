@@ -266,7 +266,7 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   const {
     argv: { host },
     params: { appId, appSamlSecretId },
-    url,
+    path,
   } = ctx;
 
   const secret = await AppSamlSecret.findOne({
@@ -274,10 +274,14 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
     where: { AppId: appId, id: appSamlSecretId },
   });
 
+  if (!secret) {
+    throw notFound('SAML secret not found');
+  }
+
   const doc = dom.createDocument(NS.md, 'md:EntityDescriptor', null);
   const entityDescriptor = doc.documentElement;
   entityDescriptor.setAttributeNS(NS.xmlns, 'xmlns:md', NS.md);
-  entityDescriptor.setAttribute('entityId', url);
+  entityDescriptor.setAttribute('entityID', String(new URL(path, host)));
 
   const spssoDescriptor = doc.createElementNS(NS.md, 'md:SPSSODescriptor');
   spssoDescriptor.setAttribute('AuthnRequestsSigned', 'true');
