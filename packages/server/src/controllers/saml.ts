@@ -324,5 +324,5 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   // eslint-disable-next-line unicorn/prefer-node-append
   entityDescriptor.appendChild(assertionConsumerService);
 
-  ctx.body = String(doc);
+  ctx.body = `<?xml version="1.0" encoding="utf-8">\n${doc}`;
 }

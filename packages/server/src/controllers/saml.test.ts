@@ -466,6 +466,7 @@ describe('getEntityId', () => {
     expect(response).toMatchObject({
       status: 200,
       data:
+        '<?xml version="1.0" encoding="utf-8">\n' +
         '<md:EntityDescriptor' +
         ' xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"' +
         ` entityID="http://localhost/api/apps/${app.id}/saml/${secret.id}/metadata.xml"` +
@@ -514,6 +515,7 @@ describe('getEntityId', () => {
     expect(response).toMatchObject({
       status: 200,
       data:
+        '<?xml version="1.0" encoding="utf-8">\n' +
         '<md:EntityDescriptor' +
         ' xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"' +
         ` entityID="http://localhost/api/apps/${app.id}/saml/${secret.id}/metadata.xml"` +
