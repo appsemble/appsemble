@@ -36,5 +36,7 @@
   "app.src.components.ProfileDropdown.pfp": "Profilfoto",
   "app.src.components.ProfileDropdown.settings": "Indstillinger",
   "app.src.components.SideMenuButton.label": "Åbn menu",
+  "app.src.components.SideNavigation.login": "",
+  "app.src.components.SideNavigation.logout": "",
   "app.src.components.SideNavigation.settings": "Indstillinger"
 }
