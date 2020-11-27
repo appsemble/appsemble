@@ -687,6 +687,13 @@ export interface EventActionDefinition extends BaseActionDefinition<'event'> {
    * The name of the event to emit to.
    */
   event: string;
+
+  /**
+   * An event to wait for before resolving.
+   *
+   * If this is unspecified, the action will resolve with the input data.
+   */
+  waitFor?: string;
 }
 
 export interface StaticActionDefinition extends BaseActionDefinition<'static'> {

@@ -2,9 +2,8 @@ import { createReadStream, promises as fs } from 'fs';
 import { join, relative, resolve } from 'path';
 import { inspect } from 'util';
 
-import { logger } from '@appsemble/node-utils';
+import { logger, opendirSafe } from '@appsemble/node-utils';
 import FormData from 'form-data';
-import klaw from 'klaw';
 
 import { BlockConfig } from '../types';
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
@@ -50,22 +49,21 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
     form.append('icon', createReadStream(iconPath));
   }
 
-  return new Promise((resolveForm, reject) => {
-    klaw(distPath)
-      .on('data', (file) => {
-        if (!file.stats.isFile()) {
-          return;
-        }
-        const relativePath = relative(distPath, file.path);
-        const realPath = relative(process.cwd(), relativePath);
-        logger.info(`Adding file: “${realPath}” as “${relativePath}”`);
-        form.append('files', createReadStream(file.path), {
-          filename: encodeURIComponent(relativePath),
-        });
-      })
-      .on('error', reject)
-      .on('end', () => {
-        resolveForm(form);
+  await opendirSafe(
+    distPath,
+    (fullpath, stat) => {
+      if (!stat.isFile()) {
+        return;
+      }
+      const relativePath = relative(distPath, fullpath);
+      const realPath = relative(process.cwd(), fullpath);
+      logger.info(`Adding file: “${realPath}” as “${relativePath}”`);
+      form.append('files', createReadStream(fullpath), {
+        filename: encodeURIComponent(relativePath),
       });
-  });
+    },
+    { recursive: true },
+  );
+
+  return form;
 }
