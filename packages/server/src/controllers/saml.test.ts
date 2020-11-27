@@ -1,4 +1,6 @@
 import { URL, URLSearchParams } from 'url';
+import { promisify } from 'util';
+import { inflateRaw } from 'zlib';
 
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
@@ -15,6 +17,8 @@ let authorization: string;
 let clock: InstalledClock;
 let secret: AppSamlSecret;
 let user: User;
+
+const inflate = promisify(inflateRaw);
 
 const idpCertificate = `-----BEGIN CERTIFICATE-----
 MIICKzCCAdWgAwIBAgIJAM8DxRNtPj90MA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNV
@@ -279,8 +283,6 @@ function createSamlResponse({
   return buf.toString('base64');
 }
 
-jest.mock('uuid');
-
 beforeAll(createTestSchema('saml'));
 
 beforeAll(async () => {
@@ -341,21 +343,39 @@ describe('createAuthnRequest', () => {
     expect(params).toStrictEqual({
       RelayState: 'http://localhost',
       SigAlg: 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
-      SAMLRequest:
-        'jVHbSgMxEP2VJe/di4jFsLuwWIRCldKqD74N2dEGcjMzW+rfm92tUB8Uh8nkds6cZKYmsCbIbuCD2+HHgMTZyRpHcrxoxBCd9ECapAOLJFnJffewkVd5KYEII2vvRNZ9L++8o8Fi3GM8aoXPu00jDsxBFoXxCszBExcQdBqBiqoYVdIEikS2SuLawZhmJlFi4QlsMJgrb2ew8e86Ka5XjdB9ebbFFK7HAHDezra8EdkLRpqSplcnJtGAa0cMjhtR3S4TvEr+VJZy8jzRXkfcNv1QH7ERHAcUF3UJfxcmRM9eeSPaekTLSTG2/6iDRYYeGPKkVReX5Hpu1GMSW6+23mj1md37aIF/f0uVV9OJ7hdvE1SiBW26vo9IJIp2lvjZ/vYL',
-      Signature:
-        'dMOsJsKZwrYcw5F6w6rCl8OhAxd6M8KcW8KuBTzCtnLCp2DDmDTDtsK4HMOFAMKcYcKZHcKrwptdw7fDo8Kbw44qd8Osw7TDp1w7wrcTJ1fCiMO3w77Cl2jCoMOKYgXCq8KAw4B1PsOfTz7DlnDDhMKIdA3DhBJKw5ELwp/ChMODw6LDksKKBl5Mw4Nww6dIwoRaYMOAw5HCv8K6wok2flYSw6LCpVnDmFxhEcO7C38DwpLDqsO+w7oNwqI+OcKkw5RrYsKOwoTDqTV2woXCu0/DvmjDsDzDn00dwojDl8KFX8OACndAwojCnSorKMKsU3dbwqtHwpIswq0efMOGMsKaHMOAwrsiwoTDlBMQHwPDjsOzwo/Ch8OwwoQhMcOwLVzCqcORwpsObhzDhcOzwo3DmcOUfDzCgMOYwoXCvsO9wpfCigdoPMKawr0EwrU6wo3DgMOpwrBBVFosV8OPwoh0wowCwrvCpx97In1cUsKBIcOGKx0gLG/CkAjDtyjDpXc=',
+      SAMLRequest: expect.any(String),
+      Signature: expect.any(String),
     });
+    const inflated = await inflate(Buffer.from(params.SAMLRequest, 'base64'));
+    const samlRequest = inflated.toString('utf-8');
 
     const loginRequest = await SamlLoginRequest.findOne();
     expect(loginRequest).toMatchObject({
-      id: 'id00000000-0000-4000-aa00-000000000076',
+      id: expect.any(String),
       AppSamlSecretId: secret.id,
       UserId: user.id,
       redirectUri: 'https://app.example',
       scope: 'email openid profile',
       state: 'secret state',
     });
+
+    expect(samlRequest).toBe(
+      '<samlp:AuthnRequest' +
+        ' xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"' +
+        ' AssertionConsumerServiceURL="http://localhost/api/apps/1/saml/1/acs"' +
+        ' Destination="https://example.com/saml/login"' +
+        ` ID="${loginRequest.id}"` +
+        ' Version="2.0" IssueInstant="1970-01-01T00:00:00.000Z"' +
+        ' IsPassive="true" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"' +
+        '>' +
+        '<saml:Issuer>' +
+        'http://localhost/api/apps/1/saml/1/metadata.xml' +
+        '</saml:Issuer>' +
+        '<samlp:NameIDPolicy' +
+        ' Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"' +
+        '/>' +
+        '</samlp:AuthnRequest>',
+    );
   });
 
   it('should throw if the app ID is invalid', async () => {
