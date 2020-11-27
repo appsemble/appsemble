@@ -8,7 +8,7 @@ import axios from 'axios';
 import { md, pki } from 'node-forge';
 import { v4 } from 'uuid';
 import { SignedXml, xpath } from 'xml-crypto';
-import { DOMImplementation, DOMParser, XMLSerializer } from 'xmldom';
+import { DOMImplementation, DOMParser } from 'xmldom';
 
 import { App, AppMember, AppSamlSecret, transactional, User } from '../models';
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
@@ -36,7 +36,6 @@ enum NS {
 const deflate = promisify(deflateRaw);
 const dom = new DOMImplementation();
 const parser = new DOMParser();
-const serializer = new XMLSerializer();
 
 export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void> {
   const {
@@ -93,8 +92,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   // eslint-disable-next-line unicorn/prefer-node-append
   authnRequest.appendChild(nameIDPolicy);
 
-  const xml = serializer.serializeToString(doc);
-  const samlRequest = await deflate(Buffer.from(xml));
+  const samlRequest = await deflate(Buffer.from(String(doc)));
   const redirect = new URL(secret.ssoUrl);
   redirect.searchParams.set('SAMLRequest', samlRequest.toString('base64'));
   redirect.searchParams.set('RelayState', host);
@@ -326,5 +324,5 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   // eslint-disable-next-line unicorn/prefer-node-append
   entityDescriptor.appendChild(assertionConsumerService);
 
-  ctx.body = serializer.serializeToString(doc);
+  ctx.body = String(doc);
 }
