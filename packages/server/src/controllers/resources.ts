@@ -58,6 +58,46 @@ function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.Sch
 }
 
 /**
+ * Generate Sequelize filter objects based on ODATA filters present in the request.
+ *
+ * @param ctx - The KoaContext to extract the parameters from.
+ * @returns An object containing the generated order and query options.
+ */
+function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOptions } {
+  const {
+    query: { $filter, $orderby },
+  } = ctx;
+
+  try {
+    const order =
+      $orderby &&
+      odataOrderbyToSequelize(
+        $orderby
+          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+        renameOData,
+      );
+    const query =
+      $filter &&
+      odataFilterToSequelize(
+        $filter
+          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+        Resource,
+        renameOData,
+      );
+
+    return { order, query };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw badRequest('Unable to process this query', { syntaxError: error.message });
+    }
+    logger.error(error);
+    throw internal('Unable to process this query');
+  }
+}
+
+/**
  * Verifies whether or not the user has sufficient permissions to perform a resource call.
  * Will throw an 403 error if the user does not satisfy the requirements.
  *
@@ -191,7 +231,7 @@ async function verifyPermission(
 export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    query: { $filter, $orderby, $top },
+    query: { $top },
     user,
   } = ctx;
 
@@ -212,34 +252,8 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
 
   verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'query');
+  const { order, query } = generateQuery(ctx);
 
-  let order: Order;
-  let query: WhereOptions;
-  try {
-    order =
-      $orderby &&
-      odataOrderbyToSequelize(
-        $orderby
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
-        renameOData,
-      );
-    query =
-      $filter &&
-      odataFilterToSequelize(
-        $filter
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
-        Resource,
-        renameOData,
-      );
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw badRequest('Unable to process this query', { syntaxError: error.message });
-    }
-    logger.error(error);
-    throw internal('Unable to process this query');
-  }
   const resources = await Resource.findAll({
     include: [{ model: User, attributes: ['id', 'name'], required: false }],
     limit: $top,
@@ -273,7 +287,6 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
 export async function countResources(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    query: { $filter },
     user,
   } = ctx;
 
@@ -294,25 +307,8 @@ export async function countResources(ctx: KoaContext<Params>): Promise<void> {
 
   verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'count');
+  const { query } = generateQuery(ctx);
 
-  let query: WhereOptions;
-  try {
-    query =
-      $filter &&
-      odataFilterToSequelize(
-        $filter
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
-        Resource,
-        renameOData,
-      );
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw badRequest('Unable to process this query', { syntaxError: error.message });
-    }
-    logger.error(error);
-    throw internal('Unable to process this query');
-  }
   const count = await Resource.count({
     where: {
       [Op.and]: [
