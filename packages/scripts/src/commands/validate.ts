@@ -68,12 +68,13 @@ type Assert = (assertion: boolean, filename: string, message: string, workspace?
 
 async function validateTranslations(assert: Assert): Promise<void> {
   const workspaces = ['app', 'react-components', 'studio'];
-  const locales = ['nl', 'en-US'];
+  const developerLocales = ['nl', 'en-US'].sort();
+  const allLocales = [...developerLocales, 'da'].sort();
   const defaultLocale = 'en-US';
 
   for (const workspace of workspaces) {
     const translatedMessages = await extractMessages.extractReactIntl(
-      locales,
+      allLocales,
       `./packages/${workspace}/src/**/messages.ts`,
       {
         format: 'json',
@@ -97,7 +98,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
 
       const [language] = stat.name.split('.json');
 
-      if (!locales.includes(language)) {
+      if (!allLocales.includes(language)) {
         assert(false, filepath, `Language ${language} should be supported.`);
         return;
       }
@@ -116,13 +117,15 @@ async function validateTranslations(assert: Assert): Promise<void> {
           filepath,
           'Keys should be the same',
         );
-        const untranslatedMessages = Object.values(messages).filter((message) => !message);
-        assert(untranslatedMessages.length === 0, filepath, 'Messages should be translated');
+        if (developerLocales.includes(language)) {
+          const untranslatedMessages = Object.values(messages).filter((message) => !message);
+          assert(untranslatedMessages.length === 0, filepath, 'Messages should be translated');
+        }
       }
     });
 
     assert(
-      isEqual(locales.sort(), translated.sort()),
+      isEqual(allLocales, translated.sort()),
       '',
       'should have translations for each supported language',
       `packages/${workspace}`,
