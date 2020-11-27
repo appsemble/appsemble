@@ -276,6 +276,15 @@ These functions have only been implemented for strings, not for collections.
 
 - [ ] [`case`](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_case)
 
+## Securing resources
+
+It is possible to secure resources by specifying the roles that the user needs to have in order to
+access specific resources for specific resource actions. This makes it possible to, for example,
+restrict access to other user’s resources by only allowing users to interact with the resources they
+made themselves.
+
+For more information about this, please refer to [this page](./security.md)
+
 ## Assets
 
 Some resources may also include files such as images or documents. To support this, Appsemble

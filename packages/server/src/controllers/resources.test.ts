@@ -1,8 +1,19 @@
+import { TeamRole } from '@appsemble/utils/src';
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
 
-import { App, AppMember, AppSubscription, Member, Organization, Resource, User } from '../models';
+import {
+  App,
+  AppMember,
+  AppSubscription,
+  Member,
+  Organization,
+  Resource,
+  Team,
+  TeamMember,
+  User,
+} from '../models';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -83,6 +94,29 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             roles: ['Reader'],
           },
         },
+        testResourceTeam: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+          get: { roles: ['$author', '$team:member'] },
+          query: { roles: ['$team:member'] },
+          update: { roles: ['$team:member'] },
+          create: { roles: ['$team:member'] },
+          delete: { roles: ['$team:member'] },
+        },
+        testResourceTeamManager: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+          query: { roles: ['$author', '$team:manager'] },
+          update: { roles: ['$team:manager'] },
+          create: { roles: ['$team:manager'] },
+          delete: { roles: ['$team:manager'] },
+        },
         testExpirableResource: {
           expires: '10m',
           schema: {
@@ -159,6 +193,67 @@ describe('getResourceById', () => {
         foo: 'bar',
         $created: new Date(0).toJSON(),
         $updated: new Date(0).toJSON(),
+      },
+    });
+  });
+
+  it('should be able to fetch a resource you are a team member of', async () => {
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'bar' },
+      UserId: userB.id,
+    });
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: resource.id,
+        foo: 'bar',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+      },
+    });
+  });
+
+  it('should not be able to fetch a resource you are not a team member of', async () => {
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'bar' },
+      UserId: userB.id,
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        message: 'Resource not found',
       },
     });
   });
@@ -329,6 +424,112 @@ describe('queryResources', () => {
         {
           id: resourceA.id,
           foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+  });
+
+  it('should only fetch resources from team members', async () => {
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    const resourceB = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam`, {
+      headers: { authorization },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+        {
+          id: resourceB.id,
+          foo: 'baz',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+  });
+
+  it('should only fetch resources as an author or team manager', async () => {
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const teamB = await Team.create({ name: 'Test Team 2', OrganizationId: organizationId });
+
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
+    await TeamMember.create({ TeamId: teamB.id, UserId: userB.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userC.id, role: TeamRole.Member });
+
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeamManager',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeamManager',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    const resourceB = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeamManager',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeamManager`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+        {
+          id: resourceB.id,
+          foo: 'foo',
           $created: new Date(0).toJSON(),
           $updated: new Date(0).toJSON(),
         },
@@ -741,6 +942,66 @@ describe('updateResource', () => {
     });
   });
 
+  it('should be able to update an existing resource from another team', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resource = await Resource.create({
+      type: 'testResourceTeam',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      UserId: userB.id,
+    });
+
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'I am not Foo.',
+        id: resource.id,
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+      },
+    });
+  });
+
+  it('should not be able to update an existing resource from another team if not part of the team', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resource = await Resource.create({
+      type: 'testResourceTeam',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      UserId: userB.id,
+    });
+
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        message: 'Resource not found',
+      },
+    });
+  });
+
   it('should not be possible to update an existing resource through another resource', async () => {
     const app = await exampleApp(organizationId);
     const resource = await Resource.create({
@@ -943,6 +1204,51 @@ describe('deleteResource', () => {
         statusCode: 404,
       },
     });
+  });
+
+  it('should delete another team member’s resource', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resource = await Resource.create({
+      type: 'testResourceTeam',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      UserId: userB.id,
+    });
+
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({ status: 204 });
+  });
+
+  it('should not delete resources if not part of the same team', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resource = await Resource.create({
+      type: 'testResourceTeam',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      UserId: userB.id,
+    });
+
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found' } });
   });
 
   it('should not be able to delete a non-existent resource', async () => {
