@@ -7,6 +7,7 @@ import { AppsembleError } from '.';
 
 interface OpenDirSafeOptions {
   allowMissing?: boolean;
+  recursive?: boolean;
 }
 
 /**
@@ -20,13 +21,13 @@ interface OpenDirSafeOptions {
 export async function opendirSafe(
   directory: string,
   onFile: (fullpath: string, stat: Dirent) => Promisable<void>,
-  { allowMissing }: OpenDirSafeOptions = {},
+  options: OpenDirSafeOptions = {},
 ): Promise<void> {
   let stats: Stats;
   try {
     stats = await fs.stat(directory);
   } catch (err: unknown) {
-    if (allowMissing && (err as NodeJS.ErrnoException).code === 'ENOENT') {
+    if (options.allowMissing && (err as NodeJS.ErrnoException).code === 'ENOENT') {
       return;
     }
     throw new AppsembleError(`Expected ${directory} to be a directory`);
@@ -36,6 +37,10 @@ export async function opendirSafe(
   }
   const dir = await fs.opendir(directory);
   for await (const file of dir) {
-    await onFile(join(directory, file.name), file);
+    const fullPath = join(directory, file.name);
+    await onFile(fullPath, file);
+    if (options.recursive && file.isDirectory()) {
+      await opendirSafe(fullPath, onFile, options);
+    }
   }
 }
