@@ -24,7 +24,7 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
-  "browser": "dist",
+  "main": "dist",
   "types": "dist",
   "files": [
     "dist"
