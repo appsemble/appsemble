@@ -77,10 +77,10 @@ fine-grain control over which users have access to specific pages or blocks.
   not, `organization` to assign the default role to every user within the app’s organization, and
   `invite` for an invite-only policy.
 - **roles**: An object containing keys representing the roles that can be used within the app.
-- **roles[key].description**: The description of a role.
-- **roles[key].inherits**: The name of the role to inherit from. Note that this role must exist and
+- **roles\[key].description**: The description of a role.
+- **roles\[key].inherits**: The name of the role to inherit from. Note that this role must exist and
   can not inherit itself via this field or the `inherits` field of the referenced role.
-- **roles[key].defaultPage**: The default page to redirect users with this role to.
+- **roles\[key].defaultPage**: The default page to redirect users with this role to.
 - **login** (_**deprecated**_): By default, users can login to apps using OAuth2. In order to
   support legacy apps, this can be set to `password` to enable a less secure login mechanism.
 

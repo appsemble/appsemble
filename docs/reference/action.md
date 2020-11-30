@@ -171,8 +171,8 @@ query:
 This action opens a pop-up dialog that can be used to seamlessly transition to a new set of blocks
 temporarily.
 
-Dialogs can be closed by calling the [`dialog.ok`] and [`dialog.error`]. Users can still manually
-close dialogs, which should be supported by the app.
+Dialogs can be closed by calling the [`dialog.ok`](#dialogok) and [`dialog.error`](#dialogok). Users
+can still manually close dialogs, which should be supported by the app.
 
 | Parameter  | Required | Description                                                                                                      |
 | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
