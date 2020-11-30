@@ -1,0 +1,1 @@
+Add `resource.count` action.

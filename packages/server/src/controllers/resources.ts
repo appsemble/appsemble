@@ -1,5 +1,11 @@
 import { logger } from '@appsemble/node-utils';
-import { checkAppRole, Permission, SchemaValidationError, validate } from '@appsemble/utils';
+import {
+  checkAppRole,
+  Permission,
+  SchemaValidationError,
+  TeamRole,
+  validate,
+} from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { OpenAPIV3 } from 'openapi-types';
@@ -12,6 +18,7 @@ import {
   Organization,
   Resource,
   ResourceSubscription,
+  TeamMember,
   User,
 } from '../models';
 import { KoaContext } from '../types';
@@ -27,6 +34,8 @@ interface Params {
   $orderby: string;
   $top: number;
 }
+
+const specialRoles = new Set(['$author', ...Object.values(TeamRole).map((r) => `$team:${r}`)]);
 
 function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.SchemaObject {
   if (!app) {
@@ -49,24 +58,62 @@ function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.Sch
 }
 
 /**
+ * Generate Sequelize filter objects based on ODATA filters present in the request.
+ *
+ * @param ctx - The KoaContext to extract the parameters from.
+ * @returns An object containing the generated order and query options.
+ */
+function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOptions } {
+  const {
+    query: { $filter, $orderby },
+  } = ctx;
+
+  try {
+    const order =
+      $orderby &&
+      odataOrderbyToSequelize(
+        $orderby
+          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+        renameOData,
+      );
+    const query =
+      $filter &&
+      odataFilterToSequelize(
+        $filter
+          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+        Resource,
+        renameOData,
+      );
+
+    return { order, query };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw badRequest('Unable to process this query', { syntaxError: error.message });
+    }
+    logger.error(error);
+    throw internal('Unable to process this query');
+  }
+}
+
+/**
  * Verifies whether or not the user has sufficient permissions to perform a resource call.
  * Will throw an 403 error if the user does not satisfy the requirements.
  *
  * @param ctx - Koa context of the request
  * @param app - App as fetched from the database.
  * This must include the app member and organization relationships.
- * @param resource - The resource as fetched from the database.
  * @param resourceType - The resource type to check the role for.
  * @param action - The resource action to theck the role for.
  *
  * @returns Query options to filter the resource for the user context.
  */
-async function verifyAppRole(
+async function verifyPermission(
   ctx: KoaContext,
   app: App,
-  resource: Resource,
   resourceType: string,
-  action: 'create' | 'delete' | 'get' | 'query' | 'update',
+  action: 'create' | 'delete' | 'get' | 'query' | 'update' | 'count',
 ): Promise<WhereOptions> {
   if (!app.definition.resources[resourceType] || !app.definition.resources[resourceType][action]) {
     return;
@@ -83,62 +130,108 @@ async function verifyAppRole(
     }
   }
 
-  const author = roles.includes('$author');
-  const filteredRoles = roles.filter((r) => r !== '$author');
+  const functionalRoles = roles.filter((r) => specialRoles.has(r));
+  const appRoles = roles.filter((r) => !specialRoles.has(r));
 
-  if (!author && !filteredRoles.length) {
+  if (!functionalRoles.length && !appRoles.length) {
     return;
   }
 
-  if (!user && (filteredRoles.length || author)) {
+  if (!user && (appRoles.length || functionalRoles.length)) {
     throw unauthorized('User is not logged in');
   }
 
-  if (author && user && action === 'query') {
-    return { UserId: user.id };
+  const result = [];
+
+  if (functionalRoles.includes('$author') && user && action !== 'create') {
+    result.push({ UserId: user.id });
   }
 
-  if (author && user && resource && user.id === resource.UserId) {
-    return;
+  if (functionalRoles.includes(`$team:${TeamRole.Member}`)) {
+    const teamIds = (
+      await TeamMember.findAll({
+        where: { UserId: user.id, role: TeamRole.Member },
+        raw: true,
+        attributes: ['TeamId'],
+      })
+    ).map((t) => t.TeamId);
+
+    const userIds = (
+      await TeamMember.findAll({
+        attributes: ['UserId'],
+        raw: true,
+        where: { TeamId: teamIds },
+      })
+    ).map((tm) => tm.UserId);
+    result.push({ UserId: { [Op.in]: userIds } });
   }
 
-  const member = app.Users.find((u) => u.id === user.id);
-  const { policy, role: defaultRole } = app.definition.security.default;
-  let role: string;
+  if (functionalRoles.includes(`$team:${TeamRole.Manager}`)) {
+    const teamIds = (
+      await TeamMember.findAll({
+        where: { UserId: user.id },
+        raw: true,
+        attributes: ['TeamId'],
+      })
+    ).map((t) => t.TeamId);
 
-  if (member) {
-    ({ role } = member.AppMember);
-  } else {
-    switch (policy) {
-      case 'everyone':
-        role = defaultRole;
-        break;
+    const userIds = (
+      await TeamMember.findAll({
+        attributes: ['UserId'],
+        raw: true,
+        where: { TeamId: teamIds },
+      })
+    ).map((tm) => tm.UserId);
+    result.push({ UserId: { [Op.in]: userIds } });
+  }
 
-      case 'organization':
-        if (!(await app.Organization.$has('User', user.id))) {
-          throw forbidden('User is not a member of the organization.');
-        }
+  if (app.definition.security) {
+    const member = app.Users.find((u) => u.id === user.id);
+    const { policy, role: defaultRole } = app.definition?.security?.default;
+    let role: string;
 
-        role = defaultRole;
-        break;
+    if (member) {
+      ({ role } = member.AppMember);
+    } else {
+      switch (policy) {
+        case 'everyone':
+          role = defaultRole;
+          break;
 
-      case 'invite':
-        throw forbidden('User is not a member of the app.');
+        case 'organization':
+          if (!(await app.Organization.$has('User', user.id))) {
+            throw forbidden('User is not a member of the organization.');
+          }
 
-      default:
-        role = null;
+          role = defaultRole;
+          break;
+
+        case 'invite':
+          throw forbidden('User is not a member of the app.');
+
+        default:
+          role = null;
+      }
+    }
+
+    if (!appRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
+      if (!result.length) {
+        throw forbidden('User does not have sufficient permissions.');
+      }
     }
   }
 
-  if (!filteredRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
-    throw forbidden('User does not have sufficient permissions.');
+  if (result.length === 0) {
+    return;
   }
+
+  return result.length === 1 ? result[0] : { [Op.or]: result };
 }
 
 export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    query: { $filter, $orderby, $top },
+    query: { $top },
     user,
   } = ctx;
 
@@ -156,36 +249,11 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
       ],
     }),
   });
-  verifyResourceDefinition(app, resourceType);
-  const userQuery = await verifyAppRole(ctx, app, null, resourceType, 'query');
 
-  let order: Order;
-  let query: WhereOptions;
-  try {
-    order =
-      $orderby &&
-      odataOrderbyToSequelize(
-        $orderby
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
-        renameOData,
-      );
-    query =
-      $filter &&
-      odataFilterToSequelize(
-        $filter
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
-        Resource,
-        renameOData,
-      );
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw badRequest('Unable to process this query', { syntaxError: error.message });
-    }
-    logger.error(error);
-    throw internal('Unable to process this query');
-  }
+  verifyResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, 'query');
+  const { order, query } = generateQuery(ctx);
+
   const resources = await Resource.findAll({
     include: [{ model: User, attributes: ['id', 'name'], required: false }],
     limit: $top,
@@ -216,6 +284,48 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
+export async function countResources(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, resourceType },
+    user,
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    ...(user && {
+      include: [
+        { model: Organization, attributes: ['id'] },
+        {
+          model: User,
+          attributes: ['id'],
+          required: false,
+          where: { id: user.id },
+          through: { attributes: ['role'] },
+        },
+      ],
+    }),
+  });
+
+  verifyResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, 'count');
+  const { query } = generateQuery(ctx);
+
+  const count = await Resource.count({
+    where: {
+      [Op.and]: [
+        query,
+        {
+          ...userQuery,
+          type: resourceType,
+          AppId: appId,
+          expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
+        },
+      ],
+    },
+  });
+
+  ctx.body = count;
+}
+
 export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceId, resourceType },
@@ -237,6 +347,7 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
     }),
   });
   verifyResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, 'get');
 
   const resource = await Resource.findOne({
     where: {
@@ -244,6 +355,7 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
       id: resourceId,
       type: resourceType,
       expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
+      ...userQuery,
     },
     include: [{ model: User, attributes: ['name'], required: false }],
   });
@@ -251,8 +363,6 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
   if (!resource) {
     throw notFound('Resource not found');
   }
-
-  await verifyAppRole(ctx, app, resource, resourceType, 'get');
 
   ctx.body = {
     ...resource.data,
@@ -413,8 +523,8 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   });
 
   verifyResourceDefinition(app, resourceType);
+  await verifyPermission(ctx, app, resourceType, action);
 
-  await verifyAppRole(ctx, app, resource, resourceType, action);
   const { expires, schema } = app.definition.resources[resourceType];
 
   try {
@@ -496,17 +606,16 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   });
 
   verifyResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
   let resource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, AppId: appId },
+    where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
     include: [{ model: User, attributes: ['id', 'name'], required: false }],
   });
 
   if (!resource) {
     throw notFound('Resource not found');
   }
-
-  await verifyAppRole(ctx, app, resource, resourceType, action);
 
   const { schema } = app.definition.resources[resourceType];
 
@@ -578,17 +687,16 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   });
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
-
   verifyResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, action);
+
   const resource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, AppId: appId },
+    where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
   });
 
   if (!resource) {
     throw notFound('Resource not found');
   }
-
-  await verifyAppRole(ctx, app, resource, resourceType, action);
 
   await resource.destroy();
   ctx.status = 204;

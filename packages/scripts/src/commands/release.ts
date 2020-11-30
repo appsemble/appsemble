@@ -15,7 +15,7 @@ import { Argv } from 'yargs';
 
 import {
   createHeading,
-  createLinkReference,
+  createLink,
   createList,
   createListItem,
   createRoot,
@@ -143,8 +143,9 @@ async function updateChangelog(workspaces: string[], version: string): Promise<v
   );
   const changesSection = [
     createHeading(2, [
-      createLinkReference(version, [version]),
-      ' - ',
+      '[',
+      createLink(`https://gitlab.com/appsemble/appsemble/-/releases/${version}`, [version]),
+      '] - ',
       formatISO(new Date(), { representation: 'date' }),
     ]),
     ...Object.entries(changesByCategory)

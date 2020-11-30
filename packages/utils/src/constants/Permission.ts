@@ -10,7 +10,6 @@ export enum Permission {
   EditApps,
   EditAppMessages,
   EditAppSettings,
-  EditThemes,
   DeleteApps,
   PushNotifications,
   ManageResources,

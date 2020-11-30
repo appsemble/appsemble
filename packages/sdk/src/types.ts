@@ -44,6 +44,7 @@ export type RequestLikeActionTypes =
   | 'resource.delete'
   | 'resource.get'
   | 'resource.query'
+  | 'resource.count'
   | 'resource.update';
 
 export interface LinkAction extends BaseAction<'link'> {
@@ -76,6 +77,7 @@ export type ResourceCreateAction = RequestLikeAction<'resource.create'>;
 export type ResourceDeleteAction = RequestLikeAction<'resource.delete'>;
 export type ResourceGetAction = RequestLikeAction<'resource.get'>;
 export type ResourceQueryAction = RequestLikeAction<'resource.query'>;
+export type ResourceCountAction = RequestLikeAction<'resource.count'>;
 export type ResourceUpdateAction = RequestLikeAction<'resource.update'>;
 
 /**
@@ -99,6 +101,7 @@ export type Action =
   | RequestAction
   | ResourceGetAction
   | ResourceQueryAction
+  | ResourceCountAction
   | ResourceCreateAction
   | ResourceUpdateAction
   | ResourceDeleteAction

@@ -430,6 +430,11 @@ export interface ResourceDefinition {
   query?: ResourceCall;
 
   /**
+   * The definition for the `resource.count` action.
+   */
+  count?: ResourceCall;
+
+  /**
    * The definition for the `resource.update` action.
    */
   update?: ResourceCall;
@@ -644,6 +649,7 @@ export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
 export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
+export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>

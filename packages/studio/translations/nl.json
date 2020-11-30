@@ -540,7 +540,7 @@
   "studio.src.components.UserSettings.primary": "Primair",
   "studio.src.components.UserSettings.primaryEmailSuccess": "Succesvol {email} ingesteld als primair e-mailadres.",
   "studio.src.components.UserSettings.profile": "Publiek profiel",
-  "studio.src.components.UserSettings.resendVerification": "Opnieuw e-mail terverificatie versturen",
+  "studio.src.components.UserSettings.resendVerification": "Opnieuw e-mail ter verificatie versturen",
   "studio.src.components.UserSettings.resendVerificationSent": "E-mail ter verificatie is opnieuw verstuurd.",
   "studio.src.components.UserSettings.saveProfile": "Profiel opslaan",
   "studio.src.components.UserSettings.setPrimaryEmail": "Instellen als primair",

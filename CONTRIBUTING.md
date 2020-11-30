@@ -104,14 +104,8 @@ following steps:
 CI will take care of the rest.
 
 [airbnb javascript style guide]: https://github.com/airbnb/javascript
-[css modules]: https://github.com/css-modules/css-modules
-[dev.appsemble.io]: https://dev.appsemble.io
 [dnsmasq]: http://www.thekelleys.org.uk/dnsmasq/doc.html
 [eslint]: https://eslint.org
 [keep a changelog]: https://keepachangelog.com/en/1.0.0
-[lodash]: https://www.npmjs.com/package/lodash-es
-[npmjs]: https://www.npmjs.com
-[openapi]: https://swagger.io/specification/v2/
-[redux]: https://redux.js.org
 [rfc 2606]: https://tools.ietf.org/html/rfc2606
 [stylelint]: https://stylelint.io
