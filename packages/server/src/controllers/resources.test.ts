@@ -84,6 +84,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             properties: { foo: { type: 'string' } },
           },
           query: { roles: ['$author'] },
+          count: { roles: ['$author'] },
         },
         secured: {
           schema: { type: 'object' },
@@ -102,6 +103,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
           },
           get: { roles: ['$author', '$team:member'] },
           query: { roles: ['$team:member'] },
+          count: { roles: ['$team:member'] },
           update: { roles: ['$team:member'] },
           create: { roles: ['$team:member'] },
           delete: { roles: ['$team:member'] },
@@ -785,6 +787,119 @@ describe('queryResources', () => {
         $expires: '1970-01-01T00:10:00.000Z',
       },
     ]);
+  });
+});
+
+describe('countResources', () => {
+  it('should be able to count all resources of a type', async () => {
+    const app = await exampleApp(organizationId);
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+    });
+
+    const responseA = await request.get(`/api/apps/${app.id}/resources/testResource/$count`);
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testExpirableResource/$count`,
+    );
+
+    expect(responseA).toMatchObject({ status: 200, data: 2 });
+    expect(responseB).toMatchObject({ status: 200, data: 0 });
+  });
+
+  it('should apply filters', async () => {
+    const app = await exampleApp(organizationId);
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/$count?$filter=foo eq 'baz'`,
+    );
+
+    expect(response).toMatchObject({ status: 200, data: 2 });
+  });
+
+  it('should only count resources the user has access to', async () => {
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'baz' },
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({ status: 200, data: 1 });
+  });
+
+  it('should only count resources from team members', async () => {
+    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceTeam',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam/$count`, {
+      headers: { authorization },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: 2,
+    });
   });
 });
 

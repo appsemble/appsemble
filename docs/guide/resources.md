@@ -51,6 +51,7 @@ These are configured to use Appsemble APIs by default, but can be overridden man
 The resource actions available are:
 
 - **resource.query**: Fetch all resources.
+- **resource.count**: Count all resources.
 - **resource.get**: Fetch a single resource.
 - **resource.create**: Create a new resource.
 - **resource.update**: Update an existing resource.
