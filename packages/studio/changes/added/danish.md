@@ -1,0 +1,1 @@
+Added Danish language support.
