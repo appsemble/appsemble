@@ -5,6 +5,7 @@ import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } fr
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
+import { getAppMembers } from '../../utils/getAppMembers';
 import { useApp } from '../AppContext';
 import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
@@ -27,28 +28,7 @@ export function Roles(): ReactElement {
   const [submittingMemberRoleId, setSubmittingMemberRoleId] = useState<string>();
 
   useEffect(() => {
-    const getMembers = async (): Promise<void> => {
-      const { data: appMembers } = await axios.get<Member[]>(`/api/apps/${app.id}/members`);
-      if (app.definition.security.default.policy === 'invite') {
-        setMembers(appMembers);
-        return;
-      }
-
-      const { data: organizationMembers } = await axios.get<Member[]>(
-        `/api/organizations/${app.OrganizationId}/members`,
-      );
-
-      setMembers([
-        ...organizationMembers.map((orgMem) => {
-          const appMember = appMembers.find((appMem) => appMem.id === orgMem.id);
-          return appMember || { ...orgMem, role: app.definition.security.default.role };
-        }),
-        ...appMembers.filter(
-          (appMem) => !organizationMembers.find((orgMem) => orgMem.id === appMem.id),
-        ),
-      ]);
-    };
-    getMembers();
+    getAppMembers(app).then(setMembers);
   }, [app]);
 
   const onChangeRole = useCallback(

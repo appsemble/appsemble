@@ -32,15 +32,15 @@ export interface UseAxiosResult<T> {
 }
 
 /**
- * Use data fetched from a temote API.
+ * Use data fetched from a remote API.
  *
  * Whenever the URL is changed, new data is loaded.
  *
- * @param url - The URL from which to fetch data.
+ * @param target - Either the URL from which to fetch data, or a promise that returns T.
  *
- * @returns A state which holds the Axios data and some utility functions.
+ * @returns A state which holds the target data and some utility functions.
  */
-export function useData<T>(url: string): UseAxiosResult<T> {
+export function useData<T>(target: string | (() => Promise<T>)): UseAxiosResult<T> {
   const [error, setError] = useState<AxiosError>(null);
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<T>(null);
@@ -50,28 +50,42 @@ export function useData<T>(url: string): UseAxiosResult<T> {
   const refresh = useCallback(() => setRefresher({}), []);
 
   useEffect(() => {
-    const source = axios.CancelToken.source();
     setLoading(true);
     setError(null);
     setResult(null);
 
-    axios
-      .get(url, { cancelToken: source.token })
-      .then(({ data }) => {
-        setResult(data);
+    if (typeof target === 'string') {
+      const source = axios.CancelToken.source();
+      axios
+        .get(target, { cancelToken: source.token })
+        .then(({ data }) => {
+          setResult(data);
+          setError(null);
+          setLoading(false);
+        })
+        .catch((err) => {
+          if (!axios.isCancel(err)) {
+            setResult(null);
+            setError(err);
+            setLoading(false);
+          }
+        });
+
+      return source.cancel;
+    }
+
+    target()
+      .then((response) => {
+        setResult(response);
         setError(null);
         setLoading(false);
       })
       .catch((err) => {
-        if (!axios.isCancel(err)) {
-          setResult(null);
-          setError(err);
-          setLoading(false);
-        }
+        setResult(null);
+        setError(err);
+        setLoading(false);
       });
-
-    return source.cancel;
-  }, [refresher, url]);
+  }, [refresher, target]);
 
   return useMemo(
     () => ({

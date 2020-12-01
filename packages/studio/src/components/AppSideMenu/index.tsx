@@ -80,11 +80,18 @@ export function AppSideMenu(): ReactElement {
       {editPermission && (
         <>
           {app.definition.security !== undefined && (
-            <SideNavLink
-              icon="users"
-              label={<FormattedMessage {...messages.roles} />}
-              to={`${url}/roles`}
-            />
+            <>
+              <SideNavLink
+                icon="users"
+                label={<FormattedMessage {...messages.roles} />}
+                to={`${url}/roles`}
+              />
+              <SideNavLink
+                icon="hands-helping"
+                label={<FormattedMessage {...messages.teams} />}
+                to={`${url}/teams`}
+              />
+            </>
           )}
           <SideNavLink
             icon="cogs"
