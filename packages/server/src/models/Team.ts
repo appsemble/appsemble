@@ -28,7 +28,7 @@ export class Team extends Model<Team> {
   @AllowNull(false)
   @ForeignKey(() => App)
   @Column
-  AppId: string;
+  AppId: number;
 
   @BelongsTo(() => App)
   App: App;

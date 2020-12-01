@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { TeamRole } from '../..';
+import { TeamRole } from '../../constants';
 
 export const paths: OpenAPIV3.PathsObject = {
   '/api/apps': {

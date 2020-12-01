@@ -145,13 +145,16 @@ export async function deleteTeam(ctx: KoaContext<Params>): Promise<void> {
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
-    include: [{ model: User, where: { id: user.id }, required: false }],
+    include: [
+      { model: User, where: { id: user.id }, required: false },
+      { model: App, attributes: ['OrganizationId'] },
+    ],
   });
   if (!team) {
     throw notFound('Team not found.');
   }
 
-  await checkRole(ctx, appId, Permission.ManageMembers);
+  await checkRole(ctx, team.App.OrganizationId, Permission.ManageMembers);
 
   await team.destroy();
 }
@@ -199,13 +202,13 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   try {
-    await checkRole(ctx, appId, Permission.InviteMember);
+    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
   } catch {
     await checkTeamPermission(ctx, team);
   }
 
   if (!team.App.Users.length) {
-    throw notFound(`User with id ${id} is not part of this apps’s members.`);
+    throw notFound(`User with id ${id} is not part of this app’s members.`);
   }
 
   if (team.Users.length) {

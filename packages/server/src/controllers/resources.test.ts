@@ -1,4 +1,4 @@
-import { TeamRole } from '@appsemble/utils/src';
+import { TeamRole } from '@appsemble/utils';
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
