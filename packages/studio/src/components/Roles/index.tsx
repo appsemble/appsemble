@@ -1,12 +1,12 @@
-import { Loader, Table, Title, useMessages } from '@appsemble/react-components';
+import { Table, Title, useData, useMessages } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
-import React, { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { getAppMembers } from '../../utils/getAppMembers';
 import { useApp } from '../AppContext';
+import { AsyncDataView } from '../AsyncDataView';
 import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
@@ -24,12 +24,8 @@ export function Roles(): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const { userInfo } = useUser();
   const { app } = useApp();
-  const [members, setMembers] = useState<Member[]>();
   const [submittingMemberRoleId, setSubmittingMemberRoleId] = useState<string>();
-
-  useEffect(() => {
-    getAppMembers(app).then(setMembers);
-  }, [app]);
+  const result = useData<Member[]>(`/api/apps/${app.id}/members`);
 
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, userId: string): Promise<void> => {
@@ -59,10 +55,6 @@ export function Roles(): ReactElement {
     [app, formatMessage, push],
   );
 
-  if (members === undefined) {
-    return <Loader />;
-  }
-
   return (
     <>
       <HelmetIntl title={messages.title} />
@@ -79,55 +71,64 @@ export function Roles(): ReactElement {
           }}
         />
       )}
-      <Table>
-        <thead>
-          <tr>
-            <th>
-              <FormattedMessage {...messages.member} />
-            </th>
-            <th className="has-text-right">
-              <FormattedMessage {...messages.role} />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((member) => (
-            <tr key={member.id}>
-              <td>
-                <span>{member.name || member.primaryEmail || member.id}</span>
-                <div className="tags is-inline ml-2">
-                  {member.id === userInfo.sub && (
-                    <span className="tag is-success">
-                      <FormattedMessage {...messages.you} />
-                    </span>
-                  )}
-                </div>
-              </td>
-              <td className="has-text-right">
-                <div className="control is-inline">
-                  <div
-                    className={classNames('select', {
-                      'is-loading': submittingMemberRoleId === member.id,
-                    })}
-                  >
-                    <select
-                      defaultValue={member.role}
-                      disabled={submittingMemberRoleId === member.id}
-                      onChange={(event) => onChangeRole(event, member.id)}
-                    >
-                      {Object.keys(app.definition.security.roles).map((role) => (
-                        <option key={role} value={role}>
-                          {role}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <AsyncDataView
+        emptyMessage={<FormattedMessage {...messages.noMembers} />}
+        errorMessage={<FormattedMessage {...messages.memberError} />}
+        loadingMessage={<FormattedMessage {...messages.loadingMembers} />}
+        result={result}
+      >
+        {(members) => (
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.member} />
+                </th>
+                <th className="has-text-right">
+                  <FormattedMessage {...messages.role} />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <tr key={member.id}>
+                  <td>
+                    <span>{member.name || member.primaryEmail || member.id}</span>
+                    <div className="tags is-inline ml-2">
+                      {member.id === userInfo.sub && (
+                        <span className="tag is-success">
+                          <FormattedMessage {...messages.you} />
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="has-text-right">
+                    <div className="control is-inline">
+                      <div
+                        className={classNames('select', {
+                          'is-loading': submittingMemberRoleId === member.id,
+                        })}
+                      >
+                        <select
+                          defaultValue={member.role}
+                          disabled={submittingMemberRoleId === member.id}
+                          onChange={(event) => onChangeRole(event, member.id)}
+                        >
+                          {Object.keys(app.definition.security.roles).map((role) => (
+                            <option key={role} value={role}>
+                              {role}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </AsyncDataView>
     </>
   );
 }

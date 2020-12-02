@@ -11,7 +11,6 @@ import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Member, TeamMember } from '../../../types';
-import { getAppMembers } from '../../../utils/getAppMembers';
 import { useApp } from '../../AppContext';
 import { AsyncDataView } from '../../AsyncDataView';
 import { messages } from './messages';
@@ -28,8 +27,7 @@ export function AddTeamMemberModal({
   toggle,
 }: AddTeamMemberModalProps): ReactElement {
   const { app } = useApp();
-  const getMembers = useCallback(() => getAppMembers(app), [app]);
-  const result = useData<Member[]>(getMembers);
+  const result = useData<Member[]>(`/api/apps/${app.id}/members`);
   const onSubmit = useCallback(({ memberId }) => onAdd(memberId), [onAdd]);
 
   const defaultValues = {

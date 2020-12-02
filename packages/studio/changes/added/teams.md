@@ -1,1 +1,1 @@
-Add support for teams in organizations
+Add support for teams in apps
