@@ -1,7 +1,6 @@
-import { Table, Title, useData, useMessages } from '@appsemble/react-components';
+import { AsyncSelect, Table, Title, useData, useMessages } from '@appsemble/react-components';
 import axios from 'axios';
-import classNames from 'classnames';
-import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import React, { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -24,15 +23,12 @@ export function Roles(): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const { userInfo } = useUser();
   const { app } = useApp();
-  const [submittingMemberRoleId, setSubmittingMemberRoleId] = useState<string>();
   const result = useData<Member[]>(`/api/apps/${app.id}/members`);
 
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, userId: string): Promise<void> => {
       event.preventDefault();
       const { value: role } = event.currentTarget;
-
-      setSubmittingMemberRoleId(userId);
 
       try {
         const { data: member } = await axios.post<Member>(`/api/apps/${app.id}/members/${userId}`, {
@@ -49,8 +45,6 @@ export function Roles(): ReactElement {
       } catch {
         push({ body: formatMessage(messages.changeRoleError) });
       }
-
-      setSubmittingMemberRoleId(null);
     },
     [app, formatMessage, push],
   );
@@ -104,23 +98,13 @@ export function Roles(): ReactElement {
                   </td>
                   <td className="has-text-right">
                     <div className="control is-inline">
-                      <div
-                        className={classNames('select', {
-                          'is-loading': submittingMemberRoleId === member.id,
-                        })}
-                      >
-                        <select
-                          defaultValue={member.role}
-                          disabled={submittingMemberRoleId === member.id}
-                          onChange={(event) => onChangeRole(event, member.id)}
-                        >
-                          {Object.keys(app.definition.security.roles).map((role) => (
-                            <option key={role} value={role}>
-                              {role}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <AsyncSelect onChange={(event) => onChangeRole(event, member.id)}>
+                        {Object.keys(app.definition.security.roles).map((role) => (
+                          <option key={role} selected={role === member.role} value={role}>
+                            {role}
+                          </option>
+                        ))}
+                      </AsyncSelect>
                     </div>
                   </td>
                 </tr>
