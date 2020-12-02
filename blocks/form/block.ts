@@ -310,7 +310,7 @@ interface SyncEnumField extends AbstractEnumField {
  */
 interface AsyncEnumField extends AbstractEnumField {
   /**
-   * This action will be firex to fetch dynamic enum options.
+   * This action will be fired to fetch dynamic enum options.
    *
    * The action should return an array of objects that contain the `label` and `value` property.
    *
