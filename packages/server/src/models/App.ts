@@ -32,6 +32,7 @@ import {
   OAuth2Consent,
   Organization,
   Resource,
+  Team,
   User,
 } from '.';
 
@@ -138,6 +139,9 @@ export class App extends Model<App> {
 
   @HasMany(() => AppScreenshot)
   AppScreenshots: AppScreenshot[];
+
+  @HasMany(() => Team)
+  Teams: Team[];
 
   ResourceCount: number;
 

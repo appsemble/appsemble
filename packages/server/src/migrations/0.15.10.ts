@@ -18,13 +18,13 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.createTable('Team', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING, allowNull: false },
-    OrganizationId: {
-      type: DataTypes.STRING,
+    AppId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       onDelete: 'cascade',
       onUpdate: 'cascade',
       references: {
-        model: 'Organization',
+        model: 'App',
         key: 'id',
       },
     },
@@ -70,10 +70,9 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+  logger.info('Dropping table TeamMember');
+  await queryInterface.dropTable('TeamMember');
 
   logger.info('Dropping table Team');
   await queryInterface.dropTable('Team');
-
-  logger.info('Dropping table TeamMember');
-  await queryInterface.dropTable('TeamMember');
 }

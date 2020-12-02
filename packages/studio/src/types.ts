@@ -1,5 +1,5 @@
 import { OAuth2Provider, UserInfo } from '@appsemble/types';
-import { TeamRole } from '@appsemble/utils/src';
+import { TeamRole } from '@appsemble/utils';
 import { OAuth2State } from '@appsemble/web-utils';
 
 /**

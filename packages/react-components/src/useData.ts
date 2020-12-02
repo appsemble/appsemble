@@ -32,13 +32,13 @@ export interface UseAxiosResult<T> {
 }
 
 /**
- * Use data fetched from a temote API.
+ * Use data fetched from a remote API.
  *
  * Whenever the URL is changed, new data is loaded.
  *
- * @param url - The URL from which to fetch data.
+ * @param url - Either the URL from which to fetch data.
  *
- * @returns A state which holds the Axios data and some utility functions.
+ * @returns A state which holds the target data and some utility functions.
  */
 export function useData<T>(url: string): UseAxiosResult<T> {
   const [error, setError] = useState<AxiosError>(null);

@@ -12,7 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, Member, OrganizationInvite, Team, User } from '.';
+import { App, Member, OrganizationInvite, User } from '.';
 
 @Table({ tableName: 'Organization', paranoid: true })
 export class Organization extends Model<Organization> {
@@ -44,9 +44,6 @@ export class Organization extends Model<Organization> {
 
   @HasMany(() => App)
   Apps: App[];
-
-  @HasMany(() => Team)
-  Teams: Team[];
 
   @CreatedAt
   created: Date;

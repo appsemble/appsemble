@@ -8,10 +8,9 @@ import {
 } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import classNames from 'classnames';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
 import { checkRole } from '../../utils/checkRole';
 import { useUser } from '../UserProvider';
@@ -19,8 +18,6 @@ import { EditOrganizationModal } from './EditOrganizationModal';
 import styles from './index.css';
 import { MemberTable } from './MemberTable';
 import { messages } from './messages';
-import { TeamSettings } from './TeamSettings';
-import { TeamsList } from './TeamsList';
 
 /**
  * The page for configuring various settings of an organization.
@@ -31,10 +28,7 @@ export function OrganizationSettings(): ReactElement {
   const [icon, setIcon] = useState<File>();
   const {
     params: { organizationId },
-    path,
-    url,
   } = useRouteMatch<{ organizationId: string }>();
-  const history = useHistory();
   const editModal = useToggle();
 
   const onLogoChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
@@ -81,30 +75,7 @@ export function OrganizationSettings(): ReactElement {
         )}
       </div>
       <hr />
-      <div className="tabs">
-        <ul>
-          <li
-            className={classNames({ 'is-active': history.location.pathname.endsWith('/members') })}
-          >
-            <Link to={`${url}/members`}>Members</Link>
-          </li>
-          <li className={classNames({ 'is-active': history.location.pathname.includes('/teams') })}>
-            <Link to={`${url}/teams`}>Teams</Link>
-          </li>
-        </ul>
-      </div>
-      <Switch>
-        <Route exact path={`${path}/members`}>
-          <MemberTable />
-        </Route>
-        <Route exact path={`${path}/teams`}>
-          <TeamsList />
-        </Route>
-        <Route exact path={`${path}/teams/:teamId`}>
-          <TeamSettings />
-        </Route>
-        <Redirect to={`${path}/members`} />
-      </Switch>
+      <MemberTable />
       {mayEditOrganization && (
         <EditOrganizationModal
           editModal={editModal}

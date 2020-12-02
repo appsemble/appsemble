@@ -18,6 +18,7 @@ import { useHistory, useParams } from 'react-router-dom';
 
 import { TeamMember } from '../../../types';
 import { checkRole } from '../../../utils/checkRole';
+import { useApp } from '../../AppContext';
 import { AsyncDataView } from '../../AsyncDataView';
 import { HeaderControl } from '../../HeaderControl';
 import { useUser } from '../../UserProvider';
@@ -26,61 +27,57 @@ import { TeamMemberRow } from '../TeamMemberRow';
 import { messages } from './messages';
 
 export function TeamSettings(): ReactElement {
-  const { organizationId, teamId } = useParams<{ organizationId: string; teamId: string }>();
+  const { teamId } = useParams<{ teamId: string }>();
+  const { app } = useApp();
   const { organizations, userInfo } = useUser();
   const history = useHistory();
   const { formatMessage } = useIntl();
 
-  const teamResult = useData<Team>(`/api/organizations/${organizationId}/teams/${teamId}`);
-  const memberResult = useData<TeamMember[]>(
-    `/api/organizations/${organizationId}/teams/${teamId}/members`,
-  );
+  const teamResult = useData<Team>(`/api/apps/${app.id}/teams/${teamId}`);
+  const memberResult = useData<TeamMember[]>(`/api/apps/${app.id}/teams/${teamId}/members`);
   const editModal = useToggle();
   const addModal = useToggle();
 
   const submitTeam = useCallback(
     async ({ name }: Team) => {
-      const { data } = await axios.put<Team>(
-        `/api/organizations/${organizationId}/teams/${teamId}`,
-        {
-          name,
-        },
-      );
+      const { data } = await axios.put<Team>(`/api/apps/${app.id}/teams/${teamId}`, {
+        name,
+      });
       teamResult.setData(data);
       editModal.disable();
     },
-    [editModal, organizationId, teamResult, teamId],
+    [editModal, app, teamResult, teamId],
   );
 
   const onEdit = useCallback(
     async ({ id }: TeamMember, role: TeamRole) => {
       const { data: updated } = await axios.put<TeamMember>(
-        `/api/organizations/${organizationId}/teams/${teamId}/members/${id}`,
+        `/api/apps/${app.id}/teams/${teamId}/members/${id}`,
         { role },
       );
       memberResult.setData((members) =>
         members.map((member) => (member.id === id ? updated : member)),
       );
     },
-    [organizationId, memberResult, teamId],
+    [app, memberResult, teamId],
   );
 
   const onAdd = useCallback(
     async (id: string) => {
       const { data: newMember } = await axios.post<TeamMember>(
-        `/api/organizations/${organizationId}/teams/${teamId}/members`,
+        `/api/apps/${app.id}/teams/${teamId}/members`,
         { id },
       );
       memberResult.setData((members) => [...members, newMember]);
       addModal.disable();
     },
-    [addModal, memberResult, organizationId, teamId],
+    [addModal, memberResult, app, teamId],
   );
 
   const onDelete = useCallback(async () => {
-    await axios.delete(`/api/organizations/${organizationId}/teams/${teamId}`);
+    await axios.delete(`/api/apps/${app.id}/teams/${teamId}`);
     history.replace(history.location.pathname.replace(`/teams/${teamId}`, '/teams'));
-  }, [history, organizationId, teamId]);
+  }, [history, app, teamId]);
 
   const onDeleteClick = useConfirmation({
     title: <FormattedMessage {...messages.deletingTeam} />,
@@ -92,13 +89,13 @@ export function TeamSettings(): ReactElement {
 
   const onRemoveTeamMember = useCallback(
     async ({ id }: TeamMember) => {
-      await axios.delete(`/api/organizations/${organizationId}/teams/${teamId}/members/${id}`);
+      await axios.delete(`/api/apps/${app.id}/teams/${teamId}/members/${id}`);
       memberResult.setData((members) => members.filter((member) => member.id !== id));
     },
-    [memberResult, organizationId, teamId],
+    [app, memberResult, teamId],
   );
 
-  const organization = organizations.find((o) => o.id === organizationId);
+  const organization = organizations.find((o) => o.id === app.OrganizationId);
   const me = memberResult.data?.find((member) => member.id === userInfo.sub);
   const mayEditTeam = organization && checkRole(organization.role, Permission.ManageMembers);
   const mayInvite =

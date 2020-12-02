@@ -64,6 +64,7 @@ describe('getAppMembers', () => {
           },
           roles: {
             Reader: {},
+            Admin: {},
           },
         },
       },
@@ -73,7 +74,45 @@ describe('getAppMembers', () => {
       OrganizationId: organizationId,
     });
 
-    await AppMember.create({ UserId: user.id, AppId: app.id, role: 'Reader' });
+    await AppMember.create({ UserId: user.id, AppId: app.id, role: 'Admin' });
+
+    const response = await request.get(`/api/apps/${app.id}/members`, {
+      headers: { authorization },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: user.id,
+          name: 'Test User',
+          primaryEmail: 'test@example.com',
+          role: 'Admin',
+        },
+      ],
+    });
+  });
+
+  it('should include organization members with the default role if policy is not invite', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
 
     const response = await request.get(`/api/apps/${app.id}/members`, {
       headers: { authorization },
@@ -88,6 +127,36 @@ describe('getAppMembers', () => {
           role: 'Reader',
         },
       ],
+    });
+  });
+
+  it('should only return invited members if policy is set to invite', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'invite',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/members`, {
+      headers: { authorization },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: [],
     });
   });
 });
@@ -303,13 +372,8 @@ describe('setAppMember', () => {
       },
     });
 
-    const responseB = await request.get(`/api/apps/${app.id}/members`, {
-      headers: { authorization },
-    });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: [],
-    });
+    const member = await AppMember.findOne({ where: { UserId: userB.id } });
+    expect(member).toBeNull();
   });
 
   it('should remove app members if role is default with invite policy', async () => {

@@ -16,6 +16,8 @@ import { MessageEditor } from '../MessageEditor';
 import { Notifications } from '../Notifications';
 import { ProtectedRoute } from '../ProtectedRoute';
 import { Roles } from '../Roles';
+import { TeamSettings } from '../Teams/TeamSettings';
+import { TeamsList } from '../Teams/TeamsList';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
@@ -111,6 +113,22 @@ export function AppContext(): ReactElement {
               permission={Permission.EditApps}
             >
               <Roles />
+            </ProtectedRoute>
+            <ProtectedRoute
+              exact
+              organization={organization}
+              path={`${path}/teams`}
+              permission={Permission.InviteMember}
+            >
+              <TeamsList />
+            </ProtectedRoute>
+            <ProtectedRoute
+              exact
+              organization={organization}
+              path={`${path}/teams/:teamId`}
+              permission={Permission.InviteMember}
+            >
+              <TeamSettings />
             </ProtectedRoute>
             <ProtectedRoute
               exact

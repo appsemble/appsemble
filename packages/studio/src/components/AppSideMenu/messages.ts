@@ -9,5 +9,6 @@ export const messages = defineMessages({
   secrets: 'Secrets',
   notifications: 'Notifications',
   roles: 'Roles',
+  teams: 'Teams',
   translations: 'Translations',
 });
