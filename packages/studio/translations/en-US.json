@@ -484,7 +484,7 @@
   "studio.src.components.Teams.AddTeamMemberModal.addMember": "Add member",
   "studio.src.components.Teams.AddTeamMemberModal.addingMember": "Adding member",
   "studio.src.components.Teams.AddTeamMemberModal.cancel": "Cancel",
-  "studio.src.components.Teams.AddTeamMemberModal.error": "Something went wrong when retrieving this organization’s members.",
+  "studio.src.components.Teams.AddTeamMemberModal.error": "Something went wrong when retrieving the members.",
   "studio.src.components.Teams.AddTeamMemberModal.loading": "Loading members…",
   "studio.src.components.Teams.AddTeamMemberModal.member": "Member",
   "studio.src.components.Teams.AddTeamMemberModal.noMembers": "There aren’t any members that can be added to this team.",
