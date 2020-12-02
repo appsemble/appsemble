@@ -151,7 +151,7 @@ export type ObjectRequirement = LengthRequirement;
 /**
  * An option that is displayed in a dropdown menu or radio button field.
  */
-interface Choice {
+export interface Choice {
   /**
    * The label used to display the option.
    */
@@ -276,34 +276,57 @@ export interface RadioField extends AbstractField {
   requirements?: RequiredRequirement[];
 }
 
-/**
- * A dropdown list containing a list of predetermined values.
- */
-export interface EnumField extends AbstractField {
-  /**
-   * The default value of the field.
-   */
-  defaultValue?: any;
-
-  /**
-   * The list of available choices.
-   */
-  enum: Choice[];
-
+interface AbstractEnumField extends AbstractField {
   /**
    * The type of the field.
    */
   type: 'enum';
 
   /**
+   * The default value of the field.
+   */
+  defaultValue?: any;
+
+  /**
    * The requirements that are used to validate the field with.
    *
    * These are evaluated in the order they are defined in.
-   *
    */
-  // XXX: Implement field requirements
   requirements?: RequiredRequirement[];
 }
+
+/**
+ * A dropdown list containing a list of predetermined values.
+ */
+interface SyncEnumField extends AbstractEnumField {
+  /**
+   * The list of available choices.
+   */
+  enum: Choice[];
+}
+
+/**
+ * A dropdown list containing a list of predetermined values.
+ */
+interface AsyncEnumField extends AbstractEnumField {
+  /**
+   * This action will be fired to fetch dynamic enum options.
+   *
+   * The action should return an array of objects that contain the `label` and `value` property.
+   *
+   * @format action
+   */
+  action: string;
+
+  /**
+   * This message is displayed if the options failed to load.
+   *
+   * @default 'Error loading options'
+   */
+  loadError: Remapper;
+}
+
+export type EnumField = SyncEnumField | AsyncEnumField;
 
 /**
  * An input field used to upload files.
