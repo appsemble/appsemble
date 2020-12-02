@@ -1,7 +1,7 @@
 import { Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 
-import { App, Team, TeamMember, transactional, User } from '../models';
+import { App, Organization, Team, TeamMember, transactional, User } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 
@@ -193,7 +193,13 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     where: { id: teamId, AppId: appId },
     include: [
       { model: User, where: { id }, required: false },
-      { model: App, include: [{ model: User, where: { id }, required: false }] },
+      {
+        model: App,
+        include: [
+          { model: User, where: { id }, required: false },
+          { model: Organization, include: [{ model: User, where: { id }, required: false }] },
+        ],
+      },
     ],
   });
 
@@ -207,7 +213,11 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     await checkTeamPermission(ctx, team);
   }
 
-  if (!team.App.Users.length) {
+  if (
+    !team.App.Users.length &&
+    (team.App.definition.security.default.policy === 'invite' ||
+      !team.App.Organization.Users.length)
+  ) {
     throw notFound(`User with id ${id} is not part of this app’s members.`);
   }
 
@@ -215,7 +225,7 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     throw badRequest('This user is already a member of this team.');
   }
 
-  const [user] = team.App.Users;
+  const [user] = team.App.Users.length ? team.App.Users : team.App.Organization.Users;
   await TeamMember.create({ UserId: id, TeamId: team.id, role: TeamRole.Member });
   ctx.body = {
     id: user.id,
