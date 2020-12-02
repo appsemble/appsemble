@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.15.10](https://gitlab.com/appsemble/appsemble/-/releases/0.15.10)] - 2020-12-02
+
+### Added
+
+- Block(`form`): Added support for dynamic enum options.
+- Block(`form`): Added the new `change` event.
+- App: Add `resource.count` action.
+- App: Add support for `$team:member` and `$team:manager` in resource action roles.
+- App: Added Danish language support to the core parts of apps.
+- App: Added `waitFor` option for `event` action.
+- Appsemble: Add support for fetching resources based on teams.
+- Server: Add `/resources/{type}/$count` endpoint.
+- Server: Add teams API.
+- Studio: Add support for teams in apps.
+- Studio: Added Danish language support.
+
+### Changed
+
+- Block(`form`): Invalid form requirements now block the user from submitting the form.
+- Server: Change `/api/apps/{id}/members` to also display organization members based on the policy.
+
 ## \[[0.15.9](https://gitlab.com/appsemble/appsemble/-/releases/0.15.9)] - 2020-11-23
 
 ### Added
