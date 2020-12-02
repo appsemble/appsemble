@@ -200,12 +200,12 @@ describe('getResourceById', () => {
   });
 
   it('should be able to fetch a resource you are a team member of', async () => {
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    const app = await exampleApp(organizationId);
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
 
@@ -232,11 +232,11 @@ describe('getResourceById', () => {
   });
 
   it('should not be able to fetch a resource you are not a team member of', async () => {
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    const app = await exampleApp(organizationId);
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
@@ -434,13 +434,13 @@ describe('queryResources', () => {
   });
 
   it('should only fetch resources from team members', async () => {
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    const app = await exampleApp(organizationId);
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     const resourceA = await Resource.create({
@@ -485,8 +485,9 @@ describe('queryResources', () => {
   });
 
   it('should only fetch resources as an author or team manager', async () => {
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
-    const teamB = await Team.create({ name: 'Test Team 2', OrganizationId: organizationId });
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const teamB = await Team.create({ name: 'Test Team 2', AppId: app.id });
 
     const userB = await User.create();
     const userC = await User.create();
@@ -494,7 +495,6 @@ describe('queryResources', () => {
     await TeamMember.create({ TeamId: teamB.id, UserId: userB.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userC.id, role: TeamRole.Member });
 
-    const app = await exampleApp(organizationId);
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     const resourceA = await Resource.create({
@@ -865,13 +865,13 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members', async () => {
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    const app = await exampleApp(organizationId);
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     await Resource.create({
@@ -1059,7 +1059,7 @@ describe('updateResource', () => {
 
   it('should be able to update an existing resource from another team', async () => {
     const app = await exampleApp(organizationId);
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
@@ -1091,7 +1091,7 @@ describe('updateResource', () => {
 
   it('should not be able to update an existing resource from another team if not part of the team', async () => {
     const app = await exampleApp(organizationId);
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
@@ -1323,7 +1323,7 @@ describe('deleteResource', () => {
 
   it('should delete another team member’s resource', async () => {
     const app = await exampleApp(organizationId);
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
@@ -1346,7 +1346,7 @@ describe('deleteResource', () => {
 
   it('should not delete resources if not part of the same team', async () => {
     const app = await exampleApp(organizationId);
-    const team = await Team.create({ name: 'Test Team', OrganizationId: organizationId });
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
