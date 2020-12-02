@@ -15,7 +15,7 @@ import { Link, useParams } from 'react-router-dom';
 import { checkRole } from '../../utils/checkRole';
 import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
-import { AppCard } from './AppCard';
+import { CollapsibleList } from './CollapsibleList';
 import { CreateAppButton } from './CreateAppButton';
 import styles from './index.css';
 import { messages } from './messages';
@@ -83,12 +83,6 @@ export function AppList(): ReactElement {
     );
   }
 
-  const filteredApps = apps.filter(
-    (app) =>
-      app.definition.name.toLowerCase().includes(filter.toLowerCase()) ||
-      app.OrganizationId.toLowerCase().includes(filter.toLowerCase().replace(/@/g, '')),
-  );
-
   const createOrganizations =
     organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) ?? [];
 
@@ -143,11 +137,18 @@ export function AppList(): ReactElement {
           )}
         </div>
 
-        <div className={styles.appList}>
-          {filteredApps.map((app) => (
-            <AppCard app={app} key={app.id} />
-          ))}
-        </div>
+        {userInfo && (
+          <CollapsibleList
+            filter={filter}
+            target="/api/apps/me"
+            title={<FormattedMessage {...messages.myApps} />}
+          />
+        )}
+        <CollapsibleList
+          filter={filter}
+          target="/api/apps"
+          title={<FormattedMessage {...messages.allApps} />}
+        />
         {userInfo && createOrganizations.length === 0 && apps.length === 0 && (
           <div className={`${styles.noApps} px-4 py-4 has-text-centered`}>
             <span>

@@ -14,4 +14,6 @@ export const messages = defineMessages({
   organization: 'Organization',
   created: 'Created',
   updated: 'Updated',
+  allApps: 'All Apps',
+  myApps: 'My Apps',
 });
