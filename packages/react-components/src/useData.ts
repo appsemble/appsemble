@@ -36,11 +36,10 @@ export interface UseAxiosResult<T> {
  *
  * Whenever the URL is changed, new data is loaded.
  *
- * @param target - Either the URL from which to fetch data, or a promise that returns T.
- *
+ * @param url - Either the URL from which to fetch data.
  * @returns A state which holds the target data and some utility functions.
  */
-export function useData<T>(target: string | (() => Promise<T>)): UseAxiosResult<T> {
+export function useData<T>(url: string): UseAxiosResult<T> {
   const [error, setError] = useState<AxiosError>(null);
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<T>(null);
@@ -54,38 +53,24 @@ export function useData<T>(target: string | (() => Promise<T>)): UseAxiosResult<
     setError(null);
     setResult(null);
 
-    if (typeof target === 'string') {
-      const source = axios.CancelToken.source();
-      axios
-        .get(target, { cancelToken: source.token })
-        .then(({ data }) => {
-          setResult(data);
-          setError(null);
-          setLoading(false);
-        })
-        .catch((err) => {
-          if (!axios.isCancel(err)) {
-            setResult(null);
-            setError(err);
-            setLoading(false);
-          }
-        });
-
-      return source.cancel;
-    }
-
-    target()
-      .then((response) => {
-        setResult(response);
+    const source = axios.CancelToken.source();
+    axios
+      .get(url, { cancelToken: source.token })
+      .then(({ data }) => {
+        setResult(data);
         setError(null);
         setLoading(false);
       })
       .catch((err) => {
-        setResult(null);
-        setError(err);
-        setLoading(false);
+        if (!axios.isCancel(err)) {
+          setResult(null);
+          setError(err);
+          setLoading(false);
+        }
       });
-  }, [refresher, target]);
+
+    return source.cancel;
+  }, [refresher, url]);
 
   return useMemo(
     () => ({
