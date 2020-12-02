@@ -28,7 +28,6 @@ function generateDefaultValue(field: Field): unknown {
       return Array.from({ length }).map(() => values);
     }
     default:
-      return null;
   }
 }
 
