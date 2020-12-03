@@ -109,7 +109,7 @@ async function processChangesDir(dir: string, prefix: string): Promise<ListItem[
 }
 
 async function processChanges(dir: string): Promise<Changes> {
-  const changesDir = join(dir, 'changes');
+  const changesDir = join(dir, 'changed');
   const base = basename(dir);
   const parent = basename(dirname(dir));
   const prefix = parent === 'blocks' ? `Block(\`${base}\`)` : capitalize(base);
