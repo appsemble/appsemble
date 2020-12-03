@@ -1,16 +1,8 @@
-import {
-  Content,
-  InputField,
-  Loader,
-  Message,
-  SelectField,
-  useData,
-} from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { Content, InputField, SelectField } from '@appsemble/react-components';
+import { App } from '@appsemble/types/src';
 import { Permission } from '@appsemble/utils';
 import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
 
 import { checkRole } from '../../utils/checkRole';
 import { HelmetIntl } from '../HelmetIntl';
@@ -20,68 +12,37 @@ import { CreateAppButton } from './CreateAppButton';
 import styles from './index.css';
 import { messages } from './messages';
 
+const sortFunctions = {
+  organization: (a: App, b: App) => a.OrganizationId.localeCompare(b.OrganizationId),
+  rating: (a: App, b: App) =>
+    a.rating.average === b.rating.average
+      ? a.rating.count - b.rating.count
+      : a.rating.average - b.rating.average,
+  $created: (a: App, b: App) => a.$created.localeCompare(b.$created),
+  $updated: (a: App, b: App) => a.$updated.localeCompare(b.$updated),
+  name: (a: App, b: App) => a.definition.name.localeCompare(b.definition.name),
+};
+
 export function AppList(): ReactElement {
-  const { lang } = useParams<{ lang: string }>();
   const [filter, setFilter] = useState('');
+  const [sort, setSort] = useState<{ name: keyof typeof sortFunctions; reverse: boolean }>({
+    name: 'rating',
+    reverse: true,
+  });
   const { formatMessage } = useIntl();
   const { organizations, userInfo } = useUser();
-  const { data: apps, error, loading, setData: setApps } = useData<App[]>(
-    userInfo ? '/api/apps/me' : '/api/apps',
-  );
 
   const onFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setFilter(event.currentTarget.value);
   }, []);
 
   const onSortChange = useCallback(
-    ({ currentTarget: { value } }: ChangeEvent<HTMLSelectElement>) => {
-      const sortedApps = [...apps];
-
+    ({ currentTarget: { value } }: ChangeEvent<HTMLSelectElement>): void => {
       const [name, direction] = value.split('.');
-
-      switch (name) {
-        case 'organization':
-          sortedApps.sort((a, b) => a.OrganizationId.localeCompare(b.OrganizationId));
-          break;
-
-        case 'rating':
-          // Sort by average, then by count
-          sortedApps.sort((a, b) =>
-            a.rating.average === b.rating.average
-              ? a.rating.count - b.rating.count
-              : a.rating.average - b.rating.average,
-          );
-          break;
-
-        case '$updated':
-        case '$created':
-          sortedApps.sort((a, b) => a[name].localeCompare(b[name]));
-          break;
-
-        case 'name':
-          sortedApps.sort((a, b) => a.definition.name.localeCompare(b.definition.name));
-          break;
-
-        default:
-          break;
-      }
-
-      setApps(direction === 'desc' ? sortedApps.reverse() : sortedApps);
+      setSort({ name: name as keyof typeof sortFunctions, reverse: direction === 'desc' });
     },
-    [apps, setApps],
+    [],
   );
-
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return (
-      <Message color="danger">
-        <FormattedMessage {...messages.error} />
-      </Message>
-    );
-  }
 
   const createOrganizations =
     organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) ?? [];
@@ -140,32 +101,19 @@ export function AppList(): ReactElement {
         {userInfo && (
           <CollapsibleList
             filter={filter}
+            reverse={sort?.reverse}
+            sortFunction={sortFunctions[sort?.name]}
             target="/api/apps/me"
             title={<FormattedMessage {...messages.myApps} />}
           />
         )}
         <CollapsibleList
           filter={filter}
+          reverse={sort?.reverse}
+          sortFunction={sortFunctions[sort?.name]}
           target="/api/apps"
           title={<FormattedMessage {...messages.allApps} />}
         />
-        {userInfo && createOrganizations.length === 0 && apps.length === 0 && (
-          <div className={`${styles.noApps} px-4 py-4 has-text-centered`}>
-            <span>
-              <i className={`fas fa-folder-open ${styles.noAppsIcon}`} />
-            </span>
-            <span>
-              <FormattedMessage
-                {...messages.createOrganizationInstruction}
-                values={{
-                  link: (link: string) => (
-                    <Link to={`/${lang}/settings/organizations`}>{link}</Link>
-                  ),
-                }}
-              />
-            </span>
-          </div>
-        )}
       </Content>
     </>
   );
