@@ -31,7 +31,7 @@
     "@appsemble/sdk": "0.15.10",
     "@fortawesome/fontawesome-common-types": "^0.2.32",
     "openapi-types": "^7.0.1",
-    "type-fest": "^0.18.0",
+    "type-fest": "^0.20.2",
     "typescript-json-schema": "^0.43.0"
   }
 }
