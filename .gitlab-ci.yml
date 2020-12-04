@@ -265,6 +265,7 @@ review:
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "proxy=true"
+      --set "sentryEnvironment=$CI_ENVIRONMENT_NAME"
       --set "sentrySecret=sentry"
 
 # Stop a review environment.
@@ -316,6 +317,7 @@ staging:
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "proxy=true"
+      --set "sentryEnvironment=staging"
       --set "sentrySecret=sentry"
 
 production:
@@ -347,6 +349,7 @@ production:
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
       --set "proxy=true"
+      --set "sentryEnvironment=production"
       --wait
 
 # Perform various post release actions.

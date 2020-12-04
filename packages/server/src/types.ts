@@ -46,6 +46,7 @@ export interface Argv {
   proxy?: true;
   secret?: string;
   sentryDsn?: string;
+  sentryEnvironment?: string;
   to?: string;
 }
 
