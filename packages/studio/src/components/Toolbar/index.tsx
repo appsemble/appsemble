@@ -1,14 +1,20 @@
+import classNames from 'classnames';
 import React, { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
+import { supportedLanguages } from '../../utils/constants';
 import { ProfileDropdown } from '../ProfileDropdown';
 import styles from './index.css';
 import { messages } from './messages';
 
 export function Toolbar(): ReactElement {
   const { formatMessage } = useIntl();
-  const { url } = useRouteMatch();
+  const {
+    params: { lang },
+    url,
+  } = useRouteMatch<{ lang: string }>();
+  const { pathname } = useLocation();
 
   return (
     <nav className={`navbar is-fixed-top is-dark is-flex ${styles.root}`}>
@@ -28,9 +34,25 @@ export function Toolbar(): ReactElement {
           {`alpha ${process.env.APPSEMBLE_VERSION}`}
         </a>
       </div>
-      <div className="navbar-brand">
-        <div className="navbar-item is-paddingless px-1">
-          <ProfileDropdown />
+      <div className="navbar-menu">
+        <div className="navbar-end">
+          <div className="navbar-item has-dropdown is-hoverable">
+            <div className="navbar-link">{lang.split('-')[0].toUpperCase()}</div>
+            <div className="navbar-dropdown">
+              {Object.entries(supportedLanguages).map(([language, name]) => (
+                <Link
+                  className={classNames(['navbar-item px-2', { 'is-active': language === lang }])}
+                  key={language}
+                  to={pathname.replace(lang, language)}
+                >
+                  {name}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="navbar-item is-paddingless px-1">
+            <ProfileDropdown />
+          </div>
         </div>
       </div>
     </nav>
