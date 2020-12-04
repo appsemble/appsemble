@@ -159,7 +159,7 @@ spec:
             {{- end }}
             {{- with .Values.sentryEnvironment }}
             - name: SENTRY_ENVIRONMENT
-              value: {{ .Values.sentryEnvironment | quote }}
+              value: {{ . | quote }}
             {{- end }}
             {{- if .Values.proxy }}
             - name: PROXY
