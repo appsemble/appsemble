@@ -20,6 +20,6 @@
     "@appsemble/preact-components": "0.15.10",
     "@appsemble/utils": "0.15.10",
     "@fortawesome/fontawesome-common-types": "^0.2.30",
-    "preact": "^10.5.5"
+    "preact": "^10.5.7"
   }
 }

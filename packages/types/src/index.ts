@@ -665,17 +665,11 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   action?: 'create' | 'update' | 'delete';
 }
 
-export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.subscribe'
->;
+export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
 
-export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.unsubscribe'
->;
+export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
 
-export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.toggle'
->;
+export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
 
 export type ResourceSubscriptionStatusActionDefinition = Omit<
   BaseResourceSubscribeActionDefinition<'resource.subscription.status'>,

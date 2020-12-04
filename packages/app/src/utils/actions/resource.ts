@@ -232,9 +232,7 @@ export function subscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<
-  'resource.subscription.subscribe'
-> {
+}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscription.subscribe'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -259,9 +257,7 @@ export function unsubscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<
-  'resource.subscription.unsubscribe'
-> {
+}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<'resource.subscription.unsubscribe'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -286,9 +282,7 @@ export function toggleSubscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<
-  'resource.subscription.toggle'
-> {
+}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<'resource.subscription.toggle'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -312,9 +306,7 @@ export function subscriptionStatus({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<
-  'resource.subscription.status'
-> {
+}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<'resource.subscription.status'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 

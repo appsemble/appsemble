@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.15.10",
-    "@jest/types": "^26.6.1",
+    "@jest/types": "^26.6.2",
     "axios": "^0.21.0",
     "date-fns": "^2.16.1",
     "extract-react-intl-messages": "^4.1.1",
@@ -33,12 +33,12 @@
     "globby": "^11.0.1",
     "lodash": "^4.17.20",
     "normalize-path": "^3.0.0",
-    "prettier": "^2.1.2",
+    "prettier": "^2.2.1",
     "remark": "^12.0.1",
-    "semver": "^7.3.2",
-    "type-fest": "^0.18.0",
+    "semver": "^7.3.4",
+    "type-fest": "^0.20.2",
     "webpack": "^4.44.2",
-    "yargs": "^16.1.0"
+    "yargs": "^16.1.1"
   },
   "engines": {
     "node": ">=12.0.0"
