@@ -323,7 +323,7 @@ interface AsyncEnumField extends AbstractEnumField {
    *
    * @default 'Error loading options'
    */
-  loadError: Remapper;
+  loadError?: Remapper;
 }
 
 export type EnumField = SyncEnumField | AsyncEnumField;
