@@ -1,13 +1,21 @@
-import { Button, Dropdown, Icon, useLocationString, useQuery } from '@appsemble/react-components';
+import { Button, Icon, useLocationString, useQuery } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
+import { NavbarDropdown } from '../NavbarDropdown';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
 
-export function ProfileDropdown(): ReactElement {
+interface LanguageDropdownProps {
+  /**
+   * An optional class name to add to the root element.
+   */
+  className?: string;
+}
+
+export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElement {
   const { formatMessage } = useIntl();
   const { logout, userInfo } = useUser();
   const location = useLocation();
@@ -26,8 +34,8 @@ export function ProfileDropdown(): ReactElement {
   }
 
   return (
-    <Dropdown
-      className="is-right"
+    <NavbarDropdown
+      className={`is-right ${className}`}
       label={
         userInfo ? (
           <figure className="image is-32x32">
@@ -84,6 +92,6 @@ export function ProfileDropdown(): ReactElement {
           </span>
         </Link>
       )}
-    </Dropdown>
+    </NavbarDropdown>
   );
 }
