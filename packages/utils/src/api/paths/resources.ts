@@ -81,31 +81,6 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
   },
-  '/api/apps/{appId}/resources/{resourceType}/count': {
-    parameters: [
-      { $ref: '#/components/parameters/appId' },
-      { $ref: '#/components/parameters/resourceType' },
-    ],
-    get: {
-      tags: ['resource'],
-      description: 'Get a count of all resources of this app.',
-      operationId: 'countResources',
-      parameters: [{ $ref: '#/components/parameters/$filter' }],
-      responses: {
-        200: {
-          description: 'The count of all this app’s resources of this type.',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'number',
-              },
-            },
-          },
-        },
-      },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
-    },
-  },
   '/api/apps/{appId}/resources/{resourceType}/subscriptions': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
