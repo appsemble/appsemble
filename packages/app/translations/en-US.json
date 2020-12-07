@@ -24,7 +24,6 @@
   "app.src.components.EmailLogin.usernameError": "This needs to be a valid email address",
   "app.src.components.EmailLogin.usernameLabel": "Email",
   "app.src.components.ErrorFallback.message": "An unexpected error has occurred.",
-  "app.src.components.ErrorFallback.title": "Error",
   "app.src.components.OpenIDCallback.accessDenied": "Access was denied",
   "app.src.components.OpenIDCallback.error": "An unexpected error occurred while logging in",
   "app.src.components.OpenIDCallback.retry": "Back to login",
