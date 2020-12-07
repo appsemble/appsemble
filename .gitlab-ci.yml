@@ -350,6 +350,7 @@ production:
       --set 'postgresSSL=true'
       --set "proxy=true"
       --set "sentryEnvironment=production"
+      --set "sentrySecret=sentry"
       --wait
 
 # Perform various post release actions.
