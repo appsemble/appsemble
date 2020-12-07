@@ -32,7 +32,7 @@ export function builder(yargs: Argv): Argv {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
     })
     .option('sentry-environment', {
-      desc: 'The Sentry ebvironment to use for error reporting. See https://sentry.io for details.',
+      desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
     })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
