@@ -6,6 +6,7 @@ import * as cleanupResources from './commands/cleanupResources';
 import * as health from './commands/health';
 import * as migrate from './commands/migrate';
 import * as restore from './commands/restore';
+import * as runCronJobs from './commands/runCronJobs';
 import * as start from './commands/start';
 import { readPackageJson } from './utils/readPackageJson';
 
@@ -15,10 +16,13 @@ import { readPackageJson } from './utils/readPackageJson';
 const startHandler = start.handler;
 const migrateHandler = migrate.handler;
 const cleanupResourcesHandler = cleanupResources.handler;
+const runCronJobsHandler = runCronJobs.handler;
+
 export {
   startHandler as start,
   migrateHandler as migrate,
   cleanupResourcesHandler as cleanupResources,
+  runCronJobsHandler as runCronJobs,
 };
 
 /**
@@ -46,6 +50,7 @@ function main(argv: string[]): void {
     .middleware([configureLogger])
     .command(cleanup as CommandModule)
     .command(cleanupResources as CommandModule)
+    .command(runCronJobs as CommandModule)
     .command(health as CommandModule)
     .command(start as CommandModule)
     .command(migrate as CommandModule)

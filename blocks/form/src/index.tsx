@@ -38,6 +38,7 @@ bootstrap(
     ]);
 
     const [formError, setFormError] = useState<string>(null);
+    const [hasSubmitError, setSubmitError] = useState(false);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
@@ -49,6 +50,7 @@ bootstrap(
     const onChange = useCallback(
       async (name: string, value: Values, err: FieldErrorMap) => {
         setValues(value);
+        events.emit.change(value);
         setErrors(err);
 
         if (!requirements?.length) {
@@ -79,11 +81,12 @@ bootstrap(
           return;
         }
         const newValues = Object.assign({}, value, ...patchedValues);
+        events.emit.change(newValues);
         setValues(newValues);
         setErrors(generateDefaultValidity(fields, newValues, utils));
         setFormError(error);
       },
-      [actions, fields, formRequirementError, requirements, utils],
+      [actions, events, fields, formRequirementError, requirements, utils],
     );
 
     const onSubmit = useCallback(() => {
@@ -95,11 +98,11 @@ bootstrap(
             // Log the error to the console for troubleshooting.
             // eslint-disable-next-line no-console
             console.error(error);
-            setFormError(utils.remap(submitError, values));
+            setSubmitError(true);
           })
           .finally(() => setSubmitting(false));
       }
-    }, [actions, submitError, submitting, utils, values]);
+    }, [actions, submitting, values]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious.dispatch(values);
@@ -131,6 +134,12 @@ bootstrap(
         >
           <span>{formError}</span>
         </Message>
+        <Message
+          className={classNames(styles.error, { [styles.hidden]: !hasSubmitError })}
+          color="danger"
+        >
+          <span>{utils.remap(submitError, values)}</span>
+        </Message>
         <FieldGroup
           disabled={loading || submitting}
           errors={errors}
@@ -146,7 +155,7 @@ bootstrap(
           )}
           <Button
             color="primary"
-            disabled={loading || submitting || !isFormValid(errors)}
+            disabled={loading || submitting || Boolean(formError) || !isFormValid(errors)}
             type="submit"
           >
             {utils.remap(submitLabel, {})}

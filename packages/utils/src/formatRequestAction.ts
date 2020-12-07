@@ -1,4 +1,4 @@
-import { RequestLikeActionDefinition } from '@appsemble/types';
+import { Remapper, RequestLikeActionDefinition } from '@appsemble/types';
 import { AxiosRequestConfig } from 'axios';
 
 import { compileFilters, MapperFunction } from './legacyRemap';
@@ -8,9 +8,11 @@ const regex = /{(.+?)}/g;
 type Mapper = Record<string, MapperFunction>;
 
 export function formatRequestAction(
-  { method = 'GET', query, url }: RequestLikeActionDefinition,
+  { method = 'GET', query, ...action }: RequestLikeActionDefinition,
   data: unknown,
+  remap: (remapper: Remapper, data: any) => any,
 ): AxiosRequestConfig {
+  const url = String(remap(action.url, data));
   const urlMatch = url.match(regex);
   const urlMappers = urlMatch
     ?.map((match) => match.slice(1, -1))

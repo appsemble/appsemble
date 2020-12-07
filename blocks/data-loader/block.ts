@@ -1,7 +1,5 @@
 import { Remapper } from '@appsemble/sdk';
 
-export {};
-
 declare module '@appsemble/sdk' {
   interface Actions {
     /**

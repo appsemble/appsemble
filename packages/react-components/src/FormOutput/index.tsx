@@ -1,6 +1,6 @@
-import React, { ComponentPropsWithoutRef, ReactElement, useCallback, useRef } from 'react';
+import React, { ComponentPropsWithoutRef, forwardRef, useCallback, useRef } from 'react';
 
-import { IconButton, InputField, useMessages } from '..';
+import { IconButton, InputField, TextAreaField, useCombinedRefs, useMessages } from '..';
 
 interface FormOutputProps
   extends Omit<
@@ -16,6 +16,11 @@ interface FormOutputProps
    * The message to display if the contents have been copied succesfully.
    */
   copySuccessMessage: string;
+
+  /**
+   * If true, a textarea element will be rendered instead of an input element.
+   */
+  multiline?: boolean;
 }
 
 /**
@@ -24,36 +29,49 @@ interface FormOutputProps
  * If the copy button is pressed, the value of the input is copied to the clipboard and the user is
  * notified of this.
  */
-export function FormOutput({
-  copyErrorMessage,
-  copySuccessMessage,
-  ...props
-}: FormOutputProps): ReactElement {
-  const ref = useRef<HTMLInputElement>();
-  const push = useMessages();
+export const FormOutput = forwardRef<HTMLInputElement, FormOutputProps>(
+  ({ copyErrorMessage, copySuccessMessage, multiline, ...props }, forwardedRef) => {
+    const ref = useRef<HTMLInputElement | HTMLTextAreaElement>();
+    const push = useMessages();
 
-  const onClick = useCallback(() => {
-    const input = ref.current;
-    let success = false;
-    if (input) {
-      input.select();
-      success = document.execCommand('copy');
-    }
-    if (success) {
-      push({ body: copySuccessMessage, color: 'success' });
-    } else {
-      push({ body: copyErrorMessage, color: 'danger' });
-    }
-  }, [copyErrorMessage, copySuccessMessage, push]);
+    const combinedRef = useCombinedRefs(ref, forwardedRef);
 
-  return (
-    <InputField
-      control={<IconButton icon="copy" onClick={onClick} />}
-      readOnly
-      ref={ref}
-      // Hide the (Optional) label.
-      required
-      {...props}
-    />
-  );
-}
+    const onClick = useCallback(() => {
+      const input = ref.current;
+      let success = false;
+      if (input) {
+        input.select();
+        success = document.execCommand('copy');
+      }
+      if (success) {
+        push({ body: copySuccessMessage, color: 'success' });
+      } else {
+        push({ body: copyErrorMessage, color: 'danger' });
+      }
+    }, [copyErrorMessage, copySuccessMessage, push]);
+
+    if (multiline) {
+      return (
+        <TextAreaField
+          control={<IconButton icon="copy" onClick={onClick} />}
+          readOnly
+          ref={combinedRef}
+          // Hide the (Optional) label.
+          required
+          {...(props as any)}
+        />
+      );
+    }
+
+    return (
+      <InputField
+        control={<IconButton icon="copy" onClick={onClick} />}
+        readOnly
+        ref={combinedRef}
+        // Hide the (Optional) label.
+        required
+        {...(props as ComponentPropsWithoutRef<typeof InputField>)}
+      />
+    );
+  },
+);

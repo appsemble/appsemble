@@ -16,18 +16,18 @@ import {
   useData,
   useMessages,
 } from '@appsemble/react-components';
+import { has } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { UserEmail } from '../../types';
+import { supportedLanguages } from '../../utils/constants';
 import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
-
-const languages = ['en-us', 'nl'];
 
 export function UserSettings(): ReactElement {
   const { formatMessage } = useIntl();
@@ -40,7 +40,7 @@ export function UserSettings(): ReactElement {
   );
 
   const onSaveProfile = useCallback(
-    async (values: { name: string; locale: 'en-us' | 'nl' }) => {
+    async (values: { name: string; locale: string }) => {
       localStorage.setItem('preferredLanguage', values.locale);
       await axios.put('/api/user', values);
       refreshUserInfo();
@@ -126,10 +126,11 @@ export function UserSettings(): ReactElement {
         <SimpleForm
           defaultValues={{
             name: userInfo.name || '',
-            locale:
-              languages.find((lang) => lang === userInfo.locale?.toLowerCase()) ||
-              localStorage.getItem('preferredLanguage') ||
-              'en-us',
+            locale: has(supportedLanguages, userInfo.locale?.toLowerCase())
+              ? supportedLanguages[
+                  userInfo.locale?.toLowerCase() as keyof typeof supportedLanguages
+                ]
+              : localStorage.getItem('preferredLanguage') || 'en-us',
           }}
           onSubmit={onSaveProfile}
         >
@@ -149,8 +150,11 @@ export function UserSettings(): ReactElement {
             name="locale"
             required
           >
-            <option value="nl">Dutch (Nederlands)</option>
-            <option value="en-us">English</option>
+            {Object.entries(supportedLanguages).map(([code, name]) => (
+              <option key={code} value={code.toLowerCase()}>
+                {name}
+              </option>
+            ))}
           </SimpleFormField>
           <FormButtons>
             <SimpleSubmit>

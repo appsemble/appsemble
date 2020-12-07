@@ -2,13 +2,81 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.15.4] - 2020-10-26
+## \[[0.15.10](https://gitlab.com/appsemble/appsemble/-/releases/0.15.10)] - 2020-12-02
+
+### Added
+
+- Block(`form`): Added support for dynamic enum options.
+- Block(`form`): Added the new `change` event.
+- App: Add `resource.count` action.
+- App: Add support for `$team:member` and `$team:manager` in resource action roles.
+- App: Added Danish language support to the core parts of apps.
+- App: Added `waitFor` option for `event` action.
+- Appsemble: Add support for fetching resources based on teams.
+- Server: Add `/resources/{type}/$count` endpoint.
+- Server: Add teams API.
+- Studio: Add support for teams in apps.
+- Studio: Added Danish language support.
+
+### Changed
+
+- Block(`form`): Invalid form requirements now block the user from submitting the form.
+- Server: Change `/api/apps/{id}/members` to also display organization members based on the policy.
+
+## \[[0.15.9](https://gitlab.com/appsemble/appsemble/-/releases/0.15.9)] - 2020-11-23
+
+### Added
+
+- Server: Add more verbose logging for running app cronjobs.
+
+## \[[0.15.8](https://gitlab.com/appsemble/appsemble/-/releases/0.15.8)] - 2020-11-20
+
+### Added
+
+- App: Add `layout` property which can be used to determine where various layout elements should be.
+- Server: Add support connecting for SAML2.0 identity providers to apps.
+- Studio: Add support connecting for SAML2.0 identity providers to apps.
+
+### Changed
+
+- App: Move `navigation` to `layout`.
+
+## \[[0.15.7](https://gitlab.com/appsemble/appsemble/-/releases/0.15.7)] - 2020-11-13
+
+### Added
+
+- Server: Add support for running cronjobs for apps.
+
+### Fixed
+
+- Block(`form`): Check for `undefined` in `enum` and `radio` fields.
+- Preact-components: Fix error messages not showing up when they should.
+
+## \[[0.15.6](https://gitlab.com/appsemble/appsemble/-/releases/0.15.6)] - 2020-11-04
+
+### Fixed
+
+- App: Fixed the OAuth2 login scope used to request an access token.
+
+## \[[0.15.5](https://gitlab.com/appsemble/appsemble/-/releases/0.15.5)] - 2020-11-03
+
+### Added
+
+- Utils: Add `date.now` and `date.add` remappers.
+- Utils: Add `object.assign` remapper.
+
+### Security
+
+- Server: Add action handler security definition, allowing actions to access a logged in user.
+- Server: Fix the check for which OAuth2 scopes are granted when requesting an access token.
+
+## \[[0.15.4](https://gitlab.com/appsemble/appsemble/-/releases/0.15.4)] - 2020-10-26
 
 ### Added
 
 - Server: Add support for organization logos.
 
-## [0.15.3] - 2020-10-22
+## \[[0.15.3](https://gitlab.com/appsemble/appsemble/-/releases/0.15.3)] - 2020-10-22
 
 ### Added
 
@@ -19,14 +87,14 @@ All notable changes to this project will be documented in this file.
 - Server: Add `anchors` property. This can be used to store YAML anchors.
 - Studio: Implement internationalization. For now English and Dutch are supported.
 
-## [0.15.2] - 2020-10-14
+## \[[0.15.2](https://gitlab.com/appsemble/appsemble/-/releases/0.15.2)] - 2020-10-14
 
 ### Fixed
 
 - App: Fix events when called from a dialog action.
 - Studio: Save agreed OAuth2 consent for app login.
 
-## [0.15.1] - 2020-10-05
+## \[[0.15.1](https://gitlab.com/appsemble/appsemble/-/releases/0.15.1)] - 2020-10-05
 
 ### Added
 
@@ -37,7 +105,7 @@ All notable changes to this project will be documented in this file.
 - Block(`filter`): Fixed layout for highlighted `date-range` fields.
 - Server: Added support for more numeric OData types.
 
-## [0.15.0] - 2020-10-02
+## \[[0.15.0](https://gitlab.com/appsemble/appsemble/-/releases/0.15.0)] - 2020-10-02
 
 ### Added
 
@@ -49,13 +117,13 @@ All notable changes to this project will be documented in this file.
 
 - Block(`form`): Fixed the accept property for file fields.
 
-## [0.14.2] - 2020-09-25
+## \[[0.14.2](https://gitlab.com/appsemble/appsemble/-/releases/0.14.2)] - 2020-09-25
 
 ### Fixed
 
 - Block(`form`): Fix styling of date time fields.
 
-## [0.14.1] - 2020-09-25
+## \[[0.14.1](https://gitlab.com/appsemble/appsemble/-/releases/0.14.1)] - 2020-09-25
 
 ### Changed
 
@@ -65,7 +133,7 @@ All notable changes to this project will be documented in this file.
 
 - Block(`form`): Fix the error state if initial data was received.
 
-## [0.14.0] - 2020-09-24
+## \[[0.14.0](https://gitlab.com/appsemble/appsemble/-/releases/0.14.0)] - 2020-09-24
 
 ### Added
 
@@ -81,7 +149,7 @@ All notable changes to this project will be documented in this file.
   `static`.
 - Utils: Add support for `equals` remapper.
 
-## [0.13.15] - 2020-09-18
+## \[[0.13.15](https://gitlab.com/appsemble/appsemble/-/releases/0.13.15)] - 2020-09-18
 
 ### Added
 
@@ -95,7 +163,7 @@ All notable changes to this project will be documented in this file.
 - Block(`form`): Fix issue where the default state was not correctly initialized.
 - Preact-components: Fix logic for when to display the optional label.
 
-## [0.13.14] - 2020-09-15
+## \[[0.13.14](https://gitlab.com/appsemble/appsemble/-/releases/0.13.14)] - 2020-09-15
 
 ### Added
 
@@ -109,7 +177,7 @@ All notable changes to this project will be documented in this file.
 - Block(`detail-viewer`): Rename `name` to `value`.
 - Block(`table`): Rename `name` to `value`.
 
-## [0.13.13] - 2020-09-08
+## \[[0.13.13](https://gitlab.com/appsemble/appsemble/-/releases/0.13.13)] - 2020-09-08
 
 ### Added
 
@@ -141,13 +209,13 @@ All notable changes to this project will be documented in this file.
 
 - Server: Don’t create ingress for apps that have an empty string domain field.
 
-## [0.13.12] - 2020-09-01
+## \[[0.13.12](https://gitlab.com/appsemble/appsemble/-/releases/0.13.12)] - 2020-09-01
 
 ### Added
 
 - Server: Add support for attaching assets to emails.
 
-## [0.13.11] - 2020-08-27
+## \[[0.13.11](https://gitlab.com/appsemble/appsemble/-/releases/0.13.11)] - 2020-08-27
 
 ### Added
 
@@ -170,13 +238,13 @@ All notable changes to this project will be documented in this file.
 
 - Block(`form`): Fix logic for determining form validity.
 
-## [0.13.10] - 2020-08-21
+## \[[0.13.10](https://gitlab.com/appsemble/appsemble/-/releases/0.13.10)] - 2020-08-21
 
 ### Fixed
 
 - Server: Fix migration for version 0.13.9.
 
-## [0.13.9] - 2020-08-21
+## \[[0.13.9](https://gitlab.com/appsemble/appsemble/-/releases/0.13.9)] - 2020-08-21
 
 ### Added
 
@@ -193,7 +261,7 @@ All notable changes to this project will be documented in this file.
 
 - App: Fix various issues with page routing.
 
-## [0.13.8] - 2020-08-18
+## \[[0.13.8](https://gitlab.com/appsemble/appsemble/-/releases/0.13.8)] - 2020-08-18
 
 ### Added
 
@@ -205,7 +273,7 @@ All notable changes to this project will be documented in this file.
 - App: Add `string.replace` remapper.
 - Studio: Add translations page to studio for translating app messages.
 
-## [0.13.7] - 2020-07-31
+## \[[0.13.7](https://gitlab.com/appsemble/appsemble/-/releases/0.13.7)] - 2020-07-31
 
 ### Added
 
@@ -221,7 +289,7 @@ All notable changes to this project will be documented in this file.
 
 - App: Fix prefix paths for `onSuccess` and `onError` actions.
 
-## [0.13.6] - 2020-07-27
+## \[[0.13.6](https://gitlab.com/appsemble/appsemble/-/releases/0.13.6)] - 2020-07-27
 
 ### Added
 
@@ -239,7 +307,7 @@ All notable changes to this project will be documented in this file.
 - Block(`feed`): Move `longitude` and `latitude` into the `marker` object.
 - Block(`feed`): Replace remapping logic with remappers.
 
-## [0.13.5] - 2020-07-15
+## \[[0.13.5](https://gitlab.com/appsemble/appsemble/-/releases/0.13.5)] - 2020-07-15
 
 ### Added
 
@@ -279,7 +347,7 @@ All notable changes to this project will be documented in this file.
 
 - Studio: Fix bug where user gets redirected to app details when trying to access secured routes.
 
-## [0.13.4] - 2020-06-29
+## \[[0.13.4](https://gitlab.com/appsemble/appsemble/-/releases/0.13.4)] - 2020-06-29
 
 ### Added
 
@@ -294,7 +362,7 @@ All notable changes to this project will be documented in this file.
 - Server: Support optional display name upon registration.
 - Studio: Support optional display name upon registration.
 
-## [0.13.3] - 2020-06-11
+## \[[0.13.3](https://gitlab.com/appsemble/appsemble/-/releases/0.13.3)] - 2020-06-11
 
 ### Added
 
@@ -309,7 +377,7 @@ All notable changes to this project will be documented in this file.
   Appsemble Studio directly.
 - Block(`button-list`): Change `label` property type from `string` to `Remapper`.
 
-## [0.13.2] - 2020-06-03
+## \[[0.13.2](https://gitlab.com/appsemble/appsemble/-/releases/0.13.2)] - 2020-06-03
 
 ### Added
 
@@ -318,7 +386,7 @@ All notable changes to this project will be documented in this file.
 - Server: Add event descriptions.
 - Studio: Add event descriptions.
 
-## [0.13.1] - 2020-06-02
+## \[[0.13.1](https://gitlab.com/appsemble/appsemble/-/releases/0.13.1)] - 2020-06-02
 
 ### Added
 
@@ -335,7 +403,7 @@ All notable changes to this project will be documented in this file.
 
 - Studio: Fix login with OAuth2.
 
-## [0.13.0] - 2020-05-15
+## \[[0.13.0](https://gitlab.com/appsemble/appsemble/-/releases/0.13.0)] - 2020-05-15
 
 ### Added
 
@@ -361,19 +429,19 @@ All notable changes to this project will be documented in this file.
 
 - Studio: Fix file upload components not displaying correctly.
 
-## [0.12.8] - 2020-04-29
+## \[[0.12.8](https://gitlab.com/appsemble/appsemble/-/releases/0.12.8)] - 2020-04-29
 
 ### Fixed
 
 - Server: Fix connection to database with self-signed certificate.
 
-## [0.12.7] - 2020-04-29
+## \[[0.12.7](https://gitlab.com/appsemble/appsemble/-/releases/0.12.7)] - 2020-04-29
 
 ### Fixed
 
 - CI: Fix the release process for production.
 
-## [0.12.6] - 2020-04-29
+## \[[0.12.6](https://gitlab.com/appsemble/appsemble/-/releases/0.12.6)] - 2020-04-29
 
 ### Added
 
@@ -390,7 +458,7 @@ All notable changes to this project will be documented in this file.
 - Studio: Add asset management page for apps. This can be used to preview, download, delete, and
   update assets.
 
-## [0.12.5] - 2020-04-16
+## \[[0.12.5](https://gitlab.com/appsemble/appsemble/-/releases/0.12.5)] - 2020-04-16
 
 ### Added
 
@@ -407,7 +475,7 @@ All notable changes to this project will be documented in this file.
 - Server: Flatten the block publish API.
 - CLI: Fix compatibility with the updated block publish API.
 
-## [0.12.4] - 2020-04-06
+## \[[0.12.4](https://gitlab.com/appsemble/appsemble/-/releases/0.12.4)] - 2020-04-06
 
 ### Added
 
@@ -428,20 +496,20 @@ All notable changes to this project will be documented in this file.
 - CLI: Remove `block register` command. You can now always use `block publish` when publishing new
   blocks or new block versions.
 
-## [0.12.3] - 2020-03-27
+## \[[0.12.3](https://gitlab.com/appsemble/appsemble/-/releases/0.12.3)] - 2020-03-27
 
 ### Fixed
 
 - App: Fix loading blocks.
 
-## [0.12.2] - 2020-03-27
+## \[[0.12.2](https://gitlab.com/appsemble/appsemble/-/releases/0.12.2)] - 2020-03-27
 
 ### Fixed
 
 - App: Fix serving apps.
 - Studio: Fix serving Appsemble studio.
 
-## [0.12.1] - 2020-03-26
+## \[[0.12.1](https://gitlab.com/appsemble/appsemble/-/releases/0.12.1)] - 2020-03-26
 
 ### Added
 
@@ -453,7 +521,7 @@ All notable changes to this project will be documented in this file.
 - Server: Handle unsupported browsers.
 - Server: Serve block assets from the app host URL instead of the studio host URL.
 
-## [0.12.0] - 2020-03-20
+## \[[0.12.0](https://gitlab.com/appsemble/appsemble/-/releases/0.12.0)] - 2020-03-20
 
 ### Added
 
@@ -480,7 +548,7 @@ All notable changes to this project will be documented in this file.
 
 - SDK: Remove `block` from bootstrap parameters, `parameters` is now passed in directly.
 
-## [0.11.6] - 2020-03-05
+## \[[0.11.6](https://gitlab.com/appsemble/appsemble/-/releases/0.11.6)] - 2020-03-05
 
 ### Added
 
@@ -491,7 +559,7 @@ All notable changes to this project will be documented in this file.
 - Block(`@appsemble/form`): Fix issue where optional fields were marked as invalid.
 - App: Fix leak of authorization header to third parties.
 
-## [0.11.5] - 2020-03-03
+## \[[0.11.5](https://gitlab.com/appsemble/appsemble/-/releases/0.11.5)] - 2020-03-03
 
 ### Added
 
@@ -522,7 +590,7 @@ All notable changes to this project will be documented in this file.
 - Block(`@amsterdam/splash`): Move this block into the
   [Amsterdam Appsemble repository](https://gitlab.com/appsemble/amsterdam).
 
-## [0.11.4] - 2020-02-18
+## \[[0.11.4](https://gitlab.com/appsemble/appsemble/-/releases/0.11.4)] - 2020-02-18
 
 ### Added
 
@@ -541,7 +609,7 @@ All notable changes to this project will be documented in this file.
 - Studio: Fix crash on the organization invite page.
 - Studio: Fix login form not always being visible on protected routes.
 
-## [0.11.3] - 2020-02-17
+## \[[0.11.3](https://gitlab.com/appsemble/appsemble/-/releases/0.11.3)] - 2020-02-17
 
 ### Added
 
@@ -558,7 +626,7 @@ All notable changes to this project will be documented in this file.
 - Server: Fix various issues when extracting app blocks.
 - Studio: Fix various issues when extracting app blocks.
 
-## [0.11.2] - 2020-02-12
+## \[[0.11.2](https://gitlab.com/appsemble/appsemble/-/releases/0.11.2)] - 2020-02-12
 
 ### Fixed
 
@@ -566,13 +634,13 @@ All notable changes to this project will be documented in this file.
 - Server: Add resource references to JSON schema.
 - Server: Fix serving an app based on a custom domain name.
 
-## [0.11.1] - 2020-02-12
+## \[[0.11.1](https://gitlab.com/appsemble/appsemble/-/releases/0.11.1)] - 2020-02-12
 
 ### Fixed
 
 - Server: Fix migration key for 0.10.0 migrations.
 
-## [0.11.0] - 2020-02-12
+## \[[0.11.0](https://gitlab.com/appsemble/appsemble/-/releases/0.11.0)] - 2020-02-12
 
 ### Added
 
@@ -608,7 +676,7 @@ All notable changes to this project will be documented in this file.
 
 - App: A lot of stability improvements.
 
-## [0.10.0] - 2019-12-20
+## \[[0.10.0](https://gitlab.com/appsemble/appsemble/-/releases/0.10.0)] - 2019-12-20
 
 ### Added
 
@@ -635,7 +703,7 @@ All notable changes to this project will be documented in this file.
 
 - CLI: email / password login.
 
-## [0.9.5] - 2019-12-02
+## \[[0.9.5](https://gitlab.com/appsemble/appsemble/-/releases/0.9.5)] - 2019-12-02
 
 ### Added
 
@@ -657,7 +725,7 @@ All notable changes to this project will be documented in this file.
 
 - App: Fix issue where full screen class was not applied correctly.
 
-## [0.9.4] - 2019-11-27
+## \[[0.9.4](https://gitlab.com/appsemble/appsemble/-/releases/0.9.4)] - 2019-11-27
 
 ### Added
 
@@ -672,7 +740,7 @@ All notable changes to this project will be documented in this file.
 
 - Server: Remove file-based app templates.
 
-## [0.9.3] - 2019-11-18
+## \[[0.9.3](https://gitlab.com/appsemble/appsemble/-/releases/0.9.3)] - 2019-11-18
 
 ### Added
 
@@ -682,20 +750,20 @@ All notable changes to this project will be documented in this file.
 - App: Add settings page
 - Server: Add support for broadcasting push notifications.
 
-## [0.9.2] - 2019-11-14
+## \[[0.9.2](https://gitlab.com/appsemble/appsemble/-/releases/0.9.2)] - 2019-11-14
 
 ### Fixed
 
 - Server: Add support connection to PostgreSQL databases over SSL.
 
-## [0.9.1] - 2019-11-14
+## \[[0.9.1](https://gitlab.com/appsemble/appsemble/-/releases/0.9.1)] - 2019-11-14
 
 ### Fixed
 
 - Server: Reduce log size when creating blocks.
 - Server: Remove old migrations that depended on MySQL.
 
-## [0.9.0] - 2019-11-12
+## \[[0.9.0](https://gitlab.com/appsemble/appsemble/-/releases/0.9.0)] - 2019-11-12
 
 ### Added
 
@@ -708,7 +776,7 @@ All notable changes to this project will be documented in this file.
 - Helm: Use Helm 3, dropping support for Helm 2.
 - Server: Replace MySQL with PostgreSQL.
 
-## [0.8.11] - 2019-11-01
+## \[[0.8.11](https://gitlab.com/appsemble/appsemble/-/releases/0.8.11)] - 2019-11-01
 
 ### Added
 
@@ -723,7 +791,7 @@ All notable changes to this project will be documented in this file.
 - Server: Remove support for `private` and `path` properties in App. These have been moved to
   `/api/apps/{appId}/settings`.
 
-## [0.8.10] - 2019-10-04
+## \[[0.8.10](https://gitlab.com/appsemble/appsemble/-/releases/0.8.10)] - 2019-10-04
 
 ### Added
 
@@ -736,14 +804,14 @@ All notable changes to this project will be documented in this file.
 
 - Block(`@appsemble/form`): Fix `maxLength` not being passed to string input fields.
 
-## [0.8.9] - 2019-10-02
+## \[[0.8.9](https://gitlab.com/appsemble/appsemble/-/releases/0.8.9)] - 2019-10-02
 
 ### Fixed
 
 - Editor: Don’t require a login to reset a forgotten password.
 - Server: Fix issues related to OData filtering.
 
-## [0.8.8] - 2019-10-01
+## \[[0.8.8](https://gitlab.com/appsemble/appsemble/-/releases/0.8.8)] - 2019-10-01
 
 ### Added
 
@@ -751,13 +819,13 @@ All notable changes to this project will be documented in this file.
 - Editor: Add support for deleting apps.
 - Server: Add support for deleting apps.
 
-## [0.8.7] - 2019-09-16
+## \[[0.8.7](https://gitlab.com/appsemble/appsemble/-/releases/0.8.7)] - 2019-09-16
 
 ### Fixed
 
 - Server: Add missing migration from 0.8.6.
 
-## [0.8.6] - 2019-09-16
+## \[[0.8.6](https://gitlab.com/appsemble/appsemble/-/releases/0.8.6)] - 2019-09-16
 
 ### Added
 
@@ -765,7 +833,7 @@ All notable changes to this project will be documented in this file.
 - CLI: Upload a JSON schema to validate block parameters.
 - Server: Blocks are now validated against a JSON schema.
 
-## [0.8.5] - 2019-09-01
+## \[[0.8.5](https://gitlab.com/appsemble/appsemble/-/releases/0.8.5)] - 2019-09-01
 
 ### Added
 
@@ -782,7 +850,7 @@ All notable changes to this project will be documented in this file.
 - Block(`@appsemble/form`): Fix issue where `defaultValue` was considered invalid by default.
 - Block(`@appsemble/form`): Fix issue where `defaultValue` was not used if value was falsy.
 
-## [0.8.4] - 2019-08-20
+## \[[0.8.4](https://gitlab.com/appsemble/appsemble/-/releases/0.8.4)] - 2019-08-20
 
 ### Added
 
@@ -802,7 +870,7 @@ All notable changes to this project will be documented in this file.
 - App: Inverted Bulma colors are calculated properly.
 - Editor: Regression causing Appsemble to crash when editing resources.
 
-## [0.8.3] - 2019-08-16
+## \[[0.8.3](https://gitlab.com/appsemble/appsemble/-/releases/0.8.3)] - 2019-08-16
 
 ### Added
 
@@ -819,7 +887,7 @@ All notable changes to this project will be documented in this file.
 
 - Editor: The password reset page no longer crashes.
 
-## [0.8.2] - 2019-07-29
+## \[[0.8.2](https://gitlab.com/appsemble/appsemble/-/releases/0.8.2)] - 2019-07-29
 
 ### Added
 
@@ -845,13 +913,13 @@ All notable changes to this project will be documented in this file.
 
 - Editor: Fix issue where array or object fields could not be edited.
 
-## [0.8.1] - 2019-06-26
+## \[[0.8.1](https://gitlab.com/appsemble/appsemble/-/releases/0.8.1)] - 2019-06-26
 
 ### Fixed
 
 - App: Adjust the toolbar items size. They no longer exceed the main element padding.
 
-## [0.8.0] - 2019-06-25
+## \[[0.8.0](https://gitlab.com/appsemble/appsemble/-/releases/0.8.0)] - 2019-06-25
 
 ### Added
 
@@ -864,7 +932,7 @@ All notable changes to this project will be documented in this file.
 
 - Editor: Fix issue where users were unable to verify their accounts when logged in.
 
-## [0.7.0] - 2019-06-14
+## \[[0.7.0](https://gitlab.com/appsemble/appsemble/-/releases/0.7.0)] - 2019-06-14
 
 ### Added
 
@@ -884,7 +952,7 @@ All notable changes to this project will be documented in this file.
 
 - Server: Internal server error responses are now logged as such.
 
-## [0.6.0] - 2019-05-20
+## \[[0.6.0](https://gitlab.com/appsemble/appsemble/-/releases/0.6.0)] - 2019-05-20
 
 ### Added
 
@@ -910,7 +978,7 @@ All notable changes to this project will be documented in this file.
   `/apps/{appId}/resources/{resourceName}`.
 - Server: Make App endpoint `/apps` public.
 
-## [0.5.0] - 2019-04-11
+## \[[0.5.0](https://gitlab.com/appsemble/appsemble/-/releases/0.5.0)] - 2019-04-11
 
 ### Added
 
@@ -932,14 +1000,14 @@ All notable changes to this project will be documented in this file.
 - Block(`@appsemble/map`): Replace usage of resource with a load action.
 - Server: Add security scopes for API calls.
 
-## [0.4.2] - 2019-02-26
+## \[[0.4.2](https://gitlab.com/appsemble/appsemble/-/releases/0.4.2)] - 2019-02-26
 
 ### Added
 
 - Server: Add option to disable user registration. This is only implemented server side. The
   registration form still exists in the editor.
 
-## [0.4.1] - 2019-02-20
+## \[[0.4.1](https://gitlab.com/appsemble/appsemble/-/releases/0.4.1)] - 2019-02-20
 
 ### Removed
 
@@ -950,7 +1018,7 @@ All notable changes to this project will be documented in this file.
 
 - App: Fix the crash when a splash action is dispatched.
 
-## [0.4.0] - 2019-02-19
+## \[[0.4.0](https://gitlab.com/appsemble/appsemble/-/releases/0.4.0)] - 2019-02-19
 
 ### Added
 
@@ -967,7 +1035,7 @@ All notable changes to this project will be documented in this file.
 
 - App: Make sure the navigation menu button is always visible.
 
-## [0.3.0] - 2019-01-25
+## \[[0.3.0](https://gitlab.com/appsemble/appsemble/-/releases/0.3.0)] - 2019-01-25
 
 ### Added
 
@@ -985,7 +1053,7 @@ All notable changes to this project will be documented in this file.
 - Server: API was renamed to server.
 - Server: The `--initialize-database` flag was changed to the `initialize` subcommand.
 
-## [0.2.0] - 2018-11-02
+## \[[0.2.0](https://gitlab.com/appsemble/appsemble/-/releases/0.2.0)] - 2018-11-02
 
 ### Added
 
@@ -999,6 +1067,6 @@ All notable changes to this project will be documented in this file.
 
 - Frontend: Show the page title instead of the app title.
 
-## [0.1.0] - 2018-10-19
+## \[[0.1.0](https://gitlab.com/appsemble/appsemble/-/releases/0.1.0)] - 2018-10-19
 
 This is the initial release of the Appsemble platform.

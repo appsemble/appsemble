@@ -5,6 +5,13 @@
  */
 
 /**
+ * A user defined remapper function.
+ *
+ * @format remapper
+ */
+export type Remapper = string | number | boolean | object | object[];
+
+/**
  * Common HTTP methods, but either all upper case or all lower case.
  */
 export type HTTPMethods =
@@ -37,6 +44,7 @@ export type RequestLikeActionTypes =
   | 'resource.delete'
   | 'resource.get'
   | 'resource.query'
+  | 'resource.count'
   | 'resource.update';
 
 export interface LinkAction extends BaseAction<'link'> {
@@ -61,7 +69,7 @@ export interface RequestLikeAction<T extends RequestLikeActionTypes> extends Bas
   /**
    * The URL to which the request will be made.
    */
-  url: string;
+  url: Remapper;
 }
 
 export type RequestAction = RequestLikeAction<'request'>;
@@ -69,6 +77,7 @@ export type ResourceCreateAction = RequestLikeAction<'resource.create'>;
 export type ResourceDeleteAction = RequestLikeAction<'resource.delete'>;
 export type ResourceGetAction = RequestLikeAction<'resource.get'>;
 export type ResourceQueryAction = RequestLikeAction<'resource.query'>;
+export type ResourceCountAction = RequestLikeAction<'resource.count'>;
 export type ResourceUpdateAction = RequestLikeAction<'resource.update'>;
 
 /**
@@ -92,6 +101,7 @@ export type Action =
   | RequestAction
   | ResourceGetAction
   | ResourceQueryAction
+  | ResourceCountAction
   | ResourceCreateAction
   | ResourceUpdateAction
   | ResourceDeleteAction

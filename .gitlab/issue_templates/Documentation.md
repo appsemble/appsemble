@@ -8,7 +8,7 @@
 
 - Block developer
 - Custom hosting
-- Docker imags usage
+- Docker image usage
 - etc…
 
 <!-- Remove the labels that don’t apply. -->

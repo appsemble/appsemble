@@ -16,6 +16,7 @@ import { testToken } from '../utils/test/testToken';
 
 let app: App;
 let authorization: string;
+let member: Member;
 let user: User;
 
 beforeAll(createTestSchema('appnotifications'));
@@ -39,7 +40,7 @@ beforeEach(async () => {
     vapidPrivateKey: '',
     definition: {},
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 });
 
 afterAll(closeTestSchema);
@@ -136,7 +137,6 @@ describe('getAppOAuth2Secrets', () => {
       status: 200,
       data: [
         {
-          AppId: app.id,
           authorizationUrl: 'https://example.com/oauth/authorize',
           clientId: 'example_client_id',
           clientSecret: 'example_client_secret',
@@ -190,6 +190,139 @@ describe('getAppOAuth2Secret', () => {
         authorizationUrl: 'https://example.com/oauth/authorize',
         clientId: 'example_client_id',
         scope: 'email openid profile',
+      },
+    });
+  });
+});
+
+describe('updateAppOAuth2Secret', () => {
+  it('should update an OAuth2 secret', async () => {
+    const secret = await AppOAuth2Secret.create({
+      AppId: app.id,
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
+    const response = await request.put(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}`,
+      {
+        authorizationUrl: 'https://other.example/oauth/authorize',
+        clientId: 'other_client_id',
+        clientSecret: 'example_client_secret',
+        icon: 'updated',
+        name: 'Updated Example',
+        scope: 'custom',
+        tokenUrl: 'https://other.example/oauth/token',
+        userInfoUrl: 'https://other.example/oauth/userinfo',
+      },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        authorizationUrl: 'https://other.example/oauth/authorize',
+        clientId: 'other_client_id',
+        clientSecret: 'example_client_secret',
+        icon: 'updated',
+        name: 'Updated Example',
+        scope: 'custom',
+        tokenUrl: 'https://other.example/oauth/token',
+        userInfoUrl: 'https://other.example/oauth/userinfo',
+      },
+    });
+    await secret.reload();
+    expect(secret).toMatchObject({
+      authorizationUrl: 'https://other.example/oauth/authorize',
+      clientId: 'other_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'updated',
+      name: 'Updated Example',
+      scope: 'custom',
+      tokenUrl: 'https://other.example/oauth/token',
+      userInfoUrl: 'https://other.example/oauth/userinfo',
+    });
+  });
+
+  it('should handle if the app id is invalid', async () => {
+    const response = await request.put(
+      '/api/apps/123/secrets/oauth2/1',
+      {
+        authorizationUrl: 'https://other.example/oauth/authorize',
+        clientId: 'other_client_id',
+        clientSecret: 'example_client_secret',
+        icon: 'updated',
+        name: 'Updated Example',
+        scope: 'custom',
+        tokenUrl: 'https://other.example/oauth/token',
+        userInfoUrl: 'https://other.example/oauth/userinfo',
+      },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
+    });
+  });
+
+  it('should handle if the secret id is invalid', async () => {
+    const response = await request.put(
+      `/api/apps/${app.id}/secrets/oauth2/1`,
+      {
+        authorizationUrl: 'https://other.example/oauth/authorize',
+        clientId: 'other_client_id',
+        clientSecret: 'example_client_secret',
+        icon: 'updated',
+        name: 'Updated Example',
+        scope: 'custom',
+        tokenUrl: 'https://other.example/oauth/token',
+        userInfoUrl: 'https://other.example/oauth/userinfo',
+      },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: { error: 'Not Found', message: 'OAuth2 secret not found', statusCode: 404 },
+    });
+  });
+
+  it('should require the user to have correct permissions', async () => {
+    const secret = await AppOAuth2Secret.create({
+      AppId: app.id,
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
+    await member.update({ role: 'Member' });
+    const response = await request.put(
+      `/api/apps/${app.id}/secrets/oauth2/${secret.id}`,
+      {
+        authorizationUrl: 'https://other.example/oauth/authorize',
+        clientId: 'other_client_id',
+        clientSecret: 'example_client_secret',
+        icon: 'updated',
+        name: 'Updated Example',
+        scope: 'custom',
+        tokenUrl: 'https://other.example/oauth/token',
+        userInfoUrl: 'https://other.example/oauth/userinfo',
+      },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
       },
     });
   });

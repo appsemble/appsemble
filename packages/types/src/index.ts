@@ -347,6 +347,7 @@ export interface Security {
 }
 
 export type Navigation = 'bottom' | 'left-menu' | 'hidden';
+export type LayoutPosition = 'navigation' | 'navbar' | 'hidden';
 
 export interface NotificationDefinition {
   to?: string[];
@@ -427,6 +428,11 @@ export interface ResourceDefinition {
    * The definition for the `resource.query` action.
    */
   query?: ResourceCall;
+
+  /**
+   * The definition for the `resource.count` action.
+   */
+  count?: ResourceCall;
 
   /**
    * The definition for the `resource.update` action.
@@ -622,7 +628,7 @@ export interface RequestLikeActionDefinition<
   /**
    * The URL to which to make the request.
    */
-  url?: string;
+  url?: Remapper;
 
   /**
    * How to serialize the request body.
@@ -643,6 +649,7 @@ export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
 export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
+export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
@@ -658,17 +665,11 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   action?: 'create' | 'update' | 'delete';
 }
 
-export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.subscribe'
->;
+export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
 
-export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.unsubscribe'
->;
+export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
 
-export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.toggle'
->;
+export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
 
 export type ResourceSubscriptionStatusActionDefinition = Omit<
   BaseResourceSubscribeActionDefinition<'resource.subscription.status'>,
@@ -680,6 +681,13 @@ export interface EventActionDefinition extends BaseActionDefinition<'event'> {
    * The name of the event to emit to.
    */
   event: string;
+
+  /**
+   * An event to wait for before resolving.
+   *
+   * If this is unspecified, the action will resolve with the input data.
+   */
+  waitFor?: string;
 }
 
 export interface StaticActionDefinition extends BaseActionDefinition<'static'> {
@@ -704,6 +712,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.next'>
   | BaseActionDefinition<'email'>
   | BaseActionDefinition<'noop'>
+  | BaseActionDefinition<'throw'>
   | DialogActionDefinition
   | EventActionDefinition
   | LinkActionDefinition
@@ -914,11 +923,34 @@ export interface AppDefinition {
   defaultPage: string;
 
   /**
-   * The navigation type to use.
-   *
-   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+   * The settings for the layout of the app.
    */
-  navigation?: Navigation;
+  layout?: {
+    /**
+     * The location of the login button.
+     *
+     * @default 'navbar'
+     */
+    login?: LayoutPosition;
+
+    /**
+     * The location of the settings button.
+     *
+     * If set to `navigation`, it will only be visible if `login` is also visible in `navigation`.
+     *
+     * @default 'navbar'
+     */
+    settings?: LayoutPosition;
+
+    /**
+     * The navigation type to use.
+     *
+     * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+     *
+     * @default 'left-menu'
+     */
+    navigation?: Navigation;
+  };
 
   /**
    * The strategy to use for apps to subscribe to push notifications.
@@ -948,6 +980,19 @@ export interface AppDefinition {
    * This is omitted any time the API serves the app definition.
    */
   anchors?: any[];
+
+  /**
+   * Cron jobs associated with the app.
+   */
+  cron?: Record<string, CronDefinition>;
+}
+
+/**
+ * The definition of a cron job for an app.
+ */
+export interface CronDefinition {
+  schedule: string;
+  action: ActionDefinition;
 }
 
 export interface App {
@@ -1071,6 +1116,21 @@ export interface Organization {
 }
 
 /**
+ * Represents a team within an organization.
+ */
+export interface Team {
+  /**
+   * The ID of the team.
+   */
+  id: number;
+
+  /**
+   * The display name of the team.
+   */
+  name: string;
+}
+
+/**
  * An invite for an organizaton.
  */
 export interface OrganizationInvite {
@@ -1112,6 +1172,8 @@ export interface AppMessages {
  * screen.
  */
 export interface OAuth2Provider {
+  type?: 'oauth2';
+
   /**
    * The OAuth2 redirect URL.
    *
@@ -1170,4 +1232,43 @@ export interface AppOAuth2Secret extends OAuth2Provider {
    * The remapper to apply on the user info data.
    */
   remapper: Remapper;
+}
+
+export interface WritableAppSamlSecret {
+  /**
+   * The name that will be displayed on the login button.
+   */
+  name: string;
+
+  /**
+   * The icon that will be displayed on the login button.
+   */
+  icon: IconName;
+
+  /**
+   * The certificate of the identity provider.
+   */
+  idpCertificate: string;
+
+  /**
+   * The URL of the identity provider where SAML metadata is hosted.
+   */
+  entityId: string;
+
+  /**
+   * The URL of the identity provider where the user will be redirected to in order to login.
+   */
+  ssoUrl: string;
+}
+
+export interface AppSamlSecret extends WritableAppSamlSecret {
+  /**
+   * The unique ID of the secret.
+   */
+  id?: number;
+
+  /**
+   * The SAML service provider certificate.
+   */
+  spCertificate?: string;
 }

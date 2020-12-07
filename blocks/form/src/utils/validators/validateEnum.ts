@@ -9,11 +9,14 @@ import { EnumField, RadioField, RequiredRequirement } from '../../../block';
  */
 export function validateEnum(field: EnumField, value: any): RequiredRequirement {
   return field.requirements?.find((requirement) => {
-    if (
-      'required' in requirement &&
-      (!value || !field.enum.find((choice) => choice.value === value))
-    ) {
+    if (!('required' in requirement)) {
+      return false;
+    }
+    if (value === undefined) {
       return true;
+    }
+    if ('enum' in field) {
+      return !field.enum.some((choice) => choice.value === value);
     }
   });
 }
@@ -29,7 +32,7 @@ export function validateRadio(field: RadioField, value: any): RequiredRequiremen
   return field.requirements?.find((requirement) => {
     if (
       'required' in requirement &&
-      (!value || !field.options.find((choice) => choice.value === value))
+      (value === undefined || !field.options.find((choice) => choice.value === value))
     ) {
       return true;
     }

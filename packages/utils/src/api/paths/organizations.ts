@@ -1,5 +1,7 @@
 import { OpenAPIV3 } from 'openapi-types';
 
+import { roles } from '../../constants';
+
 export const paths: OpenAPIV3.PathsObject = {
   '/api/organizations': {
     post: {
@@ -321,6 +323,7 @@ export const paths: OpenAPIV3.PathsObject = {
               properties: {
                 role: {
                   type: 'string',
+                  enum: Object.keys(roles),
                 },
               },
             },

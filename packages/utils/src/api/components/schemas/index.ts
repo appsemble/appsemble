@@ -5,6 +5,7 @@ export * from './Asset';
 export * from './Block';
 export * from './BlockVersion';
 export * from './Color';
+export * from './CronDefinition';
 export * from './Error';
 export * from './Health';
 export * from './Hooks';

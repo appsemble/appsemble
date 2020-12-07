@@ -13,7 +13,7 @@ export function Main({ className, ...props }: MainProps): ReactElement {
   const { role } = useUser();
 
   const hasBottomNav = useMemo(
-    () => definition.navigation === 'bottom' && shouldShowMenu(definition, role),
+    () => definition?.layout?.navigation === 'bottom' && shouldShowMenu(definition, role),
     [definition, role],
   );
 

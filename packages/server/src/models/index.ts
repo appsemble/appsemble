@@ -9,6 +9,8 @@ import { AppMessages } from './AppMessages';
 import { AppOAuth2Authorization } from './AppOAuth2Authorization';
 import { AppOAuth2Secret } from './AppOAuth2Secret';
 import { AppRating } from './AppRating';
+import { AppSamlAuthorization } from './AppSamlAuthorization';
+import { AppSamlSecret } from './AppSamlSecret';
 import { AppScreenshot } from './AppScreenshot';
 import { AppSubscription } from './AppSubscription';
 import { Asset } from './Asset';
@@ -26,6 +28,9 @@ import { OrganizationInvite } from './OrganizationInvite';
 import { ResetPasswordToken } from './ResetPasswordToken';
 import { Resource } from './Resource';
 import { ResourceSubscription } from './ResourceSubscription';
+import { SamlLoginRequest } from './SamlLoginRequest';
+import { Team } from './Team';
+import { TeamMember } from './TeamMember';
 import { User } from './User';
 
 let db: Sequelize;
@@ -47,6 +52,8 @@ export {
   AppOAuth2Authorization,
   AppOAuth2Secret,
   AppRating,
+  AppSamlAuthorization,
+  AppSamlSecret,
   AppScreenshot,
   AppSubscription,
   AppMessages,
@@ -65,6 +72,9 @@ export {
   ResetPasswordToken,
   Resource,
   ResourceSubscription,
+  Team,
+  TeamMember,
+  SamlLoginRequest,
   User,
 };
 
@@ -91,6 +101,8 @@ export function initDB({
       AppOAuth2Authorization,
       AppOAuth2Secret,
       AppRating,
+      AppSamlAuthorization,
+      AppSamlSecret,
       AppScreenshot,
       AppSubscription,
       AppMessages,
@@ -109,6 +121,9 @@ export function initDB({
       ResetPasswordToken,
       Resource,
       ResourceSubscription,
+      Team,
+      TeamMember,
+      SamlLoginRequest,
       User,
     ],
   };

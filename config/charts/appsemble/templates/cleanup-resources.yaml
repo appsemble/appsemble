@@ -1,0 +1,49 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "appsemble.fullname" . }}-cleanup-resources
+  labels:
+    app: {{ .Values.app }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "appsemble.name" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "appsemble.chart" . }}
+spec:
+  schedule: 0 23 * * * # Run every day at 23:00:00
+  successfulJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjob.jobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-resources
+              image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command:
+                - node
+                - packages/server/dist
+                - cleanup-resources
+                - -vv
+              env:
+                - name: DATABASE_HOST
+                  value: {{ .Values.postgresql.fullnameOverride }}
+                {{ if .Values.postgresSSL }}
+                - name: DATABASE_SSL
+                  value: 'true'
+                {{ end }}
+                - name: DATABASE_PORT
+                  value: {{ .Values.global.postgresql.servicePort | quote }}
+                - name: DATABASE_NAME
+                  value: {{ .Values.global.postgresql.postgresqlDatabase }}
+                - name: DATABASE_USER
+                  value: {{ .Values.global.postgresql.postgresqlUsername }}
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.global.postgresql.existingSecret }}
+                      key: postgresql-password
+{{ end }}

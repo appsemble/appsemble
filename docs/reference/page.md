@@ -77,7 +77,7 @@ itself. Defaults to `left-menu` if navigation or App navigation are not set.
 Set to `bottom` to use a navigation pane at the bottom of the screen instead of the default side
 menu. Set to `hidden` to display no navigational menus at all.
 
-See also: [App](app.md#navigation)
+See also: [App](app.md#layoutnavigation)
 
 ## `hideFromMenu`
 

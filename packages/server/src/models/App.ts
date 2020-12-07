@@ -25,12 +25,14 @@ import {
   AppMessages,
   AppOAuth2Secret,
   AppRating,
+  AppSamlSecret,
   AppScreenshot,
   AppSubscription,
   Asset,
   OAuth2Consent,
   Organization,
   Resource,
+  Team,
   User,
 } from '.';
 
@@ -108,6 +110,9 @@ export class App extends Model<App> {
   @HasMany(() => AppOAuth2Secret)
   AppOAuth2Secrets: AppOAuth2Secret[];
 
+  @HasMany(() => AppSamlSecret)
+  AppSamlSecrets: AppSamlSecret[];
+
   @BelongsTo(() => Organization)
   Organization: Organization;
 
@@ -134,6 +139,9 @@ export class App extends Model<App> {
 
   @HasMany(() => AppScreenshot)
   AppScreenshots: AppScreenshot[];
+
+  @HasMany(() => Team)
+  Teams: Team[];
 
   ResourceCount: number;
 

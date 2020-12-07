@@ -1,7 +1,7 @@
 import {
   BlockContent,
   Heading,
-  LinkReference,
+  Link,
   List,
   ListItem,
   PhrasingContent,
@@ -40,18 +40,14 @@ export function createHeading(
 /**
  * Convenience function for creating an mdast link reference.
  *
- * @param identifier - The identifier of the link reference.
+ * @param url - The URL to link to.
  * @param children - Child nodes to append to the link reference.
  * @returns A link reference node.
  */
-export function createLinkReference(
-  identifier: string,
-  children: (string | StaticPhrasingContent)[],
-): LinkReference {
+export function createLink(url: string, children: (string | StaticPhrasingContent)[]): Link {
   return {
-    type: 'linkReference',
-    identifier,
-    referenceType: 'shortcut',
+    type: 'link',
+    url,
     children: children.map((node) => ensureNode(node)),
   };
 }

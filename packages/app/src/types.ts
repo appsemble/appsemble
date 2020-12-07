@@ -5,12 +5,12 @@ import { Action } from '@appsemble/sdk';
 import {
   ActionDefinition,
   AppDefinition,
-  AppOAuth2Secret,
   BlockDefinition,
   BlockManifest,
   Remapper,
   UserInfo,
 } from '@appsemble/types';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import { match as Match, RouteComponentProps } from 'react-router-dom';
 import { JsonValue } from 'type-fest';
 
@@ -57,8 +57,14 @@ declare global {
       id: number;
       definition: AppDefinition;
       languages: string[];
-      logins: Pick<AppOAuth2Secret, 'icon' | 'id' | 'name'>[];
+      logins: {
+        icon: IconName;
+        id: number;
+        name: string;
+        type: 'oauth2' | 'saml';
+      }[];
       sentryDsn: string;
+      sentryEnvironment: string;
     };
   }
 }

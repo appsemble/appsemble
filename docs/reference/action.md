@@ -31,7 +31,8 @@ continue as normal.
 | to          | false    | The address the email should be sent to. Can be either in the format of `test@example.com`, or `John Doe <test@example.com>`. Supports remappers.             |
 | cc          | false    | The list of additional email addresses email should be sent to. Uses the same format as `to`. Every email address in the CC is visible to all recipients.     |
 | bcc         | false    | The list of additional email addresses email should be sent to. Uses the same format as `to`. Email addresses in the BCC are hidden from other recipients.    |
-| subject     | true     | The subject of the email. Supports remappers.                                                                                                                 |  | body | true | The body of the email. The content of the body is converted to HTML using the Markdown syntax. Supports remappers. |
+| subject     | true     | The subject of the email. Supports remappers.                                                                                                                 |
+| body        | true     | The body of the email. The content of the body is converted to HTML using the Markdown syntax. Supports remappers.                                            |
 | attachments | false    | Remapper for the attachments to include in the email. Must resolve into an array of either asset IDs that are associated with the same app, or absolute URLs. |
 
 ## `link`
@@ -129,7 +130,7 @@ JSON.
 
 | Parameter  | Required | Description                                                                                                                                                                                                                                       |
 | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| url        | true     | The URL to send the request to. Can be a relative URL (Eg. `/api/health`) for usage with the Appsemble API or an absolute URL (Eg. `https://example.com`) for usage with external sites.                                                          |
+| url        | true     | A remapper that results in the URL to send the request to. Can be a relative URL (Eg. `/api/health`) for usage with the Appsemble API or an absolute URL (Eg. `https://example.com`) for usage with external sites.                               |
 | method     |          | The type of request to make. Defaults to `GET` if omitted.                                                                                                                                                                                        |
 | query      |          | An object representing the values that get added to the query string. Templating can be applied here to make Appsemble inject values based on the data it received.                                                                               |
 | proxy      |          | By default requests will be proxied through the Appsemble API. This allows to protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behaviour can be disabled by setting this to `false`. |
@@ -170,8 +171,8 @@ query:
 This action opens a pop-up dialog that can be used to seamlessly transition to a new set of blocks
 temporarily.
 
-Dialogs can be closed by calling the [`dialog.ok`] and [`dialog.error`]. Users can still manually
-close dialogs, which should be supported by the app.
+Dialogs can be closed by calling the [`dialog.ok`](#dialogok) and [`dialog.error`](#dialogok). Users
+can still manually close dialogs, which should be supported by the app.
 
 | Parameter  | Required | Description                                                                                                      |
 | ---------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -193,9 +194,10 @@ This action allows for other blocks to emit data upon triggering the action. Thi
 make blocks interact with each other, such as triggering the `data-loader` block to refresh itself
 by sending an event action that matches the name of what the block is listening to.
 
-| Parameter | Required | Description                    |
-| --------- | -------- | ------------------------------ |
-| event     | true     | The name of the event to emit. |
+| Parameter | Required | Description                                                                                       |
+| --------- | -------- | ------------------------------------------------------------------------------------------------- |
+| event     | true     | The name of the event to emit.                                                                    |
+| waitFor   | false    | If specified, the action will wait for this event to have been emitted and respond with its data. |
 
 ## `static`
 

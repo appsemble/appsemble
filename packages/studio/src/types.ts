@@ -1,4 +1,5 @@
 import { OAuth2Provider, UserInfo } from '@appsemble/types';
+import { TeamRole } from '@appsemble/utils';
 import { OAuth2State } from '@appsemble/web-utils';
 
 /**
@@ -34,6 +35,13 @@ export interface Member {
   role: Role;
 }
 
+export interface TeamMember {
+  id: string;
+  name?: string;
+  primaryEmail?: string;
+  role: TeamRole;
+}
+
 export interface Organization {
   id: string;
   name: string;
@@ -64,6 +72,7 @@ declare global {
       enableRegistration: boolean;
       logins: OAuth2Provider[];
       sentryDsn: string;
+      sentryEnvironment: string;
     };
   }
 }

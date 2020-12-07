@@ -4,7 +4,13 @@ import { URLSearchParams } from 'url';
 import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
-import { AppMessages, AppOAuth2Secret, BlockAsset, BlockVersion } from '../../models';
+import {
+  AppMessages,
+  AppOAuth2Secret,
+  AppSamlSecret,
+  BlockAsset,
+  BlockVersion,
+} from '../../models';
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { createSettings } from '../../utils/createSettings';
@@ -20,7 +26,7 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
 export async function indexHandler(ctx: KoaContext): Promise<void> {
   ctx.type = 'text/html';
   const {
-    argv: { host, sentryDsn },
+    argv: { host, sentryDsn, sentryEnvironment },
     state: { render },
   } = ctx;
 
@@ -34,6 +40,10 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
       {
         attributes: ['language'],
         model: AppMessages,
+      },
+      {
+        attributes: ['icon', 'id', 'name'],
+        model: AppSamlSecret,
       },
     ],
   });
@@ -70,7 +80,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     },
   });
   const nonce = randomBytes(16).toString('base64');
-  const reportUri = sentryDsnToReportUri(sentryDsn);
+  const sentry = sentryDsnToReportUri(sentryDsn);
   const [settingsHash, settings] = createSettings({
     apiUrl: host,
     blockManifests: blockManifests.map(
@@ -90,14 +100,18 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
         app.definition.defaultLanguage || 'en-us',
       ]),
     ].sort(),
-    logins: app.AppOAuth2Secrets,
+    logins: [
+      ...app.AppOAuth2Secrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'oauth2' })),
+      ...app.AppSamlSecrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'saml' })),
+    ],
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
     sentryDsn,
+    sentryEnvironment,
   });
   const csp = {
-    'report-uri': [reportUri],
-    'connect-src': ['*', 'blob:', 'data:'],
+    'report-uri': [sentry?.reportUri],
+    'connect-src': ['*', 'blob:', 'data:', sentry?.origin],
     'default-src': ["'self'"],
     'script-src': [
       "'self'",

@@ -9,14 +9,12 @@ import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
 import { ParameterizedContext } from 'koa';
 import { get, pick } from 'lodash';
-import { extension } from 'mime-types';
-import { SendMailOptions } from 'nodemailer';
 import { Op } from 'sequelize';
 
-import { App, Asset, EmailAuthorization } from '../models';
+import { App, EmailAuthorization } from '../models';
 import { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
+import { email } from '../utils/actions/email';
 import { getRemapperContext } from '../utils/app';
-import { renderEmail } from '../utils/email/renderEmail';
 import { readPackageJson } from '../utils/readPackageJson';
 
 interface Params {
@@ -67,66 +65,13 @@ async function handleEmail(
     ],
   });
 
-  const context = await getRemapperContext(
-    app,
-    app.definition.defaultLanguage || 'en-us',
-    user && {
-      sub: user.id,
-      name: user.name,
-      email: user.primaryEmail,
-      email_verified: user.EmailAuthorizations[0].verified,
-    },
-  );
-  const to = remap(action.to, data, context) as string;
-  const cc = remap(action.cc, data, context) as string | string[];
-  const bcc = remap(action.bcc, data, context) as string | string[];
-  const body = remap(action.body, data, context) as string;
-  const sub = remap(action.subject, data, context) as string;
-  const attachmentUrls = remap(action.attachments, data, context) as string[];
-  const attachments: SendMailOptions['attachments'] = [];
-
-  if (!to && !cc?.length && !bcc?.length) {
-    // Continue as normal without doing anything
-    ctx.status = 204;
-    return;
-  }
-
-  if (!sub || !body) {
-    throw badRequest('Fields “subject” and “body” must be a valid string');
-  }
-
-  if (attachmentUrls?.length) {
-    const assetIds = attachmentUrls.filter((a) => !String(a).startsWith('http'));
-    const assetUrls = attachmentUrls.filter((a) => String(a).startsWith('http'));
-
-    const assets = await Asset.findAll({ where: { AppId: app.id, id: assetIds } });
-
-    attachments.push(
-      ...assets.map((a) => {
-        const ext = extension(a.mime);
-        const filename = a.filename || (ext ? `${a.id}.${ext}` : String(a.id));
-        return { content: a.data, filename };
-      }),
-    );
-    attachments.push(...assetUrls.map((a) => ({ path: a })));
-  }
-
-  const { html, subject, text } = await renderEmail(body, {}, sub);
-  await mailer.sendEmail({
-    ...(to && { to }),
-    ...(cc && { cc }),
-    ...(bcc && { bcc }),
-    subject,
-    html,
-    text,
-    attachments,
-  });
-
+  await email({ action, app, data, mailer, user });
   ctx.status = 204;
 }
 
 async function handleRequestProxy(
   ctx: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
+  app: App,
   action: RequestLikeActionDefinition,
   useBody: boolean,
 ): Promise<void> {
@@ -134,6 +79,7 @@ async function handleRequestProxy(
     method,
     query,
     request: { body },
+    user,
   } = ctx;
 
   let data;
@@ -147,7 +93,33 @@ async function handleRequestProxy(
     }
   }
 
-  const axiosConfig = formatRequestAction(action, data);
+  await user?.reload({
+    attributes: ['primaryEmail', 'name'],
+    include: [
+      {
+        required: false,
+        model: EmailAuthorization,
+        attributes: ['verified'],
+        where: {
+          email: { [Op.col]: 'User.primaryEmail' },
+        },
+      },
+    ],
+  });
+
+  const context = await getRemapperContext(
+    app,
+    app.definition.defaultLanguage || 'en-us',
+    user && {
+      sub: user.id,
+      name: user.name,
+      email: user.primaryEmail,
+      email_verified: user.EmailAuthorizations[0].verified,
+    },
+  );
+  const axiosConfig = formatRequestAction(action, data, (remapper, d) =>
+    remap(remapper, d, context),
+  );
 
   if (axiosConfig.method.toUpperCase() !== method) {
     throw badRequest('Method does match the request action method');
@@ -191,7 +163,7 @@ function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
       case 'email':
         return handleEmail(ctx, app, appAction as EmailActionDefinition);
       case 'request':
-        return handleRequestProxy(ctx, appAction as RequestLikeActionDefinition, useBody);
+        return handleRequestProxy(ctx, app, appAction as RequestLikeActionDefinition, useBody);
       default:
         throw badRequest('path does not point to a proxyable action');
     }

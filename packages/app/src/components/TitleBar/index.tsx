@@ -24,7 +24,7 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className={`is-flex ${styles.container}`}>
-        {!(definition.navigation || definition.navigation === 'left-menu') &&
+        {!(definition?.layout?.navigation || definition?.layout?.navigation === 'left-menu') &&
           shouldShowMenu(definition, role) && (
             <div className="navbar-brand">
               <span>
@@ -35,11 +35,13 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
         <div className={`navbar-brand ${styles.title}`}>
           <h2 className="navbar-item title is-4">{children || definition.name}</h2>
         </div>
-        <div className="navbar-brand">
-          <div className="navbar-item is-paddingless px-1">
-            <ProfileDropdown />
+        {(definition?.layout?.login == null || definition?.layout?.login === 'navbar') && (
+          <div className="navbar-brand">
+            <div className="navbar-item is-paddingless px-1">
+              <ProfileDropdown />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </Portal>
   );

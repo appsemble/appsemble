@@ -350,6 +350,11 @@ describe('root', () => {
       mappers: [{ prop: 'input' }, { root: null }],
       expected: { input: 'data' },
     },
+    'not overwrite the root in the context': {
+      input: { input: 'data' },
+      mappers: [{ prop: 'input' }, { 'object.from': { key: { root: null } } }],
+      expected: { key: { input: 'data' } },
+    },
   });
 });
 

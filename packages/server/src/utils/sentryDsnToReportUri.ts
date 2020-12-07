@@ -1,9 +1,14 @@
 import { URL } from 'url';
 
-export function sentryDsnToReportUri(dsn: string): string {
+interface SentrySettings {
+  reportUri: string;
+  origin: string;
+}
+
+export function sentryDsnToReportUri(dsn: string): undefined | SentrySettings {
   if (!dsn) {
-    return null;
+    return;
   }
-  const { host, pathname, protocol, username } = new URL(dsn);
-  return `${protocol}//${host}/api${pathname}/security/?sentry_key=${username}`;
+  const { origin, pathname, username } = new URL(dsn);
+  return { origin, reportUri: `${origin}/api${pathname}/security/?sentry_key=${username}` };
 }

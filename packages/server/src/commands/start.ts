@@ -31,6 +31,9 @@ export function builder(yargs: Argv): Argv {
     .option('sentry-dsn', {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
     })
+    .option('sentry-environment', {
+      desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
+    })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
     })
@@ -121,6 +124,7 @@ export async function handler(
   argv: Args,
   { webpackConfigs }: AdditionalArguments = {},
 ): Promise<void> {
+  const { version } = readPackageJson();
   try {
     initDB({
       host: argv.databaseHost,
@@ -142,7 +146,7 @@ export async function handler(
   await configureDNS(argv);
 
   if (argv.sentryDsn) {
-    init({ dsn: argv.sentryDsn });
+    init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: version });
   }
 
   const app = await createServer({ argv, webpackConfigs });
@@ -176,6 +180,6 @@ export async function handler(
 
   httpServer.listen(argv.port || PORT, '0.0.0.0', () => {
     logger.info(asciiLogo);
-    logger.info(api(readPackageJson().version, argv).info.description);
+    logger.info(api(version, argv).info.description);
   });
 }

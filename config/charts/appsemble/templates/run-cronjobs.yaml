@@ -1,0 +1,81 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "appsemble.fullname" . }}-run-cronjobs
+  labels:
+    app: {{ .Values.app }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "appsemble.name" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "appsemble.chart" . }}
+spec:
+  schedule: 0 * * * * # Run every hour
+  successfulJobsHistoryLimit: {{ mul 24 .Values.cronjob.jobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ mul 24 .Values.cronjob.jobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: {{ include "appsemble.fullname" . }}-cronjob
+              image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command:
+                - node
+                - packages/server/dist
+                - run-cronjobs
+                - -vv
+              env:
+                - name: DATABASE_HOST
+                  value: {{ .Values.postgresql.fullnameOverride }}
+                {{ if .Values.postgresSSL }}
+                - name: DATABASE_SSL
+                  value: 'true'
+                {{ end }}
+                - name: DATABASE_PORT
+                  value: {{ .Values.global.postgresql.servicePort | quote }}
+                - name: DATABASE_NAME
+                  value: {{ .Values.global.postgresql.postgresqlDatabase }}
+                - name: DATABASE_USER
+                  value: {{ .Values.global.postgresql.postgresqlUsername }}
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.global.postgresql.existingSecret }}
+                      key: postgresql-password
+                {{- with .Values.smtpSecret }}
+                - name: SMTP_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: host
+                - name: SMTP_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: port
+                - name: SMTP_SECURE
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: secure
+                - name: SMTP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: user
+                - name: SMTP_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: pass
+                - name: SMTP_FROM
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ . | quote }}
+                      key: from
+                {{- end }}
+{{ end }}

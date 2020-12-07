@@ -1,17 +1,7 @@
-.table td {
-  vertical-align: middle;
-}
-
 .vertical {
   vertical-align: middle;
 }
 
 .editButton {
   margin-left: auto;
-}
-
-.icon {
-  height: 128px !important;
-  object-fit: contain;
-  width: 128px !important;
 }

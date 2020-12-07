@@ -1,6 +1,6 @@
 import { Remapper } from '@appsemble/sdk';
 
-import { DateTimeField, DateTimeRequirement } from '../../../block';
+import { DateField, DateTimeField, DateTimeRequirement } from '../../../block';
 import { isValidDate } from '../requirements';
 
 /**
@@ -12,7 +12,7 @@ import { isValidDate } from '../requirements';
  * @returns The first requirement that failed validation.
  */
 export function validateDateTime(
-  field: DateTimeField,
+  field: DateTimeField | DateField,
   value: string,
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
 ): DateTimeRequirement {
@@ -28,7 +28,9 @@ export function validateDateTime(
         return false;
       }
 
-      return fromDate.toISOString() > value;
+      const isoDate =
+        field.type === 'date-time' ? fromDate.toISOString() : fromDate.toISOString().split('T')[0];
+      return isoDate > value;
     }
 
     if ('to' in requirement && value) {
@@ -38,7 +40,9 @@ export function validateDateTime(
         return false;
       }
 
-      return toDate.toISOString() < value;
+      const isoDate =
+        field.type === 'date-time' ? toDate.toISOString() : toDate.toISOString().split('T')[0];
+      return isoDate < value;
     }
   });
 }

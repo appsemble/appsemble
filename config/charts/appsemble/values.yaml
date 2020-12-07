@@ -40,9 +40,14 @@ smtpSecret: smtp
 
 sentrySecret: {}
 
+sentryEnvironment: null
+
 oauthSecret: null
 
 secretSecret: appsemble
+
+cronjob:
+  jobsHistoryLimit: 3
 
 migrateTo: {}
 

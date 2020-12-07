@@ -22,5 +22,5 @@ export function MDXCode({ children, className }: MDXCodeProps): ReactElement {
     return <Mermaid graph={children} />;
   }
 
-  return <CodeBlock code={children.trimEnd()} language={language} />;
+  return <CodeBlock className="mb-4" code={children.trimEnd()} language={language} />;
 }

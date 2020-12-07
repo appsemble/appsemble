@@ -83,6 +83,35 @@ export async function getAppOAuth2Secret(ctx: KoaContext<Params>): Promise<void>
   [ctx.body] = app.AppOAuth2Secrets;
 }
 
+export async function updateAppOAuth2Secret(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, appOAuth2SecretId },
+    request: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      body: { id, ...body },
+    },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+    include: [{ model: AppOAuth2Secret, required: false, where: { id: appOAuth2SecretId } }],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppOAuth2Secrets?.length) {
+    throw notFound('OAuth2 secret not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+
+  const [secret] = app.AppOAuth2Secrets;
+  await secret.update(body);
+  ctx.body = secret;
+}
+
 export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promise<void> {
   const {
     argv: { host },

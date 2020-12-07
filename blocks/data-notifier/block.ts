@@ -1,6 +1,4 @@
-import { BulmaColor } from '@appsemble/sdk';
-
-export {};
+import { BulmaColor, Remapper } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Parameters {

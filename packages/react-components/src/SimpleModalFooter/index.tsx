@@ -25,12 +25,20 @@ interface SimpleModalFooterProps {
    * The label for the submit button.
    */
   submitLabel: ReactNode;
+
+  /**
+   * If true, disable the submit button if no values have been changed.
+   *
+   * @default true
+   */
+  allowPristine?: boolean;
 }
 
 /**
  * A footer for a modal when combining it with `<SimpleForm />`.
  */
 export function SimpleModalFooter({
+  allowPristine = true,
   cancelLabel,
   color = 'primary',
   onClose,
@@ -45,7 +53,9 @@ export function SimpleModalFooter({
       </CardFooterButton>
       <CardFooterButton
         color={color}
-        disabled={pristine || submitting || Object.values(formErrors).some(Boolean)}
+        disabled={
+          (allowPristine && pristine) || submitting || Object.values(formErrors).some(Boolean)
+        }
         loading={submitting}
         type="submit"
       >

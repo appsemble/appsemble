@@ -64,7 +64,8 @@ export class Mailer {
   /**
    * @param argv - The CLI arguments passed to the Appsemble server.
    */
-  constructor({ smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser }: Argv) {
+  constructor(argv: Argv) {
+    const { smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser } = argv;
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
       this.transport = createTransport(
@@ -105,7 +106,7 @@ export class Mailer {
     templateName: string,
     values: Record<string, string>,
   ): Promise<void> {
-    const template = (await readAsset(`email/${templateName}.md`, 'utf-8')) as string;
+    const template = await readAsset(`email/${templateName}.md`, 'utf-8');
     const { html, subject, text } = await renderEmail(template, {
       ...values,
       greeting: to.name ? `Hello ${to.name}` : 'Hello',

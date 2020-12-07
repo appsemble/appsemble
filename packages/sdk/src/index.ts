@@ -1,6 +1,6 @@
 import { Promisable } from 'type-fest';
 
-import { Action, Message, Theme } from './types';
+import { Action, Message, Remapper, Theme } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 export * from './types';
@@ -73,13 +73,6 @@ export interface EventListeners {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Parameters {}
 
-/**
- * A user defined remapper function.
- *
- * @format remapper
- */
-export type Remapper = string | number | boolean | object | object[];
-
 export type PageParameters = Record<string, string>;
 
 /**
@@ -123,8 +116,9 @@ export interface Events {
    *
    * @param type - The type of event to emit.
    * @param data - Data to emit with the event.
+   * @returns Boolean indicating whether an emitter is implemented or not.
    */
-  emit: { [K in keyof EventEmitters]: (data: any, error?: string) => void };
+  emit: { [K in keyof EventEmitters]: (data: any, error?: string) => Promise<boolean> };
 
   /**
    * Remove an event listener for an Appsemble event.

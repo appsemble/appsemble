@@ -12,6 +12,7 @@ import React, {
   useState,
 } from 'react';
 
+import { oauth2Scope } from '../../utils/constants';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 
@@ -108,7 +109,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       new URLSearchParams({
         client_id: `app:${appId}`,
         grant_type: grantType,
-        scope: 'openid',
+        scope: oauth2Scope,
         ...params,
       }),
     );

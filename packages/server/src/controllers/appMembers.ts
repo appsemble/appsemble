@@ -1,5 +1,6 @@
 import { Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
+import { Op } from 'sequelize';
 
 import { App, AppMember, Organization, User } from '../models';
 import { KoaContext } from '../types';
@@ -20,12 +21,35 @@ export async function getAppMembers(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
-  ctx.body = app.Users.map((user) => ({
-    id: user.id,
-    name: user.name,
-    primaryEmail: user.primaryEmail,
-    role: user.AppMember.role,
-  }));
+  let appMembers: { id: string; name: string; primaryEmail: string; role: string }[] = [];
+
+  if (app.definition.security?.default?.policy === 'invite') {
+    appMembers = app.Users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      primaryEmail: user.primaryEmail,
+      role: user.AppMember.role,
+    }));
+  } else {
+    const organization = await Organization.findByPk(app.OrganizationId, {
+      include: [
+        {
+          model: User,
+          where: { id: { [Op.not]: app.Users.map((user) => user.id) } },
+          required: false,
+        },
+      ],
+    });
+
+    appMembers = [...app.Users, ...organization.Users].map((user) => ({
+      id: user.id,
+      name: user.name,
+      primaryEmail: user.primaryEmail,
+      role: user?.AppMember?.role ?? app.definition.security.default.role,
+    }));
+  }
+
+  ctx.body = appMembers;
 }
 
 export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {

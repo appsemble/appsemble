@@ -18,11 +18,27 @@ unique.
 The description of the app. This description has a maximum character limit of 80 and is displayed in
 the app index.
 
-## `navigation`
+## `layout`
+
+Properties related to the layout of the app.
+
+### `layout.navigation`
 
 Set a navigation type for the app. This defaults to `left-menu` for a left side menu. Set to
 `bottom` to use a navigation pane at the bottom of the screen instead of the default side menu. Set
 to `hidden` to display no navigational menus at all.
+
+## `layout.login`
+
+Set the location of the login button. This defaults to `navbar` which adds a login button and
+dropdown to the navigation bar. This can be set to `navigation` to instead display it in the
+navigation menu, or `hidden` to hide it entirely.
+
+## `layout.settings`
+
+Set the location of the settings button. This defaults to `navbar` and is only visible there if the
+login button is also visible in the navigation bar. This can be set to `navigation` to display it in
+the navigation menu, or `hidden` to hide it entirely.
 
 ## `notifications`
 
@@ -61,10 +77,10 @@ fine-grain control over which users have access to specific pages or blocks.
   not, `organization` to assign the default role to every user within the app’s organization, and
   `invite` for an invite-only policy.
 - **roles**: An object containing keys representing the roles that can be used within the app.
-- **roles[key].description**: The description of a role.
-- **roles[key].inherits**: The name of the role to inherit from. Note that this role must exist and
+- **roles\[key].description**: The description of a role.
+- **roles\[key].inherits**: The name of the role to inherit from. Note that this role must exist and
   can not inherit itself via this field or the `inherits` field of the referenced role.
-- **roles[key].defaultPage**: The default page to redirect users with this role to.
+- **roles\[key].defaultPage**: The default page to redirect users with this role to.
 - **login** (_**deprecated**_): By default, users can login to apps using OAuth2. In order to
   support legacy apps, this can be set to `password` to enable a less secure login mechanism.
 

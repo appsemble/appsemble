@@ -29,6 +29,10 @@ export function convertToCsv(body: any): string {
 
   const data = Array.isArray(body) ? body : [body];
 
+  if (data.length === 0) {
+    return null;
+  }
+
   const headers = [...new Set(data.flatMap((value) => Object.keys(value)))].sort();
 
   if (headers.length === 0) {

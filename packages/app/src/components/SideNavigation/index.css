@@ -11,3 +11,19 @@
     }
   }
 }
+
+.button {
+  border: none;
+  justify-content: initial;
+  padding: 26px 1em !important;
+  width: 100%;
+
+  &:hover {
+    background-color: hsl(0, 0%, 96%);
+    color: hsl(0, 0%, 21%);
+  }
+
+  & span {
+    margin-left: 0 !important;
+  }
+}

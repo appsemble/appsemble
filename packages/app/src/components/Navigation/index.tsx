@@ -16,7 +16,7 @@ export function Navigation(): ReactElement {
   const { definition } = useAppDefinition();
   const { role } = useUser();
 
-  const navigation = definition.navigation || 'left-menu';
+  const navigation = definition?.layout?.navigation || 'left-menu';
   const checkPagePermissions = (page: PageDefinition): boolean => {
     const roles = page.roles || definition.roles || [];
     return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));

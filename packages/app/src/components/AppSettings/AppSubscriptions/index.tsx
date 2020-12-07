@@ -180,8 +180,8 @@ export function AppSubscriptions(): ReactElement {
             }
             required
           >
-            {(resource.create.notification.subscribe === 'all' ||
-              resource.create.notification.subscribe === 'both') && (
+            {(resource.create?.notification?.subscribe === 'all' ||
+              resource.create?.notification?.subscribe === 'both') && (
               <CheckboxField
                 className={styles.subscribeCheckbox}
                 disabled={!subscription || !resource.create}
@@ -199,8 +199,8 @@ export function AppSubscriptions(): ReactElement {
                 value={subscriptions[resourceType].create.subscribed}
               />
             )}
-            {(resource.update.notification.subscribe === 'all' ||
-              resource.update.notification.subscribe === 'both') && (
+            {(resource.update?.notification?.subscribe === 'all' ||
+              resource.update?.notification?.subscribe === 'both') && (
               <CheckboxField
                 className={styles.subscribeCheckbox}
                 disabled={!subscription || !resource.update}
@@ -218,8 +218,8 @@ export function AppSubscriptions(): ReactElement {
                 value={subscriptions[resourceType].update.subscribed}
               />
             )}
-            {(resource.delete.notification.subscribe === 'all' ||
-              resource.delete.notification.subscribe === 'both') && (
+            {(resource.delete?.notification?.subscribe === 'all' ||
+              resource.delete?.notification?.subscribe === 'both') && (
               <CheckboxField
                 className={styles.subscribeCheckbox}
                 disabled={!subscription || !resource.delete}

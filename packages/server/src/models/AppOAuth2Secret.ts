@@ -9,6 +9,7 @@ import {
   Column,
   CreatedAt,
   DataType,
+  DefaultScope,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -18,6 +19,22 @@ import {
 
 import { App } from '.';
 
+@DefaultScope(() => ({
+  attributes: [
+    'authorizationUrl',
+    'clientId',
+    'clientSecret',
+    'created',
+    'icon',
+    'id',
+    'name',
+    'remapper',
+    'scope',
+    'tokenUrl',
+    'updated',
+    'userInfoUrl',
+  ],
+}))
 @Table({ tableName: 'AppOAuth2Secret' })
 export class AppOAuth2Secret extends Model<AppOAuth2Secret> {
   @PrimaryKey

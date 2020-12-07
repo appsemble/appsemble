@@ -189,3 +189,15 @@ resources:
 > In the above example, users with the “Reader” role will be able to view either all blog resources
 > or a singular one through the “query” and “get” resource actions, but they will not be able to
 > create, update, or delete blog resources without having the “Admin” role.
+
+On top of specifying app roles to determine which users have access to resources, there are a couple
+of special options that are always available regardless of the presence of roles. All of these
+require the user to be logged in.
+
+The following special options are currently supported:
+
+- **\$author**: Grants access if the user is the same as the one who created the resource.
+- **\$team:member**: Grants access if the user is in the same team as the user who created the
+  resource.
+- **\$team:manager**: Grants access if the user is in the same team as the user who created the
+  resource and has the `manager` role within the team.

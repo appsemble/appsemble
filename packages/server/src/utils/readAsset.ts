@@ -11,6 +11,8 @@ export const assetDir = resolve(__dirname, '../../assets');
  *
  * @returns The content of the specified file.
  */
-export function readAsset(filename: string, encoding?: 'utf-8'): Promise<string | Buffer> {
+export function readAsset(filename: string): Promise<Buffer>;
+export function readAsset(filename: string, encoding: BufferEncoding): Promise<string>;
+export function readAsset(filename: string, encoding?: BufferEncoding): Promise<string | Buffer> {
   return fs.readFile(join(assetDir, filename), encoding);
 }

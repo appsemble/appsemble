@@ -119,7 +119,7 @@ export function OrganizationInvite(): ReactElement {
         </p>
         <Link
           className="button is-primary my-3"
-          to={{ pathname: `${lang}/login`, search: `?${search}` }}
+          to={{ pathname: `/${lang}/login`, search: `?${search}` }}
         >
           <Icon icon="sign-in-alt" />
           <span>
@@ -141,7 +141,7 @@ export function OrganizationInvite(): ReactElement {
                 organization: <strong>{organization.name || organization.id}</strong>,
                 makeApps: (link: string) => <Link to={`/${lang}/apps`}>{link}</Link>,
                 viewOrganization: (link: string) => (
-                  <Link to={`${lang}/settings/organizations`}>{link}</Link>
+                  <Link to={`/${lang}/settings/organizations`}>{link}</Link>
                 ),
               }}
             />

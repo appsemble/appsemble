@@ -25,6 +25,7 @@ import {
   OAuthAuthorization,
   Organization,
   ResetPasswordToken,
+  TeamMember,
 } from '.';
 
 @Table({ tableName: 'User', paranoid: true })
@@ -80,6 +81,8 @@ export class User extends Model<User> {
 
   @DeletedAt
   deleted: Date;
+
+  TeamMember: TeamMember;
 
   AppMember: AppMember;
 
