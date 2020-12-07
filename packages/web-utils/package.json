@@ -24,5 +24,8 @@
   "main": "src",
   "scripts": {
     "test": "jest"
+  },
+  "dependencies": {
+    "@sentry/browser": "^5.28.0"
   }
 }

@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 
 import { Events } from '@appsemble/sdk';
 import { BlockDefinition, BlockManifest } from '@appsemble/types';
+import { addBreadcrumb } from '@sentry/browser';
 
 /**
  * Create the events object that is passed to a block.
@@ -25,7 +26,12 @@ export function createEvents(
         ready.then(
           definition?.emit?.[key]
             ? () => {
-                ee.emit(definition.emit[key], d, error === '' ? 'Error' : error);
+                const name = definition.emit[key];
+                ee.emit(name, d, error === '' ? 'Error' : error);
+                addBreadcrumb({
+                  category: 'appsemble.event',
+                  data: { name, listeners: String(ee.listenerCount(name)) },
+                });
                 return true;
               }
             : () => false,

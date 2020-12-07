@@ -1,5 +1,6 @@
 import { Loader } from '@appsemble/react-components';
 import { JwtPayload, Organization, TokenResponse, UserInfo } from '@appsemble/types';
+import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import React, {
@@ -62,6 +63,11 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
 
   const refreshUserInfo = useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/connect/userinfo');
+    setUser({
+      email: data.email,
+      id: data.sub,
+      username: data.name,
+    });
     setUserInfo(data);
   }, []);
 
@@ -79,6 +85,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   );
 
   const logout = useCallback(() => {
+    setUser(null);
     setUserInfo(null);
     setOrganizations([]);
     delete axios.defaults.headers.authorization;

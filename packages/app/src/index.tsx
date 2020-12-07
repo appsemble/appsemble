@@ -1,7 +1,7 @@
 import 'roboto-fontface';
 import './index.css';
 
-import { init } from '@sentry/browser';
+import { setupSentry } from '@appsemble/web-utils';
 import React from 'react';
 import { render } from 'react-dom';
 import runtime from 'serviceworker-webpack-plugin/lib/runtime';
@@ -9,7 +9,7 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 import { App } from './components/App';
 import { sentryDsn, sentryEnvironment } from './utils/settings';
 
-init({ dsn: sentryDsn, environment: sentryEnvironment, release: process.env.APPSEMBLE_VERSION });
+setupSentry(sentryDsn, sentryEnvironment);
 
 const serviceWorkerRegistrationPromise =
   runtime.register() || Promise.reject(new Error('Service worker not available'));

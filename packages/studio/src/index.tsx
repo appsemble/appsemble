@@ -1,13 +1,13 @@
 import './index.css';
 
-import { init } from '@sentry/browser';
+import { setupSentry } from '@appsemble/web-utils';
 import React from 'react';
 import { render } from 'react-dom';
 
 import { App } from './components/App';
 import { sentryDsn, sentryEnvironment } from './utils/settings';
 
-init({ dsn: sentryDsn, environment: sentryEnvironment, release: process.env.APPSEMBLE_VERSION });
+setupSentry(sentryDsn, sentryEnvironment);
 
 render(<App />, document.getElementById('app'));
 
