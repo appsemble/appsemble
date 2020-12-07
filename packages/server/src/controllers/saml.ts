@@ -80,7 +80,6 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   authnRequest.setAttribute('ID', loginId);
   authnRequest.setAttribute('Version', '2.0');
   authnRequest.setAttribute('IssueInstant', new Date().toISOString());
-  authnRequest.setAttribute('IsPassive', 'true');
 
   const issuer = doc.createElementNS(NS.saml, 'saml:Issuer');
   issuer.textContent = `${samlUrl}/metadata.xml`;
