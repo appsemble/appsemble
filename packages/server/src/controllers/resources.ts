@@ -8,6 +8,7 @@ import {
 } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
+import { pick } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
 import { Op, Order, WhereOptions } from 'sequelize';
@@ -231,7 +232,7 @@ async function verifyPermission(
 export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    query: { $top },
+    query: { $select, $top },
     user,
   } = ctx;
 
@@ -271,7 +272,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     },
   });
 
-  ctx.body = resources.map((resource) => ({
+  let response = resources.map((resource) => ({
     ...resource.data,
     id: resource.id,
     $created: resource.created,
@@ -282,6 +283,13 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     }),
     ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
   }));
+
+  if ($select) {
+    const select = $select.split(',');
+    response = response.map((resource) => pick(resource, select));
+  }
+
+  ctx.body = response;
 }
 
 export async function countResources(ctx: KoaContext<Params>): Promise<void> {
