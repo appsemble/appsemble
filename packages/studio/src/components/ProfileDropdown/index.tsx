@@ -31,11 +31,18 @@ export function ProfileDropdown(): ReactElement {
       label={
         userInfo ? (
           <figure className="image is-32x32">
-            <img
-              alt={formatMessage(messages.pfp)}
-              className={`is-rounded ${styles.gravatar}`}
-              src={userInfo.picture}
-            />
+            {userInfo?.picture ? (
+              <img
+                alt={formatMessage(messages.pfp)}
+                className={`is-rounded ${styles.gravatar}`}
+                src={userInfo.picture}
+              />
+            ) : (
+              <Icon
+                className={`is-rounded has-background-grey-dark has-text-white-ter ${styles.gravatarFallback}`}
+                icon="user"
+              />
+            )}
           </figure>
         ) : (
           <span>
