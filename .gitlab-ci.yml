@@ -211,6 +211,18 @@ publish npm:
     - npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
     - find . -exec npm publish --access public {} \;
 
+# Perform various post release actions.
+sentry release:
+  extends: .yarn
+  stage: publish
+  # XXX this should be removed once it has proven itself in production.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - sentry-cli releases new --finalize --project appsemble "$CI_COMMIT_TAG"
+    - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+
 ###################################################################################################
 #  Deploy Stage                                                                                   #
 ###################################################################################################
