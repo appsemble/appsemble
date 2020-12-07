@@ -365,8 +365,9 @@ describe('createAuthnRequest', () => {
         ' AssertionConsumerServiceURL="http://localhost/api/apps/1/saml/1/acs"' +
         ' Destination="https://example.com/saml/login"' +
         ` ID="${loginRequest.id}"` +
-        ' Version="2.0" IssueInstant="1970-01-01T00:00:00.000Z"' +
-        ' IsPassive="true" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"' +
+        ' Version="2.0"' +
+        ' IssueInstant="1970-01-01T00:00:00.000Z"' +
+        ' xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"' +
         '>' +
         '<saml:Issuer>' +
         'http://localhost/api/apps/1/saml/1/metadata.xml' +
