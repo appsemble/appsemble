@@ -72,6 +72,7 @@ declare global {
       enableRegistration: boolean;
       logins: OAuth2Provider[];
       sentryDsn: string;
+      sentryEnvironment: string;
     };
   }
 }

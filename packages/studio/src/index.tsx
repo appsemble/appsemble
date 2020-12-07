@@ -5,9 +5,9 @@ import React from 'react';
 import { render } from 'react-dom';
 
 import { App } from './components/App';
-import { sentryDsn } from './utils/settings';
+import { sentryDsn, sentryEnvironment } from './utils/settings';
 
-init({ dsn: sentryDsn });
+init({ dsn: sentryDsn, environment: sentryEnvironment, release: process.env.APPSEMBLE_VERSION });
 
 render(<App />, document.getElementById('app'));
 

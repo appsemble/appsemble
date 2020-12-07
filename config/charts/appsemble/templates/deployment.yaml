@@ -157,6 +157,10 @@ spec:
                   name: {{ . | quote }}
                   key: dsn
             {{- end }}
+            {{- with .Values.sentryEnvironment }}
+            - name: SENTRY_ENVIRONMENT
+              value: {{ . | quote }}
+            {{- end }}
             {{- if .Values.proxy }}
             - name: PROXY
               value: 'true'

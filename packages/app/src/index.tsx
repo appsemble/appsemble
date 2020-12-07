@@ -7,9 +7,9 @@ import { render } from 'react-dom';
 import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
 import { App } from './components/App';
-import { sentryDsn } from './utils/settings';
+import { sentryDsn, sentryEnvironment } from './utils/settings';
 
-init({ dsn: sentryDsn });
+init({ dsn: sentryDsn, environment: sentryEnvironment, release: process.env.APPSEMBLE_VERSION });
 
 const serviceWorkerRegistrationPromise =
   runtime.register() || Promise.reject(new Error('Service worker not available'));

@@ -64,6 +64,7 @@ declare global {
         type: 'oauth2' | 'saml';
       }[];
       sentryDsn: string;
+      sentryEnvironment: string;
     };
   }
 }
