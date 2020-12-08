@@ -285,7 +285,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   }));
 
   if ($select) {
-    const select = $select.split(',');
+    const select = $select.split(',').map((s) => s.trim());
     response = response.map((resource) => pick(resource, select));
   }
 
