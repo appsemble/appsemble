@@ -140,6 +140,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
 
   const buf = Buffer.from(SAMLResponse, 'base64');
   const xml = buf.toString('utf-8');
+  logger.verbose(`SAML response XML: ${xml}`);
   const doc = parser.parseFromString(xml);
   const x = (localName: string, namespace: NS, element: Node = doc): Element =>
     xpath(
@@ -182,7 +183,6 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     });
     throw badRequest('Bad signature');
   }
-  logger.info(xml);
 
   const subject = x('Subject', NS.saml);
   if (!subject) {
