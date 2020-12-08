@@ -31,9 +31,6 @@ interface Params {
   appId: number;
   resourceType: string;
   resourceId: number;
-  $filter: string;
-  $orderby: string;
-  $top: number;
 }
 
 const specialRoles = new Set(['$author', ...Object.values(TeamRole).map((r) => `$team:${r}`)]);
@@ -285,7 +282,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   }));
 
   if ($select) {
-    const select = $select.split(',').map((s) => s.trim());
+    const select = $select.split(',').map((s: string) => s.trim());
     response = response.map((resource) => pick(resource, select));
   }
 
