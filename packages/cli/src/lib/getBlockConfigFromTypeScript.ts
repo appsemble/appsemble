@@ -111,7 +111,7 @@ function processInterface<T>(
 }
 
 /**
- * Get an axtions object based on a TypeScript interface node.
+ * Get an actions object based on a TypeScript interface node.
  *
  * @param iface - The node to base the actions on.
  * @param checker - The TypeScript type checker.
