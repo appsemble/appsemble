@@ -215,13 +215,11 @@ publish npm:
 sentry release:
   extends: .yarn
   stage: publish
-  # XXX this should be removed once it has proven itself in production.
-  allow_failure: true
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - sentry-cli releases new --finalize --project appsemble "$CI_COMMIT_TAG"
-    - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+    - yarn sentry-cli releases new --finalize --project appsemble "$CI_COMMIT_TAG"
+    - yarn sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
 
 ###################################################################################################
 #  Deploy Stage                                                                                   #
