@@ -1,4 +1,6 @@
 import { URL, URLSearchParams } from 'url';
+import { promisify } from 'util';
+import { inflateRaw } from 'zlib';
 
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
@@ -15,6 +17,8 @@ let authorization: string;
 let clock: InstalledClock;
 let secret: AppSamlSecret;
 let user: User;
+
+const inflate = promisify(inflateRaw);
 
 const idpCertificate = `-----BEGIN CERTIFICATE-----
 MIICKzCCAdWgAwIBAgIJAM8DxRNtPj90MA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNV
@@ -279,8 +283,6 @@ function createSamlResponse({
   return buf.toString('base64');
 }
 
-jest.mock('uuid');
-
 beforeAll(createTestSchema('saml'));
 
 beforeAll(async () => {
@@ -341,21 +343,40 @@ describe('createAuthnRequest', () => {
     expect(params).toStrictEqual({
       RelayState: 'http://localhost',
       SigAlg: 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
-      SAMLRequest:
-        'jVHbSgMxEP2VJe/di4jFsLuwWIRCldKqD74N2dEGcjMzW+rfm92tUB8Uh8nkds6cZKYmsCbIbuCD2+HHgMTZyRpHcrxoxBCd9ECapAOLJFnJffewkVd5KYEII2vvRNZ9L++8o8Fi3GM8aoXPu00jDsxBFoXxCszBExcQdBqBiqoYVdIEikS2SuLawZhmJlFi4QlsMJgrb2ew8e86Ka5XjdB9ebbFFK7HAHDezra8EdkLRpqSplcnJtGAa0cMjhtR3S4TvEr+VJZy8jzRXkfcNv1QH7ERHAcUF3UJfxcmRM9eeSPaekTLSTG2/6iDRYYeGPKkVReX5Hpu1GMSW6+23mj1md37aIF/f0uVV9OJ7hdvE1SiBW26vo9IJIp2lvjZ/vYL',
-      Signature:
-        'dMOsJsKZwrYcw5F6w6rCl8OhAxd6M8KcW8KuBTzCtnLCp2DDmDTDtsK4HMOFAMKcYcKZHcKrwptdw7fDo8Kbw44qd8Osw7TDp1w7wrcTJ1fCiMO3w77Cl2jCoMOKYgXCq8KAw4B1PsOfTz7DlnDDhMKIdA3DhBJKw5ELwp/ChMODw6LDksKKBl5Mw4Nww6dIwoRaYMOAw5HCv8K6wok2flYSw6LCpVnDmFxhEcO7C38DwpLDqsO+w7oNwqI+OcKkw5RrYsKOwoTDqTV2woXCu0/DvmjDsDzDn00dwojDl8KFX8OACndAwojCnSorKMKsU3dbwqtHwpIswq0efMOGMsKaHMOAwrsiwoTDlBMQHwPDjsOzwo/Ch8OwwoQhMcOwLVzCqcORwpsObhzDhcOzwo3DmcOUfDzCgMOYwoXCvsO9wpfCigdoPMKawr0EwrU6wo3DgMOpwrBBVFosV8OPwoh0wowCwrvCpx97In1cUsKBIcOGKx0gLG/CkAjDtyjDpXc=',
+      SAMLRequest: expect.any(String),
+      Signature: expect.any(String),
     });
+    const inflated = await inflate(Buffer.from(params.SAMLRequest, 'base64'));
+    const samlRequest = inflated.toString('utf-8');
 
     const loginRequest = await SamlLoginRequest.findOne();
     expect(loginRequest).toMatchObject({
-      id: 'id00000000-0000-4000-aa00-000000000076',
+      id: expect.any(String),
       AppSamlSecretId: secret.id,
       UserId: user.id,
       redirectUri: 'https://app.example',
       scope: 'email openid profile',
       state: 'secret state',
     });
+
+    expect(samlRequest).toBe(
+      '<samlp:AuthnRequest' +
+        ' xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"' +
+        ' AssertionConsumerServiceURL="http://localhost/api/apps/1/saml/1/acs"' +
+        ' Destination="https://example.com/saml/login"' +
+        ` ID="${loginRequest.id}"` +
+        ' Version="2.0"' +
+        ' IssueInstant="1970-01-01T00:00:00.000Z"' +
+        ' xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"' +
+        '>' +
+        '<saml:Issuer>' +
+        'http://localhost/api/apps/1/saml/1/metadata.xml' +
+        '</saml:Issuer>' +
+        '<samlp:NameIDPolicy' +
+        ' Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"' +
+        '/>' +
+        '</samlp:AuthnRequest>',
+    );
   });
 
   it('should throw if the app ID is invalid', async () => {
@@ -426,6 +447,115 @@ describe('assertConsumerService', () => {
     expect(response).toMatchObject({
       status: 400,
       data: { statusCode: 400, error: 'Bad Request', message: 'Status code is unsuccesful' },
+    });
+  });
+});
+
+describe('getEntityId', () => {
+  it('should handle if no secret can be found', async () => {
+    const response = await request.get('/api/apps/23/saml/93/metadata.xml');
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: { statusCode: 404, error: 'Not Found', message: 'SAML secret not found' },
+    });
+  });
+
+  it('should serve the metadata XML', async () => {
+    const response = await request.get(`/api/apps/${app.id}/saml/${secret.id}/metadata.xml`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data:
+        '<?xml version="1.0" encoding="utf-8"?>\n' +
+        '<md:EntityDescriptor' +
+        ' xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"' +
+        ` entityID="http://localhost/api/apps/${app.id}/saml/${secret.id}/metadata.xml"` +
+        '>' +
+        '<md:SPSSODescriptor' +
+        ' AuthnRequestsSigned="true"' +
+        ' WantAssertionsSigned="true"' +
+        ' protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"' +
+        '>' +
+        '<md:KeyDescriptor' +
+        ' use="signing"' +
+        '/>' +
+        '<md:KeyDescriptor' +
+        ' use="encryption"' +
+        '/>' +
+        '</md:SPSSODescriptor>' +
+        '<ds:KeyInfo' +
+        ' xmlns:ds="http://www.w3.org/2000/09/xmldsig#"' +
+        '>' +
+        '<ds:X509Data>' +
+        '<ds:X509Certificate>' +
+        'MIIC4TCCAcmgAwIBAgIBADANBgkqhkiG9w0BAQUFADA0MR4wHAYDVQQDExVodHRwOi8vbG9jYWxob3N0Ojk5OTkxEjAQBgNVBAoTCUFwcHNlbWJsZTAeFw0yMDExMDYxMTIxMjNaFw0zMDExMDYxMTIxMjNaMDQxHjAcBgNVBAMTFWh0dHA6Ly9sb2NhbGhvc3Q6OTk5OTESMBAGA1UEChMJQXBwc2VtYmxlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvoJXvGK6c3aWhA5qOqQdDozsSe8Ii01wtd3+joZs8X7rg2VxETZM47OUgw4gbH6Ar104aGxdvfp0w5sP8Dj18s3U8S3dpdEzz6cVqfobzt85oHtmd0GqbzDrNlgG27Uk4PgK1AZEUtOJd8+kK0mKa84B4RDHS62fm18s3MPN6r4YHqLP5WBuf2qjqXP9Glsro9SpwGF9a7Ufc1smtbDOg+zWLmVyXDfVOC1zfEek+TA+3PRQ3XVdXZKhiw49Afjc5MGUD08n3jESlc++XfAMgKuW6OUwMuE3Tvq1qqkdVZgYubA6v48ZAywfCl3GQ6qcXdF6nGGb0X3QYSR7GFUonwIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQAFBSSUwb8TRSTun2ZKAI4bovsZ9yBd4Nx7DpBB1Lfiag1+vdrFOUZOUYXFcjoS/0Dpr8BSGWnSRB9ea9RiIOBOVIshtTPsapNmNLsR5NmkSCFGC2euAWybqScSJ9OH+HYXykXlY8p2AN6Y2ib5IeJYB03lepL32geDFsfuXoYZrEWxxcAChgy5CCtd69yO8GL8uW78Fr5X136m12+zacrQ+hmi7KBIGaqraSolpCUTJplc5f41AXjkJFzkx73C1Dw1O0acaz41CyyE7D0BXm7vWsXg7rHfHVoT3D4HjcRujIi1Oi5GqdyLAAFwMDm9VevTHL9rsmXufHriUcUP3z0I' +
+        '</ds:X509Certificate>' +
+        '</ds:X509Data>' +
+        '</ds:KeyInfo>' +
+        '<ds:KeyInfo' +
+        ' xmlns:ds="http://www.w3.org/2000/09/xmldsig#"' +
+        '>' +
+        '<ds:X509Data>' +
+        '<ds:X509Certificate>' +
+        'MIIC4TCCAcmgAwIBAgIBADANBgkqhkiG9w0BAQUFADA0MR4wHAYDVQQDExVodHRwOi8vbG9jYWxob3N0Ojk5OTkxEjAQBgNVBAoTCUFwcHNlbWJsZTAeFw0yMDExMDYxMTIxMjNaFw0zMDExMDYxMTIxMjNaMDQxHjAcBgNVBAMTFWh0dHA6Ly9sb2NhbGhvc3Q6OTk5OTESMBAGA1UEChMJQXBwc2VtYmxlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvoJXvGK6c3aWhA5qOqQdDozsSe8Ii01wtd3+joZs8X7rg2VxETZM47OUgw4gbH6Ar104aGxdvfp0w5sP8Dj18s3U8S3dpdEzz6cVqfobzt85oHtmd0GqbzDrNlgG27Uk4PgK1AZEUtOJd8+kK0mKa84B4RDHS62fm18s3MPN6r4YHqLP5WBuf2qjqXP9Glsro9SpwGF9a7Ufc1smtbDOg+zWLmVyXDfVOC1zfEek+TA+3PRQ3XVdXZKhiw49Afjc5MGUD08n3jESlc++XfAMgKuW6OUwMuE3Tvq1qqkdVZgYubA6v48ZAywfCl3GQ6qcXdF6nGGb0X3QYSR7GFUonwIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQAFBSSUwb8TRSTun2ZKAI4bovsZ9yBd4Nx7DpBB1Lfiag1+vdrFOUZOUYXFcjoS/0Dpr8BSGWnSRB9ea9RiIOBOVIshtTPsapNmNLsR5NmkSCFGC2euAWybqScSJ9OH+HYXykXlY8p2AN6Y2ib5IeJYB03lepL32geDFsfuXoYZrEWxxcAChgy5CCtd69yO8GL8uW78Fr5X136m12+zacrQ+hmi7KBIGaqraSolpCUTJplc5f41AXjkJFzkx73C1Dw1O0acaz41CyyE7D0BXm7vWsXg7rHfHVoT3D4HjcRujIi1Oi5GqdyLAAFwMDm9VevTHL9rsmXufHriUcUP3z0I' +
+        '</ds:X509Certificate>' +
+        '</ds:X509Data>' +
+        '</ds:KeyInfo>' +
+        '<md:AssertionConsumerService' +
+        ' Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"' +
+        ` Location="http://localhost/api/apps/${app.id}/saml/${secret.id}/acs"` +
+        '/>' +
+        '</md:EntityDescriptor>',
+    });
+  });
+
+  it('should ignore query parameters', async () => {
+    const response = await request.get(`/api/apps/${app.id}/saml/${secret.id}/metadata.xml?foo=1`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data:
+        '<?xml version="1.0" encoding="utf-8"?>\n' +
+        '<md:EntityDescriptor' +
+        ' xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"' +
+        ` entityID="http://localhost/api/apps/${app.id}/saml/${secret.id}/metadata.xml"` +
+        '>' +
+        '<md:SPSSODescriptor' +
+        ' AuthnRequestsSigned="true"' +
+        ' WantAssertionsSigned="true"' +
+        ' protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"' +
+        '>' +
+        '<md:KeyDescriptor' +
+        ' use="signing"' +
+        '/>' +
+        '<md:KeyDescriptor' +
+        ' use="encryption"' +
+        '/>' +
+        '</md:SPSSODescriptor>' +
+        '<ds:KeyInfo' +
+        ' xmlns:ds="http://www.w3.org/2000/09/xmldsig#"' +
+        '>' +
+        '<ds:X509Data>' +
+        '<ds:X509Certificate>' +
+        'MIIC4TCCAcmgAwIBAgIBADANBgkqhkiG9w0BAQUFADA0MR4wHAYDVQQDExVodHRwOi8vbG9jYWxob3N0Ojk5OTkxEjAQBgNVBAoTCUFwcHNlbWJsZTAeFw0yMDExMDYxMTIxMjNaFw0zMDExMDYxMTIxMjNaMDQxHjAcBgNVBAMTFWh0dHA6Ly9sb2NhbGhvc3Q6OTk5OTESMBAGA1UEChMJQXBwc2VtYmxlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvoJXvGK6c3aWhA5qOqQdDozsSe8Ii01wtd3+joZs8X7rg2VxETZM47OUgw4gbH6Ar104aGxdvfp0w5sP8Dj18s3U8S3dpdEzz6cVqfobzt85oHtmd0GqbzDrNlgG27Uk4PgK1AZEUtOJd8+kK0mKa84B4RDHS62fm18s3MPN6r4YHqLP5WBuf2qjqXP9Glsro9SpwGF9a7Ufc1smtbDOg+zWLmVyXDfVOC1zfEek+TA+3PRQ3XVdXZKhiw49Afjc5MGUD08n3jESlc++XfAMgKuW6OUwMuE3Tvq1qqkdVZgYubA6v48ZAywfCl3GQ6qcXdF6nGGb0X3QYSR7GFUonwIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQAFBSSUwb8TRSTun2ZKAI4bovsZ9yBd4Nx7DpBB1Lfiag1+vdrFOUZOUYXFcjoS/0Dpr8BSGWnSRB9ea9RiIOBOVIshtTPsapNmNLsR5NmkSCFGC2euAWybqScSJ9OH+HYXykXlY8p2AN6Y2ib5IeJYB03lepL32geDFsfuXoYZrEWxxcAChgy5CCtd69yO8GL8uW78Fr5X136m12+zacrQ+hmi7KBIGaqraSolpCUTJplc5f41AXjkJFzkx73C1Dw1O0acaz41CyyE7D0BXm7vWsXg7rHfHVoT3D4HjcRujIi1Oi5GqdyLAAFwMDm9VevTHL9rsmXufHriUcUP3z0I' +
+        '</ds:X509Certificate>' +
+        '</ds:X509Data>' +
+        '</ds:KeyInfo>' +
+        '<ds:KeyInfo' +
+        ' xmlns:ds="http://www.w3.org/2000/09/xmldsig#"' +
+        '>' +
+        '<ds:X509Data>' +
+        '<ds:X509Certificate>' +
+        'MIIC4TCCAcmgAwIBAgIBADANBgkqhkiG9w0BAQUFADA0MR4wHAYDVQQDExVodHRwOi8vbG9jYWxob3N0Ojk5OTkxEjAQBgNVBAoTCUFwcHNlbWJsZTAeFw0yMDExMDYxMTIxMjNaFw0zMDExMDYxMTIxMjNaMDQxHjAcBgNVBAMTFWh0dHA6Ly9sb2NhbGhvc3Q6OTk5OTESMBAGA1UEChMJQXBwc2VtYmxlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvoJXvGK6c3aWhA5qOqQdDozsSe8Ii01wtd3+joZs8X7rg2VxETZM47OUgw4gbH6Ar104aGxdvfp0w5sP8Dj18s3U8S3dpdEzz6cVqfobzt85oHtmd0GqbzDrNlgG27Uk4PgK1AZEUtOJd8+kK0mKa84B4RDHS62fm18s3MPN6r4YHqLP5WBuf2qjqXP9Glsro9SpwGF9a7Ufc1smtbDOg+zWLmVyXDfVOC1zfEek+TA+3PRQ3XVdXZKhiw49Afjc5MGUD08n3jESlc++XfAMgKuW6OUwMuE3Tvq1qqkdVZgYubA6v48ZAywfCl3GQ6qcXdF6nGGb0X3QYSR7GFUonwIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQAFBSSUwb8TRSTun2ZKAI4bovsZ9yBd4Nx7DpBB1Lfiag1+vdrFOUZOUYXFcjoS/0Dpr8BSGWnSRB9ea9RiIOBOVIshtTPsapNmNLsR5NmkSCFGC2euAWybqScSJ9OH+HYXykXlY8p2AN6Y2ib5IeJYB03lepL32geDFsfuXoYZrEWxxcAChgy5CCtd69yO8GL8uW78Fr5X136m12+zacrQ+hmi7KBIGaqraSolpCUTJplc5f41AXjkJFzkx73C1Dw1O0acaz41CyyE7D0BXm7vWsXg7rHfHVoT3D4HjcRujIi1Oi5GqdyLAAFwMDm9VevTHL9rsmXufHriUcUP3z0I' +
+        '</ds:X509Certificate>' +
+        '</ds:X509Data>' +
+        '</ds:KeyInfo>' +
+        '<md:AssertionConsumerService' +
+        ' Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"' +
+        ` Location="http://localhost/api/apps/${app.id}/saml/${secret.id}/acs"` +
+        '/>' +
+        '</md:EntityDescriptor>',
     });
   });
 });

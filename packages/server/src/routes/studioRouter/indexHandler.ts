@@ -14,7 +14,15 @@ import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
  */
 export async function indexHandler(ctx: KoaContext): Promise<void> {
   const {
-    argv: { disableRegistration, githubClientId, gitlabClientId, googleClientId, host, sentryDsn },
+    argv: {
+      disableRegistration,
+      githubClientId,
+      gitlabClientId,
+      googleClientId,
+      host,
+      sentryDsn,
+      sentryEnvironment,
+    },
     state: { render },
   } = ctx;
   const logins = [];
@@ -51,6 +59,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     enableRegistration: !disableRegistration,
     logins,
     sentryDsn,
+    sentryEnvironment,
   });
   const csp = makeCSP({
     'report-uri': [sentry?.reportUri],

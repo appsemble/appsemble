@@ -15,7 +15,7 @@ import { Argv } from 'yargs';
 
 import {
   createHeading,
-  createLinkReference,
+  createLink,
   createList,
   createListItem,
   createRoot,
@@ -109,7 +109,7 @@ async function processChangesDir(dir: string, prefix: string): Promise<ListItem[
 }
 
 async function processChanges(dir: string): Promise<Changes> {
-  const changesDir = join(dir, 'changes');
+  const changesDir = join(dir, 'changed');
   const base = basename(dir);
   const parent = basename(dirname(dir));
   const prefix = parent === 'blocks' ? `Block(\`${base}\`)` : capitalize(base);
@@ -143,8 +143,9 @@ async function updateChangelog(workspaces: string[], version: string): Promise<v
   );
   const changesSection = [
     createHeading(2, [
-      createLinkReference(version, [version]),
-      ' - ',
+      '[',
+      createLink(`https://gitlab.com/appsemble/appsemble/-/releases/${version}`, [version]),
+      '] - ',
       formatISO(new Date(), { representation: 'date' }),
     ]),
     ...Object.entries(changesByCategory)

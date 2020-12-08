@@ -13,6 +13,7 @@ export const paths: OpenAPIV3.PathsObject = {
       parameters: [
         { $ref: '#/components/parameters/$filter' },
         { $ref: '#/components/parameters/$orderby' },
+        { $ref: '#/components/parameters/$select' },
         { $ref: '#/components/parameters/$top' },
       ],
       responses: {
@@ -49,6 +50,33 @@ export const paths: OpenAPIV3.PathsObject = {
         201: {
           description: 'The resource that was created.',
           $ref: '#/components/responses/resource',
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+    },
+  },
+  // XXX: Temporary workaround until this is fixed in Koas
+  // See https://gitlab.com/remcohaszing/koas/-/issues/2
+  '/api/apps/{appId}/resources/{resourceType}/\\$count': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/resourceType' },
+    ],
+    get: {
+      tags: ['resource'],
+      description: 'Get a count of all resources of this app.',
+      operationId: 'countResources',
+      parameters: [{ $ref: '#/components/parameters/$filter' }],
+      responses: {
+        200: {
+          description: 'The count of all this app’s resources of this type.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'number',
+              },
+            },
+          },
         },
       },
       security: [{ studio: [] }, { app: ['resources:manage'] }, {}],

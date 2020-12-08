@@ -224,9 +224,9 @@ following syntax:
 ```
 
 To do even more advanced CSS transformations, a custom `postcssrc` file can be created. See
-[`postcss-load-config`] for details.
+[`postcss-load-config`][] for details.
 
 [bulma]: https://bulma.io/
 [hex]: https://htmlcolorcodes.com/
 [css-variables]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
-[postcss-load-config]: https://github.com/michael-ciniawsky/postcss-load-config
+[`postcss-load-config`]: https://github.com/michael-ciniawsky/postcss-load-config

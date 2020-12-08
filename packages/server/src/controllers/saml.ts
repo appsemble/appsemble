@@ -8,7 +8,7 @@ import axios from 'axios';
 import { md, pki } from 'node-forge';
 import { v4 } from 'uuid';
 import { SignedXml, xpath } from 'xml-crypto';
-import { DOMImplementation, DOMParser, XMLSerializer } from 'xmldom';
+import { DOMImplementation, DOMParser } from 'xmldom';
 
 import { App, AppMember, AppSamlSecret, transactional, User } from '../models';
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
@@ -36,7 +36,6 @@ enum NS {
 const deflate = promisify(deflateRaw);
 const dom = new DOMImplementation();
 const parser = new DOMParser();
-const serializer = new XMLSerializer();
 
 export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void> {
   const {
@@ -81,7 +80,6 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   authnRequest.setAttribute('ID', loginId);
   authnRequest.setAttribute('Version', '2.0');
   authnRequest.setAttribute('IssueInstant', new Date().toISOString());
-  authnRequest.setAttribute('IsPassive', 'true');
 
   const issuer = doc.createElementNS(NS.saml, 'saml:Issuer');
   issuer.textContent = `${samlUrl}/metadata.xml`;
@@ -93,8 +91,8 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   // eslint-disable-next-line unicorn/prefer-node-append
   authnRequest.appendChild(nameIDPolicy);
 
-  const xml = serializer.serializeToString(doc);
-  const samlRequest = await deflate(Buffer.from(xml));
+  logger.verbose(`SAML request XML: ${doc}`);
+  const samlRequest = await deflate(Buffer.from(String(doc)));
   const redirect = new URL(secret.ssoUrl);
   redirect.searchParams.set('SAMLRequest', samlRequest.toString('base64'));
   redirect.searchParams.set('RelayState', host);
@@ -143,6 +141,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
 
   const buf = Buffer.from(SAMLResponse, 'base64');
   const xml = buf.toString('utf-8');
+  logger.verbose(`SAML response XML: ${xml}`);
   const doc = parser.parseFromString(xml);
   const x = (localName: string, namespace: NS, element: Node = doc): Element =>
     xpath(
@@ -185,7 +184,6 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     });
     throw badRequest('Bad signature');
   }
-  logger.info(xml);
 
   const subject = x('Subject', NS.saml);
   if (!subject) {
@@ -266,7 +264,7 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   const {
     argv: { host },
     params: { appId, appSamlSecretId },
-    url,
+    path,
   } = ctx;
 
   const secret = await AppSamlSecret.findOne({
@@ -274,10 +272,14 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
     where: { AppId: appId, id: appSamlSecretId },
   });
 
+  if (!secret) {
+    throw notFound('SAML secret not found');
+  }
+
   const doc = dom.createDocument(NS.md, 'md:EntityDescriptor', null);
   const entityDescriptor = doc.documentElement;
   entityDescriptor.setAttributeNS(NS.xmlns, 'xmlns:md', NS.md);
-  entityDescriptor.setAttribute('entityId', url);
+  entityDescriptor.setAttribute('entityID', String(new URL(path, host)));
 
   const spssoDescriptor = doc.createElementNS(NS.md, 'md:SPSSODescriptor');
   spssoDescriptor.setAttribute('AuthnRequestsSigned', 'true');
@@ -322,5 +324,5 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   // eslint-disable-next-line unicorn/prefer-node-append
   entityDescriptor.appendChild(assertionConsumerService);
 
-  ctx.body = serializer.serializeToString(doc);
+  ctx.body = `<?xml version="1.0" encoding="utf-8"?>\n${doc}`;
 }

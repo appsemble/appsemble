@@ -7,5 +7,5 @@ export const messages = defineMessages({
   member: 'Member',
   noMembers: 'There aren’t any members that can be added to this team.',
   loading: 'Loading members…',
-  error: 'Something went wrong when retrieving this organization’s members.',
+  error: 'Something went wrong when retrieving the members.',
 });

@@ -430,6 +430,11 @@ export interface ResourceDefinition {
   query?: ResourceCall;
 
   /**
+   * The definition for the `resource.count` action.
+   */
+  count?: ResourceCall;
+
+  /**
    * The definition for the `resource.update` action.
    */
   update?: ResourceCall;
@@ -644,6 +649,7 @@ export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
 export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
 export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
+export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
@@ -659,17 +665,11 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   action?: 'create' | 'update' | 'delete';
 }
 
-export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.subscribe'
->;
+export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
 
-export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.unsubscribe'
->;
+export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
 
-export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.toggle'
->;
+export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
 
 export type ResourceSubscriptionStatusActionDefinition = Omit<
   BaseResourceSubscribeActionDefinition<'resource.subscription.status'>,
@@ -681,6 +681,13 @@ export interface EventActionDefinition extends BaseActionDefinition<'event'> {
    * The name of the event to emit to.
    */
   event: string;
+
+  /**
+   * An event to wait for before resolving.
+   *
+   * If this is unspecified, the action will resolve with the input data.
+   */
+  waitFor?: string;
 }
 
 export interface StaticActionDefinition extends BaseActionDefinition<'static'> {

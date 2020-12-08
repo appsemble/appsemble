@@ -13,9 +13,10 @@ import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
 import { checkRole } from '../../../utils/checkRole';
+import { useApp } from '../../AppContext';
 import { AsyncDataView } from '../../AsyncDataView';
 import { HeaderControl } from '../../HeaderControl';
 import { ListButton } from '../../List/ListButton';
@@ -44,24 +45,24 @@ const newTeam = {
 export function TeamsList(): ReactElement {
   const { organizations, userInfo } = useUser();
   const { url } = useRouteMatch();
-  const { organizationId } = useParams<{ organizationId: string }>();
+  const { app } = useApp();
   const modal = useToggle();
   const { formatMessage } = useIntl();
-  const result = useData<UserTeam[]>(`/api/organizations/${organizationId}/teams`);
+  const result = useData<UserTeam[]>(`/api/apps/${app.id}/teams`);
   const { setData: setTeams } = result;
 
   const submitTeam = useCallback(
     async ({ name }: Team) => {
-      const { data } = await axios.post<Team>(`/api/organizations/${organizationId}/teams`, {
+      const { data } = await axios.post<Team>(`/api/apps/${app.id}/teams`, {
         name,
       });
       setTeams((teams) => [...teams, data]);
       modal.disable();
     },
-    [modal, organizationId, setTeams],
+    [modal, app, setTeams],
   );
 
-  const organization = organizations.find((o) => o.id === organizationId);
+  const organization = organizations.find((o) => o.id === app.OrganizationId);
   const mayCreateTeam = organization && checkRole(organization.role, Permission.ManageMembers);
 
   return (

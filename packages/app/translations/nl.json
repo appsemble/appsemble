@@ -24,7 +24,6 @@
   "app.src.components.EmailLogin.usernameError": "Dit moet een geldig e-mailadres zijn",
   "app.src.components.EmailLogin.usernameLabel": "E-mail",
   "app.src.components.ErrorFallback.message": "Er is een onverwachte fout opgetreden.",
-  "app.src.components.ErrorFallback.title": "Fout",
   "app.src.components.OpenIDCallback.accessDenied": "Toegang geweigerd",
   "app.src.components.OpenIDCallback.error": "Er is een onverwachte fout opgetreden tijdens het inloggen",
   "app.src.components.OpenIDCallback.retry": "Terug naar inloggen",

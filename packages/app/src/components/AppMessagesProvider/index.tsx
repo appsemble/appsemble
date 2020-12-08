@@ -1,5 +1,6 @@
 import {
   Content,
+  da as daReactComponentMessages,
   Loader,
   Message,
   nl as nlReactComponentMessages,
@@ -23,6 +24,7 @@ import React, {
 import { IntlProvider } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
+import daAppMessages from '../../../translations/da.json';
 import nlAppMessages from '../../../translations/nl.json';
 import { apiUrl, appId, languages } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -46,6 +48,7 @@ const formatters = {
 
 const providedMessages: Record<string, Record<string, string>> = {
   nl: { ...nlReactComponentMessages, ...nlAppMessages },
+  da: { ...daReactComponentMessages, ...daAppMessages },
 };
 
 export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {

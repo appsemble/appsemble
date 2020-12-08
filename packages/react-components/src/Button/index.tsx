@@ -30,6 +30,13 @@ interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
    * Set to true to indicate the button is in a loading state.
    */
   loading?: boolean;
+
+  /**
+   * The position of the icon.
+   *
+   * @default 'left'
+   */
+  iconPosition?: 'left' | 'right';
 }
 
 /**
@@ -42,6 +49,7 @@ export function Button({
   className,
   color,
   icon,
+  iconPosition = 'left',
   iconPrefix,
   inverted,
   loading,
@@ -59,8 +67,9 @@ export function Button({
     >
       {icon ? (
         <>
-          <Icon icon={icon} prefix={iconPrefix} />
+          {iconPosition === 'left' && <Icon icon={icon} prefix={iconPrefix} />}
           {children && <span>{children}</span>}
+          {iconPosition === 'right' && <Icon icon={icon} prefix={iconPrefix} />}
         </>
       ) : (
         children

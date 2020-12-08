@@ -26,7 +26,7 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
 export async function indexHandler(ctx: KoaContext): Promise<void> {
   ctx.type = 'text/html';
   const {
-    argv: { host, sentryDsn },
+    argv: { host, sentryDsn, sentryEnvironment },
     state: { render },
   } = ctx;
 
@@ -107,6 +107,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
     sentryDsn,
+    sentryEnvironment,
   });
   const csp = {
     'report-uri': [sentry?.reportUri],

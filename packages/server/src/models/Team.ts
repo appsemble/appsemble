@@ -12,7 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { Organization, TeamMember, User } from '.';
+import { App, TeamMember, User } from '.';
 
 @Table({ tableName: 'Team' })
 export class Team extends Model<Team> {
@@ -26,12 +26,12 @@ export class Team extends Model<Team> {
   name: string;
 
   @AllowNull(false)
-  @ForeignKey(() => Organization)
+  @ForeignKey(() => App)
   @Column
-  OrganizationId: string;
+  AppId: number;
 
-  @BelongsTo(() => Organization)
-  Organization: Organization;
+  @BelongsTo(() => App)
+  App: App;
 
   @BelongsToMany(() => User, () => TeamMember)
   Users: User[];

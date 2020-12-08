@@ -51,6 +51,7 @@ These are configured to use Appsemble APIs by default, but can be overridden man
 The resource actions available are:
 
 - **resource.query**: Fetch all resources.
+- **resource.count**: Count all resources.
 - **resource.get**: Fetch a single resource.
 - **resource.create**: Create a new resource.
 - **resource.update**: Update an existing resource.
@@ -125,7 +126,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.15.9
+        version: 0.15.11
         actions:
           onLoad:
             type: resource.query
@@ -275,6 +276,15 @@ These functions have only been implemented for strings, not for collections.
 #### Conditional Functions
 
 - [ ] [`case`](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_case)
+
+## Securing resources
+
+It is possible to secure resources by specifying the roles that the user needs to have in order to
+access specific resources for specific resource actions. This makes it possible to, for example,
+restrict access to other user’s resources by only allowing users to interact with the resources they
+made themselves.
+
+For more information about this, please refer to [this page](./security.md)
 
 ## Assets
 

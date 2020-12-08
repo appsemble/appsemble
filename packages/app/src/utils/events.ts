@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import { Events } from '@appsemble/sdk';
 import { BlockDefinition, BlockManifest } from '@appsemble/types';
 import { has } from '@appsemble/utils';
+import { addBreadcrumb } from '@sentry/browser';
 
 /**
  * Create the events object that is passed to a block.
@@ -49,7 +50,12 @@ export function createEvents(
     implemented
       ? async (data, error) => {
           await ready;
-          ee.emit(definition.emit[key], data, error === '' ? 'Error' : error);
+          const name = definition.emit[key];
+          ee.emit(name, data, error === '' ? 'Error' : error);
+          addBreadcrumb({
+            category: 'appsemble.event',
+            data: { name, listeners: String(ee.listenerCount(name)) },
+          });
           return true;
         }
       : // eslint-disable-next-line require-await

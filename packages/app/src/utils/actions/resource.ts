@@ -1,5 +1,6 @@
 import {
   BaseAction,
+  ResourceCountAction,
   ResourceCreateAction,
   ResourceDeleteAction,
   ResourceGetAction,
@@ -8,6 +9,7 @@ import {
 } from '@appsemble/sdk';
 import {
   BlobUploadType,
+  ResourceCountActionDefinition,
   ResourceCreateActionDefinition,
   ResourceDefinition,
   ResourceDeleteActionDefinition,
@@ -86,6 +88,34 @@ export function query(
       },
     }),
     type: 'resource.query',
+  };
+}
+
+export function count(
+  args: MakeActionParameters<ResourceCountActionDefinition>,
+): ResourceCountAction {
+  const { app, definition } = args;
+  const resource = app.resources[definition.resource];
+  const method = resource?.query?.method || 'GET';
+  const url =
+    resource?.query?.url ??
+    resource?.url ??
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/$count`;
+
+  return {
+    ...requestLikeAction({
+      ...args,
+      definition: {
+        ...definition,
+        query: { ...resource?.query?.query, ...definition.query },
+        blobs: getBlobs(resource),
+        method,
+        proxy: false,
+        url,
+        schema: resource.schema,
+      },
+    }),
+    type: 'resource.count',
   };
 }
 
@@ -202,9 +232,7 @@ export function subscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<
-  'resource.subscription.subscribe'
-> {
+}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscription.subscribe'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -229,9 +257,7 @@ export function unsubscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<
-  'resource.subscription.unsubscribe'
-> {
+}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<'resource.subscription.unsubscribe'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -256,9 +282,7 @@ export function toggleSubscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<
-  'resource.subscription.toggle'
-> {
+}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<'resource.subscription.toggle'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -282,9 +306,7 @@ export function subscriptionStatus({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<
-  'resource.subscription.status'
-> {
+}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<'resource.subscription.status'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 

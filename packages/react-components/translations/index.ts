@@ -1,3 +1,2 @@
-import nl from './nl.json';
-
-export { nl };
+export { default as da } from './da.json';
+export { default as nl } from './nl.json';

@@ -1,13 +1,13 @@
 import { Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 
-import { Organization, Team, TeamMember, transactional, User } from '../models';
+import { App, Organization, Team, TeamMember, transactional, User } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 
 interface Params {
   memberId: string;
-  organizationId: string;
+  appId: string;
   teamId: number;
 }
 
@@ -29,23 +29,23 @@ async function checkTeamPermission(ctx: KoaContext<Params>, team: Team): Promise
 
 export async function createTeam(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { organizationId },
+    params: { appId },
     request: {
       body: { name },
     },
     user,
   } = ctx;
 
-  const organization = await Organization.count({ where: { id: organizationId } });
-  if (!organization) {
-    throw notFound('Organization not found.');
+  const app = await App.findByPk(appId);
+  if (!app) {
+    throw notFound('App not found.');
   }
 
-  await checkRole(ctx, organizationId, Permission.ManageMembers);
+  await checkRole(ctx, app.OrganizationId, Permission.ManageMembers);
 
   let team: Team;
   await transactional(async (transaction) => {
-    team = await Team.create({ name, OrganizationId: organizationId }, { transaction });
+    team = await Team.create({ name, AppId: appId }, { transaction });
     await TeamMember.create(
       { TeamId: team.id, UserId: user.id, role: TeamRole.Manager },
       { transaction },
@@ -61,12 +61,12 @@ export async function createTeam(ctx: KoaContext<Params>): Promise<void> {
 
 export async function getTeam(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { organizationId, teamId },
+    params: { appId, teamId },
     user,
   } = ctx;
 
   const team = await Team.findOne({
-    where: { id: teamId, OrganizationId: organizationId },
+    where: { id: teamId, AppId: appId },
     include: [{ model: User, where: { id: user.id }, required: false }],
   });
 
@@ -83,11 +83,11 @@ export async function getTeam(ctx: KoaContext<Params>): Promise<void> {
 
 export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { organizationId },
+    params: { appId },
     user,
   } = ctx;
 
-  const organization = await Organization.findByPk(organizationId, {
+  const app = await App.findByPk(appId, {
     include: [
       {
         model: Team,
@@ -95,11 +95,11 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
       },
     ],
   });
-  if (!organization) {
-    throw notFound('Organization not found.');
+  if (!app) {
+    throw notFound('App not found.');
   }
 
-  ctx.body = organization.Teams.map((team) => ({
+  ctx.body = app.Teams.map((team) => ({
     id: team.id,
     name: team.name,
     ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
@@ -108,7 +108,7 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
 
 export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { organizationId, teamId },
+    params: { appId, teamId },
     request: {
       body: { name },
     },
@@ -116,15 +116,18 @@ export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
   } = ctx;
 
   const team = await Team.findOne({
-    where: { id: teamId, OrganizationId: organizationId },
-    include: [{ model: User, where: { id: user.id }, required: false }],
+    where: { id: teamId, AppId: appId },
+    include: [
+      { model: User, where: { id: user.id }, required: false },
+      { model: App, attributes: ['OrganizationId'] },
+    ],
   });
 
   if (!team) {
     throw notFound('Team not found.');
   }
 
-  await checkRole(ctx, organizationId, Permission.ManageMembers);
+  await checkRole(ctx, team.App.OrganizationId, Permission.ManageMembers);
 
   await team.update({ name });
   ctx.body = {
@@ -136,30 +139,33 @@ export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
 
 export async function deleteTeam(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { organizationId, teamId },
+    params: { appId, teamId },
     user,
   } = ctx;
 
   const team = await Team.findOne({
-    where: { id: teamId, OrganizationId: organizationId },
-    include: [{ model: User, where: { id: user.id }, required: false }],
+    where: { id: teamId, AppId: appId },
+    include: [
+      { model: User, where: { id: user.id }, required: false },
+      { model: App, attributes: ['OrganizationId'] },
+    ],
   });
   if (!team) {
     throw notFound('Team not found.');
   }
 
-  await checkRole(ctx, organizationId, Permission.ManageMembers);
+  await checkRole(ctx, team.App.OrganizationId, Permission.ManageMembers);
 
   await team.destroy();
 }
 
 export async function getTeamMembers(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { organizationId, teamId },
+    params: { appId, teamId },
   } = ctx;
 
   const team = await Team.findOne({
-    where: { id: teamId, OrganizationId: organizationId },
+    where: { id: teamId, AppId: appId },
     include: [{ model: User }],
   });
 
@@ -177,17 +183,23 @@ export async function getTeamMembers(ctx: KoaContext<Params>): Promise<void> {
 
 export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { organizationId, teamId },
+    params: { appId, teamId },
     request: {
       body: { id },
     },
   } = ctx;
 
   const team = await Team.findOne({
-    where: { id: teamId, OrganizationId: organizationId },
+    where: { id: teamId, AppId: appId },
     include: [
       { model: User, where: { id }, required: false },
-      { model: Organization, include: [{ model: User, where: { id }, required: false }] },
+      {
+        model: App,
+        include: [
+          { model: User, where: { id }, required: false },
+          { model: Organization, include: [{ model: User, where: { id }, required: false }] },
+        ],
+      },
     ],
   });
 
@@ -196,20 +208,24 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   try {
-    await checkRole(ctx, organizationId, Permission.InviteMember);
+    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
   } catch {
     await checkTeamPermission(ctx, team);
   }
 
-  if (!team.Organization.Users.length) {
-    throw notFound(`User with id ${id} is not part of this team’s organization.`);
+  if (
+    !team.App.Users.length &&
+    (team.App.definition.security.default.policy === 'invite' ||
+      !team.App.Organization.Users.length)
+  ) {
+    throw notFound(`User with id ${id} is not part of this app’s members.`);
   }
 
   if (team.Users.length) {
     throw badRequest('This user is already a member of this team.');
   }
 
-  const [user] = team.Organization.Users;
+  const [user] = team.App.Users.length ? team.App.Users : team.App.Organization.Users;
   await TeamMember.create({ UserId: id, TeamId: team.id, role: TeamRole.Member });
   ctx.body = {
     id: user.id,
@@ -221,12 +237,15 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
 
 export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { memberId, organizationId, teamId },
+    params: { appId, memberId, teamId },
   } = ctx;
 
   const team = await Team.findOne({
-    where: { id: teamId, OrganizationId: organizationId },
-    include: [{ model: User, where: { id: memberId }, required: false }],
+    where: { id: teamId, AppId: appId },
+    include: [
+      { model: User, where: { id: memberId }, required: false },
+      { model: App, attributes: ['OrganizationId'] },
+    ],
   });
 
   if (!team) {
@@ -234,7 +253,7 @@ export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   try {
-    await checkRole(ctx, organizationId, Permission.InviteMember);
+    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
   } catch {
     await checkTeamPermission(ctx, team);
   }
@@ -248,15 +267,18 @@ export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
 
 export async function updateTeamMember(ctx: KoaContext<Params>): Promise<void> {
   const {
-    params: { memberId, organizationId, teamId },
+    params: { appId, memberId, teamId },
     request: {
       body: { role },
     },
   } = ctx;
 
   const team = await Team.findOne({
-    where: { id: teamId, OrganizationId: organizationId },
-    include: [{ model: User, where: { id: memberId }, required: false }],
+    where: { id: teamId, AppId: appId },
+    include: [
+      { model: User, where: { id: memberId }, required: false },
+      { model: App, attributes: ['OrganizationId'] },
+    ],
   });
 
   if (!team) {
@@ -264,7 +286,7 @@ export async function updateTeamMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   try {
-    await checkRole(ctx, organizationId, Permission.InviteMember);
+    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
   } catch {
     await checkTeamPermission(ctx, team);
   }
