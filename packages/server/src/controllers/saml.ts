@@ -91,6 +91,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   // eslint-disable-next-line unicorn/prefer-node-append
   authnRequest.appendChild(nameIDPolicy);
 
+  logger.verbose(`SAML request XML: ${doc}`);
   const samlRequest = await deflate(Buffer.from(String(doc)));
   const redirect = new URL(secret.ssoUrl);
   redirect.searchParams.set('SAMLRequest', samlRequest.toString('base64'));
