@@ -152,11 +152,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
             },
           ),
         ]);
-        setUser({
-          email: userInfo.email,
-          id: userInfo.sub,
-          username: userInfo.name,
-        });
+        setUser({ id: userInfo.sub });
         setState({
           isLoggedIn: true,
           role,

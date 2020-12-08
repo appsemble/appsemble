@@ -63,11 +63,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
 
   const refreshUserInfo = useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/connect/userinfo');
-    setUser({
-      email: data.email,
-      id: data.sub,
-      username: data.name,
-    });
+    setUser({ id: data.sub });
     setUserInfo(data);
   }, []);
 
