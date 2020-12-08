@@ -91,6 +91,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   // eslint-disable-next-line unicorn/prefer-node-append
   authnRequest.appendChild(nameIDPolicy);
 
+  logger.verbose(`SAML request XML: ${doc}`);
   const samlRequest = await deflate(Buffer.from(String(doc)));
   const redirect = new URL(secret.ssoUrl);
   redirect.searchParams.set('SAMLRequest', samlRequest.toString('base64'));
@@ -140,6 +141,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
 
   const buf = Buffer.from(SAMLResponse, 'base64');
   const xml = buf.toString('utf-8');
+  logger.verbose(`SAML response XML: ${xml}`);
   const doc = parser.parseFromString(xml);
   const x = (localName: string, namespace: NS, element: Node = doc): Element =>
     xpath(
@@ -182,7 +184,6 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     });
     throw badRequest('Bad signature');
   }
-  logger.info(xml);
 
   const subject = x('Subject', NS.saml);
   if (!subject) {
