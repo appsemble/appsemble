@@ -14,8 +14,6 @@ module.exports = {
   preset: 'ts-jest',
   resetMocks: true,
   restoreMocks: true,
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  snapshotSerializers: ['enzyme-to-json/serializer'],
   transform: {
     [/\/[A-Z]\w+\/messages\.ts$/.source]: 'babel-jest',
   },
