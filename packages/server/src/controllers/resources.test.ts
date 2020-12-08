@@ -34,7 +34,12 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
           schema: {
             type: 'object',
             required: ['foo'],
-            properties: { foo: { type: 'string' } },
+            properties: {
+              foo: { type: 'string' },
+              bar: { type: 'string' },
+              fooz: { type: 'string' },
+              baz: { type: 'string' },
+            },
           },
           create: {
             hooks: {
@@ -394,6 +399,78 @@ describe('queryResources', () => {
         },
       ],
     });
+  });
+
+  it('should be possible to filter properties using $select', async () => {
+    const app = await exampleApp(organizationId);
+
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar', bar: 'foo', fooz: 'baz', baz: 'fooz' },
+    });
+    const resourceB = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $select: 'id,foo,bar' },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual([
+      { id: resourceA.id, bar: 'foo', foo: 'bar' },
+      { id: resourceB.id, bar: 'fooz', foo: 'baz' },
+    ]);
+  });
+
+  it('should trim spaces in $select properties', async () => {
+    const app = await exampleApp(organizationId);
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar', bar: 'foo', fooz: 'baz', baz: 'fooz' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $select: '  fooz ,    baz     ' },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual([
+      { fooz: 'baz', baz: 'fooz' },
+      { fooz: 'bar', baz: 'foo' },
+    ]);
+  });
+
+  it('should ignore unknown properties in $select', async () => {
+    const app = await exampleApp(organizationId);
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar', bar: 'foo', fooz: 'baz', baz: 'fooz' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $select: 'unknown' },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toStrictEqual([{}, {}]);
   });
 
   it('should be possible to query resources as author', async () => {
