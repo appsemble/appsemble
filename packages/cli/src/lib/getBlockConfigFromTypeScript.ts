@@ -146,7 +146,7 @@ function processEvents(
     { description },
   ]);
 
-  return emit && listen && { emit, listen };
+  return (emit || listen) && { emit, listen };
 }
 
 /**
