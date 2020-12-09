@@ -28,33 +28,38 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
   const required = isRequired(field);
 
   useEffect(() => {
-    if ('event' in field) {
-      events.on[field.event]((result, e) => {
-        if (e) {
-          setError(utils.remap(field.loadError ?? 'Error loading options', {}));
-        } else {
-          setOptions(result as Choice[]);
-        }
-        setLoading(false);
-      });
+    if ('enum' in field) {
+      return;
     }
 
+    const handleOptions = (result: Choice[]): void => {
+      if (!result.find((r) => r.value === value)) {
+        // Explicitly set value to undefined if value does not exist in the new set of options.
+        onChange(field.name);
+      }
+      setOptions(result);
+      setLoading(false);
+    };
+
+    const handleError = (): void => {
+      setError(utils.remap(field.loadError ?? 'Error loading options', {}));
+      setLoading(false);
+    };
+
     if ('action' in field) {
-      actions[field.action]
-        .dispatch()
-        .then((result: Choice[]) => {
-          setOptions(result);
-          if (!result.map((r) => r.value).includes(value)) {
-            // Explicitly set value to undefined if value does not exist in the new set of options.
-            // eslint-disable-next-line unicorn/no-useless-undefined
-            onChange(field.name, undefined);
-          }
-          setLoading(false);
-        })
-        .catch(() => {
-          setError(utils.remap(field.loadError ?? 'Error loading options', {}));
-          setLoading(false);
-        });
+      actions[field.action].dispatch().then(handleOptions, handleError);
+    }
+
+    if ('event' in field) {
+      const eventHandler = (data: Choice[], e: string): void => {
+        if (e) {
+          handleError();
+        } else {
+          handleOptions(data);
+        }
+      };
+      events.on[field.event](eventHandler);
+      return () => events.off[field.event](eventHandler);
     }
   }, [actions, events, field, onChange, utils, value]);
 
