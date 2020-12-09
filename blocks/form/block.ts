@@ -336,8 +336,6 @@ interface EventEnumField extends AbstractEnumField {
    * The event should return an array of objects that contain the `label` and `value` property.
    *
    * XXX: Implement event-listener format
-   *
-   * @format event-listener
    */
   event: string;
 

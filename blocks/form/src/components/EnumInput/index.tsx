@@ -42,8 +42,13 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
     if ('action' in field) {
       actions[field.action]
         .dispatch()
-        .then((result) => {
-          setOptions(result as Choice[]);
+        .then((result: Choice[]) => {
+          setOptions(result);
+          if (!result.map((r) => r.value).includes(value)) {
+            // Explicitly set value to undefined if value does not exist in the new set of options.
+            // eslint-disable-next-line unicorn/no-useless-undefined
+            onChange(field.name, undefined);
+          }
           setLoading(false);
         })
         .catch(() => {
@@ -51,7 +56,7 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
           setLoading(false);
         });
     }
-  }, [actions, events, field, utils]);
+  }, [actions, events, field, onChange, utils, value]);
 
   return (
     <SelectField
