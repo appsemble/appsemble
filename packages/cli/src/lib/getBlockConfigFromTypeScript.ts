@@ -38,7 +38,7 @@ import { BlockConfig } from '../types';
 function getNodeComments(checker: TypeChecker, node: TypeElement): string {
   const symbol = checker.getSymbolAtLocation(node.name);
   if (!symbol) {
-    return null;
+    return;
   }
 
   const comments = symbol.getDocumentationComment(checker);
