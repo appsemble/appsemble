@@ -1,4 +1,4 @@
-import { languages } from 'monaco-editor';
+import { languages, IEvent as MonacoIEvent } from 'monaco-editor';
 import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
 import 'monaco-yaml';
 
@@ -10,6 +10,10 @@ declare module 'monaco-editor' {
     type LanguageServiceDefaults = monaco.languages.yaml.LanguageServiceDefaults;
     export const yamlDefaults: LanguageServiceDefaults;
   }
+}
+
+declare global {
+  type IEvent<T> = MonacoIEvent<T>;
 }
 
 const { getWorker } = MonacoEnvironment;
