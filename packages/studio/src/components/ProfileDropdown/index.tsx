@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
+import { sentryDsn } from '../../utils/settings';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
@@ -71,6 +72,14 @@ export function ProfileDropdown(): ReactElement {
           <FormattedMessage {...messages.documentation} />
         </span>
       </Link>
+      {sentryDsn && (
+        <Link className={`dropdown-item ${styles.logoutButton}`} to={`${url}/feedback`}>
+          <Icon icon="comment" />
+          <span>
+            <FormattedMessage {...messages.feedback} />
+          </span>
+        </Link>
+      )}
       <hr className="dropdown-divider" />
       {userInfo ? (
         <Button

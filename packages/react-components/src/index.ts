@@ -31,6 +31,7 @@ export * from './PasswordField';
 export * from './Portal';
 export * from './Select';
 export * from './SelectField';
+export * from './SentryForm';
 export * from './SimpleBeforeUnload';
 export * from './SimpleForm';
 export * from './SimpleFormError';
