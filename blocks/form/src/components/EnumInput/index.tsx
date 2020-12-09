@@ -16,17 +16,29 @@ type EnumInputProps = InputProps<string, EnumField>;
 export function EnumInput({ disabled, field, name, onChange, value }: EnumInputProps): VNode {
   const {
     actions,
+    events,
     parameters: { optionalLabel },
     utils,
   } = useBlock();
   const [loading, setLoading] = useState('action' in field);
-  const [options, setOptions] = useState('action' in field ? [] : field.enum);
+  const [options, setOptions] = useState('action' in field || 'event' in field ? [] : field.enum);
   const [error, setError] = useState<string>(null);
 
   const { icon, label, placeholder, tag } = field;
   const required = isRequired(field);
 
   useEffect(() => {
+    if ('event' in field) {
+      events.on[field.event]((result, e) => {
+        if (e) {
+          setError(utils.remap(field.loadError ?? 'Error loading options', {}));
+        } else {
+          setOptions(result as Choice[]);
+        }
+        setLoading(false);
+      });
+    }
+
     if ('action' in field) {
       actions[field.action]
         .dispatch()
@@ -39,7 +51,7 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
           setLoading(false);
         });
     }
-  }, [actions, field, utils]);
+  }, [actions, events, field, utils]);
 
   return (
     <SelectField

@@ -306,9 +306,9 @@ interface SyncEnumField extends AbstractEnumField {
 }
 
 /**
- * A dropdown list containing a list of predetermined values.
+ * A dropdown list containing a list of values based on the output of an action.
  */
-interface AsyncEnumField extends AbstractEnumField {
+interface ActionEnumField extends AbstractEnumField {
   /**
    * This action will be fired to fetch dynamic enum options.
    *
@@ -326,7 +326,30 @@ interface AsyncEnumField extends AbstractEnumField {
   loadError?: Remapper;
 }
 
-export type EnumField = SyncEnumField | AsyncEnumField;
+/**
+ * A dropdown list containing a list of values based on the output of an event.
+ */
+interface EventEnumField extends AbstractEnumField {
+  /**
+   * Wait until an event has been fired containing the list of options.
+   *
+   * The event should return an array of objects that contain the `label` and `value` property.
+   *
+   * XXX: Implement event-listener format
+   *
+   * @format event-listener
+   */
+  event: string;
+
+  /**
+   * This message is displayed if the options failed to load.
+   *
+   * @default 'Error loading options'
+   */
+  loadError?: Remapper;
+}
+
+export type EnumField = SyncEnumField | ActionEnumField | EventEnumField;
 
 /**
  * An input field used to upload files.
@@ -615,6 +638,11 @@ declare module '@appsemble/sdk' {
      * `fields` parameter.
      */
     data: never;
+
+    /**
+     * Custom event listeners that can be used to receive data for specific types of form fields.
+     */
+    [key: string]: never;
   }
 
   interface EventEmitters {
