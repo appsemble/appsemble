@@ -145,7 +145,7 @@ exports[`should render its fallback when errors are thrown 1`] = `
       >
         <Fallback
           error={[Error: test]}
-          eventId="c386a8f789064b72aea50aa618999fb5"
+          eventId="stub-event-id"
         >
           <p>
             Something went wrong!

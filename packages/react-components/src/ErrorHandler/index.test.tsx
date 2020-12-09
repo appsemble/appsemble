@@ -1,8 +1,14 @@
+// eslint-disable-next-line unicorn/import-style
+import * as Sentry from '@sentry/browser';
 import { mount } from 'enzyme';
 import React, { ReactElement } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ErrorHandler } from '.';
+
+beforeEach(() => {
+  jest.spyOn(Sentry, 'captureException').mockReturnValue('stub-event-id');
+});
 
 it('should render its children if no errors are thrown', () => {
   function Child(): ReactElement {
