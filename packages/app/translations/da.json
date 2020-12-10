@@ -14,7 +14,7 @@
   "app.src.components.AppSettings.AppSubscriptions.suscribeDescription": "Hvis man abonnerer på en app kan app udvikleren sende notikikationer til deres brugere.",
   "app.src.components.AppSettings.AppSubscriptions.unsubscribe": "Afmeld",
   "app.src.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Afmeldt notifikationer.",
-  "app.src.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Modtag notifikation når “{resource}” bliver opdateret",
+  "app.src.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Modtag notifikation når \"{resource}\" bliver opdateret",
   "app.src.components.AppSettings.LanguagePreference.preferredLanguage": "Det foretrukne sprog for denne app",
   "app.src.components.AppSettings.settings": "Indstillinger",
   "app.src.components.EmailLogin.loginButton": "Login",
@@ -24,6 +24,7 @@
   "app.src.components.EmailLogin.usernameError": "Der skal angives en gyldig email adresse",
   "app.src.components.EmailLogin.usernameLabel": "Email",
   "app.src.components.ErrorFallback.message": "Der opstod en uventet fejl.",
+  "app.src.components.ErrorFallback.title": "Fejl",
   "app.src.components.OpenIDCallback.accessDenied": "Adgang nægtet",
   "app.src.components.OpenIDCallback.error": "Der opstod en uventet fejl under login",
   "app.src.components.OpenIDCallback.retry": "Tilbage til login",
@@ -35,7 +36,5 @@
   "app.src.components.ProfileDropdown.pfp": "Profilfoto",
   "app.src.components.ProfileDropdown.settings": "Indstillinger",
   "app.src.components.SideMenuButton.label": "Åbn menu",
-  "app.src.components.SideNavigation.login": "",
-  "app.src.components.SideNavigation.logout": "",
   "app.src.components.SideNavigation.settings": "Indstillinger"
 }
