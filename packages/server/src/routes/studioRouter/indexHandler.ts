@@ -64,7 +64,8 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
   const csp = makeCSP({
     'report-uri': [sentry?.reportUri],
     // This is needed for Webpack.
-    'connect-src': [process.env.NODE_ENV !== 'production' && '*'],
+    'connect-src':
+      process.env.NODE_ENV === 'production' ? [sentryDsn && 'https://sentry.io', "'self'"] : ['*'],
     'default-src': ["'self'", sentry?.origin],
     'img-src': ['blob:', 'data:', '*'],
     'script-src': [
