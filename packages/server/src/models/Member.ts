@@ -15,7 +15,7 @@ import {
 import { Organization, User } from '.';
 
 @Table({ tableName: 'Member' })
-export class Member extends Model<Member> {
+export class Member extends Model {
   @Default('Member')
   @Column(DataType.ENUM(...Object.keys(roles)))
   role: Role;

@@ -24,51 +24,156 @@ describe('createEvents', () => {
     ee.removeAllListeners();
   });
 
-  it('should emit events after the page is ready', async () => {
-    const events = createEvents(ee, promise, { emit: { foo: {} } }, { emit: { foo: 'bar' } });
-    const implemented = events.emit.foo('test', 'error');
-    expect(ee.emit).not.toHaveBeenCalled();
-    await ready();
-    expect(await implemented).toBe(true);
-    expect(ee.emit).toHaveBeenCalledWith('bar', 'test', 'error');
+  describe('emit', () => {
+    it('should emit events after the page is ready', async () => {
+      const events = createEvents(ee, promise, { emit: { foo: {} } }, { emit: { foo: 'bar' } });
+      const implemented = events.emit.foo('test', 'error');
+      expect(ee.emit).not.toHaveBeenCalled();
+      await ready();
+      expect(await implemented).toBe(true);
+      expect(ee.emit).toHaveBeenCalledWith('bar', 'test', 'error');
+    });
+
+    it('should handle empty string errors', async () => {
+      const events = createEvents(ee, promise, { emit: { foo: {} } }, { emit: { foo: 'bar' } });
+      await ready();
+      await events.emit.foo('test', '');
+      expect(ee.emit).toHaveBeenCalledWith('bar', 'test', 'Error');
+    });
+
+    it('should not emit events if no emitters have been registered', async () => {
+      const events = createEvents(ee, promise, { emit: { foo: {} } });
+      const implemented = events.emit.foo('test', 'error');
+      await ready();
+      expect(await implemented).toBe(false);
+      expect(ee.emit).not.toHaveBeenCalled();
+    });
+
+    it('should cache the event emitter', () => {
+      const events = createEvents(ee, promise, { emit: { foo: {} } });
+      expect(events.emit.foo).toBe(events.emit.foo);
+    });
+
+    it('should support emitting custom events', async () => {
+      const events = createEvents(ee, promise, { emit: { $any: {} } }, { emit: { foo: 'bar' } });
+      const implemented = events.emit.foo('test', 'error');
+      expect(ee.emit).not.toHaveBeenCalled();
+      await ready();
+      expect(await implemented).toBe(true);
+      expect(ee.emit).toHaveBeenCalledWith('bar', 'test', 'error');
+    });
+
+    it('should handle symbols', () => {
+      const events = createEvents(ee, promise, { emit: { $any: {} } });
+      // @ts-expect-error This type error is introduced for testing purposes.
+      const emitter = events.emit[Symbol('test')];
+      expect(emitter).toBeUndefined();
+    });
+
+    it('should handle unknown event types', () => {
+      const events = createEvents(ee, promise, null, { emit: { foo: 'bar' } });
+      const emitter = events.emit.foo;
+      expect(emitter).toBeUndefined();
+    });
   });
 
-  it('should not emit events if no emitters have been registered', async () => {
-    const events = createEvents(ee, promise, { emit: { foo: {} } });
-    const implemented = events.emit.foo('test', 'error');
-    await ready();
-    expect(await implemented).toBe(false);
-    expect(ee.emit).not.toHaveBeenCalled();
+  describe('on', () => {
+    it('should listen on events', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = jest.fn();
+      const implemented = events.on.foo(listener);
+      ee.emit('bar', 'data');
+      expect(implemented).toBe(true);
+      expect(listener).toHaveBeenCalledWith('data');
+    });
+
+    it('should indicate if the event listener is implemented when registering', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } });
+      const implemented = events.on.foo(() => {});
+      expect(implemented).toBe(false);
+    });
+
+    it('should cache the event registration function', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } });
+      expect(events.on.foo).toBe(events.on.foo);
+    });
+
+    it('should support registering custom events', () => {
+      const events = createEvents(
+        ee,
+        promise,
+        { listen: { $any: {} } },
+        { listen: { foo: 'bar' } },
+      );
+      const listener = jest.fn();
+      const implemented = events.on.foo(listener);
+      ee.emit('bar', 'data');
+      expect(implemented).toBe(true);
+      expect(listener).toHaveBeenCalledWith('data');
+    });
+
+    it('should handle symbols', () => {
+      const events = createEvents(ee, promise, { listen: { $any: {} } });
+      // @ts-expect-error This type error is introduced for testing purposes.
+      const emitter = events.on[Symbol('test')];
+      expect(emitter).toBeUndefined();
+    });
+
+    it('should handle unknown event types', () => {
+      const events = createEvents(ee, promise, null, { listen: { foo: 'bar' } });
+      const emitter = events.on.foo;
+      expect(emitter).toBeUndefined();
+    });
   });
 
-  it('should listen on events', () => {
-    const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
-    const listener = jest.fn();
-    const implemented = events.on.foo(listener);
-    ee.emit('bar', 'data');
-    expect(implemented).toBe(true);
-    expect(listener).toHaveBeenCalledWith('data');
-  });
+  describe('off', () => {
+    it('should be possible to unregister event listeners', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
+      const listener = jest.fn();
+      events.on.foo(listener);
+      const implemented = events.off.foo(listener);
+      expect(implemented).toBe(true);
+      ee.emit('bar', 'data');
+      expect(listener).not.toHaveBeenCalled();
+    });
 
-  it('should indicate if the event listener is implemented when registering', () => {
-    const events = createEvents(ee, promise, { listen: { foo: {} } });
-    const implemented = events.on.foo(() => {});
-    expect(implemented).toBe(false);
-  });
+    it('should indicate if the event listener is implemented when unregistering', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } });
+      const implemented = events.off.foo(() => {});
+      expect(implemented).toBe(false);
+    });
 
-  it('should be possible to unregister event listeners', () => {
-    const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
-    const listener = jest.fn();
-    events.on.foo(listener);
-    const implemented = events.off.foo(listener);
-    expect(implemented).toBe(true);
-    ee.emit('bar', 'data');
-    expect(listener).not.toHaveBeenCalled();
-  });
+    it('should cache the event unregistration function', () => {
+      const events = createEvents(ee, promise, { listen: { foo: {} } });
+      expect(events.off.foo).toBe(events.off.foo);
+    });
 
-  it('should indicate if the event listener is implemented when unregistering', () => {
-    const events = createEvents(ee, promise, { listen: { foo: {} } });
-    const implemented = events.off.foo(() => {});
-    expect(implemented).toBe(false);
+    it('should support unregistering custom events', () => {
+      const events = createEvents(
+        ee,
+        promise,
+        { listen: { $any: {} } },
+        { listen: { foo: 'bar' } },
+      );
+      const listener = jest.fn();
+      events.on.foo(listener);
+      const implemented = events.off.foo(listener);
+      expect(implemented).toBe(true);
+      ee.emit('bar', 'data');
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should handle symbols', () => {
+      const events = createEvents(ee, promise, { listen: { $any: {} } });
+      // @ts-expect-error This type error is introduced for testing purposes.
+      const emitter = events.off[Symbol('test')];
+      expect(emitter).toBeUndefined();
+    });
+
+    it('should handle unknown event types', () => {
+      const events = createEvents(ee, promise, null, { listen: { foo: 'bar' } });
+      const emitter = events.off.foo;
+      expect(emitter).toBeUndefined();
+    });
   });
 });

@@ -15,7 +15,7 @@
     "prettier": "prettier --check",
     "scripts": "ts-node -TP packages/scripts/tsconfig.json packages/scripts/src",
     "start": "ts-node -TP packages/cli/tsconfig.json packages/cli/src start",
-    "stylelint": "stylelint",
+    "stylelint": "stylelint --report-needless-disables",
     "test": "jest"
   },
   "husky": {
@@ -25,7 +25,7 @@
   },
   "lint-staged": {
     "*.css": [
-      "stylelint"
+      "stylelint --report-needless-disables"
     ],
     "*.md": [
       "remark --frail --no-stdout"
@@ -191,7 +191,8 @@
     "unist-util-visit": "^2.0.3",
     "unused-files-webpack-plugin": "^3.4.0",
     "webpack": "^4.44.2",
-    "webpack-cli": "^4.2.0"
+    "webpack-cli": "^4.2.0",
+    "worker-loader": "^3.0.5"
   },
   "engines": {
     "node": ">=12.0.0"

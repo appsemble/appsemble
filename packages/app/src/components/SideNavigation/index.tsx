@@ -56,6 +56,16 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
               </NavLink>
             </li>
           )}
+          {layout?.feedback === 'navigation' && (
+            <li>
+              <NavLink activeClassName={styles.active} to={`${url}/Feedback`}>
+                <Icon className={styles.icon} icon="comment" />
+                <span>
+                  <FormattedMessage {...messages.feedback} />
+                </span>
+              </NavLink>
+            </li>
+          )}
 
           {showLogin && layout?.login === 'navigation' && (
             <li>

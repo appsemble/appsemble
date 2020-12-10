@@ -15,7 +15,7 @@ import {
 import { App, TeamMember, User } from '.';
 
 @Table({ tableName: 'Team' })
-export class Team extends Model<Team> {
+export class Team extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column

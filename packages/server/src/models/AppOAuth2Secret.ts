@@ -36,7 +36,7 @@ import { App } from '.';
   ],
 }))
 @Table({ tableName: 'AppOAuth2Secret' })
-export class AppOAuth2Secret extends Model<AppOAuth2Secret> {
+export class AppOAuth2Secret extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column

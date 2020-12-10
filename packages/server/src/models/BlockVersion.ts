@@ -17,7 +17,7 @@ import { Definition } from 'typescript-json-schema';
 import { BlockAsset, Organization } from '.';
 
 @Table({ tableName: 'BlockVersion', updatedAt: false })
-export class BlockVersion extends Model<BlockVersion> {
+export class BlockVersion extends Model {
   @PrimaryKey
   @ForeignKey(() => Organization)
   @AllowNull(false)

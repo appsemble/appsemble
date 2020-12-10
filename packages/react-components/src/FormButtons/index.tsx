@@ -15,10 +15,10 @@ interface FormButtonsProps {
  * them.
  */
 export function FormButtons({ children, className }: FormButtonsProps): ReactElement {
-  const count = Children.count(children);
+  const { length } = Children.toArray(children).filter(Boolean);
 
   return (
-    <div className={classNames(styles.root, count > 1 ? styles.multiple : styles.one, className)}>
+    <div className={classNames(styles.root, length > 1 ? styles.multiple : styles.one, className)}>
       {children}
     </div>
   );

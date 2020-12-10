@@ -8,6 +8,7 @@ import { AppSettings } from '../AppSettings';
 import { Login } from '../Login';
 import { OpenIDCallback } from '../OpenIDCallback';
 import { Page } from '../Page';
+import { SentryFeedback } from '../SentryFeedback';
 import { useUser } from '../UserProvider';
 
 /**
@@ -37,6 +38,9 @@ export function AppRoutes(): ReactElement {
       </Route>
       <Route exact path="/:lang/Callback" sensitive>
         <OpenIDCallback />
+      </Route>
+      <Route exact path="/:lang/Feedback" sensitive>
+        <SentryFeedback />
       </Route>
       <Route path="/:lang/:pageId">
         <Page />

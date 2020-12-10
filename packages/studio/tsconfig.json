@@ -2,13 +2,6 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": [
-      "babel-plugin-react-intl-auto",
-      "css-modules",
-      "jest",
-      // XXX This type is needed due to a dependency issue in @apidevtools/json-schema-ref-parser
-      "node",
-      "webpack-env"
-    ]
+    "types": ["babel-plugin-react-intl-auto", "css-modules", "jest", "node", "webpack-env"]
   }
 }

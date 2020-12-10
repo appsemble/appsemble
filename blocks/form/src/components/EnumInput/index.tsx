@@ -16,30 +16,52 @@ type EnumInputProps = InputProps<string, EnumField>;
 export function EnumInput({ disabled, field, name, onChange, value }: EnumInputProps): VNode {
   const {
     actions,
+    events,
     parameters: { optionalLabel },
     utils,
   } = useBlock();
   const [loading, setLoading] = useState('action' in field);
-  const [options, setOptions] = useState('action' in field ? [] : field.enum);
+  const [options, setOptions] = useState('action' in field || 'event' in field ? [] : field.enum);
   const [error, setError] = useState<string>(null);
 
   const { icon, label, placeholder, tag } = field;
   const required = isRequired(field);
 
   useEffect(() => {
-    if ('action' in field) {
-      actions[field.action]
-        .dispatch()
-        .then((result) => {
-          setOptions(result as Choice[]);
-          setLoading(false);
-        })
-        .catch(() => {
-          setError(utils.remap(field.loadError ?? 'Error loading options', {}));
-          setLoading(false);
-        });
+    if ('enum' in field) {
+      return;
     }
-  }, [actions, field, utils]);
+
+    const handleOptions = (result: Choice[]): void => {
+      if (!result.find((r) => r.value === value)) {
+        // Explicitly set value to undefined if value does not exist in the new set of options.
+        onChange(field.name);
+      }
+      setOptions(result);
+      setLoading(false);
+    };
+
+    const handleError = (): void => {
+      setError(utils.remap(field.loadError ?? 'Error loading options', {}));
+      setLoading(false);
+    };
+
+    if ('action' in field) {
+      actions[field.action].dispatch().then(handleOptions, handleError);
+    }
+
+    if ('event' in field) {
+      const eventHandler = (data: Choice[], e: string): void => {
+        if (e) {
+          handleError();
+        } else {
+          handleOptions(data);
+        }
+      };
+      events.on[field.event](eventHandler);
+      return () => events.off[field.event](eventHandler);
+    }
+  }, [actions, events, field, onChange, utils, value]);
 
   return (
     <SelectField
