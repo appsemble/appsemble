@@ -65,7 +65,9 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     'report-uri': [sentry?.reportUri],
     // This is needed for Webpack.
     'connect-src':
-      process.env.NODE_ENV === 'production' ? [sentryDsn && 'https://sentry.io', "'self'"] : ['*'],
+      process.env.NODE_ENV === 'production'
+        ? [sentryDsn && 'https://sentry.io', sentryDsn && new URL(sentryDsn).origin, "'self'"]
+        : ['*'],
     'default-src': ["'self'", sentry?.origin],
     'img-src': ['blob:', 'data:', '*'],
     'script-src': [
