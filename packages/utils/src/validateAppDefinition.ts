@@ -52,6 +52,15 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
         actionParameters.add(property);
         return block.actions && Object.hasOwnProperty.call(block.actions, property);
       });
+      ajv.addFormat(
+        'event-listener',
+        (property) =>
+          block.events?.listen && Object.hasOwnProperty.call(block.events.listen, property),
+      );
+      ajv.addFormat(
+        'event-emitter',
+        (property) => block.events?.emit && Object.hasOwnProperty.call(block.events.emit, property),
+      );
       const validate = ajv.compile(version.parameters);
       const valid = validate(block.parameters || {});
       if (!valid) {
@@ -83,6 +92,24 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
         }
       } else if (!Object.hasOwnProperty.call(version.actions, key)) {
         acc[`${loc}.actions.${key}`] = 'Unknown action type';
+      }
+    });
+
+    Object.keys(block.events?.emit || {}).forEach((key) => {
+      if (
+        !version.events?.emit?.$any &&
+        !Object.hasOwnProperty.call(version.events?.emit || {}, key)
+      ) {
+        acc[`${loc}.events.emit.${key}`] = 'Unknown event emitter';
+      }
+    });
+
+    Object.keys(block.events?.listen || {}).forEach((key) => {
+      if (
+        !version.events?.listen?.$any &&
+        !Object.hasOwnProperty.call(version.events?.listen || {}, key)
+      ) {
+        acc[`${loc}.events.listen.${key}`] = 'Unknown event listener';
       }
     });
 

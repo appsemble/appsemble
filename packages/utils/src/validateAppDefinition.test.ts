@@ -178,6 +178,118 @@ describe('checkBlocks', () => {
       'pages.0.blocks.0.actions': 'This block doesn’t support any actions',
     });
   });
+
+  it('should throw on unknown event emitters', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            events: { emit: { test: 'bla' } },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: {},
+            events: {},
+            parameters: {
+              type: 'object',
+              properties: { customAction: { type: 'string', format: 'action' } },
+            },
+          },
+        ],
+      );
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0.events.emit.test': 'Unknown event emitter',
+    });
+  });
+
+  it('should throw on unknown event listeners', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            events: { listen: { test: 'bla' } },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: {},
+            events: {},
+          },
+        ],
+      );
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0.events.listen.test': 'Unknown event listener',
+    });
+  });
+
+  it('should allow wildcard event emitters', () => {
+    expect(() =>
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            events: { emit: { test: 'bla' } },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: {},
+            events: { emit: { $any: {} } },
+          },
+        ],
+      ),
+    ).not.toThrow();
+  });
+
+  it('should allow wildcard event listeners', () => {
+    expect(() =>
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            events: { listen: { test: 'bla' } },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: {},
+            events: { listen: { $any: {} } },
+          },
+        ],
+      ),
+    ).not.toThrow();
+  });
 });
 
 describe('validateSecurity', () => {
