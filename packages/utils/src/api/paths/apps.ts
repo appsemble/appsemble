@@ -746,6 +746,10 @@ export const paths: OpenAPIV3.PathsObject = {
                 name: {
                   type: 'string',
                 },
+                annotations: {
+                  type: 'object',
+                  additionalProperties: { type: 'string' },
+                },
               },
             },
           },
