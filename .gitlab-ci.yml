@@ -38,14 +38,6 @@ workflow:
   image: dtzar/helm-kubectl:3.2.1
   dependencies: []
 
-# A job preset for deleting Helm Charts.
-.helm-delete:
-  extends: .helm
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - helm delete "$CI_ENVIRONMENT_SLUG"
-
 # A preconfigured environment for using Yarn.
 .yarn:
   interruptible: true
@@ -280,7 +272,7 @@ review:
 
 # Stop a review environment.
 stop review:
-  extends: .helm-delete
+  extends: .helm
   stage: deploy
   rules:
     - if: $CI_MERGE_REQUEST_ID
@@ -289,6 +281,10 @@ stop review:
   environment:
     name: review/$CI_MERGE_REQUEST_IID
     action: stop
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - helm delete "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for master to the staging environment.
 staging:
