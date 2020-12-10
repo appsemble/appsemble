@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.15.11](https://gitlab.com/appsemble/appsemble/-/releases/0.15.11)] - 2020-12-08
+
+### Added
+
+- Server: Add support for the OData `$select` query parameter when querying resources.
+- Studio: Add support for collapsing lists of apps.
+
 ## \[[0.15.10](https://gitlab.com/appsemble/appsemble/-/releases/0.15.10)] - 2020-12-02
 
 ### Added

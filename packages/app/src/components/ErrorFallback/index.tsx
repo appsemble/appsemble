@@ -1,9 +1,7 @@
-import classNames from 'classnames';
+import { Content, Message } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { TitleBar } from '../TitleBar';
-import styles from './index.css';
 import { messages } from './messages';
 
 /**
@@ -11,13 +9,10 @@ import { messages } from './messages';
  */
 export function ErrorFallback(): ReactElement {
   return (
-    <>
-      <TitleBar>
-        <FormattedMessage {...messages.title} />
-      </TitleBar>
-      <div className={classNames('container', styles.container)} role="alert">
+    <Content className="py-3">
+      <Message color="danger">
         <FormattedMessage {...messages.message} />
-      </div>
-    </>
+      </Message>
+    </Content>
   );
 }

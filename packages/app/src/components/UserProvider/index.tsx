@@ -1,5 +1,6 @@
 import { Loader } from '@appsemble/react-components';
 import { AppMember, UserInfo } from '@appsemble/types';
+import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import React, {
@@ -89,6 +90,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
    * Reset everything to its initial state for a logged out user.
    */
   const logout = useCallback(() => {
+    setUser(null);
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
     setState(initialState);
@@ -150,6 +152,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
             },
           ),
         ]);
+        setUser({ id: userInfo.sub });
         setState({
           isLoggedIn: true,
           role,

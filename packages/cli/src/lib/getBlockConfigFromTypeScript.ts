@@ -10,11 +10,12 @@ import {
   FormatDiagnosticsHost,
   formatDiagnosticsWithColorAndContext,
   getPreEmitDiagnostics,
-  Identifier,
   InterfaceDeclaration,
+  isIdentifier,
   isIndexSignatureDeclaration,
   isInterfaceDeclaration,
   isModuleDeclaration,
+  isPropertySignature,
   parseJsonConfigFileContent,
   Program,
   readConfigFile,
@@ -37,7 +38,7 @@ import { BlockConfig } from '../types';
 function getNodeComments(checker: TypeChecker, node: TypeElement): string {
   const symbol = checker.getSymbolAtLocation(node.name);
   if (!symbol) {
-    return null;
+    return;
   }
 
   const comments = symbol.getDocumentationComment(checker);
@@ -51,7 +52,66 @@ function getNodeComments(checker: TypeChecker, node: TypeElement): string {
 }
 
 /**
- * Get an axtions object based on a TypeScript interface node.
+ * Process keys from an interface into an object.
+ *
+ * This asserts only index signature members and regular alphanumerical properties are used.
+ *
+ * @param iface - The TypeScript interface to check.
+ * @param checker - The TypeScript type checker.
+ * @param convert - A function for converting extracted data to a value. It will be called with the
+ * name and JSDoc description. The name is `undefined` for index signatures. The function should
+ * return a tuple of key and value.
+ * @returns A record created from the returned key/value pairs.
+ */
+function processInterface<T>(
+  iface: InterfaceDeclaration,
+  checker: TypeChecker,
+  convert: (name: string, description: string) => [string, T],
+): Record<string, T> {
+  if (!iface?.members.length) {
+    return;
+  }
+
+  return Object.fromEntries(
+    iface.members.map((member) => {
+      const description = getNodeComments(checker, member);
+      if (isIndexSignatureDeclaration(member)) {
+        return convert(undefined, description);
+      }
+
+      if (!isPropertySignature(member)) {
+        throw new AppsembleError(
+          `Only property and index signatures are allowed as ${
+            iface.name
+          } keys. Found: ${member.getFullText()}`,
+        );
+      }
+
+      const { name } = member;
+
+      if (!isIdentifier(name)) {
+        throw new AppsembleError(
+          `Only property and index signatures are allowed as ${
+            iface.name
+          } keys. Found: ${name.getFullText()}`,
+        );
+      }
+
+      const { text } = name;
+
+      if (!/^[\da-z]+$/i.test(text)) {
+        throw new AppsembleError(
+          `Found property named ‘${text}’ in ${iface.name} interface. Only alphanumerical identifiers are supported.`,
+        );
+      }
+
+      return convert(text, description);
+    }),
+  );
+}
+
+/**
+ * Get an actions object based on a TypeScript interface node.
  *
  * @param iface - The node to base the actions on.
  * @param checker - The TypeScript type checker.
@@ -61,26 +121,7 @@ function processActions(
   iface: InterfaceDeclaration,
   checker: TypeChecker,
 ): BlockManifest['actions'] {
-  if (!iface || !iface.members.length) {
-    return;
-  }
-
-  return Object.fromEntries(
-    iface.members.map((member) => {
-      const description = getNodeComments(checker, member);
-      if (isIndexSignatureDeclaration(member)) {
-        return ['$any', { description }];
-      }
-
-      if ((member.name as Identifier).escapedText === '$any') {
-        throw new AppsembleError(
-          'Found ‘$any’ property signature in Actions interface. This is reserved to mark index signatures.',
-        );
-      }
-
-      return [(member.name as Identifier).escapedText, { description }];
-    }),
-  );
+  return processInterface(iface, checker, (name, description) => [name ?? '$any', { description }]);
 }
 
 /**
@@ -96,28 +137,16 @@ function processEvents(
   eventEmitterInterface: InterfaceDeclaration,
   checker: TypeChecker,
 ): BlockManifest['events'] {
-  if (!eventListenerInterface?.members.length && !eventEmitterInterface?.members.length) {
-    return;
-  }
+  const listen = processInterface(eventListenerInterface, checker, (name, description) => [
+    name ?? '$any',
+    { description },
+  ]);
+  const emit = processInterface(eventEmitterInterface, checker, (name, description) => [
+    name ?? '$any',
+    { description },
+  ]);
 
-  const listen =
-    eventListenerInterface?.members.length &&
-    Object.fromEntries(
-      eventListenerInterface.members.map((member) => [
-        (member.name as Identifier).escapedText,
-        { description: getNodeComments(checker, member) },
-      ]),
-    );
-  const emit =
-    eventEmitterInterface?.members.length &&
-    Object.fromEntries(
-      eventEmitterInterface.members.map((member) => [
-        (member.name as Identifier).escapedText,
-        { description: getNodeComments(checker, member) },
-      ]),
-    );
-
-  return { emit, listen };
+  return emit && listen && { emit, listen };
 }
 
 /**

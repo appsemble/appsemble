@@ -10,6 +10,7 @@ import {
   FlowPageDefinition,
   Remapper,
 } from '@appsemble/types';
+import { addBreadcrumb, Severity } from '@sentry/browser';
 import { match as Match, RouteComponentProps } from 'react-router-dom';
 
 import { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
@@ -130,7 +131,16 @@ function createAction({
             ? remap(actionDefinition.remap, args, context)
             : args,
         );
+        addBreadcrumb({
+          category: 'appsemble.action',
+          data: { success: action.type },
+        });
       } catch (error: unknown) {
+        addBreadcrumb({
+          category: 'appsemble.action',
+          data: { failed: action.type },
+          level: Severity.Warning,
+        });
         if (onError) {
           return onError.dispatch(error, context);
         }

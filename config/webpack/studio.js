@@ -1,15 +1,11 @@
 const { join, resolve } = require('path');
 
-// Adding this to package.json causes yarn to fail in production mode.
-// eslint-disable-next-line import/no-extraneous-dependencies
-const studioPkg = require('@appsemble/studio/package.json');
 const faPkg = require('@fortawesome/fontawesome-free/package.json');
 const bulmaPkg = require('bulma/package.json');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
-const { EnvironmentPlugin } = require('webpack');
 
 const core = require('./core');
 const minify = require('./html-minifier.json');
@@ -36,9 +32,6 @@ module.exports = (env, argv) => {
     },
     plugins: [
       ...coreConfig.plugins,
-      new EnvironmentPlugin({
-        APPSEMBLE_VERSION: studioPkg.version,
-      }),
       new HtmlWebpackPlugin({
         template: join(studioEntry, 'index.html'),
         templateParameters: {
