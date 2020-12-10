@@ -14,7 +14,7 @@ import {
 import { AppSamlSecret, User } from '.';
 
 @Table({ tableName: 'AppSamlAuthorization' })
-export class AppSamlAuthorization extends Model<AppSamlAuthorization> {
+export class AppSamlAuthorization extends Model {
   /**
    * The name id of the user on the identity provider.
    */

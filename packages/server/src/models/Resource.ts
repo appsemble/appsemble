@@ -18,7 +18,7 @@ import {
 import { App, ResourceSubscription, User } from '.';
 
 @Table({ tableName: 'Resource', paranoid: true })
-export class Resource extends Model<Resource> {
+export class Resource extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column

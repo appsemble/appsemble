@@ -16,7 +16,7 @@ import {
 import { Team, User } from '.';
 
 @Table({ tableName: 'TeamMember' })
-export class TeamMember extends Model<TeamMember> {
+export class TeamMember extends Model {
   @PrimaryKey
   @ForeignKey(() => Team)
   @Column

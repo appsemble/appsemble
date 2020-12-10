@@ -37,7 +37,7 @@ import {
 } from '.';
 
 @Table({ tableName: 'App', paranoid: true })
-export class App extends Model<App> {
+export class App extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column

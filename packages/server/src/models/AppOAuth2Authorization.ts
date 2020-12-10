@@ -14,7 +14,7 @@ import {
 import { AppOAuth2Secret, User } from '.';
 
 @Table({ tableName: 'AppOAuth2Authorization' })
-export class AppOAuth2Authorization extends Model<AppOAuth2Authorization> {
+export class AppOAuth2Authorization extends Model {
   /**
    * The subject id of the user on the remote authorization server.
    */

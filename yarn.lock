@@ -14141,17 +14141,17 @@ sequelize-pool@^6.0.0:
   resolved "https://registry.yarnpkg.com/sequelize-pool/-/sequelize-pool-6.1.0.tgz#caaa0c1e324d3c2c3a399fed2c7998970925d668"
   integrity sha512-4YwEw3ZgK/tY/so+GfnSgXkdwIJJ1I32uZJztIEgZeAO6HMgj64OzySbWLgxj+tXhZCJnzRfkY9gINw8Ft8ZMg==
 
-sequelize-typescript@^2.0.0-beta.0:
-  version "2.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/sequelize-typescript/-/sequelize-typescript-2.0.0-beta.0.tgz#3e3740d411654a2f0d2fccdf7b708751dc4521bf"
-  integrity sha512-xsKz2XdTzwcxcmk3CifrLcJoSuUzASqzOKCt1tKTg2OGZd+Hzasr6Rdl5Jhkx3hW9hZ3ScQQWpJkkXItlOhp5g==
+sequelize-typescript@^2.0.0-beta.1:
+  version "2.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/sequelize-typescript/-/sequelize-typescript-2.0.0-beta.1.tgz#08c52c35e7fb4f940b9919cbc77752776bcc800a"
+  integrity sha512-GHlNfh8vPIJKzXtk4A8MTndK3Uu87HO75fFFX4PM+35P/SW3fFCiw/KeHeQ6DjLz7zeI+fop2HFWVeuZarnJwQ==
   dependencies:
     glob "7.1.2"
 
-sequelize@6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-6.1.1.tgz#671c1144cc8b1c8eecc603759670140948e471a5"
-  integrity sha512-3ik4crdYtEwApUMwoGRKAz822tFvNts1T5gFDmmJMRAWESr6Eruhni4XHJwcbccrS0D5ifuFKppN2n37M6g0Rg==
+sequelize@6.3.5:
+  version "6.3.5"
+  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-6.3.5.tgz#80e3db7ac8b76d98c45ca93334197eb6e2335158"
+  integrity sha512-MiwiPkYSA8NWttRKAXdU9h0TxP6HAc1fl7qZmMO/VQqQOND83G4nZLXd0kWILtAoT9cxtZgFqeb/MPYgEeXwsw==
   dependencies:
     debug "^4.1.1"
     dottie "^2.0.0"

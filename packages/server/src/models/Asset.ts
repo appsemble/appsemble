@@ -16,7 +16,7 @@ import {
 import { App, User } from '.';
 
 @Table({ tableName: 'Asset', paranoid: true })
-export class Asset extends Model<Asset> {
+export class Asset extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column
