@@ -14,7 +14,7 @@
   "app.src.components.AppSettings.AppSubscriptions.suscribeDescription": "Hvis man abonnerer på en app kan app udvikleren sende notikikationer til deres brugere.",
   "app.src.components.AppSettings.AppSubscriptions.unsubscribe": "Afmeld",
   "app.src.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Afmeldt notifikationer.",
-  "app.src.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Modtag notifikation når \"{resource}\" bliver opdateret",
+  "app.src.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Modtag notifikation når “{resource}” bliver opdateret",
   "app.src.components.AppSettings.LanguagePreference.preferredLanguage": "Det foretrukne sprog for denne app",
   "app.src.components.AppSettings.settings": "Indstillinger",
   "app.src.components.EmailLogin.loginButton": "Login",
