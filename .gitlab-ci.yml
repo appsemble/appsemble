@@ -80,8 +80,6 @@ remark lint:
 stylelint:
   extends: .yarn
   script:
-    # The --report-needless-disables flag is broken. Add this in package.json when it works again.
-    # https://github.com/stylelint/stylelint/issues/4203
     - yarn stylelint .
 
 # Run unittests using NodeJS 12.
