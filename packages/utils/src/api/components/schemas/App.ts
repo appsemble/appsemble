@@ -102,6 +102,16 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
                 \`navigation\`.
               `,
             },
+            feedback: {
+              type: 'string',
+              enum: ['navbar', 'navigation', 'hidden'],
+              description: `
+                The location of the feedback button.
+
+                If set to \`navigation\`, it will only be visible if \`login\` is also visible in
+                \`navigation\`.
+              `,
+            },
             navigation: {
               type: 'string',
               enum: ['bottom', 'left-menu', 'hidden'],
