@@ -15,7 +15,7 @@ import {
 import { App, User } from '.';
 
 @Table({ tableName: 'AppRating' })
-export class AppRating extends Model<AppRating> {
+export class AppRating extends Model {
   @AllowNull(false)
   @Column
   rating: number;

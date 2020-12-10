@@ -22,7 +22,7 @@ import { App } from '.';
   attributes: ['id', 'idpCertificate', 'entityId', 'ssoUrl', 'name', 'icon', 'spCertificate'],
 }))
 @Table({ tableName: 'AppSamlSecret' })
-export class AppSamlSecret extends Model<AppSamlSecret> implements Interface {
+export class AppSamlSecret extends Model implements Interface {
   @PrimaryKey
   @AutoIncrement
   @Column

@@ -15,7 +15,7 @@ import {
 import { User } from '.';
 
 @Table({ tableName: 'EmailAuthorization' })
-export class EmailAuthorization extends Model<EmailAuthorization> {
+export class EmailAuthorization extends Model {
   @PrimaryKey
   @Column
   email: string;

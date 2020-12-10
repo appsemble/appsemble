@@ -17,7 +17,7 @@ import { App, User } from '.';
  * A consent given by the user which grant an app specific scopes.
  */
 @Table({ tableName: 'OAuth2Consent' })
-export class OAuth2Consent extends Model<OAuth2Consent> {
+export class OAuth2Consent extends Model {
   /**
    * The id of the app the OAuth2 consent is for.
    */

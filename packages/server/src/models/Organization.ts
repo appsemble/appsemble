@@ -15,7 +15,7 @@ import {
 import { App, Member, OrganizationInvite, User } from '.';
 
 @Table({ tableName: 'Organization', paranoid: true })
-export class Organization extends Model<Organization> {
+export class Organization extends Model {
   @PrimaryKey
   @Column
   id: string;

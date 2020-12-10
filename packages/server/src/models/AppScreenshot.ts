@@ -14,7 +14,7 @@ import {
 import { App } from '.';
 
 @Table({ tableName: 'AppScreenshot' })
-export class AppScreenshot extends Model<AppScreenshot> {
+export class AppScreenshot extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column

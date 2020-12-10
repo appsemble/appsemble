@@ -14,7 +14,7 @@ import {
 import { AppSamlSecret, User } from '.';
 
 @Table({ tableName: 'SamlLoginRequest', paranoid: false })
-export class SamlLoginRequest extends Model<SamlLoginRequest> {
+export class SamlLoginRequest extends Model {
   /**
    * The SAML login ID that is sent to the SAML server.
    */
