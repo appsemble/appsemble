@@ -1,1 +1,12 @@
-{}
+{
+  "react-components.src.ErrorHandler.message": "",
+  "react-components.src.ErrorHandler.title": "",
+  "react-components.src.FormComponent.optional": "",
+  "react-components.src.JSONField.error": "",
+  "react-components.src.MessagesProvider.dismiss": "",
+  "react-components.src.Modal.closeDialog": "",
+  "react-components.src.Stepper.back": "",
+  "react-components.src.Stepper.cancel": "",
+  "react-components.src.Stepper.finish": "",
+  "react-components.src.Stepper.next": ""
+}

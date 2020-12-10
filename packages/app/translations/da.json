@@ -24,7 +24,6 @@
   "app.src.components.EmailLogin.usernameError": "Der skal angives en gyldig email adresse",
   "app.src.components.EmailLogin.usernameLabel": "Email",
   "app.src.components.ErrorFallback.message": "Der opstod en uventet fejl.",
-  "app.src.components.ErrorFallback.title": "Fejl",
   "app.src.components.OpenIDCallback.accessDenied": "Adgang nægtet",
   "app.src.components.OpenIDCallback.error": "Der opstod en uventet fejl under login",
   "app.src.components.OpenIDCallback.retry": "Tilbage til login",
@@ -36,5 +35,7 @@
   "app.src.components.ProfileDropdown.pfp": "Profilfoto",
   "app.src.components.ProfileDropdown.settings": "Indstillinger",
   "app.src.components.SideMenuButton.label": "Åbn menu",
+  "app.src.components.SideNavigation.login": "",
+  "app.src.components.SideNavigation.logout": "",
   "app.src.components.SideNavigation.settings": "Indstillinger"
 }
