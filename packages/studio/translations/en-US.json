@@ -253,6 +253,7 @@
   "studio.src.components.Editor.updateSuccess": "Successfully updated app recipe",
   "studio.src.components.Editor.viewLive": "View live",
   "studio.src.components.Editor.yamlNotFound": "Unable to restore original YAML. Formatting may be different from what was previously published.",
+  "studio.src.components.ErrorFallback.feedback": "Send feedback",
   "studio.src.components.ErrorFallback.message": "An unexpected error has occurred.",
   "studio.src.components.ErrorFallback.title": "Error",
   "studio.src.components.ErrorFallback.toApps": "Back to apps",

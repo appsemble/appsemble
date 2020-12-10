@@ -253,6 +253,7 @@
   "studio.src.components.Editor.updateSuccess": "App-opskrift er opdateret",
   "studio.src.components.Editor.viewLive": "Se live",
   "studio.src.components.Editor.yamlNotFound": "Den oprindelige YAML kunne ikke gendannes. Formateringen kan være forskellig fra det, der tidligere blev udgivet.",
+  "studio.src.components.ErrorFallback.feedback": "",
   "studio.src.components.ErrorFallback.message": "Der opstod en uventet fejl.",
   "studio.src.components.ErrorFallback.title": "Fejl",
   "studio.src.components.ErrorFallback.toApps": "",

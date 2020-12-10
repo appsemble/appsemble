@@ -1,4 +1,4 @@
-import { Content, Message, SentryForm } from '@appsemble/react-components';
+import { Content, Message, SentryForm, Title } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -30,17 +30,29 @@ export function ErrorFallback({ eventId }: ErrorFallbackProps): ReactElement {
         <Message color="danger">
           <FormattedMessage {...messages.message} />
         </Message>
-        <SentryForm
-          dsn={sentryDsn}
-          email={user?.userInfo?.email}
-          eventId={eventId}
-          name={user?.userInfo?.name}
-          recovery={
-            <Link className="button mb-3" to="/apps">
-              <FormattedMessage {...messages.toApps} />
-            </Link>
-          }
-        />
+        <hr />
+        {sentryDsn ? (
+          <>
+            <Title level={3}>
+              <FormattedMessage {...messages.feedback} />
+            </Title>
+            <SentryForm
+              dsn={sentryDsn}
+              email={user?.userInfo?.email}
+              eventId={eventId}
+              name={user?.userInfo?.name}
+              recovery={
+                <Link className="button mb-3" to="/apps">
+                  <FormattedMessage {...messages.toApps} />
+                </Link>
+              }
+            />
+          </>
+        ) : (
+          <Link className="button" to="/apps">
+            <FormattedMessage {...messages.toApps} />
+          </Link>
+        )}
       </Content>
     </>
   );
