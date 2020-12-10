@@ -143,7 +143,10 @@ exports[`should render its fallback when errors are thrown 1`] = `
           }
         }
       >
-        <Fallback>
+        <Fallback
+          error={[Error: test]}
+          eventId="stub-event-id"
+        >
           <p>
             Something went wrong!
           </p>

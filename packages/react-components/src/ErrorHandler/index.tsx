@@ -1,4 +1,4 @@
-import { captureException, withScope } from '@sentry/browser';
+import { captureException } from '@sentry/browser';
 import React, { Component, ElementType, ErrorInfo, ReactNode } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
@@ -11,11 +11,19 @@ interface ErrorHandlerProps extends RouteComponentProps<any> {
   /**
    * The fallback to render in case an error occurs rendering children.
    */
-  fallback: ElementType;
+  fallback: ElementType<ErrorHandlerState>;
 }
 
 interface ErrorHandlerState {
-  error: boolean;
+  /**
+   * The error that was thrown.
+   */
+  error: Error;
+
+  /**
+   * The Sentry event ID that has been generated.
+   */
+  eventId: string;
 }
 
 /**
@@ -25,32 +33,30 @@ interface ErrorHandlerState {
  */
 class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
   state: ErrorHandlerState = {
-    error: false,
+    error: null,
+    eventId: null,
   };
 
   componentDidMount(): void {
     const { history } = this.props;
 
     history.listen(() => {
-      this.setState({ error: false });
+      this.setState({ error: null, eventId: null });
     });
   }
 
-  componentDidCatch(error: Error, info: ErrorInfo): void {
-    this.setState({ error: true });
-    withScope((scope) => {
-      Object.entries(info).forEach(([key, value]) => {
-        scope.setExtra(key, value);
-      });
-      captureException(error);
+  componentDidCatch(error: Error, { componentStack }: ErrorInfo): void {
+    this.setState({
+      error,
+      eventId: captureException(error, { contexts: { react: { componentStack } } }),
     });
   }
 
   render(): ReactNode {
     const { children, fallback: Fallback } = this.props;
-    const { error } = this.state;
+    const { error, eventId } = this.state;
 
-    return error ? <Fallback /> : children;
+    return error ? <Fallback error={error} eventId={eventId} /> : children;
   }
 }
 

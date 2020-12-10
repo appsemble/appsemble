@@ -17,6 +17,7 @@ import { OrganizationInvite } from '../OrganizationInvite';
 import { ProtectedRoute } from '../ProtectedRoute';
 import { Register } from '../Register';
 import { ResetPassword } from '../ResetPassword';
+import { SentryFeedback } from '../SentryFeedback';
 import { Settings } from '../Settings';
 import { VerifyEmail } from '../VerifyEmail';
 
@@ -39,6 +40,9 @@ export function Routes(): ReactElement {
       </Route>
       <ProtectedRoute path={`${path}/settings`}>
         <Settings />
+      </ProtectedRoute>
+      <ProtectedRoute path={`${path}/feedback`}>
+        <SentryFeedback />
       </ProtectedRoute>
       <ProtectedRoute exact path={`${path}/connect/authorize`}>
         <OpenIDLogin />

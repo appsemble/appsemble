@@ -31,6 +31,18 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Create the default labels for a template indented with 4 spaces.
+*/}}
+{{- define "appsemble.labels" -}}
+    app: {{ .Values.app | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/name: {{ include "appsemble.name" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    helm.sh/chart: {{ include "appsemble.chart" . }}
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "appsemble.tag" -}}

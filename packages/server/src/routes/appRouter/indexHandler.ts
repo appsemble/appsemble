@@ -111,7 +111,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
   });
   const csp = {
     'report-uri': [sentry?.reportUri],
-    'connect-src': ['*', 'blob:', 'data:', sentry?.origin],
+    'connect-src': ['*', 'blob:', 'data:', sentry?.origin, sentryDsn && 'https://sentry.io'],
     'default-src': ["'self'"],
     'script-src': [
       "'self'",

@@ -48,12 +48,22 @@ export function ProfileDropdown(): ReactElement {
         </figure>
       }
     >
-      <Link className="dropdown-item" to="/Settings">
-        <Icon icon="wrench" />
-        <span>
-          <FormattedMessage {...messages.settings} />
-        </span>
-      </Link>
+      {(layout?.settings ?? 'navbar') === 'navbar' && (
+        <Link className="dropdown-item" to="/Settings">
+          <Icon icon="wrench" />
+          <span>
+            <FormattedMessage {...messages.settings} />
+          </span>
+        </Link>
+      )}
+      {(layout?.feedback ?? 'navbar') === 'navbar' && (
+        <Link className="dropdown-item" to="/Feedback">
+          <Icon icon="comment" />
+          <span>
+            <FormattedMessage {...messages.feedback} />
+          </span>
+        </Link>
+      )}
       {showLogin && (
         <>
           <hr className="dropdown-divider" />

@@ -943,6 +943,15 @@ export interface AppDefinition {
     settings?: LayoutPosition;
 
     /**
+     * The location of the feedback button
+     *
+     * If set to `navigation`, it will only be visible if `login` is also visible in `navigation`.
+     *
+     * @default 'navbar'
+     */
+    feedback?: LayoutPosition;
+
+    /**
      * The navigation type to use.
      *
      * If this is omitted, a collapsable side navigation menu will be rendered on the left.
