@@ -12,7 +12,7 @@
   "react-components.src.SentryForm.nameHelp": "Deze naam wordt mogelijk gebruikt in e-mails over dit probleem",
   "react-components.src.SentryForm.nameLabel": "Naam",
   "react-components.src.SentryForm.submit": "Versturen",
-  "react-components.src.SentryForm.submitError": "Er is een fout opgetreden bij het versturen van de feedbacj",
+  "react-components.src.SentryForm.submitError": "Er is een fout opgetreden bij het versturen van de feedback",
   "react-components.src.SentryForm.submitSuccess": "Je feedback is verstuurd. Dankjewel!",
   "react-components.src.Stepper.back": "Terug",
   "react-components.src.Stepper.cancel": "Annuleren",
