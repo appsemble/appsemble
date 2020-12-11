@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.15.12](https://gitlab.com/appsemble/appsemble/-/releases/0.15.12)] - 2020-12-11
+
+### Added
+
+- Block(`form`): Add support for enum fields to receive options from events.
+- App: Added support for sending feedback using the Sentry feedback API.
+- App: Allow the user to send feedback when a crash is reported.
+- Cli: Added support for custom block events.
+- Studio: Added auto completion and validation in app editor.
+- Studio: Added support for sending feedback using the Sentry feedback API.
+- Studio: Allow the user to send feedback when a crash is reported.
+
 ## \[[0.15.11](https://gitlab.com/appsemble/appsemble/-/releases/0.15.11)] - 2020-12-08
 
 ### Added
