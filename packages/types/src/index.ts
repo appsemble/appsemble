@@ -1128,6 +1128,11 @@ export interface Team {
    * The display name of the team.
    */
   name: string;
+
+  /**
+   * Custom annotations for the team.
+   */
+  annotations?: Record<string, string>;
 }
 
 /**
