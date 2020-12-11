@@ -4,7 +4,6 @@
   "react-components.src.FormComponent.optional": "Optional",
   "react-components.src.JSONField.error": "This must be a valid JSON value.",
   "react-components.src.MessagesProvider.dismiss": "Dismiss message",
-  "react-components.src.Modal.closeDialog": "Close dialog",
   "react-components.src.SentryForm.commentsHelp": "Please help us by describing what went wrong",
   "react-components.src.SentryForm.commentsLabel": "Comments",
   "react-components.src.SentryForm.emailHelp": "We may use your email address to contact you about this issue",
