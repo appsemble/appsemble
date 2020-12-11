@@ -50,8 +50,5 @@
     "serviceworker-webpack-plugin": "^1.0.1",
     "type-fest": "^0.20.2"
   },
-  "devDependencies": {
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.5"
-  }
+  "devDependencies": {}
 }

@@ -1,14 +1,8 @@
-// eslint-disable-next-line unicorn/import-style
-import * as Sentry from '@sentry/browser';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import React, { ReactElement } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ErrorHandler } from '.';
-
-beforeEach(() => {
-  jest.spyOn(Sentry, 'captureException').mockReturnValue('stub-event-id');
-});
 
 it('should render its children if no errors are thrown', () => {
   function Child(): ReactElement {
@@ -17,7 +11,7 @@ it('should render its children if no errors are thrown', () => {
   function Fallback(): ReactElement {
     return <p>Something went wrong!</p>;
   }
-  const result = mount(
+  const { container } = render(
     <BrowserRouter>
       <ErrorHandler fallback={Fallback}>
         <Child />
@@ -25,7 +19,7 @@ it('should render its children if no errors are thrown', () => {
     </BrowserRouter>,
   );
 
-  expect(result).toMatchSnapshot();
+  expect(container).toMatchSnapshot();
 });
 
 it('should render its fallback when errors are thrown', () => {
@@ -36,7 +30,7 @@ it('should render its fallback when errors are thrown', () => {
   function Fallback(): ReactElement {
     return <p>Something went wrong!</p>;
   }
-  const result = mount(
+  const { container } = render(
     <BrowserRouter>
       <ErrorHandler fallback={Fallback}>
         <Child />
@@ -44,5 +38,5 @@ it('should render its fallback when errors are thrown', () => {
     </BrowserRouter>,
   );
 
-  expect(result).toMatchSnapshot();
+  expect(container).toMatchSnapshot();
 });

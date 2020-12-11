@@ -13,5 +13,4 @@ module.exports = {
   preset: 'ts-jest',
   resetMocks: true,
   restoreMocks: true,
-  snapshotSerializers: ['enzyme-to-json/serializer'],
 };

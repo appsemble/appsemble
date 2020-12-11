@@ -1,158 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should render its children if no errors are thrown 1`] = `
-<BrowserRouter>
-  <Router
-    history={
-      Object {
-        "action": "POP",
-        "block": [Function],
-        "createHref": [Function],
-        "go": [Function],
-        "goBack": [Function],
-        "goForward": [Function],
-        "length": 1,
-        "listen": [Function],
-        "location": Object {
-          "hash": "",
-          "pathname": "/",
-          "search": "",
-          "state": undefined,
-        },
-        "push": [Function],
-        "replace": [Function],
-      }
-    }
-  >
-    <withRouter(ErrorBoundary)
-      fallback={[Function]}
-    >
-      <ErrorBoundary
-        fallback={[Function]}
-        history={
-          Object {
-            "action": "POP",
-            "block": [Function],
-            "createHref": [Function],
-            "go": [Function],
-            "goBack": [Function],
-            "goForward": [Function],
-            "length": 1,
-            "listen": [Function],
-            "location": Object {
-              "hash": "",
-              "pathname": "/",
-              "search": "",
-              "state": undefined,
-            },
-            "push": [Function],
-            "replace": [Function],
-          }
-        }
-        location={
-          Object {
-            "hash": "",
-            "pathname": "/",
-            "search": "",
-            "state": undefined,
-          }
-        }
-        match={
-          Object {
-            "isExact": true,
-            "params": Object {},
-            "path": "/",
-            "url": "/",
-          }
-        }
-      >
-        <Child>
-          <p>
-            Test
-          </p>
-        </Child>
-      </ErrorBoundary>
-    </withRouter(ErrorBoundary)>
-  </Router>
-</BrowserRouter>
+<div>
+  <p>
+    Test
+  </p>
+</div>
 `;
 
 exports[`should render its fallback when errors are thrown 1`] = `
-<BrowserRouter>
-  <Router
-    history={
-      Object {
-        "action": "POP",
-        "block": [Function],
-        "createHref": [Function],
-        "go": [Function],
-        "goBack": [Function],
-        "goForward": [Function],
-        "length": 1,
-        "listen": [Function],
-        "location": Object {
-          "hash": "",
-          "pathname": "/",
-          "search": "",
-          "state": undefined,
-        },
-        "push": [Function],
-        "replace": [Function],
-      }
-    }
-  >
-    <withRouter(ErrorBoundary)
-      fallback={[Function]}
-    >
-      <ErrorBoundary
-        fallback={[Function]}
-        history={
-          Object {
-            "action": "POP",
-            "block": [Function],
-            "createHref": [Function],
-            "go": [Function],
-            "goBack": [Function],
-            "goForward": [Function],
-            "length": 1,
-            "listen": [Function],
-            "location": Object {
-              "hash": "",
-              "pathname": "/",
-              "search": "",
-              "state": undefined,
-            },
-            "push": [Function],
-            "replace": [Function],
-          }
-        }
-        location={
-          Object {
-            "hash": "",
-            "pathname": "/",
-            "search": "",
-            "state": undefined,
-          }
-        }
-        match={
-          Object {
-            "isExact": true,
-            "params": Object {},
-            "path": "/",
-            "url": "/",
-          }
-        }
-      >
-        <Fallback
-          error={[Error: test]}
-          eventId="stub-event-id"
-        >
-          <p>
-            Something went wrong!
-          </p>
-        </Fallback>
-      </ErrorBoundary>
-    </withRouter(ErrorBoundary)>
-  </Router>
-</BrowserRouter>
+<div>
+  <p>
+    Something went wrong!
+  </p>
+</div>
 `;

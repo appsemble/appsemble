@@ -4,7 +4,6 @@
   "react-components.src.FormComponent.optional": "Optioneel",
   "react-components.src.JSONField.error": "Dit moet een geldige JSON waarde zijn.",
   "react-components.src.MessagesProvider.dismiss": "Bericht verbergen",
-  "react-components.src.Modal.closeDialog": "Venster sluiten",
   "react-components.src.SentryForm.commentsHelp": "Wat is er ging er fout?",
   "react-components.src.SentryForm.commentsLabel": "Bechrijving",
   "react-components.src.SentryForm.emailHelp": "We kunnen je e-mailadres gebruiken om contact op te nemen over dit probleem",

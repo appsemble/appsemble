@@ -4,7 +4,6 @@
   "react-components.src.FormComponent.optional": "Valgfri",
   "react-components.src.JSONField.error": "Dette skal være en gyldig JSON værdi.",
   "react-components.src.MessagesProvider.dismiss": "Afvis meddelelse",
-  "react-components.src.Modal.closeDialog": "Luk dialog",
   "react-components.src.SentryForm.commentsHelp": "",
   "react-components.src.SentryForm.commentsLabel": "",
   "react-components.src.SentryForm.emailHelp": "",
