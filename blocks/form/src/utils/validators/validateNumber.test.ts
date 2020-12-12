@@ -1,5 +1,4 @@
-import { NumberField } from 'blocks/form/block';
-
+import { NumberField } from '../../../block';
 import { validateNumber } from './validateNumber';
 
 describe('validateNumber', () => {

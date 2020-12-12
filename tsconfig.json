@@ -2,10 +2,9 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "noEmit": true,
     "paths": {
-      "@appsemble/*": ["packages/*/src"]
+      "@appsemble/*": ["./packages/*/src"]
     }
   },
   "exclude": ["**/dist", "**/templates", "**/__fixtures__"]

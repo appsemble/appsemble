@@ -1,6 +1,5 @@
 import 'leaflet/dist/leaflet.css';
 
-// eslint-disable-next-line import/no-deprecated
 import { BlockProps, withBlock } from '@appsemble/preact';
 import { Theme } from '@appsemble/sdk';
 import {
@@ -67,5 +66,4 @@ class LocationComponent extends Component<LocationProps & BlockProps> {
   }
 }
 
-// eslint-disable-next-line import/no-deprecated
 export const Location = withBlock<LocationProps>(LocationComponent);

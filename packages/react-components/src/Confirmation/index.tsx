@@ -63,7 +63,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactElement {
 
   const confirm = useCallback(async (opts: ConfirmationOptions<any, any[]>, args) => {
     try {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         setOptions({ ...opts, resolve, reject });
         setActive(true);
       });

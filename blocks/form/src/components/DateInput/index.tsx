@@ -36,8 +36,8 @@ export function DateInput({
     [onChange],
   );
 
-  const maxDate = useMemo(() => extractDate(getMaxDate(field)), [field]);
-  const minDate = useMemo(() => extractDate(getMinDate(field)), [field]);
+  const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
+  const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
 
   return (
     <DateTimeComponent

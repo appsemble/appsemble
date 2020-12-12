@@ -1,4 +1,4 @@
-import { remap } from '@appsemble/utils';
+import { Utils } from '@appsemble/sdk';
 
 import { Field } from '../../block';
 
@@ -28,12 +28,13 @@ export function isValidDate(date: Date): boolean {
  * Get the earliest date of a field.
  *
  * @param field - The field to check.
+ * @param utils - The Appsemble SDK utils.
  * @returns A date object matching the earliest date.
  */
-export function getMinDate(field: FieldWithRequirements): Date | undefined {
+export function getMinDate(field: FieldWithRequirements, utils: Utils): Date | undefined {
   const minDates = field.requirements
     ?.filter((r) => 'from' in r)
-    .map((r) => new Date(remap(r.from, null, null) as any))
+    .map((r) => new Date(utils.remap(r.from, null) as any))
     .filter(isValidDate);
   if (minDates?.length) {
     return minDates.sort()[0];
@@ -44,12 +45,13 @@ export function getMinDate(field: FieldWithRequirements): Date | undefined {
  * Get the last date of a field.
  *
  * @param field - The field to check.
+ * @param utils - The Appsemble SDK utils.
  * @returns A date object matching the last date.
  */
-export function getMaxDate(field: FieldWithRequirements): Date | undefined {
+export function getMaxDate(field: FieldWithRequirements, utils: Utils): Date | undefined {
   const maxDates = field.requirements
     ?.filter((r) => 'to' in r)
-    .map((r) => new Date(remap(r.to, null, null) as any))
+    .map((r) => new Date(utils.remap(r.to, null) as any))
     .filter(isValidDate);
   if (maxDates?.length) {
     return maxDates.sort()[maxDates.length - 1];
