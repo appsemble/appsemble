@@ -1,4 +1,4 @@
-import { captureEvent } from '@sentry/browser';
+import { captureMessage, Severity } from '@sentry/browser';
 import axios from 'axios';
 import React, { ReactElement, ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -73,7 +73,7 @@ export function SentryForm({
       formData.set('email', values.email);
       formData.set('name', values.name);
       await axios.post('https://sentry.io/api/embed/error-page/', formData, {
-        params: { eventId: eventId || captureEvent({ message: 'Feedback' }), dsn },
+        params: { eventId: eventId || captureMessage('Feedback', Severity.Info), dsn },
       });
       setSubmitted(true);
     },
