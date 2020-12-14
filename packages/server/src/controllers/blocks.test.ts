@@ -46,7 +46,7 @@ describe('getBlock', () => {
     });
 
     const { data: original } = await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     const { data: retrieved } = await request.get('/api/blocks/@xkcd/test');
@@ -74,7 +74,7 @@ describe('queryBlocks', () => {
     });
 
     const { data: apple } = await request.post('/api/blocks', formDataA, {
-      headers: { authorization, ...formDataA.getHeaders() },
+      headers: { authorization },
     });
 
     const formDataB = new FormData();
@@ -86,7 +86,7 @@ describe('queryBlocks', () => {
     });
 
     const { data: pen } = await request.post('/api/blocks', formDataB, {
-      headers: { authorization, ...formDataB.getHeaders() },
+      headers: { authorization },
     });
 
     const { data: bam } = await request.get('/api/blocks');
@@ -107,7 +107,7 @@ describe('publishBlock', () => {
     });
 
     const { data, status } = await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     expect(data).toStrictEqual({
@@ -139,7 +139,7 @@ describe('publishBlock', () => {
       filepath: 'testblock.js',
     });
     const response = await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     expect(response).toMatchObject({
@@ -161,7 +161,7 @@ describe('publishBlock', () => {
     });
 
     await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     const formData2 = new FormData();
@@ -179,7 +179,7 @@ describe('publishBlock', () => {
     });
 
     const { data } = await request.post('/api/blocks', formData2, {
-      headers: { authorization, ...formData2.getHeaders() },
+      headers: { authorization },
     });
 
     expect(data).toStrictEqual({
@@ -196,7 +196,7 @@ describe('publishBlock', () => {
     formData.append('version', '1.32.9');
 
     const { data, status } = await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     expect(data).toStrictEqual({
@@ -228,7 +228,7 @@ describe('getBlockVersion', () => {
     });
 
     const { data: created } = await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     const { data: retrieved, status } = await request.get(
@@ -263,7 +263,7 @@ describe('getBlockVersions', () => {
       filepath: 'testblock.js',
     });
     await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
@@ -301,7 +301,7 @@ describe('getBlockVersions', () => {
       filepath: 'testblock.js',
     });
     await request.post('/api/blocks', formDataA, {
-      headers: { authorization, ...formDataA.getHeaders() },
+      headers: { authorization },
     });
 
     const formDataB = new FormData();
@@ -312,7 +312,7 @@ describe('getBlockVersions', () => {
       filepath: 'testblock.js',
     });
     await request.post('/api/blocks', formDataB, {
-      headers: { authorization, ...formDataB.getHeaders() },
+      headers: { authorization },
     });
 
     const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
@@ -356,7 +356,7 @@ describe('getBlockIcon', () => {
     formData.append('icon', icon);
 
     await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
@@ -383,7 +383,7 @@ describe('getBlockIcon', () => {
     formData.append('files', Buffer.from(''), 'test.js');
 
     await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
