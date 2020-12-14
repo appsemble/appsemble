@@ -1,5 +1,8 @@
-import { setLogLevel } from '@appsemble/node-utils';
+import { formData, setLogLevel } from '@appsemble/node-utils';
+import { request } from 'axios-test-instance';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
+
+request.interceptors.request.use(formData);
 
 setLogLevel(0);
 

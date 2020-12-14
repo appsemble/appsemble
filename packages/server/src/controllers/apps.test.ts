@@ -1,6 +1,7 @@
 import { createReadStream, promises as fs } from 'fs';
 import { join } from 'path';
 
+import { createFormData } from '@appsemble/node-utils';
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
@@ -351,29 +352,28 @@ describe('queryMyApps', () => {
 
 describe('createApp', () => {
   it('should create an app', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: 'test',
-                version: '0.0.0',
-              },
-            ],
-          },
-        ],
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const createdResponse = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(createdResponse).toMatchObject({
       status: 201,
@@ -423,20 +423,16 @@ pages:
   });
 
   it('should accept screenshots', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
+    const form = createFormData({
+      OrganizationId: organization.id,
+      definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
         pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
-      }),
-    );
-    form.append('screenshots', createReadStream(join(__dirname, '__fixtures__', 'standing.png')));
-    const createdResponse = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
+      },
     });
+    form.append('screenshots', createReadStream(join(__dirname, '__fixtures__', 'standing.png')));
+    const createdResponse = await request.post('/api/apps', form, { headers: { authorization } });
 
     expect(createdResponse).toMatchObject({
       status: 201,
@@ -483,9 +479,7 @@ pages:
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
+    const response = await request.post('/api/apps', form, { headers: { authorization } });
 
     expect(response).toMatchObject({
       status: 400,
@@ -496,28 +490,27 @@ pages:
   });
 
   it('should not allow apps to be created without an organization.id', async () => {
-    const form = new FormData();
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: 'test',
-                version: '0.0.1',
-              },
-            ],
-          },
-        ],
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -536,29 +529,28 @@ pages:
   });
 
   it('should not allow apps to be created for organizations the user does not belong to', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', 'a');
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: 'test',
-                version: '0.0.1',
-              },
-            ],
-          },
-        ],
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: 'a',
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 403,
@@ -571,29 +563,28 @@ pages:
   });
 
   it('should not allow to create an app using non-existent blocks', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: '@non/existent',
-                version: '0.0.0',
-              },
-            ],
-          },
-        ],
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: '@non/existent',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -609,29 +600,28 @@ pages:
   });
 
   it('should not allow to create an app using non-existent block versions', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: 'test',
-                version: '0.0.1',
-              },
-            ],
-          },
-        ],
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -647,32 +637,31 @@ pages:
   });
 
   it('should not allow to create an app using invalid block parameters', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: 'test',
-                version: '0.0.0',
-                parameters: {
-                  foo: 'invalid',
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                  parameters: {
+                    foo: 'invalid',
+                  },
                 },
-              },
-            ],
-          },
-        ],
+              ],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -688,41 +677,41 @@ pages:
   });
 
   it('should handle app path conflicts on create', async () => {
-    const formA = new FormData();
-    formA.append('OrganizationId', organization.id);
-    formA.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    await request.post('/api/apps', formA, { headers: { ...formA.getHeaders(), authorization } });
 
-    const formB = new FormData();
-    formB.append('OrganizationId', organization.id);
-    formB.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.post('/api/apps', formB, {
-      headers: { ...formB.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 201,
@@ -752,25 +741,23 @@ pages:
         OrganizationId: organization.id,
       })),
     );
-
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    const response = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 201,
@@ -781,11 +768,9 @@ pages:
   });
 
   it('should allow stylesheets to be included when creating an app', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
+    const form = createFormData({
+      OrganizationId: organization.id,
+      definition: {
         name: 'Foobar',
         defaultPage: 'Test Page',
         pages: [
@@ -794,8 +779,8 @@ pages:
             blocks: [{ type: 'test', version: '0.0.0' }],
           },
         ],
-      }),
-    );
+      },
+    });
     form.append('coreStyle', Buffer.from('body { color: blue; }'), {
       contentType: 'text/css',
       filename: 'test.css',
@@ -804,9 +789,7 @@ pages:
       contentType: 'text/css',
       filename: 'test.css',
     });
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
+    const response = await request.post('/api/apps', form, { headers: { authorization } });
 
     const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
@@ -817,11 +800,9 @@ pages:
   });
 
   it('should not allow invalid core stylesheets when creating an app', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
+    const form = createFormData({
+      OrganizationId: organization.id,
+      definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
         pages: [
@@ -830,25 +811,21 @@ pages:
             blocks: [{ type: 'test', version: '0.0.0' }],
           },
         ],
-      }),
-    );
+      },
+    });
     form.append('coreStyle', Buffer.from('this is invalid css'), {
       contentType: 'text/css',
       filename: 'test.css',
     });
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
+    const response = await request.post('/api/apps', form, { headers: { authorization } });
 
     expect(response.status).toBe(400);
   });
 
   it('should not allow invalid shared stylesheets when creating an app', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
+    const form = createFormData({
+      OrganizationId: organization.id,
+      definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
         path: 'a',
@@ -858,15 +835,13 @@ pages:
             blocks: [{ type: 'testblock' }],
           },
         ],
-      }),
-    );
+      },
+    });
     form.append('sharedStyle', Buffer.from('this is invalid css'), {
       contentType: 'text/css',
       filename: 'test.css',
     });
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
+    const response = await request.post('/api/apps', form, { headers: { authorization } });
 
     expect(response).toMatchObject({
       status: 400,
@@ -877,23 +852,22 @@ pages:
 
 describe('updateApp', () => {
   it('should not update a non-existent app', async () => {
-    const form = new FormData();
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Foobar',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    const response = await request.patch(
+      '/api/apps/1',
+      createFormData({
+        definition: {
+          name: 'Foobar',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.patch('/api/apps/1', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -915,24 +889,23 @@ describe('updateApp', () => {
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append('private', 'true');
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Foobar',
-        defaultPage: appA.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    const response = await request.patch(
+      `/api/apps/${appA.id}`,
+      createFormData({
+        private: 'true',
+        definition: {
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 200,
@@ -979,24 +952,23 @@ pages:
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Foobar',
-        defaultPage: appA.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    const response = await request.patch(
+      `/api/apps/${appA.id}`,
+      createFormData({
+        definition: {
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
+        yaml: Buffer.from('name: foo\nname: bar'),
       }),
+      { headers: { authorization } },
     );
-    form.append('yaml', Buffer.from('name: foo\nname: bar'));
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -1020,23 +992,20 @@ pages:
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Foobar',
-        defaultPage: appA.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
-      }),
-    );
-    form.append(
-      'yaml',
-      Buffer.from(`name: Barfoo
+    const response = await request.patch(
+      `/api/apps/${appA.id}`,
+      createFormData({
+        definition: {
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
+        yaml: Buffer.from(`name: Barfoo
 defaultPage: Test Page
 pages:
 - name: Test page
@@ -1044,10 +1013,9 @@ pages:
     - type: test
       version: 0.0.0
 `),
+      }),
+      { headers: { authorization } },
     );
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -1081,24 +1049,23 @@ pages:
         version: 0.0.0
     name: *titlePage`;
 
-    const form = new FormData();
-    form.append('yaml', Buffer.from(yaml));
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Foobar',
-        defaultPage: appA.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    const response = await request.patch(
+      `/api/apps/${appA.id}`,
+      createFormData({
+        yaml: Buffer.from(yaml),
+        definition: {
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 200,
@@ -1138,11 +1105,11 @@ pages:
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append('domain', 'appsemble.app');
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
+    const response = await request.patch(
+      `/api/apps/${appA.id}`,
+      createFormData({ domain: 'appsemble.app' }),
+      { headers: { authorization } },
+    );
 
     expect(response).toMatchObject({
       status: 200,
@@ -1164,10 +1131,8 @@ pages:
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append('domain', '');
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
+    const response = await request.patch(`/api/apps/${appA.id}`, createFormData({ domain: '' }), {
+      headers: { authorization },
     });
 
     expect(response).toMatchObject({
@@ -1201,24 +1166,23 @@ pages:
     name: *titlePage`;
     const buffer = Buffer.from(yaml);
 
-    const form = new FormData();
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Foobar',
-        defaultPage: appA.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    const response = await request.patch(
+      `/api/apps/${appA.id}`,
+      createFormData({
+        definition: {
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
+        yaml: buffer,
       }),
+      { headers: { authorization } },
     );
-    form.append('yaml', buffer);
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     const responseBuffer = Buffer.from(response.data.yaml);
     expect(responseBuffer).toStrictEqual(buffer);
@@ -1237,23 +1201,22 @@ pages:
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Foobar',
-        defaultPage: appA.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
+    const response = await request.patch(
+      `/api/apps/${appA.id}`,
+      createFormData({
+        definition: {
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 403,
@@ -1266,10 +1229,8 @@ pages:
   });
 
   it('should validate an app on creation', async () => {
-    const form = new FormData();
-    form.append('app', JSON.stringify({ foo: 'bar' }));
-    const response = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
+    const response = await request.post('/api/apps', createFormData({ foo: 'bar' }), {
+      headers: { authorization },
     });
 
     expect(response).toMatchObject({
@@ -1290,11 +1251,11 @@ pages:
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append('definition', JSON.stringify({ name: 'Foobar' }));
-    const response = await request.patch(`/api/apps/${appA.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
+    const response = await request.patch(
+      `/api/apps/${appA.id}`,
+      createFormData({ definition: { name: 'Foobar' } }),
+      { headers: { authorization } },
+    );
 
     expect(response).toMatchObject({
       status: 400,
@@ -1305,35 +1266,32 @@ pages:
 
 describe('deleteApp', () => {
   it('should delete an app', async () => {
-    const form = new FormData();
-    form.append('OrganizationId', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: 'test',
-                version: '0.0.0',
-              },
-            ],
-          },
-        ],
-      }),
-    );
     const {
       data: { id },
-    } = await request.post('/api/apps', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
+    } = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      { headers: { authorization } },
+    );
 
-    const response = await request.delete(`/api/apps/${id}`, {
-      headers: { authorization },
-    });
+    const response = await request.delete(`/api/apps/${id}`, { headers: { authorization } });
 
     expect(response).toMatchObject({
       status: 204,
@@ -1385,10 +1343,8 @@ describe('patchApp', () => {
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append(
-      'definition',
-      JSON.stringify({
+    const form = createFormData({
+      definition: {
         name: 'Foobar',
         defaultPage: app.definition.defaultPage,
         pages: [
@@ -1397,8 +1353,8 @@ describe('patchApp', () => {
             blocks: [{ type: 'test', version: '0.0.0' }],
           },
         ],
-      }),
-    );
+      },
+    });
     form.append('coreStyle', Buffer.from('body { color: yellow; }'), {
       contentType: 'text/css',
       filename: 'style.css',
@@ -1408,7 +1364,7 @@ describe('patchApp', () => {
       filename: 'style.css',
     });
     const response = await request.patch(`/api/apps/${app.id}`, form, {
-      headers: { ...form.getHeaders(), authorization },
+      headers: { authorization },
     });
 
     const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
@@ -1431,11 +1387,8 @@ describe('patchApp', () => {
       { raw: true },
     );
 
-    const formA = new FormData();
-
-    formA.append(
-      'definition',
-      JSON.stringify({
+    const formA = createFormData({
+      definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
         path: 'a',
@@ -1445,20 +1398,18 @@ describe('patchApp', () => {
             blocks: [{ type: 'test', version: '0.0.0' }],
           },
         ],
-      }),
-    );
+      },
+    });
     formA.append('coreStyle', Buffer.from('this is invalid css'), {
       contentType: 'text/css',
       filename: 'style.css',
     });
     const responseA = await request.patch(`/api/apps/${app.id}`, formA, {
-      headers: { ...formA.getHeaders(), authorization },
+      headers: { authorization },
     });
 
-    const formB = new FormData();
-    formB.append(
-      'definition',
-      JSON.stringify({
+    const formB = createFormData({
+      definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
         path: 'a',
@@ -1468,14 +1419,14 @@ describe('patchApp', () => {
             blocks: [{ type: 'test', version: '0.0.0' }],
           },
         ],
-      }),
-    );
+      },
+    });
     formB.append('coreStyle', Buffer.from('.foo { margin: 0 auto; }'), {
       contentType: 'application/json',
       filename: 'style.json',
     });
     const responseB = await request.patch(`/api/apps/${app.id}`, formB, {
-      headers: { ...formB.getHeaders(), authorization },
+      headers: { authorization },
     });
 
     expect(responseA.status).toBe(400);
@@ -1494,10 +1445,8 @@ describe('patchApp', () => {
       { raw: true },
     );
 
-    const formA = new FormData();
-    formA.append(
-      'definition',
-      JSON.stringify({
+    const formA = createFormData({
+      definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
         path: 'a',
@@ -1507,20 +1456,18 @@ describe('patchApp', () => {
             blocks: [{ type: 'testblock' }],
           },
         ],
-      }),
-    );
+      },
+    });
     formA.append('sharedStyle', Buffer.from('this is invalid css'), {
       contentType: 'text/css',
       filename: 'style.css',
     });
     const responseA = await request.patch(`/api/apps/${app.id}`, formA, {
-      headers: { ...formA.getHeaders(), authorization },
+      headers: { authorization },
     });
 
-    const formB = new FormData();
-    formB.append(
-      'definition',
-      JSON.stringify({
+    const formB = createFormData({
+      definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
         path: 'a',
@@ -1530,14 +1477,14 @@ describe('patchApp', () => {
             blocks: [{ type: 'testblock' }],
           },
         ],
-      }),
-    );
+      },
+    });
     formB.append('sharedStyle', Buffer.from('.foo { margin: 0 auto; }'), {
       contentType: 'application/json',
       filename: 'style.json',
     });
     const responseB = await request.patch(`/api/apps/${app.id}`, formB, {
-      headers: { ...formB.getHeaders(), authorization },
+      headers: { authorization },
     });
 
     expect(responseA.status).toBe(400);
@@ -1618,7 +1565,7 @@ describe('setAppBlockStyle', () => {
       filename: 'style.css',
     });
     const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form, {
-      headers: { ...form.getHeaders(), authorization },
+      headers: { authorization },
     });
 
     const style = await request.get(`/api/apps/${id}/style/block/@appsemble/testblock`);
@@ -1654,7 +1601,7 @@ describe('setAppBlockStyle', () => {
     const responseA = await request.post(
       `/api/apps/${id}/style/block/@appsemble/testblock`,
       formA,
-      { headers: { ...formA.getHeaders(), authorization } },
+      { headers: { authorization } },
     );
     expect(responseA).toMatchObject({
       status: 204,
@@ -1669,7 +1616,7 @@ describe('setAppBlockStyle', () => {
     const responseB = await request.post(
       `/api/apps/${id}/style/block/@appsemble/testblock`,
       formB,
-      { headers: { ...formB.getHeaders(), authorization } },
+      { headers: { authorization } },
     );
 
     expect(responseB).toMatchObject({
@@ -1705,7 +1652,7 @@ describe('setAppBlockStyle', () => {
     const response = await request.post(
       `/api/apps/${id}/style/block/@appsemble/styledblock`,
       form,
-      { headers: { ...form.getHeaders(), authorization } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1732,7 +1679,7 @@ describe('setAppBlockStyle', () => {
       filename: 'style.css',
     });
     const response = await request.post('/api/apps/0/style/block/@appsemble/block', form, {
-      headers: { ...form.getHeaders(), authorization },
+      headers: { authorization },
     });
 
     expect(response).toMatchObject({
@@ -1766,7 +1713,7 @@ describe('setAppBlockStyle', () => {
       `/api/apps/${id}/style/block/@appsemble/doesntexist`,
       form,
       {
-        headers: { ...form.getHeaders(), authorization },
+        headers: { authorization },
       },
     );
 
@@ -1804,30 +1751,28 @@ describe('setAppBlockStyle', () => {
   });
 
   it('should not allow to update an app using non-existent blocks', async () => {
-    const form = new FormData();
-    form.append('organization.id', organization.id);
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: '@non/existent',
-                version: '0.0.0',
-              },
-            ],
-          },
-        ],
+    const response = await request.patch(
+      '/api/apps/1',
+      createFormData({
+        'organization.id': organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: '@non/existent',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-
-    const response = await request.patch('/api/apps/1', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -1836,28 +1781,27 @@ describe('setAppBlockStyle', () => {
   });
 
   it('should not allow to update an app using non-existent block versions', async () => {
-    const form = new FormData();
-    form.append(
-      'definition',
-      JSON.stringify({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [
-              {
-                type: 'test',
-                version: '0.0.1',
-              },
-            ],
-          },
-        ],
+    const response = await request.patch(
+      '/api/apps/1',
+      createFormData({
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        },
       }),
+      { headers: { authorization } },
     );
-    const response = await request.patch('/api/apps/1', form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
 
     expect(response).toMatchObject({
       status: 400,
