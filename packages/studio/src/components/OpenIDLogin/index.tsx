@@ -32,7 +32,14 @@ export function OpenIDLogin(): ReactElement {
   const redirectUri = qs.get('redirect_uri');
   const scope = qs.get('scope');
   const isRequestValid = useMemo(
-    () => verifyOAuth2LoginRequest(qs, ['email', 'openid', 'profile', 'resources:manage']),
+    () =>
+      verifyOAuth2LoginRequest(qs, [
+        'email',
+        'openid',
+        'profile',
+        'resources:manage',
+        'teams:read',
+      ]),
     [qs],
   );
 
