@@ -18,6 +18,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       label,
       required,
       icon,
+      name,
       id = name,
       tag,
       optionalLabel,

@@ -99,7 +99,7 @@ it('should run downgrades in sequence', async () => {
   await Meta.create({ version: '0.0.3' });
   let resolve: () => void;
   (m003.down as jest.Mock).mockReturnValue(
-    new Promise((r) => {
+    new Promise<void>((r) => {
       resolve = r;
     }),
   );
@@ -114,7 +114,7 @@ it('should run upgrades in sequence', async () => {
   await Meta.create({ version: '0.0.1' });
   let resolve: () => void;
   (m001.up as jest.Mock).mockReturnValue(
-    new Promise((r) => {
+    new Promise<void>((r) => {
       resolve = r;
     }),
   );
