@@ -5,6 +5,7 @@ import {
   SimpleFormField,
   SimpleModalFooter,
   Table,
+  Title,
   useConfirmation,
   useData,
   useToggle,
@@ -12,7 +13,7 @@ import {
 import { Team } from '@appsemble/types';
 import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -23,6 +24,7 @@ import { AsyncDataView } from '../../AsyncDataView';
 import { HeaderControl } from '../../HeaderControl';
 import { useUser } from '../../UserProvider';
 import { AddTeamMemberModal } from '../AddTeamMemberModal';
+import { AnnotationsTable } from '../AnnotationsTable';
 import { TeamMemberRow } from '../TeamMemberRow';
 import { messages } from './messages';
 
@@ -39,12 +41,13 @@ export function TeamSettings(): ReactElement {
   const addModal = useToggle();
 
   const submitTeam = useCallback(
-    async ({ name }: Team) => {
+    async ({ annotations, name }: typeof defaultValues) => {
       const { data } = await axios.put<Team>(`/api/apps/${app.id}/teams/${teamId}`, {
         name,
+        annotations: Object.fromEntries(annotations),
       });
-      teamResult.setData(data);
       editModal.disable();
+      teamResult.setData(data);
     },
     [editModal, app, teamResult, teamId],
   );
@@ -101,6 +104,14 @@ export function TeamSettings(): ReactElement {
   const mayInvite =
     (me && me.role === TeamRole.Manager) ||
     (organization && checkRole(organization.role, Permission.InviteMember));
+
+  const defaultValues = useMemo(
+    () => ({
+      name: teamResult?.data?.name,
+      annotations: Object.entries(teamResult?.data?.annotations || {}),
+    }),
+    [teamResult?.data],
+  );
 
   return (
     <AsyncDataView
@@ -179,7 +190,7 @@ export function TeamSettings(): ReactElement {
           {mayEditTeam && (
             <Modal
               component={SimpleForm}
-              defaultValues={team}
+              defaultValues={defaultValues}
               footer={
                 <SimpleModalFooter
                   cancelLabel={<FormattedMessage {...messages.cancelLabel} />}
@@ -190,7 +201,6 @@ export function TeamSettings(): ReactElement {
               isActive={editModal.enabled}
               onClose={editModal.disable}
               onSubmit={submitTeam}
-              resetOnSuccess
               title={<FormattedMessage {...messages.editingTeam} />}
             >
               <SimpleFormField
@@ -199,6 +209,11 @@ export function TeamSettings(): ReactElement {
                 name="name"
                 required
               />
+              <hr />
+              <Title className="mb-0" level={5}>
+                <FormattedMessage {...messages.annotations} />
+              </Title>
+              <SimpleFormField component={AnnotationsTable} name="annotations" />
             </Modal>
           )}
           {mayInvite && (

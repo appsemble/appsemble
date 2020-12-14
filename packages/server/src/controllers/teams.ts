@@ -78,6 +78,7 @@ export async function getTeam(ctx: KoaContext<Params>): Promise<void> {
     id: team.id,
     name: team.name,
     ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
+    ...(team.annotations && { annotations: team.annotations }),
   };
 }
 
@@ -103,6 +104,7 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
     id: team.id,
     name: team.name,
     ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
+    ...(team.annotations && { annotations: team.annotations }),
   }));
 }
 
@@ -110,7 +112,7 @@ export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, teamId },
     request: {
-      body: { name },
+      body: { annotations, name },
     },
     user,
   } = ctx;
@@ -129,10 +131,11 @@ export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
 
   await checkRole(ctx, team.App.OrganizationId, Permission.ManageMembers);
 
-  await team.update({ name });
+  await team.update({ name, ...(annotations && { annotations }) });
   ctx.body = {
     id: team.id,
     name,
+    ...(annotations && { annotations }),
     ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
   };
 }
