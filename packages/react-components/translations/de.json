@@ -1,0 +1,20 @@
+{
+  "react-components.src.ErrorHandler.message": "",
+  "react-components.src.ErrorHandler.title": "",
+  "react-components.src.FormComponent.optional": "",
+  "react-components.src.JSONField.error": "",
+  "react-components.src.MessagesProvider.dismiss": "",
+  "react-components.src.SentryForm.commentsHelp": "",
+  "react-components.src.SentryForm.commentsLabel": "",
+  "react-components.src.SentryForm.emailHelp": "",
+  "react-components.src.SentryForm.emailLabel": "",
+  "react-components.src.SentryForm.nameHelp": "",
+  "react-components.src.SentryForm.nameLabel": "",
+  "react-components.src.SentryForm.submit": "",
+  "react-components.src.SentryForm.submitError": "",
+  "react-components.src.SentryForm.submitSuccess": "",
+  "react-components.src.Stepper.back": "",
+  "react-components.src.Stepper.cancel": "",
+  "react-components.src.Stepper.finish": "",
+  "react-components.src.Stepper.next": ""
+}
