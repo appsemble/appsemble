@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 
+import { createFormData } from '@appsemble/node-utils/src';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -77,12 +78,11 @@ describe('getOrganizationIcon', () => {
 
 describe('patchOrganization', () => {
   it('should update the name of the organization', async () => {
-    const formData = new FormData();
-    formData.append('name', 'Test');
-
-    const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
-      headers: { authorization, ...formData.getHeaders() },
-    });
+    const response = await request.patch(
+      `/api/organizations/${organization.id}`,
+      createFormData({ name: 'Test' }),
+      { headers: { authorization } },
+    );
     expect(response).toMatchObject({ data: { id: organization.id, name: 'Test' } });
   });
 
@@ -93,7 +93,7 @@ describe('patchOrganization', () => {
     formData.append('icon', buffer, { filename: 'icon.png' });
 
     const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
-      headers: { authorization, ...formData.getHeaders() },
+      headers: { authorization },
     });
 
     await organization.reload();
@@ -107,12 +107,12 @@ describe('patchOrganization', () => {
       { role: 'Member' },
       { where: { OrganizationId: organization.id, UserId: user.id } },
     );
-    const formData = new FormData();
-    formData.append('name', 'Test');
 
-    const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
-      headers: { authorization, ...formData.getHeaders() },
-    });
+    const response = await request.patch(
+      `/api/organizations/${organization.id}`,
+      createFormData({ name: 'Test' }),
+      { headers: { authorization } },
+    );
     expect(response).toMatchObject({
       data: { message: 'User does not have sufficient permissions.' },
       status: 403,

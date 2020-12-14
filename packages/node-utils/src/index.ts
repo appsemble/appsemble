@@ -2,6 +2,7 @@ export * from './logger';
 export * from './AppsembleError';
 export * from './basicAuth';
 export * from './commandDirOptions';
+export * from './formData';
 export * from './getWorkspaces';
 export * from './handleError';
 export * from './interceptors';

@@ -262,6 +262,28 @@ describe('updateTeam', () => {
     expect(responseB.data.name).toStrictEqual('B');
   });
 
+  it('should update annotations', async () => {
+    const team = await Team.create({ name: 'A', AppId: app.id });
+    const response = await request.put(
+      `/api/apps/${app.id}/teams/${team.id}`,
+      { name: 'B', annotations: { testKey: 'foo' } },
+      { headers: { authorization } },
+    );
+    const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: { id: team.id, name: 'B', annotations: { testKey: 'foo' } },
+    });
+    expect(responseB.data).toMatchObject({
+      id: team.id,
+      name: 'B',
+      annotations: { testKey: 'foo' },
+    });
+  });
+
   it('should not update without sufficient permissions', async () => {
     await Member.update(
       { role: 'Maintainer' },

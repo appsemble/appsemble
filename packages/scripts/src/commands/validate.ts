@@ -69,7 +69,7 @@ type Assert = (assertion: boolean, filename: string, message: string, workspace?
 async function validateTranslations(assert: Assert): Promise<void> {
   const workspaces = ['app', 'react-components', 'studio'];
   const developerLocales = ['nl', 'en-US'].sort();
-  const allLocales = [...developerLocales, 'da'].sort();
+  const allLocales = [...developerLocales, 'da', 'de', 'fr'].sort();
   const defaultLocale = 'en-US';
 
   for (const workspace of workspaces) {

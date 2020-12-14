@@ -5,6 +5,7 @@ import {
   BelongsToMany,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -24,6 +25,9 @@ export class Team extends Model {
   @AllowNull(false)
   @Column
   name: string;
+
+  @Column(DataType.JSON)
+  annotations: Record<string, string>;
 
   @AllowNull(false)
   @ForeignKey(() => App)
