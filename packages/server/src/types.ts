@@ -60,6 +60,14 @@ export interface AppsembleContext<P = unknown> {
    */
   argv: Argv;
 
+  /**
+   * The client the request is from including its scopes
+   */
+  clients?: {
+    app?: { scope: string };
+    cli?: { scope: string };
+  };
+
   mailer: Mailer;
 
   /**
