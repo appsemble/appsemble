@@ -645,7 +645,8 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      // XXX: Split this resource off
+      security: [{ studio: [], app: ['resources:manage'] }],
     },
     post: {
       tags: ['app'],
