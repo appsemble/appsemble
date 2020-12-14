@@ -1,11 +1,10 @@
-import { logger } from '@appsemble/node-utils';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { highlight } from 'cli-highlight';
 import FormData from 'form-data';
 
-import { configureAxios, formData, requestLogger, responseLogger } from './interceptors';
+import { configureAxios, formData, logger, requestLogger, responseLogger } from '.';
 
 function h(content: string): string {
   return highlight(content, { language: 'http' });

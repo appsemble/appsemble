@@ -34,7 +34,7 @@
     "@hapi/boom": "^9.1.0",
     "@koa/cors": "^3.1.0",
     "@odata/parser": "^0.2.3",
-    "@sentry/node": "^5.28.0",
+    "@sentry/node": "^5.29.0",
     "autoprefixer": "^9.8.6",
     "axios": "^0.21.0",
     "bcrypt": "5.0.0",
@@ -50,7 +50,7 @@
     "intl-messageformat": "^9.3.20",
     "is-ip": "^3.1.0",
     "is-svg": "^4.2.1",
-    "js-yaml": "^3.14.0",
+    "js-yaml": "^3.14.1",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
     "koa-compose": "^4.1.0",
@@ -70,10 +70,10 @@
     "language-tags": "^1.0.5",
     "lodash": "^4.17.20",
     "mime-types": "^2.1.27",
-    "mustache": "^4.0.1",
+    "mustache": "^4.1.0",
     "node-forge": "^0.10.0",
     "node-sass": "^5.0.0",
-    "nodemailer": "^6.4.16",
+    "nodemailer": "^6.4.17",
     "openapi-types": "^7.0.1",
     "parse-duration": "^0.4.4",
     "pg": "^8.5.1",
@@ -94,14 +94,14 @@
     "sharp": "^0.26.3",
     "to-ico": "^1.1.5",
     "type-fest": "^0.20.2",
-    "typescript-json-schema": "^0.43.0",
+    "typescript-json-schema": "^0.45.0",
     "unified": "^9.2.0",
     "unist-util-visit": "^2.0.3",
-    "uuid": "^8.3.1",
+    "uuid": "^8.3.2",
     "web-push": "^3.4.4",
     "xml-crypto": "^2.0.0",
     "xmldom": "^0.4.0",
-    "yargs": "^16.1.1"
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^6.0.1",
@@ -111,7 +111,7 @@
     "koa-webpack": "^6.0.0",
     "memfs": "^3.1.3",
     "xast-util-to-xml": "^2.0.1",
-    "xastscript": "^2.1.0"
+    "xastscript": "^2.1.1"
   },
   "peerDependencies": {
     "webpack": "^4"
