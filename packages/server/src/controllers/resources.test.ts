@@ -1,3 +1,4 @@
+import { createFormData } from '@appsemble/node-utils';
 import { TeamRole } from '@appsemble/utils';
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
@@ -7,6 +8,7 @@ import {
   App,
   AppMember,
   AppSubscription,
+  Asset,
   Member,
   Organization,
   Resource,
@@ -130,6 +132,15 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             type: 'object',
             required: ['foo'],
             properties: { foo: { type: 'string' } },
+          },
+        },
+        testAssets: {
+          schema: {
+            type: 'object',
+            properties: {
+              file: { type: 'string', format: 'binary' },
+              string: { type: 'string' },
+            },
           },
         },
       },
@@ -1005,11 +1016,27 @@ describe('createResource', () => {
     expect(response).toMatchObject({
       status: 400,
       data: {
-        data: {
-          foo: {
-            required: true,
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Validation failed for resource type testResource',
+        data: [
+          {
+            argument: 'foo',
+            message: 'requires property "foo"',
+            name: 'required',
+            path: [],
+            schema: {
+              type: 'object',
+              required: ['foo'],
+              properties: {
+                bar: { type: 'string' },
+                baz: { type: 'string' },
+                foo: { type: 'string' },
+                fooz: { type: 'string' },
+              },
+            },
           },
-        },
+        ],
       },
     });
   });
@@ -1090,6 +1117,67 @@ describe('createResource', () => {
       data: {
         message: 'Expiration date has already passed.',
       },
+    });
+  });
+
+  it('should accept assets as form data', async () => {
+    const app = await exampleApp(organizationId);
+    const response = await request.post(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: { file: '0' },
+        assets: Buffer.from('Test resource a'),
+      }),
+    );
+
+    expect(response.status).toBe(201);
+    expect(response.data).toStrictEqual({
+      $created: '1970-01-01T00:00:00.000Z',
+      $updated: '1970-01-01T00:00:00.000Z',
+      file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
+      id: 1,
+    });
+    const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
+    expect(assets).toStrictEqual([
+      {
+        AppId: null,
+        ResourceId: 1,
+        UserId: null,
+        created: new Date('1970-01-01T00:00:00.000Z'),
+        data: expect.any(Buffer),
+        deleted: null,
+        filename: null,
+        id: response.data.file,
+        mime: 'application/octet-stream',
+        updated: new Date('1970-01-01T00:00:00.000Z'),
+      },
+    ]);
+    expect(Buffer.from('Test resource a').equals(assets[0].data)).toBe(true);
+  });
+
+  it('should disallow unused files', async () => {
+    const app = await exampleApp(organizationId);
+    const response = await request.post(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: { string: '0' },
+        assets: Buffer.from('Test resource a'),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.data).toStrictEqual({
+      error: 'Bad Request',
+      message: 'Validation failed for resource type testAssets',
+      statusCode: 400,
+      data: [
+        {
+          argument: 'format',
+          message: 'is not referenced from the resource',
+          name: 'binary',
+          path: ['assets', 0],
+        },
+      ],
     });
   });
 });

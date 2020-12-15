@@ -51,6 +51,7 @@
     "is-ip": "^3.1.0",
     "is-svg": "^4.2.1",
     "js-yaml": "^3.14.1",
+    "jsonschema": "^1.4.0",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
     "koa-compose": "^4.1.0",

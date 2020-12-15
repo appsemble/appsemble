@@ -8,22 +8,29 @@ import {
 } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
+import { ValidationError, Validator } from 'jsonschema';
+import { File } from 'koas-body-parser';
 import { pick } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
 import { Op, Order, WhereOptions } from 'sequelize';
+import { JsonObject } from 'type-fest';
+import { v4 } from 'uuid';
 
 import {
   App,
   AppSubscription,
+  Asset,
   Organization,
   Resource,
   ResourceSubscription,
   TeamMember,
+  transactional,
   User,
 } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
+import { handleValidatorResult } from '../utils/jsonschema';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
 import { processHooks, processReferenceHooks, renameOData } from '../utils/resource';
 
@@ -504,16 +511,27 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
 export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    request: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      body: { $expires = null, id: _, ...resource },
-    },
+    request: { body },
     user,
   } = ctx;
+  let $expires: string;
+  let resource: JsonObject;
+  let assets: File[];
+  if (ctx.is('multipart/form-data')) {
+    ({
+      assets,
+      resource: { $expires, ...resource },
+    } = body);
+  } else {
+    ({ $expires, ...resource } = body);
+    assets = [];
+  }
+  delete resource.id;
   const action = 'create';
 
-  const app = await App.findByPk(appId, {
-    ...(user && {
+  const app = await App.findByPk(
+    appId,
+    user && {
       include: [
         { model: Organization, attributes: ['id'] },
         {
@@ -524,25 +542,57 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
           through: { attributes: ['role'] },
         },
       ],
-    }),
-  });
+    },
+  );
 
   verifyResourceDefinition(app, resourceType);
   await verifyPermission(ctx, app, resourceType, action);
 
   const { expires, schema } = app.definition.resources[resourceType];
-
-  try {
-    await validate(schema, resource);
-  } catch (err: unknown) {
-    if (!(err instanceof SchemaValidationError)) {
-      throw err;
+  const validator = new Validator();
+  const assetIdMap = new Map<number, string>();
+  const assetUsedMap = new Map<number, boolean>();
+  const preparedAssets = assets.map(({ contents, filename, mime }, index) => {
+    const id = v4();
+    assetIdMap.set(index, id);
+    assetUsedMap.set(index, false);
+    return { data: contents, filename, id, mime };
+  });
+  validator.customFormats.binary = (input) => {
+    if (!/^\d+$/.test(input)) {
+      return false;
     }
+    const num = Number(input);
+    return num >= 0 && num < assets.length;
+  };
 
-    const boom = badRequest(err.message);
-    (boom.output.payload as any).data = err.data;
-    throw boom;
-  }
+  const result = validator.validate(resource, schema, {
+    base: '#',
+    rewrite(value, { format }) {
+      if (format === 'binary') {
+        assetUsedMap.set(Number(value), true);
+        return assetIdMap.get(Number(value));
+      }
+      return value;
+    },
+  });
+
+  assetUsedMap.forEach((used, assetId) => {
+    if (!used) {
+      result.errors.push(
+        new ValidationError(
+          'is not referenced from the resource',
+          assetId,
+          null,
+          ['assets', assetId],
+          'binary',
+          'format',
+        ),
+      );
+    }
+  });
+
+  handleValidatorResult(result, `Validation failed for resource type ${resourceType}`);
 
   let expireDate: Date;
   // Manual $expire takes precedence over the default calculated expiration date
@@ -559,12 +609,21 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     }
   }
 
-  const createdResource = await Resource.create({
-    AppId: app.id,
-    type: resourceType,
-    data: resource,
-    UserId: user?.id,
-    expires: expireDate,
+  await user?.reload({ attributes: ['name'] });
+  let createdResource: Resource;
+  await transactional(async (transaction) => {
+    createdResource = await Resource.create(
+      { AppId: app.id, type: resourceType, data: resource, UserId: user?.id, expires: expireDate },
+      { transaction },
+    );
+    await Asset.bulkCreate(
+      preparedAssets.map((asset) => ({
+        ...asset,
+        ResourceId: createdResource.id,
+        UserId: user?.id,
+      })),
+      { logging: false, transaction },
+    );
   });
 
   ctx.body = {
@@ -572,14 +631,9 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     id: createdResource.id,
     $created: createdResource.created,
     $updated: createdResource.updated,
-    ...(createdResource.expires != null && {
-      $expires: createdResource.expires,
-    }),
-    ...(resource.UserId != null && {
-      $author: { id: resource.UserId, name: resource.User.name },
-    }),
+    $expires: createdResource.expires ?? undefined,
+    $author: user ? { id: user.id, name: user.name } : undefined,
   };
-  ctx.status = 201;
 
   processReferenceHooks(ctx.argv.host, ctx.user, app, createdResource, action);
   processHooks(ctx.argv.host, ctx.user, app, createdResource, action);
