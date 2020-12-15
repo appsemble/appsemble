@@ -1,6 +1,7 @@
 export * from './$filter';
 export * from './$orderby';
 export * from './$select';
+export * from './$team';
 export * from './$top';
 export * from './appId';
 export * from './appOAuth2SecretId';
