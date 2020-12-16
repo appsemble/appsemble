@@ -23,7 +23,7 @@
   "app.src.components.EmailLogin.passwordLabel": "Mot de passe",
   "app.src.components.EmailLogin.usernameError": "Ceci doit être une adresse courriel valide",
   "app.src.components.EmailLogin.usernameLabel": "Courriel",
-  "app.src.components.ErrorFallback.home": "",
+  "app.src.components.ErrorFallback.home": "Retour à l'accueil",
   "app.src.components.ErrorFallback.message": "Une erreur inattendue s'est produite.",
   "app.src.components.OpenIDCallback.accessDenied": "L’accès a été refusé",
   "app.src.components.OpenIDCallback.error": "Une erreur inattendue s’est produite lors de la connexion",
@@ -39,7 +39,7 @@
   "app.src.components.SentryFeedback.feedback": "",
   "app.src.components.SideMenuButton.label": "Ouvrir le menu",
   "app.src.components.SideNavigation.feedback": "",
-  "app.src.components.SideNavigation.login": "",
-  "app.src.components.SideNavigation.logout": "",
+  "app.src.components.SideNavigation.login": "Se connecter",
+  "app.src.components.SideNavigation.logout": "Se déconnecter",
   "app.src.components.SideNavigation.settings": "Paramètres"
 }
