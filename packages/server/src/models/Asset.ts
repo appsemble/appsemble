@@ -1,10 +1,10 @@
 import {
   AllowNull,
-  AutoIncrement,
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
+  Default,
   DeletedAt,
   ForeignKey,
   Model,
@@ -18,9 +18,9 @@ import { App, User } from '.';
 @Table({ tableName: 'Asset', paranoid: true })
 export class Asset extends Model {
   @PrimaryKey
-  @AutoIncrement
+  @Default(DataType.UUIDV4)
   @Column
-  id: number;
+  id: string;
 
   @Column
   mime: string;

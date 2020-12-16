@@ -67,7 +67,7 @@ interface AssetMarkerIcon {
   /**
    * The id of an asset to use.
    */
-  asset: number;
+  asset: string;
 }
 
 declare module '@appsemble/sdk' {

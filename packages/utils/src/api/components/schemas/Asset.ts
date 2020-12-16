@@ -5,7 +5,7 @@ export const Asset: OpenAPIV3.NonArraySchemaObject = {
   description: 'The response object of an asset create call.',
   properties: {
     id: {
-      type: 'integer',
+      type: 'string',
       readOnly: true,
       description: 'The unique identifier for the asset.',
     },
