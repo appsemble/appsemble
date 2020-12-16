@@ -12,7 +12,7 @@ export const key = '0.16.0';
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Changing colmun Asset.id to String type');
+  logger.info('Changing column Asset.id to String type');
   await queryInterface.addColumn('Asset', 'newId', DataTypes.STRING);
   await db.query('UPDATE "Asset" set "newId" = CAST (id AS text)');
   await queryInterface.removeColumn('Asset', 'id');
