@@ -211,7 +211,7 @@ describe('createAsset', () => {
     });
     expect(createResponse).toMatchObject({
       status: 201,
-      data: { id: expect.any(Number) },
+      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
     });
 
     const getResponse = await request.get(`/api/apps/${app.id}/assets/${createResponse.data.id}`, {
@@ -232,7 +232,7 @@ describe('createAsset', () => {
     });
     expect(response).toMatchObject({
       status: 201,
-      data: { id: expect.any(Number) },
+      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
     });
   });
 
@@ -253,7 +253,7 @@ describe('createAsset', () => {
     expect(asset.UserId).toStrictEqual(user.id);
     expect(response).toMatchObject({
       status: 201,
-      data: { id: expect.any(Number) },
+      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
     });
   });
 });

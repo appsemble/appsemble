@@ -107,7 +107,7 @@ export interface Utils {
    * @param assetId - The id of the asset whose URL to get.
    * @returns The URL that matches the given asset id.
    */
-  asset: (assetId: number | string) => string;
+  asset: (assetId: string) => string;
 }
 
 export interface Events {
