@@ -645,7 +645,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['teams:read'] }],
     },
     post: {
       tags: ['app'],
