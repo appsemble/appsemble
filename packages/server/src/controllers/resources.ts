@@ -558,6 +558,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     await Asset.bulkCreate(
       preparedAssets.map((asset) => ({
         ...asset,
+        AppId: app.id,
         ResourceId: createdResource.id,
         UserId: user?.id,
       })),
@@ -640,6 +641,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
       Asset.bulkCreate(
         preparedAssets.map((asset) => ({
           ...asset,
+          AppId: app.id,
           ResourceId: resource.id,
           UserId: user?.id,
         })),

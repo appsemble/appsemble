@@ -1140,7 +1140,7 @@ describe('createResource', () => {
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
       {
-        AppId: null,
+        AppId: app.id,
         ResourceId: 1,
         UserId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
@@ -1490,7 +1490,7 @@ describe('updateResource', () => {
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
       {
-        AppId: null,
+        AppId: app.id,
         ResourceId: 1,
         UserId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
