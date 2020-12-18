@@ -1181,7 +1181,7 @@ describe('createResource', () => {
     });
   });
 
-  it('should block unuknown asset references', async () => {
+  it('should block unknown asset references', async () => {
     const app = await exampleApp(organizationId);
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
