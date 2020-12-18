@@ -599,11 +599,6 @@ export interface RequestLikeActionDefinition<
   base?: string;
 
   /**
-   * Specify how to handle blobs in the object to upload.
-   */
-  blobs?: BlobUploadType;
-
-  /**
    * The HTTP method to use for making a request.
    */
   method?: HTTPMethods;
@@ -629,11 +624,6 @@ export interface RequestLikeActionDefinition<
    * The URL to which to make the request.
    */
   url?: Remapper;
-
-  /**
-   * How to serialize the request body.
-   */
-  serialize?: 'formdata';
 }
 
 export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
