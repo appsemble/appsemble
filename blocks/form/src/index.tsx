@@ -5,7 +5,7 @@ import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import { Values } from '../block';
-import { FieldGroup } from './components/FieldGroup';
+import { FormInput } from './components/FormInput';
 import styles from './index.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
 import { generateDefaultValues } from './utils/generateDefaultValues';
@@ -48,7 +48,7 @@ bootstrap(
 
     const onChange = useCallback(
       async (name: string, value: Values) => {
-        setValues(value);
+        setValues((oldValues) => ({ ...oldValues, [name]: value }));
         events.emit.change(value);
 
         if (!requirements?.length) {
@@ -136,13 +136,17 @@ bootstrap(
         >
           <span>{utils.remap(submitError, values)}</span>
         </Message>
-        <FieldGroup
-          disabled={loading || submitting}
-          errors={errors}
-          fields={fields}
-          onChange={onChange}
-          value={values}
-        />
+        {fields.map((f) => (
+          <FormInput
+            disabled={loading || submitting}
+            error={errors[f.name]}
+            field={f}
+            key={f.name}
+            name={f.name}
+            onChange={onChange}
+            value={values[f.name]}
+          />
+        ))}
         <FormButtons className="mt-4">
           {previousLabel && (
             <Button className="mr-4" disabled={loading || submitting} onClick={onPrevious}>
