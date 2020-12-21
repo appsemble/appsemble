@@ -68,11 +68,10 @@ bootstrap(
             }
             try {
               return await actions[requirement.action].dispatch(value);
-            } catch {
-              error = utils.remap(
-                requirement.errorMessage ?? utils.remap(formRequirementError, {}),
-                value,
-              );
+            } catch (errorResponse: unknown) {
+              error = utils.remap(requirement.errorMessage ?? formRequirementError, value, {
+                error: errorResponse,
+              });
             }
           }),
         );
