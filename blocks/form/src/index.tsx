@@ -112,8 +112,22 @@ bootstrap(
         const newValues = { ...defaultValues, ...d };
         setLoading(false);
         setValues(newValues);
+
+        let error: string;
+        Promise.all(
+          requirements.map((requirement) =>
+            actions[requirement.action].dispatch(newValues).catch((errorResponse) => {
+              error ||= utils.remap(requirement.errorMessage ?? formRequirementError, newValues, {
+                error: errorResponse,
+              });
+            }),
+          ),
+        ).then((patchedValues) => {
+          setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
+          setFormError(error);
+        });
       },
-      [defaultValues],
+      [actions, defaultValues, formRequirementError, requirements, utils],
     );
 
     useEffect(() => {
