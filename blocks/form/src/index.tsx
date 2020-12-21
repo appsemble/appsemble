@@ -48,7 +48,6 @@ bootstrap(
     const lock = useRef<symbol>();
 
     const onChange = useCallback((name: string, value: Values) => {
-      // Console.log({ name, value });
       setValues((oldValues) => ({ ...oldValues, [name]: value }));
       setLastChanged(name);
     }, []);
