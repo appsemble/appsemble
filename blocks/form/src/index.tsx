@@ -62,7 +62,6 @@ bootstrap(
       const pendingRequirements = requirements?.filter(
         ({ isValid }) => isValid.includes(lastChanged) && isFormValid(errors, isValid),
       );
-      // Console.log({ lastChanged, pendingRequirements });
       // If there are no pending requirements checks, don’t run asynchronous validation.
       if (!pendingRequirements.length) {
         return;
@@ -72,7 +71,6 @@ bootstrap(
       lock.current = token;
 
       let error: string;
-      // Console.log('Running requirements checks!');
       Promise.all(
         pendingRequirements.map((requirement) =>
           actions[requirement.action].dispatch(values).catch((errorResponse) => {
@@ -82,7 +80,6 @@ bootstrap(
           }),
         ),
       ).then((patchedValues) => {
-        // Console.log({ patchedValues, error });
         if (lock.current !== token) {
           return;
         }
