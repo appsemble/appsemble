@@ -38,6 +38,7 @@ bootstrap(
     const [submitting, setSubmitting] = useState(false);
 
     const [values, setValues] = useState(defaultValues);
+    const [lastChanged, setLastChanged] = useState<string>(null);
     const errors = useMemo(() => generateDefaultValidity(fields, values, utils), [
       fields,
       utils,
@@ -46,45 +47,50 @@ bootstrap(
 
     const lock = useRef<symbol>();
 
-    const onChange = useCallback(
-      async (name: string, value: Values) => {
-        setValues((oldValues) => ({ ...oldValues, [name]: value }));
-        events.emit.change(value);
+    const onChange = useCallback((name: string, value: Values) => {
+      // Console.log({ name, value });
+      setValues((oldValues) => ({ ...oldValues, [name]: value }));
+      setLastChanged(name);
+    }, []);
 
-        if (!requirements?.length) {
-          return;
-        }
+    useEffect(() => {
+      events.emit.change(values);
 
-        const token = Symbol('Async requirements lock');
-        lock.current = token;
+      if (!lastChanged) {
+        return;
+      }
+      // Flter requirements whose dependencies haven’t changed and whose dependencies are valid.
+      const pendingRequirements = requirements?.filter(
+        ({ isValid }) => isValid.includes(lastChanged) && isFormValid(errors, isValid),
+      );
+      // Console.log({ lastChanged, pendingRequirements });
+      // If there are no pending requirements checks, don’t run asynchronous validation.
+      if (!pendingRequirements.length) {
+        return;
+      }
 
-        let error;
-        const err = generateDefaultValidity(fields, value, utils);
-        const patchedValues = await Promise.all(
-          requirements.map(async (requirement) => {
-            if (!isFormValid(err, requirement.isValid)) {
-              return;
-            }
-            try {
-              return await actions[requirement.action].dispatch(value);
-            } catch (errorResponse: unknown) {
-              error = utils.remap(requirement.errorMessage ?? formRequirementError, value, {
-                error: errorResponse,
-              });
-            }
+      const token = Symbol('Async requirements lock');
+      lock.current = token;
+
+      let error: string;
+      // Console.log('Running requirements checks!');
+      Promise.all(
+        pendingRequirements.map((requirement) =>
+          actions[requirement.action].dispatch(values).catch((errorResponse) => {
+            error ||= utils.remap(requirement.errorMessage ?? formRequirementError, values, {
+              error: errorResponse,
+            });
           }),
-        );
-
+        ),
+      ).then((patchedValues) => {
+        // Console.log({ patchedValues, error });
         if (lock.current !== token) {
           return;
         }
-        const newValues = Object.assign({}, value, ...patchedValues);
-        events.emit.change(newValues);
-        setValues(newValues);
+        setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
         setFormError(error);
-      },
-      [actions, events, fields, formRequirementError, requirements, utils],
-    );
+      });
+    }, [actions, errors, events, formRequirementError, lastChanged, requirements, utils, values]);
 
     const onSubmit = useCallback(() => {
       if (!submitting) {
@@ -113,6 +119,10 @@ bootstrap(
       },
       [defaultValues],
     );
+
+    useEffect(() => {
+      events.emit.change(values);
+    }, [events, values]);
 
     useEffect(() => {
       // If a listener is present, wait until data has been received

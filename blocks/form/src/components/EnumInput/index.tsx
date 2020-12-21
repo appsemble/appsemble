@@ -33,7 +33,7 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
     }
 
     const handleOptions = (result: Choice[]): void => {
-      if (!result.find((r) => r.value === value)) {
+      if (!result.find((r) => r.value === value && value !== undefined)) {
         // Explicitly set value to undefined if value does not exist in the new set of options.
         onChange(field.name);
       }
@@ -78,14 +78,14 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
       tag={utils.remap(tag, value)}
       value={value}
     >
-      {(!required || !value) && (
+      {(!required || value === undefined) && (
         <option className={classNames({ [styles.hidden]: required })} value={null}>
           {utils.remap(placeholder, {}) ?? ''}
         </option>
       )}
       {loading ||
         options.map((choice) => (
-          <option key={choice.value} value={choice.value}>
+          <option key={choice.value} selected={choice.value === value} value={choice.value}>
             {utils.remap(choice.label, value) ?? choice.value}
           </option>
         ))}
