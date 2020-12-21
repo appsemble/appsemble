@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import { FieldErrorMap, Values } from '../block';
+import { Values } from '../block';
 import { FieldGroup } from './components/FieldGroup';
 import styles from './index.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
@@ -27,14 +27,9 @@ bootstrap(
     ready,
     utils,
   }) => {
-    const defaultValues = useMemo(() => ({ ...generateDefaultValues(fields), ...data }), [
+    const defaultValues = useMemo<Values>(() => ({ ...generateDefaultValues(fields), ...data }), [
       data,
       fields,
-    ]);
-    const defaultErrors = useMemo(() => generateDefaultValidity(fields, defaultValues, utils), [
-      defaultValues,
-      fields,
-      utils,
     ]);
 
     const [formError, setFormError] = useState<string>(null);
@@ -43,15 +38,18 @@ bootstrap(
     const [submitting, setSubmitting] = useState(false);
 
     const [values, setValues] = useState(defaultValues);
-    const [errors, setErrors] = useState(defaultErrors);
+    const errors = useMemo(() => generateDefaultValidity(fields, values, utils), [
+      fields,
+      utils,
+      values,
+    ]);
 
     const lock = useRef<symbol>();
 
     const onChange = useCallback(
-      async (name: string, value: Values, err: FieldErrorMap) => {
+      async (name: string, value: Values) => {
         setValues(value);
         events.emit.change(value);
-        setErrors(err);
 
         if (!requirements?.length) {
           return;
@@ -61,6 +59,7 @@ bootstrap(
         lock.current = token;
 
         let error;
+        const err = generateDefaultValidity(fields, value, utils);
         const patchedValues = await Promise.all(
           requirements.map(async (requirement) => {
             if (!isFormValid(err, requirement.isValid)) {
@@ -82,7 +81,6 @@ bootstrap(
         const newValues = Object.assign({}, value, ...patchedValues);
         events.emit.change(newValues);
         setValues(newValues);
-        setErrors(generateDefaultValidity(fields, newValues, utils));
         setFormError(error);
       },
       [actions, events, fields, formRequirementError, requirements, utils],
@@ -112,9 +110,8 @@ bootstrap(
         const newValues = { ...defaultValues, ...d };
         setLoading(false);
         setValues(newValues);
-        setErrors(generateDefaultValidity(fields, newValues, utils));
       },
-      [defaultValues, fields, utils],
+      [defaultValues],
     );
 
     useEffect(() => {

@@ -24,8 +24,8 @@ export function ObjectEntry({
   value,
 }: ObjectEntryProps): VNode {
   const onChangeIndex = useCallback(
-    (localName: string, values: Values | Values, errors: FieldErrorMap) => {
-      onChange(String(index), values, errors);
+    (localName: string, values: Values | Values) => {
+      onChange(String(index), values);
     },
     [index, onChange],
   );
