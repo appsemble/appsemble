@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/table",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "private": true,
   "description": "A block that can be used to display larger sets of data.",
   "homepage": "https://appsemble.app",
@@ -16,9 +16,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.16.0",
-    "@appsemble/preact-components": "0.16.0",
-    "@appsemble/utils": "0.16.0",
+    "@appsemble/preact": "0.16.1",
+    "@appsemble/preact-components": "0.16.1",
+    "@appsemble/utils": "0.16.1",
     "@fortawesome/fontawesome-common-types": "^0.2.30",
     "preact": "^10.5.7"
   }

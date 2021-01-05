@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.16.1](https://gitlab.com/appsemble/appsemble/-/releases/0.16.1)] - 2021-01-05
+
+### Fixed
+
+- Block(`form`): Fix issue where form validation overwrites unresolved errors.
+
 ## \[[0.16.0](https://gitlab.com/appsemble/appsemble/-/releases/0.16.0)] - 2020-12-21
 
 ### Changed
