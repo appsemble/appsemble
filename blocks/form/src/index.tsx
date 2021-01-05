@@ -92,17 +92,62 @@ bootstrap(
     const onSubmit = useCallback(() => {
       if (!submitting) {
         setSubmitting(true);
-        actions.onSubmit
-          .dispatch(values)
-          .catch((error) => {
-            // Log the error to the console for troubleshooting.
-            // eslint-disable-next-line no-console
-            console.error(error);
-            setSubmitError(true);
-          })
-          .finally(() => setSubmitting(false));
+        const keys = fields.map((field) => field.name);
+
+        if (!isFormValid(errors, keys)) {
+          setSubmitting(false);
+          return;
+        }
+
+        let error: string;
+        Promise.all(
+          (requirements || []).map(async (requirement) => {
+            try {
+              return await actions[requirement.action].dispatch(values);
+            } catch {
+              error = utils.remap(
+                requirement.errorMessage ?? utils.remap(formRequirementError, {}),
+                values,
+              );
+            }
+          }),
+        ).then((patchedValues) => {
+          if (error) {
+            setFormError(error);
+          }
+
+          const newValues = Object.assign({}, values, ...patchedValues);
+          if (newValues !== values) {
+            setValues(newValues);
+            events.emit.change(newValues);
+          }
+
+          const err = generateDefaultValidity(fields, newValues, utils);
+          setErrors(err);
+          if (isFormValid(errors, keys)) {
+            actions.onSubmit
+              .dispatch(values)
+              .catch((submitActionError: unknown) => {
+                // Log the error to the console for troubleshooting.
+                // eslint-disable-next-line no-console
+                console.error(submitActionError);
+                setSubmitError(true);
+              })
+              .finally(() => setSubmitting(false));
+          }
+        });
       }
-    }, [actions, submitting, values]);
+    }, [
+      actions,
+      errors,
+      events,
+      fields,
+      formRequirementError,
+      requirements,
+      submitting,
+      utils,
+      values,
+    ]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious.dispatch(values);
