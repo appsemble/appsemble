@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/button-list",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "private": true,
   "description": "A block that renders list of actionable buttons",
   "homepage": "https://appsemble.app",
@@ -16,9 +16,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.16.0",
-    "@appsemble/preact-components": "0.16.0",
-    "@appsemble/sdk": "0.16.0",
+    "@appsemble/preact": "0.16.1",
+    "@appsemble/preact-components": "0.16.1",
+    "@appsemble/sdk": "0.16.1",
     "@fortawesome/fontawesome-common-types": "^0.2.32",
     "classnames": "^2.2.6",
     "preact": "^10.5.7"
