@@ -77,14 +77,17 @@ bootstrap(
       const requirementErrors = new Map<number, string>();
       Promise.all(
         pendingRequirements.map((requirement) =>
-          actions[requirement.action].dispatch(values).catch((errorResponse) => {
-            requirementErrors.set(
-              requirements.indexOf(requirement),
-              utils.remap(requirement.errorMessage ?? formRequirementError, values, {
-                error: errorResponse,
-              }),
-            );
-          }),
+          actions[requirement.action].dispatch(values).then(
+            () => requirementErrors.set(requirements.indexOf(requirement), null),
+            (errorResponse) => {
+              requirementErrors.set(
+                requirements.indexOf(requirement),
+                utils.remap(requirement.errorMessage ?? formRequirementError, values, {
+                  error: errorResponse,
+                }),
+              );
+            },
+          ),
         ),
       ).then((patchedValues) => {
         if (lock.current !== token) {
@@ -128,14 +131,17 @@ bootstrap(
         const requirementErrors = new Map<number, string>();
         Promise.all(
           requirements.map((requirement) =>
-            actions[requirement.action].dispatch(newValues).catch((errorResponse) => {
-              requirementErrors.set(
-                requirements.indexOf(requirement),
-                utils.remap(requirement.errorMessage ?? formRequirementError, newValues, {
-                  error: errorResponse,
-                }),
-              );
-            }),
+            actions[requirement.action].dispatch(newValues).then(
+              () => requirementErrors.set(requirements.indexOf(requirement), null),
+              (errorResponse) => {
+                requirementErrors.set(
+                  requirements.indexOf(requirement),
+                  utils.remap(requirement.errorMessage ?? formRequirementError, newValues, {
+                    error: errorResponse,
+                  }),
+                );
+              },
+            ),
           ),
         ).then((patchedValues) => {
           setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
