@@ -32,7 +32,9 @@ bootstrap(
       fields,
     ]);
 
-    const [formError, setFormError] = useState<string>(null);
+    const [formErrors, setFormErrors] = useState<string[]>(
+      new Array(requirements.length).fill(null),
+    );
     const [hasSubmitError, setSubmitError] = useState(false);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -58,10 +60,12 @@ bootstrap(
       if (!lastChanged) {
         return;
       }
+
       // Flter requirements whose dependencies haven’t changed and whose dependencies are valid.
       const pendingRequirements = requirements?.filter(
         ({ isValid }) => isValid.includes(lastChanged) && isFormValid(errors, isValid),
       );
+
       // If there are no pending requirements checks, don’t run asynchronous validation.
       if (!pendingRequirements.length) {
         return;
@@ -70,13 +74,16 @@ bootstrap(
       const token = Symbol('Async requirements lock');
       lock.current = token;
 
-      let error: string;
+      const requirementErrors = new Map<number, string>();
       Promise.all(
         pendingRequirements.map((requirement) =>
           actions[requirement.action].dispatch(values).catch((errorResponse) => {
-            error ||= utils.remap(requirement.errorMessage ?? formRequirementError, values, {
-              error: errorResponse,
-            });
+            requirementErrors.set(
+              requirements.indexOf(requirement),
+              utils.remap(requirement.errorMessage ?? formRequirementError, values, {
+                error: errorResponse,
+              }),
+            );
           }),
         ),
       ).then((patchedValues) => {
@@ -84,7 +91,12 @@ bootstrap(
           return;
         }
         setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
-        setFormError(error);
+        setLastChanged(null);
+        setFormErrors((oldErrors) =>
+          oldErrors.map((old, index) =>
+            requirementErrors.has(index) ? requirementErrors.get(index) : old,
+          ),
+        );
       });
     }, [actions, errors, events, formRequirementError, lastChanged, requirements, utils, values]);
 
@@ -113,18 +125,25 @@ bootstrap(
         setLoading(false);
         setValues(newValues);
 
-        let error: string;
+        const requirementErrors = new Map<number, string>();
         Promise.all(
           requirements.map((requirement) =>
             actions[requirement.action].dispatch(newValues).catch((errorResponse) => {
-              error ||= utils.remap(requirement.errorMessage ?? formRequirementError, newValues, {
-                error: errorResponse,
-              });
+              requirementErrors.set(
+                requirements.indexOf(requirement),
+                utils.remap(requirement.errorMessage ?? formRequirementError, newValues, {
+                  error: errorResponse,
+                }),
+              );
             }),
           ),
         ).then((patchedValues) => {
           setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
-          setFormError(error);
+          setFormErrors((oldErrors) =>
+            oldErrors.map((old, index) =>
+              requirementErrors.has(index) ? requirementErrors.get(index) : old,
+            ),
+          );
         });
       },
       [actions, defaultValues, formRequirementError, requirements, utils],
@@ -145,10 +164,11 @@ bootstrap(
       <Form className={`${styles.root} is-flex px-2 py-2`} onSubmit={onSubmit}>
         {loading && <progress className="progress is-small is-primary" />}
         <Message
-          className={classNames(styles.error, { [styles.hidden]: !formError })}
+          className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
         >
-          <span>{formError}</span>
+          {/* Render the first form error */}
+          <span>{formErrors.find(Boolean)}</span>
         </Message>
         <Message
           className={classNames(styles.error, { [styles.hidden]: !hasSubmitError })}
@@ -175,7 +195,7 @@ bootstrap(
           )}
           <Button
             color="primary"
-            disabled={loading || submitting || Boolean(formError) || !isFormValid(errors)}
+            disabled={loading || submitting || Boolean(formErrors) || !isFormValid(errors)}
             type="submit"
           >
             {utils.remap(submitLabel, {})}
