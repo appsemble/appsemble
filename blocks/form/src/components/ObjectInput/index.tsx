@@ -3,8 +3,7 @@ import { Button, FormButtons } from '@appsemble/preact-components';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FieldError, FieldErrorMap, InputProps, ObjectField, Values } from '../../../block';
-import { generateDefaultValidity } from '../../utils/generateDefaultValidity';
+import { FieldError, InputProps, ObjectField, Values } from '../../../block';
 import { generateDefaultValues } from '../../utils/generateDefaultValues';
 import { getMaxLength, getMinLength } from '../../utils/requirements';
 import { ObjectEntry } from '../ObjectEntry';
@@ -29,37 +28,28 @@ export function ObjectInput({
   const maxLength = getMaxLength(field);
 
   const changeArray = useCallback(
-    (localName: string, val: Values | Values, err: FieldErrorMap) => {
+    (localName: string, val: Values | Values) => {
       const index = Number(localName);
       onChange(
         localName,
         values.map((v, i) => (index === i ? val : v)),
-        errors.map((e, i) => (index === i ? err : e)),
       );
     },
-    [errors, onChange, values],
+    [onChange, values],
   );
 
   const addEntry = useCallback(() => {
     const newEntry = generateDefaultValues(field.fields);
-    onChange(
-      field.name,
-      [...(value as Values[]), newEntry],
-      [...(error as FieldError[]), generateDefaultValidity(field.fields, newEntry, utils)],
-    );
-  }, [error, field, onChange, utils, value]);
+    onChange(field.name, [...(value as Values[]), newEntry]);
+  }, [field, onChange, value]);
 
   const removeEntry = useCallback(
     (event: h.JSX.TargetedMouseEvent<HTMLButtonElement>) => {
       const index = Number(event.currentTarget.name);
 
-      onChange(
-        field.name,
-        values.slice(0, index).concat(values.slice(index + 1)),
-        errors.slice(0, index).concat(errors.slice(index + 1)),
-      );
+      onChange(field.name, values.slice(0, index).concat(values.slice(index + 1)));
     },
-    [errors, field, onChange, values],
+    [field, onChange, values],
   );
 
   return (

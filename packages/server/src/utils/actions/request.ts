@@ -36,7 +36,7 @@ export async function request({
       sub: user.id,
       name: user.name,
       email: user.primaryEmail,
-      email_verified: user.EmailAuthorizations[0].verified,
+      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
     },
   );
   const axiosConfig = formatRequestAction({ ...action, method }, data, (remapper, d) =>

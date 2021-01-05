@@ -1,5 +1,5 @@
 import { applyRefs } from '@appsemble/react-components';
-import { editor, KeyCode, KeyMod, Range, Uri } from 'monaco-editor';
+import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -86,7 +86,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
         };
       }
 
-      const model = editor.createModel('', 'yaml', Uri.parse('app.yaml'));
+      const model = editor.createModel('', 'yaml');
       const ed = editor.create(node, { ...options, model });
       ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
 
