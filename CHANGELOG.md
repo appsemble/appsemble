@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.16.2](https://gitlab.com/appsemble/appsemble/-/releases/0.16.2)] - 2021-01-06
+
+### Fixed
+
+- Block(`form`): Fix issue where submit button is incorrectly disabled.
+
 ## \[[0.16.1](https://gitlab.com/appsemble/appsemble/-/releases/0.16.1)] - 2021-01-05
 
 ### Fixed

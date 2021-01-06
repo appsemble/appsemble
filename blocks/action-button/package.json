@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/action-button",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "private": true,
   "description": "A simple button that performs an action when clicked.",
   "homepage": "https://appsemble.app",
@@ -16,7 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.16.1",
+    "@appsemble/sdk": "0.16.2",
     "@fortawesome/fontawesome-common-types": "^0.2.32"
   }
 }
