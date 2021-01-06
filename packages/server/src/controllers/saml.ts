@@ -252,6 +252,9 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
         (await User.create({ name: name || nameId, primaryEmail: email }, { transaction }));
 
       if (email) {
+        if (!user.primaryEmail) {
+          await user.update({ primaryEmail: email });
+        }
         await EmailAuthorization.create({ email, UserId: user.id }, { transaction });
       }
 
