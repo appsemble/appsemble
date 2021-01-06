@@ -1,5 +1,5 @@
 {
-  "extends": "../../../../../../../tsconfig",
+  "extends": "../../../../../tsconfig",
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "types": []

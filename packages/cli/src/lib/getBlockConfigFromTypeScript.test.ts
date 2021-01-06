@@ -1,16 +1,10 @@
-import { join } from 'path';
-
-import { AppsembleError } from '@appsemble/node-utils';
+import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import ts from 'typescript';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
-function fixture(filename: string): string {
-  return join(__dirname, '__fixtures__/getBlockConfigFromTypeScript', filename);
-}
-
 beforeEach(() => {
-  jest.spyOn(process, 'cwd').mockReturnValue(__dirname);
+  jest.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));
 });
 
 describe('getBlockConfigFromTypeScript', () => {
@@ -21,7 +15,7 @@ describe('getBlockConfigFromTypeScript', () => {
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: fixture('valid'),
+      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
     });
     expect(result).toStrictEqual({
       actions: { testAction: { description: undefined } },
@@ -66,7 +60,7 @@ describe('getBlockConfigFromTypeScript', () => {
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: fixture('valid'),
+      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
       name: '',
     } as const;
     const result = getBlockConfigFromTypeScript(input);
@@ -81,7 +75,7 @@ describe('getBlockConfigFromTypeScript', () => {
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: fixture('valid'),
+      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
       name: '',
     });
 
@@ -94,7 +88,7 @@ describe('getBlockConfigFromTypeScript', () => {
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: fixture('valid'),
+      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
       name: '',
     });
 
@@ -107,7 +101,7 @@ describe('getBlockConfigFromTypeScript', () => {
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: fixture('valid'),
+      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
       name: '',
     });
 
@@ -119,13 +113,13 @@ describe('getBlockConfigFromTypeScript', () => {
       getBlockConfigFromTypeScript({
         webpack: '',
         output: '',
-        dir: fixture('duplicateActions'),
+        dir: resolveFixture('getBlockConfigFromTypeScript/duplicateActions'),
         name: '',
         version: '1.33.7',
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'Actions' in '__fixtures__/getBlockConfigFromTypeScript/duplicateActions/index.ts:31'",
+        "Found duplicate interface 'Actions' in 'getBlockConfigFromTypeScript/duplicateActions/index.ts:31'",
       ),
     );
   });
@@ -135,13 +129,13 @@ describe('getBlockConfigFromTypeScript', () => {
       getBlockConfigFromTypeScript({
         webpack: '',
         output: '',
-        dir: fixture('duplicateEventEmitters'),
+        dir: resolveFixture('getBlockConfigFromTypeScript/duplicateEventEmitters'),
         name: '',
         version: '1.33.7',
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'EventEmitters' in '__fixtures__/getBlockConfigFromTypeScript/duplicateEventEmitters/index.ts:31'",
+        "Found duplicate interface 'EventEmitters' in 'getBlockConfigFromTypeScript/duplicateEventEmitters/index.ts:31'",
       ),
     );
   });
@@ -151,13 +145,13 @@ describe('getBlockConfigFromTypeScript', () => {
       getBlockConfigFromTypeScript({
         webpack: '',
         output: '',
-        dir: fixture('duplicateEventListeners'),
+        dir: resolveFixture('getBlockConfigFromTypeScript/duplicateEventListeners'),
         name: '',
         version: '1.33.7',
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'EventListeners' in '__fixtures__/getBlockConfigFromTypeScript/duplicateEventListeners/index.ts:31'",
+        "Found duplicate interface 'EventListeners' in 'getBlockConfigFromTypeScript/duplicateEventListeners/index.ts:31'",
       ),
     );
   });
@@ -167,13 +161,13 @@ describe('getBlockConfigFromTypeScript', () => {
       getBlockConfigFromTypeScript({
         webpack: '',
         output: '',
-        dir: fixture('duplicateParameters'),
+        dir: resolveFixture('getBlockConfigFromTypeScript/duplicateParameters'),
         name: '',
         version: '1.33.7',
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'Parameters' in '__fixtures__/getBlockConfigFromTypeScript/duplicateParameters/index.ts:31'",
+        "Found duplicate interface 'Parameters' in 'getBlockConfigFromTypeScript/duplicateParameters/index.ts:31'",
       ),
     );
   });
@@ -182,7 +176,7 @@ describe('getBlockConfigFromTypeScript', () => {
     const result = getBlockConfigFromTypeScript({
       webpack: '',
       output: '',
-      dir: fixture('fontawesomeParameters'),
+      dir: resolveFixture('getBlockConfigFromTypeScript/fontawesomeParameters'),
       name: '',
       version: '1.33.7',
     });
@@ -208,7 +202,7 @@ describe('getBlockConfigFromTypeScript', () => {
         version: '1.33.7',
         webpack: '',
         output: '',
-        dir: fixture('tsError'),
+        dir: resolveFixture('getBlockConfigFromTypeScript/tsError'),
       });
     }
     expect(fn).toThrow(AppsembleError);
@@ -222,7 +216,7 @@ describe('getBlockConfigFromTypeScript', () => {
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: fixture('comments'),
+      dir: resolveFixture('getBlockConfigFromTypeScript/comments'),
     });
 
     expect(result).toStrictEqual({
