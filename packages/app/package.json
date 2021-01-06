@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -24,11 +24,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.16.1",
-    "@appsemble/sdk": "0.16.1",
-    "@appsemble/types": "0.16.1",
-    "@appsemble/utils": "0.16.1",
-    "@appsemble/web-utils": "0.16.1",
+    "@appsemble/react-components": "0.16.2",
+    "@appsemble/sdk": "0.16.2",
+    "@appsemble/types": "0.16.2",
+    "@appsemble/utils": "0.16.2",
+    "@appsemble/web-utils": "0.16.2",
     "@browser-logos/chrome": "^1.0.18",
     "@browser-logos/edge": "^2.0.5",
     "@browser-logos/firefox": "^3.0.9",
