@@ -17,6 +17,8 @@ const initialSecret: AppSamlSecret = {
   idpCertificate: '',
   entityId: '',
   ssoUrl: '',
+  emailAttribute: '',
+  nameAttribute: '',
 };
 
 /**

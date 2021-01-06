@@ -4,6 +4,11 @@ import React, { ChangeEvent, ComponentPropsWithoutRef, forwardRef, useCallback }
 export interface InputProps
   extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'loading' | 'onChange' | 'pattern'> {
   /**
+   * If specified, a datalist element will be rendered to provided autocomplete options.
+   */
+  datalist?: string[];
+
+  /**
    * Whether to render the input in an error state.
    */
   error?: boolean;
@@ -47,7 +52,10 @@ export interface InputProps
  * A Bulma styled form input element.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ error, loading, name, onChange, pattern, readOnly, type, id = name, ...props }, ref) => {
+  (
+    { datalist, error, loading, name, onChange, pattern, readOnly, type, id = name, ...props },
+    ref,
+  ) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
@@ -57,21 +65,31 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
 
     return (
-      <input
-        {...props}
-        className={classNames('input', {
-          'has-background-white-bis': readOnly,
-          'is-danger': error,
-          'is-loading': loading,
-        })}
-        id={id}
-        name={name}
-        onChange={handleChange}
-        pattern={pattern instanceof RegExp ? pattern.source : pattern}
-        readOnly={readOnly}
-        ref={ref}
-        type={type}
-      />
+      <>
+        <input
+          {...props}
+          className={classNames('input', {
+            'has-background-white-bis': readOnly,
+            'is-danger': error,
+            'is-loading': loading,
+          })}
+          id={id}
+          list={datalist && `${id}-dataset`}
+          name={name}
+          onChange={handleChange}
+          pattern={pattern instanceof RegExp ? pattern.source : pattern}
+          readOnly={readOnly}
+          ref={ref}
+          type={type}
+        />
+        {datalist && (
+          <datalist id={datalist && `${id}-dataset`}>
+            {datalist.map((option) => (
+              <option key={option} value={option} />
+            ))}
+          </datalist>
+        )}
+      </>
     );
   },
 );

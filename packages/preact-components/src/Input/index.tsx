@@ -1,10 +1,15 @@
 import classNames from 'classnames';
-import { ComponentProps, h } from 'preact';
+import { ComponentProps, Fragment, h } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
 export interface InputProps
   extends Omit<ComponentProps<'input'>, 'label' | 'loading' | 'onChange' | 'onInput' | 'pattern'> {
+  /**
+   * If specified, a datalist element will be rendered to provided autocomplete options.
+   */
+  datalist?: string[];
+
   /**
    * Whether to render the input in an error state.
    */
@@ -41,7 +46,10 @@ export interface InputProps
  * A Bulma styled form input element.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ error, loading, name, onChange, pattern, readOnly, type, id = name, ...props }, ref) => {
+  (
+    { datalist, error, loading, name, onChange, pattern, readOnly, type, id = name, ...props },
+    ref,
+  ) => {
     const handleChange = useCallback(
       (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
@@ -51,21 +59,30 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
 
     return (
-      <input
-        {...props}
-        className={classNames('input', {
-          'has-background-white-bis': readOnly,
-          'is-danger': error,
-          'is-loading': loading,
-        })}
-        id={id}
-        name={name}
-        onInput={handleChange}
-        pattern={pattern instanceof RegExp ? pattern.source : pattern}
-        readOnly={readOnly}
-        ref={ref}
-        type={type}
-      />
+      <Fragment>
+        <input
+          {...props}
+          className={classNames('input', {
+            'has-background-white-bis': readOnly,
+            'is-danger': error,
+            'is-loading': loading,
+          })}
+          id={id}
+          name={name}
+          onInput={handleChange}
+          pattern={pattern instanceof RegExp ? pattern.source : pattern}
+          readOnly={readOnly}
+          ref={ref}
+          type={type}
+        />
+        {datalist && (
+          <datalist id={datalist && `${id}-dataset`}>
+            {datalist.map((option) => (
+              <option key={option} value={option} />
+            ))}
+          </datalist>
+        )}
+      </Fragment>
     );
   },
 );

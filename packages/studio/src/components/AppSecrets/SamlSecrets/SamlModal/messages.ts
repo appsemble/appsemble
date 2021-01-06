@@ -13,6 +13,12 @@ export const messages = defineMessages({
   acsUrlPlaceholder: 'This will be generated once this secret is saved',
   idpEntityIdLabel: 'Identity provider entity ID',
   idpEntityIdHelp: 'This URL serves metadata for the identify provider',
+  emailAttributeLabel: 'Email attribute',
+  emailAttributeHelp:
+    'If specified, this SAML attribute is used to determine the user’s email address',
+  nameAttributeLabel: 'Name attribute',
+  nameAttributeHelp:
+    'If specified, this SAML attribute is used to determine the user’s display name',
   idpCertificateLabel: 'Identity provider certificate',
   idpCertificateHelp: 'The certificate that may be used to validate login requests',
   ssoUrlLabel: 'Login endpoint',
