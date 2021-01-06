@@ -201,7 +201,7 @@ bootstrap(
           )}
           <Button
             color="primary"
-            disabled={loading || submitting || Boolean(formErrors) || !isFormValid(errors)}
+            disabled={loading || submitting || formErrors.some(Boolean) || !isFormValid(errors)}
             type="submit"
           >
             {utils.remap(submitLabel, {})}
