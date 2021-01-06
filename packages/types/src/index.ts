@@ -1273,6 +1273,16 @@ export interface WritableAppSamlSecret {
    * The URL of the identity provider where the user will be redirected to in order to login.
    */
   ssoUrl: string;
+
+  /**
+   * The custom SAML attribute that’s used to specify the user display name.
+   */
+  nameAttribute: string;
+
+  /**
+   * The custom SAML attribute that’s used to specify the user email address.
+   */
+  emailAttribute: string;
 }
 
 export interface AppSamlSecret extends WritableAppSamlSecret {

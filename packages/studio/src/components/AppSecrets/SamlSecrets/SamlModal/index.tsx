@@ -101,6 +101,23 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         validityMessages={{ typeMismatch: <FormattedMessage {...messages.badUrl} /> }}
       />
       <SimpleFormField
+        datalist={['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress']}
+        help={<FormattedMessage {...messages.emailAttributeHelp} />}
+        icon="envelope"
+        label={<FormattedMessage {...messages.emailAttributeLabel} />}
+        name="emailAttribute"
+      />
+      <SimpleFormField
+        datalist={[
+          'http://schemas.microsoft.com/identity/claims/displayname',
+          'http://schemas.microsoft.com/identity/claims/name',
+        ]}
+        help={<FormattedMessage {...messages.nameAttributeHelp} />}
+        icon="user"
+        label={<FormattedMessage {...messages.nameAttributeLabel} />}
+        name="nameAttribute"
+      />
+      <SimpleFormField
         className={styles.certificate}
         component={TextAreaField}
         help={<FormattedMessage {...messages.idpCertificateHelp} />}

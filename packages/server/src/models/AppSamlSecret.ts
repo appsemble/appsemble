@@ -19,7 +19,17 @@ import {
 import { App } from '.';
 
 @DefaultScope(() => ({
-  attributes: ['id', 'idpCertificate', 'entityId', 'ssoUrl', 'name', 'icon', 'spCertificate'],
+  attributes: [
+    'id',
+    'idpCertificate',
+    'entityId',
+    'ssoUrl',
+    'name',
+    'icon',
+    'spCertificate',
+    'emailAttribute',
+    'nameAttribute',
+  ],
 }))
 @Table({ tableName: 'AppSamlSecret' })
 export class AppSamlSecret extends Model implements Interface {
@@ -59,6 +69,12 @@ export class AppSamlSecret extends Model implements Interface {
   @AllowNull(false)
   @Column(DataType.TEXT)
   spCertificate: string;
+
+  @Column
+  emailAttribute: string;
+
+  @Column
+  nameAttribute: string;
 
   /**
    * The id of the app this secret is linked to.

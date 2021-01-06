@@ -10,7 +10,7 @@ import { v4 } from 'uuid';
 import { SignedXml, xpath } from 'xml-crypto';
 import { DOMImplementation, DOMParser } from 'xmldom';
 
-import { App, AppMember, AppSamlSecret, transactional, User } from '../models';
+import { App, AppMember, AppSamlSecret, EmailAuthorization, transactional, User } from '../models';
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
 import { SamlLoginRequest } from '../models/SamlLoginRequest';
 import { KoaContext } from '../types';
@@ -209,7 +209,11 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
           { model: App, attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'] },
         ],
       },
-      { model: User, attributes: ['id'] },
+      {
+        model: User,
+        attributes: ['id'],
+        include: [{ model: EmailAuthorization, attributes: ['email'] }],
+      },
     ],
   });
   if (!loginRequest) {
@@ -222,16 +226,37 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     include: [{ model: User }],
   });
 
+  const attributes = new Map(
+    // eslint-disable-next-line unicorn/prefer-spread
+    Array.from(
+      (x('AttributeStatement', NS.saml)?.childNodes as unknown) as Iterable<Element>,
+      (el) => [el.getAttribute('Name')?.trim(), el.firstChild?.textContent?.trim()],
+    ),
+  );
+  const email = secret.emailAttribute && attributes.get(secret.emailAttribute);
+  const name = secret.nameAttribute && attributes.get(secret.nameAttribute);
   let user: User;
   if (authorization) {
     // If the user is already linked to a known SAML authorization, use that account.
     user = authorization.User;
+    if (email && !user.EmailAuthorizations.some((auth) => auth.email === email)) {
+      await EmailAuthorization.create({ email, UserId: user.id });
+    }
   } else {
     await transactional(async (transaction) => {
       // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
       // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
       // account.
-      user = loginRequest.User || (await User.create({ name: nameId }, { transaction }));
+      user =
+        loginRequest.User ||
+        (await User.create({ name: name || nameId, primaryEmail: email }, { transaction }));
+
+      if (email) {
+        if (!user.primaryEmail) {
+          await user.update({ primaryEmail: email });
+        }
+        await EmailAuthorization.create({ email, UserId: user.id }, { transaction });
+      }
 
       // The logged in account is linked to a new SAML authorization for next time.
       await AppSamlAuthorization.create(
