@@ -3,9 +3,11 @@ const { join } = require('path');
 
 /**
  * Generate a proper Jest configuration based on a project context.
+ *
+ * @param {Object} module - The NodeJS module to assign the exported configuration to.
  */
-module.exports = (rootDir) => {
-  const readJSON = (path) => JSON.parse(readFileSync(join(rootDir, path)));
+module.exports = ({ exports, path }) => {
+  const readJSON = (filename) => JSON.parse(readFileSync(join(path, filename)));
 
   const pkg = readJSON('package.json');
   const { compilerOptions: { lib = [], types = [] } = {} } = readJSON('tsconfig.json');
@@ -20,7 +22,7 @@ module.exports = (rootDir) => {
   }
 
   // Load jest.setup.ts if it exists, otherwise skip it.
-  const setup = join(rootDir, 'jest.setup.ts');
+  const setup = join(path, 'jest.setup.ts');
   if (existsSync(setup)) {
     setupFilesAfterEnv.push(setup);
   }
@@ -35,7 +37,7 @@ module.exports = (rootDir) => {
     transform[/\/[A-Z]\w+\/messages\.ts$/.source] = 'babel-jest';
   }
 
-  return {
+  Object.assign(exports, {
     coveragePathIgnorePatterns: ['.d.ts$'],
     clearMocks: true,
     displayName: pkg.name,
@@ -48,5 +50,5 @@ module.exports = (rootDir) => {
     // Use the jsdom environment if the project uses dom types. Otherwise default to node.
     testEnvironment: lib.includes('dom') ? 'jsdom' : 'node',
     transform,
-  };
+  });
 };
