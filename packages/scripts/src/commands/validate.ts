@@ -1,9 +1,8 @@
 import { basename, dirname, join, relative } from 'path';
 
 import { getWorkspaces, logger, opendirSafe } from '@appsemble/node-utils';
-import { Config } from '@jest/types';
 import extractMessages from 'extract-react-intl-messages';
-import { readJson } from 'fs-extra';
+import { existsSync, readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
@@ -263,29 +262,13 @@ async function validate(
   }
 
   /**
-   * Validate jest.config.js
+   * Validate jest.config.js exists
    */
-  const jestConfig: Config.InitialOptions = await import(join(dir, 'jest.config')).catch(
-    () => null,
+  assert(
+    existsSync(join(dir, 'jest.config.js')),
+    'jest.config.js',
+    'Projects should have a Jest configuration',
   );
-  assert(Boolean(jestConfig), 'jest.config.js', 'Projects should have a Jest configuration');
-  if (jestConfig) {
-    assert(jestConfig.clearMocks === true, 'jest.config.js', 'clearMocks should be true');
-    assert(jestConfig.displayName === pkg.name, 'jest.config.js', `Display name be '${pkg.name}'`);
-    assert(
-      (jestConfig.globals?.['ts-jest'] as any).isolatedModules,
-      'jest.config.js',
-      "Global 'ts-jest'.isolatedModules should be true",
-    );
-    assert(
-      jestConfig.moduleNameMapper?.[/@appsemble\/([\w-]+)/.source] === '@appsemble/$1/src',
-      'jest.config.js',
-      "Module name mapper [/@appsemble\\/([\\w-]+)/.source] should map to '@appsemble/$1/src'",
-    );
-    assert(jestConfig.preset === 'ts-jest', 'jest.config.js', "Preset should be 'ts-jest'");
-    assert(jestConfig.resetMocks === true, 'jest.config.js', 'resetMocks should be true');
-    assert(jestConfig.restoreMocks === true, 'jest.config.js', 'restoreMocks should be true');
-  }
 }
 
 export async function handler(): Promise<void> {
