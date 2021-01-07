@@ -440,11 +440,6 @@ export interface ResourceDefinition {
   update?: ResourceCall;
 
   /**
-   * How to upload blobs.
-   */
-  blobs?: BlobUploadType;
-
-  /**
    * The property to use as the id.
    *
    * @default `id`
@@ -474,13 +469,6 @@ export interface ResourceDefinition {
    * Example: 1d 8h 30m
    */
   expires?: string;
-}
-
-export interface BlobUploadType {
-  type?: 'upload';
-  method?: HTTPMethods;
-  serialize?: 'custom';
-  url?: string;
 }
 
 export interface BaseActionDefinition<T extends Action['type']> {
