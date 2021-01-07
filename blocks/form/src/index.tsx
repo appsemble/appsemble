@@ -33,7 +33,7 @@ bootstrap(
     ]);
 
     const [formErrors, setFormErrors] = useState<string[]>(
-      new Array(requirements.length).fill(null),
+      new Array(requirements?.length ?? 0).fill(null),
     );
     const [hasSubmitError, setSubmitError] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -61,13 +61,13 @@ bootstrap(
         return;
       }
 
-      // Flter requirements whose dependencies haven’t changed and whose dependencies are valid.
+      // Filter requirements whose dependencies haven’t changed and whose dependencies are valid.
       const pendingRequirements = requirements?.filter(
         ({ isValid }) => isValid.includes(lastChanged) && isFormValid(errors, isValid),
       );
 
       // If there are no pending requirements checks, don’t run asynchronous validation.
-      if (!pendingRequirements.length) {
+      if (!pendingRequirements?.length) {
         return;
       }
 
