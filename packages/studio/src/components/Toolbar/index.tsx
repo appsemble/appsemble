@@ -25,7 +25,7 @@ export function Toolbar(): ReactElement {
           rel="noopener noreferrer"
           target="_blank"
         >
-          {`alpha ${process.env.APPSEMBLE_VERSION}`}
+          {process.env.APPSEMBLE_VERSION}
         </a>
       </div>
       <div className="navbar-brand">
