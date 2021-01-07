@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import { FieldErrorMap, Values } from '../block';
-import { FieldGroup } from './components/FieldGroup';
+import { Values } from '../block';
+import { FormInput } from './components/FormInput';
 import styles from './index.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
 import { generateDefaultValues } from './utils/generateDefaultValues';
@@ -27,67 +27,81 @@ bootstrap(
     ready,
     utils,
   }) => {
-    const defaultValues = useMemo(() => ({ ...generateDefaultValues(fields), ...data }), [
+    const defaultValues = useMemo<Values>(() => ({ ...generateDefaultValues(fields), ...data }), [
       data,
       fields,
     ]);
-    const defaultErrors = useMemo(() => generateDefaultValidity(fields, defaultValues, utils), [
-      defaultValues,
-      fields,
-      utils,
-    ]);
 
-    const [formError, setFormError] = useState<string>(null);
+    const [formErrors, setFormErrors] = useState<string[]>(
+      new Array(requirements.length).fill(null),
+    );
     const [hasSubmitError, setSubmitError] = useState(false);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
     const [values, setValues] = useState(defaultValues);
-    const [errors, setErrors] = useState(defaultErrors);
+    const [lastChanged, setLastChanged] = useState<string>(null);
+    const errors = useMemo(() => generateDefaultValidity(fields, values, utils), [
+      fields,
+      utils,
+      values,
+    ]);
 
     const lock = useRef<symbol>();
 
-    const onChange = useCallback(
-      async (name: string, value: Values, err: FieldErrorMap) => {
-        setValues(value);
-        events.emit.change(value);
-        setErrors(err);
+    const onChange = useCallback((name: string, value: Values) => {
+      setValues((oldValues) => ({ ...oldValues, [name]: value }));
+      setLastChanged(name);
+    }, []);
 
-        if (!requirements?.length) {
-          return;
-        }
+    useEffect(() => {
+      events.emit.change(values);
 
-        const token = Symbol('Async requirements lock');
-        lock.current = token;
+      if (!lastChanged) {
+        return;
+      }
 
-        let error;
-        const patchedValues = await Promise.all(
-          requirements.map(async (requirement) => {
-            if (!isFormValid(err, requirement.isValid)) {
-              return;
-            }
-            try {
-              return await actions[requirement.action].dispatch(value);
-            } catch {
-              error = utils.remap(
-                requirement.errorMessage ?? utils.remap(formRequirementError, {}),
-                value,
+      // Flter requirements whose dependencies haven’t changed and whose dependencies are valid.
+      const pendingRequirements = requirements?.filter(
+        ({ isValid }) => isValid.includes(lastChanged) && isFormValid(errors, isValid),
+      );
+
+      // If there are no pending requirements checks, don’t run asynchronous validation.
+      if (!pendingRequirements.length) {
+        return;
+      }
+
+      const token = Symbol('Async requirements lock');
+      lock.current = token;
+
+      const requirementErrors = new Map<number, string>();
+      Promise.all(
+        pendingRequirements.map((requirement) =>
+          actions[requirement.action].dispatch(values).then(
+            () => requirementErrors.set(requirements.indexOf(requirement), null),
+            (errorResponse) => {
+              requirementErrors.set(
+                requirements.indexOf(requirement),
+                utils.remap(requirement.errorMessage ?? formRequirementError, values, {
+                  error: errorResponse,
+                }),
               );
-            }
-          }),
-        );
-
+            },
+          ),
+        ),
+      ).then((patchedValues) => {
         if (lock.current !== token) {
           return;
         }
-        const newValues = Object.assign({}, value, ...patchedValues);
-        events.emit.change(newValues);
-        setValues(newValues);
-        setErrors(generateDefaultValidity(fields, newValues, utils));
-        setFormError(error);
-      },
-      [actions, events, fields, formRequirementError, requirements, utils],
-    );
+        setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
+        setLastChanged(null);
+        setFormErrors((oldErrors) =>
+          oldErrors.map((old, index) =>
+            requirementErrors.has(index) ? requirementErrors.get(index) : old,
+          ),
+        );
+      });
+    }, [actions, errors, events, formRequirementError, lastChanged, requirements, utils, values]);
 
     const onSubmit = useCallback(() => {
       if (!submitting) {
@@ -113,10 +127,37 @@ bootstrap(
         const newValues = { ...defaultValues, ...d };
         setLoading(false);
         setValues(newValues);
-        setErrors(generateDefaultValidity(fields, newValues, utils));
+
+        const requirementErrors = new Map<number, string>();
+        Promise.all(
+          requirements.map((requirement) =>
+            actions[requirement.action].dispatch(newValues).then(
+              () => requirementErrors.set(requirements.indexOf(requirement), null),
+              (errorResponse) => {
+                requirementErrors.set(
+                  requirements.indexOf(requirement),
+                  utils.remap(requirement.errorMessage ?? formRequirementError, newValues, {
+                    error: errorResponse,
+                  }),
+                );
+              },
+            ),
+          ),
+        ).then((patchedValues) => {
+          setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
+          setFormErrors((oldErrors) =>
+            oldErrors.map((old, index) =>
+              requirementErrors.has(index) ? requirementErrors.get(index) : old,
+            ),
+          );
+        });
       },
-      [defaultValues, fields, utils],
+      [actions, defaultValues, formRequirementError, requirements, utils],
     );
+
+    useEffect(() => {
+      events.emit.change(values);
+    }, [events, values]);
 
     useEffect(() => {
       // If a listener is present, wait until data has been received
@@ -129,10 +170,11 @@ bootstrap(
       <Form className={`${styles.root} is-flex px-2 py-2`} onSubmit={onSubmit}>
         {loading && <progress className="progress is-small is-primary" />}
         <Message
-          className={classNames(styles.error, { [styles.hidden]: !formError })}
+          className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
         >
-          <span>{formError}</span>
+          {/* Render the first form error */}
+          <span>{formErrors.find(Boolean)}</span>
         </Message>
         <Message
           className={classNames(styles.error, { [styles.hidden]: !hasSubmitError })}
@@ -140,13 +182,17 @@ bootstrap(
         >
           <span>{utils.remap(submitError, values)}</span>
         </Message>
-        <FieldGroup
-          disabled={loading || submitting}
-          errors={errors}
-          fields={fields}
-          onChange={onChange}
-          value={values}
-        />
+        {fields.map((f) => (
+          <FormInput
+            disabled={loading || submitting}
+            error={errors[f.name]}
+            field={f}
+            key={f.name}
+            name={f.name}
+            onChange={onChange}
+            value={values[f.name]}
+          />
+        ))}
         <FormButtons className="mt-4">
           {previousLabel && (
             <Button className="mr-4" disabled={loading || submitting} onClick={onPrevious}>
@@ -155,7 +201,7 @@ bootstrap(
           )}
           <Button
             color="primary"
-            disabled={loading || submitting || Boolean(formError) || !isFormValid(errors)}
+            disabled={loading || submitting || formErrors.some(Boolean) || !isFormValid(errors)}
             type="submit"
           >
             {utils.remap(submitLabel, {})}

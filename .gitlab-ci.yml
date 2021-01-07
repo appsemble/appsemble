@@ -431,10 +431,6 @@ lighthouse:
   interruptible: true
   stage: end 2 end
   dependencies: []
-  needs:
-    - provision staging
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies
@@ -442,9 +438,9 @@ lighthouse:
     - yarn lhci assert
   artifacts:
     expose_as: Lighthouse reports
+    when: always
     paths:
       - .lighthouseci
-    expire_in: 7 days
 
 # Test 10 Second Dance in the staging environment.
 10 second dance:

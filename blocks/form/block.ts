@@ -597,7 +597,7 @@ export interface InputProps<T, F extends Field> {
   /**
    * A callback for when the value changes.
    */
-  onChange: (name: string | Event, value?: T, validity?: FieldError) => void;
+  onChange: (name: string | Event, value?: T) => void;
 
   /**
    * Whether ot not the input has been modified by the user.

@@ -115,23 +115,28 @@ async function verifyPermission(
   resourceType: string,
   action: 'create' | 'delete' | 'get' | 'query' | 'update' | 'count',
 ): Promise<WhereOptions> {
-  if (!app.definition.resources[resourceType] || !app.definition.resources[resourceType][action]) {
+  if (!app.definition.resources[resourceType] && !app.definition.resources[resourceType][action]) {
     return;
   }
 
-  const { user } = ctx;
-  let { roles } = app.definition.resources[resourceType][action];
+  const {
+    query: { $team },
+    user,
+  } = ctx;
+  let roles = app.definition.resources?.[resourceType]?.[action]?.roles ?? [];
 
   if (!roles || !roles.length) {
     if (app.definition.roles?.length) {
       ({ roles } = app.definition);
-    } else {
-      return;
     }
   }
 
   const functionalRoles = roles.filter((r) => specialRoles.has(r));
   const appRoles = roles.filter((r) => !specialRoles.has(r));
+
+  if ($team && !functionalRoles.includes(`$team:${$team}`)) {
+    functionalRoles.push(`$team:${$team}`);
+  }
 
   if (!functionalRoles.length && !appRoles.length) {
     return;
@@ -150,7 +155,7 @@ async function verifyPermission(
   if (functionalRoles.includes(`$team:${TeamRole.Member}`)) {
     const teamIds = (
       await TeamMember.findAll({
-        where: { UserId: user.id, role: TeamRole.Member },
+        where: { UserId: user.id },
         raw: true,
         attributes: ['TeamId'],
       })
@@ -169,7 +174,7 @@ async function verifyPermission(
   if (functionalRoles.includes(`$team:${TeamRole.Manager}`)) {
     const teamIds = (
       await TeamMember.findAll({
-        where: { UserId: user.id },
+        where: { UserId: user.id, role: TeamRole.Manager },
         raw: true,
         attributes: ['TeamId'],
       })

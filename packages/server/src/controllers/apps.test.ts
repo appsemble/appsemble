@@ -1,7 +1,4 @@
-import { createReadStream, promises as fs } from 'fs';
-import { join } from 'path';
-
-import { createFormData } from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
@@ -431,7 +428,7 @@ pages:
         pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
       },
     });
-    form.append('screenshots', createReadStream(join(__dirname, '__fixtures__', 'standing.png')));
+    form.append('screenshots', createFixtureStream('standing.png'));
     const createdResponse = await request.post('/api/apps', form, { headers: { authorization } });
 
     expect(createdResponse).toMatchObject({
@@ -1522,7 +1519,7 @@ describe('getAppScreenshots', () => {
       vapidPrivateKey: '',
       vapidPublicKey: '',
     });
-    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'standing.png'));
+    const buffer = await readFixture('standing.png');
     const screenshot = await AppScreenshot.create({
       AppId: app.id,
       screenshot: buffer,

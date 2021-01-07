@@ -81,7 +81,7 @@ export async function updateAppSamlSecret(ctx: KoaContext<Params>): Promise<void
   const {
     params: { appId, appSamlSecretId },
     request: {
-      body: { entityId, icon, idpCertificate, name, ssoUrl },
+      body: { emailAttribute, entityId, icon, idpCertificate, name, nameAttribute, ssoUrl },
     },
   } = ctx;
 
@@ -103,10 +103,12 @@ export async function updateAppSamlSecret(ctx: KoaContext<Params>): Promise<void
   }
 
   ctx.body = await secret.update({
+    emailAttribute,
     entityId,
     icon,
     idpCertificate,
     name,
+    nameAttribute,
     ssoUrl,
   });
 }

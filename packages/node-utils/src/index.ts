@@ -9,3 +9,4 @@ export * from './interceptors';
 export * from './loggerMiddleware';
 export * from './readFileOrString';
 export * from './fs';
+export * from './testFixtures';

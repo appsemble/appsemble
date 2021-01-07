@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.16.2](https://gitlab.com/appsemble/appsemble/-/releases/0.16.2)] - 2021-01-06
+
+### Fixed
+
+- Block(`form`): Fix issue where submit button is incorrectly disabled.
+
+## \[[0.16.1](https://gitlab.com/appsemble/appsemble/-/releases/0.16.1)] - 2021-01-05
+
+### Fixed
+
+- Block(`form`): Fix issue where form validation overwrites unresolved errors.
+
+## \[[0.16.0](https://gitlab.com/appsemble/appsemble/-/releases/0.16.0)] - 2020-12-21
+
+### Changed
+
+- Block(`form`): Add `error` to context of `formRequirement` errors.
+- Sdk: Changed asset IDs to string.
+- Server: Add `size` property to `/api/apps/{id}/teams`.
+- Server: Add support for fetching teams from app. This is automatically filtered to only include
+  teams the user is a member of.
+- Server: Changed asset IDs to string.
+
 ## \[[0.15.12](https://gitlab.com/appsemble/appsemble/-/releases/0.15.12)] - 2020-12-11
 
 ### Added

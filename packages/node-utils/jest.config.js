@@ -13,5 +13,6 @@ module.exports = {
   preset: 'ts-jest',
   resetMocks: true,
   restoreMocks: true,
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testEnvironment: 'node',
 };

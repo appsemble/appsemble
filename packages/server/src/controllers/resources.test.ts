@@ -989,6 +989,250 @@ describe('countResources', () => {
       data: 2,
     });
   });
+
+  it('should only count resources from team members based on the member team filter as a member', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
+      {
+        headers: { authorization },
+      },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: 2,
+    });
+  });
+
+  it('should only count resources from team members based on the member team filter as a manager', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
+      {
+        headers: { authorization },
+      },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: 2,
+    });
+  });
+
+  it('should not count resources from team members based on the member team filter as not a member', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
+      {
+        headers: { authorization },
+      },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: 0,
+    });
+  });
+
+  it('should only count resources from team members based on the manager team filter as a member', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      {
+        headers: { authorization },
+      },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: 0,
+    });
+  });
+
+  it('should only count resources from team members based on the manager team filter as a manager', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      {
+        headers: { authorization },
+      },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: 2,
+    });
+  });
+
+  it('should not count resources from team members based on the manager team filter as not a team member', async () => {
+    const app = await exampleApp(organizationId);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const userB = await User.create();
+    const userC = await User.create();
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+      UserId: userB.id,
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
+      {
+        headers: { authorization },
+      },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: 0,
+    });
+  });
 });
 
 describe('createResource', () => {

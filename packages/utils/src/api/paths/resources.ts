@@ -15,6 +15,7 @@ export const paths: OpenAPIV3.PathsObject = {
         { $ref: '#/components/parameters/$orderby' },
         { $ref: '#/components/parameters/$select' },
         { $ref: '#/components/parameters/$top' },
+        { $ref: '#/components/parameters/$team' },
       ],
       responses: {
         200: {
@@ -66,7 +67,10 @@ export const paths: OpenAPIV3.PathsObject = {
       tags: ['resource'],
       description: 'Get a count of all resources of this app.',
       operationId: 'countResources',
-      parameters: [{ $ref: '#/components/parameters/$filter' }],
+      parameters: [
+        { $ref: '#/components/parameters/$filter' },
+        { $ref: '#/components/parameters/$team' },
+      ],
       responses: {
         200: {
           description: 'The count of all this app’s resources of this type.',

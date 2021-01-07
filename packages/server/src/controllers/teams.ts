@@ -84,6 +84,7 @@ export async function getTeam(ctx: KoaContext<Params>): Promise<void> {
 
 export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
   const {
+    clients,
     params: { appId },
     user,
   } = ctx;
@@ -92,7 +93,7 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
     include: [
       {
         model: Team,
-        include: [{ model: User, where: { id: user.id }, required: false }],
+        include: [{ model: User, required: false }],
       },
     ],
   });
@@ -100,12 +101,21 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found.');
   }
 
-  ctx.body = app.Teams.map((team) => ({
-    id: team.id,
-    name: team.name,
-    ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
-    ...(team.annotations && { annotations: team.annotations }),
-  }));
+  // Filter to just the user’s teams if it’s requested from an app.
+  ctx.body = (clients.app
+    ? app.Teams.filter((team) => team.Users.find((u) => u.id === user.id))
+    : app.Teams
+  ).map((team) => {
+    const userRole = team.Users.find((u) => u.id === user.id);
+
+    return {
+      id: team.id,
+      name: team.name,
+      size: team.Users.length,
+      ...(userRole && { role: userRole.TeamMember.role }),
+      ...(team.annotations && { annotations: team.annotations }),
+    };
+  });
 }
 
 export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {

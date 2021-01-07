@@ -155,7 +155,7 @@ export async function processHooks(
         sub: user.id,
         name: user.name,
         email: user.primaryEmail,
-        email_verified: user.EmailAuthorizations[0].verified,
+        email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
       },
     );
 
