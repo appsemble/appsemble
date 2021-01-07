@@ -39,6 +39,7 @@
     "koa": "^2.13.0",
     "koa-compose": "^4.1.0",
     "logform": "^2.2.0",
+    "normalize-path": "^3.0.0",
     "type-fest": "^0.20.2",
     "winston": "^3.3.3",
     "yargs": "^16.2.0"

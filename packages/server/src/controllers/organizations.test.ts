@@ -1,8 +1,6 @@
 import { randomBytes } from 'crypto';
-import { promises as fs } from 'fs';
-import { join } from 'path';
 
-import { createFormData } from '@appsemble/node-utils/src';
+import { createFormData, readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -66,7 +64,7 @@ describe('getOrganization', () => {
 
 describe('getOrganizationIcon', () => {
   it('should return the organization logo', async () => {
-    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'testpattern.png'));
+    const buffer = await readFixture('testpattern.png');
     await organization.update({ icon: buffer });
     const response = await request.get(`/api/organizations/${organization.id}/icon`, {
       responseType: 'arraybuffer',
@@ -88,7 +86,7 @@ describe('patchOrganization', () => {
 
   it('should update the logo of the organization', async () => {
     const formData = new FormData();
-    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'testpattern.png'));
+    const buffer = await readFixture('testpattern.png');
 
     formData.append('icon', buffer, { filename: 'icon.png' });
 

@@ -22,7 +22,7 @@ junit.xml
 *.tgz
 
 # Any kind of certificate used for using SSL locally
-*.pem
+/*.pem
 
 # Docz output directory
 /.docz/

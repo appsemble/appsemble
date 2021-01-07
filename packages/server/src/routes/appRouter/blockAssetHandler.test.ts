@@ -1,6 +1,4 @@
-import { promises as fs } from 'fs';
-import { join } from 'path';
-
+import { readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
@@ -23,7 +21,7 @@ it('should download a block asset', async () => {
   await Organization.create({ id: 'linux', name: 'Linux' });
   await BlockAsset.create({
     filename: 'tux.png',
-    content: await fs.readFile(join(__dirname, '__fixtures__', 'tux.png')),
+    content: await readFixture('tux.png'),
     mime: 'image/png',
     OrganizationId: 'linux',
     name: 'tux',

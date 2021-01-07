@@ -1,9 +1,8 @@
-import { join } from 'path';
-
 import { readFileOrString } from './readFileOrString';
+import { resolveFixture } from './testFixtures';
 
 it('should return file content if it resolves to a file', async () => {
-  const result = await readFileOrString(join(__dirname, '__fixtures__', 'hello.txt'));
+  const result = await readFileOrString(resolveFixture('hello.txt'));
   expect(Buffer.from('Hello world!\n').equals(result as Buffer)).toBe(true);
 });
 
