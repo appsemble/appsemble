@@ -35,7 +35,7 @@ bootstrap(
     const [formErrors, setFormErrors] = useState<string[]>(
       new Array(requirements?.length ?? 0).fill(null),
     );
-    const [hasSubmitError, setSubmitError] = useState(false);
+    const [submitErrorResult, setSubmitErrorResult] = useState<string>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
@@ -119,11 +119,15 @@ bootstrap(
             // Log the error to the console for troubleshooting.
             // eslint-disable-next-line no-console
             console.error(submitActionError);
-            setSubmitError(true);
+            const error =
+              typeof submitActionError === 'string'
+                ? submitActionError
+                : utils.remap(submitError, values);
+            setSubmitErrorResult(error);
           })
           .finally(() => setSubmitting(false));
       }
-    }, [actions, errors, fields, formErrors, submitting, values]);
+    }, [actions, errors, fields, formErrors, submitError, submitting, utils, values]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious.dispatch(values);
@@ -184,10 +188,10 @@ bootstrap(
           <span>{formErrors.find(Boolean)}</span>
         </Message>
         <Message
-          className={classNames(styles.error, { [styles.hidden]: !hasSubmitError })}
+          className={classNames(styles.error, { [styles.hidden]: submitErrorResult == null })}
           color="danger"
         >
-          <span>{utils.remap(submitError, values)}</span>
+          <span>{submitErrorResult}</span>
         </Message>
         {fields.map((f) => (
           <FormInput
