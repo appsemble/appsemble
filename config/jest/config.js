@@ -45,8 +45,9 @@ module.exports = (rootDir) => {
     resetMocks: true,
     restoreMocks: true,
     setupFilesAfterEnv,
-    // Use the jsdom environment if the project uses dom types. Otherwise default to node.
-    testEnvironment: lib.includes('dom') ? 'jsdom' : 'node',
+    // Use the jsdom environment if the project uses dom or webworker types. Otherwise default to
+    // node.
+    testEnvironment: lib.includes('dom') || lib.includes('webworker') ? 'jsdom' : 'node',
     transform,
   };
 };
