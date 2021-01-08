@@ -216,6 +216,8 @@
   "studio.src.components.ClientCredentials.never": "Nooit",
   "studio.src.components.ClientCredentials.organizations:write": "Organisaties aanmaken en beheren",
   "studio.src.components.ClientCredentials.register": "Opslaan",
+  "studio.src.components.ClientCredentials.resources:read": "App resources lezen",
+  "studio.src.components.ClientCredentials.resources:write": "App resources maken, bewerken en verwijderen",
   "studio.src.components.ClientCredentials.retry": "Opnieuw",
   "studio.src.components.ClientCredentials.revoke": "Intrekken",
   "studio.src.components.ClientCredentials.scope": "Scope",

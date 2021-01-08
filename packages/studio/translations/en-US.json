@@ -216,6 +216,8 @@
   "studio.src.components.ClientCredentials.never": "Never",
   "studio.src.components.ClientCredentials.organizations:write": "Create and manage organizations",
   "studio.src.components.ClientCredentials.register": "Register",
+  "studio.src.components.ClientCredentials.resources:read": "Read app resources",
+  "studio.src.components.ClientCredentials.resources:write": "Create, update, and delete app resources",
   "studio.src.components.ClientCredentials.retry": "Retry",
   "studio.src.components.ClientCredentials.revoke": "Revoke",
   "studio.src.components.ClientCredentials.scope": "Scope",

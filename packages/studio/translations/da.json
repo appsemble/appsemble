@@ -216,6 +216,8 @@
   "studio.src.components.ClientCredentials.never": "Aldrig",
   "studio.src.components.ClientCredentials.organizations:write": "Opret og administrer organisationer",
   "studio.src.components.ClientCredentials.register": "Registrer",
+  "studio.src.components.ClientCredentials.resources:read": "",
+  "studio.src.components.ClientCredentials.resources:write": "",
   "studio.src.components.ClientCredentials.retry": "Forsøg igen",
   "studio.src.components.ClientCredentials.revoke": "Tilbagekald",
   "studio.src.components.ClientCredentials.scope": "Område",
