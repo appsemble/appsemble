@@ -15,7 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, ResourceSubscription, User } from '.';
+import { App, Asset, ResourceSubscription, User } from '.';
 
 @Table({ tableName: 'Resource', paranoid: true })
 export class Resource extends Model {
@@ -60,6 +60,9 @@ export class Resource extends Model {
 
   @BelongsTo(() => User)
   User: User;
+
+  @HasMany(() => Asset)
+  Assets: Asset[];
 
   @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })
   ResourceSubscriptions: ResourceSubscription[];

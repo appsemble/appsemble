@@ -23,6 +23,14 @@ export async function up(db: Sequelize): Promise<void> {
     type: 'primary key',
     name: 'Asset_pkey',
   });
+
+  logger.info('Adding column ResourceID to table Asset');
+  await queryInterface.addColumn('Asset', 'ResourceId', {
+    type: DataTypes.INTEGER,
+    references: { model: 'Resource', key: 'id' },
+    onDelete: 'cascade',
+    onUpdate: 'cascade',
+  });
 }
 
 /**
