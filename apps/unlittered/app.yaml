@@ -92,8 +92,9 @@ pages:
             type: resource.query
             resource: litter
             query:
-              '$orderby': '$created desc'
-              '$top': 50
+              object.from:
+                $orderby: $created desc
+                $top: 50
         events:
           emit:
             data: data

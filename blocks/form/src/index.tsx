@@ -33,7 +33,7 @@ bootstrap(
     ]);
 
     const [formErrors, setFormErrors] = useState<string[]>(
-      new Array(requirements.length).fill(null),
+      new Array(requirements?.length ?? 0).fill(null),
     );
     const [hasSubmitError, setSubmitError] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -67,7 +67,7 @@ bootstrap(
       );
 
       // If there are no pending requirements checks, don’t run asynchronous validation.
-      if (!pendingRequirements.length) {
+      if (!pendingRequirements?.length) {
         return;
       }
 

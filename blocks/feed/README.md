@@ -8,5 +8,7 @@ This can be used for example to show a social media feed in an app.
 type: resource.query
 resource: MyReplyResource
 query:
-  $filter: '{$filter}'
+  object.from:
+    $filter:
+      prop: $filter
 ```

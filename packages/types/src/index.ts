@@ -385,7 +385,7 @@ export interface ResourceCall {
   /**
    * Query parameters to pass along with the request.
    */
-  query?: Record<string, string>;
+  query?: Remapper;
 
   /**
    * THe roles that are allowed to perform this action.
@@ -623,7 +623,7 @@ export interface RequestLikeActionDefinition<
   /**
    * Query parameters to pass along with the request.
    */
-  query?: Record<string, string>;
+  query?: Remapper;
 
   /**
    * The URL to which to make the request.
