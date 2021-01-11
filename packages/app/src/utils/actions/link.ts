@@ -1,22 +1,17 @@
 import { LinkAction } from '@appsemble/sdk';
 import { LinkActionDefinition } from '@appsemble/types';
-import {
-  compileFilters,
-  mapValues,
-  normalize,
-  partialNormalized,
-  remapData,
-} from '@appsemble/utils';
+import { mapValues, normalize, partialNormalized } from '@appsemble/utils';
 
 import { MakeActionParameters } from '../../types';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
 export function link({
-  definition: { to, parameters = {}, remap = '' },
+  definition: { to, parameters = {} },
   app: { pages },
   history,
   route,
+  remap,
 }: MakeActionParameters<LinkActionDefinition>): LinkAction {
   let href: (data: any) => string;
 

@@ -1,5 +1,4 @@
 import { Parameters } from '@appsemble/sdk';
-import { compileFilters } from '@appsemble/utils';
 
 export interface LatLngMapper {
   lat: (data: any) => any;
@@ -8,13 +7,7 @@ export interface LatLngMapper {
 
 export function createGetters(params: Parameters): LatLngMapper {
   return {
-    lat:
-      params.latitude == null
-        ? (data) => data.latitude
-        : compileFilters(params.latitude, { intl: null }),
-    lng:
-      params.longitude == null
-        ? (data) => data.longitude
-        : compileFilters(params.longitude, { intl: null }),
+    lat: params.latitude == null ? (data) => data.latitude : () => params.latitude,
+    lng: params.longitude == null ? (data) => data.longitude : () => params.longitude,
   };
 }
