@@ -8,10 +8,8 @@ import {
   ResourceUpdateAction,
 } from '@appsemble/sdk';
 import {
-  BlobUploadType,
   ResourceCountActionDefinition,
   ResourceCreateActionDefinition,
-  ResourceDefinition,
   ResourceDeleteActionDefinition,
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
@@ -26,15 +24,6 @@ import axios from 'axios';
 import { MakeActionParameters, ServiceWorkerRegistrationContextType } from '../../types';
 import { apiUrl, appId } from '../settings';
 import { requestLikeAction } from './request';
-
-function getBlobs(resource: ResourceDefinition): BlobUploadType {
-  const { blobs } = resource;
-  const type = blobs?.type || 'upload';
-  const method = blobs?.method || 'post';
-  const url = blobs?.url ?? `${apiUrl}/api/apps/${appId}/assets`;
-
-  return { type, method, url, serialize: blobs?.serialize ? blobs.serialize : null };
-}
 
 export function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceGetAction {
   const { app, definition } = args;
@@ -52,7 +41,6 @@ export function get(args: MakeActionParameters<ResourceGetActionDefinition>): Re
       definition: {
         ...definition,
         query: definition?.query ?? resource?.get?.query,
-        blobs: getBlobs(resource),
         method,
         proxy: false,
         url: {
@@ -85,7 +73,6 @@ export function query(
       definition: {
         ...definition,
         query: definition?.query ?? resource?.query?.query,
-        blobs: getBlobs(resource),
         method,
         proxy: false,
         url,
@@ -113,7 +100,6 @@ export function count(
       definition: {
         ...definition,
         query: definition?.query ?? resource?.count?.query,
-        blobs: getBlobs(resource),
         method,
         proxy: false,
         url,
@@ -141,7 +127,6 @@ export function create(
       definition: {
         ...definition,
         query: definition?.query ?? resource?.create?.query,
-        blobs: getBlobs(resource),
         method,
         proxy: false,
         url,
@@ -170,7 +155,6 @@ export function update(
       definition: {
         ...definition,
         query: definition?.query ?? resource?.update?.query,
-        blobs: getBlobs(resource),
         method,
         proxy: false,
         url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
@@ -200,7 +184,6 @@ export function remove(
         ...definition,
         query: definition?.query ?? resource?.delete?.query,
         type: 'resource.delete',
-        blobs: getBlobs(resource),
         method,
         proxy: false,
         url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,

@@ -1,16 +1,24 @@
 import { NotificationDefinition } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
+import { parseISO } from 'date-fns';
+import { Schema, ValidationError, Validator } from 'jsonschema';
+import { File } from 'koas-body-parser';
 import { Op } from 'sequelize';
+import { JsonObject } from 'type-fest';
+import { v4 } from 'uuid';
 
 import {
   App,
   AppSubscription,
+  Asset,
   EmailAuthorization,
   Resource,
   ResourceSubscription,
   User,
 } from '../models';
+import { KoaContext } from '../types';
 import { getRemapperContext } from './app';
+import { handleValidatorResult } from './jsonschema';
 import { sendNotification, SendNotificationOptions } from './sendNotification';
 
 export function renameOData(name: string): string {
@@ -202,4 +210,81 @@ export async function processReferenceHooks(
       },
     ),
   );
+}
+
+export function processResourceBody(ctx: KoaContext): [JsonObject, File[], Date, boolean] {
+  let body;
+  let assets: File[];
+  if (ctx.is('multipart/form-data')) {
+    ({ assets, resource: body } = ctx.request.body);
+  } else {
+    ({ body } = ctx.request);
+    assets = [];
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { $clonable, $expires, id, ...resource } = body;
+  return [resource, assets, $expires ? parseISO($expires) : null, Boolean($clonable)];
+}
+
+export function verifyResourceBody(
+  type: string,
+  schema: Schema,
+  resource: any,
+  assets: File[] = [],
+  knownAssetIds: string[] = [],
+): [Pick<Asset, 'data' | 'filename' | 'data' | 'mime'>[], string[]] {
+  const validator = new Validator();
+  const assetIdMap = new Map<number, string>();
+  const assetUsedMap = new Map<number, boolean>();
+  const reusedAssets = new Set<string>();
+  const preparedAssets = assets.map(({ contents, filename, mime }, index) => {
+    const id = v4();
+    assetIdMap.set(index, id);
+    assetUsedMap.set(index, false);
+    return { data: contents, filename, id, mime };
+  });
+  validator.customFormats.binary = (input) => {
+    if (knownAssetIds.includes(input)) {
+      reusedAssets.add(input);
+      return true;
+    }
+    if (!/^\d+$/.test(input)) {
+      return false;
+    }
+    const num = Number(input);
+    return num >= 0 && num < assets.length;
+  };
+
+  const result = validator.validate(resource, schema, {
+    base: '#',
+    rewrite(value, { format }) {
+      if (format !== 'binary') {
+        return value;
+      }
+      if (knownAssetIds.includes(value)) {
+        return value;
+      }
+      assetUsedMap.set(Number(value), true);
+      return assetIdMap.get(Number(value));
+    },
+  });
+
+  assetUsedMap.forEach((used, assetId) => {
+    if (!used) {
+      result.errors.push(
+        new ValidationError(
+          'is not referenced from the resource',
+          assetId,
+          null,
+          ['assets', assetId],
+          'binary',
+          'format',
+        ),
+      );
+    }
+  });
+
+  handleValidatorResult(result, `Validation failed for resource type ${type}`);
+
+  return [preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
 }

@@ -1,13 +1,7 @@
 import { logger } from '@appsemble/node-utils';
-import {
-  checkAppRole,
-  Permission,
-  SchemaValidationError,
-  TeamRole,
-  validate,
-} from '@appsemble/utils';
+import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
-import { addMilliseconds, isPast, parseISO } from 'date-fns';
+import { addMilliseconds, isPast } from 'date-fns';
 import { pick } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
@@ -16,16 +10,24 @@ import { Op, Order, WhereOptions } from 'sequelize';
 import {
   App,
   AppSubscription,
+  Asset,
   Organization,
   Resource,
   ResourceSubscription,
   TeamMember,
+  transactional,
   User,
 } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
-import { processHooks, processReferenceHooks, renameOData } from '../utils/resource';
+import {
+  processHooks,
+  processReferenceHooks,
+  processResourceBody,
+  renameOData,
+  verifyResourceBody,
+} from '../utils/resource';
 
 interface Params {
   appId: number;
@@ -509,16 +511,14 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
 export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    request: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      body: { $expires = null, id: _, ...resource },
-    },
     user,
   } = ctx;
+  const [resource, assets, $expires] = processResourceBody(ctx);
   const action = 'create';
 
-  const app = await App.findByPk(appId, {
-    ...(user && {
+  const app = await App.findByPk(
+    appId,
+    user && {
       include: [
         { model: Organization, attributes: ['id'] },
         {
@@ -529,33 +529,22 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
           through: { attributes: ['role'] },
         },
       ],
-    }),
-  });
+    },
+  );
 
   verifyResourceDefinition(app, resourceType);
   await verifyPermission(ctx, app, resourceType, action);
 
   const { expires, schema } = app.definition.resources[resourceType];
-
-  try {
-    await validate(schema, resource);
-  } catch (err: unknown) {
-    if (!(err instanceof SchemaValidationError)) {
-      throw err;
-    }
-
-    const boom = badRequest(err.message);
-    (boom.output.payload as any).data = err.data;
-    throw boom;
-  }
+  const [preparedAssets] = verifyResourceBody(resourceType, schema, resource, assets);
 
   let expireDate: Date;
   // Manual $expire takes precedence over the default calculated expiration date
   if ($expires) {
-    expireDate = parseISO($expires);
-    if (isPast(expireDate)) {
+    if (isPast($expires)) {
       throw badRequest('Expiration date has already passed.');
     }
+    expireDate = $expires;
   } else if (expires) {
     const expireDuration = parseDuration(expires);
 
@@ -564,12 +553,22 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     }
   }
 
-  const createdResource = await Resource.create({
-    AppId: app.id,
-    type: resourceType,
-    data: resource,
-    UserId: user?.id,
-    expires: expireDate,
+  await user?.reload({ attributes: ['name'] });
+  let createdResource: Resource;
+  await transactional(async (transaction) => {
+    createdResource = await Resource.create(
+      { AppId: app.id, type: resourceType, data: resource, UserId: user?.id, expires: expireDate },
+      { transaction },
+    );
+    await Asset.bulkCreate(
+      preparedAssets.map((asset) => ({
+        ...asset,
+        AppId: app.id,
+        ResourceId: createdResource.id,
+        UserId: user?.id,
+      })),
+      { logging: false, transaction },
+    );
   });
 
   ctx.body = {
@@ -577,14 +576,9 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     id: createdResource.id,
     $created: createdResource.created,
     $updated: createdResource.updated,
-    ...(createdResource.expires != null && {
-      $expires: createdResource.expires,
-    }),
-    ...(resource.UserId != null && {
-      $author: { id: resource.UserId, name: resource.User.name },
-    }),
+    $expires: createdResource.expires ?? undefined,
+    $author: user ? { id: user.id, name: user.name } : undefined,
   };
-  ctx.status = 201;
 
   processReferenceHooks(ctx.argv.host, ctx.user, app, createdResource, action);
   processHooks(ctx.argv.host, ctx.user, app, createdResource, action);
@@ -593,15 +587,14 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
 export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceId, resourceType },
-    request: {
-      body: { $clonable: clonable = false, $expires = null, ...updatedResource },
-    },
     user,
   } = ctx;
+  const [updatedResource, assets, $expires, clonable] = processResourceBody(ctx);
   const action = 'update';
 
-  const app = await App.findByPk(appId, {
-    ...(user && {
+  const app = await App.findByPk(
+    appId,
+    user && {
       include: [
         { model: Organization, attributes: ['id'] },
         {
@@ -612,15 +605,18 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
           through: { attributes: ['role'] },
         },
       ],
-    }),
-  });
+    },
+  );
 
   verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
-  let resource = await Resource.findOne({
+  const resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
-    include: [{ model: User, attributes: ['id', 'name'], required: false }],
+    include: [
+      { model: User, attributes: ['id', 'name'], required: false },
+      { model: Asset, attributes: ['id'], required: false },
+    ],
   });
 
   if (!resource) {
@@ -628,46 +624,45 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   }
 
   const { schema } = app.definition.resources[resourceType];
-
-  try {
-    await validate(schema, updatedResource);
-  } catch (err: unknown) {
-    if (!(err instanceof SchemaValidationError)) {
-      throw err;
-    }
-
-    const boom = badRequest(err.message);
-    (boom.output.payload as any).data = err.data;
-    throw boom;
-  }
+  const [preparedAssets, deletedAssetIds] = verifyResourceBody(
+    resourceType,
+    schema,
+    updatedResource,
+    assets,
+    resource.Assets.map((asset) => asset.id),
+  );
 
   let { expires } = resource;
   if ($expires) {
-    expires = parseISO($expires);
-    if (isPast(expires)) {
+    if (isPast($expires)) {
       throw badRequest('Expiration date has already passed.');
     }
+    expires = $expires;
   }
 
-  resource.changed('updated', true);
-  resource = await resource.update(
-    { data: updatedResource, clonable, expires },
-    { where: { id: resourceId, type: resourceType, AppId: appId } },
+  await transactional((transaction) =>
+    Promise.all([
+      resource.update({ data: updatedResource, clonable, expires }, { transaction }),
+      Asset.bulkCreate(
+        preparedAssets.map((asset) => ({
+          ...asset,
+          AppId: app.id,
+          ResourceId: resource.id,
+          UserId: user?.id,
+        })),
+        { logging: false, transaction },
+      ),
+      Asset.destroy({ where: { id: deletedAssetIds } }),
+    ]),
   );
 
-  await resource.reload();
-
   ctx.body = {
-    ...resource.get('data', { plain: true }),
+    ...resource.data,
     id: resourceId,
     $created: resource.created,
     $updated: resource.updated,
-    ...(resource.expires != null && {
-      $expires: resource.expires,
-    }),
-    ...(resource.UserId != null && {
-      $author: { id: resource.UserId, name: resource.User.name },
-    }),
+    $expires: resource.expires ?? undefined,
+    $author: resource.UserId ? { id: resource.UserId, name: resource.User.name } : undefined,
   };
 
   processReferenceHooks(ctx.argv.host, ctx.user, app, resource, action);

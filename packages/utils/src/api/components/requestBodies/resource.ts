@@ -8,5 +8,22 @@ export const resource: OpenAPIV3.RequestBodyObject = {
         $ref: '#/components/schemas/Resource',
       },
     },
+    'multipart/form-data': {
+      schema: {
+        type: 'object',
+        required: ['resource'],
+        properties: {
+          resource: { $ref: '#/components/schemas/Resource' },
+          assets: {
+            type: 'array',
+            description: 'A list of assets that should be linked to the resource.',
+            items: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+        },
+      },
+    },
   },
 };

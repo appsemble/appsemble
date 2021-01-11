@@ -13,7 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, User } from '.';
+import { App, Resource, User } from '.';
 
 @Table({ tableName: 'Asset', paranoid: true })
 export class Asset extends Model {
@@ -54,4 +54,11 @@ export class Asset extends Model {
 
   @BelongsTo(() => User)
   User: User;
+
+  @ForeignKey(() => Resource)
+  @Column
+  ResourceId: number;
+
+  @BelongsTo(() => Resource)
+  Resource: Resource;
 }

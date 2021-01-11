@@ -35,7 +35,7 @@ bootstrap(
     const [formErrors, setFormErrors] = useState<string[]>(
       new Array(requirements?.length ?? 0).fill(null),
     );
-    const [hasSubmitError, setSubmitError] = useState(false);
+    const [submitErrorResult, setSubmitErrorResult] = useState<string>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
@@ -61,7 +61,7 @@ bootstrap(
         return;
       }
 
-      // Flter requirements whose dependencies haven’t changed and whose dependencies are valid.
+      // Filter requirements whose dependencies haven’t changed and whose dependencies are valid.
       const pendingRequirements = requirements?.filter(
         ({ isValid }) => isValid.includes(lastChanged) && isFormValid(errors, isValid),
       );
@@ -106,17 +106,28 @@ bootstrap(
     const onSubmit = useCallback(() => {
       if (!submitting) {
         setSubmitting(true);
+        const keys = fields.map((field) => field.name);
+
+        if (!isFormValid(errors, keys) || formErrors.some(Boolean)) {
+          setSubmitting(false);
+          return;
+        }
+
         actions.onSubmit
           .dispatch(values)
-          .catch((error) => {
+          .catch((submitActionError: unknown) => {
             // Log the error to the console for troubleshooting.
             // eslint-disable-next-line no-console
-            console.error(error);
-            setSubmitError(true);
+            console.error(submitActionError);
+            const error =
+              typeof submitActionError === 'string'
+                ? submitActionError
+                : utils.remap(submitError, values);
+            setSubmitErrorResult(error);
           })
           .finally(() => setSubmitting(false));
       }
-    }, [actions, submitting, values]);
+    }, [actions, errors, fields, formErrors, submitError, submitting, utils, values]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious.dispatch(values);
@@ -177,10 +188,10 @@ bootstrap(
           <span>{formErrors.find(Boolean)}</span>
         </Message>
         <Message
-          className={classNames(styles.error, { [styles.hidden]: !hasSubmitError })}
+          className={classNames(styles.error, { [styles.hidden]: submitErrorResult == null })}
           color="danger"
         >
-          <span>{utils.remap(submitError, values)}</span>
+          <span>{submitErrorResult}</span>
         </Message>
         {fields.map((f) => (
           <FormInput
