@@ -1,7 +1,6 @@
 import { BootstrapParams } from '@appsemble/sdk';
 import { LatLngBounds, LayerGroup, Map, Marker } from 'leaflet';
 
-import { LatLngMapper } from './createGetters';
 import { createIcon } from './createIcon';
 
 export function makeFilter(fields: [string, string], bounds: LatLngBounds): string {
@@ -21,7 +20,6 @@ interface BlockMarker {
 export function loadMarkers(
   markers: BlockMarker[],
   fetched: Set<number>,
-  get: LatLngMapper,
   data: any,
   params: BootstrapParams,
   target: LayerGroup | Map,
@@ -34,8 +32,8 @@ export function loadMarkers(
       return;
     }
     fetched.add(marker.id);
-    const lat = get.lat(marker);
-    const lng = get.lng(marker);
+    const lat = params.utils.remap(params.parameters.latitude, marker);
+    const lng = params.utils.remap(params.parameters.longitude, marker);
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }

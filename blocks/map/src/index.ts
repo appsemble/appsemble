@@ -7,7 +7,6 @@ import { attach } from '@appsemble/sdk';
 import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 
-import { createGetters } from './createGetters';
 import { loadMarkers, makeFilter } from './loadMarkers';
 
 attach((params) => {
@@ -17,16 +16,15 @@ attach((params) => {
     parameters,
     shadowRoot,
     theme: { primaryColor, tileLayer },
-    utils,
+    utils: { addCleanup, remap, showMessage },
   } = params;
   const node = document.createElement('div');
   shadowRoot.append(node);
   const fetched = new Set<number>();
 
-  const get = createGetters(parameters);
-  const lat = Number(get.lat(data));
-  const lng = Number(get.lng(data));
-  const hasExplicitCenter = Number.isFinite(lat) && Number.isFinite(lng);
+  const latitude = Number(remap(parameters.latitude, data));
+  const longitude = Number(remap(parameters.longitude, data));
+  const hasExplicitCenter = Number.isFinite(latitude) && Number.isFinite(longitude);
   const locationMarker = new CircleMarker(null, {
     color: primaryColor,
   });
@@ -38,7 +36,7 @@ attach((params) => {
   const map = new Map(node, {
     attributionControl: false,
     layers: [new TileLayer(tileLayer)],
-    center: hasExplicitCenter ? [lat, lng] : defaultLocation,
+    center: hasExplicitCenter ? [latitude, longitude] : defaultLocation,
     zoom: 16,
   });
 
@@ -47,7 +45,7 @@ attach((params) => {
   setTimeout(() => map.invalidateSize(), 0);
 
   // Cleanup the map when the block gets removed.
-  utils.addCleanup(() => map.remove());
+  addCleanup(() => map.remove());
 
   map
     /**
@@ -56,7 +54,7 @@ attach((params) => {
     .on('moveend', () => {
       events.emit.move({
         $filter: makeFilter(
-          [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
+          [parameters.filterLatitudeName, parameters.filterLongitudeName],
           map.getBounds(),
         ),
       });
@@ -68,7 +66,7 @@ attach((params) => {
     .once('locationerror', (error) => {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
       if (error?.code === 1) {
-        utils.showMessage({ body: utils.remap(locationError, {}) });
+        showMessage({ body: remap(locationError, {}) });
       }
       // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
     })
@@ -103,6 +101,6 @@ attach((params) => {
   }
 
   events.on.data((d) => {
-    loadMarkers(d, fetched, get, data, params, cluster || map);
+    loadMarkers(d, fetched, data, params, cluster || map);
   });
 });

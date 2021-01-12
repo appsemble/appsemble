@@ -101,8 +101,13 @@ pages:
       - type: map
         version: 0.16.2
         parameters:
-          latitude: location.latitude
-          longitude: location.longitude
+          latitude:
+            - prop: location
+            - prop: latitude
+          longitude:
+            - prop: location
+            - prop: longitude
+
         actions:
           onMarkerClick:
             to: Litter details
