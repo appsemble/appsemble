@@ -1,17 +1,16 @@
 import { LinkAction } from '@appsemble/sdk';
 import { LinkActionDefinition } from '@appsemble/types';
-import { mapValues, normalize, partialNormalized } from '@appsemble/utils';
+import { normalize, partialNormalized } from '@appsemble/utils';
 
 import { MakeActionParameters } from '../../types';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
 export function link({
-  definition: { to, parameters = {} },
   app: { pages },
+  definition: { to },
   history,
   route,
-  remap,
 }: MakeActionParameters<LinkActionDefinition>): LinkAction {
   let href: (data: any) => string;
 
@@ -28,8 +27,6 @@ export function link({
       throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);
     }
 
-    const mappers = mapValues(parameters || {}, compileFilters);
-
     href = (data = {}) => {
       if (urlRegex.test(data)) {
         return data;
@@ -38,9 +35,7 @@ export function link({
       return [
         '',
         normalize(toPage.name),
-        ...(toPage.parameters || []).map((name) =>
-          Object.hasOwnProperty.call(mappers, name) ? mappers[name](data) : data[name],
-        ),
+        ...(toPage.parameters || []).map((name) => data[name] ?? ''),
         ...(subPage ? [normalize(subPage.name)] : []),
       ].join('/');
     };
@@ -61,7 +56,7 @@ export function link({
       return data;
     },
     href(args: any = {}) {
-      return href(remapData(remap, args));
+      return href(args);
     },
   };
 }

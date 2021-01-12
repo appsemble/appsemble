@@ -562,11 +562,6 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
    * This should be a page name.
    */
   to: string;
-
-  /**
-   * Parameters to use for formatting the link.
-   */
-  parameters?: Record<string, any>;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
