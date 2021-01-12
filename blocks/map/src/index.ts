@@ -30,6 +30,8 @@ attach((params) => {
   });
   const {
     defaultLocation = [51.476_852, 0],
+    filterLatitudeName = 'lat',
+    filterLongitudeName = 'lng',
     locationError = 'Couldn’t find your location. Are location services enabled?',
   } = parameters;
 
@@ -53,10 +55,7 @@ attach((params) => {
      */
     .on('moveend', () => {
       events.emit.move({
-        $filter: makeFilter(
-          [parameters.filterLatitudeName, parameters.filterLongitudeName],
-          map.getBounds(),
-        ),
+        $filter: makeFilter([filterLatitudeName, filterLongitudeName], map.getBounds()),
       });
     })
 

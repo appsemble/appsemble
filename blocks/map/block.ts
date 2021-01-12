@@ -80,16 +80,20 @@ declare module '@appsemble/sdk' {
     /**
      * The name of the latitude property in the resource.
      *
-     * These are primarily used for filtering purposes.
+     * These are used for filtering purposes.
+     *
+     * @default 'lat'
      */
-    filterLatitudeName: string;
+    filterLatitudeName?: string;
 
     /**
      * The name of the longitude property in the resource.
      *
-     * These are primarily used for filtering purposes.
+     * These are used for filtering purposes.
+     *
+     * @default 'lng'
      */
-    filterLongitudeName: string;
+    filterLongitudeName?: string;
 
     /**
      * The location (latitude, longitude) to default to when the user’s location cannot be found.
