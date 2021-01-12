@@ -1,6 +1,6 @@
 import { RequestAction, RequestLikeAction, RequestLikeActionTypes } from '@appsemble/sdk';
 import { RequestLikeActionDefinition } from '@appsemble/types';
-import { formatRequestAction, remapData } from '@appsemble/utils';
+import { formatRequestAction } from '@appsemble/utils';
 import axios, { Method } from 'axios';
 
 import { MakeActionParameters } from '../../types';
@@ -13,7 +13,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
   prefix,
   remap,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
-  const { base, method = 'GET', proxy = true, schema, url } = definition;
+  const { method = 'GET', proxy = true, schema, url } = definition;
 
   return {
     type: 'request',
@@ -36,10 +36,6 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       let responseBody = response.data;
       if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
         responseBody = xmlToJson(responseBody, schema);
-      }
-
-      if (base) {
-        responseBody = remapData(base, responseBody);
       }
 
       return responseBody;

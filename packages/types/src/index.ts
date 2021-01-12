@@ -577,11 +577,6 @@ export interface RequestLikeActionDefinition<
   T extends RequestLikeActionTypes = RequestLikeActionTypes
 > extends BaseActionDefinition<T> {
   /**
-   * The element to use as the base when returning the response data.
-   */
-  base?: string;
-
-  /**
    * The HTTP method to use for making a request.
    */
   method?: HTTPMethods;
