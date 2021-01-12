@@ -1274,3 +1274,13 @@ export interface AppSamlSecret extends WritableAppSamlSecret {
    */
   spCertificate?: string;
 }
+
+export type SAMLStatus =
+  | 'badsignature'
+  | 'emailconflict'
+  | 'invalidsubjectconfirmation'
+  | 'invalidrelaystate'
+  | 'invalidsecret'
+  | 'invalidstatuscode'
+  | 'missingnameid'
+  | 'missingsubject';

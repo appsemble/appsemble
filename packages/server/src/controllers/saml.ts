@@ -2,8 +2,9 @@ import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 
 import { logger } from '@appsemble/node-utils';
+import { SAMLStatus } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
-import { badRequest, notFound } from '@hapi/boom';
+import { notFound } from '@hapi/boom';
 import axios from 'axios';
 import { md, pki } from 'node-forge';
 import { v4 } from 'uuid';
@@ -126,8 +127,11 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     },
   } = ctx;
 
+  const prompt = (status: SAMLStatus, query?: Record<string, string>): void =>
+    ctx.redirect(`/saml/response/${status}${query ? `?${new URLSearchParams(query)}` : ''}`);
+
   if (RelayState !== argv.host) {
-    throw badRequest('Invalid RelayState');
+    return prompt('invalidrelaystate');
   }
 
   const secret = await AppSamlSecret.findOne({
@@ -136,7 +140,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   });
 
   if (!secret) {
-    throw notFound('SAML secret not found');
+    return prompt('invalidsecret');
   }
 
   const buf = Buffer.from(SAMLResponse, 'base64');
@@ -153,7 +157,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
 
   const status = x('StatusCode', NS.samlp);
   if (status.getAttribute('Value') !== 'urn:oasis:names:tc:SAML:2.0:status:Success') {
-    throw badRequest('Status code is unsuccesful');
+    return prompt('invalidstatuscode');
   }
 
   const signature = x('Signature', NS.ds);
@@ -182,22 +186,22 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
     sig.validationErrors.forEach((error) => {
       logger.warn(error);
     });
-    throw badRequest('Bad signature');
+    return prompt('badsignature');
   }
 
   const subject = x('Subject', NS.saml);
   if (!subject) {
-    throw badRequest('No subject could be found');
+    return prompt('missingsubject');
   }
 
   const nameId = x('NameID', NS.saml, subject)?.textContent;
   if (!nameId) {
-    throw badRequest('Unsupported NameID');
+    return prompt('missingnameid');
   }
 
   const loginId = x('SubjectConfirmationData', NS.saml, subject)?.getAttribute('InResponseTo');
   if (!loginId) {
-    throw badRequest('Invalid subject confirmation data');
+    return prompt('invalidsubjectconfirmation');
   }
 
   const loginRequest = await SamlLoginRequest.findOne({
@@ -211,19 +215,18 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
       },
       {
         model: User,
-        attributes: ['id'],
-        include: [{ model: EmailAuthorization, attributes: ['email'] }],
+        attributes: ['id', 'primaryEmail'],
       },
     ],
   });
   if (!loginRequest) {
-    throw badRequest('Invalid subject confirmation data');
+    return prompt('invalidsubjectconfirmation');
   }
 
   const app = loginRequest.AppSamlSecret.App;
   const authorization = await AppSamlAuthorization.findOne({
     where: { nameId, AppSamlSecretId: appSamlSecretId },
-    include: [{ model: User }],
+    include: [{ model: User, include: [{ model: EmailAuthorization }] }],
   });
 
   const attributes = new Map(
@@ -239,36 +242,49 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   if (authorization) {
     // If the user is already linked to a known SAML authorization, use that account.
     user = authorization.User;
-    if (email && !user.EmailAuthorizations.some((auth) => auth.email === email)) {
-      await EmailAuthorization.create({ email, UserId: user.id });
+    if (email && !user.EmailAuthorizations?.some((auth) => auth.email === email)) {
+      try {
+        await EmailAuthorization.create({ email, UserId: user.id });
+      } catch {
+        // The SAML login is already linked to an account, but the email address is registered to
+        // another account. In this case ignore the email address.
+      }
     }
   } else {
-    await transactional(async (transaction) => {
-      // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
-      // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
-      // account.
-      user =
-        loginRequest.User ||
-        (await User.create({ name: name || nameId, primaryEmail: email }, { transaction }));
+    try {
+      await transactional(async (transaction) => {
+        // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
+        // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
+        // account.
+        user =
+          loginRequest.User ||
+          (await User.create({ name: name || nameId, primaryEmail: email }, { transaction }));
 
-      if (email) {
-        if (!user.primaryEmail) {
-          await user.update({ primaryEmail: email });
+        if (email && !user.EmailAuthorizations?.some((auth) => auth.email === email)) {
+          if (!user.primaryEmail) {
+            await user.update({ primaryEmail: email });
+          }
+          await EmailAuthorization.create({ email, UserId: user.id }, { transaction });
         }
-        await EmailAuthorization.create({ email, UserId: user.id }, { transaction });
-      }
 
-      // The logged in account is linked to a new SAML authorization for next time.
-      await AppSamlAuthorization.create(
-        { nameId, AppSamlSecretId: appSamlSecretId, UserId: user.id },
-        { transaction },
-      );
+        // The logged in account is linked to a new SAML authorization for next time.
+        await AppSamlAuthorization.create(
+          { nameId, AppSamlSecretId: appSamlSecretId, UserId: user.id },
+          { transaction },
+        );
 
-      const role = app.definition.security?.default?.role;
-      if (role) {
-        await AppMember.create({ UserId: user.id, AppId: appId, role }, { transaction });
-      }
-    });
+        const role = app.definition.security?.default?.role;
+        if (role) {
+          const appMember = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
+          if (!appMember) {
+            await AppMember.create({ UserId: user.id, AppId: appId, role }, { transaction });
+          }
+        }
+      });
+    } catch {
+      await loginRequest.update({ email, nameId });
+      return prompt('emailconflict', { email, id: loginRequest.id });
+    }
   }
 
   const { code } = await createOAuth2AuthorizationCode(
@@ -283,6 +299,45 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   location.searchParams.set('state', loginRequest.state);
   ctx.redirect(String(location));
   ctx.body = `Redirecting to ${location}`;
+}
+
+export async function continueSamlLogin(ctx: KoaContext): Promise<void> {
+  const {
+    argv,
+    request: {
+      body: { id },
+    },
+    user,
+  } = ctx;
+
+  const loginRequest = await SamlLoginRequest.findByPk(id, {
+    include: [
+      { model: User },
+      {
+        model: AppSamlSecret,
+        include: [{ model: App, attributes: ['domain', 'id', 'path', 'OrganizationId'] }],
+      },
+    ],
+  });
+
+  // The logged in account is linked to a new SAML authorization for next time.
+  await AppSamlAuthorization.create({
+    nameId: loginRequest.nameId,
+    AppSamlSecretId: loginRequest.AppSamlSecret.id,
+    UserId: loginRequest.User?.id ?? user.id,
+  });
+
+  const { code } = await createOAuth2AuthorizationCode(
+    argv,
+    loginRequest.AppSamlSecret.App,
+    loginRequest.redirectUri,
+    loginRequest.scope,
+    loginRequest.User ?? user,
+  );
+  const redirect = new URL(loginRequest.redirectUri);
+  redirect.searchParams.set('code', code);
+  redirect.searchParams.set('state', loginRequest.state);
+  ctx.body = { redirect };
 }
 
 export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {

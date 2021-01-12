@@ -26,7 +26,11 @@ interface LoginFormValues {
   password: string;
 }
 
-export function Login(): ReactElement {
+interface LoginProps {
+  disableRegistration?: boolean;
+}
+
+export function Login({ disableRegistration }: LoginProps): ReactElement {
   const location = useLocation();
   const { login } = useUser();
   const qs = useQuery();
@@ -79,19 +83,19 @@ export function Login(): ReactElement {
           }}
         />
         <FormButtons>
-          <div>
-            {enableRegistration && (
+          {enableRegistration && !disableRegistration && (
+            <div>
               <Link
                 className="is-block"
                 to={{ pathname: `/${lang}/register`, search: location.search, hash: location.hash }}
               >
                 <FormattedMessage {...messages.registerLink} />
               </Link>
-            )}
-            <Link className="is-block" to={`/${lang}/reset-password`}>
-              <FormattedMessage {...messages.forgotPasswordLink} />
-            </Link>
-          </div>
+              <Link className="is-block" to={`/${lang}/reset-password`}>
+                <FormattedMessage {...messages.forgotPasswordLink} />
+              </Link>
+            </div>
+          )}
           <SimpleSubmit disabled={busy.enabled}>
             <FormattedMessage {...messages.loginButton} />
           </SimpleSubmit>
