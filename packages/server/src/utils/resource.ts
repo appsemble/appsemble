@@ -27,6 +27,8 @@ export function renameOData(name: string): string {
       return 'created';
     case '__updated__':
       return 'updated';
+    case '__author__':
+      return 'UserId';
     case 'id':
       return name;
     default:
