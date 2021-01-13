@@ -4,7 +4,6 @@ import https from 'https';
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException, init, withScope } from '@sentry/node';
-import Koa from 'koa';
 import { Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
@@ -152,8 +151,8 @@ export async function handler(
   const app = await createServer({ argv, webpackConfigs });
 
   app.on('error', (err, ctx) => {
-    if (err instanceof Koa.HttpError) {
-      // It is thrown by `ctx.throw()`.
+    if (err.expose) {
+      // It is thrown by `ctx.throw()` or `ctx.assert()`.
       return;
     }
     logger.error(err);
