@@ -772,6 +772,38 @@ describe('queryResources', () => {
     });
   });
 
+  it('should be able to filter by author', async () => {
+    const app = await exampleApp(organizationId);
+    const userB = await User.create();
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo', bar: 1 },
+      UserId: user.id,
+    });
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar', bar: 2 },
+      UserId: userB.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { $filter: `$author/id eq ${userB.id}` },
+    });
+
+    expect(response.data).toMatchObject([
+      {
+        id: resource.id,
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+        foo: 'bar',
+        bar: 2,
+        $author: { id: userB.id },
+      },
+    ]);
+  });
+
   it('should be able to combine multiple functions when fetching resources', async () => {
     const app = await exampleApp(organizationId);
     const resource = await Resource.create({
