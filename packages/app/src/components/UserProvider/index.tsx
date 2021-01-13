@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { AppMember, UserInfo } from '@appsemble/types';
+import { AppMember, Team, UserInfo } from '@appsemble/types';
 import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
@@ -28,6 +28,7 @@ const initialState: LoginState = {
   isLoggedIn: false,
   role: null,
   userInfo: null,
+  teams: [],
 };
 
 interface PasswordLoginParams {
@@ -45,6 +46,11 @@ interface LoginState {
   isLoggedIn: boolean;
   role: string;
   userInfo: UserInfo;
+  teams: TeamMember[];
+}
+
+interface TeamMember extends Team {
+  role: 'manager' | 'member';
 }
 
 interface UserContext extends LoginState {
@@ -134,7 +140,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       try {
         const [auth, { sub }] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
-        const [{ data: userInfo }, role] = await Promise.all([
+        const [{ data: userInfo }, role, { data: teams }] = await Promise.all([
           axios.get<UserInfo>(`${apiUrl}/api/connect/userinfo`, config),
           axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
             ({ data }) => data.role,
@@ -151,12 +157,14 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
               throw error;
             },
           ),
+          axios.get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams`, config),
         ]);
         setUser({ id: userInfo.sub });
         setState({
           isLoggedIn: true,
           role,
           userInfo,
+          teams,
         });
       } catch (error: unknown) {
         logout();

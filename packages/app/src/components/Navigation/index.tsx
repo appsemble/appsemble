@@ -14,11 +14,19 @@ import { useUser } from '../UserProvider';
  */
 export function Navigation(): ReactElement {
   const { definition } = useAppDefinition();
-  const { role } = useUser();
+  const { role, teams } = useUser();
 
   const navigation = definition?.layout?.navigation || 'left-menu';
   const checkPagePermissions = (page: PageDefinition): boolean => {
-    const roles = page.roles || definition.roles || [];
+    const roles = page.roles?.filter((r) => !r.startsWith('$team:')) || definition.roles || [];
+    const teamRoles = page.roles?.filter((r) => r.startsWith('$team:'));
+
+    if (teamRoles?.length) {
+      return teamRoles.includes('$team:manager')
+        ? teams.some((team) => team.role === 'manager')
+        : Boolean(teams.length);
+    }
+
     return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
   };
 

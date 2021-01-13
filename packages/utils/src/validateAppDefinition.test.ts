@@ -395,6 +395,26 @@ describe('validateSecurity', () => {
     );
   });
 
+  it('should allow team roles for pages', () => {
+    const definition: AppDefinition = {
+      defaultPage: '',
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [
+        { name: 'Test Page A', roles: ['$team:member'], blocks: [] },
+        { name: 'Test Page B', roles: ['$team:manager'], blocks: [] },
+        { name: 'Test Page C', blocks: [] },
+      ],
+    };
+
+    expect(() => validateSecurity(definition)).not.toThrow();
+  });
+
   it('should check for non-existent block roles', () => {
     const definition: AppDefinition = {
       defaultPage: '',
