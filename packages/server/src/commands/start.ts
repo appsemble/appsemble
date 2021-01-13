@@ -3,7 +3,7 @@ import https from 'https';
 
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
-import { captureException, init, withScope } from '@sentry/node';
+import { captureException, init } from '@sentry/node';
 import { Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
@@ -156,13 +156,13 @@ export async function handler(
       return;
     }
     logger.error(err);
-    withScope((scope) => {
-      scope.setTag('ip', ctx.ip);
-      scope.setTag('level', 'error');
-      scope.setTag('method', ctx.method);
-      scope.setTag('url', String(ctx.URL));
-      scope.setTag('User-Agent', ctx.headers['user-agent']);
-      captureException(err);
+    captureException(err, {
+      tags: {
+        ip: ctx.ip,
+        method: ctx.method,
+        url: String(ctx.URL),
+        'User-Agent': ctx.headers['user-agent'],
+      },
     });
   });
 
