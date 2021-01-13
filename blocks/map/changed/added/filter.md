@@ -1,1 +1,1 @@
-Add `filterLatitudeName` and `filterLatitudeName` parameters.
+Add `filterLatitudeName` and `filterLongitudeName` parameters.
