@@ -82,7 +82,8 @@ function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOpt
       odataFilterToSequelize(
         $filter
           .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__')
+          .replace(/(^|\B)\$author\/id(\b|$)/g, '__author__'),
         Resource,
         renameOData,
       );
