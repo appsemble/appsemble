@@ -36,7 +36,7 @@
     "@odata/parser": "^0.2.3",
     "@sentry/node": "^5.29.0",
     "autoprefixer": "^9.8.6",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "bcrypt": "5.0.0",
     "bulma": "0.9.1",
     "bulma-checkradio": "^1.1.1",
@@ -107,7 +107,7 @@
   "devDependencies": {
     "@sinonjs/fake-timers": "^6.0.1",
     "axios-mock-adapter": "^1.19.0",
-    "axios-test-instance": "^3.2.1",
+    "axios-test-instance": "^4.0.0",
     "jest-image-snapshot": "^4.2.0",
     "koa-webpack": "^6.0.0",
     "memfs": "^3.1.3",
