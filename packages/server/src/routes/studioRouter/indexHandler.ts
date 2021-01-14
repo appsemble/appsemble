@@ -2,8 +2,9 @@ import { randomBytes } from 'crypto';
 import { URL } from 'url';
 
 import { KoaContext } from '../../types';
+import { argv } from '../../utils/argv';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
-import { createSettings, makeCSP } from '../../utils/render';
+import { createSettings, makeCSP, render } from '../../utils/render';
 import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
 
 /**
@@ -12,9 +13,6 @@ import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
  * @param ctx - The Koa context.
  */
 export async function indexHandler(ctx: KoaContext): Promise<void> {
-  const {
-    state: { render },
-  } = ctx;
   const {
     disableRegistration,
     githubClientId,
@@ -86,6 +84,6 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     'frame-src': [`*.${new URL(host).host}`, host],
   });
   ctx.set('Content-Security-Policy', csp);
-  ctx.body = await render('studio.html', { nonce, settings });
+  ctx.body = await render(ctx, 'studio.html', { nonce, settings });
   ctx.type = 'text/html';
 }
