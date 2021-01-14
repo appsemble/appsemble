@@ -39,6 +39,15 @@ always be returned as the result.
 
 The following remapper functions are available:
 
+### `app`
+
+Get an app related property.
+
+#### Parameters
+
+The parameter must be a string which describes the app data to get. The only supported value is
+`id`, which returns the app id.
+
 ### `context`
 
 Get a property from the context. Some blocks may provide contextual data that can be used. The

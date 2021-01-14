@@ -201,6 +201,15 @@ export interface TokenResponse {
 
 export interface Remappers {
   /**
+   * Get app metadata.
+   *
+   * Supported properties:
+   *
+   * - `id`: Get the app id.
+   */
+  app: 'id';
+
+  /**
    * Get a property from the context.
    */
   context: string;
