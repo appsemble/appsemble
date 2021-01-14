@@ -31,7 +31,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "chalk": "^4.1.0",
     "cli-highlight": "^2.1.9",
     "fast-glob": "^3.2.4",
@@ -47,7 +47,7 @@
   "devDependencies": {
     "@sinonjs/fake-timers": "^6.0.1",
     "axios-mock-adapter": "^1.19.0",
-    "axios-test-instance": "^3.2.1"
+    "axios-test-instance": "^4.0.0"
   },
   "engines": {
     "node": ">=12.0.0"

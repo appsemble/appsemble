@@ -37,6 +37,18 @@ export class SamlLoginRequest extends Model {
   state: string;
 
   /**
+   * The email address the user is linking.
+   */
+  @Column
+  email: string;
+
+  /**
+   * The nameId that’s stored if the authorization is being linked to the user.
+   */
+  @Column
+  nameId: string;
+
+  /**
    * The OAuth2 redirect URI the app specified in the login request.
    */
   @AllowNull(false)

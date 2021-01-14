@@ -343,8 +343,9 @@ describe('assertConsumerService', () => {
     );
 
     expect(response).toMatchObject({
-      status: 400,
-      data: { statusCode: 400, error: 'Bad Request', message: 'Invalid RelayState' },
+      status: 302,
+      data:
+        'Redirecting to <a href="/saml/response/invalidrelaystate">/saml/response/invalidrelaystate</a>.',
     });
   });
 
@@ -358,8 +359,9 @@ describe('assertConsumerService', () => {
     );
 
     expect(response).toMatchObject({
-      status: 404,
-      data: { statusCode: 404, error: 'Not Found', message: 'SAML secret not found' },
+      status: 302,
+      data:
+        'Redirecting to <a href="/saml/response/invalidsecret">/saml/response/invalidsecret</a>.',
     });
   });
 
@@ -373,8 +375,9 @@ describe('assertConsumerService', () => {
     );
 
     expect(response).toMatchObject({
-      status: 400,
-      data: { statusCode: 400, error: 'Bad Request', message: 'Status code is unsuccesful' },
+      status: 302,
+      data:
+        'Redirecting to <a href="/saml/response/invalidstatuscode">/saml/response/invalidstatuscode</a>.',
     });
   });
 });
