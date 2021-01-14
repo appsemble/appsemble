@@ -37,7 +37,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
     post: {
       tags: ['resource'],
@@ -53,7 +53,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
   },
   // XXX: Temporary workaround until this is fixed in Koas
@@ -83,7 +83,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
   },
   '/api/apps/{appId}/resources/{resourceType}/subscriptions': {
@@ -127,7 +127,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
     put: {
       tags: ['resource'],
@@ -143,7 +143,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
     delete: {
       tags: ['resource'],
@@ -155,7 +155,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
   },
   '/api/apps/{appId}/resources/{resourceType}/{resourceId}/subscriptions': {
