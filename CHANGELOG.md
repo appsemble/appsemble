@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.17.0](https://gitlab.com/appsemble/appsemble/-/releases/0.17.0)] - 2021-01-14
+
+### Added
+
+- Block(`map`): Add `filterLatitudeName` and `filterLongitudeName` parameters.
+- App: Add support for `$team:member` and `$team:manager` roles in `page.roles`.
+- Server: Add option to filter resources by user ID by applying the appropriate OData filter. For
+  example: `$filter=$author/id eq 11111111-a111-11a1-aa11-111a1a11aa1a"`.
+- Server: Added possibility to upload and link assets with resources.
+- Utils: Add the app remapper.
+
+### Changed
+
+- Block(`map`): Change parameters `longitude` and `latitude` to accept remappers instead of property
+  paths.
+- App: Adapted the updated resource API.
+
+### Removed
+
+- App: Remove `parameters` property from `link` actions. This functionality can be replaced by using
+  `remap`.
+- Appsemble: Remove the `base` property of `request` actions. This can be replicated using remappers
+  in `onSuccess` and/or `onError`.
+- Studio: Remove the alpha tag from the header.
+
 ## \[[0.16.2](https://gitlab.com/appsemble/appsemble/-/releases/0.16.2)] - 2021-01-06
 
 ### Fixed
