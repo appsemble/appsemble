@@ -22,7 +22,7 @@ import * as m21 from './0.15.4';
 import * as m22 from './0.15.8';
 import * as m25 from './0.16.0';
 import * as m26 from './0.16.2';
-import * as m27 from './0.16.3';
+import * as m27 from './0.17.0';
 import * as m1 from './0.9.0';
 import * as m2 from './0.9.3';
 import * as m3 from './0.9.4';
