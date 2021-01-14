@@ -11,11 +11,33 @@ export interface IntlMessage {
   defaultMessage?: string;
 }
 
+/**
+ * Get a message format instance based on a message id and default message.
+ *
+ * @param msg - The message to get the message format instance for.
+ * @returns A message format instance.
+ */
 export type MessageGetter = (msg: IntlMessage) => IntlMessageFormat;
 
 export interface RemapperContext {
-  getMessage: (msg: IntlMessage) => IntlMessageFormat;
+  /**
+   * The id of the app whose context the remapper is run in.
+   */
+  appId: number;
+
+  /**
+   * @see MessageGetter
+   */
+  getMessage: MessageGetter;
+
+  /**
+   * The OpenID compatible userinfo object for the current user.
+   */
   userInfo: UserInfo;
+
+  /**
+   * A custom context passed to the remap function.
+   */
   context: Record<string, any>;
 }
 
@@ -61,9 +83,18 @@ export function remap(
 /**
  * Implementations of all remappers.
  *
- * All arguments are deferred from {@link @appsemble/sdk#Remappers}
+ * All arguments are deferred from remappers.
+ *
+ * @see Remappers
  */
 const mapperImplementations: MapperImplementations = {
+  app: (prop, input, context) => {
+    if (prop === 'id') {
+      return context.appId;
+    }
+    throw new Error('Unknown app property: id');
+  },
+
   context: (prop, _, context) =>
     String(prop)
       .split('.')

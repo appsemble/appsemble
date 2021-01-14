@@ -85,6 +85,7 @@ export async function getRemapperContext(
     (message) => new IntlMessageFormat(message, language, undefined, { formatters }),
   );
   return {
+    appId: app.id,
     getMessage({ defaultMessage, id }) {
       const msg = appMessages.find(({ messages }) => Object.hasOwnProperty.call(messages, id));
       const message = msg ? msg.messages[id] : defaultMessage;
