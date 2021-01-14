@@ -177,7 +177,11 @@ export function validateSecurity(definition: AppDefinition): void {
   pages.forEach((page) => {
     if (page.roles?.length) {
       page.roles.forEach((role) => {
-        if (!Object.keys(security.roles).includes(role)) {
+        if (
+          !Object.keys(security.roles).includes(role) &&
+          role !== '$team:member' &&
+          role !== '$team:manager'
+        ) {
           throw new AppsembleValidationError(
             `Role ‘${role}’ in page ‘${page.name}’ roles does not exist.`,
           );

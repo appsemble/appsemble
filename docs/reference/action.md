@@ -132,10 +132,9 @@ JSON.
 | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | url        | true     | A remapper that results in the URL to send the request to. Can be a relative URL (Eg. `/api/health`) for usage with the Appsemble API or an absolute URL (Eg. `https://example.com`) for usage with external sites.                               |
 | method     |          | The type of request to make. Defaults to `GET` if omitted.                                                                                                                                                                                        |
-| query      |          | An object representing the values that get added to the query string. Templating can be applied here to make Appsemble inject values based on the data it received.                                                                               |
+| query      |          | A remapper that results in either an object containing each property of the querystring, or a string that gets passed through as-is.                                                                                                              |
 | proxy      |          | By default requests will be proxied through the Appsemble API. This allows to protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behaviour can be disabled by setting this to `false`. |
 | schema     |          | The name of the schema to validate against before submitting data.                                                                                                                                                                                |
-| base       |          | The base element to return when used in `GET` queries. This can be used to flatten the data being returned from the API. Dot notation can be used.                                                                                                |
 | serialize  |          | The method used to serialize the request data. Setting this to `formdata` will send the request as a `multipart/form-data` request. By default the data is serialized as an `application/json` request.                                           |
 | blobs      |          | An object containing a range of parameters used to upload files to the server.                                                                                                                                                                    |
 | blobs.type |          | The method used to upload files to the server. Supports `upload` to override the default behavior.                                                                                                                                                |
@@ -145,25 +144,26 @@ JSON.
 This action throws a new exception based on the data that is passed through. This can be used to
 create a custom error that ends up in the error action handler.
 
-### Query templates
+### Query
 
 The `query` action parameter can be used to customize what data gets added to the query string of
-the request. This can either be a string that is taken as-is, or they can be constructed using query
-templates.
+the request. This can either be a string that is taken as-is, or they can be constructed using a
+remapper.
 
-Query templates works by wrapping parts of the value of the object with `{}`. This will let
-Appsemble know that it should replace that part of the string with a value taken from the available
-data that was passed to the action.
-
-For example, the following `query` object will result in this URL:
+For example, the following `query` remapper will result in this URL:
 `https://example.com/api/foo?$filter=id eq 1 and foo eq 'bar'&baz=23`
 
 ```yaml
 type: request
 url: https://example.com/api/foo
 query:
-  $filter: id eq {id} and foo eq bar
-  baz: 23
+  object.from:
+    $filter:
+      string.format:
+        template: id eq {id} and foo eq bar
+        values:
+          id: { prop: id }
+    baz: 23
 ```
 
 ## `dialog`

@@ -385,7 +385,7 @@ export interface ResourceCall {
   /**
    * Query parameters to pass along with the request.
    */
-  query?: Record<string, string>;
+  query?: Remapper;
 
   /**
    * THe roles that are allowed to perform this action.
@@ -562,11 +562,6 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
    * This should be a page name.
    */
   to: string;
-
-  /**
-   * Parameters to use for formatting the link.
-   */
-  parameters?: Record<string, any>;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
@@ -581,11 +576,6 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
 export interface RequestLikeActionDefinition<
   T extends RequestLikeActionTypes = RequestLikeActionTypes
 > extends BaseActionDefinition<T> {
-  /**
-   * The element to use as the base when returning the response data.
-   */
-  base?: string;
-
   /**
    * The HTTP method to use for making a request.
    */
@@ -606,7 +596,7 @@ export interface RequestLikeActionDefinition<
   /**
    * Query parameters to pass along with the request.
    */
-  query?: Record<string, string>;
+  query?: Remapper;
 
   /**
    * The URL to which to make the request.

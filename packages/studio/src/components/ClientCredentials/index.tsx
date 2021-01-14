@@ -107,6 +107,8 @@ export function ClientCredentials(): ReactElement {
           expires: '',
           'blocks:write': false,
           'organizations:write': false,
+          'resources:read': false,
+          'resources:write': false,
           'apps:write': false,
         }}
         footer={
@@ -171,6 +173,18 @@ export function ClientCredentials(): ReactElement {
               label="apps:write"
               name="apps:write"
               title={<FormattedMessage {...messages['apps:write']} />}
+            />
+            <SimpleFormField
+              component={CheckboxField}
+              label="resources:read"
+              name="resources:read"
+              title={<FormattedMessage {...messages['resources:read']} />}
+            />
+            <SimpleFormField
+              component={CheckboxField}
+              label="resources:write"
+              name="resources:write"
+              title={<FormattedMessage {...messages['resources:write']} />}
             />
           </>
         )}

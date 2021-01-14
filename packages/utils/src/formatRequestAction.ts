@@ -1,54 +1,15 @@
 import { Remapper, RequestLikeActionDefinition } from '@appsemble/types';
 import { AxiosRequestConfig } from 'axios';
 
-import { compileFilters, MapperFunction } from './legacyRemap';
-
-const regex = /{(.+?)}/g;
-
-type Mapper = Record<string, MapperFunction>;
-
 export function formatRequestAction(
   { method = 'GET', query, ...action }: RequestLikeActionDefinition,
   data: unknown,
   remap: (remapper: Remapper, data: any) => any,
 ): AxiosRequestConfig {
-  const url = String(remap(action.url, data));
-  const urlMatch = url.match(regex);
-  const urlMappers = urlMatch
-    ?.map((match) => match.slice(1, -1))
-    .reduce<Mapper>((acc, filter) => ({ ...acc, [filter]: compileFilters(filter) }), {});
-
-  const queryMappers =
-    query &&
-    Object.entries(query).reduce<Record<string, Mapper>>((acc, [queryKey, queryValue]) => {
-      const queryMatch = String(queryValue).match(regex);
-      if (queryMatch) {
-        acc[queryKey] = queryMatch
-          .map((match) => match.slice(1, -1))
-          .reduce((subAcc, filter) => ({ ...subAcc, [filter]: compileFilters(filter) }), {});
-      }
-      return acc;
-    }, {});
-
   return {
     method,
-    url: url.replace(regex, (_, filter) => urlMappers[filter](data)),
+    url: String(remap(action.url, data)),
     headers: {},
-    params:
-      query &&
-      Object.fromEntries(
-        Object.entries(query).map(([key, value]) => {
-          if (!queryMappers[key]) {
-            return [key, value];
-          }
-
-          return [
-            key,
-            queryMappers[key]
-              ? value.replace(regex, (_, filter) => queryMappers[key][filter](data))
-              : value,
-          ];
-        }),
-      ),
+    params: remap(query, data),
   };
 }

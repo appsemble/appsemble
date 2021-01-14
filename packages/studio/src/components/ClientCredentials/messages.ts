@@ -31,4 +31,6 @@ export const messages = defineMessages({
   'blocks:write': 'Publish blocks and block versions',
   'organizations:write': 'Create and manage organizations',
   'apps:write': 'Create and modify apps',
+  'resources:read': 'Read app resources',
+  'resources:write': 'Create, update, and delete app resources',
 });
