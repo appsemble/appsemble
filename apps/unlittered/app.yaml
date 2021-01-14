@@ -92,16 +92,22 @@ pages:
             type: resource.query
             resource: litter
             query:
-              '$orderby': '$created desc'
-              '$top': 50
+              object.from:
+                $orderby: $created desc
+                $top: 50
         events:
           emit:
             data: data
       - type: map
         version: 0.16.2
         parameters:
-          latitude: location.latitude
-          longitude: location.longitude
+          latitude:
+            - prop: location
+            - prop: latitude
+          longitude:
+            - prop: location
+            - prop: longitude
+
         actions:
           onMarkerClick:
             to: Litter details

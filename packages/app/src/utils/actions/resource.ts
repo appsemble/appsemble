@@ -40,10 +40,15 @@ export function get(args: MakeActionParameters<ResourceGetActionDefinition>): Re
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
+        query: definition?.query ?? resource?.get?.query,
         method,
         proxy: false,
-        url: url.includes(`{${id}}`) ? url : `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
+        url: {
+          'string.format': {
+            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+            values: { id: { prop: id as string } },
+          },
+        },
         schema: resource.schema,
       },
     }),
@@ -67,7 +72,7 @@ export function query(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
+        query: definition?.query ?? resource?.query?.query,
         method,
         proxy: false,
         url,
@@ -83,9 +88,9 @@ export function count(
 ): ResourceCountAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = resource?.query?.method || 'GET';
+  const method = resource?.count?.method || 'GET';
   const url =
-    resource?.query?.url ??
+    resource?.count?.url ??
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/$count`;
 
@@ -94,7 +99,7 @@ export function count(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
+        query: definition?.query ?? resource?.count?.query,
         method,
         proxy: false,
         url,
@@ -121,7 +126,7 @@ export function create(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
+        query: definition?.query ?? resource?.create?.query,
         method,
         proxy: false,
         url,
@@ -149,7 +154,7 @@ export function update(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
+        query: definition?.query ?? resource?.update?.query,
         method,
         proxy: false,
         url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
@@ -165,9 +170,9 @@ export function remove(
 ): ResourceDeleteAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = resource?.update?.method || 'DELETE';
+  const method = resource?.delete?.method || 'DELETE';
   const url =
-    resource?.update?.url ||
+    resource?.delete?.url ||
     resource.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
@@ -177,7 +182,7 @@ export function remove(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
+        query: definition?.query ?? resource?.delete?.query,
         type: 'resource.delete',
         method,
         proxy: false,

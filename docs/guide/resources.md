@@ -92,9 +92,10 @@ person:
     # url: defaults to the base URL
 
     # Query parameters are the ones after the question mark in the URL. These can optionally be
-    # defined in a readable manner.
+    # defined in a readable manner using remappers.
     query:
-      $limit: '50'
+      object.from:
+        $limit: 50
   get:
     # HTTP method to use. GET is default
     method: GET
@@ -111,8 +112,9 @@ person:
 ## Query object
 
 Aside from including the query string parameters in the URL manually, it is also possible to define
-a `query` object in a resource definition. This allows for the URL to be easier to read, as well as
-working in tandem with the `query` object as defined in (`resource` actions)[].
+a `query` object in a resource definition. This allows for the URL to be easier to read. Note that
+if `query` is defined in the (`resource` action)[], the `query` remapper as defined in the action
+will take precedence over the one defined as the default for the resource’s method.
 
 Below is an example of what the query object looks like when in use.
 
@@ -120,7 +122,8 @@ Below is an example of what the query object looks like when in use.
 person:
   query:
     query:
-      $filter: lastName eq 'foo' # Resolves to /resources/person?$filter=lastName eq 'foo'
+      object.from:
+        $filter: lastName eq 'foo' # Resolves to /resources/person?$filter=lastName eq 'foo'
 
 pages:
   - name: Example Page
@@ -132,7 +135,8 @@ pages:
             type: resource.query
             resource: person
             query:
-              id: 1 # Combined with the base filter, resolves to /resources/person?$filter=lastName eq 'foo'&id=1
+              object.from:
+                id: 1 # Resolves to /resources/person?id=1
         events:
           emit:
             data: people

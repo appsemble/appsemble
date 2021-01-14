@@ -68,14 +68,32 @@ interface AssetMarkerIcon extends AbstractMarkerIcon {
 declare module '@appsemble/sdk' {
   interface Parameters {
     /**
-     * The name of the field used to retrieve the longitude
+     * The remapper used to retrieve the latitude.
      */
-    latitude: string;
+    latitude: Remapper;
 
     /**
-     * The name of the field used to retrieve the latitude
+     * The remapper used to retrieve the longitude.
      */
-    longitude: string;
+    longitude: Remapper;
+
+    /**
+     * The name of the latitude property in the resource.
+     *
+     * These are used for filtering purposes.
+     *
+     * @default 'lat'
+     */
+    filterLatitudeName?: string;
+
+    /**
+     * The name of the longitude property in the resource.
+     *
+     * These are used for filtering purposes.
+     *
+     * @default 'lng'
+     */
+    filterLongitudeName?: string;
 
     /**
      * The location (latitude, longitude) to default to when the user’s location cannot be found.
