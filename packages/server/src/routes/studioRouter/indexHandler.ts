@@ -2,9 +2,8 @@ import { randomBytes } from 'crypto';
 import { URL } from 'url';
 
 import { KoaContext } from '../../types';
-import { makeCSP } from '../../utils/makeCSP';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
-import { createSettings } from '../../utils/render';
+import { createSettings, makeCSP } from '../../utils/render';
 import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
 
 /**
