@@ -574,14 +574,21 @@ describe('queryResources', () => {
 
   it('should only fetch resources as an author or team manager', async () => {
     const app = await exampleApp(organizationId);
+    const appB = await exampleApp(organizationId, 'test-app-2');
+
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const teamB = await Team.create({ name: 'Test Team 2', AppId: app.id });
+    // Create a team from a different app where the user is a manager,
+    // These should not be included in the result.
+    const teamC = await Team.create({ name: 'Test Team different app', AppId: appB.id });
 
     const userB = await User.create();
     const userC = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
     await TeamMember.create({ TeamId: teamB.id, UserId: userB.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userC.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: teamC.id, UserId: user.id, role: TeamRole.Manager });
+    await TeamMember.create({ TeamId: teamC.id, UserId: userC.id, role: TeamRole.Member });
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
@@ -601,6 +608,18 @@ describe('queryResources', () => {
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'foo' },
+      UserId: userC.id,
+    });
+    await Resource.create({
+      AppId: appB.id,
+      type: 'testResourceTeamManager',
+      data: { foo: 'baar' },
+      UserId: user.id,
+    });
+    await Resource.create({
+      AppId: appB.id,
+      type: 'testResourceTeamManager',
+      data: { foo: 'baaar' },
       UserId: userC.id,
     });
 

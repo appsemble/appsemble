@@ -14,6 +14,7 @@ import {
   Organization,
   Resource,
   ResourceSubscription,
+  Team,
   TeamMember,
   transactional,
   User,
@@ -155,17 +156,16 @@ async function verifyPermission(
 
   if (functionalRoles.includes(`$team:${TeamRole.Member}`)) {
     const teamIds = (
-      await TeamMember.findAll({
-        where: { UserId: user.id },
-        raw: true,
-        attributes: ['TeamId'],
+      await Team.findAll({
+        where: { AppId: app.id },
+        include: [{ model: User, where: { id: user.id } }],
+        attributes: ['id'],
       })
-    ).map((t) => t.TeamId);
+    ).map((t) => t.id);
 
     const userIds = (
       await TeamMember.findAll({
         attributes: ['UserId'],
-        raw: true,
         where: { TeamId: teamIds },
       })
     ).map((tm) => tm.UserId);
@@ -174,12 +174,14 @@ async function verifyPermission(
 
   if (functionalRoles.includes(`$team:${TeamRole.Manager}`)) {
     const teamIds = (
-      await TeamMember.findAll({
-        where: { UserId: user.id, role: TeamRole.Manager },
-        raw: true,
-        attributes: ['TeamId'],
+      await Team.findAll({
+        where: { AppId: app.id },
+        include: [
+          { model: User, where: { id: user.id }, through: { where: { role: TeamRole.Manager } } },
+        ],
+        attributes: ['id'],
       })
-    ).map((t) => t.TeamId);
+    ).map((t) => t.id);
 
     const userIds = (
       await TeamMember.findAll({
