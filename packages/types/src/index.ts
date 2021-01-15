@@ -1330,3 +1330,37 @@ export type SAMLStatus =
   | 'invalidsubjectconfirmation'
   | 'missingnameid'
   | 'missingsubject';
+
+/**
+ * The block configuration that’s used by the CLI when building a block.
+ *
+ * This configuration is also passed to the Webpack configuration function as the `env` variable.
+ */
+export interface BlockConfig
+  extends Pick<
+    BlockManifest,
+    | 'actions'
+    | 'description'
+    | 'events'
+    | 'layout'
+    | 'longDescription'
+    | 'name'
+    | 'parameters'
+    | 'resources'
+    | 'version'
+  > {
+  /**
+   * The path to the webpack configuration file relative to the block project directory.
+   */
+  webpack: string;
+
+  /**
+   * The build output directory relative to the block project directory.
+   */
+  output: string;
+
+  /**
+   * The absolute directory of the block project.
+   */
+  dir: string;
+}

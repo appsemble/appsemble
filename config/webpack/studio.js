@@ -7,8 +7,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const UnusedWebpackPlugin = require('unused-webpack-plugin');
 
-const core = require('./core');
 const minify = require('./html-minifier.json');
+const shared = require('./shared');
 
 const publicPath = '/';
 
@@ -20,10 +20,10 @@ module.exports = (env, argv) => {
   const production = mode === 'production';
   const studioEntry = resolve(__dirname, '../../packages/studio/src');
 
-  const coreConfig = core('studio', argv);
+  const config = shared('studio', argv);
 
   return {
-    ...coreConfig,
+    ...config,
     name: 'Appsemble Studio',
     entry: [studioEntry],
     output: {
@@ -31,7 +31,7 @@ module.exports = (env, argv) => {
       publicPath,
     },
     plugins: [
-      ...coreConfig.plugins,
+      ...config.plugins,
       new HtmlWebpackPlugin({
         template: join(studioEntry, 'index.html'),
         templateParameters: {

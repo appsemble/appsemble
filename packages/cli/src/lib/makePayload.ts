@@ -3,9 +3,9 @@ import { join, relative, resolve } from 'path';
 import { inspect } from 'util';
 
 import { logger, opendirSafe } from '@appsemble/node-utils';
+import { BlockConfig } from '@appsemble/types';
 import FormData from 'form-data';
 
-import { BlockConfig } from '../types';
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
 /**

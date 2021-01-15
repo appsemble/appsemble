@@ -5,8 +5,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const UnusedWebpackPlugin = require('unused-webpack-plugin');
 
-const core = require('./core');
 const minify = require('./html-minifier.json');
+const shared = require('./shared');
 
 const publicPath = '/';
 
@@ -18,10 +18,10 @@ module.exports = (env, argv) => {
   const production = mode === 'production';
   const appEntry = resolve(__dirname, '../../packages/app/src');
 
-  const coreConfig = core('app', argv);
+  const config = shared('app', argv);
 
   return {
-    ...coreConfig,
+    ...config,
     name: 'Appsemble App',
     entry: [appEntry],
     output: {
@@ -29,7 +29,7 @@ module.exports = (env, argv) => {
       publicPath,
     },
     plugins: [
-      ...coreConfig.plugins,
+      ...config.plugins,
       new HtmlWebpackPlugin({
         template: join(appEntry, 'index.html'),
         filename: 'app.html',
