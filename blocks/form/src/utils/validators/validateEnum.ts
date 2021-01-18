@@ -9,14 +9,8 @@ import { EnumField, RadioField, RequiredRequirement } from '../../../block';
  */
 export function validateEnum(field: EnumField, value: any): RequiredRequirement {
   return field.requirements?.find((requirement) => {
-    if (!('required' in requirement)) {
-      return false;
-    }
-    if (value === undefined) {
-      return true;
-    }
-    if ('enum' in field) {
-      return !field.enum.some((choice) => choice.value === value);
+    if ('required' in requirement) {
+      return value === undefined;
     }
   });
 }
