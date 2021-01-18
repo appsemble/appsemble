@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { remap } from '@appsemble/utils';
+import { remap, RemapperContext } from '@appsemble/utils';
 import { parseExpression } from 'cron-parser';
 import { Op } from 'sequelize';
 import { Argv } from 'yargs';
@@ -20,7 +20,10 @@ async function handleAction(
   params: ServerActionParameters,
 ): Promise<void> {
   logger.info(`Running action: ${params.action.type}`);
-  let data = 'remap' in params.action ? remap(params.action.remap, params.data, null) : params.data;
+  let data =
+    'remap' in params.action
+      ? remap(params.action.remap, params.data, { appId: params.app.id } as RemapperContext)
+      : params.data;
 
   try {
     data = await action({ ...params, data });
