@@ -22,9 +22,9 @@ attach((params) => {
   shadowRoot.append(node);
   const fetched = new Set<number>();
 
-  const latitude = Number(remap(parameters.latitude, data));
-  const longitude = Number(remap(parameters.longitude, data));
-  const hasExplicitCenter = Number.isFinite(latitude) && Number.isFinite(longitude);
+  const latitude = data && remap(parameters.latitude, data);
+  const longitude = data && remap(parameters.longitude, data);
+  const hasExplicitCenter = Number.isFinite(longitude) && Number.isFinite(latitude);
   const locationMarker = new CircleMarker(null, {
     color: primaryColor,
   });
