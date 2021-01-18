@@ -24,7 +24,11 @@ attach((params) => {
 
   const latitude = data && remap(parameters.latitude, data);
   const longitude = data && remap(parameters.longitude, data);
-  const hasExplicitCenter = Number.isFinite(longitude) && Number.isFinite(latitude);
+  const hasExplicitCenter =
+    longitude != null &&
+    latitude != null &&
+    Number.isFinite(longitude) &&
+    Number.isFinite(latitude);
   const locationMarker = new CircleMarker(null, {
     color: primaryColor,
   });
