@@ -16,6 +16,7 @@ export * from './Loader';
 export * from './Location';
 export * from './Message';
 export * from './Modal';
+export * from './Option';
 export * from './RadioButton';
 export * from './RadioGroup';
 export * from './Select';
