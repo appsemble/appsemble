@@ -28,15 +28,18 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
   const required = isRequired(field);
 
   useEffect(() => {
+    if (value !== undefined && !options.some((option) => option.value === value)) {
+      // Explicitly set value to undefined if value does not exist in the new set of options.
+      onChange(field.name);
+    }
+  }, [field, onChange, options, value]);
+
+  useEffect(() => {
     if ('enum' in field) {
       return;
     }
 
     const handleOptions = (result: Choice[]): void => {
-      if (!result.find((r) => r.value === value && value !== undefined)) {
-        // Explicitly set value to undefined if value does not exist in the new set of options.
-        onChange(field.name);
-      }
       setOptions(result);
       setLoading(false);
     };
@@ -61,7 +64,7 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
       events.on[field.event](eventHandler);
       return () => events.off[field.event](eventHandler);
     }
-  }, [actions, events, field, onChange, utils, value]);
+  }, [actions, events, field, utils]);
 
   return (
     <SelectField
