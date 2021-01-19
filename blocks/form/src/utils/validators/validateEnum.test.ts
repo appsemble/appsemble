@@ -10,7 +10,7 @@ describe('validateEnum', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateEnum(field, null)).toBe(field.requirements[0]);
+    expect(validateEnum(field)).toBe(field.requirements[0]);
   });
 
   it('should return undefined if it validates correctly', () => {
@@ -34,17 +34,6 @@ describe('validateEnum', () => {
 
     expect(validateEnum(field, '')).toBeUndefined();
   });
-
-  it('should not validate correctly if value is not a valid option', () => {
-    const field: EnumField = {
-      type: 'enum',
-      name: 'test',
-      enum: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
-      requirements: [{ required: true }],
-    };
-
-    expect(validateEnum(field, 'd')).toBe(field.requirements[0]);
-  });
 });
 
 describe('validateRadio', () => {
@@ -56,7 +45,7 @@ describe('validateRadio', () => {
       requirements: [{ required: true }],
     };
 
-    expect(validateRadio(field, null)).toBe(field.requirements[0]);
+    expect(validateRadio(field)).toBe(field.requirements[0]);
   });
 
   it('should return undefined if it validates correctly', () => {
@@ -79,16 +68,5 @@ describe('validateRadio', () => {
     };
 
     expect(validateRadio(field, '')).toBeUndefined();
-  });
-
-  it('should not validate correctly if value is not a valid option', () => {
-    const field: RadioField = {
-      type: 'radio',
-      name: 'test',
-      options: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
-      requirements: [{ required: true }],
-    };
-
-    expect(validateRadio(field, 'd')).toBe(field.requirements[0]);
   });
 });

@@ -7,16 +7,10 @@ import { EnumField, RadioField, RequiredRequirement } from '../../../block';
  * @param value - The value of the field.
  * @returns The first requirement that failed validation.
  */
-export function validateEnum(field: EnumField, value: any): RequiredRequirement {
+export function validateEnum(field: EnumField, value?: any): RequiredRequirement {
   return field.requirements?.find((requirement) => {
-    if (!('required' in requirement)) {
-      return false;
-    }
-    if (value === undefined) {
-      return true;
-    }
-    if ('enum' in field) {
-      return !field.enum.some((choice) => choice.value === value);
+    if ('required' in requirement) {
+      return value === undefined;
     }
   });
 }
@@ -28,13 +22,10 @@ export function validateEnum(field: EnumField, value: any): RequiredRequirement 
  * @param value - The value of the field.
  * @returns The first requirement that failed validation.
  */
-export function validateRadio(field: RadioField, value: any): RequiredRequirement {
+export function validateRadio(field: RadioField, value?: any): RequiredRequirement {
   return field.requirements?.find((requirement) => {
-    if (
-      'required' in requirement &&
-      (value === undefined || !field.options.find((choice) => choice.value === value))
-    ) {
-      return true;
+    if ('required' in requirement) {
+      return value === undefined;
     }
   });
 }
