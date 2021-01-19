@@ -564,6 +564,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/apps/{appId}/screenshots/{screenshotId}': {
@@ -611,6 +612,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The screenshot has been successfully updated',
         },
       },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
     delete: {
       tags: ['app'],
@@ -621,6 +623,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The screenshot has been successfully deleted.',
         },
       },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/apps/{appId}/style/core': {

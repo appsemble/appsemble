@@ -538,6 +538,8 @@ export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+
   await transactional(async (transaction) => {
     logger.verbose(`Saving ${screenshots?.length} screenshots`);
     const result = await AppScreenshot.bulkCreate(
@@ -569,6 +571,8 @@ export async function updateAppScreenshot(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+
   if (!app.AppScreenshots.length) {
     throw notFound('Screenshot not found');
   }
@@ -588,6 +592,8 @@ export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void
   if (!app) {
     throw notFound('App not found');
   }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
   if (!app.AppScreenshots.length) {
     throw notFound('Screenshot not found');
