@@ -1,12 +1,10 @@
 import { useBlock } from '@appsemble/preact';
-import { SelectField } from '@appsemble/preact-components';
-import classNames from 'classnames';
+import { Option, SelectField } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import { Choice, EnumField, InputProps } from '../../../block';
 import { isRequired } from '../../utils/requirements';
-import styles from './index.css';
 
 type EnumInputProps = InputProps<string, EnumField>;
 
@@ -82,15 +80,15 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
       value={value}
     >
       {(!required || value === undefined) && (
-        <option className={classNames({ [styles.hidden]: required })} value={null}>
+        <Option hidden={required} value={null}>
           {utils.remap(placeholder, {}) ?? ''}
-        </option>
+        </Option>
       )}
       {loading ||
         options.map((choice) => (
-          <option key={choice.value} selected={choice.value === value} value={choice.value}>
+          <Option key={choice.value} value={choice.value}>
             {utils.remap(choice.label, value) ?? choice.value}
-          </option>
+          </Option>
         ))}
     </SelectField>
   );

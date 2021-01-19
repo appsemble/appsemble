@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Select } from '@appsemble/preact-components';
+import { Option, Select } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import { EnumField, FieldComponentProps } from '../../../block';
@@ -23,9 +23,9 @@ export function EnumFieldComponent({
       value={value}
     >
       {field.enum.map(({ label, value: val }) => (
-        <option key={val} selected={value === val} value={val}>
+        <Option key={val} value={val}>
           {utils.remap(label, {}) || val}
-        </option>
+        </Option>
       ))}
     </Select>
   );
