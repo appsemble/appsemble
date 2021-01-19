@@ -1,7 +1,7 @@
-import { AppDefinition } from '@appsemble/types';
+import { AppDefinition, TeamMember } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 
-export function shouldShowMenu(app: AppDefinition, userRole: string, teams): boolean {
+export function shouldShowMenu(app: AppDefinition, userRole: string, teams: TeamMember[]): boolean {
   return app.pages.some((page) => {
     if (page.hideFromMenu) {
       return false;

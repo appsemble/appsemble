@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { Loader, useLocationString } from '@appsemble/react-components';
-import { BlockDefinition, PageDefinition, Remapper, Security } from '@appsemble/types';
+import { BlockDefinition, PageDefinition, Remapper, Security, TeamMember } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
@@ -28,6 +28,7 @@ function filterBlocks(
   security: Security,
   blocks: BlockDefinition[],
   userRole: string,
+  teams: TeamMember[],
 ): [BlockDefinition, number][] {
   return blocks
     .map<[BlockDefinition, number]>((block, index) => [block, index])
@@ -35,7 +36,7 @@ function filterBlocks(
       ([block]) =>
         block.roles === undefined ||
         block.roles.length === 0 ||
-        block.roles.some((r) => checkAppRole(security, r, userRole)),
+        block.roles.some((r) => checkAppRole(security, r, userRole, teams)),
     );
 }
 
@@ -51,13 +52,14 @@ export function BlockList({
   showDialog,
 }: BlockListProps): ReactElement {
   const { definition, revision } = useAppDefinition();
-  const { isLoggedIn, role } = useUser();
+  const { isLoggedIn, role, teams } = useUser();
   const redirect = useLocationString();
 
-  const blockList = useMemo(() => filterBlocks(definition.security, blocks, role), [
+  const blockList = useMemo(() => filterBlocks(definition.security, blocks, role, teams), [
     blocks,
     definition,
     role,
+    teams,
   ]);
 
   const blockStatus = useRef(blockList.map(() => false));
