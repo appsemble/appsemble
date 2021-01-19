@@ -523,6 +523,79 @@ export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
   ctx.type = mime;
 }
 
+export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+    request: {
+      body: { screenshots },
+    },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: ['id'],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await transactional(async (transaction) => {
+    logger.verbose(`Saving ${screenshots?.length} screenshots`);
+    const result = await AppScreenshot.bulkCreate(
+      screenshots.map((screenshot: File) => ({
+        screenshot: screenshot.contents,
+        AppId: app.id,
+      })),
+      // These queries provide huge logs.
+      { transaction, logging: false },
+    );
+
+    ctx.body = result.map((screenshot) => screenshot.id);
+  });
+}
+
+export async function updateAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, screenshotId },
+    request: {
+      body: { screenshot },
+    },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: [],
+    include: [{ model: AppScreenshot, where: { id: screenshotId }, required: false }],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppScreenshots.length) {
+    throw notFound('Screenshot not found');
+  }
+
+  await app.AppScreenshots[0].update({ screenshot: screenshot.contents });
+}
+
+export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, screenshotId },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: [],
+    include: [{ model: AppScreenshot, where: { id: screenshotId }, required: false }],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppScreenshots.length) {
+    throw notFound('Screenshot not found');
+  }
+
+  await app.AppScreenshots[0].destroy();
+}
+
 export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
