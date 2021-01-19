@@ -13,7 +13,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
   prefix,
   remap,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
-  const { method = 'GET', proxy = true, schema, url } = definition;
+  const { body, method = 'GET', proxy = true, schema, url } = definition;
 
   return {
     type: 'request',
@@ -27,7 +27,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
         : formatRequestAction(definition, data, remap);
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
-        req.data = serializeResource(data);
+        req.data = serializeResource(body ? remap(body, data) : data);
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
       }
