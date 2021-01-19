@@ -196,10 +196,12 @@ export async function getTeamMembers(ctx: KoaContext<Params>): Promise<void> {
 
 export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
   const {
+    clients,
     params: { appId, teamId },
     request: {
       body: { id },
     },
+    user,
   } = ctx;
 
   const team = await Team.findOne({
@@ -220,10 +222,17 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Team not found.');
   }
 
-  try {
-    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
-  } catch {
-    await checkTeamPermission(ctx, team);
+  // Allow app users to add themselves to a team.
+  if ('app' in clients) {
+    if (id !== user.id) {
+      throw forbidden('App users may only modify add themselves as team member');
+    }
+  } else {
+    try {
+      await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
+    } catch {
+      await checkTeamPermission(ctx, team);
+    }
   }
 
   if (
@@ -238,12 +247,12 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     throw badRequest('This user is already a member of this team.');
   }
 
-  const [user] = team.App.Users.length ? team.App.Users : team.App.Organization.Users;
+  const [member] = team.App.Users.length ? team.App.Users : team.App.Organization.Users;
   await TeamMember.create({ UserId: id, TeamId: team.id, role: TeamRole.Member });
   ctx.body = {
-    id: user.id,
-    name: user.name,
-    primaryEmail: user.primaryEmail,
+    id: member.id,
+    name: member.name,
+    primaryEmail: member.primaryEmail,
     role: TeamRole.Member,
   };
 }
