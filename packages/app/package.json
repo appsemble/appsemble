@@ -40,7 +40,6 @@
     "events": "^3.2.0",
     "intl-format-cache": "^4.3.1",
     "intl-messageformat": "^9.3.20",
-    "jsonpointer": "^4.1.0",
     "jwt-decode": "^3.1.2",
     "openapi-types": "^7.0.1",
     "react": "^17.0.1",

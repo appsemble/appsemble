@@ -58,7 +58,6 @@
     "@types/jest": "26.0.19",
     "@types/jest-image-snapshot": "^3.1.0",
     "@types/js-yaml": "^3.12.5",
-    "@types/jsonpointer": "^4.0.0",
     "@types/jsonschema": "^1.1.1",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/koa-compress": "^4.0.1",
