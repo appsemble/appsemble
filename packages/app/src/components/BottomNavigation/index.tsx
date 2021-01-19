@@ -19,11 +19,16 @@ interface BottomNavigationProps {
  */
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
   const { url } = useRouteMatch();
+  const { teams } = useUser();
   const { getMessage } = useAppMessages();
   const { definition } = useAppDefinition();
   const { role } = useUser();
 
-  const showMenu = useMemo(() => shouldShowMenu(definition, role), [definition, role]);
+  const showMenu = useMemo(() => shouldShowMenu(definition, role, teams), [
+    definition,
+    role,
+    teams,
+  ]);
 
   return (
     showMenu && (

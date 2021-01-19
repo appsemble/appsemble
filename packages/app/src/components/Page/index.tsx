@@ -86,16 +86,11 @@ export function Page(): ReactElement {
   useEffect(() => () => ee.current.removeAllListeners(), [page]);
 
   const checkPagePermissions = (p: PageDefinition): boolean => {
-    const roles = p.roles?.filter((r) => !r.startsWith('$team:')) || definition.roles || [];
-    const teamRoles = p.roles?.filter((r) => r.startsWith('$team:'));
+    const roles = p.roles || definition.roles || [];
 
-    if (teamRoles?.length) {
-      return teamRoles.includes('$team:manager')
-        ? teams.some((team) => team.role === 'manager')
-        : Boolean(teams.length);
-    }
-
-    return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
+    return (
+      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+    );
   };
 
   // If the user is on an existing page and is allowed to view it, render it.
@@ -189,8 +184,8 @@ export function Page(): ReactElement {
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = definition.pages.find((p) => checkPagePermissions(p) && !p.parameters);
   if (redirectPage) {
-    const i = definition.pages.indexOf(defaultPage);
-    let pageName = defaultPage.name;
+    const i = definition.pages.indexOf(redirectPage);
+    let pageName = redirectPage.name;
 
     if (messageIds.includes(`pages.${i}`)) {
       pageName = getMessage({ id: `pages.${i}` }).format() as string;
