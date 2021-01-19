@@ -531,7 +531,7 @@ export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void
     },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['id'],
+    attributes: ['id', 'OrganizationId'],
   });
 
   if (!app) {
@@ -563,7 +563,7 @@ export async function updateAppScreenshot(ctx: KoaContext<Params>): Promise<void
     },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: [],
+    attributes: ['OrganizationId'],
     include: [{ model: AppScreenshot, where: { id: screenshotId }, required: false }],
   });
 
@@ -585,7 +585,7 @@ export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void
     params: { appId, screenshotId },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: [],
+    attributes: ['OrganizationId'],
     include: [{ model: AppScreenshot, where: { id: screenshotId }, required: false }],
   });
 
