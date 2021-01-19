@@ -611,6 +611,13 @@ export interface RequestLikeActionDefinition<
    * The URL to which to make the request.
    */
   url?: Remapper;
+
+  /**
+   * A remapper for the request body.
+   *
+   * If this isn’t specified, the raw input data is used.
+   */
+  body?: Remapper;
 }
 
 export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
