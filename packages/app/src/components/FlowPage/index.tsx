@@ -104,7 +104,7 @@ export function FlowPage({
     () =>
       makeActions({
         actions: { onFlowFinish: {}, onFlowCancel: {} },
-        definition,
+        app: definition,
         context: page,
         history,
         showDialog,

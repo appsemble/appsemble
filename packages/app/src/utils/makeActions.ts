@@ -16,107 +16,70 @@ import { match as Match, RouteComponentProps } from 'react-router-dom';
 import { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
 import { ActionCreator, ActionCreators, actionCreators } from './actions';
 
-interface MakeActionsParams {
-  actions: Record<string, ActionType>;
-  definition: AppDefinition;
-  context: BlockDefinition | FlowPageDefinition;
-  history: RouteComponentProps['history'];
-  route: Match<{ lang: string }>;
-  showDialog: ShowDialogAction;
-  extraCreators: ActionCreators;
-  flowActions: FlowActions;
-  pushNotifications: ServiceWorkerRegistrationContextType;
-  pageReady: Promise<void>;
-  prefix: string;
-  ee: EventEmitter;
-  remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
-  showMessage: ShowMessage;
-}
-
-interface CreateActionParams {
-  actionDefinition: ActionDefinition;
+interface CommonActionParams {
   app: AppDefinition;
   ee: EventEmitter;
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
-  route: Match<{ lang: string }>;
   pageReady: Promise<void>;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
+  route: Match<{ lang: string }>;
   showDialog: ShowDialogAction;
-  type: Action['type'];
   showMessage: ShowMessage;
+}
+
+interface MakeActionsParams extends CommonActionParams {
+  actions: Record<string, ActionType>;
+  context: BlockDefinition | FlowPageDefinition;
+}
+
+interface CreateActionParams extends CommonActionParams {
+  actionDefinition: ActionDefinition;
+  type: Action['type'];
 }
 
 function createAction({
   actionDefinition,
-  app,
-  ee,
   extraCreators,
-  flowActions,
-  history,
   pageReady,
   prefix,
-  pushNotifications,
   remap,
-  route,
-  showDialog,
-  showMessage,
   type,
+  ...params
 }: CreateActionParams): Action {
   const actionCreator: ActionCreator = actionCreators[type] || extraCreators[type];
 
   const action = actionCreator({
+    ...params,
     definition: actionDefinition,
-    app,
-    history,
-    showDialog,
-    flowActions,
-    prefix,
-    ee,
-    pushNotifications,
     remap,
-    showMessage,
-    route,
+    prefix,
   });
 
   const onSuccess =
     actionDefinition?.onSuccess &&
     createAction({
+      ...params,
       actionDefinition: actionDefinition.onSuccess,
-      app,
-      ee,
       extraCreators,
-      flowActions,
-      history,
-      route,
       pageReady,
       prefix: `${prefix}.onSuccess`,
-      pushNotifications,
       remap,
-      showDialog,
       type: actionDefinition.onSuccess.type,
-      showMessage,
     });
   const onError =
     actionDefinition?.onError &&
     createAction({
+      ...params,
       actionDefinition: actionDefinition.onError,
-      app,
-      ee,
       extraCreators,
-      flowActions,
-      history,
-      route,
       pageReady,
       prefix: `${prefix}.onError`,
-      pushNotifications,
       remap,
-      showDialog,
       type: actionDefinition.onError.type,
-      showMessage,
     });
 
   const { dispatch } = action;
@@ -162,18 +125,8 @@ function createAction({
 export function makeActions({
   actions,
   context,
-  definition,
-  ee,
-  extraCreators,
-  flowActions,
-  history,
-  pageReady,
   prefix,
-  pushNotifications,
-  remap,
-  route,
-  showDialog,
-  showMessage,
+  ...params
 }: MakeActionsParams): Record<string, Action> {
   const actionMap = Object.entries(actions || {})
     .filter(([key]) => key !== '$any')
@@ -191,20 +144,10 @@ export function makeActions({
       }
 
       const action = createAction({
-        app: definition,
+        ...params,
         actionDefinition,
-        ee,
-        extraCreators,
-        history,
-        route,
         type,
         prefix: `${prefix}.actions.${on}`,
-        pushNotifications,
-        flowActions,
-        showDialog,
-        pageReady,
-        remap,
-        showMessage,
       });
 
       acc[on] = action;
@@ -220,20 +163,10 @@ export function makeActions({
         const { type } = actionDefinition;
 
         const action = createAction({
-          app: definition,
+          ...params,
           actionDefinition,
-          ee,
-          extraCreators,
-          history,
-          route,
           type,
           prefix: `${prefix}.actions.${on}`,
-          pushNotifications,
-          flowActions,
-          showDialog,
-          pageReady,
-          remap,
-          showMessage,
         });
 
         acc[on] = action;

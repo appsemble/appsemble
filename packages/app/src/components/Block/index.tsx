@@ -105,7 +105,7 @@ export function Block({
 
     const actions = makeActions({
       actions: manifest.actions,
-      definition,
+      app: definition,
       context: block,
       history,
       showDialog,
