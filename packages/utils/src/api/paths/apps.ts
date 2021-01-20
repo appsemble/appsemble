@@ -582,38 +582,6 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
-    put: {
-      tags: ['app'],
-      description: 'Replace an existing screenshot',
-      operationId: 'updateAppScreenshot',
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            schema: {
-              type: 'object',
-              properties: {
-                screenshot: {
-                  description: 'Screenshot to showcase in the store',
-                  type: 'string',
-                  format: 'binary',
-                },
-              },
-            },
-            encoding: {
-              screenshot: {
-                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        204: {
-          description: 'The screenshot has been successfully updated',
-        },
-      },
-      security: [{ studio: [] }, { cli: ['apps:write'] }],
-    },
     delete: {
       tags: ['app'],
       description: 'Delete an existing screenshot.',

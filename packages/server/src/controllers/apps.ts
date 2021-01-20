@@ -541,7 +541,7 @@ export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
   await transactional(async (transaction) => {
-    logger.verbose(`Saving ${screenshots?.length} screenshots`);
+    logger.verbose(`Saving ${screenshots.length} screenshots`);
     const result = await AppScreenshot.bulkCreate(
       screenshots.map((screenshot: File) => ({
         screenshot: screenshot.contents,
@@ -553,31 +553,6 @@ export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void
 
     ctx.body = result.map((screenshot) => screenshot.id);
   });
-}
-
-export async function updateAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
-  const {
-    params: { appId, screenshotId },
-    request: {
-      body: { screenshot },
-    },
-  } = ctx;
-  const app = await App.findByPk(appId, {
-    attributes: ['OrganizationId'],
-    include: [{ model: AppScreenshot, where: { id: screenshotId }, required: false }],
-  });
-
-  if (!app) {
-    throw notFound('App not found');
-  }
-
-  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
-
-  if (!app.AppScreenshots.length) {
-    throw notFound('Screenshot not found');
-  }
-
-  await app.AppScreenshots[0].update({ screenshot: screenshot.contents });
 }
 
 export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
