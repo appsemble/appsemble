@@ -222,7 +222,9 @@ async function verifyPermission(
       }
     }
 
-    if (!appRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
+    // Team roles are checked separately
+    // XXX unify this logic?
+    if (!appRoles.some((r) => checkAppRole(app.definition.security, r, role, null))) {
       if (!result.length) {
         throw forbidden('User does not have sufficient permissions.');
       }

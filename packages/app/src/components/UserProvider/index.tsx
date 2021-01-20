@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { AppMember, Team, UserInfo } from '@appsemble/types';
+import { AppMember, TeamMember, UserInfo } from '@appsemble/types';
 import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
@@ -47,10 +47,6 @@ interface LoginState {
   role: string;
   userInfo: UserInfo;
   teams: TeamMember[];
-}
-
-interface TeamMember extends Team {
-  role: 'manager' | 'member';
 }
 
 interface UserContext extends LoginState {

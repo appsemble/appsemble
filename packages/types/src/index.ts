@@ -1128,6 +1128,10 @@ export interface Team {
   annotations?: Record<string, string>;
 }
 
+export interface TeamMember extends Team {
+  role: 'manager' | 'member';
+}
+
 /**
  * An invite for an organizaton.
  */
