@@ -21,20 +21,15 @@ type MakeActionsParams = Omit<MakeActionParameters<ActionDefinition>, 'definitio
     context: BlockDefinition | FlowPageDefinition;
   };
 
-type CreateActionParams = MakeActionParameters<ActionDefinition> &
-  CommonActionParams & {
-    type: Action['type'];
-  };
-
 function createAction({
   definition,
   extraCreators,
   pageReady,
   prefix,
   remap,
-  type,
   ...params
-}: CreateActionParams): Action {
+}: MakeActionParameters<ActionDefinition> & CommonActionParams): Action {
+  const type = definition?.type ?? 'noop';
   const actionCreator: ActionCreator = actionCreators[type] || extraCreators[type];
 
   const action = actionCreator({
@@ -53,7 +48,6 @@ function createAction({
       pageReady,
       prefix: `${prefix}.onSuccess`,
       remap,
-      type: definition.onSuccess.type,
     });
   const onError =
     definition?.onError &&
@@ -64,7 +58,6 @@ function createAction({
       pageReady,
       prefix: `${prefix}.onError`,
       remap,
-      type: definition.onError.type,
     });
 
   const { dispatch } = action;
@@ -117,21 +110,17 @@ export function makeActions({
     .filter(([key]) => key !== '$any')
     .reduce<Record<string, Action>>((acc, [on, { required }]) => {
       let definition: ActionDefinition;
-      let type: Action['type'];
       if (!context.actions || !Object.hasOwnProperty.call(context.actions, on)) {
         if (required) {
           throw new Error(`Missing required action ${on}`);
         }
-        type = 'noop';
       } else {
         definition = context.actions[on as keyof typeof context.actions];
-        ({ type } = definition);
       }
 
       const action = createAction({
         ...params,
         definition,
-        type,
         prefix: `${prefix}.actions.${on}`,
       });
 
@@ -145,12 +134,10 @@ export function makeActions({
       .filter((key) => !actionMap[key])
       .reduce<Record<string, Action>>((acc, on: keyof typeof context.actions) => {
         const definition = context.actions[on];
-        const { type } = definition;
 
         const action = createAction({
           ...params,
           definition,
-          type,
           prefix: `${prefix}.actions.${on}`,
         });
 
