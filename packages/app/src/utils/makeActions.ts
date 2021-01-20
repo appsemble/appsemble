@@ -1,48 +1,33 @@
-import { EventEmitter } from 'events';
-
-import { ShowMessage } from '@appsemble/react-components';
 import { Action } from '@appsemble/sdk';
 import {
   ActionDefinition,
   ActionType,
-  AppDefinition,
   BlockDefinition,
   FlowPageDefinition,
-  Remapper,
 } from '@appsemble/types';
 import { addBreadcrumb, Severity } from '@sentry/browser';
-import { match as Match, RouteComponentProps } from 'react-router-dom';
 
-import { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
+import { MakeActionParameters } from '../types';
 import { ActionCreator, ActionCreators, actionCreators } from './actions';
 
 interface CommonActionParams {
-  app: AppDefinition;
-  ee: EventEmitter;
   extraCreators: ActionCreators;
-  flowActions: FlowActions;
-  history: RouteComponentProps['history'];
   pageReady: Promise<void>;
-  prefix: string;
-  pushNotifications: ServiceWorkerRegistrationContextType;
-  remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
-  route: Match<{ lang: string }>;
-  showDialog: ShowDialogAction;
-  showMessage: ShowMessage;
 }
 
-interface MakeActionsParams extends CommonActionParams {
-  actions: Record<string, ActionType>;
-  context: BlockDefinition | FlowPageDefinition;
-}
+type MakeActionsParams = Omit<MakeActionParameters<ActionDefinition>, 'definition'> &
+  CommonActionParams & {
+    actions: Record<string, ActionType>;
+    context: BlockDefinition | FlowPageDefinition;
+  };
 
-interface CreateActionParams extends CommonActionParams {
-  actionDefinition: ActionDefinition;
-  type: Action['type'];
-}
+type CreateActionParams = MakeActionParameters<ActionDefinition> &
+  CommonActionParams & {
+    type: Action['type'];
+  };
 
 function createAction({
-  actionDefinition,
+  definition,
   extraCreators,
   pageReady,
   prefix,
@@ -54,44 +39,44 @@ function createAction({
 
   const action = actionCreator({
     ...params,
-    definition: actionDefinition,
+    definition,
     remap,
     prefix,
   });
 
   const onSuccess =
-    actionDefinition?.onSuccess &&
+    definition?.onSuccess &&
     createAction({
       ...params,
-      actionDefinition: actionDefinition.onSuccess,
+      definition: definition.onSuccess,
       extraCreators,
       pageReady,
       prefix: `${prefix}.onSuccess`,
       remap,
-      type: actionDefinition.onSuccess.type,
+      type: definition.onSuccess.type,
     });
   const onError =
-    actionDefinition?.onError &&
+    definition?.onError &&
     createAction({
       ...params,
-      actionDefinition: actionDefinition.onError,
+      definition: definition.onError,
       extraCreators,
       pageReady,
       prefix: `${prefix}.onError`,
       remap,
-      type: actionDefinition.onError.type,
+      type: definition.onError.type,
     });
 
   const { dispatch } = action;
-  if (actionDefinition) {
+  if (definition) {
     action.dispatch = async (args: any, context: Record<string, any>) => {
       await pageReady;
       let result;
 
       try {
         result = await dispatch(
-          Object.hasOwnProperty.call(actionDefinition, 'remap')
-            ? remap(actionDefinition.remap, args, context)
+          Object.hasOwnProperty.call(definition, 'remap')
+            ? remap(definition.remap, args, context)
             : args,
         );
         addBreadcrumb({
@@ -131,7 +116,7 @@ export function makeActions({
   const actionMap = Object.entries(actions || {})
     .filter(([key]) => key !== '$any')
     .reduce<Record<string, Action>>((acc, [on, { required }]) => {
-      let actionDefinition: ActionDefinition;
+      let definition: ActionDefinition;
       let type: Action['type'];
       if (!context.actions || !Object.hasOwnProperty.call(context.actions, on)) {
         if (required) {
@@ -139,13 +124,13 @@ export function makeActions({
         }
         type = 'noop';
       } else {
-        actionDefinition = context.actions[on as keyof typeof context.actions];
-        ({ type } = actionDefinition);
+        definition = context.actions[on as keyof typeof context.actions];
+        ({ type } = definition);
       }
 
       const action = createAction({
         ...params,
-        actionDefinition,
+        definition,
         type,
         prefix: `${prefix}.actions.${on}`,
       });
@@ -159,12 +144,12 @@ export function makeActions({
     anyActions = Object.keys(context.actions || {})
       .filter((key) => !actionMap[key])
       .reduce<Record<string, Action>>((acc, on: keyof typeof context.actions) => {
-        const actionDefinition = context.actions[on];
-        const { type } = actionDefinition;
+        const definition = context.actions[on];
+        const { type } = definition;
 
         const action = createAction({
           ...params,
-          actionDefinition,
+          definition,
           type,
           prefix: `${prefix}.actions.${on}`,
         });
