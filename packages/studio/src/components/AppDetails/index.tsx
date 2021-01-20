@@ -15,7 +15,7 @@ import {
 import { Organization } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useRef } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ import { checkRole } from '../../utils/checkRole';
 import { getAppUrl } from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import { AppRatings } from '../AppRatings';
+import { AppScreenshots } from '../AppScreenshots';
 import { StarRating } from '../StarRating';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
@@ -37,21 +38,6 @@ export function AppDetails(): ReactElement {
   const history = useHistory();
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
-
-  const screenshotDiv = useRef<HTMLDivElement>();
-  const scrollScreenshots = useCallback((reverse = false) => {
-    if (!screenshotDiv.current) {
-      return;
-    }
-
-    screenshotDiv.current.scrollLeft += reverse ? -255 : 255;
-  }, []);
-  const scrollRight = useCallback(() => {
-    scrollScreenshots();
-  }, [scrollScreenshots]);
-  const scrollLeft = useCallback(() => {
-    scrollScreenshots(true);
-  }, [scrollScreenshots]);
 
   const cloneApp = useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
@@ -173,49 +159,7 @@ export function AppDetails(): ReactElement {
           )}
         </div>
       </div>
-      {app.screenshotUrls.length ? (
-        <div className="my-4 is-flex">
-          <Button
-            className={`is-medium ${styles.scrollButton}`}
-            icon="chevron-left"
-            onClick={scrollLeft}
-          />
-          <div className={`px-4 ${styles.screenshots}`} ref={screenshotDiv}>
-            {app.screenshotUrls.map((url) => (
-              <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-                <img
-                  alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-                  className={styles.screenshot}
-                  src={url}
-                />
-              </figure>
-            ))}
-            {app.screenshotUrls.map((url) => (
-              <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-                <img
-                  alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-                  className={styles.screenshot}
-                  src={url}
-                />
-              </figure>
-            ))}
-            {app.screenshotUrls.map((url) => (
-              <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-                <img
-                  alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-                  className={styles.screenshot}
-                  src={url}
-                />
-              </figure>
-            ))}
-          </div>
-          <Button
-            className={`is-medium ${styles.scrollButton}`}
-            icon="chevron-right"
-            onClick={scrollRight}
-          />
-        </div>
-      ) : null}
+      {app.screenshotUrls.length && <AppScreenshots />}
       <AppRatings />
     </Content>
   );
