@@ -84,7 +84,6 @@ export async function getTeam(ctx: KoaContext<Params>): Promise<void> {
 
 export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
   const {
-    clients,
     params: { appId },
     user,
   } = ctx;
@@ -102,20 +101,13 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
   }
 
   // Filter to just the user’s teams if it’s requested from an app.
-  ctx.body = (clients.app
-    ? app.Teams.filter((team) => team.Users.find((u) => u.id === user.id))
-    : app.Teams
-  ).map((team) => {
-    const userRole = team.Users.find((u) => u.id === user.id);
-
-    return {
-      id: team.id,
-      name: team.name,
-      size: team.Users.length,
-      ...(userRole && { role: userRole.TeamMember.role }),
-      ...(team.annotations && { annotations: team.annotations }),
-    };
-  });
+  ctx.body = app.Teams.map((team) => ({
+    id: team.id,
+    name: team.name,
+    size: team.Users.length,
+    role: team.Users.find((u) => u.id === user.id)?.TeamMember.role,
+    annotations: team.annotations ?? {},
+  }));
 }
 
 export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {

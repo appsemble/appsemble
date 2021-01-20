@@ -13,6 +13,7 @@ import React, {
   useState,
 } from 'react';
 
+import { UpdateTeam } from '../../types';
 import { oauth2Scope } from '../../utils/constants';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -53,6 +54,7 @@ interface UserContext extends LoginState {
   passwordLogin: (params: PasswordLoginParams) => Promise<void>;
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   logout: () => any;
+  updateTeam: UpdateTeam;
 }
 
 interface UserProviderProps {
@@ -190,6 +192,13 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     [login],
   );
 
+  const updateTeam: UpdateTeam = useCallback(({ id, role }) => {
+    setState(({ teams, ...oldState }) => ({
+      ...oldState,
+      teams: teams.map((t) => (t.id === id ? { ...t, role } : t)),
+    }));
+  }, []);
+
   // Initialize the login session/
   useEffect(() => {
     // If the app doesn’t have a security definition, don’t even bother initializing anything.
@@ -259,12 +268,10 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   }, [authorization]);
 
   // The value is memoized to prevent unnecessary rerenders.
-  const value = useMemo(() => ({ authorizationCodeLogin, passwordLogin, logout, ...state }), [
-    authorizationCodeLogin,
-    passwordLogin,
-    logout,
-    state,
-  ]);
+  const value = useMemo(
+    () => ({ authorizationCodeLogin, passwordLogin, logout, updateTeam, ...state }),
+    [authorizationCodeLogin, passwordLogin, logout, state, updateTeam],
+  );
 
   // If security hasn’t been initialized yet, show a loader instead of the children. This prevents
   // children from crashing when the context is still undefined.

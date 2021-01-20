@@ -696,6 +696,8 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.next'>
   | BaseActionDefinition<'email'>
   | BaseActionDefinition<'noop'>
+  | BaseActionDefinition<'team.list'>
+  | BaseActionDefinition<'team.join'>
   | BaseActionDefinition<'throw'>
   | DialogActionDefinition
   | EventActionDefinition

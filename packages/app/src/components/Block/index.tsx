@@ -18,6 +18,7 @@ import { prefixBlockURL } from '../../utils/prefixBlockURL';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 
 const FA_URL = [...document.styleSheets]
@@ -76,6 +77,7 @@ export function Block({
   const route = useRouteMatch<{ lang: string }>();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
+  const { teams, updateTeam, userInfo } = useUser();
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<(() => void)[]>([]);
@@ -118,6 +120,9 @@ export function Block({
       ee,
       remap,
       showMessage: push,
+      teams,
+      updateTeam,
+      userInfo,
     });
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
     const [bulmaBase] = BULMA_URL.href.split('?');
@@ -194,6 +199,9 @@ export function Block({
     remap,
     route,
     showDialog,
+    teams,
+    updateTeam,
+    userInfo,
   ]);
 
   const { layout = manifest.layout } = block;

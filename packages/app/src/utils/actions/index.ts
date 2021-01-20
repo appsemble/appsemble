@@ -13,6 +13,7 @@ import { noop } from './noop';
 import { request } from './request';
 import * as resource from './resource';
 import { staticAction } from './static';
+import { teamJoin, teamList } from './team';
 import { throwAction } from './throwAction';
 
 // XXX fix type, this requires a generic mapping key to type.
@@ -47,4 +48,6 @@ export const actionCreators = {
   'resource.subscription.toggle': resource.toggleSubscribe,
   'resource.subscription.status': resource.subscriptionStatus,
   static: staticAction,
+  'team.join': teamJoin,
+  'team.list': teamList,
 } as ActionCreators;
