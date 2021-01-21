@@ -68,29 +68,37 @@ export function AppScreenshots(): ReactElement {
     closeModal();
   }, [app, setApp, uploadingScreenshot, closeModal]);
 
+  if (!mayManageScreenshots && !app.screenshotUrls.length) {
+    return null;
+  }
+
   return (
     <>
       <div className={`is-flex ${styles.wrapper}`}>
-        <Button className={styles.createScreenshotButton} onClick={screenshotModal.enable}>
-          <FormattedMessage {...messages.addNewScreenshot} />
-        </Button>
-        <div className="my-4 is-flex">
-          <Button
-            className={`is-medium ${styles.scrollButton}`}
-            icon="chevron-left"
-            onClick={scrollLeft}
-          />
-          <div className={`px-4 ${styles.screenshots}`} ref={screenshotDiv}>
-            {app.screenshotUrls.map((url) => (
-              <AppScreenshot key={url} mayManageScreenshots={mayManageScreenshots} url={url} />
-            ))}
+        {mayManageScreenshots && (
+          <Button className={styles.createScreenshotButton} onClick={screenshotModal.enable}>
+            <FormattedMessage {...messages.addNewScreenshot} />
+          </Button>
+        )}
+        {app.screenshotUrls.length !== 0 && (
+          <div className="my-4 is-flex">
+            <Button
+              className={`is-medium ${styles.scrollButton}`}
+              icon="chevron-left"
+              onClick={scrollLeft}
+            />
+            <div className={`px-4 ${styles.screenshots}`} ref={screenshotDiv}>
+              {app.screenshotUrls.map((url) => (
+                <AppScreenshot key={url} mayManageScreenshots={mayManageScreenshots} url={url} />
+              ))}
+            </div>
+            <Button
+              className={`is-medium ${styles.scrollButton}`}
+              icon="chevron-right"
+              onClick={scrollRight}
+            />
           </div>
-          <Button
-            className={`is-medium ${styles.scrollButton}`}
-            icon="chevron-right"
-            onClick={scrollRight}
-          />
-        </div>
+        )}
       </div>
       <Modal
         footer={

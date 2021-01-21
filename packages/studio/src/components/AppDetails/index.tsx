@@ -159,7 +159,7 @@ export function AppDetails(): ReactElement {
           )}
         </div>
       </div>
-      {app.screenshotUrls.length && <AppScreenshots />}
+      <AppScreenshots />
       <AppRatings />
     </Content>
   );
