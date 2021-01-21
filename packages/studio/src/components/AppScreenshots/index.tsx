@@ -1,12 +1,20 @@
-import { Button, useConfirmation } from '@appsemble/react-components';
+import {
+  Button,
+  CardFooterButton,
+  FileUpload,
+  Modal,
+  useObjectURL,
+  useToggle,
+} from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils/src';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useRef } from 'react';
+import React, { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { checkRole } from '../../utils/checkRole';
 import { useApp } from '../AppContext';
 import { useUser } from '../UserProvider';
+import { AppScreenshot } from './AppScreenshot';
 import styles from './index.css';
 import { messages } from './messages';
 
@@ -15,22 +23,12 @@ export function AppScreenshots(): ReactElement {
   const { organizations } = useUser();
   const { formatMessage } = useIntl();
 
+  const screenshotModal = useToggle();
+  const [uploadingScreenshot, setUploadingScreenshot] = useState<File>();
+  const uploadingScreenshotPreview = useObjectURL(uploadingScreenshot);
+
   const userRole = organizations?.find((org) => org.id === app.OrganizationId)?.role;
   const mayManageScreenshots = userRole && checkRole(userRole, Permission.EditAppSettings);
-
-  const onDeleteScreenshotClick = useConfirmation({
-    title: <FormattedMessage {...messages.deleteScreenshotTitle} />,
-    body: <FormattedMessage {...messages.deleteScreenshotBody} />,
-    cancelLabel: <FormattedMessage {...messages.deleteCancel} />,
-    confirmLabel: <FormattedMessage {...messages.deleteConfirm} />,
-    async action(url: string) {
-      const split = url.split('/');
-      const id = split[split.length - 1];
-
-      await axios.delete(`/api/apps/${app.id}/screenshots/${id}`);
-      setApp({ ...app, screenshotUrls: app.screenshotUrls.filter((u) => u !== url) });
-    },
-  });
 
   const screenshotDiv = useRef<HTMLDivElement>();
   const scrollScreenshots = useCallback((reverse = false) => {
@@ -47,57 +45,93 @@ export function AppScreenshots(): ReactElement {
     scrollScreenshots(true);
   }, [scrollScreenshots]);
 
+  const onScreenshotChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setUploadingScreenshot(event.currentTarget.files[0]);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    screenshotModal.disable();
+    setUploadingScreenshot(null);
+  }, [screenshotModal]);
+
+  const onSubmitScreenshot = useCallback(async () => {
+    const form = new FormData();
+    form.append('screenshots', uploadingScreenshot, uploadingScreenshot.name);
+    const { data: ids } = await axios.post<number[]>(`/api/apps/${app.id}/screenshots`, form);
+    setApp({
+      ...app,
+      screenshotUrls: [
+        ...app?.screenshotUrls,
+        ...ids.map((id) => `/api/apps/${app.id}/screenshots/${id}`),
+      ],
+    });
+    closeModal();
+  }, [app, setApp, uploadingScreenshot, closeModal]);
+
   return (
-    <div className="my-4 is-flex">
-      <Button
-        className={`is-medium ${styles.scrollButton}`}
-        icon="chevron-left"
-        onClick={scrollLeft}
-      />
-      <div className={`px-4 ${styles.screenshots}`} ref={screenshotDiv}>
-        {app.screenshotUrls.map((url) => (
-          <div className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-            {mayManageScreenshots && (
-              <Button
-                className={`${styles.deleteScreenshotButton} mx-2 my-2 is-rounded is-small`}
-                color="danger"
-                icon="trash-alt"
-                onClick={() => onDeleteScreenshotClick(url)}
-              />
-            )}
-            <figure className={styles.screenshot}>
-              <img
-                alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-                className={styles.screenshot}
-                src={url}
-              />
-            </figure>
+    <>
+      <div className={`is-flex ${styles.wrapper}`}>
+        <Button className={styles.createScreenshotButton} onClick={screenshotModal.enable}>
+          <FormattedMessage {...messages.addNewScreenshot} />
+        </Button>
+        <div className="my-4 is-flex">
+          <Button
+            className={`is-medium ${styles.scrollButton}`}
+            icon="chevron-left"
+            onClick={scrollLeft}
+          />
+          <div className={`px-4 ${styles.screenshots}`} ref={screenshotDiv}>
+            {app.screenshotUrls.map((url) => (
+              <AppScreenshot key={url} mayManageScreenshots={mayManageScreenshots} url={url} />
+            ))}
           </div>
-        ))}
-        {app.screenshotUrls.map((url) => (
-          <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-            <img
-              alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-              className={styles.screenshot}
-              src={url}
-            />
-          </figure>
-        ))}
-        {app.screenshotUrls.map((url) => (
-          <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-            <img
-              alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-              className={styles.screenshot}
-              src={url}
-            />
-          </figure>
-        ))}
+          <Button
+            className={`is-medium ${styles.scrollButton}`}
+            icon="chevron-right"
+            onClick={scrollRight}
+          />
+        </div>
       </div>
-      <Button
-        className={`is-medium ${styles.scrollButton}`}
-        icon="chevron-right"
-        onClick={scrollRight}
-      />
-    </div>
+      <Modal
+        footer={
+          <>
+            <CardFooterButton onClick={closeModal}>
+              <FormattedMessage {...messages.cancel} />
+            </CardFooterButton>
+            <CardFooterButton
+              color="primary"
+              disabled={!uploadingScreenshot}
+              onClick={onSubmitScreenshot}
+            >
+              <FormattedMessage {...messages.submit} />
+            </CardFooterButton>
+          </>
+        }
+        isActive={screenshotModal.enabled}
+        onClose={closeModal}
+        title={<FormattedMessage {...messages.submit} />}
+      >
+        <FileUpload
+          accept="image/jpeg, image/png, image/tiff, image/webp"
+          fileButtonLabel={<FormattedMessage {...messages.screenshot} />}
+          fileLabel={uploadingScreenshot?.name ?? <FormattedMessage {...messages.noFile} />}
+          label={<FormattedMessage {...messages.screenshot} />}
+          name="screenshot"
+          onChange={onScreenshotChange}
+          preview={
+            uploadingScreenshot && (
+              <figure className={`mb-2 ${styles.screenshotPreview}`}>
+                <img
+                  alt={formatMessage(messages.screenshot)}
+                  className={styles.screenshotPreview}
+                  src={uploadingScreenshotPreview}
+                />
+              </figure>
+            )
+          }
+          required
+        />
+      </Modal>
+    </>
   );
 }

@@ -1,3 +1,11 @@
+.wrapper {
+  flex-direction: column;
+}
+
+.createScreenshotButton {
+  align-self: flex-end;
+}
+
 .scrollButton {
   align-self: center;
   border: none;
@@ -5,6 +13,7 @@
 
 .screenshots {
   height: 24em;
+  justify-content: space-between;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
   overflow-x: scroll;
@@ -13,33 +22,13 @@
   scroll-behavior: smooth;
   scrollbar-width: none; /* Hide scrollbar for Firefox */
   white-space: nowrap;
+  width: 100%;
 }
 
 .screenshots::-webkit-scrollbar {
   display: none; /* Hide scrollbar for webkit */
 }
 
-.screenshotWrapper {
-  box-shadow: 0 0.5em 1em -0.125em hsla(0, 0%, 29%, 0.1), 0 0 0 1px hsla(0, 0%, 29%, 0.02);
-  display: inline-block;
-  height: 100%;
-  position: relative;
-
-  &:last-child {
-    margin-right: 0 !important;
-  }
-}
-
-.screenshot {
-  height: 100%;
-  max-width: unset;
-  width: initial;
-}
-
-.deleteScreenshotButton {
-  box-shadow: 0 1px 2px 0 hsl(0, 0%, 0%);
-  height: 36px;
-  position: absolute;
-  right: 0;
-  top: 0;
+.screenshotPreview {
+  height: 24em;
 }
