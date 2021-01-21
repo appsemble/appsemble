@@ -100,10 +100,8 @@ export function TeamSettings(): ReactElement {
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
   const me = memberResult.data?.find((member) => member.id === userInfo.sub);
-  const mayEditTeam = organization && checkRole(organization.role, Permission.ManageMembers);
-  const mayInvite =
-    (me && me.role === TeamRole.Manager) ||
-    (organization && checkRole(organization.role, Permission.InviteMember));
+  const mayEditTeam = organization && checkRole(organization.role, Permission.ManageTeams);
+  const mayInvite = mayEditTeam || (me && me.role === TeamRole.Manager);
 
   const defaultValues = useMemo(
     () => ({

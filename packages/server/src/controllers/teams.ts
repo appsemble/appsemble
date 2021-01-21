@@ -41,7 +41,7 @@ export async function createTeam(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found.');
   }
 
-  await checkRole(ctx, app.OrganizationId, Permission.ManageMembers);
+  await checkRole(ctx, app.OrganizationId, Permission.ManageTeams);
 
   let team: Team;
   await transactional(async (transaction) => {
@@ -131,7 +131,7 @@ export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Team not found.');
   }
 
-  await checkRole(ctx, team.App.OrganizationId, Permission.ManageMembers);
+  await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
   await team.update({ name, ...(annotations && { annotations }) });
   ctx.body = {
@@ -159,7 +159,7 @@ export async function deleteTeam(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Team not found.');
   }
 
-  await checkRole(ctx, team.App.OrganizationId, Permission.ManageMembers);
+  await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
   await team.destroy();
 }
@@ -221,7 +221,7 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     }
   } else {
     try {
-      await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
+      await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
     } catch {
       await checkTeamPermission(ctx, team);
     }
@@ -267,7 +267,7 @@ export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   try {
-    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
+    await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
   } catch {
     await checkTeamPermission(ctx, team);
   }
@@ -300,7 +300,7 @@ export async function updateTeamMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   try {
-    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
+    await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
   } catch {
     await checkTeamPermission(ctx, team);
   }
