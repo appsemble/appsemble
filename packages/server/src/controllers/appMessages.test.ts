@@ -1,14 +1,12 @@
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppMessages, Member, Organization, User } from '../models';
+import { App, AppMessages, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
 let app: App;
-let user: User;
 
 beforeAll(createTestSchema('messages'));
 
@@ -19,7 +17,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
+  const user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -44,14 +42,11 @@ afterAll(closeTestSchema);
 
 describe('getMessages', () => {
   it('should return the messages for an existing language', async () => {
-    await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'en-gb',
-        messages: { test: 'Test.' },
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en-gb',
+      messages: { test: 'Test.' },
+    });
 
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(data).toMatchObject({ language: 'en-gb', messages: { test: 'Test.' } });
@@ -79,23 +74,16 @@ describe('getMessages', () => {
   });
 
   it('should merge messages with the base language if merge is enabled', async () => {
-    await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'en',
-        messages: { test: 'Test.', bla: 'bla' },
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en',
+      messages: { test: 'Test.', bla: 'bla' },
+    });
 
-    await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'en-gb',
-        messages: { bla: 'blah' },
-      },
-      { headers: { authorization } },
-    );
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en-gb',
+      messages: { bla: 'blah' },
+    });
 
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB?merge=true`);
 
@@ -105,14 +93,11 @@ describe('getMessages', () => {
 
 describe('createMessages', () => {
   it('should accept valid requests', async () => {
-    const response = await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'en',
-        messages: { test: 'Test.' },
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en',
+      messages: { test: 'Test.' },
+    });
     const translation = await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } });
 
     expect(response).toMatchObject({
@@ -123,14 +108,11 @@ describe('createMessages', () => {
   });
 
   it('should not accept invalid language tags', async () => {
-    const response = await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'english',
-        messages: { test: 'Test.' },
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'english',
+      messages: { test: 'Test.' },
+    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -141,26 +123,20 @@ describe('createMessages', () => {
 
 describe('deleteMessages', () => {
   it('should delete existing messages', async () => {
-    await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'en',
-        messages: { test: 'Test.' },
-      },
-      { headers: { authorization } },
-    );
-
-    const response = await request.delete(`/api/apps/${app.id}/messages/en`, {
-      headers: { authorization },
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en',
+      messages: { test: 'Test.' },
     });
+
+    const response = await request.delete(`/api/apps/${app.id}/messages/en`);
 
     expect(response.status).toBe(204);
   });
 
   it('should return 404 when deleting non-existant messages', async () => {
-    const response = await request.delete(`/api/apps/${app.id}/messages/en`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/messages/en`);
 
     expect(response).toMatchObject({
       data: { statusCode: 404, message: 'App does not have messages for “en”' },
@@ -186,34 +162,21 @@ describe('getLanguages', () => {
   });
 
   it('should return a list of available languages', async () => {
-    await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'nl',
-        messages: { test: 'Geslaagd met vliegende kleuren' },
-      },
-      { headers: { authorization } },
-    );
-    await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'en',
-        messages: { test: 'Passed with flying colors' },
-      },
-      { headers: { authorization } },
-    );
-    await request.post(
-      `/api/apps/${app.id}/messages`,
-      {
-        language: 'en-GB',
-        messages: { test: 'Passed with flying colours' },
-      },
-      { headers: { authorization } },
-    );
-
-    const { data } = await request.get(`/api/apps/${app.id}/messages`, {
-      headers: { authorization },
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'nl',
+      messages: { test: 'Geslaagd met vliegende kleuren' },
     });
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en',
+      messages: { test: 'Passed with flying colors' },
+    });
+    await request.post(`/api/apps/${app.id}/messages`, {
+      language: 'en-GB',
+      messages: { test: 'Passed with flying colours' },
+    });
+
+    const { data } = await request.get(`/api/apps/${app.id}/messages`);
 
     expect(data).toStrictEqual(['en', 'en-gb', 'en-us', 'nl']);
   });

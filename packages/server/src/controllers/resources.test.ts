@@ -18,11 +18,10 @@ import {
 } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
-let organizationId: string;
+let organization: Organization;
 let clock: FakeTimers.InstalledClock;
 let user: User;
 let originalSendNotification: typeof webpush.sendNotification;
@@ -174,12 +173,12 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
-  ({ id: organizationId } = await Organization.create({
+  user = await createTestUser();
+  organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
-  }));
-  await Member.create({ UserId: user.id, OrganizationId: organizationId, role: 'Maintainer' });
+  });
+  await Member.create({ UserId: user.id, OrganizationId: organization.id, role: 'Maintainer' });
   clock = FakeTimers.install();
 });
 
@@ -197,7 +196,7 @@ afterAll(closeTestSchema);
 
 describe('getResourceById', () => {
   it('should be able to fetch a resource', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const resource = await Resource.create({
       AppId: app.id,
@@ -218,7 +217,7 @@ describe('getResourceById', () => {
   });
 
   it('should be able to fetch a resource you are a team member of', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
@@ -233,9 +232,9 @@ describe('getResourceById', () => {
       data: { foo: 'bar' },
       UserId: userB.id,
     });
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -250,7 +249,7 @@ describe('getResourceById', () => {
   });
 
   it('should not be able to fetch a resource you are not a team member of', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
@@ -265,9 +264,9 @@ describe('getResourceById', () => {
       UserId: userB.id,
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -279,8 +278,8 @@ describe('getResourceById', () => {
   });
 
   it('should not be able to fetch a resources of a different app', async () => {
-    const appA = await exampleApp(organizationId);
-    const appB = await exampleApp(organizationId, 'app-b');
+    const appA = await exampleApp(organization.id);
+    const appB = await exampleApp(organization.id, 'app-b');
 
     const resource = await Resource.create({
       AppId: appA.id,
@@ -299,7 +298,7 @@ describe('getResourceById', () => {
   });
 
   it('should return the resource author when fetching a single resource if it has one', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -323,7 +322,7 @@ describe('getResourceById', () => {
   });
 
   it('should ignore id in the data fields', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -347,7 +346,7 @@ describe('getResourceById', () => {
   });
 
   it('should not fetch expired resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const {
       data: { id },
     } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -379,7 +378,7 @@ describe('getResourceById', () => {
 
 describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const resourceA = await Resource.create({
       AppId: app.id,
@@ -415,7 +414,7 @@ describe('queryResources', () => {
   });
 
   it('should be possible to filter properties using $select', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const resourceA = await Resource.create({
       AppId: app.id,
@@ -440,7 +439,7 @@ describe('queryResources', () => {
   });
 
   it('should trim spaces in $select properties', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     await Resource.create({
       AppId: app.id,
@@ -465,7 +464,7 @@ describe('queryResources', () => {
   });
 
   it('should ignore unknown properties in $select', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     await Resource.create({
       AppId: app.id,
@@ -487,7 +486,7 @@ describe('queryResources', () => {
   });
 
   it('should be possible to query resources as author', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
     const userB = await User.create();
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Admin' });
@@ -506,9 +505,8 @@ describe('queryResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -524,7 +522,7 @@ describe('queryResources', () => {
   });
 
   it('should only fetch resources from team members', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
@@ -552,9 +550,8 @@ describe('queryResources', () => {
       UserId: userC.id,
     });
 
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam`);
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -575,8 +572,8 @@ describe('queryResources', () => {
   });
 
   it('should only fetch resources as an author or team manager', async () => {
-    const app = await exampleApp(organizationId);
-    const appB = await exampleApp(organizationId, 'test-app-2');
+    const app = await exampleApp(organization.id);
+    const appB = await exampleApp(organization.id, 'test-app-2');
 
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const teamB = await Team.create({ name: 'Test Team 2', AppId: app.id });
@@ -625,9 +622,8 @@ describe('queryResources', () => {
       UserId: userC.id,
     });
 
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeamManager`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeamManager`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -649,7 +645,7 @@ describe('queryResources', () => {
   });
 
   it('should be able to limit the amount of resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const resourceA = await Resource.create({
       AppId: app.id,
@@ -674,7 +670,7 @@ describe('queryResources', () => {
   });
 
   it('should be able to sort fetched resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const resourceA = await Resource.create({
       AppId: app.id,
@@ -742,7 +738,7 @@ describe('queryResources', () => {
   });
 
   it('should be able to filter fields when fetching resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -768,7 +764,7 @@ describe('queryResources', () => {
   });
 
   it('should be able to filter multiple fields when fetching resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -794,7 +790,7 @@ describe('queryResources', () => {
   });
 
   it('should be able to filter by author', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const userB = await User.create();
     await Resource.create({
       AppId: app.id,
@@ -826,7 +822,7 @@ describe('queryResources', () => {
   });
 
   it('should be able to combine multiple functions when fetching resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -865,7 +861,7 @@ describe('queryResources', () => {
   });
 
   it('should return the resource author if it has one', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -891,7 +887,7 @@ describe('queryResources', () => {
   });
 
   it('should not fetch expired resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const {
       data: { id: idA },
     } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -933,7 +929,7 @@ describe('queryResources', () => {
 
 describe('countResources', () => {
   it('should be able to count all resources of a type', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     await Resource.create({
       AppId: app.id,
@@ -956,7 +952,7 @@ describe('countResources', () => {
   });
 
   it('should apply filters', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     await Resource.create({
       AppId: app.id,
@@ -982,7 +978,7 @@ describe('countResources', () => {
   });
 
   it('should only count resources the user has access to', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
 
     await Resource.create({
@@ -997,16 +993,16 @@ describe('countResources', () => {
       data: { foo: 'baz' },
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 200, data: 1 });
   });
 
   it('should only count resources from team members', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
@@ -1034,9 +1030,8 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
-    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam/$count`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam/$count`);
     expect(response).toMatchObject({
       status: 200,
       data: 2,
@@ -1044,7 +1039,7 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members based on the member team filter as a member', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
@@ -1072,11 +1067,9 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
-      {
-        headers: { authorization },
-      },
     );
     expect(response).toMatchObject({
       status: 200,
@@ -1085,7 +1078,7 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members based on the member team filter as a manager', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
@@ -1113,11 +1106,9 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
-      {
-        headers: { authorization },
-      },
     );
     expect(response).toMatchObject({
       status: 200,
@@ -1126,7 +1117,7 @@ describe('countResources', () => {
   });
 
   it('should not count resources from team members based on the member team filter as not a member', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
@@ -1153,11 +1144,9 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
-      {
-        headers: { authorization },
-      },
     );
     expect(response).toMatchObject({
       status: 200,
@@ -1166,7 +1155,7 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members based on the manager team filter as a member', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
@@ -1194,11 +1183,9 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
-      {
-        headers: { authorization },
-      },
     );
     expect(response).toMatchObject({
       status: 200,
@@ -1207,7 +1194,7 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members based on the manager team filter as a manager', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
@@ -1235,11 +1222,9 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
-      {
-        headers: { authorization },
-      },
     );
     expect(response).toMatchObject({
       status: 200,
@@ -1248,7 +1233,7 @@ describe('countResources', () => {
   });
 
   it('should not count resources from team members based on the manager team filter as not a team member', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     const userC = await User.create();
@@ -1275,11 +1260,9 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
-      {
-        headers: { authorization },
-      },
     );
     expect(response).toMatchObject({
       status: 200,
@@ -1290,7 +1273,7 @@ describe('countResources', () => {
 
 describe('createResource', () => {
   it('should be able to create a new resource', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const resource = { foo: 'bar' };
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
@@ -1305,7 +1288,7 @@ describe('createResource', () => {
   });
 
   it('should validate resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const resource = {};
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
@@ -1339,7 +1322,7 @@ describe('createResource', () => {
   });
 
   it('should check if an app has a specific resource definition', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
     expect(response).toMatchObject({
@@ -1354,7 +1337,7 @@ describe('createResource', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
 
@@ -1365,7 +1348,7 @@ describe('createResource', () => {
   });
 
   it('should calculate resource expiration', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
     });
@@ -1382,7 +1365,7 @@ describe('createResource', () => {
   });
 
   it('should set resource expiration', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
@@ -1403,7 +1386,7 @@ describe('createResource', () => {
     // 10 minutes
     clock.tick(600e3);
 
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
@@ -1418,7 +1401,7 @@ describe('createResource', () => {
   });
 
   it('should accept assets as form data', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -1453,7 +1436,7 @@ describe('createResource', () => {
   });
 
   it('should disallow unused files', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -1479,7 +1462,7 @@ describe('createResource', () => {
   });
 
   it('should block unknown asset references', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -1507,7 +1490,7 @@ describe('createResource', () => {
 
 describe('updateResource', () => {
   it('should be able to update an existing resource', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -1516,10 +1499,10 @@ describe('updateResource', () => {
 
     clock.tick(20e3);
 
+    authorizeStudio();
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1546,7 +1529,7 @@ describe('updateResource', () => {
   });
 
   it('should be able to update an existing resource from another team', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
@@ -1560,10 +1543,10 @@ describe('updateResource', () => {
       UserId: userB.id,
     });
 
+    authorizeStudio();
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1578,7 +1561,7 @@ describe('updateResource', () => {
   });
 
   it('should not be able to update an existing resource from another team if not part of the team', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
@@ -1591,10 +1574,10 @@ describe('updateResource', () => {
       UserId: userB.id,
     });
 
+    authorizeStudio();
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1606,48 +1589,47 @@ describe('updateResource', () => {
   });
 
   it('should not be possible to update an existing resource through another resource', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
+    authorizeStudio();
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404 });
   });
 
   it('should not be possible to update an existing resource through another app', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
-    const appB = await exampleApp(organizationId, 'app-b');
+    const appB = await exampleApp(organization.id, 'app-b');
 
+    authorizeStudio();
     const response = await request.put(
       `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404 });
   });
 
   it('should not be possible to update a non-existent resource', async () => {
-    const app = await exampleApp(organizationId);
-    const response = await request.put(
-      `/api/apps/${app.id}/resources/testResource/0`,
-      { foo: 'I am not Foo.' },
-      { headers: { authorization } },
-    );
+    const app = await exampleApp(organization.id);
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/resources/testResource/0`, {
+      foo: 'I am not Foo.',
+    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -1660,17 +1642,17 @@ describe('updateResource', () => {
   });
 
   it('should validate resources', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
+    authorizeStudio();
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { bar: 123 },
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1680,17 +1662,17 @@ describe('updateResource', () => {
   });
 
   it('should set clonable if specified in the request', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
+    authorizeStudio();
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.', $clonable: true },
-      { headers: { authorization } },
     );
 
     await resource.reload();
@@ -1700,7 +1682,7 @@ describe('updateResource', () => {
   });
 
   it('should set $expires', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const {
       data: { id },
     } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -1744,7 +1726,7 @@ describe('updateResource', () => {
     // 10 minutes
     clock.tick(600e3);
 
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const {
       data: { id },
     } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -1767,7 +1749,7 @@ describe('updateResource', () => {
   });
 
   it('should accept assets as form data', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -1803,7 +1785,7 @@ describe('updateResource', () => {
   });
 
   it('should disallow unused assets', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -1830,7 +1812,7 @@ describe('updateResource', () => {
   });
 
   it('should block unuknown asset references', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -1857,7 +1839,7 @@ describe('updateResource', () => {
   });
 
   it('should allow referencing existing assets', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
     const asset = await Asset.create({
       ResourceId: resource.id,
@@ -1879,7 +1861,7 @@ describe('updateResource', () => {
   });
 
   it('should delete dereferenced assets', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testAssets',
@@ -1911,7 +1893,7 @@ describe('updateResource', () => {
 
 describe('deleteResource', () => {
   it('should be able to delete an existing resource', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -1930,9 +1912,9 @@ describe('deleteResource', () => {
       },
     });
 
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 204 });
@@ -1952,7 +1934,7 @@ describe('deleteResource', () => {
   });
 
   it('should delete another team member’s resource', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
@@ -1966,16 +1948,16 @@ describe('deleteResource', () => {
       UserId: userB.id,
     });
 
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 204 });
   });
 
   it('should not delete resources if not part of the same team', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create();
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
@@ -1988,19 +1970,18 @@ describe('deleteResource', () => {
       UserId: userB.id,
     });
 
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found' } });
   });
 
   it('should not be able to delete a non-existent resource', async () => {
-    const app = await exampleApp(organizationId);
-    const response = await request.delete(`/api/apps/${app.id}/resources/testResource/0`, {
-      headers: { authorization },
-    });
+    const app = await exampleApp(organization.id);
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/resources/testResource/0`);
 
     expect(response).toMatchObject({
       status: 404,
@@ -2013,16 +1994,16 @@ describe('deleteResource', () => {
   });
 
   it('should not be possible to delete an existing resource through another resource', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404 });
@@ -2041,17 +2022,17 @@ describe('deleteResource', () => {
   });
 
   it('should not be possible to delete an existing resource through another app', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
-    const appB = await exampleApp(organizationId, 'app-b');
+    const appB = await exampleApp(organization.id, 'app-b');
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404 });
@@ -2073,7 +2054,7 @@ describe('deleteResource', () => {
 describe('verifyAppRole', () => {
   // The same logic gets applies to query, get, create, update, and delete.
   it('should return normally on secured actions if user is authenticated and has sufficient roles', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     app.definition.resources.testResource.query = {
       roles: ['Reader'],
     };
@@ -2091,9 +2072,8 @@ describe('verifyAppRole', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -2115,7 +2095,7 @@ describe('verifyAppRole', () => {
   });
 
   it('should return normally on secured actions if user is the resource author', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     app.definition.resources.testResource.get = {
       roles: ['Admin', '$author'],
     };
@@ -2128,12 +2108,8 @@ describe('verifyAppRole', () => {
       UserId: user.id,
     });
 
-    const response = await request.get(
-      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
-      {
-        headers: { authorization },
-      },
-    );
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -2151,7 +2127,7 @@ describe('verifyAppRole', () => {
   });
 
   it('should return a 401 on unauthorized requests if roles are present', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
@@ -2166,11 +2142,10 @@ describe('verifyAppRole', () => {
   });
 
   it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
-    const response = await request.get(`/api/apps/${app.id}/resources/secured`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
     expect(response).toMatchObject({
       status: 403,
@@ -2183,17 +2158,12 @@ describe('verifyAppRole', () => {
   });
 
   it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
 
-    const response = await request.post(
-      `/api/apps/${app.id}/resources/secured`,
-      {},
-      {
-        headers: { authorization },
-      },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/secured`, {});
 
     expect(response).toMatchObject({
       status: 403,
@@ -2208,7 +2178,7 @@ describe('verifyAppRole', () => {
 
 describe('getResourceSubscription', () => {
   it('should fetch resource subscriptions', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -2220,21 +2190,18 @@ describe('getResourceSubscription', () => {
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
-    await request.patch(
-      `/api/apps/${app.id}/subscriptions`,
-      {
-        endpoint: 'https://example.com',
-        resource: 'testResource',
-        resourceId: resource.id,
-        action: 'update',
-        value: true,
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    await request.patch(`/api/apps/${app.id}/subscriptions`, {
+      endpoint: 'https://example.com',
+      resource: 'testResource',
+      resourceId: resource.id,
+      action: 'update',
+      value: true,
+    });
 
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-      { headers: { authorization }, params: { endpoint: 'https://example.com' } },
+      { params: { endpoint: 'https://example.com' } },
     );
 
     expect(response).toMatchObject({
@@ -2244,7 +2211,7 @@ describe('getResourceSubscription', () => {
   });
 
   it('should return normally if user is not subscribed to the specific resource', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -2257,9 +2224,10 @@ describe('getResourceSubscription', () => {
       data: { foo: 'I am Foo.' },
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-      { headers: { authorization }, params: { endpoint: 'https://example.com' } },
+      { params: { endpoint: 'https://example.com' } },
     );
 
     expect(response).toMatchObject({
@@ -2269,7 +2237,7 @@ describe('getResourceSubscription', () => {
   });
 
   it('should 404 if resource is not found', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -2277,24 +2245,26 @@ describe('getResourceSubscription', () => {
       auth: 'def',
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/0/subscriptions`,
-      { headers: { authorization }, params: { endpoint: 'https://example.com' } },
+      { params: { endpoint: 'https://example.com' } },
     );
 
     expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found.' } });
   });
 
   it('should return 200 if user is not subscribed', async () => {
-    const app = await exampleApp(organizationId);
+    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-      { headers: { authorization }, params: { endpoint: 'https://example.com' } },
+      { params: { endpoint: 'https://example.com' } },
     );
 
     expect(response).toMatchObject({

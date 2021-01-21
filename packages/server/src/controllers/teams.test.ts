@@ -4,10 +4,9 @@ import { request, setTestApp } from 'axios-test-instance';
 import { App, AppMember, Member, Organization, Team, TeamMember, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
 let organization: Organization;
 let app: App;
 let user: User;
@@ -21,7 +20,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
+  user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -55,9 +54,8 @@ afterAll(closeTestSchema);
 
 describe('getTeams', () => {
   it('should return an empty array', async () => {
-    const response = await request.get(`/api/apps/${app.id}/teams`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -69,9 +67,8 @@ describe('getTeams', () => {
     const teamA = await Team.create({ name: 'A', AppId: app.id });
     const teamB = await Team.create({ name: 'B', AppId: app.id });
 
-    const response = await request.get(`/api/apps/${app.id}/teams`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -92,9 +89,8 @@ describe('getTeams', () => {
       { role: TeamRole.Manager, UserId: user.id, TeamId: teamB.id },
     ]);
 
-    const response = await request.get(`/api/apps/${app.id}/teams`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -112,9 +108,8 @@ describe('getTeam', () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ role: TeamRole.Member, UserId: user.id, TeamId: team.id });
 
-    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}`);
     expect(response).toMatchObject({
       status: 200,
       data: { id: team.id, name: team.name, role: TeamRole.Member },
@@ -122,9 +117,8 @@ describe('getTeam', () => {
   });
 
   it('should not return a team that doesn’t exist', async () => {
-    const response = await request.get(`/api/apps/${app.id}/teams/80000`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams/80000`);
 
     expect(response).toMatchObject({
       status: 404,
@@ -154,9 +148,8 @@ describe('getTeam', () => {
       OrganizationId: organization.id,
     });
 
-    const response = await request.get(`/api/apps/${appB.id}/teams/${team.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${appB.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({
       status: 404,
@@ -167,11 +160,8 @@ describe('getTeam', () => {
 
 describe('createTeam', () => {
   it('should create a team if user is Owner', async () => {
-    const response = await request.post(
-      `/api/apps/${app.id}/teams`,
-      { name: 'Test Team' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/teams`, { name: 'Test Team' });
 
     expect(response).toMatchObject({
       status: 201,
@@ -184,11 +174,8 @@ describe('createTeam', () => {
       { role: 'Maintainer' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
-    const response = await request.post(
-      `/api/apps/${app.id}/teams`,
-      { name: 'Test Team' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/teams`, { name: 'Test Team' });
 
     expect(response).toMatchObject({
       status: 403,
@@ -220,11 +207,8 @@ describe('createTeam', () => {
       vapidPrivateKey: 'b',
       OrganizationId: 'appsemble',
     });
-    const response = await request.post(
-      `/api/apps/${appB.id}/teams`,
-      { name: 'Test Team' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${appB.id}/teams`, { name: 'Test Team' });
 
     expect(response).toMatchObject({
       status: 403,
@@ -233,11 +217,8 @@ describe('createTeam', () => {
   });
 
   it('should not create a team for non-existent organizations', async () => {
-    const response = await request.post(
-      '/api/apps/80123/teams',
-      { name: 'Test Team' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/apps/80123/teams', { name: 'Test Team' });
 
     expect(response).toMatchObject({
       status: 404,
@@ -249,14 +230,9 @@ describe('createTeam', () => {
 describe('updateTeam', () => {
   it('should update the name of the team', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const response = await request.put(
-      `/api/apps/${app.id}/teams/${team.id}`,
-      { name: 'B' },
-      { headers: { authorization } },
-    );
-    const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
+    const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({ status: 200, data: { id: team.id, name: 'B' } });
     expect(responseB.data.name).toStrictEqual('B');
@@ -264,14 +240,12 @@ describe('updateTeam', () => {
 
   it('should update annotations', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const response = await request.put(
-      `/api/apps/${app.id}/teams/${team.id}`,
-      { name: 'B', annotations: { testKey: 'foo' } },
-      { headers: { authorization } },
-    );
-    const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`, {
-      headers: { authorization },
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, {
+      name: 'B',
+      annotations: { testKey: 'foo' },
     });
+    const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -290,11 +264,8 @@ describe('updateTeam', () => {
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const response = await request.put(
-      `/api/apps/${app.id}/teams/${team.id}`,
-      { name: 'B' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
 
     expect(response).toMatchObject({
       status: 403,
@@ -303,11 +274,8 @@ describe('updateTeam', () => {
   });
 
   it('should not update a non-existent team', async () => {
-    const response = await request.put(
-      `/api/apps/${app.id}/teams/80000`,
-      { name: 'B' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/teams/80000`, { name: 'B' });
 
     expect(response).toMatchObject({ status: 404, data: { message: 'Team not found.' } });
   });
@@ -337,11 +305,8 @@ describe('updateTeam', () => {
       OrganizationId: org.id,
     });
     const team = await Team.create({ name: 'A', AppId: appB.id });
-    const response = await request.put(
-      `/api/apps/${appB.id}/teams/${team.id}`,
-      { name: 'B' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${appB.id}/teams/${team.id}`, { name: 'B' });
 
     expect(response).toMatchObject({
       status: 403,
@@ -353,12 +318,9 @@ describe('updateTeam', () => {
 describe('deleteTeam', () => {
   it('should delete a team', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const response = await request.delete(`/api/apps/${app.id}/teams/${team.id}`, {
-      headers: { authorization },
-    });
-    const responseB = await request.get(`/api/apps/${app.id}/teams`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/teams/${team.id}`);
+    const responseB = await request.get(`/api/apps/${app.id}/teams`);
 
     expect(response.status).toStrictEqual(204);
     expect(responseB.data).toStrictEqual([]);
@@ -370,9 +332,8 @@ describe('deleteTeam', () => {
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const response = await request.delete(`/api/apps/${app.id}/teams/${team.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({
       status: 403,
@@ -402,9 +363,8 @@ describe('deleteTeam', () => {
       OrganizationId: orgB.id,
     });
     const team = await Team.create({ name: 'A', AppId: appB.id });
-    const response = await request.delete(`/api/apps/${appB.id}/teams/${team.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${appB.id}/teams/${team.id}`);
     expect(response).toMatchObject({
       status: 403,
       data: { message: 'User is not part of this organization.' },
@@ -415,9 +375,8 @@ describe('deleteTeam', () => {
 describe('getTeamMembers', () => {
   it('should return an empty array', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members`);
 
     expect(response).toMatchObject({ status: 200, data: [] });
   });
@@ -434,9 +393,8 @@ describe('getTeamMembers', () => {
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -448,9 +406,8 @@ describe('getTeamMembers', () => {
   });
 
   it('should not fetch members of non-existent teams', async () => {
-    const response = await request.get(`/api/apps/${app.id}/teams/80000/members`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams/80000/members`);
 
     expect(response).toMatchObject({
       status: 404,
@@ -469,11 +426,10 @@ describe('addTeamMember', () => {
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const response = await request.post(
-      `/api/apps/${app.id}/teams/${team.id}/members`,
-      { id: userB.id },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+      id: userB.id,
+    });
 
     expect(response).toMatchObject({
       status: 201,
@@ -500,11 +456,10 @@ describe('addTeamMember', () => {
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Manager });
-    const response = await request.post(
-      `/api/apps/${app.id}/teams/${team.id}/members`,
-      { id: userB.id },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+      id: userB.id,
+    });
 
     expect(response).toMatchObject({
       status: 201,
@@ -530,11 +485,10 @@ describe('addTeamMember', () => {
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Member });
-    const response = await request.post(
-      `/api/apps/${app.id}/teams/${team.id}/members`,
-      { id: userB.id },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+      id: userB.id,
+    });
 
     expect(response).toMatchObject({
       status: 403,
@@ -550,16 +504,11 @@ describe('addTeamMember', () => {
     });
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
-    await request.post(
-      `/api/apps/${app.id}/teams/${team.id}/members`,
-      { id: userB.id },
-      { headers: { authorization } },
-    );
-    const response = await request.post(
-      `/api/apps/${app.id}/teams/${team.id}/members`,
-      { id: userB.id },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, { id: userB.id });
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+      id: userB.id,
+    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -576,11 +525,10 @@ describe('addTeamMember', () => {
       primaryEmail: 'testuser@example.com',
     });
     const team = await Team.create({ name: 'A', AppId: app.id });
-    const response = await request.post(
-      `/api/apps/${app.id}/teams/${team.id}/members`,
-      { id: userB.id },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+      id: userB.id,
+    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -602,9 +550,9 @@ describe('removeTeamMember', () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
 
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      { headers: { authorization } },
     );
     expect(response.status).toStrictEqual(204);
   });
@@ -621,9 +569,9 @@ describe('removeTeamMember', () => {
     await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
     await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Manager });
 
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      { headers: { authorization } },
     );
     expect(response.status).toStrictEqual(204);
   });
@@ -642,9 +590,9 @@ describe('removeTeamMember', () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
 
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      { headers: { authorization } },
     );
     expect(response).toMatchObject({
       status: 403,
@@ -661,9 +609,9 @@ describe('removeTeamMember', () => {
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
 
+    authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -684,11 +632,10 @@ describe('updateTeamMember', () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
 
-    const response = await request.put(
-      `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      { role: TeamRole.Manager },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
+      role: TeamRole.Manager,
+    });
 
     expect(response).toMatchObject({
       status: 200,
@@ -716,11 +663,10 @@ describe('updateTeamMember', () => {
     await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
     await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Manager });
 
-    const response = await request.put(
-      `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      { role: TeamRole.Manager },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
+      role: TeamRole.Manager,
+    });
 
     expect(response).toMatchObject({
       status: 200,
@@ -747,11 +693,10 @@ describe('updateTeamMember', () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
 
-    const response = await request.put(
-      `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      { role: TeamRole.Manager },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
+      role: TeamRole.Manager,
+    });
 
     expect(response).toMatchObject({
       status: 403,
@@ -770,11 +715,10 @@ describe('updateTeamMember', () => {
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
 
-    const response = await request.put(
-      `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
-      { role: TeamRole.Manager },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
+      role: TeamRole.Manager,
+    });
 
     expect(response).toMatchObject({
       status: 400,

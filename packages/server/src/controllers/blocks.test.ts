@@ -3,28 +3,23 @@ import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
 
-import { Member, Organization, User } from '../models';
+import { Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
-
-let authorization: string;
-let user: User;
-let clientToken: string;
 
 beforeAll(createTestSchema('blocks'));
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
-  ({ clientToken, user } = await testToken('blocks:write'));
+  const user = await createTestUser();
   const organization = await Organization.create({
     id: 'xkcd',
     name: 'xkcd',
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
-  authorization = `Bearer ${clientToken}`;
   await setTestApp(server);
 });
 
@@ -45,9 +40,8 @@ describe('getBlock', () => {
       filepath: 'testblock.js',
     });
 
-    const { data: original } = await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    const { data: original } = await request.post('/api/blocks', formData);
 
     const { data: retrieved } = await request.get('/api/blocks/@xkcd/test');
     expect(retrieved).toStrictEqual(omit(original, ['files']));
@@ -73,9 +67,8 @@ describe('queryBlocks', () => {
       filepath: 'standing.png',
     });
 
-    const { data: apple } = await request.post('/api/blocks', formDataA, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    const { data: apple } = await request.post('/api/blocks', formDataA);
 
     const formDataB = new FormData();
     formDataB.append('name', '@xkcd/pen');
@@ -85,9 +78,8 @@ describe('queryBlocks', () => {
       filepath: 'standing.png',
     });
 
-    const { data: pen } = await request.post('/api/blocks', formDataB, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    const { data: pen } = await request.post('/api/blocks', formDataB);
 
     const { data: bam } = await request.get('/api/blocks');
     expect(bam).toMatchObject([omit(apple, ['files']), omit(pen, ['files'])]);
@@ -106,9 +98,8 @@ describe('publishBlock', () => {
       filepath: encodeURIComponent('build/testblock.js'),
     });
 
-    const { data, status } = await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    const { data, status } = await request.post('/api/blocks', formData);
 
     expect(data).toStrictEqual({
       actions: null,
@@ -138,9 +129,8 @@ describe('publishBlock', () => {
     formData.append('files', createFixtureStream('standing.png'), {
       filepath: 'testblock.js',
     });
-    const response = await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    const response = await request.post('/api/blocks', formData);
 
     expect(response).toMatchObject({
       status: 400,
@@ -160,9 +150,8 @@ describe('publishBlock', () => {
       filepath: 'testblock.js',
     });
 
-    await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formData);
 
     const formData2 = new FormData();
     formData2.append('name', '@xkcd/standing');
@@ -178,9 +167,8 @@ describe('publishBlock', () => {
       filepath: 'testblock.js',
     });
 
-    const { data } = await request.post('/api/blocks', formData2, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    const { data } = await request.post('/api/blocks', formData2);
 
     expect(data).toStrictEqual({
       error: 'Conflict',
@@ -195,9 +183,8 @@ describe('publishBlock', () => {
     formData.append('name', '@xkcd/standing');
     formData.append('version', '1.32.9');
 
-    const { data, status } = await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    const { data, status } = await request.post('/api/blocks', formData);
 
     expect(data).toStrictEqual({
       errors: [
@@ -227,9 +214,8 @@ describe('getBlockVersion', () => {
       filepath: 'testblock.js',
     });
 
-    const { data: created } = await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    const { data: created } = await request.post('/api/blocks', formData);
 
     const { data: retrieved, status } = await request.get(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
@@ -262,9 +248,8 @@ describe('getBlockVersions', () => {
     formData.append('files', createFixtureStream('standing.png'), {
       filepath: 'testblock.js',
     });
-    await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formData);
 
     const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual([
@@ -300,9 +285,8 @@ describe('getBlockVersions', () => {
     formDataA.append('files', createFixtureStream('standing.png'), {
       filepath: 'testblock.js',
     });
-    await request.post('/api/blocks', formDataA, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formDataA);
 
     const formDataB = new FormData();
     formDataB.append('name', '@xkcd/standing');
@@ -311,9 +295,8 @@ describe('getBlockVersions', () => {
     formDataB.append('files', createFixtureStream('standing.png'), {
       filepath: 'testblock.js',
     });
-    await request.post('/api/blocks', formDataB, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formDataB);
 
     const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual([
@@ -355,9 +338,8 @@ describe('getBlockIcon', () => {
     formData.append('files', Buffer.from(''), 'test.js');
     formData.append('icon', icon);
 
-    await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formData);
 
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',
@@ -382,9 +364,8 @@ describe('getBlockIcon', () => {
     formData.append('version', '1.33.8');
     formData.append('files', Buffer.from(''), 'test.js');
 
-    await request.post('/api/blocks', formData, {
-      headers: { authorization },
-    });
+    await authorizeClientCredentials('blocks:write');
+    await request.post('/api/blocks', formData);
 
     const response = await request.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
       responseType: 'arraybuffer',

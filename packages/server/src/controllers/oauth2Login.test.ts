@@ -6,10 +6,11 @@ import { sign } from 'jsonwebtoken';
 import { EmailAuthorization, OAuthAuthorization, User } from '../models';
 import { argv, setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
 const mock = new MockAdapter(axios);
+let user: User;
 
 beforeAll(createTestSchema('oauth2login'));
 
@@ -17,6 +18,7 @@ beforeEach(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
+  user = await createTestUser();
 });
 
 afterEach(() => {
@@ -133,7 +135,7 @@ describe('registerOAuth2Connection', () => {
   });
 
   it('should log in the user if the returned authorization response is known', async () => {
-    const { authorization, user } = await testToken();
+    authorizeStudio();
     argv.gitlabClientId = 'gitlab_client_id';
     argv.gitlabClientSecret = 'gitlab_client_secret';
     let tokenRequest: AxiosRequestConfig;
@@ -166,7 +168,7 @@ describe('registerOAuth2Connection', () => {
     const response = await request.post(
       '/api/oauth2/connect/register',
       { authorizationUrl: 'https://gitlab.com/oauth/authorize', code: '456' },
-      { headers: { authorization, referer: 'http://localhost/foo?code=456' } },
+      { headers: { referer: 'http://localhost/foo?code=456' } },
     );
     expect(tokenRequest).toMatchObject({
       url: 'https://gitlab.com/oauth/token',
@@ -197,13 +199,6 @@ describe('registerOAuth2Connection', () => {
 });
 
 describe('connectPendingOAuth2Profile', () => {
-  let authorization: string;
-  let user: User;
-
-  beforeEach(async () => {
-    ({ authorization, user } = await testToken());
-  });
-
   it('should throw if the authorization URL is not implemented', async () => {
     const response = await request.post('/api/oauth2/connect/pending', {
       authorizationUrl: '',
@@ -241,11 +236,11 @@ describe('connectPendingOAuth2Profile', () => {
       code: '789',
       sub: '42',
     });
-    const response = await request.post(
-      '/api/oauth2/connect/pending',
-      { authorizationUrl: 'https://gitlab.com/oauth/authorize', code: '789' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/connect/pending', {
+      authorizationUrl: 'https://gitlab.com/oauth/authorize',
+      code: '789',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -268,11 +263,11 @@ describe('connectPendingOAuth2Profile', () => {
       code: '789',
       sub: '42',
     });
-    const response = await request.post(
-      '/api/oauth2/connect/pending',
-      { authorizationUrl: 'https://gitlab.com/oauth/authorize', code: '789' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/connect/pending', {
+      authorizationUrl: 'https://gitlab.com/oauth/authorize',
+      code: '789',
+    });
     expect(response).toMatchObject({
       status: 403,
       data: {
@@ -388,13 +383,6 @@ describe('connectPendingOAuth2Profile', () => {
 });
 
 describe('getConnectedAccounts', () => {
-  let authorization: string;
-  let user: User;
-
-  beforeEach(async () => {
-    ({ authorization, user } = await testToken());
-  });
-
   it('should return the linked accounts of the logged in user', async () => {
     await OAuthAuthorization.create({
       UserId: user.id,
@@ -411,7 +399,8 @@ describe('getConnectedAccounts', () => {
       sub: 'aubB',
     });
 
-    const response = await request.get('/api/oauth2/connected', { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.get('/api/oauth2/connected');
     expect(response).toMatchObject({
       status: 200,
       data: [{ authorizationUrl: 'https://a.example' }],
@@ -420,13 +409,6 @@ describe('getConnectedAccounts', () => {
 });
 
 describe('unlinkConnectedAccount', () => {
-  let authorization: string;
-  let user: User;
-
-  beforeEach(async () => {
-    ({ authorization, user } = await testToken());
-  });
-
   it('should delete a linked account', async () => {
     const oauthAuthorization = await OAuthAuthorization.create({
       UserId: user.id,
@@ -435,8 +417,8 @@ describe('unlinkConnectedAccount', () => {
       sub: 'aubA',
     });
 
+    authorizeStudio();
     const response = await request.delete('/api/oauth2/connected', {
-      headers: { authorization },
       params: { authorizationUrl: 'https://a.example' },
     });
     expect(response).toMatchObject({
@@ -458,8 +440,8 @@ describe('unlinkConnectedAccount', () => {
       sub: 'aubB',
     });
 
+    authorizeStudio();
     const response = await request.delete('/api/oauth2/connected', {
-      headers: { authorization },
       params: { authorizationUrl: 'https://b.example' },
     });
     expect(response).toMatchObject({
