@@ -39,6 +39,7 @@ export function OpenIDLogin(): ReactElement {
         'profile',
         'resources:manage',
         'teams:read',
+        'teams:write',
       ]),
     [qs],
   );

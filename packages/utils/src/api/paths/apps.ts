@@ -851,7 +851,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['teams:write'] }],
     },
   },
   '/api/apps/{appId}/teams/{teamId}/members/{memberId}': {
