@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.17.1](https://gitlab.com/appsemble/appsemble/-/releases/0.17.1)] - 2021-01-21
+
+### Added
+
+- App: Add a remapper for the body of request actions.
+- App: The `team.join` action allows blocks to join a team.
+- App: The `team.list` action allows blocks to access all teams in the app.
+- Server: Add a remapper for the body of request actions.
+- Server: Add endpoints for manually replacing, creating, and removing app screenshots.
+- Studio: Add option to upload and delete screenshots.
+
+### Changed
+
+- Server: Remove the user filter from the teams API if it’s called from an app.
+
+### Fixed
+
+- Block(`form`): Fix selecting enum option values that aren’t strings.
+
+### Security
+
+- Server: Allow users to join a team from within an app.
+
 ## \[[0.17.0](https://gitlab.com/appsemble/appsemble/-/releases/0.17.0)] - 2021-01-14
 
 ### Added
