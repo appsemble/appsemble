@@ -23,6 +23,7 @@ import { checkRole } from '../../utils/checkRole';
 import { getAppUrl } from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import { AppRatings } from '../AppRatings';
+import { AppScreenshots } from '../AppScreenshots';
 import { StarRating } from '../StarRating';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
@@ -36,7 +37,6 @@ export function AppDetails(): ReactElement {
   const cloneDialog = useToggle();
   const history = useHistory();
   const { formatMessage } = useIntl();
-
   const { organizations } = useUser();
 
   const cloneApp = useCallback(
@@ -159,19 +159,7 @@ export function AppDetails(): ReactElement {
           )}
         </div>
       </div>
-      {app.screenshotUrls.length ? (
-        <div className={`my-4 ${styles.screenshots}`}>
-          {app.screenshotUrls.map((url) => (
-            <figure className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-              <img
-                alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-                className={styles.screenshot}
-                src={url}
-              />
-            </figure>
-          ))}
-        </div>
-      ) : null}
+      <AppScreenshots />
       <AppRatings />
     </Content>
   );

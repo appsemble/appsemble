@@ -1,0 +1,34 @@
+.wrapper {
+  flex-direction: column;
+}
+
+.createScreenshotButton {
+  align-self: flex-end;
+}
+
+.scrollButton {
+  align-self: center;
+  border: none;
+}
+
+.screenshots {
+  height: 24em;
+  justify-content: space-between;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+  overflow-x: scroll;
+  overflow-y: hidden;
+  padding-bottom: 1em;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  white-space: nowrap;
+  width: 100%;
+}
+
+.screenshots::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for webkit */
+}
+
+.screenshotPreview {
+  height: 24em;
+}

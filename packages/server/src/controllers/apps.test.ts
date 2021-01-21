@@ -1532,6 +1532,123 @@ describe('getAppScreenshots', () => {
   });
 });
 
+describe('createAppScreenshot', () => {
+  it('should create one screenshot', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const form = createFormData({
+      screenshots: createFixtureStream('standing.png'),
+    });
+
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form, {
+      headers: { authorization },
+    });
+
+    expect(createdResponse).toMatchObject({ status: 201, data: [expect.any(Number)] });
+  });
+
+  it('should create multiple screenshots', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const form = createFormData({
+      screenshots: [createFixtureStream('standing.png'), createFixtureStream('standing.png')],
+    });
+
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form, {
+      headers: { authorization },
+    });
+
+    expect(createdResponse).toMatchObject({
+      status: 201,
+      data: [expect.any(Number), expect.any(Number)],
+    });
+  });
+
+  // XXX: Re-enable this test when updating Koas 🧀
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip('should not accept empty arrays of screenshots', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const form = createFormData({});
+
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form, {
+      headers: { authorization },
+    });
+
+    expect(createdResponse.status).toBe(400);
+  });
+
+  it('should not accept files that aren’t images', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const form = createFormData({ screenshots: Buffer.from('I am not a screenshot') });
+
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form, {
+      headers: { authorization },
+    });
+
+    expect(createdResponse).toMatchObject({
+      status: 400,
+      data: { message: 'Invalid content types found' },
+    });
+  });
+});
+
+describe('deleteAppScreenshot', () => {
+  it('should delete existing screenshots', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const buffer = await readFixture('standing.png');
+    const screenshot = await AppScreenshot.create({
+      AppId: app.id,
+      screenshot: buffer,
+    });
+
+    const response = await request.delete(`/api/apps/${app.id}/screenshots/${screenshot.id}`, {
+      headers: { authorization },
+    });
+
+    const screenshots = await AppScreenshot.count();
+
+    expect(response.status).toBe(200);
+    expect(screenshots).toStrictEqual(0);
+  });
+
+  it('should return 404 when trying to delete screenshots with IDs that don’t exist', async () => {
+    const app = await App.create({
+      definition: {},
+      OrganizationId: organization.id,
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const response = await request.delete(`/api/apps/${app.id}/screenshots/0`, {
+      headers: { authorization },
+    });
+
+    expect(response.status).toBe(404);
+  });
+});
+
 describe('setAppBlockStyle', () => {
   it('should validate and update css when updating an app’s block style', async () => {
     await BlockVersion.create({
