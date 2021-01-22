@@ -157,7 +157,12 @@ export function update(
         query: definition?.query ?? resource?.update?.query,
         method,
         proxy: false,
-        url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
+        url: {
+          'string.format': {
+            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+            values: { id: { prop: id as string } },
+          },
+        },
         schema: resource.schema,
       },
     }),
@@ -186,7 +191,12 @@ export function remove(
         type: 'resource.delete',
         method,
         proxy: false,
-        url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
+        url: {
+          'string.format': {
+            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+            values: { id: { prop: id as string } },
+          },
+        },
         schema: resource.schema,
       },
     }),
