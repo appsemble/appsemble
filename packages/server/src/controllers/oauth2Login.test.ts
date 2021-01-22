@@ -4,19 +4,18 @@ import { request, setTestApp } from 'axios-test-instance';
 import { sign } from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, User } from '../models';
-import { Argv } from '../types';
+import { argv, setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
 
-let argv: Argv;
 const mock = new MockAdapter(axios);
 
 beforeAll(createTestSchema('oauth2login'));
 
 beforeEach(async () => {
-  argv = { host: 'http://localhost', secret: 'test' };
-  const server = await createServer({ argv });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 

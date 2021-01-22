@@ -9,7 +9,7 @@ import { Argv } from 'yargs';
 
 import { migrations } from '../migrations';
 import { initDB } from '../models';
-import { Argv as Args } from '../types';
+import { argv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { configureDNS } from '../utils/dns';
 import { migrate } from '../utils/migrate';
@@ -119,10 +119,7 @@ export function builder(yargs: Argv): Argv {
     });
 }
 
-export async function handler(
-  argv: Args,
-  { webpackConfigs }: AdditionalArguments = {},
-): Promise<void> {
+export async function handler({ webpackConfigs }: AdditionalArguments = {}): Promise<void> {
   const { version } = readPackageJson();
   try {
     initDB({
@@ -142,13 +139,13 @@ export async function handler(
     await migrate(argv.migrateTo, migrations);
   }
 
-  await configureDNS(argv);
+  await configureDNS();
 
   if (argv.sentryDsn) {
     init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: version });
   }
 
-  const app = await createServer({ argv, webpackConfigs });
+  const app = await createServer({ webpackConfigs });
 
   app.on('error', (err, ctx) => {
     if (err.expose) {

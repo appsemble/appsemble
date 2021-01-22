@@ -2,7 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
 import { Options } from 'nodemailer/lib/smtp-connection';
 
-import { Argv } from '../../types';
+import { argv } from '../argv';
 import { readAsset } from '../readAsset';
 import { renderEmail } from './renderEmail';
 
@@ -61,10 +61,7 @@ export interface SendMailOptions {
 export class Mailer {
   transport: Transporter;
 
-  /**
-   * @param argv - The CLI arguments passed to the Appsemble server.
-   */
-  constructor(argv: Argv) {
+  constructor() {
     const { smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser } = argv;
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;

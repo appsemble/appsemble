@@ -7,6 +7,7 @@ import { Op, UniqueConstraintError } from 'sequelize';
 import { EmailAuthorization, Organization, OrganizationInvite, User } from '../models';
 import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
+import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { readAsset } from '../utils/readAsset';
 
@@ -231,7 +232,6 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
 
 export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
     mailer,
     params: { organizationId },
     request: { body },
@@ -293,7 +293,7 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
     result.map((invite) =>
       mailer.sendTemplateEmail({ ...invite.User, email: invite.email }, 'organizationInvite', {
         organization: organizationId,
-        url: `${host}/organization-invite?token=${invite.key}`,
+        url: `${argv.host}/organization-invite?token=${invite.key}`,
       }),
     ),
   );
@@ -302,7 +302,6 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
 
 export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
     mailer,
     params: { organizationId },
     request: {
@@ -319,7 +318,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   await checkRole(ctx, organization.id, Permission.InviteMember);
 
-  const invite = await organization.OrganizationInvites.find((i) => i.email === email);
+  const invite = organization.OrganizationInvites.find((i) => i.email === email);
   if (!invite) {
     throw notFound('This person was not invited previously.');
   }
@@ -331,7 +330,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
     'organizationInvite',
     {
       organization: organization.id,
-      url: `${host}/organization-invite?token=${invite.key}`,
+      url: `${argv.host}/organization-invite?token=${invite.key}`,
     },
   );
 

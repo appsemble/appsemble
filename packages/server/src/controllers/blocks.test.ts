@@ -4,6 +4,7 @@ import FormData from 'form-data';
 import { omit } from 'lodash';
 
 import { Member, Organization, User } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -15,7 +16,8 @@ let clientToken: string;
 beforeAll(createTestSchema('blocks'));
 
 beforeEach(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   ({ clientToken, user } = await testToken('blocks:write'));
   const organization = await Organization.create({
     id: 'xkcd',

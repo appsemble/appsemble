@@ -4,6 +4,7 @@ import { logger } from '@appsemble/node-utils';
 import webpush from 'web-push';
 
 import { App, AppSubscription } from '../models';
+import { argv } from './argv';
 
 export interface SendNotificationOptions {
   title: string;
@@ -11,7 +12,6 @@ export interface SendNotificationOptions {
 }
 
 export async function sendNotification(
-  hostname: string,
   app: App,
   subscription: AppSubscription,
   options: SendNotificationOptions,
@@ -22,7 +22,7 @@ export async function sendNotification(
     );
 
     const { auth, endpoint, p256dh } = subscription;
-    const { host, protocol } = new URL(hostname);
+    const { host, protocol } = new URL(argv.host);
     const icon = `${protocol}//${app.path}.${app.OrganizationId}.${host}/icon-96.png`;
 
     await webpush.sendNotification(

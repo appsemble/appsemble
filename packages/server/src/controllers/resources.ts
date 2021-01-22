@@ -585,8 +585,8 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     $author: user ? { id: user.id, name: user.name } : undefined,
   };
 
-  processReferenceHooks(ctx.argv.host, ctx.user, app, createdResource, action);
-  processHooks(ctx.argv.host, ctx.user, app, createdResource, action);
+  processReferenceHooks(ctx.user, app, createdResource, action);
+  processHooks(ctx.user, app, createdResource, action);
 }
 
 export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
@@ -670,8 +670,8 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
     $author: resource.UserId ? { id: resource.UserId, name: resource.User.name } : undefined,
   };
 
-  processReferenceHooks(ctx.argv.host, ctx.user, app, resource, action);
-  processHooks(ctx.argv.host, ctx.user, app, resource, action);
+  processReferenceHooks(ctx.user, app, resource, action);
+  processHooks(ctx.user, app, resource, action);
 }
 
 export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
@@ -711,6 +711,6 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   await resource.destroy();
   ctx.status = 204;
 
-  processReferenceHooks(ctx.argv.host, ctx.user, app, resource, action);
-  processHooks(ctx.argv.host, ctx.user, app, resource, action);
+  processReferenceHooks(ctx.user, app, resource, action);
+  processHooks(ctx.user, app, resource, action);
 }

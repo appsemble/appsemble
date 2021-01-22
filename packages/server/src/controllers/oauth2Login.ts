@@ -5,6 +5,7 @@ import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
 import { KoaContext } from '../types';
+import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
 import { Recipient } from '../utils/email/Mailer';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
@@ -12,7 +13,6 @@ import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAut
 
 export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   const {
-    argv,
     request: {
       body: { authorizationUrl, code },
       headers,
@@ -75,7 +75,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
     // If the combination of authorization url and sub exists, update the entry and allow the user
     // to login to Appsemble.
     await authorization.update({ accessToken, refreshToken }, { where: { authorizationUrl, sub } });
-    ctx.body = createJWTResponse(authorization.UserId, argv);
+    ctx.body = createJWTResponse(authorization.UserId);
   } else {
     // Otherwise, register an authorization object and ask the user if this is the account they want
     // to use.
@@ -94,7 +94,6 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
 
 export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void> {
   const {
-    argv,
     mailer,
     request: {
       body: { authorizationUrl, code },
@@ -167,7 +166,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
       }
     });
   }
-  ctx.body = createJWTResponse(user.id, argv);
+  ctx.body = createJWTResponse(user.id);
 }
 
 export async function getConnectedAccounts(ctx: KoaContext): Promise<void> {

@@ -5,6 +5,7 @@ import { pki } from 'node-forge';
 
 import { App, AppSamlSecret } from '../models';
 import { KoaContext } from '../types';
+import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 
 interface Params {
@@ -14,7 +15,6 @@ interface Params {
 
 export async function createAppSamlSecret(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
     params: { appId },
     request: { body },
   } = ctx;
@@ -41,7 +41,7 @@ export async function createAppSamlSecret(ctx: KoaContext<Params>): Promise<void
   cert.validity.notBefore = new Date();
   cert.validity.notAfter = addYears(new Date(), 10);
   const attrs = [
-    { shortName: 'CN', value: host },
+    { shortName: 'CN', value: argv.host },
     { shortName: 'O', value: 'Appsemble' },
   ];
   cert.setSubject(attrs);

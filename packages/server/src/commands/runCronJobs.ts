@@ -5,8 +5,8 @@ import { Op } from 'sequelize';
 import { Argv } from 'yargs';
 
 import { App, initDB } from '../models';
-import { Argv as Args } from '../types';
 import { actions, ServerActionParameters } from '../utils/actions';
+import { argv } from '../utils/argv';
 import { iterTable } from '../utils/database';
 import { Mailer } from '../utils/email/Mailer';
 import { handleDBError } from '../utils/sqlUtils';
@@ -84,7 +84,7 @@ export function builder(yargs: Argv): Argv {
     });
 }
 
-export async function handler(argv: Args): Promise<void> {
+export async function handler(): Promise<void> {
   let db;
 
   try {
@@ -101,7 +101,7 @@ export async function handler(argv: Args): Promise<void> {
     handleDBError(error as Error);
   }
 
-  const mailer = new Mailer(argv);
+  const mailer = new Mailer();
 
   // 1 hour ago
   const startDate = Date.now() - 60 * 60 * 1e3;

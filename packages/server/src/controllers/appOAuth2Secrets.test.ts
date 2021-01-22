@@ -9,6 +9,7 @@ import {
   Organization,
   User,
 } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import * as oauth2 from '../utils/oauth2';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
@@ -22,7 +23,8 @@ let user: User;
 beforeAll(createTestSchema('appnotifications'));
 
 beforeAll(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 

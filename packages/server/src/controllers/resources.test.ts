@@ -16,6 +16,7 @@ import {
   TeamMember,
   User,
 } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -166,7 +167,8 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
 beforeAll(createTestSchema('resources'));
 
 beforeAll(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
   originalSendNotification = webpush.sendNotification;
 });

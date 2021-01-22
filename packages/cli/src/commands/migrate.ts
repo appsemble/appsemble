@@ -46,6 +46,7 @@ export function builder(yargs: Argv): Argv {
 }
 
 export async function handler(argv: BaseArguments): Promise<void> {
-  const migrate = await serverImport('migrate');
-  return migrate(argv);
+  const { migrate, setArgv } = await serverImport('setArgv', 'migrate');
+  setArgv(argv);
+  return migrate();
 }

@@ -6,6 +6,7 @@ import { verify } from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
 import { KoaContext } from '../types';
+import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
 
 export async function getUser(ctx: KoaContext): Promise<void> {
@@ -118,7 +119,6 @@ export async function listEmails(ctx: KoaContext): Promise<void> {
 
 export async function addEmail(ctx: KoaContext): Promise<void> {
   const {
-    argv: { host },
     mailer,
     request: {
       body: { email },
@@ -147,7 +147,7 @@ export async function addEmail(ctx: KoaContext): Promise<void> {
   await EmailAuthorization.create({ UserId: user.id, email, key });
 
   await mailer.sendTemplateEmail({ email, name: dbUser.name }, 'emailAdded', {
-    url: `${host}/verify?token=${key}`,
+    url: `${argv.host}/verify?token=${key}`,
   });
 
   ctx.status = 201;
@@ -193,17 +193,16 @@ export async function removeEmail(ctx: KoaContext): Promise<void> {
 }
 
 export function emailLogin(ctx: KoaContext): void {
-  const { argv, user } = ctx;
+  const { user } = ctx;
 
-  ctx.body = createJWTResponse(user.id, argv);
+  ctx.body = createJWTResponse(user.id);
 }
 
 export function refreshToken(ctx: KoaContext): void {
   const {
-    argv,
     request: { body },
   } = ctx;
   const { sub } = verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload;
 
-  ctx.body = createJWTResponse(sub, argv);
+  ctx.body = createJWTResponse(sub);
 }

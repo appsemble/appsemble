@@ -4,22 +4,22 @@ import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { decode } from 'jsonwebtoken';
-import Koa from 'koa';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
+import { setArgv } from '../../utils/argv';
 import { createServer } from '../../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import { testToken } from '../../utils/test/testToken';
 
 let clock: InstalledClock;
-let server: Koa;
 let user: User;
 let refreshToken: string;
 
 beforeAll(createTestSchema('tokenhandler'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 

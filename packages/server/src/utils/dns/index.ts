@@ -2,17 +2,16 @@ import { inspect } from 'util';
 
 import { AppsembleError } from '@appsemble/node-utils';
 
-import { Argv } from '../../types';
+import { argv } from '../argv';
 import * as kubernetes from './kubernetes';
 
 /**
  * Get the DNS implementation for the specified app domain strategy.
  *
- * @param argv - The parsed command line parameters.
- *
  * @returns An implementation for the given `--app-domain-strategy` flag.
  */
-function getImplementation({ appDomainStrategy }: Argv): typeof import('.') {
+function getImplementation(): typeof import('.') {
+  const { appDomainStrategy } = argv;
   if (!appDomainStrategy) {
     return;
   }
@@ -26,27 +25,21 @@ function getImplementation({ appDomainStrategy }: Argv): typeof import('.') {
 
 /**
  * Configure DNS for a running deployment.
- *
- * @param argv - The parsed command line parameters.
  */
-export async function configureDNS(argv: Argv): Promise<void> {
-  await getImplementation(argv)?.configureDNS(argv);
+export async function configureDNS(): Promise<void> {
+  await getImplementation()?.configureDNS();
 }
 
 /**
  * Cleanup the DNS settings in the running environment.
- *
- * @param argv - The parsed command line parameters.
  */
-export async function cleanupDNS(argv: Argv): Promise<void> {
-  await getImplementation(argv)?.cleanupDNS(argv);
+export async function cleanupDNS(): Promise<void> {
+  await getImplementation()?.cleanupDNS();
 }
 
 /**
  * Restore the DNS settings for the running environment.
- *
- * @param argv - The parsed command line parameters.
  */
-export async function restoreDNS(argv: Argv): Promise<void> {
-  await getImplementation(argv)?.restoreDNS(argv);
+export async function restoreDNS(): Promise<void> {
+  await getImplementation()?.restoreDNS();
 }

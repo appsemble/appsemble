@@ -41,6 +41,7 @@ export function builder(yargs: Argv): Argv {
 }
 
 export async function handler(argv: BaseArguments): Promise<void> {
-  const runCronJobs = await serverImport('runCronJobs');
-  return runCronJobs(argv);
+  const { runCronJobs, setArgv } = await serverImport('setArgv', 'runCronJobs');
+  setArgv(argv);
+  return runCronJobs();
 }

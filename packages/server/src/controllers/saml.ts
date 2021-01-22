@@ -15,6 +15,7 @@ import { App, AppMember, AppSamlSecret, EmailAuthorization, transactional, User 
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
 import { SamlLoginRequest } from '../models/SamlLoginRequest';
 import { KoaContext } from '../types';
+import { argv } from '../utils/argv';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 
 interface Params {
@@ -40,7 +41,6 @@ const parser = new DOMParser();
 
 export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
     params: { appId, appSamlSecretId },
     request: {
       body: { redirectUri, scope, state },
@@ -72,7 +72,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
 
   const loginId = `id${v4()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
-  const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, host);
+  const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, argv.host);
 
   const authnRequest = doc.documentElement;
   authnRequest.setAttributeNS(NS.xmlns, 'xmlns:saml', NS.saml);
@@ -96,7 +96,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   const samlRequest = await deflate(Buffer.from(String(doc)));
   const redirect = new URL(secret.ssoUrl);
   redirect.searchParams.set('SAMLRequest', samlRequest.toString('base64'));
-  redirect.searchParams.set('RelayState', host);
+  redirect.searchParams.set('RelayState', argv.host);
   redirect.searchParams.set('SigAlg', 'http://www.w3.org/2000/09/xmldsig#rsa-sha1');
 
   const privateKey = pki.privateKeyFromPem(secret.spPrivateKey);
@@ -120,7 +120,6 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
 
 export async function assertConsumerService(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv,
     params: { appId, appSamlSecretId },
     request: {
       body: { RelayState, SAMLResponse },
@@ -288,7 +287,6 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   }
 
   const { code } = await createOAuth2AuthorizationCode(
-    argv,
     app,
     loginRequest.redirectUri,
     loginRequest.scope,
@@ -303,7 +301,6 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
 
 export async function continueSamlLogin(ctx: KoaContext): Promise<void> {
   const {
-    argv,
     request: {
       body: { id },
     },
@@ -328,7 +325,6 @@ export async function continueSamlLogin(ctx: KoaContext): Promise<void> {
   });
 
   const { code } = await createOAuth2AuthorizationCode(
-    argv,
     loginRequest.AppSamlSecret.App,
     loginRequest.redirectUri,
     loginRequest.scope,
@@ -342,7 +338,6 @@ export async function continueSamlLogin(ctx: KoaContext): Promise<void> {
 
 export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
     params: { appId, appSamlSecretId },
     path,
   } = ctx;
@@ -359,7 +354,7 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   const doc = dom.createDocument(NS.md, 'md:EntityDescriptor', null);
   const entityDescriptor = doc.documentElement;
   entityDescriptor.setAttributeNS(NS.xmlns, 'xmlns:md', NS.md);
-  entityDescriptor.setAttribute('entityID', String(new URL(path, host)));
+  entityDescriptor.setAttribute('entityID', String(new URL(path, argv.host)));
 
   const spssoDescriptor = doc.createElementNS(NS.md, 'md:SPSSODescriptor');
   spssoDescriptor.setAttribute('AuthnRequestsSigned', 'true');
@@ -399,7 +394,7 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   );
   assertionConsumerService.setAttribute(
     'Location',
-    String(new URL(`/api/apps/${appId}/saml/${appSamlSecretId}/acs`, host)),
+    String(new URL(`/api/apps/${appId}/saml/${appSamlSecretId}/acs`, argv.host)),
   );
   // eslint-disable-next-line unicorn/prefer-node-append
   entityDescriptor.appendChild(assertionConsumerService);
