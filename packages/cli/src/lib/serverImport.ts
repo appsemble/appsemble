@@ -12,18 +12,20 @@ ${PROMPT} ${COMMAND} @appsemble/server
 /**
  * Import an exported member of @appsemble/server.
  *
- * @param member - The name of the exported member to import.
+ * @param members - The names of the exported member to import.
  * @returns The exported member.
  */
-export async function serverImport(
-  member: 'migrate' | 'start' | 'cleanupResources' | 'runCronJobs',
-): Promise<any> {
+export async function serverImport<
+  T extends 'migrate' | 'start' | 'cleanupResources' | 'runCronJobs' | 'setArgv'
+>(...members: T[]): Promise<Record<T, any>> {
   try {
     const mod = await import('@appsemble/server');
-    if (!Object.hasOwnProperty.call(mod, member)) {
-      throw new Error(`@appsemble/server does not export ${member}`);
-    }
-    return mod[member];
+    members.forEach((member) => {
+      if (!Object.hasOwnProperty.call(mod, member)) {
+        throw new Error(`@appsemble/server does not export ${member}`);
+      }
+    });
+    return mod;
   } catch (error: unknown) {
     if (
       (error as any).code !== 'MODULE_NOT_FOUND' ||

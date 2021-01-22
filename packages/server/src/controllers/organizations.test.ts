@@ -6,6 +6,7 @@ import FormData from 'form-data';
 import * as Koa from 'koa';
 
 import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -18,7 +19,8 @@ let user: User;
 beforeAll(createTestSchema('organizations'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  server = await createServer();
   await setTestApp(server);
 });
 

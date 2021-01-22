@@ -1,7 +1,7 @@
 import { Argv } from 'yargs';
 
 import { initDB } from '../models';
-import { Argv as Args } from '../types';
+import { argv } from '../utils/argv';
 import { cleanupDNS } from '../utils/dns';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';
@@ -36,7 +36,7 @@ export function builder(yargs: Argv): Argv {
     });
 }
 
-export async function handler(argv: Args): Promise<void> {
+export async function handler(): Promise<void> {
   try {
     initDB({
       host: argv.databaseHost,
@@ -51,5 +51,5 @@ export async function handler(argv: Args): Promise<void> {
     handleDBError(error as Error);
   }
 
-  await cleanupDNS(argv);
+  await cleanupDNS();
 }

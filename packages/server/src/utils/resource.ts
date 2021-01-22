@@ -37,7 +37,6 @@ export function renameOData(name: string): string {
 }
 
 async function sendSubscriptionNotifications(
-  host: string,
   app: App,
   notification: NotificationDefinition,
   resourceUserId: string,
@@ -112,12 +111,11 @@ async function sendSubscriptionNotifications(
   }
 
   subscriptions.forEach((subscription) => {
-    sendNotification(host, app, subscription, options);
+    sendNotification(app, subscription, options);
   });
 }
 
 export async function processHooks(
-  host: string,
   user: User,
   app: App,
   resource: Resource,
@@ -167,7 +165,6 @@ export async function processHooks(
       : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`) as string;
 
     await sendSubscriptionNotifications(
-      host,
       app,
       notification,
       // Don't send notifications to the creator when creating
@@ -184,7 +181,6 @@ export async function processHooks(
 }
 
 export async function processReferenceHooks(
-  host: string,
   user: User,
   app: App,
   resource: Resource,
@@ -206,7 +202,7 @@ export async function processReferenceHooks(
 
         await Promise.all(
           parents.map((parent) =>
-            Promise.all(trigger.map((t) => processHooks(host, user, app, parent, t))),
+            Promise.all(trigger.map((t) => processHooks(user, app, parent, t))),
           ),
         );
       },

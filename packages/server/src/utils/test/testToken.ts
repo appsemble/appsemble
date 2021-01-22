@@ -17,10 +17,9 @@ export async function testToken(
   email = 'test@example.com',
 ): Promise<TestTokenResult> {
   const password = await hash('testpassword', 10);
-  const argv = { host: 'http://localhost', secret: 'test' };
   const user = await User.create({ password, name: 'Test User', primaryEmail: email });
   await EmailAuthorization.create({ UserId: user.id, email, verified: true });
-  const response = createJWTResponse(user.id, argv, { refreshToken: true });
+  const response = createJWTResponse(user.id, { refreshToken: true });
   const result: TestTokenResult = {
     user,
     authorization: `Bearer ${response.access_token}`,
@@ -34,7 +33,7 @@ export async function testToken(
       secret: randomBytes(32).toString('hex'),
       UserId: user.id,
     });
-    result.clientToken = createJWTResponse(user.id, argv, { aud: id, scope }).access_token;
+    result.clientToken = createJWTResponse(user.id, { aud: id, scope }).access_token;
   }
   return result;
 }

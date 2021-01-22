@@ -4,15 +4,16 @@ import Koa from 'koa';
 import { appRouter } from '.';
 import { boomMiddleware } from '../../middleware/boom';
 import { App, AppBlockStyle, Organization } from '../../models';
+import { setArgv } from '../../utils/argv';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
 beforeAll(createTestSchema('blockcsshandler'));
 
 beforeAll(async () => {
+  setArgv({ host: 'http://localhost' });
   await setTestApp(
     new Koa()
       .use((ctx, next) => {
-        ctx.argv = { host: 'http://localhost' };
         Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
         return next();
       })

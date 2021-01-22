@@ -8,7 +8,7 @@ import yaml from 'js-yaml';
 import { omit } from 'lodash';
 
 import * as models from '../models';
-import { Argv } from '../types';
+import { argv } from './argv';
 
 /**
  * Normalizes an app record for consistant return values.
@@ -53,13 +53,12 @@ export function getAppFromRecord(
 }
 
 export async function createOAuth2AuthorizationCode(
-  { host }: Argv,
   app: models.App,
   redirectUri: string,
   scope: string,
   user: models.User,
 ): Promise<types.OAuth2AuthorizationCode> {
-  const appHost = `${app.path}.${app.OrganizationId}.${new URL(host).hostname}`;
+  const appHost = `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
   const redirectHost = new URL(redirectUri).hostname;
   if (redirectHost !== appHost && redirectHost !== app.domain) {
     throw forbidden('Invalid redirectUri');

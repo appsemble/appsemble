@@ -126,10 +126,11 @@ export function builder(yargs: Argv): Argv {
 }
 
 export async function handler(argv: BaseArguments): Promise<void> {
-  const start = await serverImport('start');
+  const { setArgv, start } = await serverImport('setArgv', 'start');
+  setArgv(argv);
   const blocks = await discoverBlocks(process.cwd());
   const webpackConfigs = await Promise.all(
     blocks.map((block) => loadWebpackConfig(block, 'development')),
   );
-  return start(argv, { webpackConfigs });
+  return start({ webpackConfigs });
 }

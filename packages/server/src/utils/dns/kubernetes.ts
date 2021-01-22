@@ -9,7 +9,7 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { Op } from 'sequelize';
 
 import { App, Organization } from '../../models';
-import { Argv } from '../../types';
+import { argv } from '../argv';
 import { iterTable } from '../database';
 import { readPackageJson } from '../readPackageJson';
 
@@ -20,15 +20,10 @@ function readK8sSecret(filename: string): Promise<string> {
 /**
  * Get common Axios request configuration based on the command line arguments.
  *
- * @param argv - arguments passed on the command line.
- *
  * @returns A partial Axios request configuration for making ingress related requests.
  */
-async function getAxiosConfig({
-  kubernetesServiceHost = 'kubernetes.default.svc',
-  kubernetesServicePort = 443,
-}: Argv): Promise<AxiosRequestConfig> {
-  const K8S_HOST = `https://${kubernetesServiceHost}:${kubernetesServicePort}`;
+async function getAxiosConfig(): Promise<AxiosRequestConfig> {
+  const K8S_HOST = `https://${argv.kubernetesServiceHost}:${argv.kubernetesServicePort}`;
   const ca = await readK8sSecret('ca.crt');
   const namespace = await readK8sSecret('namespace');
   const token = await readK8sSecret('token');
@@ -42,17 +37,15 @@ async function getAxiosConfig({
 /**
  * Create a function for creating ingresses.
  *
- * @param argv - arguments passed on the command line.
- *
  * @returns A function for creating an ingress.
  *
  * The ingress function takes a domain name to create an ingress for. THe rest is determined from
  * the command line arguments and the environment.
  */
-async function createIngressFunction(argv: Argv): Promise<(domain: string) => Promise<void>> {
+async function createIngressFunction(): Promise<(domain: string) => Promise<void>> {
   const { ingressAnnotations, serviceName, servicePort } = argv;
   const { version } = readPackageJson();
-  const config = await getAxiosConfig(argv);
+  const config = await getAxiosConfig();
   const annotations = ingressAnnotations ? JSON.parse(ingressAnnotations) : undefined;
 
   return async (domain) => {
@@ -108,13 +101,11 @@ async function createIngressFunction(argv: Argv): Promise<(domain: string) => Pr
  * This method requires a role bound to the default service account, which allows Appsemble to
  * read and update a single ingress resource.
  *
- * @param argv - The parsed command line arguments.
- *
  * @returns A DNS implemenation basd on a Kubernetes ingress.
  */
-export async function configureDNS(argv: Argv): Promise<void> {
+export async function configureDNS(): Promise<void> {
   const { hostname } = new URL(argv.host);
-  const createIngress = await createIngressFunction(argv);
+  const createIngress = await createIngressFunction();
 
   /**
    * Register a wildcard domain name ingress for organizations.
@@ -136,12 +127,10 @@ export async function configureDNS(argv: Argv): Promise<void> {
 
 /**
  * Cleanup all ingresses managed by the current service.
- *
- * @param argv - The parsed command line parameters.
  */
-export async function cleanupDNS(argv: Argv): Promise<void> {
+export async function cleanupDNS(): Promise<void> {
   const { serviceName } = argv;
-  const config = await getAxiosConfig(argv);
+  const config = await getAxiosConfig();
   logger.warn(`Deleting all ingresses for ${serviceName}`);
   await axios({
     ...config,
@@ -155,12 +144,10 @@ export async function cleanupDNS(argv: Argv): Promise<void> {
 
 /**
  * Restore ingresses for all apps andorganizations.
- *
- * @param argv - The parsed command line parameters.
  */
-export async function restoreDNS(argv: Argv): Promise<void> {
+export async function restoreDNS(): Promise<void> {
   const { hostname } = new URL(argv.host);
-  const createIngress = await createIngressFunction(argv);
+  const createIngress = await createIngressFunction();
 
   for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
     await createIngress(`*.${id}.${hostname}`);

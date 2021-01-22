@@ -10,56 +10,11 @@ declare module 'koa' {
   }
 }
 
-export interface Argv {
-  appDomainStrategy?: string;
-  databaseHost?: string;
-  databasePort?: number;
-  databaseUser?: string;
-  databasePassword?: string;
-  databaseName?: string;
-  databaseSsl?: boolean;
-  databaseUrl?: string;
-  disableRegistration?: boolean;
-  host?: string;
-  ingressAnnotations?: string;
-  serviceName?: string;
-  servicePort?: string | number;
-  kubernetesServiceHost?: string;
-  kubernetesServicePort?: string | number;
-  migrateTo?: string;
-  port?: number;
-  ssl?: boolean;
-  sslKey?: string;
-  sslCert?: string;
-  smtpFrom?: string;
-  smtpHost?: string;
-  smtpPass?: string;
-  smtpPort?: number;
-  smtpSecure?: boolean;
-  smtpUser?: string;
-  githubClientId?: string;
-  githubClientSecret?: string;
-  gitlabClientId?: string;
-  gitlabClientSecret?: string;
-  googleClientId?: string;
-  googleClientSecret?: string;
-  proxy?: true;
-  secret?: string;
-  sentryDsn?: string;
-  sentryEnvironment?: string;
-  to?: string;
-}
-
 export interface AppsembleState extends DefaultState {
   render: (template: string, params: Record<string, unknown>) => Promise<string>;
 }
 
 export interface AppsembleContext<P = unknown> {
-  /**
-   * The parsed command line parameters.
-   */
-  argv: Argv;
-
   /**
    * The client the request is from including its scopes
    */

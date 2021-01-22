@@ -15,6 +15,7 @@ import {
 } from '../../models';
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
+import { argv } from '../../utils/argv';
 import { createJWTResponse } from '../../utils/createJWTResponse';
 import { hasScope } from '../../utils/oauth2';
 
@@ -59,7 +60,7 @@ function checkTokenRequestParameters(
  * @param ctx - The Koa context.
  */
 export async function tokenHandler(ctx: KoaContext): Promise<void> {
-  const { argv, header } = ctx;
+  const { header } = ctx;
   let aud: string;
   let refreshToken: boolean;
   let scope: string;
@@ -205,5 +206,5 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
     throw error;
   }
 
-  ctx.body = createJWTResponse(sub, argv, { aud, refreshToken, scope });
+  ctx.body = createJWTResponse(sub, { aud, refreshToken, scope });
 }

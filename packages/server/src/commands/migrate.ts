@@ -4,7 +4,7 @@ import { Argv } from 'yargs';
 
 import { migrations } from '../migrations';
 import { initDB } from '../models';
-import { Argv as Args } from '../types';
+import { argv } from '../utils/argv';
 import { migrate } from '../utils/migrate';
 import { readPackageJson } from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
@@ -14,16 +14,16 @@ export const command = 'migrate [to]';
 export const description = 'Migrate the Appsemble database.';
 
 export function builder(yargs: Argv): Argv {
-  return databaseBuilder(yargs).positional('to', {
+  return databaseBuilder(yargs).positional('migrate-to', {
     desc: 'The database version to migrate to.',
     default: readPackageJson().version,
   });
 }
 
-export async function handler(argv: Args): Promise<void> {
-  const { to } = argv;
-  if (to !== 'next' && !semver.valid(to)) {
-    throw new AppsembleError(`A valid semver is required. Got ${to}`);
+export async function handler(): Promise<void> {
+  const { migrateTo } = argv;
+  if (migrateTo !== 'next' && !semver.valid(migrateTo)) {
+    throw new AppsembleError(`A valid semver is required. Got ${migrateTo}`);
   }
   let db;
   try {
@@ -40,6 +40,6 @@ export async function handler(argv: Args): Promise<void> {
     handleDBError(error as Error);
   }
 
-  await migrate(to, migrations);
+  await migrate(migrateTo, migrations);
   await db.close();
 }

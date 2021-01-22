@@ -2,20 +2,20 @@ import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import { KoaContext, KoaMiddleware } from '../types';
+import { setArgv } from '../utils/argv';
 import { appMapper } from './appMapper';
 
 let platformMiddleware: KoaMiddleware;
 let appMiddleware: KoaMiddleware;
 let fakeHostname: string;
-let app: Koa;
 let context: KoaContext;
 
 beforeEach(async () => {
+  setArgv({ host: 'http://localhost:1337' });
   platformMiddleware = jest.fn();
   appMiddleware = jest.fn();
   fakeHostname = 'localhost';
-  app = new Koa();
-  app.context.argv = { host: 'http://localhost:1337' };
+  const app = new Koa();
   app.use((ctx: KoaContext, next) => {
     Object.defineProperty(ctx, 'hostname', { value: fakeHostname });
     context = ctx;

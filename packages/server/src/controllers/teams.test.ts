@@ -1,8 +1,8 @@
 import { TeamRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
-import * as Koa from 'koa';
 
 import { App, AppMember, Member, Organization, Team, TeamMember, User } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import { testToken } from '../utils/test/testToken';
@@ -10,13 +10,13 @@ import { testToken } from '../utils/test/testToken';
 let authorization: string;
 let organization: Organization;
 let app: App;
-let server: Koa;
 let user: User;
 
 beforeAll(createTestSchema('teams'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 

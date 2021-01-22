@@ -9,6 +9,7 @@ import { FindOptions, Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
 import { KoaContext } from '../types';
+import { argv } from './argv';
 
 const formatters = {
   getNumberFormat: memoizeIntlConstructor(Intl.NumberFormat),
@@ -26,7 +27,7 @@ const formatters = {
  * @returns The app matching the url.
  */
 export function getApp(
-  { argv, origin }: Pick<KoaContext, 'argv' | 'origin'>,
+  { origin }: Pick<KoaContext, 'origin'>,
   queryOptions: FindOptions,
   url = origin,
 ): Promise<App> {

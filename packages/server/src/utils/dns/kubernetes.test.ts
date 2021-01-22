@@ -5,6 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { vol } from 'memfs';
 
 import { App, Organization } from '../../models';
+import { setArgv } from '../argv';
 import { closeTestSchema, createTestSchema, truncate } from '../test/testSchema';
 import { cleanupDNS, configureDNS, restoreDNS } from './kubernetes';
 
@@ -46,7 +47,8 @@ describe('configureDNS', () => {
       return [201, request.data];
     });
 
-    await configureDNS({ host: 'https://host.example', serviceName: 'review-service' });
+    setArgv({ host: 'https://host.example', serviceName: 'review-service' });
+    await configureDNS();
     await Organization.create({ id: 'testorg' });
 
     expect(config.url).toBe(
@@ -92,8 +94,9 @@ describe('configureDNS', () => {
       return [201, request.data];
     });
 
+    setArgv({ host: 'https://host.example', serviceName: 'review-service' });
     await Organization.create({ id: 'org' });
-    await configureDNS({ host: 'https://host.example', serviceName: 'review-service' });
+    await configureDNS();
     await App.create({
       domain: 'example.com',
       definition: '',
@@ -143,8 +146,9 @@ describe('configureDNS', () => {
       return [201, request.data];
     });
 
+    setArgv({ host: 'https://host.example', serviceName: 'review-service' });
     await Organization.create({ id: 'org' });
-    await configureDNS({ host: 'https://host.example', serviceName: 'review-service' });
+    await configureDNS();
     await App.create({
       definition: '',
       vapidPublicKey: '',
@@ -162,11 +166,12 @@ describe('configureDNS', () => {
       return [201, request.data];
     });
 
-    await configureDNS({
+    setArgv({
       host: 'https://host.example',
       ingressAnnotations: JSON.stringify({ custom: 'annotation' }),
       serviceName: 'review-service',
     });
+    await configureDNS();
     await Organization.create({ id: 'foo' });
 
     expect(config.url).toBe(
@@ -213,10 +218,11 @@ describe('cleanupDNS', () => {
       return [204];
     });
 
-    await cleanupDNS({
+    setArgv({
       host: 'https://host.example',
       serviceName: 'review-service',
     });
+    await cleanupDNS();
 
     expect(config.url).toBe(
       'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
@@ -249,10 +255,11 @@ describe('restoreDNS', () => {
       OrganizationId: 'test',
     });
 
-    await restoreDNS({
+    setArgv({
       host: 'https://host.example',
       serviceName: 'review-service',
     });
+    await restoreDNS();
 
     expect(ingresses).toStrictEqual([
       {
