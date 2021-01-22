@@ -103,8 +103,8 @@ describe('queryApps', () => {
       data: [
         {
           id: appA.id,
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
           private: false,
           path: 'test-app',
@@ -114,8 +114,8 @@ describe('queryApps', () => {
         },
         {
           id: appB.id,
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
           private: false,
           path: 'another-app',
@@ -156,8 +156,8 @@ describe('queryApps', () => {
       data: [
         {
           id: appA.id,
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
           private: false,
           path: 'test-app',
@@ -255,8 +255,8 @@ describe('getAppById', () => {
       status: 200,
       data: {
         id: appA.id,
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
         private: false,
         path: 'test-app',
@@ -308,8 +308,8 @@ describe('queryMyApps', () => {
       data: [
         {
           id: appA.id,
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
           private: false,
           path: 'test-app',
@@ -324,8 +324,8 @@ describe('queryMyApps', () => {
       data: [
         {
           id: appA.id,
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
           private: false,
           path: 'test-app',
@@ -335,8 +335,8 @@ describe('queryMyApps', () => {
         },
         {
           id: appB.id,
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
           private: false,
           path: 'test-app-b',
@@ -378,8 +378,8 @@ describe('createApp', () => {
       status: 201,
       data: {
         id: expect.any(Number),
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
         private: true,
         path: 'test-app',
@@ -440,8 +440,8 @@ pages:
       status: 201,
       data: {
         id: expect.any(Number),
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
         private: true,
         path: 'test-app',
@@ -916,8 +916,8 @@ describe('updateApp', () => {
       status: 200,
       data: {
         id: appA.id,
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
         private: true,
         path: 'test-app',
@@ -1070,8 +1070,8 @@ pages:
       status: 200,
       data: {
         id: appA.id,
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
         private: false,
         path: 'test-app',

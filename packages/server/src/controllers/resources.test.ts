@@ -210,8 +210,8 @@ describe('getResourceById', () => {
       data: {
         id: resource.id,
         foo: 'bar',
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
       },
     });
   });
@@ -242,8 +242,8 @@ describe('getResourceById', () => {
       data: {
         id: resource.id,
         foo: 'bar',
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
       },
     });
   });
@@ -314,8 +314,8 @@ describe('getResourceById', () => {
         id: resource.id,
         foo: 'foo',
         bar: 1,
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         $author: { id: user.id, name: user.name },
       },
     });
@@ -338,8 +338,8 @@ describe('getResourceById', () => {
         id: resource.id,
         foo: 'foo',
         bar: 1,
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         $author: { id: user.id, name: user.name },
       },
     });
@@ -400,14 +400,14 @@ describe('queryResources', () => {
         {
           id: resourceA.id,
           foo: 'bar',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
         {
           id: resourceB.id,
           foo: 'baz',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -514,8 +514,8 @@ describe('queryResources', () => {
         {
           id: resourceA.id,
           foo: 'bar',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -558,14 +558,14 @@ describe('queryResources', () => {
         {
           id: resourceA.id,
           foo: 'bar',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
         {
           id: resourceB.id,
           foo: 'baz',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -631,14 +631,14 @@ describe('queryResources', () => {
         {
           id: resourceA.id,
           foo: 'bar',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
         {
           id: resourceB.id,
           foo: 'foo',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -662,8 +662,8 @@ describe('queryResources', () => {
         {
           id: resourceA.id,
           foo: 'bar',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -693,14 +693,14 @@ describe('queryResources', () => {
         {
           id: resourceA.id,
           foo: 'bar',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
         {
           id: resourceB.id,
           foo: 'baz',
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:20.000Z',
+          $updated: '1970-01-01T00:00:20.000Z',
         },
       ],
     });
@@ -714,14 +714,14 @@ describe('queryResources', () => {
         {
           id: resourceB.id,
           foo: 'baz',
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:20.000Z',
+          $updated: '1970-01-01T00:00:20.000Z',
         },
         {
           id: resourceA.id,
           foo: 'bar',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -756,8 +756,8 @@ describe('queryResources', () => {
         {
           id: resource.id,
           ...resource.data,
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -782,8 +782,8 @@ describe('queryResources', () => {
         {
           id: resource.id,
           ...resource.data,
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -812,8 +812,8 @@ describe('queryResources', () => {
     expect(response.data).toMatchObject([
       {
         id: resource.id,
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         foo: 'bar',
         bar: 2,
         $author: { id: userB.id },
@@ -844,15 +844,15 @@ describe('queryResources', () => {
       data: [
         {
           id: resourceB.id,
-          $created: new Date(clock.now).toJSON(),
-          $updated: new Date(clock.now).toJSON(),
+          $created: '1970-01-01T00:00:20.000Z',
+          $updated: '1970-01-01T00:00:20.000Z',
           foo: 'bar',
           bar: 2,
         },
         {
           id: resource.id,
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
           foo: 'foo',
           bar: 1,
         },
@@ -878,8 +878,8 @@ describe('queryResources', () => {
           id: resource.id,
           foo: 'foo',
           bar: 1,
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
           $author: { id: user.id, name: user.name },
         },
       ],
@@ -2081,14 +2081,14 @@ describe('verifyAppRole', () => {
         {
           id: resourceA.id,
           foo: 'bar',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
         {
           id: resourceB.id,
           foo: 'baz',
-          $created: new Date(0).toJSON(),
-          $updated: new Date(0).toJSON(),
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -2116,8 +2116,8 @@ describe('verifyAppRole', () => {
       data: {
         id: resource.id,
         foo: 'bar',
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
         $author: {
           id: user.id,
           name: 'Test User',
