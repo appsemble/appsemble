@@ -43,7 +43,7 @@ const newTeam = {
  * The rendered list items are links to the team settings page.
  */
 export function TeamsList(): ReactElement {
-  const { organizations, userInfo } = useUser();
+  const { organizations } = useUser();
   const { url } = useRouteMatch();
   const { app } = useApp();
   const modal = useToggle();
@@ -63,7 +63,7 @@ export function TeamsList(): ReactElement {
   );
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
-  const mayCreateTeam = organization && checkRole(organization.role, Permission.ManageMembers);
+  const mayCreateTeam = organization && checkRole(organization.role, Permission.ManageTeams);
 
   return (
     <>
@@ -118,7 +118,6 @@ export function TeamsList(): ReactElement {
           title={<FormattedMessage {...messages.creatingNewTeam} />}
         >
           <SimpleFormField
-            disabled={!userInfo.email_verified}
             icon="briefcase"
             label={<FormattedMessage {...messages.teamName} />}
             name="name"

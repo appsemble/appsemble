@@ -181,7 +181,7 @@ describe('createTeam', () => {
 
   it('should not create a team if user is not an Owner', async () => {
     await Member.update(
-      { role: 'Maintainer' },
+      { role: 'AppEditor' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const response = await request.post(
@@ -286,7 +286,7 @@ describe('updateTeam', () => {
 
   it('should not update without sufficient permissions', async () => {
     await Member.update(
-      { role: 'Maintainer' },
+      { role: 'AppEditor' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
@@ -366,7 +366,7 @@ describe('deleteTeam', () => {
 
   it('should not delete without sufficient permissions', async () => {
     await Member.update(
-      { role: 'Maintainer' },
+      { role: 'AppEditor' },
       { where: { UserId: user.id, OrganizationId: organization.id } },
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
