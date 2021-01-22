@@ -11,11 +11,10 @@ import x from 'xastscript';
 import { App, AppSamlSecret, Organization, SamlLoginRequest, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
 let app: App;
-let authorization: string;
 let clock: InstalledClock;
 let secret: AppSamlSecret;
 let user: User;
@@ -225,7 +224,7 @@ beforeEach(() => {
 });
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
+  user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -259,11 +258,12 @@ afterAll(closeTestSchema);
 
 describe('createAuthnRequest', () => {
   it('should generate SAML parameters', async () => {
-    const response = await request.post(
-      `/api/apps/${app.id}/saml/${secret.id}/authn`,
-      { redirectUri: 'https://app.example', scope: 'email openid profile', state: 'secret state' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/saml/${secret.id}/authn`, {
+      redirectUri: 'https://app.example',
+      scope: 'email openid profile',
+      state: 'secret state',
+    });
     expect(response).toMatchObject({
       status: 201,
     });
@@ -310,11 +310,12 @@ describe('createAuthnRequest', () => {
   });
 
   it('should throw if the app ID is invalid', async () => {
-    const response = await request.post(
-      '/api/apps/64/saml/26/authn',
-      { redirectUri: 'https://app.example', scope: 'email openid profile', state: 'secret state' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/apps/64/saml/26/authn', {
+      redirectUri: 'https://app.example',
+      scope: 'email openid profile',
+      state: 'secret state',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
@@ -322,11 +323,12 @@ describe('createAuthnRequest', () => {
   });
 
   it('should throw if the SAML secret ID is invalid', async () => {
-    const response = await request.post(
-      `/api/apps/${app.id}/saml/26/authn`,
-      { redirectUri: 'https://app.example', scope: 'email openid profile', state: 'secret state' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/saml/26/authn`, {
+      redirectUri: 'https://app.example',
+      scope: 'email openid profile',
+      state: 'secret state',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'SAML secret not found', statusCode: 404 },

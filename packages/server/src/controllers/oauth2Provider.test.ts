@@ -4,12 +4,10 @@ import { request, setTestApp } from 'axios-test-instance';
 import { App, Member, OAuth2AuthorizationCode, OAuth2Consent, Organization, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
 let clock: FakeTimers.InstalledClock;
-
 let user: User;
 
 beforeAll(createTestSchema('oauth2provider'));
@@ -24,7 +22,7 @@ beforeEach(async () => {
   await truncate();
   clock = FakeTimers.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  ({ authorization, user } = await testToken());
+  user = await createTestUser();
 });
 
 afterEach(truncate);
@@ -37,7 +35,8 @@ afterAll(closeTestSchema);
 
 describe('getUserInfo', () => {
   it('should return userinfo formatted as defined by OpenID', async () => {
-    const response = await request.get('/api/connect/userinfo', { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.get('/api/connect/userinfo');
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -52,7 +51,8 @@ describe('getUserInfo', () => {
 
   it('should work if the user has no primary email address', async () => {
     await user.update({ primaryEmail: null });
-    const response = await request.get('/api/connect/userinfo', { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.get('/api/connect/userinfo');
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -86,11 +86,12 @@ describe('verifyOAuth2Consent', () => {
       vapidPrivateKey: '',
     });
     await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
-    const response = await request.post(
-      '/api/oauth2/consent/verify',
-      { appId: app.id, redirectUri: 'http://app.org.localhost:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/verify', {
+      appId: app.id,
+      redirectUri: 'http://app.org.localhost:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -120,11 +121,12 @@ describe('verifyOAuth2Consent', () => {
       vapidPrivateKey: '',
     });
     await OAuth2Consent.create({ scope: 'email', AppId: app.id, UserId: user.id });
-    const response = await request.post(
-      '/api/oauth2/consent/verify',
-      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'email' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/verify', {
+      appId: app.id,
+      redirectUri: 'http://app.example:9999',
+      scope: 'email',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -154,11 +156,12 @@ describe('verifyOAuth2Consent', () => {
       vapidPrivateKey: '',
     });
     await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
-    const response = await request.post(
-      '/api/oauth2/consent/verify',
-      { appId: app.id, redirectUri: 'http://invalid.example:9999', scope: 'email openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/verify', {
+      appId: app.id,
+      redirectUri: 'http://invalid.example:9999',
+      scope: 'email openid',
+    });
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -178,11 +181,12 @@ describe('verifyOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    const response = await request.post(
-      '/api/oauth2/consent/verify',
-      { appId: app.id, redirectUri: 'http://invalid.example:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/verify', {
+      appId: app.id,
+      redirectUri: 'http://invalid.example:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -204,11 +208,12 @@ describe('verifyOAuth2Consent', () => {
     });
     await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
 
-    const response = await request.post(
-      '/api/oauth2/consent/verify',
-      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/verify', {
+      appId: app.id,
+      redirectUri: 'http://app.example:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -229,11 +234,12 @@ describe('verifyOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    const response = await request.post(
-      '/api/oauth2/consent/verify',
-      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/verify', {
+      appId: app.id,
+      redirectUri: 'http://app.example:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -246,11 +252,12 @@ describe('verifyOAuth2Consent', () => {
   });
 
   it('should return 404 for non-existent apps', async () => {
-    const response = await request.post(
-      '/api/oauth2/consent/verify',
-      { appId: 346, redirectUri: 'http://any.example:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/verify', {
+      appId: 346,
+      redirectUri: 'http://any.example:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: {
@@ -281,11 +288,12 @@ describe('agreeOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    const response = await request.post(
-      '/api/oauth2/consent/agree',
-      { appId: app.id, redirectUri: 'http://app.org.localhost:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/agree', {
+      appId: app.id,
+      redirectUri: 'http://app.org.localhost:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 201,
       data: {
@@ -314,11 +322,12 @@ describe('agreeOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    const response = await request.post(
-      '/api/oauth2/consent/agree',
-      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'email' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/agree', {
+      appId: app.id,
+      redirectUri: 'http://app.example:9999',
+      scope: 'email',
+    });
     expect(response).toMatchObject({
       status: 201,
       data: {
@@ -347,11 +356,12 @@ describe('agreeOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    const response = await request.post(
-      '/api/oauth2/consent/agree',
-      { appId: app.id, redirectUri: 'http://invalid.example:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/agree', {
+      appId: app.id,
+      redirectUri: 'http://invalid.example:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 403,
       data: {
@@ -372,11 +382,12 @@ describe('agreeOAuth2Consent', () => {
       vapidPrivateKey: '',
     });
 
-    const response = await request.post(
-      '/api/oauth2/consent/agree',
-      { appId: app.id, redirectUri: 'http://app.org.localhost:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/agree', {
+      appId: app.id,
+      redirectUri: 'http://app.org.localhost:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -388,11 +399,12 @@ describe('agreeOAuth2Consent', () => {
   });
 
   it('should return 404 for non-existent apps', async () => {
-    const response = await request.post(
-      '/api/oauth2/consent/agree',
-      { appId: 346, redirectUri: 'http://any.example:9999', scope: 'openid' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/oauth2/consent/agree', {
+      appId: 346,
+      redirectUri: 'http://any.example:9999',
+      scope: 'openid',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: {

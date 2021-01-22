@@ -15,10 +15,9 @@ import {
 } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
 let organization: Organization;
 let clock: FakeTimers.InstalledClock;
 let user: User;
@@ -34,7 +33,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   clock = FakeTimers.install();
 
-  ({ authorization, user } = await testToken());
+  user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -67,7 +66,7 @@ afterAll(closeTestSchema);
 
 describe('queryApps', () => {
   it('should return an empty array of apps', async () => {
-    const response = await request.get('/api/apps', { headers: { authorization } });
+    const response = await request.get('/api/apps');
 
     expect(response).toMatchObject({
       status: 200,
@@ -297,11 +296,12 @@ describe('queryMyApps', () => {
       { raw: true },
     );
 
-    const responseA = await request.get('/api/apps/me', { headers: { authorization } });
+    authorizeStudio();
+    const responseA = await request.get('/api/apps/me');
 
     await Member.create({ OrganizationId: organizationB.id, UserId: user.id, role: 'Member' });
 
-    const responseB = await request.get('/api/apps/me', { headers: { authorization } });
+    const responseB = await request.get('/api/apps/me');
 
     expect(responseA).toMatchObject({
       status: 200,
@@ -351,6 +351,7 @@ describe('queryMyApps', () => {
 
 describe('createApp', () => {
   it('should create an app', async () => {
+    authorizeStudio();
     const createdResponse = await request.post(
       '/api/apps',
       createFormData({
@@ -371,7 +372,6 @@ describe('createApp', () => {
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(createdResponse).toMatchObject({
@@ -422,16 +422,19 @@ pages:
   });
 
   it('should accept screenshots', async () => {
-    const form = createFormData({
-      OrganizationId: organization.id,
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
-      },
-    });
-    form.append('screenshots', createFixtureStream('standing.png'));
-    const createdResponse = await request.post('/api/apps', form, { headers: { authorization } });
+    authorizeStudio();
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
+        },
+        screenshots: createFixtureStream('standing.png'),
+      }),
+    );
 
     expect(createdResponse).toMatchObject({
       status: 201,
@@ -473,12 +476,13 @@ pages:
   });
 
   it('should not allow an upload without an app when creating an app', async () => {
+    authorizeStudio();
     const form = new FormData();
     form.append('coreStyle', Buffer.from('body { color: red; }'), {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const response = await request.post('/api/apps', form, { headers: { authorization } });
+    const response = await request.post('/api/apps', form);
 
     expect(response).toMatchObject({
       status: 400,
@@ -489,6 +493,7 @@ pages:
   });
 
   it('should not allow apps to be created without an organization.id', async () => {
+    authorizeStudio();
     const response = await request.post(
       '/api/apps',
       createFormData({
@@ -508,7 +513,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -528,6 +532,7 @@ pages:
   });
 
   it('should not allow apps to be created for organizations the user does not belong to', async () => {
+    authorizeStudio();
     const response = await request.post(
       '/api/apps',
       createFormData({
@@ -548,7 +553,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -562,6 +566,7 @@ pages:
   });
 
   it('should not allow to create an app using non-existent blocks', async () => {
+    authorizeStudio();
     const response = await request.post(
       '/api/apps',
       createFormData({
@@ -582,7 +587,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -599,6 +603,7 @@ pages:
   });
 
   it('should not allow to create an app using non-existent block versions', async () => {
+    authorizeStudio();
     const response = await request.post(
       '/api/apps',
       createFormData({
@@ -619,7 +624,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -636,6 +640,7 @@ pages:
   });
 
   it('should not allow to create an app using invalid block parameters', async () => {
+    authorizeStudio();
     const response = await request.post(
       '/api/apps',
       createFormData({
@@ -659,7 +664,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -676,6 +680,7 @@ pages:
   });
 
   it('should handle app path conflicts on create', async () => {
+    authorizeStudio();
     await request.post(
       '/api/apps',
       createFormData({
@@ -691,7 +696,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     const response = await request.post(
@@ -709,7 +713,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -740,6 +743,7 @@ pages:
         OrganizationId: organization.id,
       })),
     );
+    authorizeStudio();
     const response = await request.post(
       '/api/apps',
       createFormData({
@@ -755,7 +759,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -788,7 +791,8 @@ pages:
       contentType: 'text/css',
       filename: 'test.css',
     });
-    const response = await request.post('/api/apps', form, { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.post('/api/apps', form);
 
     const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
@@ -816,7 +820,8 @@ pages:
       contentType: 'text/css',
       filename: 'test.css',
     });
-    const response = await request.post('/api/apps', form, { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.post('/api/apps', form);
 
     expect(response.status).toBe(400);
   });
@@ -840,7 +845,8 @@ pages:
       contentType: 'text/css',
       filename: 'test.css',
     });
-    const response = await request.post('/api/apps', form, { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.post('/api/apps', form);
 
     expect(response).toMatchObject({
       status: 400,
@@ -851,6 +857,7 @@ pages:
 
 describe('updateApp', () => {
   it('should not update a non-existent app', async () => {
+    authorizeStudio();
     const response = await request.patch(
       '/api/apps/1',
       createFormData({
@@ -865,7 +872,6 @@ describe('updateApp', () => {
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -888,6 +894,7 @@ describe('updateApp', () => {
       { raw: true },
     );
 
+    authorizeStudio();
     const response = await request.patch(
       `/api/apps/${appA.id}`,
       createFormData({
@@ -903,7 +910,6 @@ describe('updateApp', () => {
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -951,6 +957,7 @@ pages:
       { raw: true },
     );
 
+    authorizeStudio();
     const response = await request.patch(
       `/api/apps/${appA.id}`,
       createFormData({
@@ -966,7 +973,6 @@ pages:
         },
         yaml: Buffer.from('name: foo\nname: bar'),
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -980,17 +986,15 @@ pages:
   });
 
   it('should verify if the supplied YAML is the same as the app definition when updating an app', async () => {
-    const appA = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const appA = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
+    authorizeStudio();
     const response = await request.patch(
       `/api/apps/${appA.id}`,
       createFormData({
@@ -1013,7 +1017,6 @@ pages:
       version: 0.0.0
 `),
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1027,16 +1030,13 @@ pages:
   });
 
   it('should allow for formatted YAML when updating an app', async () => {
-    const appA = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const appA = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
     const yaml = `# Hi I'm a comment
 name: Foobar
@@ -1048,6 +1048,7 @@ pages:
         version: 0.0.0
     name: *titlePage`;
 
+    authorizeStudio();
     const response = await request.patch(
       `/api/apps/${appA.id}`,
       createFormData({
@@ -1063,7 +1064,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1093,21 +1093,18 @@ pages:
   });
 
   it('should update the app domain', async () => {
-    const appA = await App.create(
-      {
-        path: 'foo',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const appA = await App.create({
+      path: 'foo',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
+    authorizeStudio();
     const response = await request.patch(
       `/api/apps/${appA.id}`,
       createFormData({ domain: 'appsemble.app' }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1130,9 +1127,8 @@ pages:
       { raw: true },
     );
 
-    const response = await request.patch(`/api/apps/${appA.id}`, createFormData({ domain: '' }), {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${appA.id}`, createFormData({ domain: '' }));
 
     expect(response).toMatchObject({
       status: 200,
@@ -1165,6 +1161,7 @@ pages:
     name: *titlePage`;
     const buffer = Buffer.from(yaml);
 
+    authorizeStudio();
     const response = await request.patch(
       `/api/apps/${appA.id}`,
       createFormData({
@@ -1180,7 +1177,6 @@ pages:
         },
         yaml: buffer,
       }),
-      { headers: { authorization } },
     );
 
     const responseBuffer = Buffer.from(response.data.yaml);
@@ -1189,17 +1185,15 @@ pages:
 
   it('should not update an app of another organization', async () => {
     const newOrganization = await Organization.create({ id: 'Test Organization 2' });
-    const appA = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: newOrganization.id,
-      },
-      { raw: true },
-    );
+    const appA = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: newOrganization.id,
+    });
 
+    authorizeStudio();
     const response = await request.patch(
       `/api/apps/${appA.id}`,
       createFormData({
@@ -1214,7 +1208,6 @@ pages:
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1228,9 +1221,8 @@ pages:
   });
 
   it('should validate an app on creation', async () => {
-    const response = await request.post('/api/apps', createFormData({ foo: 'bar' }), {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.post('/api/apps', createFormData({ foo: 'bar' }));
 
     expect(response).toMatchObject({
       status: 400,
@@ -1239,21 +1231,18 @@ pages:
   });
 
   it('should validate an app on update', async () => {
-    const appA = await App.create(
-      {
-        path: 'foo',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const appA = await App.create({
+      path: 'foo',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
+    authorizeStudio();
     const response = await request.patch(
       `/api/apps/${appA.id}`,
       createFormData({ definition: { name: 'Foobar' } }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1265,6 +1254,7 @@ pages:
 
 describe('deleteApp', () => {
   it('should delete an app', async () => {
+    authorizeStudio();
     const {
       data: { id },
     } = await request.post(
@@ -1287,10 +1277,9 @@ describe('deleteApp', () => {
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
-    const response = await request.delete(`/api/apps/${id}`, { headers: { authorization } });
+    const response = await request.delete(`/api/apps/${id}`);
 
     expect(response).toMatchObject({
       status: 204,
@@ -1299,7 +1288,8 @@ describe('deleteApp', () => {
   });
 
   it('should not delete non-existent apps', async () => {
-    const response = await request.delete('/api/apps/0', { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.delete('/api/apps/0');
 
     expect(response).toMatchObject({
       status: 404,
@@ -1309,18 +1299,16 @@ describe('deleteApp', () => {
 
   it('should not delete apps from other organizations', async () => {
     const organizationB = await Organization.create({ id: 'testorganizationb' });
-    const app = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organizationB.id,
-      },
-      { raw: true },
-    );
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationB.id,
+    });
 
-    const response = await request.delete(`/api/apps/${app.id}`, { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}`);
 
     expect(response).toMatchObject({
       status: 403,
@@ -1331,16 +1319,13 @@ describe('deleteApp', () => {
 
 describe('patchApp', () => {
   it('should validate and update css when updating an app', async () => {
-    const app = await App.create(
-      {
-        path: 'bar',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
     const form = createFormData({
       definition: {
@@ -1362,9 +1347,8 @@ describe('patchApp', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const response = await request.patch(`/api/apps/${app.id}`, form, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}`, form);
 
     const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
@@ -1403,9 +1387,8 @@ describe('patchApp', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const responseA = await request.patch(`/api/apps/${app.id}`, formA, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const responseA = await request.patch(`/api/apps/${app.id}`, formA);
 
     const formB = createFormData({
       definition: {
@@ -1424,25 +1407,21 @@ describe('patchApp', () => {
       contentType: 'application/json',
       filename: 'style.json',
     });
-    const responseB = await request.patch(`/api/apps/${app.id}`, formB, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const responseB = await request.patch(`/api/apps/${app.id}`, formB);
 
     expect(responseA.status).toBe(400);
     expect(responseB.status).toBe(400);
   });
 
   it('should not allow invalid shared stylesheets when updating an app', async () => {
-    const app = await App.create(
-      {
-        path: 'bar',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
     const formA = createFormData({
       definition: {
@@ -1461,9 +1440,8 @@ describe('patchApp', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const responseA = await request.patch(`/api/apps/${app.id}`, formA, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const responseA = await request.patch(`/api/apps/${app.id}`, formA);
 
     const formB = createFormData({
       definition: {
@@ -1482,9 +1460,8 @@ describe('patchApp', () => {
       contentType: 'application/json',
       filename: 'style.json',
     });
-    const responseB = await request.patch(`/api/apps/${app.id}`, formB, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const responseB = await request.patch(`/api/apps/${app.id}`, formB);
 
     expect(responseA.status).toBe(400);
     expect(responseB.status).toBe(400);
@@ -1546,9 +1523,8 @@ describe('createAppScreenshot', () => {
       screenshots: createFixtureStream('standing.png'),
     });
 
-    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse).toMatchObject({ status: 201, data: [expect.any(Number)] });
   });
@@ -1564,9 +1540,8 @@ describe('createAppScreenshot', () => {
       screenshots: [createFixtureStream('standing.png'), createFixtureStream('standing.png')],
     });
 
-    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse).toMatchObject({
       status: 201,
@@ -1585,9 +1560,8 @@ describe('createAppScreenshot', () => {
     });
     const form = createFormData({});
 
-    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse.status).toBe(400);
   });
@@ -1601,9 +1575,8 @@ describe('createAppScreenshot', () => {
     });
     const form = createFormData({ screenshots: Buffer.from('I am not a screenshot') });
 
-    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse).toMatchObject({
       status: 400,
@@ -1626,9 +1599,8 @@ describe('deleteAppScreenshot', () => {
       screenshot: buffer,
     });
 
-    const response = await request.delete(`/api/apps/${app.id}/screenshots/${screenshot.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/screenshots/${screenshot.id}`);
 
     const screenshots = await AppScreenshot.count();
 
@@ -1643,9 +1615,8 @@ describe('deleteAppScreenshot', () => {
       vapidPrivateKey: '',
       vapidPublicKey: '',
     });
-    const response = await request.delete(`/api/apps/${app.id}/screenshots/0`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/screenshots/0`);
 
     expect(response.status).toBe(404);
   });
@@ -1680,9 +1651,8 @@ describe('setAppBlockStyle', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form);
 
     const style = await request.get(`/api/apps/${id}/style/block/@appsemble/testblock`);
 
@@ -1714,11 +1684,8 @@ describe('setAppBlockStyle', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const responseA = await request.post(
-      `/api/apps/${id}/style/block/@appsemble/testblock`,
-      formA,
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const responseA = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, formA);
     expect(responseA).toMatchObject({
       status: 204,
       data: '',
@@ -1729,11 +1696,8 @@ describe('setAppBlockStyle', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const responseB = await request.post(
-      `/api/apps/${id}/style/block/@appsemble/testblock`,
-      formB,
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const responseB = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, formB);
 
     expect(responseB).toMatchObject({
       status: 204,
@@ -1765,11 +1729,8 @@ describe('setAppBlockStyle', () => {
 
     const form = new FormData();
     form.append('style', Buffer.from('invalidCss'));
-    const response = await request.post(
-      `/api/apps/${id}/style/block/@appsemble/styledblock`,
-      form,
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/styledblock`, form);
 
     expect(response).toMatchObject({
       status: 400,
@@ -1794,9 +1755,8 @@ describe('setAppBlockStyle', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const response = await request.post('/api/apps/0/style/block/@appsemble/block', form, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.post('/api/apps/0/style/block/@appsemble/block', form);
 
     expect(response).toMatchObject({
       status: 404,
@@ -1809,29 +1769,21 @@ describe('setAppBlockStyle', () => {
   });
 
   it('should not allow uploading block stylesheets for non-existent blocks', async () => {
-    const { id } = await App.create(
-      {
-        path: 'bar',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const { id } = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
     const form = new FormData();
     form.append('style', Buffer.from('body { color: red; }'), {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const response = await request.post(
-      `/api/apps/${id}/style/block/@appsemble/doesntexist`,
-      form,
-      {
-        headers: { authorization },
-      },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/doesntexist`, form);
 
     expect(response).toMatchObject({
       status: 404,
@@ -1844,16 +1796,13 @@ describe('setAppBlockStyle', () => {
   });
 
   it('should return an empty response on non-existent block stylesheets', async () => {
-    const { id } = await App.create(
-      {
-        path: 'bar',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const { id } = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
     const response = await request.get(`/api/apps/${id}/style/block/@appsemble/doesntexist`);
 
@@ -1867,6 +1816,7 @@ describe('setAppBlockStyle', () => {
   });
 
   it('should not allow to update an app using non-existent blocks', async () => {
+    authorizeStudio();
     const response = await request.patch(
       '/api/apps/1',
       createFormData({
@@ -1887,7 +1837,6 @@ describe('setAppBlockStyle', () => {
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -1897,6 +1846,7 @@ describe('setAppBlockStyle', () => {
   });
 
   it('should not allow to update an app using non-existent block versions', async () => {
+    authorizeStudio();
     const response = await request.patch(
       '/api/apps/1',
       createFormData({
@@ -1916,7 +1866,6 @@ describe('setAppBlockStyle', () => {
           ],
         },
       }),
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({

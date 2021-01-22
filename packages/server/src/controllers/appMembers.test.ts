@@ -4,11 +4,10 @@ import { request, setTestApp } from 'axios-test-instance';
 import { App, AppMember, BlockVersion, Member, Organization, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
-let organizationId: string;
+let organization: Organization;
 let clock: FakeTimers.InstalledClock;
 let user: User;
 
@@ -23,12 +22,12 @@ beforeAll(async () => {
 beforeEach(async () => {
   clock = FakeTimers.install();
 
-  ({ authorization, user } = await testToken());
-  ({ id: organizationId } = await Organization.create({
+  user = await createTestUser();
+  organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
-  }));
-  await Member.create({ OrganizationId: organizationId, UserId: user.id, role: 'Owner' });
+  });
+  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
   await BlockVersion.create({
@@ -73,14 +72,13 @@ describe('getAppMembers', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     await AppMember.create({ UserId: user.id, AppId: app.id, role: 'Admin' });
 
-    const response = await request.get(`/api/apps/${app.id}/members`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -113,12 +111,11 @@ describe('getAppMembers', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
-    const response = await request.get(`/api/apps/${app.id}/members`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -150,12 +147,11 @@ describe('getAppMembers', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
-    const response = await request.get(`/api/apps/${app.id}/members`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members`);
     expect(response).toMatchObject({
       status: 200,
       data: [],
@@ -182,16 +178,13 @@ describe('getAppMember', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
-      headers: { authorization },
-    });
-    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
+    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`);
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -225,17 +218,14 @@ describe('getAppMember', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     const userB = await User.create();
 
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
-      headers: { authorization },
-    });
-    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
+    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -275,12 +265,11 @@ describe('getAppMember', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
 
     expect(response).toMatchObject({
       status: 404,
@@ -313,16 +302,15 @@ describe('setAppMember', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
 
-    const response = await request.post(
-      `/api/apps/${app.id}/members/${userB.id}`,
-      { role: 'Admin' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/members/${userB.id}`, {
+      role: 'Admin',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -353,17 +341,16 @@ describe('setAppMember', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
     await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Admin' });
 
-    const response = await request.post(
-      `/api/apps/${app.id}/members/${userB.id}`,
-      { role: 'Reader' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/members/${userB.id}`, {
+      role: 'Reader',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -397,17 +384,16 @@ describe('setAppMember', () => {
       path: 'test-app',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
     await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Admin' });
 
-    const response = await request.post(
-      `/api/apps/${app.id}/members/${userB.id}`,
-      { role: 'Reader' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/members/${userB.id}`, {
+      role: 'Reader',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -418,9 +404,8 @@ describe('setAppMember', () => {
       },
     });
 
-    const responseB = await request.get(`/api/apps/${app.id}/members`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const responseB = await request.get(`/api/apps/${app.id}/members`);
     expect(responseB).toMatchObject({
       status: 200,
       data: [

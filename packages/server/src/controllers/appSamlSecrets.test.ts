@@ -1,16 +1,14 @@
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppSamlSecret, Member, Organization, User } from '../models';
+import { App, AppSamlSecret, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
 let app: App;
-let authorization: string;
 let member: Member;
 let organization: Organization;
-let user: User;
 
 beforeAll(createTestSchema('appsamlsecrets'));
 
@@ -23,7 +21,7 @@ beforeAll(async () => {
 afterEach(truncate);
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
+  const user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -41,17 +39,14 @@ afterAll(closeTestSchema);
 
 describe('createSamlSecret', () => {
   it('should generate SAML parameters', async () => {
-    const response = await request.post(
-      `/api/apps/${app.id}/secrets/saml`,
-      {
-        entityId: 'https://example.com/saml/metadata.xml',
-        ssoUrl: 'https://example.com/saml/login',
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-        icon: '',
-        name: '',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+    });
     expect(response).toMatchObject({
       status: 201,
       data: {
@@ -67,17 +62,14 @@ describe('createSamlSecret', () => {
   });
 
   it('should not throw status 404 for unknown apps', async () => {
-    const response = await request.post(
-      '/api/apps/13/secrets/saml',
-      {
-        entityId: 'https://example.com/saml/metadata.xml',
-        ssoUrl: 'https://example.com/saml/login',
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-        icon: '',
-        name: '',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/apps/13/secrets/saml', {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
@@ -85,18 +77,15 @@ describe('createSamlSecret', () => {
   });
 
   it('should require the EditApps and EditAppSettings permissions', async () => {
+    authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.post(
-      `/api/apps/${app.id}/secrets/saml`,
-      {
-        entityId: 'https://example.com/saml/metadata.xml',
-        ssoUrl: 'https://example.com/saml/login',
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-        icon: '',
-        name: '',
-      },
-      { headers: { authorization } },
-    );
+    const response = await request.post(`/api/apps/${app.id}/secrets/saml`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+    });
     expect(response).toMatchObject({
       status: 403,
       data: {
@@ -110,6 +99,7 @@ describe('createSamlSecret', () => {
 
 describe('getAppSamlSecrets', () => {
   it('should get SAML secrets for an app', async () => {
+    authorizeStudio();
     const secret = await AppSamlSecret.create({
       AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
@@ -121,9 +111,7 @@ describe('getAppSamlSecrets', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
-    const response = await request.get(`/api/apps/${app.id}/secrets/saml`, {
-      headers: { authorization },
-    });
+    const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -141,6 +129,7 @@ describe('getAppSamlSecrets', () => {
   });
 
   it('should only include SAML secrets for the specified app', async () => {
+    authorizeStudio();
     const otherApp = await App.create({
       OrganizationId: organization.id,
       vapidPublicKey: '',
@@ -169,9 +158,7 @@ describe('getAppSamlSecrets', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nOTHER)SP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nOTHER_SP\n-----END PUBLIC KEY-----',
     });
-    const response = await request.get(`/api/apps/${app.id}/secrets/saml`, {
-      headers: { authorization },
-    });
+    const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -189,9 +176,8 @@ describe('getAppSamlSecrets', () => {
   });
 
   it('should not throw status 404 for unknown apps', async () => {
-    const response = await request.get('/api/apps/53/secrets/saml', {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get('/api/apps/53/secrets/saml');
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
@@ -199,10 +185,9 @@ describe('getAppSamlSecrets', () => {
   });
 
   it('should require the EditApps and EditAppSettings permissions', async () => {
+    authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.get(`/api/apps/${app.id}/secrets/saml`, {
-      headers: { authorization },
-    });
+    const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
     expect(response).toMatchObject({
       status: 403,
       data: {
@@ -216,6 +201,7 @@ describe('getAppSamlSecrets', () => {
 
 describe('updateAppSamlSecret', () => {
   it('should generate SAML parameters', async () => {
+    authorizeStudio();
     const secret = await AppSamlSecret.create({
       AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
@@ -227,17 +213,13 @@ describe('updateAppSamlSecret', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
-    const response = await request.put(
-      `/api/apps/${app.id}/secrets/saml/${secret.id}`,
-      {
-        entityId: 'https://updated.example/saml/metadata.xml',
-        ssoUrl: 'https://updated.example/saml/login',
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nUPDATED\n-----END CERTIFICATE-----',
-        icon: 'updated',
-        name: 'Updated',
-      },
-      { headers: { authorization } },
-    );
+    const response = await request.put(`/api/apps/${app.id}/secrets/saml/${secret.id}`, {
+      entityId: 'https://updated.example/saml/metadata.xml',
+      ssoUrl: 'https://updated.example/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nUPDATED\n-----END CERTIFICATE-----',
+      icon: 'updated',
+      name: 'Updated',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -257,17 +239,14 @@ describe('updateAppSamlSecret', () => {
   });
 
   it('should not throw status 404 for unknown apps', async () => {
-    const response = await request.put(
-      `/api/apps/${app.id}/secrets/saml/1`,
-      {
-        entityId: 'https://example.com/saml/metadata.xml',
-        ssoUrl: 'https://example.com/saml/login',
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-        icon: '',
-        name: '',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/saml/1`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'SAML secret not found', statusCode: 404 },
@@ -275,17 +254,14 @@ describe('updateAppSamlSecret', () => {
   });
 
   it('should not throw status 404 for unknown secrets', async () => {
-    const response = await request.put(
-      '/api/apps/13/secrets/saml/1',
-      {
-        entityId: 'https://example.com/saml/metadata.xml',
-        ssoUrl: 'https://example.com/saml/login',
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-        icon: '',
-        name: '',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put('/api/apps/13/secrets/saml/1', {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
@@ -293,18 +269,15 @@ describe('updateAppSamlSecret', () => {
   });
 
   it('should require the EditApps and EditAppSettings permissions', async () => {
+    authorizeStudio();
     await member.update({ role: 'Member' });
-    const response = await request.put(
-      `/api/apps/${app.id}/secrets/saml/34`,
-      {
-        entityId: 'https://example.com/saml/metadata.xml',
-        ssoUrl: 'https://example.com/saml/login',
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-        icon: '',
-        name: '',
-      },
-      { headers: { authorization } },
-    );
+    const response = await request.put(`/api/apps/${app.id}/secrets/saml/34`, {
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+    });
     expect(response).toMatchObject({
       status: 403,
       data: {
