@@ -1008,6 +1008,11 @@ export interface App {
    */
   OrganizationId?: string;
 
+  /**
+   * The long description of the app.
+   */
+  longDescription: string;
+
   path: string;
   private: boolean;
 

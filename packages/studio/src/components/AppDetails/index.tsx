@@ -3,6 +3,7 @@ import {
   CardFooterButton,
   CheckboxField,
   Content,
+  MarkdownContent,
   Modal,
   SelectField,
   SimpleForm,
@@ -15,6 +16,7 @@ import {
 import { Organization } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
+import classNames from 'classnames';
 import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
@@ -35,6 +37,7 @@ export function AppDetails(): ReactElement {
     `/api/organizations/${app.OrganizationId}`,
   );
   const cloneDialog = useToggle();
+  const descriptionToggle = useToggle();
   const history = useHistory();
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
@@ -162,6 +165,25 @@ export function AppDetails(): ReactElement {
         </div>
         <AppScreenshots />
       </div>
+      {app.longDescription && (
+        <div
+          className={classNames('card my-3 card-content', {
+            [styles.descriptionHidden]: !descriptionToggle.enabled,
+          })}
+        >
+          <Title>
+            <FormattedMessage {...messages.description} />
+          </Title>
+          <Button className={styles.descriptionToggle} onClick={descriptionToggle.toggle}>
+            {descriptionToggle.enabled ? (
+              <FormattedMessage {...messages.readLess} />
+            ) : (
+              <FormattedMessage {...messages.readMore} />
+            )}
+          </Button>
+          <MarkdownContent content={app.longDescription} />
+        </div>
+      )}
       <AppRatings />
     </Content>
   );

@@ -106,6 +106,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
         definition,
         domain,
         icon,
+        longDescription,
         private: isPrivate = true,
         screenshots,
         sharedStyle,
@@ -125,6 +126,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       definition,
       OrganizationId,
       coreStyle: validateStyle(coreStyle?.contents),
+      longDescription,
       sharedStyle: validateStyle(sharedStyle?.contents),
       domain: domain || null,
       private: Boolean(isPrivate),
@@ -265,7 +267,16 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
     request: {
-      body: { coreStyle, definition, domain, path, screenshots, sharedStyle, yaml },
+      body: {
+        coreStyle,
+        definition,
+        domain,
+        longDescription,
+        path,
+        screenshots,
+        sharedStyle,
+        yaml,
+      },
     },
   } = ctx;
 
@@ -277,6 +288,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
       coreStyle: validateStyle(coreStyle?.contents),
       sharedStyle: validateStyle(sharedStyle?.contents),
       domain,
+      longDescription,
       path: path || normalize(definition.name),
       yaml: yaml?.toString('utf8'),
     };
@@ -339,6 +351,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         definition,
         domain,
         icon,
+        longDescription,
         path,
         private: isPrivate,
         screenshots,
@@ -373,6 +386,10 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
     if (domain !== undefined) {
       result.domain = domain;
+    }
+
+    if (longDescription !== undefined) {
+      result.longDescription = longDescription;
     }
 
     if (coreStyle) {

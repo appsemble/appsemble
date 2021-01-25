@@ -39,13 +39,18 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
         formData.append('icon', createReadStream(filepath));
         return;
 
+      case 'readme.md':
+        logger.info(`Including longDescription from ${filepath}`);
+        formData.append('longDescription', await fs.readFile(filepath, 'utf8'));
+        return;
+
       case 'screenshots':
         return opendirSafe(
           filepath,
           (screenshotPath, screenshotStat) => {
-            logger.info(`Adding screenshot ${filepath} 🖼️`);
+            logger.info(`Adding screenshot ${screenshotPath} 🖼️`);
             if (!screenshotStat.isFile()) {
-              throw new AppsembleError(`Expected ${filepath} to be an image file`);
+              throw new AppsembleError(`Expected ${screenshotPath} to be an image file`);
             }
             formData.append('screenshots', createReadStream(screenshotPath));
           },
