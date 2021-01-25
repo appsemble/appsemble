@@ -150,6 +150,19 @@ declare module '@appsemble/sdk' {
      * Compatible data that is received will be displayed. Must be a set of data.
      */
     data: never;
+
+    /**
+     * An event that can be triggered to center the map’s position to the user’s current location.
+     */
+    center: never;
+
+    /**
+     * Toggles whether or not the map should follow the user’s location. Defaults to not following.
+     *
+     * If the value is exactly `true` or `false`, the following state will be set to that value.
+     * Otherwise, it will toggle between following and not following.
+     */
+    follow: never;
   }
 
   interface EventEmitters {
