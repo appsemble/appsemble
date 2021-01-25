@@ -2,10 +2,3 @@ This is a very minimalist app. It serves as a starting point for you to start bu
 It contains two pages, each with a single action button that links to the other page.
 
 Hit that clone button and start building your own app from scratch!
-
-- foo
-- bar
-
-https://google.com
-
-For [example](https://example.com) foo bar.
