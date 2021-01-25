@@ -67,6 +67,7 @@ SMTP
 SSL
 SSO
 Stylelint
+SwaggerUI
 TSDoc
 util/kitten
 UUID
