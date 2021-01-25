@@ -11,6 +11,7 @@
   position: sticky;
   top: 64px;
   transition: 150ms;
+  z-index: 1;
 
   &.hidden {
     margin-bottom: 0;

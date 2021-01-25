@@ -52,6 +52,7 @@ bootstrap(
     const onChange = useCallback((name: string, value: Values) => {
       setValues((oldValues) => ({ ...oldValues, [name]: value }));
       setLastChanged(name);
+      setSubmitErrorResult(null);
     }, []);
 
     useEffect(() => {
