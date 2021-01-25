@@ -34,6 +34,26 @@ export interface AppsembleContext<P = unknown> {
    * The user that is logged in.
    */
   user: User;
+
+  /**
+   * The user that is logged in.
+   */
+  users: {
+    /**
+     * The user that is logged in using an app.
+     */
+    app: User;
+
+    /**
+     * The user that is logged in using client credentials.
+     */
+    cli: User;
+
+    /**
+     * The user that is logged in using Appsemble studio.
+     */
+    studio: User;
+  };
 }
 
 export type KoaContext<P = unknown> = ParameterizedContext<AppsembleState, AppsembleContext<P>>;
