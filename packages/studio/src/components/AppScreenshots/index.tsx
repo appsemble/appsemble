@@ -74,7 +74,7 @@ export function AppScreenshots(): ReactElement {
 
   return (
     <>
-      <div className={`is-flex ${styles.wrapper}`}>
+      <div className={`has-background-white-ter is-flex ${styles.wrapper}`}>
         {mayManageScreenshots && (
           <Button className={styles.createScreenshotButton} onClick={screenshotModal.enable}>
             <FormattedMessage {...messages.addNewScreenshot} />
