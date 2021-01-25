@@ -120,5 +120,9 @@ attach((params) => {
     }
 
     following = !following;
+
+    if (following) {
+      map.setView(locationMarker.getLatLng(), 18);
+    }
   });
 });
