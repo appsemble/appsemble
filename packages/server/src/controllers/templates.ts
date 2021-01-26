@@ -5,7 +5,7 @@ import { conflict, notFound } from '@hapi/boom';
 import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
-import { App, AppMessages, Resource } from '../models';
+import { App, AppBlockStyle, AppMessages, Resource } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
@@ -40,6 +40,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
     include: [
       { model: Resource, where: { clonable: true }, required: false },
       { model: AppMessages, required: false },
+      { model: AppBlockStyle, required: false },
     ],
   });
 
@@ -65,6 +66,8 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
       private: Boolean(isPrivate),
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
+      coreStyle: template.coreStyle,
+      sharedStyle: template.sharedStyle,
       OrganizationId: organizationId,
       ...(resources && {
         Resources: [].concat(template.Resources.map(({ data, type }) => ({ type, data }))),
@@ -87,6 +90,15 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
     }
 
     const record = await App.create(result, { include: [Resource, AppMessages] });
+    if (template.AppBlockStyles.length) {
+      await AppBlockStyle.bulkCreate(
+        template.AppBlockStyles.map((blockStyle) => ({
+          AppId: record.id,
+          block: blockStyle.block,
+          style: blockStyle.style,
+        })),
+      );
+    }
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
