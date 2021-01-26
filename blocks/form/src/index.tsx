@@ -79,7 +79,10 @@ bootstrap(
       Promise.all(
         pendingRequirements.map((requirement) =>
           actions[requirement.action].dispatch(values).then(
-            () => requirementErrors.set(requirements.indexOf(requirement), null),
+            (result) => {
+              requirementErrors.set(requirements.indexOf(requirement), null);
+              return result;
+            },
             (errorResponse) => {
               requirementErrors.set(
                 requirements.indexOf(requirement),
