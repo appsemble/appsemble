@@ -11,6 +11,8 @@
   "studio.src.components.AppDetails.organization": "Organisatie",
   "studio.src.components.AppDetails.private": "Privé",
   "studio.src.components.AppDetails.privateDescription": "Verberg deze app van de publieke applijst",
+  "studio.src.components.AppDetails.readLess": "Lees minder",
+  "studio.src.components.AppDetails.readMore": "Lees meer",
   "studio.src.components.AppDetails.resources": "Resources",
   "studio.src.components.AppDetails.resourcesDescription": "Kopieer iedere kopieerbaarde resource.",
   "studio.src.components.AppDetails.submit": "Aanmaken",

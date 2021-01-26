@@ -11,6 +11,8 @@
   "studio.src.components.AppDetails.organization": "Organisation",
   "studio.src.components.AppDetails.private": "Privat",
   "studio.src.components.AppDetails.privateDescription": "Skjul denne app fra listen over offentlige apps",
+  "studio.src.components.AppDetails.readLess": "",
+  "studio.src.components.AppDetails.readMore": "",
   "studio.src.components.AppDetails.resources": "Ressourcer",
   "studio.src.components.AppDetails.resourcesDescription": "Kopier alle ressourcer, der må klones.",
   "studio.src.components.AppDetails.submit": "Opret",

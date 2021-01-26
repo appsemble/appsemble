@@ -11,6 +11,8 @@
   "studio.src.components.AppDetails.organization": "Organisation",
   "studio.src.components.AppDetails.private": "Privé",
   "studio.src.components.AppDetails.privateDescription": "Masquer cette application de la liste publique des applications",
+  "studio.src.components.AppDetails.readLess": "",
+  "studio.src.components.AppDetails.readMore": "",
   "studio.src.components.AppDetails.resources": "Ressources",
   "studio.src.components.AppDetails.resourcesDescription": "Copiez toutes les ressources autorisées à être clonées.",
   "studio.src.components.AppDetails.submit": "Créer",
