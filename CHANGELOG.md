@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.17.2](https://gitlab.com/appsemble/appsemble/-/releases/0.17.2)] - 2021-01-26
+
+### Added
+
+- Block(`map`): Add `center` and `follow` event listeners.
+- Cli: Upload `readme.md` files as the long description for apps.
+- Server: Add support for long descriptions for apps.
+- Studio: Render long descriptions in the app details pages.
+
+### Changed
+
+- Studio: Add `ManageTeams` permission to `Manager` role in organizations. Organization managers now
+  have full access to teams for apps.
+- Studio: Add various design changes.
+
+### Fixed
+
+- App: Fix `resource.delete` and `resource.update` ID resolution.
+
+### Security
+
+- Server: Resource API calls made from Appsemble Studio or client credentials now use the
+  organization security model instead of the app security model.
+
 ## \[[0.17.1](https://gitlab.com/appsemble/appsemble/-/releases/0.17.1)] - 2021-01-21
 
 ### Added
