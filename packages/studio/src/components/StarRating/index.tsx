@@ -39,6 +39,8 @@ export interface StarRatingProps {
 
 /**
  * Render a star rating component.
+ *
+ * If no value or change handler is specified, nothing is returned.
  */
 export function StarRating({
   className,
@@ -66,6 +68,10 @@ export function StarRating({
   useEffect(() => {
     setLocalRating(value);
   }, [value]);
+
+  if (!onChange && !value) {
+    return null;
+  }
 
   const inactiveIcons = [];
   const activeIcons = [];

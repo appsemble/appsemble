@@ -41,19 +41,21 @@ export function AppRatings(): ReactElement {
         >
           <FormattedMessage {...messages.ratings} />
         </HeaderControl>
-        <div>
-          <FormattedMessage
-            {...messages.average}
-            values={{
-              average: (
-                <span className="is-size-3 has-text-weight-semibold mr-1">
-                  <FormattedNumber maximumFractionDigits={1} value={app.rating.average} />
-                </span>
-              ),
-            }}
-          />
-          <StarRating value={app.rating.average} />
-        </div>
+        {app.rating.count ? (
+          <div>
+            <FormattedMessage
+              {...messages.average}
+              values={{
+                average: (
+                  <span className="is-size-3 has-text-weight-semibold mr-1">
+                    <FormattedNumber maximumFractionDigits={1} value={app.rating.average} />
+                  </span>
+                ),
+              }}
+            />
+            <StarRating value={app.rating.average} />
+          </div>
+        ) : null}
       </div>
       <hr className="is-marginless" />
       <div className="card-content">
