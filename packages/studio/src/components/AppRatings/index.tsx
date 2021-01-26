@@ -1,7 +1,7 @@
 import { useData, useMessages } from '@appsemble/react-components';
 import { Rating } from '@appsemble/types';
 import React, { ReactElement } from 'react';
-import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedDate, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';
 import { AsyncDataView } from '../AsyncDataView';
@@ -47,10 +47,9 @@ export function AppRatings(): ReactElement {
             values={{
               average: (
                 <span className="is-size-3 has-text-weight-semibold mr-1">
-                  {app.rating.average}
+                  <FormattedNumber maximumFractionDigits={1} value={app.rating.average} />
                 </span>
               ),
-              max: 5,
             }}
           />
           <StarRating value={app.rating.average} />
