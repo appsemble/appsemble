@@ -142,7 +142,7 @@ export function MessageEditor(): ReactElement {
 
   return (
     <>
-      <Title level={2}>
+      <Title>
         <FormattedMessage {...messages.title} />
       </Title>
       <SelectField
@@ -171,7 +171,7 @@ export function MessageEditor(): ReactElement {
 
       {languages.length > 0 && (
         <>
-          <Title className="my-4" level={3}>
+          <Title className="my-4" size={4}>
             <FormattedMessage {...messages.messages} />
           </Title>
           <SimpleForm

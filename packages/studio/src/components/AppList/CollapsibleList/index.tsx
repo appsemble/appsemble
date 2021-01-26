@@ -36,7 +36,7 @@ export function CollapsibleList({
           iconPosition="right"
           onClick={collapsed.toggle}
         >
-          <Title className="mb-0" level={4}>
+          <Title className="mb-0" size={4}>
             {title}
           </Title>
         </Button>

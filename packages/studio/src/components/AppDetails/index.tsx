@@ -64,16 +64,14 @@ export function AppDetails(): ReactElement {
   return (
     <Content className={styles.root}>
       <div className="card my-3">
-        <div className="is-flex px-2 py-2">
-          <figure className={`image ${styles.icon}`}>
+        <div className="is-flex card-content">
+          <figure className="image is-128x128">
             <img alt={formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
           </figure>
-          <div className={`mx-2 ${styles.appMeta}`}>
+          <div className={`mx-4 ${styles.appMeta}`}>
             <header>
-              <Title className="is-marginless" level={1}>
-                {app.definition.name}
-              </Title>
-              <Subtitle className="is-marginless" level={3}>
+              <Title className="is-marginless">{app.definition.name}</Title>
+              <Subtitle className="is-marginless" size={4}>
                 {loading || error ? `@${app.OrganizationId}` : organization.name}
               </Subtitle>
             </header>

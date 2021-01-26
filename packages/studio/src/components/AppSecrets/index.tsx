@@ -11,7 +11,7 @@ export function AppSecrets(): ReactElement {
   return (
     <Content>
       <HelmetIntl title={messages.title} />
-      <Title level={1}>
+      <Title>
         <FormattedMessage {...messages.title} />
       </Title>
       <OAuth2Secrets />

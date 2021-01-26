@@ -2,11 +2,6 @@
   max-width: 960px;
 }
 
-.icon {
-  height: 192px;
-  width: 192px;
-}
-
 .appMeta {
   flex: 1 1 auto;
 }

@@ -41,7 +41,7 @@ export function AppRatings(): ReactElement {
         <HeaderControl
           className="is-marginless"
           control={userInfo && <RateApp app={app} className="mb-4" onRate={onRate} />}
-          level={3}
+          size={4}
         >
           <FormattedMessage {...messages.ratings} />
         </HeaderControl>
@@ -51,7 +51,7 @@ export function AppRatings(): ReactElement {
               {...messages.average}
               values={{
                 average: (
-                  <span className="is-size-3 has-text-weight-semibold mr-1">
+                  <span className="is-size-5 has-text-weight-semibold">
                     <FormattedNumber maximumFractionDigits={1} value={app.rating.average} />
                   </span>
                 ),
