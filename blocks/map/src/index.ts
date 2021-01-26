@@ -35,6 +35,8 @@ attach((params) => {
     locationError = 'Couldn’t find your location. Are location services enabled?',
   } = parameters;
 
+  let following = false;
+
   const map = new Map(node, {
     attributionControl: false,
     layers: [new TileLayer(tileLayer)],
@@ -84,6 +86,10 @@ attach((params) => {
      */
     .on('locationfound', ({ latlng }: LocationEvent) => {
       locationMarker.setLatLng(latlng).addTo(map);
+
+      if (following) {
+        map.setView(latlng, map.getZoom());
+      }
     })
 
     // Start locating the map.
@@ -101,5 +107,22 @@ attach((params) => {
 
   events.on.data((d) => {
     loadMarkers(d, fetched, data, params, cluster || map);
+  });
+
+  events.on.center(() => {
+    map.setView(locationMarker.getLatLng(), 18);
+  });
+
+  events.on.follow((d) => {
+    if (typeof d === 'boolean') {
+      following = d;
+      return;
+    }
+
+    following = !following;
+
+    if (following) {
+      map.setView(locationMarker.getLatLng(), 18);
+    }
   });
 });
