@@ -4,12 +4,12 @@ import { readPackageJson } from '../lib/readPackageJson';
 import { serverImport } from '../lib/serverImport';
 import { BaseArguments } from '../types';
 
-export const command = 'migrate [to]';
+export const command = 'migrate [migrate-to]';
 export const description = 'Migrate the Appsemble database';
 
 export function builder(yargs: Argv): Argv {
   return yargs
-    .positional('to', {
+    .positional('migrate-to', {
       desc: 'The database version to migrate to.',
       default: readPackageJson().version,
     })

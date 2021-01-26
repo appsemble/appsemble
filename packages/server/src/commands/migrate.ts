@@ -10,7 +10,7 @@ import { readPackageJson } from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';
 
-export const command = 'migrate [to]';
+export const command = 'migrate [migrate-to]';
 export const description = 'Migrate the Appsemble database.';
 
 export function builder(yargs: Argv): Argv {
