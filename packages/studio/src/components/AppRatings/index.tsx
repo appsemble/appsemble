@@ -1,6 +1,6 @@
 import { useData, useMessages } from '@appsemble/react-components';
 import { Rating } from '@appsemble/types';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';
@@ -13,23 +13,27 @@ import styles from './index.css';
 import { messages } from './messages';
 
 export function AppRatings(): ReactElement {
-  const { app } = useApp();
+  const { app, setApp } = useApp();
   const result = useData<Rating[]>(`/api/apps/${app.id}/ratings`);
   const { formatMessage } = useIntl();
 
   const push = useMessages();
   const { userInfo } = useUser();
 
-  const onRate = (rating: Rating): void => {
-    result.setData((ratings) => {
-      const existingRating = ratings.find((r) => r.UserId === rating.UserId);
+  const onRate = useCallback(
+    (rating: Rating): void => {
+      result.setData((ratings) => {
+        const existingRating = ratings.find((r) => r.UserId === rating.UserId);
 
-      return existingRating
-        ? ratings.map((r) => (r.UserId === rating.UserId ? rating : r))
-        : [rating, ...ratings];
-    });
-    push({ color: 'success', body: formatMessage(messages.ratingSuccessful) });
-  };
+        return existingRating
+          ? ratings.map((r) => (r.UserId === rating.UserId ? rating : r))
+          : [rating, ...ratings];
+      });
+      setApp((a) => (a.rating.count ? a : { ...a, rating: { count: 1, average: rating.rating } }));
+      push({ color: 'success', body: formatMessage(messages.ratingSuccessful) });
+    },
+    [formatMessage, push, result, setApp],
+  );
 
   return (
     <div className="card">

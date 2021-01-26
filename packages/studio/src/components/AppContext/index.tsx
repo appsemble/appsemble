@@ -1,7 +1,14 @@
 import { Loader, Message, useData } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import React, { createContext, ReactElement, useContext, useMemo } from 'react';
+import React, {
+  createContext,
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useContext,
+  useMemo,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
@@ -34,7 +41,7 @@ interface AppValueContext {
   /**
    * Update the app in the current context.
    */
-  setApp: (app: App) => void;
+  setApp: Dispatch<SetStateAction<App>>;
 }
 
 const Context = createContext<AppValueContext>(null);
