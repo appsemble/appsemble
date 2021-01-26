@@ -2,11 +2,6 @@
   max-width: 960px;
 }
 
-.icon {
-  height: 192px;
-  width: 192px;
-}
-
 .appMeta {
   flex: 1 1 auto;
 }
@@ -23,4 +18,27 @@
 
 .buttonContainer {
   flex-flow: column;
+}
+
+.descriptionHidden {
+  height: 12rem;
+  position: relative;
+
+  &::after {
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(255, 255, 255, 1) 90%);
+    bottom: 0;
+    content: '';
+    height: 6em;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+}
+
+.descriptionToggle {
+  bottom: 12px;
+  position: absolute;
+  right: 12px;
+  z-index: 1;
 }

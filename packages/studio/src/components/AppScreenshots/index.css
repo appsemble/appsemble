@@ -18,7 +18,6 @@
   -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
   overflow-x: scroll;
   overflow-y: hidden;
-  padding-bottom: 1em;
   scroll-behavior: smooth;
   scrollbar-width: none; /* Hide scrollbar for Firefox */
   white-space: nowrap;

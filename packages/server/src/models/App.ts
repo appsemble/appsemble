@@ -73,6 +73,9 @@ export class App extends Model {
   template: boolean;
 
   @Column(DataType.TEXT)
+  longDescription: string;
+
+  @Column(DataType.TEXT)
   coreStyle: string;
 
   @Column(DataType.TEXT)

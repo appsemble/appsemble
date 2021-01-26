@@ -33,16 +33,16 @@ export function getAppFromRecord(
     path: record.path,
     private: Boolean(record.private),
     iconUrl: `/api/apps/${record.id}/icon`,
+    longDescription: record.longDescription,
     definition,
     yaml: record.yaml || yaml.safeDump(record.definition),
-    ...(record.get('RatingCount') && {
-      rating: {
-        average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,
-        count: record.get('RatingCount') ? Number(record.get('RatingCount')) : null,
-      },
-    }),
-    ...(record.get('ResourceCount') &&
-      record.template && { resources: record.get('ResourceCount') > 0 }),
+    rating: record.get('RatingCount')
+      ? {
+          average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,
+          count: record.get('RatingCount') ? Number(record.get('RatingCount')) : null,
+        }
+      : undefined,
+    resources: record.template && record.get('ResourceCount') ? true : undefined,
     OrganizationId: record.OrganizationId,
     screenshotUrls: record.AppScreenshots?.map(
       ({ id }) => `/api/apps/${record.id}/screenshots/${id}`,

@@ -30,6 +30,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
                 },
+                longDescription: {
+                  $ref: '#/components/schemas/App/properties/longDescription',
+                },
                 yaml: {
                   type: 'string',
                   format: 'binary',
@@ -167,6 +170,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 },
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
+                },
+                longDescription: {
+                  $ref: '#/components/schemas/App/properties/longDescription',
                 },
                 yaml: {
                   type: 'string',

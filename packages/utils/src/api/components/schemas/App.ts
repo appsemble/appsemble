@@ -49,6 +49,14 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching for templates.',
     },
+    longDescription: {
+      type: 'string',
+      description: `
+A long description for the app.
+
+The long desciption will be rendered on the app details page. Markdown content is supported.
+`,
+    },
     definition: {
       type: 'object',
       required: ['name', 'defaultPage', 'pages'],

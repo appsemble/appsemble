@@ -165,7 +165,7 @@ export function UserSettings(): ReactElement {
       </Content>
       <hr />
       <Content>
-        <Title>
+        <Title size={4}>
           <FormattedMessage {...messages.emails} />
         </Title>
         <SimpleForm defaultValues={{ email: '' }} onSubmit={onAddNewEmail} resetOnSuccess>

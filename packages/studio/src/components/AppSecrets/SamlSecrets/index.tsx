@@ -48,14 +48,14 @@ export function SamlSecrets(): ReactElement {
   );
 
   return (
-    <>
+    <div>
       <HeaderControl
         control={
           <Button icon="plus" onClick={modal.enable}>
             <FormattedMessage {...messages.addNew} />
           </Button>
         }
-        level={2}
+        size={4}
       >
         <FormattedMessage {...messages.title} />
       </HeaderControl>
@@ -74,6 +74,6 @@ export function SamlSecrets(): ReactElement {
         )}
       </AsyncDataView>
       <SamlModal onSubmit={create} secret={initialSecret} toggle={modal} />
-    </>
+    </div>
   );
 }

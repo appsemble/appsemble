@@ -1,7 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  addNewScreenshot: 'Add new screenshot',
+  addNewScreenshot: 'Add screenshot',
   cancel: 'Cancel',
   submit: 'Submit',
   screenshot: 'Screenshot',

@@ -53,14 +53,14 @@ export function OAuth2Secrets(): ReactElement {
   );
 
   return (
-    <>
+    <div className="mb-3">
       <HeaderControl
         control={
           <Button icon="plus" onClick={modal.enable}>
             <FormattedMessage {...messages.addNew} />
           </Button>
         }
-        level={2}
+        size={4}
       >
         <FormattedMessage {...messages.title} />
       </HeaderControl>
@@ -79,6 +79,6 @@ export function OAuth2Secrets(): ReactElement {
         )}
       </AsyncDataView>
       <OAuth2Modal onSubmit={create} secret={initialSecret} toggle={modal} />
-    </>
+    </div>
   );
 }

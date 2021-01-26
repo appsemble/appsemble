@@ -75,7 +75,6 @@ export function TeamsList(): ReactElement {
             </Button>
           )
         }
-        level={4}
       >
         <FormattedMessage {...messages.teams} />
       </HeaderControl>
