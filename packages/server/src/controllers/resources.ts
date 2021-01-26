@@ -124,7 +124,14 @@ async function verifyPermission(
   const {
     query: { $team },
     user,
+    users,
   } = ctx;
+
+  if ('studio' in users || 'cli' in users) {
+    await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
+    return;
+  }
+
   let roles = app.definition.resources?.[resourceType]?.[action]?.roles ?? [];
 
   if (!roles || !roles.length) {

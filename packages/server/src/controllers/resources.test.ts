@@ -18,11 +18,17 @@ import {
 } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
+import {
+  authorizeApp,
+  authorizeClientCredentials,
+  authorizeStudio,
+  createTestUser,
+} from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 let organization: Organization;
 let clock: FakeTimers.InstalledClock;
+let member: Member;
 let user: User;
 let originalSendNotification: typeof webpush.sendNotification;
 
@@ -90,8 +96,12 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
-          query: { roles: ['$author'] },
+          create: { roles: ['$author'] },
           count: { roles: ['$author'] },
+          delete: { roles: ['$author'] },
+          get: { roles: ['$author'] },
+          query: { roles: ['$author'] },
+          update: { roles: ['$author'] },
         },
         secured: {
           schema: { type: 'object' },
@@ -178,7 +188,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ UserId: user.id, OrganizationId: organization.id, role: 'Maintainer' });
+  member = await Member.create({
+    UserId: user.id,
+    OrganizationId: organization.id,
+    role: 'Maintainer',
+  });
   clock = FakeTimers.install();
 });
 
@@ -264,7 +278,7 @@ describe('getResourceById', () => {
       UserId: userB.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
@@ -372,6 +386,98 @@ describe('getResourceById', () => {
     });
     expect(responseB).toMatchObject({
       status: 404,
+    });
+  });
+
+  it('should allow organization app editors to get resources using Studio', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        foo: 'bar',
+        id: resource.id,
+      },
+    });
+  });
+
+  it('should not allow organization members to get resources using Studio', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+    );
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should allow organization app editors to get resources using client credentials', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:read');
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        foo: 'bar',
+        id: resource.id,
+      },
+    });
+  });
+
+  it('should not allow organization members to get resources using client credentials', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:read');
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+    );
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
     });
   });
 });
@@ -505,7 +611,7 @@ describe('queryResources', () => {
     });
     await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
 
     expect(response).toMatchObject({
@@ -550,7 +656,7 @@ describe('queryResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam`);
     expect(response).toMatchObject({
       status: 200,
@@ -622,7 +728,7 @@ describe('queryResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeamManager`);
 
     expect(response).toMatchObject({
@@ -925,6 +1031,96 @@ describe('queryResources', () => {
       },
     ]);
   });
+
+  it('should allow organization app editors to query resources using Studio', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          $clonable: false,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'bar',
+          id: resource.id,
+        },
+      ],
+    });
+  });
+
+  it('should not allow organization members to query resources using Studio', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should allow organization app editors to query resources using client credentials', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:read');
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          $clonable: false,
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          foo: 'bar',
+          id: resource.id,
+        },
+      ],
+    });
+  });
+
+  it('should not allow organization members to query resources using client credentials', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:read');
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
 });
 
 describe('countResources', () => {
@@ -993,7 +1189,7 @@ describe('countResources', () => {
       data: { foo: 'baz' },
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
     );
@@ -1030,7 +1226,7 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam/$count`);
     expect(response).toMatchObject({
       status: 200,
@@ -1067,7 +1263,7 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
@@ -1106,7 +1302,7 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
@@ -1144,7 +1340,7 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
@@ -1183,7 +1379,7 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
@@ -1222,7 +1418,7 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
@@ -1260,7 +1456,7 @@ describe('countResources', () => {
       UserId: userC.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
@@ -1486,6 +1682,80 @@ describe('createResource', () => {
       ],
     });
   });
+
+  it('should allow organization app editors to create resources using Studio', async () => {
+    const app = await exampleApp(organization.id);
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      foo: 'bar',
+    });
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        $author: { id: user.id, name: 'Test User' },
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        foo: 'bar',
+        id: expect.any(Number),
+      },
+    });
+  });
+
+  it('should not allow organization members to create resources using Studio', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      foo: 'bar',
+    });
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should allow organization app editors to create resources using client credentials', async () => {
+    const app = await exampleApp(organization.id);
+    await authorizeClientCredentials('resources:write');
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      foo: 'bar',
+    });
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        $author: { id: user.id, name: 'Test User' },
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        foo: 'bar',
+        id: expect.any(Number),
+      },
+    });
+  });
+
+  it('should not allow organization members to create resources using client credentials', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    await authorizeClientCredentials('resources:write');
+    const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      foo: 'bar',
+    });
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
 });
 
 describe('updateResource', () => {
@@ -1574,7 +1844,7 @@ describe('updateResource', () => {
       UserId: userB.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
       { foo: 'I am not Foo.' },
@@ -1889,6 +2159,102 @@ describe('updateResource', () => {
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
   });
+
+  it('should allow organization app editors to update resources using Studio', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      { foo: 'baz' },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        foo: 'baz',
+        id: resource.id,
+      },
+    });
+  });
+
+  it('should not allow organization members to update resources using Studio', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      { foo: 'baz' },
+    );
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should allow organization app editors to update resources using client credentials', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:write');
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      { foo: 'baz' },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        foo: 'baz',
+        id: resource.id,
+      },
+    });
+  });
+
+  it('should not allow organization members to update resources using client credentials', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:write');
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      { foo: 'baz' },
+    );
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
 });
 
 describe('deleteResource', () => {
@@ -1970,7 +2336,7 @@ describe('deleteResource', () => {
       UserId: userB.id,
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
@@ -2046,6 +2412,86 @@ describe('deleteResource', () => {
       data: {
         foo: 'I am Foo.',
         id: resource.id,
+      },
+    });
+  });
+
+  it('should allow organization app editors to delete resources using Studio', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+    );
+    expect(response).toMatchObject({
+      status: 204,
+    });
+  });
+
+  it('should not allow organization members to delete resources using Studio', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+    );
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should allow organization app editors to delete resources using client credentials', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:write');
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+    );
+    expect(response).toMatchObject({
+      status: 204,
+    });
+  });
+
+  it('should not allow organization members to delete resources using client credentials', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:write');
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+    );
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
       },
     });
   });
@@ -2144,7 +2590,7 @@ describe('verifyAppRole', () => {
   it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
     const app = await exampleApp(organization.id);
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
     expect(response).toMatchObject({
@@ -2162,7 +2608,7 @@ describe('verifyAppRole', () => {
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.post(`/api/apps/${app.id}/resources/secured`, {});
 
     expect(response).toMatchObject({
