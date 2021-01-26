@@ -1,6 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React, { MouseEvent, ReactElement, useCallback, useEffect, useState } from 'react';
+import { FormattedNumber } from 'react-intl';
 
 import styles from './index.css';
 
@@ -121,7 +122,11 @@ export function StarRating({
           {activeIcons}
         </span>
       </div>
-      {count == null || <span>({count})</span>}
+      {count == null || (
+        <span>
+          (<FormattedNumber value={count} />)
+        </span>
+      )}
     </span>
   );
 }
