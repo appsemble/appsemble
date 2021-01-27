@@ -1,7 +1,7 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppMessages, Member, Organization, Resource } from '../models';
+import { App, AppBlockStyle, AppMessages, Member, Organization, Resource } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
@@ -45,6 +45,8 @@ beforeEach(async () => {
     ...template,
     path: 'test-template-2',
     definition: { ...template.definition, name: 'Test App 2' },
+    coreStyle: '.foo { color: blue; }',
+    sharedStyle: '.bar { color: yellow; }',
     resources: {
       test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
     },
@@ -56,6 +58,13 @@ beforeEach(async () => {
     language: 'nl-nl',
     messages: { test: 'Dit is een testbericht' },
   });
+  t2.AppBlockStyles = [
+    await AppBlockStyle.create({
+      AppId: t2.id,
+      block: '@appsemble/test',
+      style: 'a { color: red; }',
+    }),
+  ];
 
   templates = [t1, t2];
 });
@@ -139,6 +148,25 @@ describe('createTemplateApp', () => {
     const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } });
 
     expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
+  });
+
+  it('should include the app’s styles when cloning an app', async () => {
+    const [, template] = templates;
+    authorizeStudio();
+    const response = await request.post('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      resources: true,
+    });
+
+    const { id } = response.data;
+    const app = await App.findByPk(id, { include: [{ model: AppBlockStyle }] });
+
+    expect(app.coreStyle).toStrictEqual(template.coreStyle);
+    expect(app.sharedStyle).toStrictEqual(template.sharedStyle);
+    expect(app.AppBlockStyles[0].style).toStrictEqual(template.AppBlockStyles[0].style);
   });
 
   it('should copy app message when cloning an app', async () => {
