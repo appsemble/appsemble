@@ -45,7 +45,7 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^7.0.2",
+    "@sinonjs/fake-timers": "^6.0.1",
     "axios-mock-adapter": "^1.19.0",
     "axios-test-instance": "^4.0.0"
   },
