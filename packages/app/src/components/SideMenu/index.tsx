@@ -1,6 +1,6 @@
 import { useEventListener } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React, {
+import {
   ReactElement,
   KeyboardEvent as ReactKeyboardEvent,
   ReactNode,

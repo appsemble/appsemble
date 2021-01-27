@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/browser';
-import React, { Component, ElementType, ErrorInfo, ReactNode } from 'react';
+import { Component, ElementType, ErrorInfo, ReactNode } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 interface ErrorHandlerProps extends RouteComponentProps<any> {

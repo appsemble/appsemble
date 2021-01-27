@@ -19,7 +19,6 @@ export async function injectCSS(parent: Node, url?: string): Promise<void> {
     });
     link.href = url;
     link.rel = 'stylesheet';
-    // eslint-disable-next-line unicorn/prefer-node-append
-    parent.appendChild(link);
+    parent.append(link);
   });
 }

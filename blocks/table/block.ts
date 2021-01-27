@@ -83,7 +83,7 @@ export interface RepeatedField {
   /**
    * The list of fields that should be repeated for each array item.
    */
-  repeat: (Field | Dropdown)[];
+  repeat: (Dropdown | Field)[];
 
   /**
    * The value to use as the base of the repeated field.
@@ -112,7 +112,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display.
      */
-    fields: (Field | RepeatedField | Dropdown)[];
+    fields: (Dropdown | Field | RepeatedField)[];
   }
 
   interface Actions {

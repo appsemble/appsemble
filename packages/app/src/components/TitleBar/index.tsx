@@ -1,5 +1,5 @@
 import { Portal } from '@appsemble/react-components';
-import React, { ReactChild, ReactElement } from 'react';
+import { ReactChild, ReactElement } from 'react';
 
 import { shouldShowMenu } from '../../utils/layout';
 import { useAppDefinition } from '../AppDefinitionProvider';

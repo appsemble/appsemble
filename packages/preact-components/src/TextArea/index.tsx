@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentProps, h } from 'preact';
+import { ComponentProps, JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
@@ -18,7 +18,7 @@ export interface TextAreaProps
   /**
    * This is fired when the input value has changed.
    */
-  onChange?: (event: h.JSX.TargetedEvent<HTMLTextAreaElement>, value: string) => void;
+  onChange?: (event: JSX.TargetedEvent<HTMLTextAreaElement>, value: string) => void;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface TextAreaProps
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ error, name, loading, onChange, readOnly, id = name, ...props }, ref) => {
     const handleChange = useCallback(
-      (event: h.JSX.TargetedEvent<HTMLTextAreaElement>) => {
+      (event: JSX.TargetedEvent<HTMLTextAreaElement>) => {
         onChange(event, event.currentTarget.value);
       },
       [onChange],

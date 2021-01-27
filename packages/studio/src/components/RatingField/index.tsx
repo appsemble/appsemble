@@ -1,10 +1,10 @@
 import { FormComponent } from '@appsemble/react-components';
-import React, { ComponentPropsWithoutRef, forwardRef, ReactElement } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, ReactElement } from 'react';
 
 import { StarRating } from '../StarRating';
 
-type RatingFieldProps = Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
-  ComponentPropsWithoutRef<typeof StarRating>;
+type RatingFieldProps = ComponentPropsWithoutRef<typeof StarRating> &
+  Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'>;
 
 /**
  * A star rating component wrapped in a form field.

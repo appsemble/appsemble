@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Dropdown } from '@appsemble/preact-components';
-import { ComponentProps, Fragment, h, VNode } from 'preact';
+import { ComponentProps, Fragment, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { Dropdown as DropdownType, Field } from '../../../block';
@@ -21,7 +21,7 @@ interface ItemCellProps extends ComponentProps<'td'> {
   /**
    * The field to render.
    */
-  field: Field | DropdownType;
+  field: DropdownType | Field;
 
   /**
    * The index of the row that was clicked.

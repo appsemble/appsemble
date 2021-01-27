@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, FormButtons } from '@appsemble/preact-components';
-import { Fragment, h, VNode } from 'preact';
+import { Fragment, JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { FieldError, InputProps, ObjectField, Values } from '../../../block';
@@ -44,7 +44,7 @@ export function ObjectInput({
   }, [field, onChange, value]);
 
   const removeEntry = useCallback(
-    (event: h.JSX.TargetedMouseEvent<HTMLButtonElement>) => {
+    (event: JSX.TargetedMouseEvent<HTMLButtonElement>) => {
       const index = Number(event.currentTarget.name);
 
       onChange(field.name, values.slice(0, index).concat(values.slice(index + 1)));

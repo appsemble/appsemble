@@ -99,7 +99,7 @@ export interface Utils {
   /**
    * Show a bulma style message.
    */
-  showMessage: (message: string | Message) => void;
+  showMessage: (message: Message | string) => void;
 
   /**
    * Get a URL serving an asset for the given asset id.

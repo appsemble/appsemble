@@ -178,7 +178,7 @@ declare module '@appsemble/sdk' {
     /**
      * Custom icon configuration for geocoordinate fields.
      */
-    icons?: FontAwesomeMarkerIcon | AssetMarkerIcon;
+    icons?: AssetMarkerIcon | FontAwesomeMarkerIcon;
   }
 
   interface EventListeners {

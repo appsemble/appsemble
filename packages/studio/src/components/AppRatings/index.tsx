@@ -1,6 +1,6 @@
 import { useData, useMessages } from '@appsemble/react-components';
 import { Rating } from '@appsemble/types';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';

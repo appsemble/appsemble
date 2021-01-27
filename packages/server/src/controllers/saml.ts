@@ -84,12 +84,12 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
 
   const issuer = doc.createElementNS(NS.saml, 'saml:Issuer');
   issuer.textContent = `${samlUrl}/metadata.xml`;
-  // eslint-disable-next-line unicorn/prefer-node-append
+  // eslint-disable-next-line unicorn/prefer-dom-node-append
   authnRequest.appendChild(issuer);
 
   const nameIDPolicy = doc.createElementNS(NS.samlp, 'samlp:NameIDPolicy');
   nameIDPolicy.setAttribute('Format', 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress');
-  // eslint-disable-next-line unicorn/prefer-node-append
+  // eslint-disable-next-line unicorn/prefer-dom-node-append
   authnRequest.appendChild(nameIDPolicy);
 
   logger.verbose(`SAML request XML: ${doc}`);
@@ -229,7 +229,6 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   });
 
   const attributes = new Map(
-    // eslint-disable-next-line unicorn/prefer-spread
     Array.from(
       (x('AttributeStatement', NS.saml)?.childNodes as unknown) as Iterable<Element>,
       (el) => [el.getAttribute('Name')?.trim(), el.firstChild?.textContent?.trim()],
@@ -360,27 +359,27 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
   spssoDescriptor.setAttribute('AuthnRequestsSigned', 'true');
   spssoDescriptor.setAttribute('WantAssertionsSigned', 'true');
   spssoDescriptor.setAttribute('protocolSupportEnumeration', NS.samlp);
-  // eslint-disable-next-line unicorn/prefer-node-append
+  // eslint-disable-next-line unicorn/prefer-dom-node-append
   entityDescriptor.appendChild(spssoDescriptor);
 
   const createKeyDescriptor = (use: string): void => {
     const keyDescriptor = doc.createElementNS(NS.md, 'md:KeyDescriptor');
     keyDescriptor.setAttribute('use', use);
-    // eslint-disable-next-line unicorn/prefer-node-append
+    // eslint-disable-next-line unicorn/prefer-dom-node-append
     spssoDescriptor.appendChild(keyDescriptor);
 
     const keyInfo = doc.createElementNS(NS.ds, 'ds:KeyInfo');
     keyInfo.setAttributeNS(NS.xmlns, 'xmlns:ds', NS.ds);
-    // eslint-disable-next-line unicorn/prefer-node-append
+    // eslint-disable-next-line unicorn/prefer-dom-node-append
     entityDescriptor.appendChild(keyInfo);
 
     const x509Data = doc.createElementNS(NS.ds, 'ds:X509Data');
-    // eslint-disable-next-line unicorn/prefer-node-append
+    // eslint-disable-next-line unicorn/prefer-dom-node-append
     keyInfo.appendChild(x509Data);
 
     const x509Certificate = doc.createElementNS(NS.ds, 'ds:X509Certificate');
     x509Certificate.textContent = stripPem(secret.spCertificate, true);
-    // eslint-disable-next-line unicorn/prefer-node-append
+    // eslint-disable-next-line unicorn/prefer-dom-node-append
     x509Data.appendChild(x509Certificate);
   };
 
@@ -396,7 +395,7 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
     'Location',
     String(new URL(`/api/apps/${appId}/saml/${appSamlSecretId}/acs`, argv.host)),
   );
-  // eslint-disable-next-line unicorn/prefer-node-append
+  // eslint-disable-next-line unicorn/prefer-dom-node-append
   entityDescriptor.appendChild(assertionConsumerService);
 
   ctx.body = `<?xml version="1.0" encoding="utf-8"?>\n${doc}`;

@@ -1,6 +1,6 @@
 import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
 import { OpenAPIV3 } from 'openapi-types';
-import React, { Fragment, ReactElement } from 'react';
+import { Fragment, ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Definition } from 'typescript-json-schema';
 

@@ -1,7 +1,7 @@
 import { Tab, Tabs } from '@appsemble/react-components';
 import { TabsPageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import React, { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
+import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { useAppMessages } from '../AppMessagesProvider';
@@ -47,9 +47,9 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
           return (
             <Route exact key={name} path={`${path}/${normalize(translatedName)}`}>
               <BlockList
+                key={prefix}
                 {...blockListProps}
                 blocks={blocks}
-                key={prefix}
                 prefix={`${prefix}.subPages.${index}.blocks`}
               />
             </Route>

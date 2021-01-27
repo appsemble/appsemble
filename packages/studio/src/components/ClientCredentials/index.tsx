@@ -20,7 +20,7 @@ import {
 } from '@appsemble/react-components';
 import { scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import { OAuth2ClientCredentials } from '../../types';

@@ -1,4 +1,6 @@
 import { attach } from '@appsemble/sdk';
+// XXX Update mini-jsx to use jsxImportSource
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { h } from 'mini-jsx';
 
 import styles from './index.css';

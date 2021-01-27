@@ -1,6 +1,6 @@
 import { Confirmation, ErrorHandler, MessagesProvider } from '@appsemble/react-components';
 import { MDXProvider } from '@mdx-js/react';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { BrowserRouter, Route } from 'react-router-dom';
 

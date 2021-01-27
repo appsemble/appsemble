@@ -1,7 +1,7 @@
 import { Content, InputField, SelectField } from '@appsemble/react-components';
 import { App } from '@appsemble/types/src';
 import { Permission } from '@appsemble/utils';
-import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { checkRole } from '../../utils/checkRole';

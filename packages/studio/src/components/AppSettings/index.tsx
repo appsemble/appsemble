@@ -16,7 +16,7 @@ import {
 import { App } from '@appsemble/types';
 import { domainPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 

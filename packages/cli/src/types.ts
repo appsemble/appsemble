@@ -44,15 +44,15 @@ export interface UpdateAppArguments extends BaseArguments {
 export interface BlockConfig
   extends Pick<
     BlockManifest,
-    | 'name'
-    | 'description'
-    | 'longDescription'
     | 'actions'
+    | 'description'
     | 'events'
+    | 'layout'
+    | 'longDescription'
+    | 'name'
     | 'parameters'
     | 'resources'
     | 'version'
-    | 'layout'
   > {
   /**
    * The path to the webpack configuration file relative to the block project directory.

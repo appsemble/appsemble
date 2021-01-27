@@ -1,10 +1,10 @@
 import classNames from 'classnames';
-import React, { ReactChild, ReactElement } from 'react';
+import { ReactChild, ReactElement } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface NavLinkProps {
   className?: string;
-  children: ReactChild[] | ReactChild;
+  children: ReactChild | ReactChild[];
   exact?: boolean;
   to: string;
 }

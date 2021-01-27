@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import React, { Children, ReactElement, ReactNode } from 'react';
+import { Children, ReactElement, ReactNode } from 'react';
 
 import { NavLink } from '../NavLink';
 import { useSideMenu } from '../SideMenu';

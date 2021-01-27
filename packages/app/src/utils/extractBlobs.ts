@@ -8,13 +8,13 @@ function defaultReplacer(): symbol {
 }
 
 export type RecursiveValue<T = never> =
+  | RecursiveArray<T>
+  | RecursiveObject<T>
+  | T
   | boolean
   | number
   | string
-  | symbol
-  | T
-  | RecursiveObject<T>
-  | RecursiveArray<T>;
+  | symbol;
 
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export interface RecursiveObject<T = never> {

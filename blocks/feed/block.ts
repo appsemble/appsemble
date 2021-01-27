@@ -163,7 +163,7 @@ declare module '@appsemble/sdk' {
        * @default 28
        */
       size?: number;
-    } & (FontAwesomeMarkerIcon | AssetMarkerIcon);
+    } & (AssetMarkerIcon | FontAwesomeMarkerIcon);
   }
 
   interface Actions {

@@ -1,6 +1,6 @@
 import { SelectField } from '@appsemble/react-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
-import React, { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 

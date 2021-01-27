@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  ComponentPropsWithoutRef,
-  ReactElement,
-  useCallback,
-  useState,
-} from 'react';
+import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback, useState } from 'react';
 
 import { Select } from '../Select';
 

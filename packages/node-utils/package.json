@@ -33,10 +33,10 @@
   "dependencies": {
     "axios": "^0.21.1",
     "chalk": "^4.1.0",
-    "cli-highlight": "^2.1.9",
-    "fast-glob": "^3.2.4",
+    "cli-highlight": "^2.1.10",
+    "fast-glob": "^3.2.5",
     "form-data": "^3.0.0",
-    "koa": "^2.13.0",
+    "koa": "^2.13.1",
     "koa-compose": "^4.1.0",
     "logform": "^2.2.0",
     "normalize-path": "^3.0.0",
@@ -45,7 +45,7 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^6.0.1",
+    "@sinonjs/fake-timers": "^7.0.2",
     "axios-mock-adapter": "^1.19.0",
     "axios-test-instance": "^4.0.0"
   },

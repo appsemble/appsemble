@@ -1,6 +1,6 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { cloneElement, ComponentChild, h, isValidElement, VNode } from 'preact';
+import { cloneElement, ComponentChild, isValidElement, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { Icon } from '..';

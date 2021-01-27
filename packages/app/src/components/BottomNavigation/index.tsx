@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import React, { ReactElement, useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
 import { shouldShowMenu } from '../../utils/layout';

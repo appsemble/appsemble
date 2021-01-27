@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { useMessages } from '@appsemble/react-components';
 import { BootstrapParams } from '@appsemble/sdk';
 import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';

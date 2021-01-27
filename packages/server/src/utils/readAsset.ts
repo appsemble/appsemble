@@ -13,6 +13,6 @@ export const assetDir = resolve(__dirname, '../../assets');
  */
 export function readAsset(filename: string): Promise<Buffer>;
 export function readAsset(filename: string, encoding: BufferEncoding): Promise<string>;
-export function readAsset(filename: string, encoding?: BufferEncoding): Promise<string | Buffer> {
+export function readAsset(filename: string, encoding?: BufferEncoding): Promise<Buffer | string> {
   return fs.readFile(join(assetDir, filename), encoding);
 }

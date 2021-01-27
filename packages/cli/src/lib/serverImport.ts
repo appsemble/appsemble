@@ -16,7 +16,7 @@ ${PROMPT} ${COMMAND} @appsemble/server
  * @returns The exported member.
  */
 export async function serverImport<
-  T extends 'migrate' | 'start' | 'cleanupResources' | 'runCronJobs' | 'setArgv'
+  T extends 'cleanupResources' | 'migrate' | 'runCronJobs' | 'setArgv' | 'start'
 >(...members: T[]): Promise<Record<T, any>> {
   try {
     const mod = await import('@appsemble/server');

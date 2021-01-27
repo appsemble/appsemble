@@ -1,6 +1,6 @@
 import { Loader, useQuery } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
-import React, { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect } from 'react';
 
 import { ExtendedOAuth2State } from '../../types';
 import { oauth2Redirect } from '../../utils/oauth2Utils';

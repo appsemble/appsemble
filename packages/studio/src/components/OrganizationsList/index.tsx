@@ -10,7 +10,7 @@ import {
 import { Organization } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 

@@ -1,5 +1,5 @@
 import { Content, Message, SentryForm, Title } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 

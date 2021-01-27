@@ -1,6 +1,6 @@
 import { ActionDefinition, App } from '@appsemble/types';
 import { NamedEvent } from '@appsemble/web-utils';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { LinkActionEditor } from '../LinkActionEditor';

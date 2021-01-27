@@ -1,7 +1,7 @@
 import { BulmaColor } from '@appsemble/sdk';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
+import { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import { Icon } from '..';
 

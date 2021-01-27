@@ -2,15 +2,15 @@ import 'flatpickr/dist/flatpickr.css';
 
 import classNames from 'classnames';
 import flatpickr from 'flatpickr';
-import React, { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
 
 import { FormComponent, Input, SharedFormComponentProps } from '..';
 import { useCombinedRefs } from '../useCombinedRefs';
 import styles from './index.css';
 
-type DateTimeFieldProps = SharedFormComponentProps &
-  Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> &
-  Pick<flatpickr.Options.Options, 'enableTime' | 'mode'> & {
+type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> &
+  Pick<flatpickr.Options.Options, 'enableTime' | 'mode'> &
+  SharedFormComponentProps & {
     /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
      * used.

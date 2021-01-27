@@ -20,7 +20,7 @@ export async function* iterTable<M extends Model>(
   { chunkSize = 100, ...options }: IterTableOptions = {},
 ): AsyncGenerator<M, void, undefined> {
   let offset = 0;
-  let length = Infinity;
+  let length = Number.POSITIVE_INFINITY;
   while (chunkSize <= length) {
     const chunk = await model.findAll({ ...options, limit: chunkSize, offset });
     yield* chunk as M[];

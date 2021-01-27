@@ -1,4 +1,4 @@
-import { ComponentProps, h, VNode } from 'preact';
+import { ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 interface FormProps extends Omit<ComponentProps<'form'>, 'noValidate'> {

@@ -1,6 +1,6 @@
 import { AsyncSelect, Button, useConfirmation } from '@appsemble/react-components';
 import { TeamRole } from '@appsemble/utils';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { TeamMember } from '../../../types';

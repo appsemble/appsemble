@@ -4,7 +4,7 @@ import { stripBlockName } from '@appsemble/utils';
 import indentString from 'indent-string';
 import yaml from 'js-yaml';
 import { editor, Range } from 'monaco-editor';
-import React, { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 
 import { GUIEditorEditBlock } from './GUIEditorEditBlock';
 import { GUIEditorNavBar } from './GUIEditorNavBar';

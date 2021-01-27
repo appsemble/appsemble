@@ -2,7 +2,7 @@ import { Content, Loader, Message, Tab, Tabs, Title, useData } from '@appsemble/
 import { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import { NamedEvent } from '@appsemble/web-utils';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { JSONSchemaEditor } from '../../JSONSchemaEditor';

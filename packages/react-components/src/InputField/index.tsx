@@ -1,9 +1,12 @@
-import React, { ComponentPropsWithoutRef, forwardRef } from 'react';
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 
 import { FormComponent, Input, SharedFormComponentProps } from '..';
 
-type InputFieldProps = SharedFormComponentProps &
-  Omit<ComponentPropsWithoutRef<typeof Input>, keyof SharedFormComponentProps>;
+type InputFieldProps = Omit<
+  ComponentPropsWithoutRef<typeof Input>,
+  keyof SharedFormComponentProps
+> &
+  SharedFormComponentProps;
 
 /**
  * A Bulma styled form input element.

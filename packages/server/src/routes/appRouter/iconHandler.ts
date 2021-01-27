@@ -13,7 +13,7 @@ interface Params {
 }
 
 export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
-  const { params } = ctx;
+  const { params, request } = ctx;
   const app = await getApp(ctx, {
     attributes: ['definition', 'icon'],
     include: [{ model: Organization, attributes: ['icon'] }],
@@ -22,7 +22,7 @@ export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const width = Number(params.width);
   const height = Number(params.height || params.width);
   const { format } = params;
-  const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
+  const opaque = 'opaque' in request.query || format === 'jpg' || format === 'tiff';
   let background;
 
   if (opaque) {

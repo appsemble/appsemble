@@ -1,5 +1,5 @@
 import { Input } from '@appsemble/preact-components';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import { DateField, FieldComponentProps } from '../../../block';
 

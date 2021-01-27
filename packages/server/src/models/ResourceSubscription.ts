@@ -17,7 +17,7 @@ export class ResourceSubscription extends Model {
   ResourceId: number;
 
   @Column
-  action: 'delete' | 'update' | 'create';
+  action: 'create' | 'delete' | 'update';
 
   @Column
   type: string;

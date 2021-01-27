@@ -1,6 +1,6 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Redirect, Route, RouteProps, useRouteMatch } from 'react-router-dom';
 
 import { Organization } from '../../types';
@@ -31,10 +31,8 @@ export function ProtectedRoute({
     return <Redirect to={{ pathname: `/${lang}/login`, search: `?${search}` }} />;
   }
 
-  if (permission) {
-    if (!organization || !checkRole(organization.role, permission)) {
-      return <Redirect to={url} />;
-    }
+  if (permission && (!organization || !checkRole(organization.role, permission))) {
+    return <Redirect to={url} />;
   }
 
   return <Route {...props} />;

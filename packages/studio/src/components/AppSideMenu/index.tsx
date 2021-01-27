@@ -1,6 +1,6 @@
 import { useToggle } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 

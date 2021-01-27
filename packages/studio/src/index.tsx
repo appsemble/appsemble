@@ -1,7 +1,6 @@
 import './index.css';
 
 import { setupSentry } from '@appsemble/web-utils';
-import React from 'react';
 import { render } from 'react-dom';
 
 import { App } from './components/App';

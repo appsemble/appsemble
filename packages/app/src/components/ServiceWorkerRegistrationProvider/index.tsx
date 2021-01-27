@@ -1,6 +1,6 @@
 import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import axios from 'axios';
-import React, {
+import {
   createContext,
   ReactElement,
   ReactNode,

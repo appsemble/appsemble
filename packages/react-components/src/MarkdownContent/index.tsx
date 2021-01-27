@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import marked from 'marked';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface MarkdownContentProps {

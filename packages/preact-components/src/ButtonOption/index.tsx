@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentProps, h, VNode } from 'preact';
+import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { Button, useValuePicker } from '..';
@@ -23,7 +23,7 @@ export function ButtonOption({
   const values = currentValue as unknown[];
 
   const onClick = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLButtonElement>) => {
+    (event: JSX.TargetedEvent<HTMLButtonElement>) => {
       if (multiple) {
         const index = values.indexOf(value);
         if (index === -1) {

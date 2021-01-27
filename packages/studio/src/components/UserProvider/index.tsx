@@ -3,7 +3,7 @@ import { JwtPayload, Organization, TokenResponse, UserInfo } from '@appsemble/ty
 import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
-import React, {
+import {
   createContext,
   ReactElement,
   ReactNode,
@@ -111,7 +111,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     axios.defaults.headers.authorization = `Bearer ${tokenResponse.access_token}`;
 
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
-    const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
+    const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const timeoutId = setTimeout(async () => {
       try {
         const { data } = await axios.post<TokenResponse>('/api/refresh', {
