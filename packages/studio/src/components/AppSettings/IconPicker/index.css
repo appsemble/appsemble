@@ -1,0 +1,51 @@
+.root {
+  border: 1px solid hsl(0, 0%, 86%);
+}
+
+.wrapper {
+  align-items: center;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  background-image: linear-gradient(45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
+    linear-gradient(-45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, hsl(0, 0%, 86%) 75%),
+    linear-gradient(-45deg, transparent 75%, hsl(0, 0%, 86%) 75%);
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  background-size: 20px 20px;
+  display: flex;
+  height: 128px;
+  justify-content: center;
+  max-height: 128px;
+  max-width: 128px;
+  position: relative;
+  width: 128px;
+}
+
+.icon {
+  align-items: center;
+  bottom: 0;
+  cursor: pointer;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: opacity 0.3s;
+  width: 100%;
+
+  &:hover {
+    opacity: 0.3;
+  }
+}
+
+.input {
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+}

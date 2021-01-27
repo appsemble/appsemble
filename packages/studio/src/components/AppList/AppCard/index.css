@@ -1,12 +1,7 @@
-.image {
-  margin: auto;
+.figure {
+  margin: 0 auto;
 }
 
 .rating {
   left: -0.5em;
-}
-
-.logo {
-  height: 128px !important;
-  object-fit: contain;
 }

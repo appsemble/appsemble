@@ -2143,11 +2143,6 @@
     text-table "^0.2.0"
     webpack-log "^1.1.2"
 
-"@wesselkuipers/leaflet.markercluster@^1.4.4":
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/@wesselkuipers/leaflet.markercluster/-/leaflet.markercluster-1.4.4.tgz#ac123028a0cd316711630e8a7ef38a6f58f7b7b6"
-  integrity sha512-1xHxNK2mFZcSr3utc549oO9j1JO0EewV7boeISQviJJdcgJEoe7/9K+MQzx9bGX/iJBEMe9gtGGOyoZsBJYK3g==
-
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
@@ -10162,11 +10157,6 @@ mini-css-extract-plugin@^1.3.4:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
     webpack-sources "^1.1.0"
-
-mini-jsx@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-2.0.0.tgz#231af1da41d6a4e78f3d48068a7f1e14f734ee3f"
-  integrity sha512-K2lADm51wdjQrbsPXciR4WH/lGfQLrA+OYYMpCx9+ox+Tltw2gY4IaArYdQfD4zi2dWL0FS3z0xqa3P2i7BgQw==
 
 minify@^4.1.1:
   version "4.1.3"
