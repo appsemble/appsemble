@@ -44,7 +44,7 @@ function getIconSize(url: string): Promise<[number, number]> {
 export async function createIcon({
   parameters: { marker = { longitude: '0', latitude: '0' } },
   utils,
-}: Pick<BootstrapParams, 'parameters' | 'utils'>): Promise<Icon | DivIcon> {
+}: Pick<BootstrapParams, 'parameters' | 'utils'>): Promise<DivIcon | Icon> {
   const { anchor, size = 28 } = marker;
   if ('asset' in marker) {
     const iconUrl = utils.asset(marker.asset);

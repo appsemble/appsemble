@@ -1,15 +1,9 @@
 import classNames from 'classnames';
-import React, {
-  ChangeEvent,
-  ComponentPropsWithoutRef,
-  forwardRef,
-  ReactNode,
-  useCallback,
-} from 'react';
+import { ChangeEvent, ComponentPropsWithoutRef, forwardRef, ReactNode, useCallback } from 'react';
 
 type CheckboxProps = Omit<
   ComponentPropsWithoutRef<'input'>,
-  'value' | 'label' | 'onChange' | 'title'
+  'label' | 'onChange' | 'title' | 'value'
 > & {
   /**
    * If true, tender an error color.

@@ -10,7 +10,7 @@ import { TokenResponse, UserInfo } from '@appsemble/types';
 import { appendOAuth2State, clearOAuth2State } from '@appsemble/web-utils';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 

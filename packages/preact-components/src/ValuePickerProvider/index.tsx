@@ -1,4 +1,4 @@
-import { ComponentChildren, createContext, h, VNode } from 'preact';
+import { ComponentChildren, createContext, JSX, VNode } from 'preact';
 import { useContext, useMemo } from 'preact/hooks';
 
 interface ValuePickerContext<T> {
@@ -10,7 +10,7 @@ interface ValuePickerContext<T> {
   /**
    * The change handler for if a value changes.
    */
-  onChange: (event: h.JSX.TargetedEvent<HTMLElement>, value: T) => void;
+  onChange: (event: JSX.TargetedEvent<HTMLElement>, value: T) => void;
 
   /**
    * The current value.

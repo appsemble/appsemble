@@ -44,7 +44,7 @@ export function resolveFixture(path: string): string {
  */
 export function readFixture(path: string): Promise<Buffer>;
 export function readFixture(path: string, encoding: BufferEncoding): Promise<string>;
-export function readFixture(path: string, encoding?: BufferEncoding): Promise<string | Buffer> {
+export function readFixture(path: string, encoding?: BufferEncoding): Promise<Buffer | string> {
   return fs.readFile(resolveFixture(path), encoding);
 }
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'preact/hooks';
 
 type EventListener<E extends Event = Event> = (event: E) => void;
-type Options = boolean | AddEventListenerOptions;
+type Options = AddEventListenerOptions | boolean;
 
 /**
  * Attach an event listener to an event target.

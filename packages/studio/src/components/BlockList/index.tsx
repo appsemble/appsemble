@@ -1,6 +1,6 @@
 import { Loader, Message, useData } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { HelmetIntl } from '../HelmetIntl';

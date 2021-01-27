@@ -1,6 +1,6 @@
 import { Button } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React, { Children, createContext, ReactChild, ReactElement, useContext } from 'react';
+import { Children, createContext, ReactChild, ReactElement, useContext } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.css';

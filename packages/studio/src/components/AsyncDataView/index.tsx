@@ -1,5 +1,5 @@
 import { Button, Loader, Message, UseAxiosResult } from '@appsemble/react-components';
-import React, { ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.css';

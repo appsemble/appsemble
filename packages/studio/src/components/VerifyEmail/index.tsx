@@ -1,6 +1,6 @@
 import { Loader, Message, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import React, { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useUser } from '../UserProvider';

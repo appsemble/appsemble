@@ -4,7 +4,7 @@ import { KoaContext } from '../types';
 
 interface ServeIconOptions {
   background?: string;
-  format?: string;
+  format?: 'png' | 'tiff' | 'webp';
   height?: number;
   icon: Buffer;
   width?: number;

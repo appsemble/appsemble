@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { Item } from '../../../block';

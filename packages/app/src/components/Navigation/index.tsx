@@ -1,6 +1,6 @@
 import { PageDefinition } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { BottomNavigation } from '../BottomNavigation';

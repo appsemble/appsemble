@@ -4,7 +4,7 @@ import {
   useLocationString,
 } from '@appsemble/react-components';
 import { detectLocale, has } from '@appsemble/utils';
-import React, { ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 

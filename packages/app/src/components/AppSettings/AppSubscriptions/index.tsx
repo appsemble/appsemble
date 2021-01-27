@@ -1,7 +1,7 @@
 import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/react-components';
 import { ResourceHooks, SubscriptionResponse } from '@appsemble/types';
 import axios from 'axios';
-import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react';
+import { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { apiUrl, appId } from '../../../utils/settings';

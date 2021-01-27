@@ -1,15 +1,12 @@
 import { BootstrapParams } from '@appsemble/sdk';
-import { h, VNode } from 'preact';
+import { JSX, VNode } from 'preact';
 
 import { Item } from '../../../block';
 
-type ListItemWrapperProps = (
-  | h.JSX.HTMLAttributes<HTMLButtonElement>
-  | h.JSX.HTMLAttributes<HTMLAnchorElement>
-) & {
+type ListItemWrapperProps = {
   actions: BootstrapParams['actions'];
   item: Item;
-};
+} & (JSX.HTMLAttributes<HTMLAnchorElement> | JSX.HTMLAttributes<HTMLButtonElement>);
 
 export function ListItemWrapper({
   actions,
@@ -18,11 +15,11 @@ export function ListItemWrapper({
   ...props
 }: ListItemWrapperProps): VNode {
   return actions.onClick.type === 'link' ? (
-    <a href={actions.onClick.href(item)} {...(props as h.JSX.HTMLAttributes<HTMLAnchorElement>)}>
+    <a href={actions.onClick.href(item)} {...(props as JSX.HTMLAttributes<HTMLAnchorElement>)}>
       {children}
     </a>
   ) : (
-    <button type="button" {...(props as h.JSX.HTMLAttributes<HTMLButtonElement>)}>
+    <button type="button" {...(props as JSX.HTMLAttributes<HTMLButtonElement>)}>
       {children}
     </button>
   );

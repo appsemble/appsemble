@@ -26,7 +26,7 @@ export interface OAuth2ClientCredentials {
   scopes: string[];
 }
 
-export type Role = 'Owner' | 'Maintainer' | 'AppEditor' | 'Member';
+export type Role = 'AppEditor' | 'Maintainer' | 'Member' | 'Owner';
 
 export interface Member {
   id: string;

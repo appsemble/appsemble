@@ -1,4 +1,4 @@
-import React, { ComponentPropsWithoutRef, forwardRef, useCallback, useRef, useState } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, useCallback, useRef, useState } from 'react';
 
 import { IconButton, InputField, useCombinedRefs } from '..';
 

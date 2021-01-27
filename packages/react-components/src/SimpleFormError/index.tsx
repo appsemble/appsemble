@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ComponentType, ReactElement } from 'react';
+import { ComponentType, ReactElement } from 'react';
 
 import { Message, useSimpleForm } from '..';
 import styles from './index.css';

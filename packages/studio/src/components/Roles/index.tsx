@@ -1,6 +1,6 @@
 import { AsyncSelect, Table, Title, useData, useMessages } from '@appsemble/react-components';
 import axios from 'axios';
-import React, { ChangeEvent, ReactElement, useCallback } from 'react';
+import { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 

@@ -1,7 +1,7 @@
 import { useToggle } from '@appsemble/react-components';
 import { AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 
 import { useApp } from '../../../AppContext';
 import { ListButton } from '../../../List/ListButton';

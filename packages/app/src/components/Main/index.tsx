@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ComponentPropsWithoutRef, ReactElement, useMemo } from 'react';
+import { ComponentPropsWithoutRef, ReactElement, useMemo } from 'react';
 
 import { shouldShowMenu } from '../../utils/layout';
 import { useAppDefinition } from '../AppDefinitionProvider';

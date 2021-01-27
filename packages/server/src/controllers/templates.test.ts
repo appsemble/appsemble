@@ -215,7 +215,7 @@ describe('createTemplateApp', () => {
 
   it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
     await Promise.all(
-      [...new Array(11)].map((_, index) =>
+      [...Array.from({ length: 11 })].map((_, index) =>
         App.create(
           {
             path: index + 1 === 1 ? 'test-app' : `test-app-${index + 1}`,

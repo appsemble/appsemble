@@ -37,7 +37,7 @@ export function formData(config: AxiosRequestConfig): AxiosRequestConfig {
  * @returns The original config.
  */
 export function requestLogger(config: AxiosRequestConfig): AxiosRequestConfig {
-  const time = new Date().getTime();
+  const time = Date.now();
   logger.verbose(
     `> ${time} ${highlight(`${config.method.toUpperCase()} ${axios.getUri(config)} HTTP/1.1`, {
       language: 'http',

@@ -126,22 +126,22 @@ interface RangeRequirement extends BaseRequirement {
 /**
  * All requirements applicable to string fields.
  */
-export type StringRequirement = RegexRequirement | LengthRequirement | RequiredRequirement;
+export type StringRequirement = LengthRequirement | RegexRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to number fields.
  */
-export type NumberRequirement = StepRequirement | MinMaxRequirement | RequiredRequirement;
+export type NumberRequirement = MinMaxRequirement | RequiredRequirement | StepRequirement;
 
 /**
  * All requirements applicable to file fields.
  */
-export type FileRequirement = AcceptRequirement | RequiredRequirement | LengthRequirement;
+export type FileRequirement = AcceptRequirement | LengthRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to date-time fields.
  */
-export type DateTimeRequirement = RequiredRequirement | RangeRequirement;
+export type DateTimeRequirement = RangeRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to object fields.
@@ -347,7 +347,7 @@ interface EventEnumField extends AbstractEnumField {
   loadError?: Remapper;
 }
 
-export type EnumField = SyncEnumField | ActionEnumField | EventEnumField;
+export type EnumField = ActionEnumField | EventEnumField | SyncEnumField;
 
 /**
  * An input field used to upload files.
@@ -552,20 +552,20 @@ export interface ObjectField extends AbstractField {
 
 export type Field =
   | BooleanField
+  | DateField
+  | DateTimeField
   | EnumField
   | FileField
   | GeoCoordinatesField
   | HiddenField
   | NumberField
-  | StringField
+  | ObjectField
   | RadioField
-  | DateTimeField
-  | DateField
-  | ObjectField;
+  | StringField;
 
 export type Values = Record<string, unknown>;
 
-export type FieldError = boolean | string | FieldErrorMap | FieldError[];
+export type FieldError = FieldError[] | FieldErrorMap | boolean | string;
 
 // Not using an interface causes an invalid circular reference.
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
@@ -597,7 +597,7 @@ export interface InputProps<T, F extends Field> {
   /**
    * A callback for when the value changes.
    */
-  onChange: (name: string | Event, value?: T) => void;
+  onChange: (name: Event | string, value?: T) => void;
 
   /**
    * Whether ot not the input has been modified by the user.

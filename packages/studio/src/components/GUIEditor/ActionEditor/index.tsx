@@ -1,7 +1,7 @@
 import { Title } from '@appsemble/react-components';
 import { ActionType, App } from '@appsemble/types';
 import { NamedEvent } from '@appsemble/web-utils';
-import React, { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { ActionEditorTypeEditor } from './ActionEditorTypeEditor';

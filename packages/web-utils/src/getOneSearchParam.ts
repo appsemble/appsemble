@@ -6,7 +6,7 @@
  * @returns The value of the seatch params, but only if exactly one value matches. Otherwise, `null`
  * is returned.
  */
-export function getOneSearchParam(qs: URLSearchParams, name: string): null | string {
+export function getOneSearchParam(qs: URLSearchParams, name: string): string | null {
   const values = qs.getAll(name);
   if (values.length === 1) {
     return values[0];

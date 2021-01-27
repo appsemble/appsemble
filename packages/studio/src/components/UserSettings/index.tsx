@@ -18,7 +18,7 @@ import {
 } from '@appsemble/react-components';
 import { has } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 

@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { DateRangeField, FieldComponentProps } from '../../../block';
@@ -18,14 +18,14 @@ export function DateRangeFieldComponent({
   const { utils } = useBlock();
 
   const onChangeFrom = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+    (event: JSX.TargetedEvent<HTMLInputElement>) => {
       onChange(event, [event.currentTarget.value, value[1]]);
     },
     [onChange, value],
   );
 
   const onChangeTo = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+    (event: JSX.TargetedEvent<HTMLInputElement>) => {
       onChange(event, [value[0], event.currentTarget.value]);
     },
     [onChange, value],

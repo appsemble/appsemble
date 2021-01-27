@@ -2,7 +2,7 @@ import { Icon, useValuePicker } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 
 import styles from './index.css';
 

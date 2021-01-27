@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
-import { h, VNode } from 'preact';
+import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
 import { DateTimeField, InputProps } from '../../../block';
@@ -31,7 +31,7 @@ export function DateTimeInput({
   const required = isRequired(field);
 
   const handleOnChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement, Event>, v: string): void => onChange(event, v),
+    (event: JSX.TargetedEvent<HTMLInputElement, Event>, v: string): void => onChange(event, v),
     [onChange],
   );
 

@@ -19,9 +19,9 @@
     "@appsemble/preact": "0.17.2",
     "@appsemble/preact-components": "0.17.2",
     "@appsemble/utils": "0.17.2",
-    "@fortawesome/fontawesome-common-types": "^0.2.32",
+    "@fortawesome/fontawesome-common-types": "^0.2.34",
     "classnames": "^2.2.6",
     "leaflet": "~1.5.1",
-    "preact": "^10.5.7"
+    "preact": "^10.5.12"
   }
 }

@@ -45,7 +45,7 @@ const operators = new Map([
   [TokenType.ModExpression, '%'],
 ]);
 
-type MethodConverter = [Edm[], (...args: any[]) => Where | Fn];
+type MethodConverter = [Edm[], (...args: any[]) => Fn | Where];
 
 function whereFunction(op: symbol): (haystack: any, needle: any) => Where {
   return (haystack, needle) => where(haystack, { [op]: needle });
@@ -91,7 +91,7 @@ const functions: Record<string, MethodConverter> = {
   trim: [[Edm.String], fnFunction('trim')],
 };
 
-function processLiteral(token: Token): boolean | number | string | Date {
+function processLiteral(token: Token): Date | boolean | number | string {
   switch (token.value) {
     case Edm.Boolean:
       return token.raw === 'true';
@@ -124,7 +124,7 @@ function processName(token: Token, model: PartialModel, rename: Rename): Col | J
   return name.includes('.') ? json(name) : col(`${model.tableName}.${name}`);
 }
 
-function processMethod(token: Token, model: PartialModel, rename: Rename): Where | Fn {
+function processMethod(token: Token, model: PartialModel, rename: Rename): Fn | Where {
   const { method, parameters } = token.value as { method: string; parameters: Token[] };
 
   if (!Object.hasOwnProperty.call(functions, method)) {
@@ -232,7 +232,7 @@ function processLogicalExpression(token: Token, model: PartialModel, rename: Ren
  * @returns The OData filter converted to a Sequelize query.
  */
 export function odataFilterToSequelize(
-  query: string | Token,
+  query: Token | string,
   model: PartialModel,
   rename: Rename = defaultRename,
 ): WhereOptions {

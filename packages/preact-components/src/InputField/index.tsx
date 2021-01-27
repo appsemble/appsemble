@@ -1,10 +1,10 @@
-import { ComponentProps, h } from 'preact';
+import { ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { FormComponent, Input, SharedFormComponentProps } from '..';
 
-type InputFieldProps = SharedFormComponentProps &
-  Omit<ComponentProps<typeof Input>, keyof SharedFormComponentProps>;
+type InputFieldProps = Omit<ComponentProps<typeof Input>, keyof SharedFormComponentProps> &
+  SharedFormComponentProps;
 
 /**
  * A Bulma styled form input element.

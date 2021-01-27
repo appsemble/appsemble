@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "jsxFactory": "h",
+    "jsxImportSource": "preact",
     "lib": ["dom", "dom.iterable", "esnext"],
     "types": ["css-modules", "jest"]
   }

@@ -64,14 +64,14 @@ export interface BlockDefinition {
    * For floating blocks this propert defines where the block should float.
    */
   position?:
-    | 'top left'
-    | 'top'
-    | 'top right'
+    | 'bottom left'
+    | 'bottom right'
+    | 'bottom'
     | 'left'
     | 'right'
-    | 'bottom left'
-    | 'bottom'
-    | 'bottom right';
+    | 'top left'
+    | 'top right'
+    | 'top';
 
   /**
    * The theme of the block.
@@ -318,11 +318,11 @@ export interface Remappers {
 }
 
 export type Remapper =
-  | RequireExactlyOne<Remappers>[]
   | RequireExactlyOne<Remappers>
-  | string
+  | RequireExactlyOne<Remappers>[]
+  | boolean
   | number
-  | boolean;
+  | string;
 
 export interface SubscriptionResponseResource {
   create: boolean;
@@ -343,7 +343,7 @@ export interface Security {
   login?: 'password';
   default: {
     role: string;
-    policy?: 'everyone' | 'organization' | 'invite';
+    policy?: 'everyone' | 'invite' | 'organization';
   };
   roles: Record<
     string,
@@ -355,12 +355,12 @@ export interface Security {
   >;
 }
 
-export type Navigation = 'bottom' | 'left-menu' | 'hidden';
-export type LayoutPosition = 'navigation' | 'navbar' | 'hidden';
+export type Navigation = 'bottom' | 'hidden' | 'left-menu';
+export type LayoutPosition = 'hidden' | 'navbar' | 'navigation';
 
 export interface NotificationDefinition {
   to?: string[];
-  subscribe?: 'all' | 'single' | 'both';
+  subscribe?: 'all' | 'both' | 'single';
   data?: {
     title: string;
     content: string;
@@ -403,7 +403,7 @@ export interface ResourceCall {
 }
 
 interface ResourceReferenceAction {
-  trigger: ('create' | 'update' | 'delete')[];
+  trigger: ('create' | 'delete' | 'update')[];
 }
 
 interface ResourceReference {
@@ -646,7 +646,7 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   /**
    * The action to subscribe to. Defaults to `update` if not specified.
    */
-  action?: 'create' | 'update' | 'delete';
+  action?: 'create' | 'delete' | 'update';
 }
 
 export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
@@ -690,34 +690,33 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
   };
 
 export type ActionDefinition =
+  | BaseActionDefinition<'email'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
   | BaseActionDefinition<'flow.next'>
-  | BaseActionDefinition<'email'>
   | BaseActionDefinition<'noop'>
-  | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'team.join'>
+  | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'throw'>
   | DialogActionDefinition
   | EventActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
+  | MessageActionDefinition
   | RequestActionDefinition
+  // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
+  | RequestLikeActionDefinition
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
   | ResourceQueryActionDefinition
-  | ResourceUpdateActionDefinition
   | ResourceSubscribeActionDefinition
-  | ResourceUnsubscribeActionDefinition
-  | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionStatusActionDefinition
-  | StaticActionDefinition
-  | MessageActionDefinition
-
-  // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
-  | RequestLikeActionDefinition;
+  | ResourceSubscriptionToggleActionDefinition
+  | ResourceUnsubscribeActionDefinition
+  | ResourceUpdateActionDefinition
+  | StaticActionDefinition;
 
 export interface ActionType {
   /**
@@ -769,7 +768,7 @@ export interface BlockManifest {
   /**
    * The type of layout to be used for the block.
    */
-  layout?: 'float' | 'static' | 'grow' | 'hidden' | null;
+  layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
 
   /**
    * Array of urls associated to the files of the block.
@@ -1295,9 +1294,9 @@ export interface AppSamlSecret extends WritableAppSamlSecret {
 export type SAMLStatus =
   | 'badsignature'
   | 'emailconflict'
-  | 'invalidsubjectconfirmation'
   | 'invalidrelaystate'
   | 'invalidsecret'
   | 'invalidstatuscode'
+  | 'invalidsubjectconfirmation'
   | 'missingnameid'
   | 'missingsubject';

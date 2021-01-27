@@ -25,7 +25,9 @@ module.exports = {
       { definedTags: ['format', 'maximum', 'minimum', 'TJS-pattern', 'TJS-type'] },
     ],
 
+    'unicorn/consistent-destructuring': 'off',
     'unicorn/no-unsafe-regex': 'off',
+    'unicorn/prefer-spread': 'off',
   },
   overrides: [
     {

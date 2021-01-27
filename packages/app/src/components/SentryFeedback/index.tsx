@@ -1,5 +1,5 @@
 import { Content, SentryForm } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { sentryDsn } from '../../utils/settings';

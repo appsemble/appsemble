@@ -1,7 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
 import { Values } from '../block';
@@ -32,8 +31,8 @@ bootstrap(
       fields,
     ]);
 
-    const [formErrors, setFormErrors] = useState<string[]>(
-      new Array(requirements?.length ?? 0).fill(null),
+    const [formErrors, setFormErrors] = useState(
+      Array.from<string>({ length: requirements?.length ?? 0 }).fill(null),
     );
     const [submitErrorResult, setSubmitErrorResult] = useState<string>(null);
     const [loading, setLoading] = useState(true);

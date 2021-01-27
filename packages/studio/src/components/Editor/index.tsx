@@ -20,7 +20,7 @@ import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
 import { editor } from 'monaco-editor';
 import { OpenAPIV3 } from 'openapi-types';
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 

@@ -38,7 +38,7 @@ class GrantError extends Error {
 }
 
 function checkTokenRequestParameters(
-  query: Record<string, string | string[]>,
+  query: Record<string, string[] | string>,
   allowed: string[],
 ): Record<string, string> {
   Object.entries(query).forEach(([key, value]) => {

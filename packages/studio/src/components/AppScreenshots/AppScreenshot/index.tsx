@@ -1,6 +1,6 @@
 import { Button, useConfirmation } from '@appsemble/react-components';
 import axios from 'axios';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../../AppContext';

@@ -1,6 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { IconName } from '@fortawesome/fontawesome-common-types';
-import React, { ElementType, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import { ElementType, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 import styles from './index.css';

@@ -1,4 +1,4 @@
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { FieldErrorMap, InputProps, ObjectField, Values } from '../../../block';

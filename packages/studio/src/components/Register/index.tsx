@@ -8,7 +8,7 @@ import {
   SimpleSubmit,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { HelmetIntl } from '../HelmetIntl';

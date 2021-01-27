@@ -1,5 +1,5 @@
 import equal from 'fast-deep-equal';
-import React, {
+import {
   ChangeEvent,
   ComponentPropsWithoutRef,
   forwardRef,

@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/preact-components';
 import { Action, Utils } from '@appsemble/sdk';
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
 import { Button as ButtonType } from '../../../block';

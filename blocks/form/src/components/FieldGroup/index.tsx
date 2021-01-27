@@ -1,4 +1,4 @@
-import { ComponentChildren, h, VNode } from 'preact';
+import { ComponentChildren, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { Field, FieldErrorMap, Values } from '../../../block';

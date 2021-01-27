@@ -1,5 +1,5 @@
 import { Join, Table } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Definition } from 'typescript-json-schema';
 
 import { messages } from './messages';

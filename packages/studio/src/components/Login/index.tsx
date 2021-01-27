@@ -11,7 +11,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';
 

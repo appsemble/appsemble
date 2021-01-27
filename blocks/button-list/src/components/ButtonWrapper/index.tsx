@@ -1,8 +1,8 @@
 import { Action, LinkAction } from '@appsemble/sdk';
-import { h, VNode } from 'preact';
+import { JSX, VNode } from 'preact';
 
 type ButtonWrapperProps = Omit<
-  h.JSX.HTMLAttributes<HTMLButtonElement> | h.JSX.HTMLAttributes<HTMLAnchorElement>,
+  JSX.HTMLAttributes<HTMLAnchorElement> | JSX.HTMLAttributes<HTMLButtonElement>,
   'action'
 > & {
   action: Action;
@@ -10,11 +10,11 @@ type ButtonWrapperProps = Omit<
 
 export function ButtonWrapper({ action, children, ...props }: ButtonWrapperProps): VNode {
   return action.type === 'link' ? (
-    <a href={(action as LinkAction).href()} {...(props as h.JSX.HTMLAttributes<HTMLAnchorElement>)}>
+    <a href={(action as LinkAction).href()} {...(props as JSX.HTMLAttributes<HTMLAnchorElement>)}>
       {children}
     </a>
   ) : (
-    <button type="button" {...(props as h.JSX.HTMLAttributes<HTMLButtonElement>)}>
+    <button type="button" {...(props as JSX.HTMLAttributes<HTMLButtonElement>)}>
       {children}
     </button>
   );

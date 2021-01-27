@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentProps, Fragment, h } from 'preact';
+import { ComponentProps, Fragment, JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
@@ -25,12 +25,12 @@ export interface InputProps
    *
    * If the input type is `number`, the value is a number, otherwise it is a string.
    */
-  onChange?: (event: h.JSX.TargetedEvent<HTMLInputElement>, value: number | string) => void;
+  onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: number | string) => void;
 
   /**
    * A regular expression the input must match.
    */
-  pattern?: string | RegExp;
+  pattern?: RegExp | string;
 
   /**
    * The HTML input type.
@@ -51,7 +51,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     ref,
   ) => {
     const handleChange = useCallback(
-      (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+      (event: JSX.TargetedEvent<HTMLInputElement>) => {
         const { currentTarget } = event;
         onChange(event, type === 'number' ? currentTarget.valueAsNumber : currentTarget.value);
       },

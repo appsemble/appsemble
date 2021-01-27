@@ -27,12 +27,12 @@ export interface SendMailOptions {
   /**
    * The email address(es) to BCC the mail to.
    */
-  cc?: string | string[];
+  cc?: string[] | string;
 
   /**
    * The email address(es) to BCC the mail to.
    */
-  bcc?: string | string[];
+  bcc?: string[] | string;
 
   /**
    * The subject of the email.

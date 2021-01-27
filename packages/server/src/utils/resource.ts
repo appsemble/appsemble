@@ -41,7 +41,7 @@ async function sendSubscriptionNotifications(
   notification: NotificationDefinition,
   resourceUserId: string,
   resourceType: string,
-  action: 'create' | 'update' | 'delete',
+  action: 'create' | 'delete' | 'update',
   resourceId: number,
   options: SendNotificationOptions,
 ): Promise<void> {
@@ -119,7 +119,7 @@ export async function processHooks(
   user: User,
   app: App,
   resource: Resource,
-  action: 'create' | 'update' | 'delete',
+  action: 'create' | 'delete' | 'update',
 ): Promise<void> {
   const resourceDefinition = app.definition.resources[resource.type];
 
@@ -184,7 +184,7 @@ export async function processReferenceHooks(
   user: User,
   app: App,
   resource: Resource,
-  action: 'create' | 'update' | 'delete',
+  action: 'create' | 'delete' | 'update',
 ): Promise<void> {
   await Promise.all(
     Object.entries(app.definition.resources[resource.type].references || {}).map(
@@ -230,7 +230,7 @@ export function verifyResourceBody(
   resource: any,
   assets: File[] = [],
   knownAssetIds: string[] = [],
-): [Pick<Asset, 'data' | 'filename' | 'data' | 'mime'>[], string[]] {
+): [Pick<Asset, 'data' | 'data' | 'filename' | 'mime'>[], string[]] {
   const validator = new Validator();
   const assetIdMap = new Map<number, string>();
   const assetUsedMap = new Map<number, boolean>();

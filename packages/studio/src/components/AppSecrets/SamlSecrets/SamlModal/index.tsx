@@ -9,7 +9,7 @@ import {
 } from '@appsemble/react-components';
 import { AppSamlSecret } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../../../AppContext';
