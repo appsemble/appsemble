@@ -36,6 +36,7 @@ beforeEach(async () => {
     OrganizationId: 'appsemble',
     parameters: {
       properties: {
+        type: 'object',
         foo: {
           type: 'number',
         },
