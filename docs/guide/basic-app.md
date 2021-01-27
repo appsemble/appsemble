@@ -251,7 +251,7 @@ After saving, the page can be opened from the app’s side menu. When data is en
 saved, a new person is registered. The user is then redirected to the _“People”_ page. This page now
 displays the newly created person.
 
-THe app should now look like this:
+The app should now look like this:
 
 ```yaml
 name: My App

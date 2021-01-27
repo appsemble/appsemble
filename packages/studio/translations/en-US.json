@@ -53,7 +53,7 @@
   "studio.src.components.AppRatings.anonymous": "Anonymous",
   "studio.src.components.AppRatings.average": "{average} out of 5",
   "studio.src.components.AppRatings.loadError": "There was a problem loading app ratings.",
-  "studio.src.components.AppRatings.loadingRatings": "THe ratings are being loaded",
+  "studio.src.components.AppRatings.loadingRatings": "The ratings are being loaded",
   "studio.src.components.AppRatings.noRatings": "There are no ratings available yet. You can be the first to rate!",
   "studio.src.components.AppRatings.rateApp": "Rate this app",
   "studio.src.components.AppRatings.ratingSuccessful": "You successfully rated this app!",

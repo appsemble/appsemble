@@ -3,7 +3,7 @@ import { PackageJson } from 'read-pkg-up';
 import { JsonObject } from 'type-fest';
 
 /**
- * THe base arguments from the command line.
+ * The base arguments from the command line.
  *
  * See {@link ./index.js}.
  */

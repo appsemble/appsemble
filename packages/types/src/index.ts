@@ -397,7 +397,7 @@ export interface ResourceCall {
   query?: Remapper;
 
   /**
-   * THe roles that are allowed to perform this action.
+   * The roles that are allowed to perform this action.
    */
   roles?: string[];
 }
@@ -1033,7 +1033,7 @@ export interface App {
     count: number;
 
     /**
-     * THe average app rating.
+     * The average app rating.
      */
     average: number;
   };
