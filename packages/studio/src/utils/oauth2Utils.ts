@@ -25,7 +25,7 @@ export function oauth2Redirect(qs: URLSearchParams, params: Record<string, strin
  * - No required parameters are missing.
  * - No duplicate parameters are oresent.
  * - The response type is valid.
- * - THe scope is valid.
+ * - The scope is valid.
  *
  * @param qs - The query parameters to check.
  * @param allowedScopes - Scopes the client is allowed to request.

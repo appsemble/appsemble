@@ -39,7 +39,7 @@ async function getAxiosConfig(): Promise<AxiosRequestConfig> {
  *
  * @returns A function for creating an ingress.
  *
- * The ingress function takes a domain name to create an ingress for. THe rest is determined from
+ * The ingress function takes a domain name to create an ingress for. The rest is determined from
  * the command line arguments and the environment.
  */
 async function createIngressFunction(): Promise<(domain: string) => Promise<void>> {
