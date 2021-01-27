@@ -4,7 +4,7 @@
  * @param parent - The parent node to insert the CSS into. I.e. a shadow root.
  * @param url - The URL of the stylesheet to insert.
  */
-export async function injectCSS(parent: Node, url?: string): Promise<void> {
+export async function injectCSS(parent: DocumentFragment, url?: string): Promise<void> {
   await new Promise<void>((resolve) => {
     if (!url) {
       resolve();
