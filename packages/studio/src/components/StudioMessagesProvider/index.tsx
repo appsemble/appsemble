@@ -1,35 +1,30 @@
-import {
-  da as reactComponentsDA,
-  nl as reactComponentsNL,
-  useLocationString,
-} from '@appsemble/react-components';
+import { useData, useLocationString } from '@appsemble/react-components';
 import { detectLocale, has } from '@appsemble/utils';
 import React, { ReactElement, ReactNode } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
-import studioDA from '../../../translations/da.json';
-import studioNL from '../../../translations/nl.json';
 import { supportedLanguages } from '../../utils/constants';
 
 interface IntlMessagesProviderProps {
   children: ReactNode;
 }
 
-const providedMessages: Record<string, Record<string, string>> = {
-  da: { ...reactComponentsDA, ...studioDA },
-  nl: { ...reactComponentsNL, ...studioNL },
-};
+interface Messages {
+  language: string;
+  messages: Record<string, string>;
+}
 
-const defaultLanguage = 'en-us';
+const defaultLanguage = 'en-US';
 
 export function StudioMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const redirect = useLocationString();
+  const messages = useData<Messages>(`/api/messages/${lang}?context=studio`);
 
   if (has(supportedLanguages, lang)) {
     return (
-      <IntlProvider defaultLocale="en-US" locale={lang} messages={providedMessages[lang]}>
+      <IntlProvider defaultLocale="en-US" locale={lang} messages={messages?.data?.messages ?? {}}>
         {children}
       </IntlProvider>
     );

@@ -1,11 +1,4 @@
-import {
-  Content,
-  da as daReactComponentMessages,
-  Loader,
-  Message,
-  nl as nlReactComponentMessages,
-  useLocationString,
-} from '@appsemble/react-components';
+import { Content, Loader, Message, useData, useLocationString } from '@appsemble/react-components';
 import { AppMessages } from '@appsemble/types';
 import { detectLocale, IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
 import axios from 'axios';
@@ -24,8 +17,6 @@ import React, {
 import { IntlProvider } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
-import daAppMessages from '../../../translations/da.json';
-import nlAppMessages from '../../../translations/nl.json';
 import { apiUrl, appId, languages } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 
@@ -46,11 +37,6 @@ const formatters = {
   getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
 };
 
-const providedMessages: Record<string, Record<string, string>> = {
-  nl: { ...nlReactComponentMessages, ...nlAppMessages },
-  da: { ...daReactComponentMessages, ...daAppMessages },
-};
-
 export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const { definition } = useAppDefinition();
@@ -64,9 +50,10 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   );
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const appsembleMessages = useData<AppMessages>(`${apiUrl}/messages/${lang}`);
 
   useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || 'en-us';
+    const defaultLanguage = definition.defaultLanguage || 'en-US';
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       const preferredLanguage = localStorage.getItem('preferredLanguage');
       const detected =
@@ -106,7 +93,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     [getMessage, messages],
   );
 
-  if (loading) {
+  if (loading || appsembleMessages.loading) {
     return <Loader />;
   }
 
@@ -120,7 +107,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   return (
     <Context.Provider value={value}>
-      <IntlProvider defaultLocale="en-US" locale={lang} messages={providedMessages[lang]}>
+      <IntlProvider defaultLocale="en-US" locale={lang} messages={appsembleMessages.data.messages}>
         {children}
       </IntlProvider>
     </Context.Provider>

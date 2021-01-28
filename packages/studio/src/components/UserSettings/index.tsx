@@ -126,11 +126,9 @@ export function UserSettings(): ReactElement {
         <SimpleForm
           defaultValues={{
             name: userInfo.name || '',
-            locale: has(supportedLanguages, userInfo.locale?.toLowerCase())
-              ? supportedLanguages[
-                  userInfo.locale?.toLowerCase() as keyof typeof supportedLanguages
-                ]
-              : localStorage.getItem('preferredLanguage') || 'en-us',
+            locale: has(supportedLanguages, userInfo.locale)
+              ? userInfo.locale
+              : localStorage.getItem('preferredLanguage') || 'en-US',
           }}
           onSubmit={onSaveProfile}
         >
@@ -151,7 +149,7 @@ export function UserSettings(): ReactElement {
             required
           >
             {Object.entries(supportedLanguages).map(([code, name]) => (
-              <option key={code} value={code.toLowerCase()}>
+              <option key={code} value={code}>
                 {name}
               </option>
             ))}

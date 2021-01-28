@@ -3,6 +3,7 @@ import { paths as translations } from './appMessages';
 import { paths as appOAuth2Secrets } from './appOAuth2Secrets';
 import { paths as apps } from './apps';
 import { paths as appSamlSecrets } from './appSamlSecrets';
+import { paths as appsembleMessages } from './appsembleMessages';
 import { paths as assets } from './assets';
 import { paths as blocks } from './blocks';
 import { paths as emails } from './emails';
@@ -21,6 +22,7 @@ export const paths = {
   ...appOAuth2Secrets,
   ...apps,
   ...appSamlSecrets,
+  ...appsembleMessages,
   ...assets,
   ...blocks,
   ...emails,
