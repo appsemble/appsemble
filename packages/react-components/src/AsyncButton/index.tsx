@@ -1,10 +1,4 @@
-import React, {
-  ComponentPropsWithoutRef,
-  MouseEvent,
-  ReactElement,
-  useCallback,
-  useState,
-} from 'react';
+import { ComponentPropsWithoutRef, MouseEvent, ReactElement, useCallback, useState } from 'react';
 
 import { Button } from '..';
 

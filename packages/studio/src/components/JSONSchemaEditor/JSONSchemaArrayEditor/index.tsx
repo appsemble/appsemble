@@ -1,7 +1,7 @@
 import { Button, Title } from '@appsemble/react-components';
 import { NamedEvent } from '@appsemble/web-utils';
 import { OpenAPIV3 } from 'openapi-types';
-import React, { MouseEvent, ReactElement, useCallback } from 'react';
+import { MouseEvent, ReactElement, useCallback } from 'react';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';

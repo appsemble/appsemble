@@ -1,6 +1,5 @@
 import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
-import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { Card } from './components/Card';

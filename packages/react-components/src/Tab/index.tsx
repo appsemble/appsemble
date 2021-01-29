@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ReactElement, ReactNode, useCallback } from 'react';
+import { ReactElement, ReactNode, useCallback } from 'react';
 
 import { useValuePicker } from '..';
 

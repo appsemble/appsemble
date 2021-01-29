@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ChangeEvent, ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
+import { ChangeEvent, ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
 
 export interface InputProps
   extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'loading' | 'onChange' | 'pattern'> {
@@ -28,7 +28,7 @@ export interface InputProps
   /**
    * A regular expression the input must match.
    */
-  pattern?: string | RegExp;
+  pattern?: RegExp | string;
 
   /**
    * The HTML input type.
@@ -37,15 +37,15 @@ export interface InputProps
    */
   type?:
     | 'color'
+    | 'date'
+    | 'datetime-local'
     | 'email'
     | 'number'
     | 'password'
     | 'search'
     | 'tel'
     | 'text'
-    | 'url'
-    | 'date'
-    | 'datetime-local';
+    | 'url';
 }
 
 /**

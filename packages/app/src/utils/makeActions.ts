@@ -15,8 +15,8 @@ interface CommonActionParams {
   pageReady: Promise<void>;
 }
 
-type MakeActionsParams = Omit<MakeActionParameters<ActionDefinition>, 'definition'> &
-  CommonActionParams & {
+type MakeActionsParams = CommonActionParams &
+  Omit<MakeActionParameters<ActionDefinition>, 'definition'> & {
     actions: Record<string, ActionType>;
     context: BlockDefinition | FlowPageDefinition;
   };
@@ -28,7 +28,7 @@ function createAction({
   prefix,
   remap,
   ...params
-}: MakeActionParameters<ActionDefinition> & CommonActionParams): Action {
+}: CommonActionParams & MakeActionParameters<ActionDefinition>): Action {
   const type = definition?.type ?? 'noop';
   const actionCreator: ActionCreator = actionCreators[type] || extraCreators[type];
 

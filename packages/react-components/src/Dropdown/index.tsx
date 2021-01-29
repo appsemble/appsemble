@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
+import { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
 import { Button, Icon, useClickOutside, useToggle } from '..';
 

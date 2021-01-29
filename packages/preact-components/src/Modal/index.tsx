@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentChildren, ComponentProps, h, VNode } from 'preact';
+import { ComponentChildren, ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { ElementType, useAnimation } from '..';

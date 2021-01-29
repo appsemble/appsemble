@@ -1,6 +1,6 @@
 import { applyRefs } from '@appsemble/react-components';
 import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import styles from './index.css';

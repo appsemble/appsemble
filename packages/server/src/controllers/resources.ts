@@ -115,7 +115,7 @@ async function verifyPermission(
   ctx: KoaContext,
   app: App,
   resourceType: string,
-  action: 'create' | 'delete' | 'get' | 'query' | 'update' | 'count',
+  action: 'count' | 'create' | 'delete' | 'get' | 'query' | 'update',
 ): Promise<WhereOptions> {
   if (!app.definition.resources[resourceType] && !app.definition.resources[resourceType][action]) {
     return;
@@ -134,10 +134,8 @@ async function verifyPermission(
 
   let roles = app.definition.resources?.[resourceType]?.[action]?.roles ?? [];
 
-  if (!roles || !roles.length) {
-    if (app.definition.roles?.length) {
-      ({ roles } = app.definition);
-    }
+  if ((!roles || !roles.length) && app.definition.roles?.length) {
+    ({ roles } = app.definition);
   }
 
   const functionalRoles = roles.filter((r) => specialRoles.has(r));
@@ -202,7 +200,7 @@ async function verifyPermission(
 
   if (app.definition.security) {
     const member = app.Users.find((u) => u.id === user.id);
-    const { policy, role: defaultRole } = app.definition?.security?.default;
+    const { policy, role: defaultRole } = app.definition.security.default;
     let role: string;
 
     if (member) {
@@ -231,10 +229,11 @@ async function verifyPermission(
 
     // Team roles are checked separately
     // XXX unify this logic?
-    if (!appRoles.some((r) => checkAppRole(app.definition.security, r, role, null))) {
-      if (!result.length) {
-        throw forbidden('User does not have sufficient permissions.');
-      }
+    if (
+      !appRoles.some((r) => checkAppRole(app.definition.security, r, role, null)) &&
+      !result.length
+    ) {
+      throw forbidden('User does not have sufficient permissions.');
     }
   }
 
@@ -592,8 +591,8 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     $author: user ? { id: user.id, name: user.name } : undefined,
   };
 
-  processReferenceHooks(ctx.user, app, createdResource, action);
-  processHooks(ctx.user, app, createdResource, action);
+  processReferenceHooks(user, app, createdResource, action);
+  processHooks(user, app, createdResource, action);
 }
 
 export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
@@ -677,8 +676,8 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
     $author: resource.UserId ? { id: resource.UserId, name: resource.User.name } : undefined,
   };
 
-  processReferenceHooks(ctx.user, app, resource, action);
-  processHooks(ctx.user, app, resource, action);
+  processReferenceHooks(user, app, resource, action);
+  processHooks(user, app, resource, action);
 }
 
 export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
@@ -718,6 +717,6 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   await resource.destroy();
   ctx.status = 204;
 
-  processReferenceHooks(ctx.user, app, resource, action);
-  processHooks(ctx.user, app, resource, action);
+  processReferenceHooks(user, app, resource, action);
+  processHooks(user, app, resource, action);
 }

@@ -3,17 +3,17 @@ import { readAsset } from '../../utils/readAsset';
 import { serveIcon } from '../serveIcon';
 
 interface Params {
-  format: string;
+  format: 'png' | 'tiff' | 'webp';
   height: string;
   width: string;
 }
 
 export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
-  const { params } = ctx;
+  const { params, request } = ctx;
   const width = Number(params.width);
   const height = Number(params.height || params.width);
   const { format } = params;
-  const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
+  const opaque = 'opaque' in request.query || format === 'tiff';
   const background = opaque && '#ffffff';
 
   const icon = await readAsset('appsemble.svg');

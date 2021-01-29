@@ -1,4 +1,4 @@
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import { Field as FieldType, RendererProps } from '../../../block';
 import { FileRenderer } from '../FileRenderer';

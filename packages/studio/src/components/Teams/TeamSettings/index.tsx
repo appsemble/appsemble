@@ -13,7 +13,7 @@ import {
 import { Team } from '@appsemble/types';
 import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 

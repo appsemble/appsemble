@@ -8,7 +8,7 @@ import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../model
 import { argv } from './argv';
 
 interface LoggedInUser {
-  id: string | number;
+  id: number | string;
 }
 
 interface AuthenticationCheckers {

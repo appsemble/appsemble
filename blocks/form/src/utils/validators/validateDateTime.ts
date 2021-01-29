@@ -12,7 +12,7 @@ import { isValidDate } from '../requirements';
  * @returns The first requirement that failed validation.
  */
 export function validateDateTime(
-  field: DateTimeField | DateField,
+  field: DateField | DateTimeField,
   value: string,
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
 ): DateTimeRequirement {

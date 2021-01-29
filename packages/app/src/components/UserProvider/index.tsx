@@ -3,7 +3,7 @@ import { AppMember, TeamMember, UserInfo } from '@appsemble/types';
 import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
-import React, {
+import {
   createContext,
   ReactElement,
   useCallback,

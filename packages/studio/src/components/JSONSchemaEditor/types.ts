@@ -42,7 +42,7 @@ export interface CommonJSONSchemaEditorProps<T = never> {
   /**
    * The schema used to render the form elements.
    */
-  schema: OpenAPIV3.SchemaObject | Definition;
+  schema: Definition | OpenAPIV3.SchemaObject;
 
   /**
    * The value used to populate the editor.

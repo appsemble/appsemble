@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils/src';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useRef, useState } from 'react';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { checkRole } from '../../utils/checkRole';
@@ -61,7 +61,7 @@ export function AppScreenshots(): ReactElement {
     setApp({
       ...app,
       screenshotUrls: [
-        ...app?.screenshotUrls,
+        ...app.screenshotUrls,
         ...ids.map((id) => `/api/apps/${app.id}/screenshots/${id}`),
       ],
     });

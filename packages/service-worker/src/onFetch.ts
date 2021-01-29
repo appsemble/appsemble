@@ -17,7 +17,7 @@ export function onFetch(event: FetchEvent): void {
   const { origin, pathname } = new URL(request.url);
 
   // This is a request to an external service or the Appsemble API. This should not be cached.
-  if (origin !== self.location.origin) {
+  if (origin !== globalThis.location.origin) {
     return;
   }
 

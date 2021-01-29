@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { Loader, useLocationString } from '@appsemble/react-components';
 import { BlockDefinition, PageDefinition, Remapper, Security, TeamMember } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';

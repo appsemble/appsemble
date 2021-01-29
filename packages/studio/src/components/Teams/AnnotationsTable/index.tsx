@@ -1,5 +1,5 @@
 import { Input, Table, useSimpleForm } from '@appsemble/react-components';
-import React, { ChangeEvent, forwardRef, ReactElement, ReactNode, useCallback } from 'react';
+import { ChangeEvent, forwardRef, ReactElement, ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages';

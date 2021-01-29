@@ -1,5 +1,5 @@
 import { Content, OAuth2LoginButton, useQuery, useToggle } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { oauth2Scope } from '../../utils/constants';

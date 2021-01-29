@@ -1,9 +1,9 @@
-import React, { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
 
 import { Checkbox, FormComponent, SharedFormComponentProps } from '..';
 
-type CheckboxFieldProps = SharedFormComponentProps &
-  Omit<ComponentPropsWithoutRef<typeof Checkbox>, 'error'> & {
+type CheckboxFieldProps = Omit<ComponentPropsWithoutRef<typeof Checkbox>, 'error'> &
+  SharedFormComponentProps & {
     /**
      * The title to display right of the checkbox.
      */

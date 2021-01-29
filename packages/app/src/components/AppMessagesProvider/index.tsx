@@ -4,7 +4,7 @@ import { detectLocale, IntlMessage, MessageGetter, normalize, objectCache } from
 import axios, { AxiosError } from 'axios';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
-import React, {
+import {
   createContext,
   ReactElement,
   ReactNode,
@@ -61,7 +61,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
           (languages.includes(preferredLanguage) && preferredLanguage) ||
           detectLocale(languages, navigator.languages) ||
           defaultLanguage;
-        if (/^[A-Z]/.exec(lang) || definition.pages.find((page) => lang === normalize(page.name))) {
+        if (/^[A-Z]/.test(lang) || definition.pages.some((page) => lang === normalize(page.name))) {
           // Someone got linked to a page without a language tag. Redirect them to the same page,
           // but with language set. This is especially important for the OAuth2 callback URL.
           history.replace(`/${detected}${redirect}`);

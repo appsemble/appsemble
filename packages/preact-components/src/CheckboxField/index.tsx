@@ -1,10 +1,10 @@
-import { ComponentChild, ComponentProps, h } from 'preact';
+import { ComponentChild, ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { Checkbox, FormComponent, SharedFormComponentProps } from '..';
 
-type CheckboxFieldProps = SharedFormComponentProps &
-  Omit<ComponentProps<typeof Checkbox>, 'error'> & {
+type CheckboxFieldProps = Omit<ComponentProps<typeof Checkbox>, 'error'> &
+  SharedFormComponentProps & {
     /**
      * The title to display right of the checkbox.
      */

@@ -1,6 +1,6 @@
 import { BulmaColor } from '@appsemble/sdk';
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 interface MessageProps {
   /**

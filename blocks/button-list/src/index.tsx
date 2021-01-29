@@ -1,5 +1,4 @@
 import { bootstrap } from '@appsemble/preact';
-import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { Button } from './components/Button';

@@ -121,7 +121,7 @@ declare module '@appsemble/sdk' {
     /**
      * Custom icon configuration.
      */
-    icons?: FontAwesomeMarkerIcon | AssetMarkerIcon;
+    icons?: AssetMarkerIcon | FontAwesomeMarkerIcon;
 
     /**
      * The maximum radius that a cluster will cover from the central marker (in pixels).

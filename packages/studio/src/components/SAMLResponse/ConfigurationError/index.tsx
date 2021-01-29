@@ -1,5 +1,5 @@
 import { Content } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 
 import { messages } from './messages';

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import { ValuePickerProvider, ValuePickerProviderProps } from '..';
 import styles from './index.css';
@@ -23,7 +23,7 @@ interface TabsProps<T> extends ValuePickerProviderProps<T> {
   /**
    * An optional size for the tabs
    */
-  size?: 'small' | 'medium' | 'large';
+  size?: 'large' | 'medium' | 'small';
 }
 
 /**

@@ -32,7 +32,7 @@ function ensureNode<T>(value: T | string): T | Text {
  */
 export function createHeading(
   depth: Heading['depth'],
-  children: (string | PhrasingContent)[],
+  children: (PhrasingContent | string)[],
 ): Heading {
   return { type: 'heading', depth, children: children.map((node) => ensureNode(node)) };
 }
@@ -44,7 +44,7 @@ export function createHeading(
  * @param children - Child nodes to append to the link reference.
  * @returns A link reference node.
  */
-export function createLink(url: string, children: (string | StaticPhrasingContent)[]): Link {
+export function createLink(url: string, children: (StaticPhrasingContent | string)[]): Link {
   return {
     type: 'link',
     url,

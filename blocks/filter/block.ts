@@ -1,6 +1,6 @@
 import { Remapper } from '@appsemble/sdk';
 import { IconName } from '@fortawesome/fontawesome-common-types';
-import { h } from 'preact';
+import { JSX } from 'preact/jsx-runtime';
 
 export interface EnumOption {
   /**
@@ -111,7 +111,7 @@ export interface FieldComponentProps<F extends Field, T = F['defaultValue']> {
 
   loading: boolean;
 
-  onChange: (event: h.JSX.TargetedEvent<HTMLElement & { name: string }>, value: T) => void;
+  onChange: (event: JSX.TargetedEvent<HTMLElement & { name: string }>, value: T) => void;
 
   value: T;
 }

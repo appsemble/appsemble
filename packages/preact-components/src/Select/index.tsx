@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentProps, h, toChildArray, VNode } from 'preact';
+import { ComponentProps, JSX, toChildArray, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
@@ -20,7 +20,7 @@ export interface SelectProps
   /**
    * This is fired when the input value has changed.
    */
-  onChange?: (event: h.JSX.TargetedEvent<HTMLSelectElement>, value: any) => void;
+  onChange?: (event: JSX.TargetedEvent<HTMLSelectElement>, value: any) => void;
 
   /**
    * The current value.
@@ -42,7 +42,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     );
 
     const handleChange = useCallback(
-      (event: h.JSX.TargetedEvent<HTMLSelectElement>) => {
+      (event: JSX.TargetedEvent<HTMLSelectElement>) => {
         onChange(event, childArray[Number(event.currentTarget.value)].props.value);
       },
       [childArray, onChange],
@@ -65,8 +65,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         >
           {childArray.map((child, index) => (
             <Option
-              {...child.props}
               key={child.key}
+              {...child.props}
               selected={child.props.value === value}
               value={index}
             />

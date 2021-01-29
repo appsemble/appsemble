@@ -37,7 +37,7 @@ export class BlockVersion extends Model {
   version: string;
 
   @Column(DataType.STRING)
-  layout?: 'float' | 'static' | 'grow' | 'hidden' | null;
+  layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
 
   @Column
   icon: Buffer;

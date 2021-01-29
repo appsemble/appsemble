@@ -10,7 +10,7 @@ import {
 import { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
-import React, { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 

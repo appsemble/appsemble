@@ -1,4 +1,4 @@
-import React, { ComponentPropsWithoutRef, ReactChild, ReactElement } from 'react';
+import { ComponentPropsWithoutRef, ReactChild, ReactElement } from 'react';
 
 import { Button, useSimpleForm } from '..';
 

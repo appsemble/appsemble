@@ -19,7 +19,7 @@ export async function getAppMembers(app: App): Promise<Member[]> {
       return appMember || { ...orgMem, role: app.definition.security.default.role };
     }),
     ...appMembers.filter(
-      (appMem) => !organizationMembers.find((orgMem) => orgMem.id === appMem.id),
+      (appMem) => !organizationMembers.some((orgMem) => orgMem.id === appMem.id),
     ),
   ] as Member[];
 }

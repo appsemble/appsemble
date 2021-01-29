@@ -1,10 +1,10 @@
-import { ComponentChild, h, VNode } from 'preact';
+import { ComponentChild, JSX, VNode } from 'preact';
 
 import { FormComponent, ValuePickerProvider } from '..';
 
 interface RadioGroupProps
-  extends Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'label' | 'onChange'> {
-  children: VNode<h.JSX.HTMLAttributes<HTMLInputElement>>[];
+  extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onChange' | 'value'> {
+  children: VNode<JSX.HTMLAttributes<HTMLInputElement>>[];
 
   /**
    * An error message to render.

@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, Input, Location } from '@appsemble/preact-components';
 import { DivIcon, Icon } from 'leaflet';
-import { Fragment, h, VNode } from 'preact';
+import { Fragment, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { AvatarWrapper } from '../AvatarWrapper';
@@ -33,7 +33,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const [message, setMessage] = useState('');
   const [replies, setReplies] = useState<unknown[]>(null);
   const [valid, setValid] = useState(false);
-  const [marker, setMarker] = useState<Icon | DivIcon>(null);
+  const [marker, setMarker] = useState<DivIcon | Icon>(null);
 
   useEffect(() => {
     createIcon({ parameters, utils }).then(setMarker);
@@ -83,7 +83,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   );
 
   const onChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>, value: string): void => {
+    (event: JSX.TargetedEvent<HTMLInputElement>, value: string): void => {
       setMessage(value);
       setValid(event.currentTarget.validity.valid);
     },

@@ -1,5 +1,5 @@
 import { BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
-import { ComponentType, createContext, h, render } from 'preact';
+import { ComponentType, createContext, render } from 'preact';
 import { useContext } from 'preact/hooks';
 
 export interface BlockProps extends BootstrapParams {
@@ -23,6 +23,7 @@ export function mount(
 ): (params: BootstrapParams) => Promise<void> {
   return (params) =>
     new Promise((ready) => {
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       const props = {
         ...params,
         ready,

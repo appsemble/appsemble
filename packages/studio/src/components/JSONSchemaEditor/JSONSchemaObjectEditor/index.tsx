@@ -1,6 +1,6 @@
 import { Title } from '@appsemble/react-components';
 import { OpenAPIV3 } from 'openapi-types';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';

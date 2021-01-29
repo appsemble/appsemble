@@ -9,7 +9,7 @@ import {
 } from '@appsemble/react-components';
 import { App, Rating } from '@appsemble/types';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { RatingField } from '../RatingField';

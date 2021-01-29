@@ -1,7 +1,7 @@
 import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
-import React, { ChangeEvent, ReactElement, useCallback } from 'react';
+import { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 

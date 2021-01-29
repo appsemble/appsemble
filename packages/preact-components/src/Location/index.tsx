@@ -12,7 +12,7 @@ import {
   Marker,
   TileLayer,
 } from 'leaflet';
-import { Component, createRef, h, VNode } from 'preact';
+import { Component, createRef, VNode } from 'preact';
 
 export interface LocationProps {
   className?: string;
@@ -20,13 +20,13 @@ export interface LocationProps {
   longitude: number;
   mapOptions?: MapOptions;
   theme: Theme;
-  marker?: Icon | DivIcon;
+  marker?: DivIcon | Icon;
 }
 
 /**
  * Render a location based marker based on leaflet.
  */
-class LocationComponent extends Component<LocationProps & BlockProps> {
+class LocationComponent extends Component<BlockProps & LocationProps> {
   ref = createRef<HTMLDivElement>();
 
   componentDidMount(): void {

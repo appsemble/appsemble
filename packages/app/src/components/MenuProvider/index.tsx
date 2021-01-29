@@ -1,5 +1,5 @@
 import { Toggle, useToggle } from '@appsemble/react-components';
-import React, { createContext, ReactElement, ReactNode, useContext } from 'react';
+import { createContext, ReactElement, ReactNode, useContext } from 'react';
 
 interface MenuProviderProps {
   children: ReactNode;

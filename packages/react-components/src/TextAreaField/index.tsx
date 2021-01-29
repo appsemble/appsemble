@@ -1,10 +1,13 @@
 import classNames from 'classnames';
-import React, { ComponentPropsWithoutRef, forwardRef } from 'react';
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 
 import { FormComponent, SharedFormComponentProps, TextArea } from '..';
 
-type TextAreaFieldProps = SharedFormComponentProps &
-  Omit<ComponentPropsWithoutRef<typeof TextArea>, keyof SharedFormComponentProps>;
+type TextAreaFieldProps = Omit<
+  ComponentPropsWithoutRef<typeof TextArea>,
+  keyof SharedFormComponentProps
+> &
+  SharedFormComponentProps;
 
 /**
  * A Bulma styled textarea element.

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { enableRegistration } from '../../utils/settings';

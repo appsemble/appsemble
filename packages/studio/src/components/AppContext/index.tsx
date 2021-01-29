@@ -1,14 +1,7 @@
 import { Loader, Message, useData } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import React, {
-  createContext,
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  useContext,
-  useMemo,
-} from 'react';
+import { createContext, Dispatch, ReactElement, SetStateAction, useContext, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 

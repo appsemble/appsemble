@@ -57,7 +57,7 @@ type MapperImplementations = {
 export function remap(
   remapper: Remapper,
   input: unknown,
-  context: RemapperContext | InternalContext,
+  context: InternalContext | RemapperContext,
 ): unknown {
   if (
     typeof remapper === 'string' ||

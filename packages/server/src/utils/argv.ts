@@ -55,7 +55,7 @@ export interface Argv {
   /**
    * The exposed port of the Kubernetes server that’s serving Appsemble.
    */
-  servicePort: string | number;
+  servicePort: number | string;
 
   /**
    * The hostname on which the Kubernetes API is available.
@@ -69,7 +69,7 @@ export interface Argv {
    *
    * @default 443
    */
-  kubernetesServicePort: string | number;
+  kubernetesServicePort: number | string;
 
   /**
    * Kubernetes annotations to apply to the ingress as a JSON string.

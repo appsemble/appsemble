@@ -12,7 +12,7 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
-import React, { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 

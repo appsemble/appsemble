@@ -44,7 +44,7 @@ function getIconSize(url: string): Promise<[number, number]> {
 export async function createIcon({
   parameters: { icons = {} },
   utils,
-}: BootstrapParams): Promise<Icon | DivIcon> {
+}: BootstrapParams): Promise<DivIcon | Icon> {
   const { anchor, size = 28 } = icons;
   if ('asset' in icons) {
     const iconUrl = utils.asset(icons.asset);

@@ -22,7 +22,7 @@ export const appRouter = tinyRouter([
     get: robotsHandler,
   },
   {
-    route: /^\/icon-(?<width>\d+)(x(?<height>\d+))?\.(?<format>png|jpg|tiff|webp)$/,
+    route: /^\/icon-(?<width>\d+)(x(?<height>\d+))?\.(?<format>png|tiff|webp)$/,
     get: iconHandler,
   },
   {

@@ -11,7 +11,7 @@ import {
 import { Team } from '@appsemble/types';
 import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';

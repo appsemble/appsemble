@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { FormComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { FileField, InputProps } from '../../../block';
@@ -9,7 +9,7 @@ import { isRequired } from '../../utils/requirements';
 import { FileEntry } from '../FileEntry';
 import styles from './index.css';
 
-type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
+type FileInputProps = InputProps<(Blob | string)[] | Blob | string, FileField>;
 
 export function FileInput({
   dirty,
@@ -29,7 +29,7 @@ export function FileInput({
   const remappedLabel = utils.remap(label, value);
 
   const handleInput = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>, val: string): void => {
+    (event: JSX.TargetedEvent<HTMLInputElement>, val: string): void => {
       const copy = [].concat(value);
       const index = Number(event.currentTarget.name.split('.').pop());
       if (val == null) {

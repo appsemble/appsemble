@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import { FieldGroup as FieldGroupType, RendererProps } from '../../../block';
 import { Field } from '../Field';

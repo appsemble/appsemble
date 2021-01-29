@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Option, Select } from '@appsemble/preact-components';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import { EnumField, FieldComponentProps } from '../../../block';
 

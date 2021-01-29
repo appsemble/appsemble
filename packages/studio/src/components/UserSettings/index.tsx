@@ -18,7 +18,7 @@ import {
 } from '@appsemble/react-components';
 import { has } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -126,8 +126,8 @@ export function UserSettings(): ReactElement {
         <SimpleForm
           defaultValues={{
             name: userInfo.name || '',
-            locale: has(supportedLanguages, userInfo.locale)
-              ? userInfo.locale
+            locale: has(supportedLanguages, userInfo.locale?.toLowerCase())
+              ? userInfo.locale?.toLowerCase()
               : localStorage.getItem('preferredLanguage') || 'en-us',
           }}
           onSubmit={onSaveProfile}

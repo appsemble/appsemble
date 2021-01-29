@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
+    "jsx": "react",
     "jsxFactory": "h",
     "lib": ["dom", "dom.iterable", "esnext"],
     "types": ["css-modules", "node"]

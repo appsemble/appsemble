@@ -20,7 +20,7 @@ import {
 import { AppMessages } from '@appsemble/types';
 import { getLanguageDisplayName, iterApp, langmap } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { findMessageIds } from '../../utils/findMessageIds';

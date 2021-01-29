@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { InputField, TextAreaField } from '@appsemble/preact-components';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import { InputProps, StringField } from '../../../block';
 import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements';

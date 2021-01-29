@@ -1,5 +1,5 @@
 import mermaid from 'mermaid';
-import React, { ReactElement, useEffect, useRef } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
 
 mermaid.initialize({
   securityLevel: 'loose',

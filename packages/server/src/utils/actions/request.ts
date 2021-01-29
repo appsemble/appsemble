@@ -11,7 +11,7 @@ export async function request({
   data,
   user,
 }: ServerActionParameters<RequestLikeActionDefinition>): Promise<any> {
-  let method: 'PUT' | 'GET' | 'POST' | 'DELETE';
+  let method: 'DELETE' | 'GET' | 'POST' | 'PUT';
 
   if (!action.method) {
     switch (action.type) {

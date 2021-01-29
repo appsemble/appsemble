@@ -1,12 +1,5 @@
 import { BulmaColor } from '@appsemble/sdk';
-import React, {
-  createContext,
-  ReactElement,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
+import { createContext, ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
 import { PromiseValue } from 'type-fest';
 
 import { CardFooterButton, Modal } from '..';

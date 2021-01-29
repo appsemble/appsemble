@@ -1,7 +1,7 @@
 import { Loader, useLocationString } from '@appsemble/react-components';
 import { detectLocale, has } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 

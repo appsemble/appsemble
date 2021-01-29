@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Button } from '@appsemble/preact-components';
-import { ComponentProps, h, VNode } from 'preact';
+import { ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { DropdownOption as DropdownOptionType } from '../../../block';

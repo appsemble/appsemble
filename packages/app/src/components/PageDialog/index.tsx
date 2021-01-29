@@ -1,6 +1,6 @@
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React, { ComponentPropsWithoutRef, ReactElement } from 'react';
+import { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import { ShowDialogParams } from '../../types';
 import { BlockList } from '../BlockList';

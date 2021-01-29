@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.17.2",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "inquirer": "^7.3.3",
     "type-fest": "^0.20.2",
     "yargs": "^16.2.0"

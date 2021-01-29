@@ -1,5 +1,5 @@
 import { Checkbox, useToggle } from '@appsemble/react-components';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 
 import styles from './index.css';
 

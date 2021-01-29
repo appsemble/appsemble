@@ -45,7 +45,7 @@ function getIconSize(url: string): Promise<[number, number]> {
 export async function createIcon(
   { parameters: { icons = {} }, utils }: BootstrapParams,
   highlight: boolean,
-): Promise<Icon | DivIcon> {
+): Promise<DivIcon | Icon> {
   const { activeRatio = 1, anchor, size = 28 } = icons;
   const fullSize = highlight ? size * activeRatio : size;
   if ('asset' in icons) {
