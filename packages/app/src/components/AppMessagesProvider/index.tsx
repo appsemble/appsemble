@@ -54,7 +54,6 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   useEffect(() => {
     const resolveMessages = async (): Promise<void> => {
-      setLoading(true);
       const defaultLanguage = definition.defaultLanguage || 'en-us';
       if (lang !== defaultLanguage && !languages.includes(lang)) {
         const preferredLanguage = localStorage.getItem('preferredLanguage');
