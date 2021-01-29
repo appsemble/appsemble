@@ -79,7 +79,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
         try {
           const appsembleMessagesResponse = await axios.get<AppMessages>(
-            `${apiUrl}/api/messages/${lang}`,
+            `${apiUrl}/api/messages/${lang}?context=app`,
           );
           setAppsembleMessages(appsembleMessagesResponse.data.messages);
         } catch (err: unknown) {
