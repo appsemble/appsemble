@@ -1,6 +1,7 @@
-import { useData, useLocationString } from '@appsemble/react-components';
+import { Loader, useLocationString } from '@appsemble/react-components';
 import { detectLocale, has } from '@appsemble/utils';
-import React, { ReactElement, ReactNode } from 'react';
+import axios from 'axios';
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
@@ -15,16 +16,32 @@ interface Messages {
   messages: Record<string, string>;
 }
 
-const defaultLanguage = 'en-US';
+const defaultLanguage = 'en-us';
 
 export function StudioMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const redirect = useLocationString();
-  const messages = useData<Messages>(`/api/messages/${lang}?context=studio`);
+  const [messages, setMessages] = useState<Record<string, string>>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!has(supportedLanguages, lang)) {
+      return;
+    }
+
+    axios.get<Messages>(`/api/messages/${lang}?context=studio`).then((response) => {
+      setMessages(response.data.messages);
+      setLoading(false);
+    });
+  }, [lang]);
 
   if (has(supportedLanguages, lang)) {
+    if (loading) {
+      return <Loader />;
+    }
+
     return (
-      <IntlProvider defaultLocale="en-US" locale={lang} messages={messages?.data?.messages ?? {}}>
+      <IntlProvider defaultLocale="en-us" locale={lang} messages={messages}>
         {children}
       </IntlProvider>
     );
