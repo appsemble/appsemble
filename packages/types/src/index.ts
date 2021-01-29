@@ -1048,12 +1048,12 @@ export interface App {
   screenshotUrls?: string[];
 
   /**
-   * True if the app supports an adaptive icon.
+   * True if the app supports an maskable icon.
    */
-  hasAdaptiveIcon: boolean;
+  hasMaskableIcon: boolean;
 
   /**
-   * True if the app supports an adaptive icon.
+   * True if the app supports an maskable icon.
    */
   iconBackground: string;
 

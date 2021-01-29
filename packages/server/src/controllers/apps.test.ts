@@ -1333,7 +1333,7 @@ describe('getAppIcon', () => {
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should generate an adaptive icon from a horizontal app icon', async () => {
+  it('should generate an maskable icon from a horizontal app icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -1343,14 +1343,14 @@ describe('getAppIcon', () => {
       OrganizationId: organization.id,
     });
     const response = await request.get(`/api/apps/${app.id}/icon`, {
-      params: { adaptive: 'true' },
+      params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
     expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should generate an adaptive icon from a vertical app icon', async () => {
+  it('should generate an maskable icon from a vertical app icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -1360,7 +1360,7 @@ describe('getAppIcon', () => {
       OrganizationId: organization.id,
     });
     const response = await request.get(`/api/apps/${app.id}/icon`, {
-      params: { adaptive: 'true' },
+      params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
     expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
@@ -1378,24 +1378,24 @@ describe('getAppIcon', () => {
       OrganizationId: organization.id,
     });
     const response = await request.get(`/api/apps/${app.id}/icon`, {
-      params: { adaptive: 'true' },
+      params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
     expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should crop and fill an adaptive icon', async () => {
+  it('should crop and fill an maskable icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
-      adaptiveIcon: await readFixture('nodejs-logo.png'),
+      maskableIcon: await readFixture('nodejs-logo.png'),
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
     const response = await request.get(`/api/apps/${app.id}/icon`, {
-      params: { adaptive: 'true' },
+      params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
     expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });

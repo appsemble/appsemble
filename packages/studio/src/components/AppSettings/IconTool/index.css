@@ -1,4 +1,4 @@
-.adaptiveIconWapper {
+.maskableIconWapper {
   /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   background-image: linear-gradient(45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
     linear-gradient(-45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
@@ -21,7 +21,7 @@
   object-fit: contain;
 }
 
-.adaptiveIcon {
+.maskableIcon {
   align-items: center;
   justify-content: center;
   transition: clip-path 1s;
@@ -29,7 +29,7 @@
 
 .contain {
   /*
-   * https://css-tricks.com/maskable-icons-android-adaptive-icons-for-your-pwa/
+   * https://css-tricks.com/maskable-icons-android-maskable-icons-for-your-pwa/
    *
    * The safe are is a radius of 40%, or a diameter of 80%.
    * The width and height of a square inside a circle is sine(π / 4)

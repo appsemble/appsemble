@@ -348,13 +348,13 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     params: { appId },
     request: {
       body: {
-        adaptiveIcon,
         coreStyle,
         definition,
         domain,
         icon,
         iconBackground,
         longDescription,
+        maskableIcon,
         path,
         private: isPrivate,
         screenshots,
@@ -407,8 +407,8 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       result.icon = icon.contents;
     }
 
-    if (adaptiveIcon) {
-      result.adaptiveIcon = adaptiveIcon.contents;
+    if (maskableIcon) {
+      result.maskableIcon = maskableIcon.contents;
     }
 
     if (iconBackground) {
@@ -502,15 +502,15 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
-    query: { adaptive, raw = false, size = 128 },
+    query: { maskable, raw = false, size = 128 },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['icon', adaptive && 'adaptiveIcon', adaptive && 'iconBackground'].filter(Boolean),
+    attributes: ['icon', maskable && 'maskableIcon', maskable && 'iconBackground'].filter(Boolean),
     include: [{ model: Organization, attributes: ['icon'] }],
   });
 
   if (!raw) {
-    return serveIcon(ctx, app, { adaptive, size: Number.parseInt(size) });
+    return serveIcon(ctx, app, { maskable, size: Number.parseInt(size) });
   }
 
   if (!app) {
@@ -518,7 +518,7 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   }
 
   const icon =
-    (adaptive && app.adaptiveIcon) ||
+    (maskable && app.maskableIcon) ||
     app.icon ||
     app.Organization.icon ||
     (await readAsset('appsemble.png'));

@@ -12,8 +12,8 @@ export const key = '0.17.3';
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.info('Adding column App.adaptiveIcon');
-  await queryInterface.addColumn('App', 'adaptiveIcon', DataTypes.BLOB);
+  logger.info('Adding column App.maskableIcon');
+  await queryInterface.addColumn('App', 'maskableIcon', DataTypes.BLOB);
 
   logger.info('Adding column App.iconBackground');
   await queryInterface.addColumn('App', 'iconBackground', DataTypes.STRING);
@@ -31,6 +31,6 @@ export async function down(db: Sequelize): Promise<void> {
   logger.info('Removing column App.iconBackground');
   await queryInterface.removeColumn('App', 'iconBackground');
 
-  logger.info('Removing column App.adaptiveIcon');
-  await queryInterface.removeColumn('App', 'adaptiveIcon');
+  logger.info('Removing column App.maskableIcon');
+  await queryInterface.removeColumn('App', 'maskableIcon');
 }

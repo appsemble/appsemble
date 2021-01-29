@@ -24,7 +24,7 @@ export function AppCard({ app }: AppCardProps): ReactElement {
             <img
               alt={formatMessage(messages.icon)}
               className="is-rounded card"
-              src={`/api/apps/${app.id}/icon?adaptive=true`}
+              src={`/api/apps/${app.id}/icon?maskable=true`}
             />
           </figure>
         </div>

@@ -5,7 +5,7 @@ import { KoaContext } from '../types';
 import { readAsset } from './readAsset';
 
 interface ServeIconOptions {
-  adaptive: boolean;
+  maskable: boolean;
   size: number;
 }
 
@@ -17,21 +17,21 @@ const transparent: RGBA = { r: 0, g: 0, b: 0, alpha: 0 };
 const white: RGBA = { r: 0xff, g: 0xff, b: 0xff, alpha: 1 };
 
 /**
- * The diameter of the safe area for adaptive icons.
+ * The diameter of the safe area for maskable icons.
  *
- * https://css-tricks.com/maskable-icons-android-adaptive-icons-for-your-pwa/
+ * https://css-tricks.com/maskable-icons-android-maskable-icons-for-your-pwa/
  */
 const safeAreaDiameter = 0.8;
 
 export async function serveIcon(
   ctx: KoaContext,
-  { Organization, adaptiveIcon, icon, iconBackground }: App,
-  { adaptive, size }: ServeIconOptions,
+  { Organization, icon, iconBackground, maskableIcon }: App,
+  { maskable, size }: ServeIconOptions,
 ): Promise<void> {
   let img: Sharp;
   const background = iconBackground ?? white;
 
-  if (!adaptive) {
+  if (!maskable) {
     // Serve the regular app icon, but scaped.
     img = sharp(icon || Organization.icon || (await readAsset('appsemble.png'))).resize({
       width: size,
@@ -39,14 +39,14 @@ export async function serveIcon(
       fit: 'contain',
       background: transparent,
     });
-  } else if (adaptiveIcon) {
-    // Serve adaptive icon
-    img = sharp(adaptiveIcon);
+  } else if (maskableIcon) {
+    // Serve maskable icon
+    img = sharp(maskableIcon);
     // XXX use exact size
     img.resize({ width: size, height: size, fit: 'cover' });
     img.flatten({ background });
   } else {
-    // Make the regular icon adaptive
+    // Make the regular icon maskable
     const actual = sharp(icon || Organization.icon || (await readAsset('appsemble.png')));
     const metadata = await actual.metadata();
     const angle = Math.atan(metadata.height / metadata.width);

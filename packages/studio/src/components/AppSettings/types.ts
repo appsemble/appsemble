@@ -1,6 +1,6 @@
 export interface FormValues {
   icon: File | string;
-  adaptiveIcon?: File;
+  maskableIcon?: File;
   iconBackground: string;
   path: string;
   private: boolean;

@@ -46,7 +46,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                adaptiveIcon: {
+                maskableIcon: {
                   type: 'string',
                   format: 'binary',
                   description: 'The app icon.',
@@ -190,7 +190,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                adaptiveIcon: {
+                maskableIcon: {
                   type: 'string',
                   format: 'binary',
                   description: 'The app icon.',

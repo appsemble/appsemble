@@ -46,7 +46,7 @@ export function AppSettings(): ReactElement {
   // This is needed, because the app domain may be null.
   const defaultValues = useMemo<FormValues>(
     () => ({
-      adaptiveIcon: null,
+      maskableIcon: null,
       domain: app.domain || '',
       icon: `${app.iconUrl}?raw=true`,
       iconBackground: app.iconBackground,
@@ -65,8 +65,8 @@ export function AppSettings(): ReactElement {
     if (values.icon !== app.iconUrl) {
       data.set('icon', values.icon);
     }
-    if (values.adaptiveIcon) {
-      data.set('adaptiveIcon', values.adaptiveIcon);
+    if (values.maskableIcon) {
+      data.set('maskableIcon', values.maskableIcon);
     }
 
     await axios.patch(`/api/apps/${app.id}`, data);

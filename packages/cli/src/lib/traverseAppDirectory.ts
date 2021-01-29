@@ -50,9 +50,9 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
         formData.append('icon', createReadStream(filepath));
         return;
 
-      case 'adaptive-icon.png':
-        logger.info(`Including adaptive icon ${filepath}`);
-        formData.append('adaptiveIcon', createReadStream(filepath));
+      case 'maskable-icon.png':
+        logger.info(`Including maskable icon ${filepath}`);
+        formData.append('maskableIcon', createReadStream(filepath));
         return;
 
       case 'readme.md':

@@ -76,7 +76,7 @@ export interface MonoRepoPackageJson extends PackageJson {
 
 export interface AppsembleRC {
   /**
-   * The background color to use for adaptive icons.
+   * The background color to use for maskable icons.
    */
   iconBackground?: string;
 }

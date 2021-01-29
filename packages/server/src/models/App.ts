@@ -59,7 +59,7 @@ export class App extends Model {
   icon: Buffer;
 
   @Column
-  adaptiveIcon: Buffer;
+  maskableIcon: Buffer;
 
   @Column
   iconBackground: string;

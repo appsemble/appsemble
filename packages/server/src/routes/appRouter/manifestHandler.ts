@@ -30,7 +30,7 @@ export async function manifestHandler(ctx: KoaContext): Promise<void> {
         purpose: 'any',
       },
       {
-        src: `/icon-${size}.png?adaptive=true`,
+        src: `/icon-${size}.png?maskable=true`,
         type: 'image/png',
         sizes: `${size}x${size}`,
         purpose: 'maskable',

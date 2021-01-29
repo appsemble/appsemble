@@ -29,11 +29,11 @@ export function IconTool(): ReactElement {
   const [shape, setShape] = useState<keyof typeof shapes>('minimal');
 
   const iconUrl = useObjectURL(values.icon);
-  const adaptiveIconUrl = useObjectURL(
-    values.adaptiveIcon ||
-      (app.hasAdaptiveIcon ? `${app.iconUrl}?adaptive=true&raw=true` : iconUrl),
+  const maskableIconUrl = useObjectURL(
+    values.maskableIcon ||
+      (app.hasMaskableIcon ? `${app.iconUrl}?maskable=true&raw=true` : iconUrl),
   );
-  const hasAdaptiveIcon = values.adaptiveIcon || app.hasAdaptiveIcon;
+  const hasMaskableIcon = values.maskableIcon || app.hasMaskableIcon;
 
   const shapeShift = useCallback((event, value) => setShape(value), []);
 
@@ -44,7 +44,7 @@ export function IconTool(): ReactElement {
     [setValue],
   );
 
-  const handleAdaptiveIconLoad = useCallback(
+  const handleMaskableIconLoad = useCallback(
     ({
       currentTarget: { classList, naturalHeight, naturalWidth, style },
     }: SyntheticEvent<HTMLImageElement>) => {
@@ -77,9 +77,9 @@ export function IconTool(): ReactElement {
           </IconPicker>
         </div>
         <div>
-          <IconPicker name="adaptiveIcon" onChange={handleChange}>
+          <IconPicker name="maskableIcon" onChange={handleChange}>
             <figure
-              className={`image is-flex is-128x128 ${styles.adaptiveIcon}`}
+              className={`image is-flex is-128x128 ${styles.maskableIcon}`}
               // eslint-disable-next-line react/forbid-dom-props
               style={{
                 clipPath: shapes[shape],
@@ -88,10 +88,10 @@ export function IconTool(): ReactElement {
             >
               {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
               <img
-                alt={formatMessage(messages.adaptiveIconPreview)}
-                className={hasAdaptiveIcon ? styles.fill : styles.contain}
-                onLoad={handleAdaptiveIconLoad}
-                src={adaptiveIconUrl}
+                alt={formatMessage(messages.maskableIconPreview)}
+                className={hasMaskableIcon ? styles.fill : styles.contain}
+                onLoad={handleMaskableIconLoad}
+                src={maskableIconUrl}
               />
             </figure>
           </IconPicker>
