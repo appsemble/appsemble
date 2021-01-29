@@ -75,6 +75,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
         const appMessages = await axios.get<AppMessages>(
           `${apiUrl}/api/apps/${appId}/messages/${lang}`,
         );
+        setMessages(appMessages.data.messages);
 
         try {
           const appsembleMessagesResponse = await axios.get<AppMessages>(
@@ -90,8 +91,6 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
             throw err;
           }
         }
-
-        setMessages(appMessages.data.messages);
       } catch {
         setError(true);
       } finally {
