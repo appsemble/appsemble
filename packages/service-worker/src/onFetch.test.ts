@@ -89,6 +89,20 @@ it('should cache static app file requests', async () => {
   expect(utils.requestFirst).not.toHaveBeenCalled();
 });
 
+it('should cache appsemble messages', async () => {
+  const request = new Request('/api/messages/nl-nl?context=studio');
+  await trigger('fetch', request);
+  expect(utils.cacheFirst).toHaveBeenCalledWith(request);
+  expect(utils.requestFirst).not.toHaveBeenCalled();
+});
+
+it('should cache app messages', async () => {
+  const request = new Request('/api/apps/123/messages/nl-nl');
+  await trigger('fetch', request);
+  expect(utils.cacheFirst).toHaveBeenCalledWith(request);
+  expect(utils.requestFirst).not.toHaveBeenCalled();
+});
+
 it('should cache block version asset requests', async () => {
   const request = new Request('/api/blocks/@appsemble/form/versions/0.1.2/form.js');
   await trigger('fetch', request);

@@ -61,4 +61,3 @@ export * from './useQuery';
 export * from './useToggle';
 export * from './useLocationString';
 export * from './ValuePickerProvider';
-export * from '../translations';

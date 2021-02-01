@@ -38,6 +38,18 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
+  // Cache appsemble messages
+  if (/^\/api\/messages/.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // Cache app messages
+  if (/^\/api\/apps\/\d+\/messages/.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
   // Static app files are immutable, because they are hashed, and should be cached.
   if (/^\/_\/.+/.test(pathname)) {
     event.respondWith(cacheFirst(request));
