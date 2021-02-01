@@ -74,14 +74,24 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   }, [definition, history, lang, redirect]);
 
   useEffect(() => {
+    const defaultLanguage = definition.defaultLanguage || 'en-us';
+    if (lang !== defaultLanguage && !languages.includes(lang)) {
+      return;
+    }
+
     axios
       .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
       .then(({ data }) => setMessages(data.messages))
       .catch(() => setMessagesError(true))
       .finally(() => setAppMessagesLoading(false));
-  }, [lang]);
+  }, [definition, lang]);
 
   useEffect(() => {
+    const defaultLanguage = definition.defaultLanguage || 'en-us';
+    if (lang !== defaultLanguage && !languages.includes(lang)) {
+      return;
+    }
+
     axios
       .get<AppMessages>(`${apiUrl}/api/messages/${lang}?context=app`)
       .then(({ data }) => setAppsembleMessages(data.messages))
@@ -94,7 +104,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
         }
       })
       .finally(() => setAppsembleMessagesLoading(false));
-  }, [lang]);
+  }, [definition, lang]);
 
   const getMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
