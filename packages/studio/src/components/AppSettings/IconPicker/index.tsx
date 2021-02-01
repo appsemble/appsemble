@@ -18,7 +18,7 @@ export function IconPicker({ children, name, onChange }: IconPickerProps): React
   );
 
   return (
-    <div className={`mb-2 mr-2 ${styles.root}`}>
+    <div className={styles.root}>
       <div className={styles.wrapper}>
         {children}
         <div className={`has-text-white has-background-black is-flex ${styles.icon}`}>

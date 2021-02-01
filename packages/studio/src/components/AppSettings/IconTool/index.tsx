@@ -7,6 +7,7 @@ import {
 } from '@appsemble/react-components';
 import { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../../AppContext';
 import { IconPicker } from '../IconPicker';
@@ -24,6 +25,7 @@ export function IconTool(): ReactElement {
   const { formatMessage } = useIntl();
   const { app } = useApp();
   const { setValue, values } = useSimpleForm();
+  const { lang } = useParams<{ lang: string }>();
 
   // Const image = useRef()
   const [shape, setShape] = useState<keyof typeof shapes>('minimal');
@@ -63,9 +65,14 @@ export function IconTool(): ReactElement {
 
   return (
     <div>
-      <span className="label">Icon</span>
+      <span className="label">
+        <FormattedMessage {...messages.icon} />
+      </span>
+      <Link className="help" to={`/${lang}/docs/guide/icons`}>
+        <FormattedMessage {...messages.more} />
+      </Link>
       <div className="is-flex">
-        <div>
+        <div className="mb-2 mr-2">
           <IconPicker name="icon" onChange={handleChange}>
             <figure className={`image is-flex is-128x128 ${styles.icon}`}>
               <img
@@ -76,7 +83,7 @@ export function IconTool(): ReactElement {
             </figure>
           </IconPicker>
         </div>
-        <div>
+        <div className="mb-2 mr-2">
           <IconPicker name="maskableIcon" onChange={handleChange}>
             <figure
               className={`image is-flex is-128x128 ${styles.maskableIcon}`}
@@ -95,6 +102,13 @@ export function IconTool(): ReactElement {
               />
             </figure>
           </IconPicker>
+          <Input
+            className="mt-2 is-paddingless"
+            name="iconBackground"
+            onChange={handleChange}
+            type="color"
+            value={values.iconBackground}
+          />
         </div>
         <div>
           <RadioGroup name="shape" onChange={shapeShift} value={shape}>
@@ -111,12 +125,6 @@ export function IconTool(): ReactElement {
               <FormattedMessage {...messages.square} />
             </RadioButton>
           </RadioGroup>
-          <Input
-            name="iconBackground"
-            onChange={handleChange}
-            type="color"
-            value={values.iconBackground}
-          />
         </div>
       </div>
     </div>

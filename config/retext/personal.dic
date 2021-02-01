@@ -5,6 +5,7 @@ accessor/processor
 changelog/kitten
 dialog/kitten
 enum/kitten
+maskable/editable
 middleware/mare
 preconfigure/reconfigure
 prepend/append
