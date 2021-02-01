@@ -1,7 +1,7 @@
 import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
 import { AppMessages } from '@appsemble/types';
 import { detectLocale, IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
 import {
@@ -49,57 +49,52 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     () => objectCache((message) => new IntlMessageFormat(message, lang, undefined, { formatters })),
     [lang],
   );
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [messagesError, setMessagesError] = useState(false);
+  const [appMessagesError, setAppMessagesError] = useState(false);
+  const [appMessagesLoading, setAppMessagesLoading] = useState(true);
+  const [appsembleMessagesLoading, setAppsembleMessagesLoading] = useState(true);
 
   useEffect(() => {
-    const resolveMessages = async (): Promise<void> => {
-      const defaultLanguage = definition.defaultLanguage || 'en-us';
-      if (lang !== defaultLanguage && !languages.includes(lang)) {
-        const preferredLanguage = localStorage.getItem('preferredLanguage');
-        const detected =
-          (languages.includes(preferredLanguage) && preferredLanguage) ||
-          detectLocale(languages, navigator.languages) ||
-          defaultLanguage;
-        if (/^[A-Z]/.test(lang) || definition.pages.some((page) => lang === normalize(page.name))) {
-          // Someone got linked to a page without a language tag. Redirect them to the same page,
-          // but with language set. This is especially important for the OAuth2 callback URL.
-          history.replace(`/${detected}${redirect}`);
-        } else {
-          history.replace(`/${detected}`);
-        }
-        return;
-      }
-
-      try {
-        const appMessages = await axios.get<AppMessages>(
-          `${apiUrl}/api/apps/${appId}/messages/${lang}`,
-        );
-        setMessages(appMessages.data.messages);
-
-        try {
-          const appsembleMessagesResponse = await axios.get<AppMessages>(
-            `${apiUrl}/api/messages/${lang}?context=app`,
-          );
-          setAppsembleMessages(appsembleMessagesResponse.data.messages);
-        } catch (err: unknown) {
-          // Unsupported languages should fall back to using
-          // the default locale’s messages for Appsemble messages
-          if ((err as AxiosError)?.response && (err as AxiosError).response.status === 404) {
-            setAppsembleMessages({});
-          } else {
-            throw err;
-          }
-        }
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    resolveMessages();
+    const defaultLanguage = definition.defaultLanguage || 'en-us';
+    if (lang === defaultLanguage || languages.includes(lang)) {
+      return;
+    }
+    const preferredLanguage = localStorage.getItem('preferredLanguage');
+    const detected =
+      (languages.includes(preferredLanguage) && preferredLanguage) ||
+      detectLocale(languages, navigator.languages) ||
+      defaultLanguage;
+    if (/^[A-Z]/.test(lang) || definition.pages.some((page) => lang === normalize(page.name))) {
+      // Someone got linked to a page without a language tag. Redirect them to the same page, but
+      // with language set. This is especially important for the OAuth2 callback URL.
+      history.replace(`/${detected}${redirect}`);
+    } else {
+      history.replace(`/${detected}`);
+    }
   }, [definition, history, lang, redirect]);
+
+  useEffect(() => {
+    axios
+      .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
+      .then(({ data }) => setMessages(data.messages))
+      .catch(() => setMessagesError(true))
+      .finally(() => setAppMessagesLoading(false));
+  }, [lang]);
+
+  useEffect(() => {
+    axios
+      .get<AppMessages>(`${apiUrl}/api/messages/${lang}?context=app`)
+      .then(({ data }) => setAppsembleMessages(data.messages))
+      .catch((error) => {
+        if (error?.response?.status === 404) {
+          // Set messages to an empty object to fall back to the default messages
+          setAppsembleMessages({});
+        } else {
+          setAppMessagesError(true);
+        }
+      })
+      .finally(() => setAppsembleMessagesLoading(false));
+  }, [lang]);
 
   const getMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
@@ -117,11 +112,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     [getMessage, messages],
   );
 
-  if (loading) {
+  if (appMessagesLoading || appsembleMessagesLoading) {
     return <Loader />;
   }
 
-  if (error) {
+  if (appMessagesError || messagesError) {
     return (
       <Content>
         <Message color="danger">There was a problem loading the app.</Message>

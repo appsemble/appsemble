@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 import { validateLanguage } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
@@ -10,6 +10,13 @@ import { KoaContext } from '../types';
 interface Params {
   language: string;
   context: 'app' | 'studio';
+}
+
+const translationsDir = resolve(__dirname, '..', '..', '..', '..', 'translations');
+
+async function getSupportedLanguages(): Promise<Set<string>> {
+  const files = await fs.readdir(translationsDir);
+  return new Set(files.map((lang) => lang.split('.json')[0].toLowerCase()));
 }
 
 export async function getAppsembleMessages(ctx: KoaContext<Params>): Promise<void> {
@@ -24,12 +31,7 @@ export async function getAppsembleMessages(ctx: KoaContext<Params>): Promise<voi
     throw badRequest(`Language code “${language}” is invalid`);
   }
 
-  const languages = new Set(
-    (await fs.readdir(join(__dirname, '../../../..', 'translations'))).map((lang) =>
-      lang.split('.json')[0].toLowerCase(),
-    ),
-  );
-
+  const languages = await getSupportedLanguages();
   const lang = language.toLowerCase();
   const baseLanguage = String(
     tags(language)
@@ -46,24 +48,20 @@ export async function getAppsembleMessages(ctx: KoaContext<Params>): Promise<voi
     return;
   }
 
-  let messages: Record<string, string> = {};
+  const messages: Record<string, string> = {};
 
   if (languages.has(baseLanguage)) {
-    messages = JSON.parse(
-      await fs.readFile(
-        join(__dirname, '../../../..', 'translations', `${baseLanguage}.json`),
-        'utf-8',
-      ),
-    ) as Record<string, string>;
+    Object.assign(
+      messages,
+      JSON.parse(await fs.readFile(join(translationsDir, `${baseLanguage}.json`), 'utf-8')),
+    );
   }
 
   if (languages.has(lang)) {
-    messages = {
-      ...messages,
-      ...(JSON.parse(
-        await fs.readFile(join(__dirname, '../../../..', 'translations', `${lang}.json`), 'utf-8'),
-      ) as Record<string, string>),
-    };
+    Object.assign(
+      messages,
+      JSON.parse(await fs.readFile(join(translationsDir, `${lang}.json`), 'utf-8')),
+    );
   }
 
   ctx.body = {
@@ -79,9 +77,6 @@ export async function getAppsembleMessages(ctx: KoaContext<Params>): Promise<voi
 }
 
 export async function getAppsembleLanguages(ctx: KoaContext<Params>): Promise<void> {
-  const languages = (
-    await fs.readdir(join(__dirname, '../../../../', 'translations'))
-  ).map((lang) => lang.split('.json')[0].toLowerCase());
-
-  ctx.body = [...new Set([...languages, 'en-us'])].sort();
+  const languages = await getSupportedLanguages();
+  ctx.body = [...languages].sort();
 }
