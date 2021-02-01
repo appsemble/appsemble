@@ -121,7 +121,7 @@
   "studio.src.components.AppRatings.ratings": "Beoordelingen",
   "studio.src.components.AppRatings.retry": "Opnieuw",
   "studio.src.components.AppRatings.you": "Jij",
-  "studio.src.components.AppScreenshots.AppScreenshot.deleteCancel": "Cancel",
+  "studio.src.components.AppScreenshots.AppScreenshot.deleteCancel": "Annuleren",
   "studio.src.components.AppScreenshots.AppScreenshot.deleteConfirm": "Verwijderen",
   "studio.src.components.AppScreenshots.AppScreenshot.deleteScreenshotBody": "Weet je zeker dat je deze screenshot wil verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
   "studio.src.components.AppScreenshots.AppScreenshot.deleteScreenshotTitle": "Schermafbeelding verwijderen",
