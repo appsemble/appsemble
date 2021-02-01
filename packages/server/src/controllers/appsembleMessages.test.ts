@@ -42,15 +42,15 @@ describe('getAppsembleMessages', () => {
   });
 
   it('should return empty messages if requesting the default language', async () => {
-    const result = await request('/api/messages/en-US');
-    expect(result).toMatchObject({ status: 200, data: { language: 'en-US', messages: {} } });
+    const result = await request('/api/messages/en-us');
+    expect(result).toMatchObject({ status: 200, data: { language: 'en-us', messages: {} } });
   });
 
   it('should return 404 on languages that aren’t supported', async () => {
-    const result = await request('/api/messages/ko-KR');
+    const result = await request('/api/messages/ko-kr');
     expect(result).toMatchObject({
       status: 404,
-      data: { message: 'Language “ko-KR” could not be found' },
+      data: { message: 'Language “ko-kr” could not be found' },
     });
   });
 
