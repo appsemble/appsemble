@@ -41,7 +41,7 @@ export function StudioMessagesProvider({ children }: IntlMessagesProviderProps):
     }
 
     return (
-      <IntlProvider defaultLocale="en-us" locale={lang} messages={messages}>
+      <IntlProvider defaultLocale={defaultLanguage} locale={lang} messages={messages}>
         {children}
       </IntlProvider>
     );
