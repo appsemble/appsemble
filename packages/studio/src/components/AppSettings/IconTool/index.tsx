@@ -68,7 +68,7 @@ export function IconTool(): ReactElement {
       <span className="label">
         <FormattedMessage {...messages.icon} />
       </span>
-      <Link className="help" to={`/${lang}/docs/guide/icons`}>
+      <Link className="help" to={`/${lang}/docs/guide/app-icons`}>
         <FormattedMessage {...messages.more} />
       </Link>
       <div className="is-flex">
