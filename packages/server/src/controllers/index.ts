@@ -6,6 +6,7 @@ export * from './appNotifications';
 export * from './appOAuth2Secrets';
 export * from './appMessages';
 export * from './appSamlSecrets';
+export * from './appsembleMessages';
 export * from './assets';
 export * from './auth';
 export * from './oauth2ClientCredentials';

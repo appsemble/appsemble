@@ -68,67 +68,57 @@ type Assert = (assertion: boolean, filename: string, message: string, workspace?
 async function validateTranslations(assert: Assert): Promise<void> {
   const workspaces = ['app', 'react-components', 'studio'];
   const developerLocales = ['nl', 'en-US'].sort();
-  const allLocales = [...developerLocales, 'da', 'de', 'fr'].sort();
   const defaultLocale = 'en-US';
+  const translations: Record<string, Record<string, string>> = {};
 
-  for (const workspace of workspaces) {
-    const translatedMessages = await extractMessages.extractReactIntl(
-      allLocales,
-      `./packages/${workspace}/src/**/messages.ts`,
-      {
-        format: 'json',
-        flat: true,
-        defaultLocale,
-        overwriteDefault: true,
-      },
-    );
+  await opendirSafe('./translations', async (filepath, stat) => {
+    if (stat.name === 'index.ts') {
+      return;
+    }
 
-    const translated: string[] = [];
+    if (!stat.isFile() || !filepath.endsWith('.json')) {
+      assert(false, filepath, 'should be a json file');
+      return;
+    }
 
-    await opendirSafe(`./packages/${workspace}/translations`, async (filepath, stat) => {
-      if (stat.name === 'index.ts') {
-        return;
-      }
+    const [language] = stat.name.split('.json');
+    const messages = await readJson(filepath);
+    translations[language] = messages;
+  });
 
-      if (!stat.isFile() || !filepath.endsWith('.json')) {
-        assert(false, filepath, 'should be a json file');
-        return;
-      }
+  const allLocales = [...new Set([...developerLocales, ...Object.keys(translations)])].sort();
+  const translatedMessages = await extractMessages.extractReactIntl(
+    allLocales,
+    `./packages/@(${workspaces.join('|')})/src/**/messages.ts`,
+    {
+      format: 'json',
+      flat: true,
+      defaultLocale,
+      overwriteDefault: true,
+    },
+  );
 
-      const [language] = stat.name.split('.json');
+  for (const language of allLocales) {
+    const path = `translations/${language}.json`;
+    const messages = translations[language];
+    if (language === defaultLocale) {
+      assert(
+        isEqual(messages, translatedMessages[language]),
+        path,
+        `${defaultLocale} messages should be equal when extracted`,
+      );
+    }
 
-      if (!allLocales.includes(language)) {
-        assert(false, filepath, `Language ${language} should be supported.`);
-        return;
-      }
-
-      translated.push(language);
-      const messages = await readJson(filepath);
-      if (stat.name === `${defaultLocale}.json`) {
-        assert(
-          isEqual(messages, translatedMessages[language]),
-          filepath,
-          `${defaultLocale} messages should be equal when extracted`,
-        );
-      } else {
-        assert(
-          isEqual(Object.keys(messages), Object.keys(translatedMessages[language]).sort()),
-          filepath,
-          'Keys should be the same',
-        );
-        if (developerLocales.includes(language)) {
-          const untranslatedMessages = Object.values(messages).filter((message) => !message);
-          assert(untranslatedMessages.length === 0, filepath, 'Messages should be translated');
-        }
-      }
-    });
-
-    assert(
-      isEqual(allLocales, translated.sort()),
-      '',
-      'should have translations for each supported language',
-      `packages/${workspace}`,
-    );
+    if (developerLocales.includes(language)) {
+      const untranslatedMessages = Object.values(messages).filter((message) => !message);
+      assert(untranslatedMessages.length === 0, path, 'Messages should be translated');
+    } else {
+      assert(
+        isEqual(Object.keys(messages), Object.keys(translatedMessages[language]).sort()),
+        path,
+        'Keys should be the same',
+      );
+    }
   }
 }
 

@@ -886,7 +886,7 @@ export interface AppDefinition {
   /**
    * The default language of the app.
    *
-   * @default 'en-US'
+   * @default 'en-us'
    */
   defaultLanguage?: string;
 

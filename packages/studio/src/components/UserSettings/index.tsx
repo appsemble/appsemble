@@ -149,7 +149,7 @@ export function UserSettings(): ReactElement {
             required
           >
             {Object.entries(supportedLanguages).map(([code, name]) => (
-              <option key={code} value={code.toLowerCase()}>
+              <option key={code} value={code}>
                 {name}
               </option>
             ))}
