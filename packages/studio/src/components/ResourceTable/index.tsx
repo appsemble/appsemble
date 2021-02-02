@@ -25,6 +25,12 @@ import { ResourceRow } from './ResourceRow';
 export interface Resource {
   id: number;
   $clonable: boolean;
+  $created: string;
+  $updated: string;
+  $author?: {
+    id: string;
+    name: string;
+  };
   [key: string]: unknown;
 }
 
@@ -46,7 +52,7 @@ export function ResourceTable(): ReactElement {
   );
 
   const { schema } = app.definition.resources[resourceName];
-  const keys = useMemo(() => ['id', ...Object.keys(schema?.properties || {})], [
+  const keys = useMemo(() => ['id', '$author', ...Object.keys(schema?.properties || {})], [
     schema?.properties,
   ]);
 
@@ -157,7 +163,9 @@ export function ResourceTable(): ReactElement {
         title={messages.title}
         titleValues={{ name: app.definition.name, resourceName }}
       />
-      <Title>Resource {resourceName}</Title>
+      <Title>
+        <FormattedMessage {...messages.header} />
+      </Title>
       <div className="buttons">
         <Button className="is-primary" icon="plus-square" onClick={modal.enable}>
           <span>
@@ -171,7 +179,9 @@ export function ResourceTable(): ReactElement {
       <Table>
         <thead>
           <tr>
-            <th>Actions</th>
+            <th>
+              <FormattedMessage {...messages.actions} />
+            </th>
             {keys.map((property) => (
               <th key={property}>{property}</th>
             ))}
