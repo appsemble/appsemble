@@ -27,7 +27,6 @@ export function IconTool(): ReactElement {
   const { setValue, values } = useSimpleForm();
   const { lang } = useParams<{ lang: string }>();
 
-  // Const image = useRef()
   const [shape, setShape] = useState<keyof typeof shapes>('minimal');
 
   const iconUrl = useObjectURL(values.icon);

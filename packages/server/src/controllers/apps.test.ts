@@ -1319,7 +1319,7 @@ describe('deleteApp', () => {
 });
 
 describe('getAppIcon', () => {
-  it('should serve the regular icon if requestes', async () => {
+  it('should serve the regular icon if requested', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',

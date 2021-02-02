@@ -32,7 +32,7 @@ export async function serveIcon(
   const background = iconBackground ?? white;
 
   if (!maskable) {
-    // Serve the regular app icon, but scaped.
+    // Serve the regular app icon, but scaled.
     img = sharp(icon || Organization.icon || (await readAsset('appsemble.png'))).resize({
       width: size,
       height: size,

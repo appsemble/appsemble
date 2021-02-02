@@ -5,7 +5,8 @@ export const key = '0.17.3';
 
 /**
  * Summary:
- * - Add column App.longDescription
+ * - Add column App.maskableIcon
+ * - Add column App.iconBackground
  *
  * @param db - The sequelize database.
  */
@@ -21,7 +22,8 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
- * - Remove column App.longDescription
+ * - Remove column App.maskableIcon
+ * - Remove column App.iconBackground
  *
  * @param db - The sequelize database.
  */
