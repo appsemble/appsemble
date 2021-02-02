@@ -327,7 +327,7 @@
   "studio.src.components.Editor.recipe": "Recette",
   "studio.src.components.Editor.resourceWarning": "Les définitions des ressources dans cette recette de l’application contiennent des données différentes de l’original. Cela peut entraîner des résultats inattendus lors de l’utilisation de données plus anciennes.",
   "studio.src.components.Editor.resourceWarningTitle": "Avertissement sur les ressources",
-  "studio.src.components.Editor.schemaValidationFailed": "La validation du schéma de l’application a échoué. Veuillez vérifier si les propriétés suivantes sont correctes : {propriétés}",
+  "studio.src.components.Editor.schemaValidationFailed": "La validation du schéma de l’application a échoué. Veuillez vérifier si les propriétés suivantes sont correctes : {properties}",
   "studio.src.components.Editor.sharedStyle": "Style partagé",
   "studio.src.components.Editor.title": "{name} · Éditeur",
   "studio.src.components.Editor.unexpected": "Quelque chose a mal tourné lors de la validation de la recette de l’application",
