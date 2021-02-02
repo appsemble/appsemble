@@ -167,7 +167,7 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         // Validate user credentials
         const emailAuth = await EmailAuthorization.findOne({
           include: [User],
-          where: { email: username },
+          where: { email: username.toLowerCase() },
         });
         if (!emailAuth) {
           throw new GrantError('invalid_grant');

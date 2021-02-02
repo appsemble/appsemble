@@ -237,7 +237,7 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
     request: { body },
   } = ctx;
 
-  const allInvites = (body as OrganizationInvite[]).map((invite) => invite.email);
+  const allInvites = (body as OrganizationInvite[]).map((invite) => invite.email.toLowerCase());
 
   const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
     include: [
@@ -304,11 +304,10 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
   const {
     mailer,
     params: { organizationId },
-    request: {
-      body: { email },
-    },
+    request,
   } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const organization = await Organization.findByPk(organizationId, {
     include: [OrganizationInvite],
   });
@@ -338,12 +337,9 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function removeInvite(ctx: KoaContext): Promise<void> {
-  const {
-    request: {
-      body: { email },
-    },
-  } = ctx;
+  const { request } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const invite = await OrganizationInvite.findOne({ where: { email } });
   if (!invite) {
     throw notFound('This invite does not exist.');

@@ -32,10 +32,13 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   try {
     await transactional(async (transaction) => {
       user = await User.create(
-        { name, password: hashedPassword, primaryEmail: email },
+        { name, password: hashedPassword, primaryEmail: email.toLowerCase() },
         { transaction },
       );
-      await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
+      await EmailAuthorization.create(
+        { UserId: user.id, email: email.toLowerCase(), key },
+        { transaction },
+      );
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
@@ -86,13 +89,9 @@ export async function verifyEmail(ctx: KoaContext): Promise<void> {
 }
 
 export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
-  const {
-    mailer,
-    request: {
-      body: { email },
-    },
-  } = ctx;
+  const { mailer, request } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const record = await EmailAuthorization.findByPk(email, { raw: true });
   if (record && !record.verified) {
     const { key } = record;
@@ -105,13 +104,9 @@ export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
 }
 
 export async function requestResetPassword(ctx: KoaContext): Promise<void> {
-  const {
-    mailer,
-    request: {
-      body: { email },
-    },
-  } = ctx;
+  const { mailer, request } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const emailRecord = await EmailAuthorization.findByPk(email);
 
   if (emailRecord) {

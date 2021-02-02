@@ -25,7 +25,7 @@ export function authentication(): AuthenticationCheckers {
     async basic(email: string, password: string) {
       const { User: user } = await EmailAuthorization.findOne({
         include: [User],
-        where: { email },
+        where: { email: email.toLowerCase() },
       });
       const isValidPassword = await compare(password, user.password);
       return isValidPassword ? user : null;

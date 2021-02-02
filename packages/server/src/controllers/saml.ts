@@ -234,7 +234,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
       (el) => [el.getAttribute('Name')?.trim(), el.firstChild?.textContent?.trim()],
     ),
   );
-  const email = secret.emailAttribute && attributes.get(secret.emailAttribute);
+  const email = secret.emailAttribute && attributes.get(secret.emailAttribute)?.toLowerCase();
   const name = secret.nameAttribute && attributes.get(secret.nameAttribute);
   let user: User;
   if (authorization) {
