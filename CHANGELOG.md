@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.17.3](https://gitlab.com/appsemble/appsemble/-/releases/0.17.3)] - 2021-02-02
+
+### Added
+
+- App: Add support for maskable icons.
+- CLI: Add support for maskable icons.
+- Studio: Add French language selection.
+- Studio: Add German language selection.
+- Studio: Add tool for managing app icons.
+- Studio: Display author in resources table.
+
+### Changed
+
+- App: App icons are now scaled, not cropped.
+- Studio: Display maskable app icons.
+- Studio: Include app styles when cloning apps.
+
+### Fixed
+
+- Block(`form`): Fix loading initial values for enum fields that have asynchronous options.
+
 ## \[[0.17.2](https://gitlab.com/appsemble/appsemble/-/releases/0.17.2)] - 2021-01-26
 
 ### Added
