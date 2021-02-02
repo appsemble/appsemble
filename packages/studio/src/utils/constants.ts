@@ -4,5 +4,5 @@
 export const supportedLanguages = {
   da: 'Danish (Dansk)',
   nl: 'Dutch (Nederlands)',
-  'en-US': 'English',
+  'en-us': 'English',
 };
