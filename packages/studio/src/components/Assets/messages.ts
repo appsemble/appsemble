@@ -4,10 +4,7 @@ export const messages = defineMessages({
   title: '{name} · Assets',
   assets: 'Assets',
   uploadButton: 'Upload new asset',
-  deleteButton: `Delete {amount} {amount, plural,
-    one {asset}
-    other {assets}
-  }`,
+  deleteButton: 'Delete {amount} {amount, plural, one {asset} other {assets}}',
   id: 'Id',
   mime: 'File type',
   filename: 'Filename',
