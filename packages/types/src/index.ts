@@ -1048,6 +1048,16 @@ export interface App {
   screenshotUrls?: string[];
 
   /**
+   * True if the app supports an maskable icon.
+   */
+  hasMaskableIcon: boolean;
+
+  /**
+   * True if the app supports an maskable icon.
+   */
+  iconBackground: string;
+
+  /**
    * An app icon url
    */
   iconUrl?: string;

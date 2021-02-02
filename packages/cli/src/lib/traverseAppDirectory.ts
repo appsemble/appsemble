@@ -5,6 +5,7 @@ import { AppsembleError, logger, opendirSafe } from '@appsemble/node-utils';
 import FormData from 'form-data';
 import yaml from 'js-yaml';
 
+import { AppsembleRC } from '../types';
 import { processCss } from './processCss';
 
 /**
@@ -19,6 +20,16 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, stat) => {
     switch (stat.name.toLowerCase()) {
+      case '.appsemblerc.yaml': {
+        logger.info(`Reading app settings from ${filepath}`);
+        const text = await fs.readFile(filepath, 'utf8');
+        const { iconBackground } = yaml.safeLoad(text) as AppsembleRC;
+        if (iconBackground) {
+          formData.append('iconBackground', iconBackground);
+        }
+        break;
+      }
+
       case 'app.yaml': {
         logger.info(`Using app definition from ${filepath}`);
         if (appFound) {
@@ -37,6 +48,11 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
       case 'icon.svg':
         logger.info(`Including icon ${filepath}`);
         formData.append('icon', createReadStream(filepath));
+        return;
+
+      case 'maskable-icon.png':
+        logger.info(`Including maskable icon ${filepath}`);
+        formData.append('maskableIcon', createReadStream(filepath));
         return;
 
       case 'readme.md':

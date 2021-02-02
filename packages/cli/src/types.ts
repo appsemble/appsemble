@@ -73,3 +73,10 @@ export interface BlockConfig
 export interface MonoRepoPackageJson extends PackageJson {
   appsembleServer?: JsonObject;
 }
+
+export interface AppsembleRC {
+  /**
+   * The background color to use for maskable icons.
+   */
+  iconBackground?: string;
+}

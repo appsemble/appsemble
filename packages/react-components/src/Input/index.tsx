@@ -53,7 +53,19 @@ export interface InputProps
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
-    { datalist, error, loading, name, onChange, pattern, readOnly, type, id = name, ...props },
+    {
+      className,
+      datalist,
+      error,
+      loading,
+      name,
+      onChange,
+      pattern,
+      readOnly,
+      type,
+      id = name,
+      ...props
+    },
     ref,
   ) => {
     const handleChange = useCallback(
@@ -68,7 +80,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <>
         <input
           {...props}
-          className={classNames('input', {
+          className={classNames('input', className, {
             'has-background-white-bis': readOnly,
             'is-danger': error,
             'is-loading': loading,
