@@ -8,14 +8,6 @@ export const messages = defineMessages({
   name: 'Name',
   description: 'Description',
   nameConflict: 'An app with this name already exists in this organization.',
-  missingBlocks: `Unknown {blockCount, plural,
-    one {block}
-    other {blocks}
-  } or {blockCount, plural,
-    one {block version}
-    other {block versions}
-  } found: {blocks}
-  `,
   template: 'Template',
   organization: 'Organization',
   resources: 'Resources',
