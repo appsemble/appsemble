@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.17.4](https://gitlab.com/appsemble/appsemble/-/releases/0.17.4)] - 2021-02-02
+
+### Fixed
+
+- Server: Include translations
+
 ## \[[0.17.3](https://gitlab.com/appsemble/appsemble/-/releases/0.17.3)] - 2021-02-02
 
 ### Added

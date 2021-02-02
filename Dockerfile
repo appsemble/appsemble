@@ -29,6 +29,7 @@ RUN rm -r yarn.lock
 FROM node:14-slim
 COPY --from=prod /app /app
 COPY --from=build /app/dist /app/dist
+COPY translations /app/translations
 WORKDIR /app
 # By default colors aren’t detected within a Docker container. Let’s assume at least simple colors
 # are supported by those who inspect the logs.

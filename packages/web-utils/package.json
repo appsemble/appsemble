@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/web-utils",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "private": true,
   "description": "Browser specific utility functions used in Appsemble internally",
   "keywords": [
