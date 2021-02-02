@@ -6,5 +6,5 @@ export const messages = defineMessages({
   parameters: 'Parameters',
   actions: 'Actions',
   events: 'Events',
-  error: 'There was a problem loading block: "{blockName}"',
+  error: 'There was a problem loading block: “{blockName}”',
 });
