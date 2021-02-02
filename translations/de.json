@@ -243,7 +243,7 @@
   "studio.src.components.Assets.chooseFile": "Wähle eine Datei",
   "studio.src.components.Assets.delete": "Löschen",
   "studio.src.components.Assets.deleteButton": "Löschen {amount} {amount, Plural, one {Vermögen} other {Vermögenswerte}}",
-  "studio.src.components.Assets.deleteSuccess": "Erfolgreich gelöscht {amount, Plurone {Vermögen}} other {Vermögen}} {Vermögenswerte}",
+  "studio.src.components.Assets.deleteSuccess": "Erfolgreich gelöscht {amount, plural {Vermögen}} other {Vermögen}} {Vermögenswerte}",
   "studio.src.components.Assets.deleteWarning": "Sind Sie sicher, dass Sie {amount} {amount, Plurone {Vermögen} other {Vermögen}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
   "studio.src.components.Assets.deleteWarningTitle": "Löschen von {amount} {amount, Plural, one {Vermögen} other {Vermögenswerte}}",
   "studio.src.components.Assets.downloadError": "Beim Herunterladen dieses Assets ist etwas schief gelaufen.",
