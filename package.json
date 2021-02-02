@@ -9,7 +9,7 @@
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:studio": "webpack --config config/webpack/studio.js --mode production",
     "create-appsemble": "ts-node -TP packages/create-appsemble/tsconfig.json packages/create-appsemble/src",
-    "extract-messages": "extract-messages -l da,de,fr,nl,en-US -d en-US --flat -o ./translations \"./packages/**/src/**/messages.ts\"",
+    "extract-messages": "extract-messages -l da,de,en-US,fr,nb-NO,nl -d en-US --flat -o ./translations \"./packages/**/src/**/messages.ts\"",
     "prettier": "prettier --check",
     "scripts": "ts-node -TP packages/scripts/tsconfig.json packages/scripts/src",
     "start": "ts-node -TP packages/cli/tsconfig.json packages/cli/src start",
