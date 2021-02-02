@@ -168,7 +168,7 @@
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.acsUrlLabel": "",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.acsUrlPlaceholder": "",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.badUrl": "Dette skal være en gyldig URL-adresse",
-  "studio.src.components.AppSecrets.SamlSecrets.SamlModal.close": "Close",
+  "studio.src.components.AppSecrets.SamlSecrets.SamlModal.close": "Luk",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.emailAttributeHelp": "",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.emailAttributeLabel": "",
   "studio.src.components.AppSecrets.SamlSecrets.SamlModal.iconHelp": "FontAwesome-ikonet, der vises på login-knappen",
