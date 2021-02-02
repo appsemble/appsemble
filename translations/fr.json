@@ -90,7 +90,6 @@
   "studio.src.components.AppList.CreateAppButton.description": "Description",
   "studio.src.components.AppList.CreateAppButton.error": "Une erreur s’est produite lors de la création de cette application.",
   "studio.src.components.AppList.CreateAppButton.includeResources": "Inclure des exemples de ressources",
-  "studio.src.components.AppList.CreateAppButton.missingBlocks": "Inconnu {blockCount, plural, one {bloc} other {blocs}} ou {blockCount, plural, one {bloc version} other {blocages}} trouvé : {blocks}",
   "studio.src.components.AppList.CreateAppButton.name": "Nom",
   "studio.src.components.AppList.CreateAppButton.nameConflict": "Une application portant ce nom existe déjà dans cette organisation.",
   "studio.src.components.AppList.CreateAppButton.organization": "Organisation",

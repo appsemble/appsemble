@@ -90,7 +90,6 @@
   "studio.src.components.AppList.CreateAppButton.description": "Beschrijving",
   "studio.src.components.AppList.CreateAppButton.error": "Er is een onbekende fout opgetreden tijdens het aanmaken van deze app.",
   "studio.src.components.AppList.CreateAppButton.includeResources": "Kopieer voorbeeldresources",
-  "studio.src.components.AppList.CreateAppButton.missingBlocks": "Onbekende {clockCount, plural, one {blok} other {blokken} of {blockCount, plural, one {blockversie} other {blokversies}} gevonden: {blocks}",
   "studio.src.components.AppList.CreateAppButton.name": "Naam",
   "studio.src.components.AppList.CreateAppButton.nameConflict": "Een app met deze naam bestaat al binnen deze organisatie.",
   "studio.src.components.AppList.CreateAppButton.organization": "Organisatie",

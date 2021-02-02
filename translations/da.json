@@ -90,7 +90,6 @@
   "studio.src.components.AppList.CreateAppButton.description": "Beskrivelse",
   "studio.src.components.AppList.CreateAppButton.error": "Der gik noget galt, da denne app blev oprettet.",
   "studio.src.components.AppList.CreateAppButton.includeResources": "Medtag eksempelressourcer",
-  "studio.src.components.AppList.CreateAppButton.missingBlocks": "Ukendt {blockCount, plural, one {block} other {blocks}} eller {blockCount, plural, one {block version} other {block versions}} blev fundet: {blocks}",
   "studio.src.components.AppList.CreateAppButton.name": "Navn",
   "studio.src.components.AppList.CreateAppButton.nameConflict": "Der findes allerede en app med dette navn i denne organisation.",
   "studio.src.components.AppList.CreateAppButton.organization": "Organisation",

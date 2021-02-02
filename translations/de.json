@@ -90,7 +90,6 @@
   "studio.src.components.AppList.CreateAppButton.description": "Beschreibung",
   "studio.src.components.AppList.CreateAppButton.error": "Bei der Erstellung dieser App ist etwas schief gelaufen.",
   "studio.src.components.AppList.CreateAppButton.includeResources": "Beispielressourcen einbeziehen",
-  "studio.src.components.AppList.CreateAppButton.missingBlocks": "Unbekannt {blockCount, Plural, one {Block} other {blocks}} oder {blockCount, Plural, one {Blockversion} other {Blockversionen}} gefunden: {blocks}",
   "studio.src.components.AppList.CreateAppButton.name": "Name",
   "studio.src.components.AppList.CreateAppButton.nameConflict": "Eine App mit diesem Namen existiert bereits in dieser Organisation.",
   "studio.src.components.AppList.CreateAppButton.organization": "Organisation",
