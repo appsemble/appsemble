@@ -340,7 +340,7 @@
   "studio.src.components.ErrorFallback.toApps": "Back to apps",
   "studio.src.components.ForwardOAuth2Login.error": "An error has occurred.",
   "studio.src.components.GUIEditor.ActionEditor.ActionEditorTypeEditor.noAction": "No action selected.",
-  "studio.src.components.GUIEditor.ActionEditor.ActionEditorTypeEditor.notSupported": "This action can't be updated, because it is not available in the GUI editor yet. This action can be defined using the manual editor.",
+  "studio.src.components.GUIEditor.ActionEditor.ActionEditorTypeEditor.notSupported": "This action can’t be updated, because it is not available in the GUI editor yet. This action can be defined using the manual editor.",
   "studio.src.components.GUIEditor.ActionEditor.ActionEditorTypeSelect.actionType": "Action Type",
   "studio.src.components.GUIEditor.ActionEditor.ActionEditorTypeSelect.empty": "No action",
   "studio.src.components.GUIEditor.ActionEditor.LinkActionEditor.empty": "No page selected",
