@@ -26,7 +26,11 @@ export function EnumInput({ disabled, field, name, onChange, value }: EnumInputP
   const required = isRequired(field);
 
   useEffect(() => {
-    if (value !== undefined && !options.some((option) => option.value === value)) {
+    if (
+      value !== undefined &&
+      options.length &&
+      !options.some((option) => option.value === value)
+    ) {
       // Explicitly set value to undefined if value does not exist in the new set of options.
       onChange(field.name);
     }
