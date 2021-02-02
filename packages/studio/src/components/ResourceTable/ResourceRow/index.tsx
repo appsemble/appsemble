@@ -162,7 +162,7 @@ export function ResourceRow({
         </Modal>
       </td>
       <td className={styles.contentCell}>{resource.id}</td>
-      <td className={styles.contentCell}>{resource?.$author?.name ?? resource?.$author?.id}</td>
+      <td className={styles.contentCell}>{resource.$author?.name ?? resource.$author?.id}</td>
       {Object.keys(schema?.properties ?? {})
         .filter((key) => !filteredKeys.has(key))
         .map((key) => (
