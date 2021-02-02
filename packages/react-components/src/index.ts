@@ -29,6 +29,8 @@ export * from './Modal';
 export * from './OAuth2LoginButton';
 export * from './PasswordField';
 export * from './Portal';
+export * from './RadioButton';
+export * from './RadioGroup';
 export * from './Select';
 export * from './SelectField';
 export * from './SentryForm';

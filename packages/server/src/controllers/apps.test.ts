@@ -1318,6 +1318,91 @@ describe('deleteApp', () => {
   });
 });
 
+describe('getAppIcon', () => {
+  it('should serve the regular icon if requested', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const response = await request.get(`/api/apps/${app.id}/icon`, { responseType: 'arraybuffer' });
+    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should generate an maskable icon from a horizontal app icon', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
+      params: { maskable: 'true' },
+      responseType: 'arraybuffer',
+    });
+    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should generate an maskable icon from a vertical app icon', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('10x50.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
+      params: { maskable: 'true' },
+      responseType: 'arraybuffer',
+    });
+    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should use the icon background color if one is specified', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('10x50.png'),
+      iconBackground: '#00ffff',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
+      params: { maskable: 'true' },
+      responseType: 'arraybuffer',
+    });
+    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should crop and fill an maskable icon', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      maskableIcon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const response = await request.get(`/api/apps/${app.id}/icon`, {
+      params: { maskable: 'true' },
+      responseType: 'arraybuffer',
+    });
+    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response.data).toMatchImageSnapshot();
+  });
+});
+
 describe('patchApp', () => {
   it('should validate and update css when updating an app', async () => {
     const app = await App.create({

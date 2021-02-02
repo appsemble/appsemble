@@ -58,6 +58,12 @@ export class App extends Model {
   @Column
   icon: Buffer;
 
+  @Column
+  maskableIcon: Buffer;
+
+  @Column
+  iconBackground: string;
+
   @Unique('UniquePathIndex')
   @Column
   path: string;

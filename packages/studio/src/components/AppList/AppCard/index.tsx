@@ -20,11 +20,11 @@ export function AppCard({ app }: AppCardProps): ReactElement {
     <Link className="card" title={app.definition.description} to={`${url}/${app.id}`}>
       <div className="card-content">
         <div className="media">
-          <figure className={`image is-128x128 ${styles.image}`}>
+          <figure className={`image is-128x128 ${styles.figure}`}>
             <img
               alt={formatMessage(messages.icon)}
-              className={styles.logo}
-              src={`/api/apps/${app.id}/icon`}
+              className="is-rounded card"
+              src={`/api/apps/${app.id}/icon?maskable=true`}
             />
           </figure>
         </div>

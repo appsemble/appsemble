@@ -22,11 +22,20 @@ export async function manifestHandler(ctx: KoaContext): Promise<void> {
     background_color: splashColor,
     description,
     display: 'standalone',
-    icons: iconSizes.map((size) => ({
-      src: `/icon-${size}.png`,
-      type: 'image/png',
-      sizes: `${size}x${size}`,
-    })),
+    icons: iconSizes.flatMap((size) => [
+      {
+        src: `/icon-${size}.png`,
+        type: 'image/png',
+        sizes: `${size}x${size}`,
+        purpose: 'any',
+      },
+      {
+        src: `/icon-${size}.png?maskable=true`,
+        type: 'image/png',
+        sizes: `${size}x${size}`,
+        purpose: 'maskable',
+      },
+    ]),
     name,
     orientation: 'any',
     scope: '/',

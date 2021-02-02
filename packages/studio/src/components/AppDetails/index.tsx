@@ -66,7 +66,11 @@ export function AppDetails(): ReactElement {
       <div className="card my-3">
         <div className="is-flex card-content">
           <figure className="image is-128x128">
-            <img alt={formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
+            <img
+              alt={formatMessage(messages.appLogo)}
+              className="is-rounded card"
+              src={`/api/apps/${app.id}/icon?maskable=true`}
+            />
           </figure>
           <div className={`mx-4 ${styles.appMeta}`}>
             <header>

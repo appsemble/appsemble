@@ -34,6 +34,7 @@ import {
 } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
+import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
 
@@ -351,7 +352,9 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         definition,
         domain,
         icon,
+        iconBackground,
         longDescription,
+        maskableIcon,
         path,
         private: isPrivate,
         screenshots,
@@ -402,6 +405,14 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
     if (icon) {
       result.icon = icon.contents;
+    }
+
+    if (maskableIcon) {
+      result.maskableIcon = maskableIcon.contents;
+    }
+
+    if (iconBackground) {
+      result.iconBackground = iconBackground;
     }
 
     if (yaml) {
@@ -491,22 +502,30 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
+    query: { maskable, raw = false, size = 128 },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['icon'],
+    attributes: ['icon', maskable && 'maskableIcon', maskable && 'iconBackground'].filter(Boolean),
     include: [{ model: Organization, attributes: ['icon'] }],
   });
+
+  if (!raw) {
+    return serveIcon(ctx, app, { maskable, size: Number.parseInt(size) });
+  }
 
   if (!app) {
     throw notFound('App not found');
   }
 
-  const icon = app.icon || app.Organization.icon || (await readAsset('appsemble.svg'));
-  const metadata = await sharp(icon).metadata();
+  const icon =
+    (maskable && app.maskableIcon) ||
+    app.icon ||
+    app.Organization.icon ||
+    (await readAsset('appsemble.png'));
 
+  const { format } = await sharp(icon).metadata();
   ctx.body = icon;
-  // Type svg resolves to text/xml instead of image/svg+xml.
-  ctx.type = metadata.format === 'svg' ? 'image/svg+xml' : metadata.format;
+  ctx.type = format;
 }
 
 export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {

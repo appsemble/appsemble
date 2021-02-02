@@ -46,6 +46,12 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
+                maskableIcon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
+                iconBackground: { $ref: '#/components/schemas/Color' },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',
@@ -184,6 +190,12 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
+                maskableIcon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
+                iconBackground: { $ref: '#/components/schemas/Color' },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',

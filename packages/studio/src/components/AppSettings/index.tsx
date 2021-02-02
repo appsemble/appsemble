@@ -2,7 +2,6 @@ import {
   Button,
   CheckboxField,
   Content,
-  FileUpload,
   FormButtons,
   Message,
   SimpleForm,
@@ -11,18 +10,18 @@ import {
   SimpleSubmit,
   useConfirmation,
   useMessages,
-  useObjectURL,
 } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
 import { domainPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useCallback, useMemo, useState } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
+import { IconTool } from './IconTool';
 import styles from './index.css';
 import { messages } from './messages';
+import { FormValues } from './types';
 
 function preprocessDomain(domain: string): string {
   return domain
@@ -39,32 +38,40 @@ function preprocessDomain(domain: string): string {
 export function AppSettings(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
-  const [icon, setIcon] = useState<File>();
 
   const push = useMessages();
-  const iconUrl = useObjectURL(icon || app.iconUrl);
   const history = useHistory();
   const { lang } = useParams<{ lang: string }>();
 
   // This is needed, because the app domain may be null.
-  const defaultValues = useMemo(() => ({ ...app, domain: app.domain ?? '' }), [app]);
+  const defaultValues = useMemo<FormValues>(
+    () => ({
+      maskableIcon: null,
+      domain: app.domain || '',
+      icon: `${app.iconUrl}?raw=true`,
+      iconBackground: app.iconBackground,
+      path: app.path,
+      private: app.private,
+    }),
+    [app],
+  );
 
-  const onSubmit = async (values: App): Promise<void> => {
+  const onSubmit = async (values: FormValues): Promise<void> => {
     const data = new FormData();
     data.set('domain', values.domain);
     data.set('path', values.path);
     data.set('private', String(values.private));
-    if (icon) {
-      data.set('icon', icon);
+    data.set('iconBackground', values.iconBackground);
+    if (values.icon !== app.iconUrl) {
+      data.set('icon', values.icon);
+    }
+    if (values.maskableIcon) {
+      data.set('maskableIcon', values.maskableIcon);
     }
 
     await axios.patch(`/api/apps/${app.id}`, data);
     push({ color: 'success', body: formatMessage(messages.updateSuccess) });
   };
-
-  const onIconChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
-    setIcon(e.currentTarget.files[0]);
-  }, []);
 
   const onDelete = useConfirmation({
     title: <FormattedMessage {...messages.deleteWarningTitle} />,
@@ -91,23 +98,10 @@ export function AppSettings(): ReactElement {
 
   return (
     <>
-      <Content>
+      <Content fullwidth>
         <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
-          <FileUpload
-            accept="image/jpeg, image/png, image/tiff, image/webp"
-            fileButtonLabel={<FormattedMessage {...messages.icon} />}
-            fileLabel={icon?.name || <FormattedMessage {...messages.noFile} />}
-            help={<FormattedMessage {...messages.iconDescription} />}
-            label={<FormattedMessage {...messages.icon} />}
-            name="icon"
-            onChange={onIconChange}
-            preview={
-              <figure className="image is-128x128 mb-2">
-                <img alt={formatMessage(messages.icon)} className={styles.icon} src={iconUrl} />
-              </figure>
-            }
-          />
           <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
+          <IconTool />
           <SimpleFormField
             component={CheckboxField}
             help={<FormattedMessage {...messages.privateDescription} />}

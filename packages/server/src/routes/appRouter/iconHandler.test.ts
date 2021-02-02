@@ -45,7 +45,7 @@ it('should fall back to a white background if neither theme color not splash col
     definition: { theme: {} },
     icon: await readFixture('tux.png'),
   } as Partial<App>) as App);
-  const response = await request.get('/icon-24.png?opaque');
+  const response = await request.get('/icon-24.png?maskable=true');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();
 });
@@ -55,7 +55,7 @@ it('should fall back to a white background if theme is undefined', async () => {
     definition: {},
     icon: await readFixture('tux.png'),
   } as Partial<App>) as App);
-  const response = await request.get('/icon-235.png?opaque');
+  const response = await request.get('/icon-235.png?maskable=true');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();
 });
