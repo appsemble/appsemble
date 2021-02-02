@@ -11,7 +11,7 @@ stages:
 workflow:
   rules:
     # By default, run jobs for every merge request.
-    - if: $CI_MERGE_REQUEST_ID && $CI_COMMIT_BRANCH != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
     # By default, run jobs for every commit on master.
     - if: $CI_COMMIT_BRANCH == 'master'
     # By default, run jobs for every schedule
@@ -236,7 +236,7 @@ review:
     - build docker image
   rules:
     - if: $CI_MERGE_REQUEST_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_MERGE_REQUEST_ID && $CI_COMMIT_BRANCH != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
       when: manual
   environment:
     name: review/$CI_MERGE_REQUEST_IID
@@ -275,7 +275,7 @@ stop review:
   extends: .helm
   stage: deploy
   rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_COMMIT_BRANCH != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
       when: manual
   allow_failure: true
   environment:
@@ -380,7 +380,7 @@ provision review:
   extends: .yarn
   stage: provision
   rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_COMMIT_BRANCH != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
   needs:
     - review
   environment:
