@@ -129,7 +129,7 @@
   "studio.src.components.AppScreenshots.addNewScreenshot": "",
   "studio.src.components.AppScreenshots.cancel": "",
   "studio.src.components.AppScreenshots.noFile": "",
-  "studio.src.components.AppScreenshots.screenshot": "Skærmbillede af {app}",
+  "studio.src.components.AppScreenshots.screenshot": "Skærmbillede af",
   "studio.src.components.AppScreenshots.submit": "",
   "studio.src.components.AppSecrets.OAuth2Secrets.OAuth2Modal.authorizationUrlHelp": "URL'en, hvor brugeren omdirigeres for at bekræfte deres login",
   "studio.src.components.AppSecrets.OAuth2Secrets.OAuth2Modal.authorizationUrlLabel": "URL-adresse til autorisation",

@@ -129,7 +129,7 @@
   "studio.src.components.AppScreenshots.addNewScreenshot": "Nieuwe schermafbeelding",
   "studio.src.components.AppScreenshots.cancel": "Annuleren",
   "studio.src.components.AppScreenshots.noFile": "Geen bestand gekozen",
-  "studio.src.components.AppScreenshots.screenshot": "Schermafbeelding van {app}",
+  "studio.src.components.AppScreenshots.screenshot": "Schermafbeelding",
   "studio.src.components.AppScreenshots.submit": "Uploaden",
   "studio.src.components.AppSecrets.OAuth2Secrets.OAuth2Modal.authorizationUrlHelp": "De URL waarnaar de gebruiker wordt doorgestuurd om zijn login te bevestigen",
   "studio.src.components.AppSecrets.OAuth2Secrets.OAuth2Modal.authorizationUrlLabel": "Autorisatie-URL",
