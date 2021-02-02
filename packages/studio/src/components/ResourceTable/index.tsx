@@ -164,7 +164,7 @@ export function ResourceTable(): ReactElement {
         titleValues={{ name: app.definition.name, resourceName }}
       />
       <Title>
-        <FormattedMessage {...messages.header} />
+        <FormattedMessage {...messages.header} values={{ resourceName }} />
       </Title>
       <div className="buttons">
         <Button className="is-primary" icon="plus-square" onClick={modal.enable}>
