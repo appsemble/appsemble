@@ -27,6 +27,9 @@ interface ResourceRowProps {
   onEdit: (resource: Resource) => void;
   schema: OpenAPIV3.SchemaObject;
 }
+
+const filteredKeys = new Set(['id', '$author']);
+
 export function ResourceRow({
   onDelete,
   onEdit,
@@ -159,8 +162,9 @@ export function ResourceRow({
         </Modal>
       </td>
       <td className={styles.contentCell}>{resource.id}</td>
+      <td className={styles.contentCell}>{resource.$author?.name ?? resource.$author?.id}</td>
       {Object.keys(schema?.properties ?? {})
-        .filter((key) => key !== 'id')
+        .filter((key) => !filteredKeys.has(key))
         .map((key) => (
           <td className={styles.contentCell} key={key}>
             {typeof resource[key] === 'string' ? resource[key] : JSON.stringify(resource[key])}
