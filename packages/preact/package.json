@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "description": "Build your own blocks using Preact",
   "keywords": [
     "app",
@@ -34,7 +34,7 @@
     "test": "jest"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "0.17.3",
+    "@appsemble/sdk": "0.17.4",
     "preact": "^10"
   }
 }
