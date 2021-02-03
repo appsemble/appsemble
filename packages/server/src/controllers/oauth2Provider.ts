@@ -59,7 +59,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
 
   const picture = user.primaryEmail
     ? `https://www.gravatar.com/avatar/${createHash('md5')
-        .update(user.primaryEmail.toLowerCase())
+        .update(user.primaryEmail)
         .digest('hex')}?s=128&d=mp`
     : null;
 

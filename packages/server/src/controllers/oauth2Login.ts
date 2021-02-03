@@ -144,7 +144,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
         // We’ll try to link this email address to the new user, even though no password has been
         // set.
         const emailAuthorization = await EmailAuthorization.findOne({
-          where: { email: userInfo.email },
+          where: { email: userInfo.email.toLowerCase() },
         });
         if (emailAuthorization) {
           if (emailAuthorization.UserId !== user.id) {
@@ -154,7 +154,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
           const verified = Boolean(userInfo.email_verified);
           const key = verified ? null : randomBytes(40).toString('hex');
           await EmailAuthorization.create(
-            { UserId: user.id, email: userInfo.email, key, verified },
+            { UserId: user.id, email: userInfo.email.toLowerCase(), key, verified },
             { transaction },
           );
           if (!verified) {

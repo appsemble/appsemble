@@ -21,10 +21,11 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   const {
     mailer,
     request: {
-      body: { email, name, password },
+      body: { name, password },
     },
   } = ctx;
 
+  const email = ctx.request.body.email.toLowerCase();
   const hashedPassword = await hash(password, 10);
   const key = randomBytes(40).toString('hex');
   let user: User;
@@ -86,13 +87,9 @@ export async function verifyEmail(ctx: KoaContext): Promise<void> {
 }
 
 export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
-  const {
-    mailer,
-    request: {
-      body: { email },
-    },
-  } = ctx;
+  const { mailer, request } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const record = await EmailAuthorization.findByPk(email, { raw: true });
   if (record && !record.verified) {
     const { key } = record;
@@ -105,13 +102,9 @@ export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
 }
 
 export async function requestResetPassword(ctx: KoaContext): Promise<void> {
-  const {
-    mailer,
-    request: {
-      body: { email },
-    },
-  } = ctx;
+  const { mailer, request } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const emailRecord = await EmailAuthorization.findByPk(email);
 
   if (emailRecord) {
