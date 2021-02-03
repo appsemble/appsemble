@@ -21,10 +21,11 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   const {
     mailer,
     request: {
-      body: { email, name, password },
+      body: { name, password },
     },
   } = ctx;
 
+  const email = ctx.request.body.email.toLowerCase();
   const hashedPassword = await hash(password, 10);
   const key = randomBytes(40).toString('hex');
   let user: User;
@@ -32,13 +33,10 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   try {
     await transactional(async (transaction) => {
       user = await User.create(
-        { name, password: hashedPassword, primaryEmail: email.toLowerCase() },
+        { name, password: hashedPassword, primaryEmail: email },
         { transaction },
       );
-      await EmailAuthorization.create(
-        { UserId: user.id, email: email.toLowerCase(), key },
-        { transaction },
-      );
+      await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
