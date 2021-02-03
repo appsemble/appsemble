@@ -284,7 +284,12 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
       const user = userMap.get(email);
       const key = randomBytes(20).toString('hex');
       return user
-        ? { email: user.primaryEmail, UserId: user.id, key, OrganizationId: organizationId }
+        ? {
+            email: user?.primaryEmail ?? email,
+            UserId: user.id,
+            key,
+            OrganizationId: organizationId,
+          }
         : { email, key, OrganizationId: organizationId };
     }),
   );
