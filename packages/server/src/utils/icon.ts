@@ -64,6 +64,9 @@ export async function serveIcon(
     img.resize(size);
     img.flatten({ background });
     img.composite([{ input: await actual.toFormat('png').toBuffer() }]);
+
+    // Cache app icons for 1 week.
+    ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7}`);
   }
 
   ctx.body = await img.toFormat('png').toBuffer();

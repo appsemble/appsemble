@@ -281,7 +281,7 @@ export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Block version not found');
   }
 
-  const icon = version.icon || version.Organization.icon || (await readAsset('appsemble.svg'));
+  const icon = version.icon || version.Organization.icon || (await readAsset('appsemble.png'));
   await serveIcon(ctx, {
     icon,
     ...(!version.icon && !version.Organization.icon && { width: 128, height: 128, format: 'png' }),
