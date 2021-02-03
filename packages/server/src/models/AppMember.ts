@@ -2,6 +2,7 @@ import {
   AllowNull,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   Table,
@@ -27,6 +28,6 @@ export class AppMember extends Model {
   AppId: number;
 
   @ForeignKey(() => User)
-  @Column
-  UserId: number;
+  @Column(DataType.UUID)
+  UserId: string;
 }

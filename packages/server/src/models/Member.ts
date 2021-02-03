@@ -33,8 +33,8 @@ export class Member extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => User)
-  @Column
-  UserId: number;
+  @Column(DataType.UUID)
+  UserId: string;
 
   @BelongsTo(() => Organization)
   Organization: Organization;
