@@ -51,15 +51,16 @@ export function UserSettings(): ReactElement {
   );
 
   const onAddNewEmail = useCallback(
-    async (values) => {
-      await axios.post('/api/user/email', values);
+    async (values: { email: string }) => {
+      const email = values.email.toLowerCase();
+      await axios.post('/api/user/email', { email });
       push({
         body: formatMessage(messages.addEmailSuccess),
         color: 'success',
       });
       setEmails(
         emails
-          .concat({ ...values, verified: false })
+          .concat({ email, verified: false })
           .sort(({ email: a }, { email: b }) => a.localeCompare(b)),
       );
     },

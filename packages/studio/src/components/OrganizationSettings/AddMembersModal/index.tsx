@@ -53,7 +53,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
     try {
       const { data } = await axios.post<OrganizationInvite[]>(
         `/api/organizations/${organizationId}/invites`,
-        invites.filter((invite) => invite.email),
+        invites.filter((invite) => invite.email.toLowerCase()),
       );
       onInvited(data);
     } catch {
