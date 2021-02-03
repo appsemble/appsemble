@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.17.5](https://gitlab.com/appsemble/appsemble/-/releases/0.17.5)] - 2021-02-03
+
+### Changed
+
+- Server: App, block, and organization icons are now cached.
+- Server: Email addresses are now treated as case insensitive.
+
 ## \[[0.17.4](https://gitlab.com/appsemble/appsemble/-/releases/0.17.4)] - 2021-02-02
 
 ### Fixed
