@@ -37,4 +37,7 @@ export async function serveIcon(
 
   ctx.body = await img.toBuffer();
   ctx.type = format;
+
+  // Cache app icons for 1 week.
+  ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7}`);
 }
