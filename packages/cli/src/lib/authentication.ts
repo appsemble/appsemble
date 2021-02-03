@@ -41,7 +41,7 @@ async function getClientCredentials(remote: string, inputCredentials: string): P
   const choices = await findCredentials(getService(remote));
   if (choices.length === 0) {
     throw new AppsembleError(
-      `No client credentials found. Register them using:\n\nappsemble auth login --remote ${remote}`,
+      `No client credentials found. Register them using:\n\nappsemble login --remote ${remote}`,
     );
   }
   let choice;
