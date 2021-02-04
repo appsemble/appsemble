@@ -14,8 +14,14 @@ import { traverseBlockThemes } from './traverseBlockThemes';
 import { uploadMessages } from './uploadMessages';
 
 interface CreateAppParams {
+  /**
+   * The OAuth2 client credentials to use.
+   */
   clientCredentials: string;
 
+  /**
+   * If specified, the context matching this name is used, overriding command line flags.
+   */
   context?: string;
 
   /**

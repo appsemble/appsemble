@@ -7,6 +7,7 @@ import { createApp } from '../../lib/createApp';
 import { BaseArguments } from '../../types';
 
 interface CreateAppArguments extends BaseArguments {
+  context: string;
   paths: string[];
   organization: string;
   private: boolean;

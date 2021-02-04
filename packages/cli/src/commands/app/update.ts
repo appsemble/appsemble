@@ -2,13 +2,13 @@ import { logger } from '@appsemble/node-utils';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { authenticate } from '../../lib/authentication';
 import { updateApp } from '../../lib/updateApp';
 import { BaseArguments } from '../../types';
 
-interface CreateAppArguments extends BaseArguments {
+interface UpdateAppArguments extends BaseArguments {
+  context: string;
   path: string;
-  appId: number;
+  id: number;
   private: boolean;
   template: boolean;
 }
@@ -22,9 +22,11 @@ export function builder(yargs: Argv): Argv {
       describe: 'The path to the app to register',
       normalize: true,
     })
-    .option('app-id', {
+    .option('context', {
+      describe: 'If specified, use the specified context from .appsemblerc.yaml',
+    })
+    .option('id', {
       describe: 'The ID of the app to update.',
-      demand: true,
       type: 'number',
     })
     .option('private', {
@@ -40,14 +42,22 @@ export function builder(yargs: Argv): Argv {
 }
 
 export async function handler({
-  appId,
   clientCredentials,
+  context,
+  id,
   path,
   private: isPrivate,
   remote,
   template,
-}: CreateAppArguments): Promise<void> {
-  await authenticate(remote, 'apps:write', clientCredentials);
-  logger.info(`Updating App ${appId}`);
-  await updateApp({ appId, path: normalizePath(path), private: isPrivate, remote, template });
+}: UpdateAppArguments): Promise<void> {
+  logger.info(`Updating App ${id}`);
+  await updateApp({
+    clientCredentials,
+    context,
+    id,
+    path: normalizePath(path),
+    private: isPrivate,
+    remote,
+    template,
+  });
 }
