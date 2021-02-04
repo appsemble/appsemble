@@ -8,7 +8,7 @@ context:
     organization: appsemble
     template: true
   review:
-    organization: appemble
+    organization: appsemble
     template: true
   development:
     remote: http://localhost:9999
