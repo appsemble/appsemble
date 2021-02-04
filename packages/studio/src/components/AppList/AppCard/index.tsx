@@ -28,8 +28,10 @@ export function AppCard({ app }: AppCardProps): ReactElement {
             />
           </figure>
         </div>
-        <Title size={4}>{app.definition.name}</Title>
-        <Subtitle className="mb-0" size={6}>
+        <Title className={styles.ellipsis} size={5}>
+          {app.definition.name}
+        </Title>
+        <Subtitle className={`mb-0 ${styles.ellipsis}`} size={6}>
           @{app.OrganizationId}
         </Subtitle>
         <StarRating className={`pt-4 ${styles.rating}`} value={app.rating?.average || 0} />

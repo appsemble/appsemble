@@ -5,3 +5,9 @@
 .rating {
   left: -0.5em;
 }
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
