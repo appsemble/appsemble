@@ -3,6 +3,7 @@ import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
+import { useApp } from '../AppContext';
 import styles from './index.css';
 import './custom';
 
@@ -75,6 +76,9 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
     ref,
   ) => {
     const [monaco, setMonaco] = useState<editor.IStandaloneCodeEditor>();
+    const {
+      app: { locked },
+    } = useApp();
 
     const saveRef = useRef(onSave);
     saveRef.current = onSave;
@@ -87,7 +91,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
       }
 
       const model = editor.createModel('', 'yaml');
-      const ed = editor.create(node, { ...options, model });
+      const ed = editor.create(node, { ...options, readOnly: locked || options.readOnly, model });
       ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
 
       const observer = new ResizeObserver(() => ed.layout());
@@ -107,7 +111,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
 
     useEffect(() => {
       if (monaco) {
-        monaco.updateOptions(options);
+        monaco.updateOptions({ ...options, readOnly: locked || options.readOnly });
 
         if (decorationList && onChangeDecorationList) {
           onChangeDecorationList(

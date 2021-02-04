@@ -9,6 +9,9 @@ export const messages = defineMessages({
   private: 'Private',
   privateDescription:
     'If checked, prevent this app from appearing on the app list if the user is not part of this app’s organization.',
+  locked: 'Locked',
+  lockedDescription:
+    'If checked, prevent this app from being updated without unchecking this option first.',
   path: 'Path',
   pathDescription: 'The path used to access the app.',
   domain: 'Domain name',

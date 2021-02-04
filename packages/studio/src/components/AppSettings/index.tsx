@@ -52,6 +52,7 @@ export function AppSettings(): ReactElement {
       iconBackground: app.iconBackground,
       path: app.path,
       private: app.private,
+      locked: app.locked,
     }),
     [app],
   );
@@ -108,6 +109,12 @@ export function AppSettings(): ReactElement {
             label={<FormattedMessage {...messages.privateLabel} />}
             name="private"
             title={<FormattedMessage {...messages.private} />}
+          />
+          <SimpleFormField
+            component={CheckboxField}
+            help={<FormattedMessage {...messages.lockedDescription} />}
+            name="locked"
+            title={<FormattedMessage {...messages.locked} />}
           />
           <SimpleFormField
             addon={

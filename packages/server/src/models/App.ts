@@ -98,6 +98,10 @@ export class App extends Model {
   @Column
   vapidPrivateKey: string;
 
+  @Default(false)
+  @Column
+  locked: boolean;
+
   @UpdatedAt
   updated: Date;
 

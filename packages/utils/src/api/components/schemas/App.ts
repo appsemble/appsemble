@@ -45,6 +45,12 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching all apps.',
     },
+    locked: {
+      type: 'boolean',
+      description: `Determines whether this app should be locked from being updated.
+
+      This must be set to \`false\` before any other changes can be made to an app.`,
+    },
     template: {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching for templates.',
