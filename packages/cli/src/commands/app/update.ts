@@ -1,4 +1,5 @@
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
+import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
@@ -7,18 +8,18 @@ import { BaseArguments } from '../../types';
 
 interface UpdateAppArguments extends BaseArguments {
   context: string;
-  path: string;
+  paths: string[];
   id: number;
   private: boolean;
   template: boolean;
 }
 
-export const command = 'update <path>';
-export const description = 'Updated a new App based on a specified YAML file or directory.';
+export const command = 'update <pats...>';
+export const description = 'Update aa app based on a specified YAML file or directory.';
 
 export function builder(yargs: Argv): Argv {
   return yargs
-    .positional('path', {
+    .positional('paths', {
       describe: 'The path to the app to register',
       normalize: true,
     })
@@ -45,19 +46,28 @@ export async function handler({
   clientCredentials,
   context,
   id,
-  path,
+  paths,
   private: isPrivate,
   remote,
   template,
 }: UpdateAppArguments): Promise<void> {
-  logger.info(`Updating App ${id}`);
-  await updateApp({
-    clientCredentials,
-    context,
-    id,
-    path: normalizePath(path),
-    private: isPrivate,
-    remote,
-    template,
-  });
+  if (id != null && paths.length) {
+    throw new AppsembleError('Only one path may be specified when specifying an app id');
+  }
+
+  const normalizedPaths = paths.map((path) => normalizePath(path));
+  const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
+
+  logger.info(`Updating ${directories.length} apps`);
+  for (const dir of directories) {
+    await updateApp({
+      clientCredentials,
+      context,
+      id,
+      path: dir,
+      private: isPrivate,
+      remote,
+      template,
+    });
+  }
 }
