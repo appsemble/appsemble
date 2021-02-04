@@ -174,9 +174,6 @@ export const paths: OpenAPIV3.PathsObject = {
                 private: {
                   $ref: '#/components/schemas/App/properties/private',
                 },
-                locked: {
-                  $ref: '#/components/schemas/App/properties/locked',
-                },
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
                 },

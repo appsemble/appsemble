@@ -23,7 +23,6 @@
 .icon {
   align-items: center;
   bottom: 0;
-  cursor: pointer;
   height: 100%;
   justify-content: center;
   left: 0;
@@ -39,9 +38,16 @@
   }
 }
 
+.disabled {
+  cursor: not-allowed;
+}
+
+.enabled {
+  cursor: pointer;
+}
+
 .input {
   bottom: 0;
-  cursor: pointer;
   left: 0;
   opacity: 0;
   position: absolute;

@@ -36,7 +36,7 @@ function preprocessDomain(domain: string): string {
  * Render the app settings view.
  */
 export function AppSettings(): ReactElement {
-  const { app } = useApp();
+  const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 
   const push = useMessages();
@@ -97,24 +97,43 @@ export function AppSettings(): ReactElement {
     },
   });
 
+  const onToggleLock = useConfirmation({
+    title: <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />,
+    body: (
+      <FormattedMessage
+        {...(app.locked ? messages.unlockAppDescription : messages.lockAppDescription)}
+      />
+    ),
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />,
+    async action() {
+      const { id, locked } = app;
+      try {
+        await axios.post(`/api/apps/${id}/lock`, { locked: !locked });
+        setApp({ ...app, locked: !locked });
+        push({
+          body: formatMessage(locked ? messages.unlockedSuccessfully : messages.lockedSuccessfully),
+          color: 'info',
+        });
+      } catch {
+        push(formatMessage(messages.lockError));
+      }
+    },
+  });
+
   return (
     <>
       <Content fullwidth>
         <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
           <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
-          <IconTool />
+          <IconTool disabled={app.locked} />
           <SimpleFormField
             component={CheckboxField}
+            disabled={app.locked}
             help={<FormattedMessage {...messages.privateDescription} />}
             label={<FormattedMessage {...messages.privateLabel} />}
             name="private"
             title={<FormattedMessage {...messages.private} />}
-          />
-          <SimpleFormField
-            component={CheckboxField}
-            help={<FormattedMessage {...messages.lockedDescription} />}
-            name="locked"
-            title={<FormattedMessage {...messages.locked} />}
           />
           <SimpleFormField
             addon={
@@ -122,6 +141,7 @@ export function AppSettings(): ReactElement {
                 {`.${app.OrganizationId}.${window.location.host}`}
               </span>
             }
+            disabled={app.locked}
             help={<FormattedMessage {...messages.pathDescription} />}
             label={<FormattedMessage {...messages.path} />}
             maxLength={30}
@@ -131,6 +151,7 @@ export function AppSettings(): ReactElement {
             required
           />
           <SimpleFormField
+            disabled={app.locked}
             help={
               <FormattedMessage
                 {...messages.domainDescription}
@@ -152,7 +173,7 @@ export function AppSettings(): ReactElement {
             }}
           />
           <FormButtons>
-            <SimpleSubmit color="primary" type="submit">
+            <SimpleSubmit color="primary" disabled={app.locked} type="submit">
               <FormattedMessage {...messages.saveChanges} />
             </SimpleSubmit>
           </FormButtons>
@@ -160,6 +181,18 @@ export function AppSettings(): ReactElement {
       </Content>
       <hr />
       <Content>
+        <Message
+          className={styles.appLock}
+          color="warning"
+          header={<FormattedMessage {...messages.appLock} />}
+        >
+          <p className="content">
+            <FormattedMessage {...messages.lockedDescription} />
+          </p>
+          <Button color="warning" icon={app.locked ? 'unlock' : 'lock'} onClick={onToggleLock}>
+            <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />
+          </Button>
+        </Message>
         <Message
           className={styles.dangerZone}
           color="danger"
