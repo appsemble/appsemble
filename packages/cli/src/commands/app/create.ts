@@ -3,7 +3,6 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { authenticate } from '../../lib/authentication';
 import { createApp } from '../../lib/createApp';
 import { BaseArguments } from '../../types';
 
@@ -22,9 +21,11 @@ export function builder(yargs: Argv): Argv {
     .positional('paths', {
       describe: 'The paths to the apps to create.',
     })
+    .option('context', {
+      describe: 'If specified, use the specified context from .appsemblerc.yaml',
+    })
     .option('organization', {
       describe: 'The ID the app should be created for.',
-      demand: true,
     })
     .option('private', {
       describe: 'Whether the app should be marked as private.',
@@ -40,23 +41,23 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler({
   clientCredentials,
+  context,
   organization,
   paths,
   private: isPrivate,
   remote,
   template,
 }: CreateAppArguments): Promise<void> {
-  await authenticate(remote, 'apps:write', clientCredentials);
-  const organizationId = organization.startsWith('@') ? organization.slice(1) : organization;
-
   const normalizedPaths = paths.map((path) => normalizePath(path));
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
 
-  logger.info(`Creating ${directories.length} Apps for @${organizationId}`);
+  logger.info(`Creating ${directories.length} apps`);
   for (const dir of directories) {
     logger.info('');
     await createApp({
-      organizationId,
+      clientCredentials,
+      context,
+      organization,
       path: dir,
       private: isPrivate,
       remote,

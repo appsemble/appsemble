@@ -1,20 +1,27 @@
 import { promises as fs } from 'fs';
 import { URL } from 'url';
+import { inspect } from 'util';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
 import yaml from 'js-yaml';
 
+import { AppsembleContext } from '../types';
+import { authenticate } from './authentication';
 import { traverseAppDirectory } from './traverseAppDirectory';
 import { traverseBlockThemes } from './traverseBlockThemes';
 import { uploadMessages } from './uploadMessages';
 
 interface CreateAppParams {
+  clientCredentials: string;
+
+  context?: string;
+
   /**
    * The ID of the organization to upload for.
    */
-  organizationId: string;
+  organization: string;
 
   /**
    * The path in which the App YAML is located.
@@ -43,17 +50,14 @@ interface CreateAppParams {
  * @param options - The options to use for creating an app.
  */
 export async function createApp({
-  organizationId,
+  clientCredentials,
+  context,
   path,
-  private: isPrivate,
-  remote,
-  template,
+  ...options
 }: CreateAppParams): Promise<void> {
   const file = await fs.stat(path);
   const formData = new FormData();
-  formData.append('private', String(isPrivate));
-  formData.append('template', String(template));
-  formData.append('OrganizationId', organizationId);
+  let appsembleContext: AppsembleContext;
 
   try {
     if (file.isFile()) {
@@ -63,7 +67,7 @@ export async function createApp({
       formData.append('yaml', data);
       formData.append('definition', JSON.stringify(app));
     } else {
-      await traverseAppDirectory(path, formData);
+      appsembleContext = await traverseAppDirectory(path, context, formData);
     }
   } catch (error: unknown) {
     if (error instanceof yaml.YAMLException) {
@@ -72,7 +76,29 @@ export async function createApp({
     throw error;
   }
 
-  const { data } = await axios.post('/api/apps', formData);
+  const remote = appsembleContext?.remote ?? options.remote;
+  const organizationId = appsembleContext?.organization ?? options.organization;
+  const template = appsembleContext?.template ?? options.template ?? false;
+  const isPrivate = appsembleContext?.private ?? options.private ?? false;
+  logger.verbose(`App remote: ${remote}`);
+  logger.verbose(`App organzation: ${organizationId}`);
+  logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
+  logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
+  if (!organizationId) {
+    throw new AppsembleError(
+      'An organization id must be passed as a command line flag or in the context',
+    );
+  }
+  formData.append('OrganizationId', organizationId);
+  if (template) {
+    formData.append('template', 'true');
+  }
+  if (isPrivate) {
+    formData.append('private', 'true');
+  }
+
+  await authenticate(remote, 'apps:write', clientCredentials);
+  const { data } = await axios.post('/api/apps', formData, { baseURL: remote });
 
   if (file.isDirectory()) {
     // After uploading the app, upload block styles and messages if they are available

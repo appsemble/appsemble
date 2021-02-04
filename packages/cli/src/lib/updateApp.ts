@@ -36,7 +36,7 @@ export async function updateApp({
       formData.append('yaml', data);
       formData.append('definition', JSON.stringify(app));
     } else {
-      await traverseAppDirectory(path, formData);
+      await traverseAppDirectory(path, undefined, formData);
     }
 
     const { data } = await axios.patch(`/api/apps/${appId}`, formData);
