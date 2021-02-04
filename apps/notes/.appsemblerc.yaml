@@ -1,0 +1,16 @@
+context:
+  production:
+    remote: https://appsemble.app
+    template: true
+    id: 70
+  staging:
+    remote: https://staging.appsemble.app
+    organization: appsemble
+    template: true
+  review:
+    organization: appemble
+    template: true
+  development:
+    remote: http://localhost:9999
+    organization: appsemble
+    template: true
