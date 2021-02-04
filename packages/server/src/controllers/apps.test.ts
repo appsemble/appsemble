@@ -1253,6 +1253,61 @@ pages:
   });
 });
 
+describe('setAppLock', () => {
+  it('should set the locked property to true', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: true });
+    await app.reload();
+    expect(response.status).toStrictEqual(204);
+    expect(app.locked).toStrictEqual(true);
+  });
+
+  it('should set the locked property to false', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: true,
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
+    await app.reload();
+    expect(response.status).toStrictEqual(204);
+    expect(app.locked).toStrictEqual(false);
+  });
+
+  it('should not be possible to set the lock status as an app editor', async () => {
+    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+
+    authorizeStudio();
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: true,
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'User does not have sufficient permissions.' },
+    });
+  });
+});
+
 describe('deleteApp', () => {
   it('should delete an app', async () => {
     authorizeStudio();
@@ -1442,6 +1497,34 @@ describe('patchApp', () => {
     expect(response).toMatchObject({ status: 200 });
     expect(coreStyle).toMatchObject({ status: 200, data: 'body { color: yellow; }' });
     expect(sharedStyle).toMatchObject({ status: 200, data: 'body { color: blue; }' });
+  });
+
+  it('should not update an app if it is currently locked', async () => {
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: true,
+    });
+
+    const form = createFormData({
+      definition: {
+        name: 'Foobar',
+        defaultPage: app.definition.defaultPage,
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'test', version: '0.0.0' }],
+          },
+        ],
+      },
+    });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}`, form);
+
+    expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
   });
 
   it('should not allow invalid core stylesheets when updating an app', async () => {
@@ -1794,6 +1877,41 @@ describe('setAppBlockStyle', () => {
       where: { AppId: id, block: '@appsemble/testblock' },
     });
     expect(style).toBeNull();
+  });
+
+  it('should not update an app if it is currently locked', async () => {
+    await BlockVersion.create({
+      name: 'testblock',
+      OrganizationId: 'appsemble',
+      description: 'This is a test block for testing purposes.',
+      version: '0.0.0',
+    });
+
+    const { id } = await App.create(
+      {
+        path: 'bar',
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test', blocks: { type: 'testblock', version: '0.0.0' } }],
+        },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: yellow; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form);
+
+    expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
   });
 
   it('should not allow invalid stylesheets when uploading block stylesheets to an app', async () => {

@@ -12,7 +12,7 @@ import {
   validateAppDefinition,
   validateStyle,
 } from '@appsemble/utils';
-import { badRequest, conflict, notFound } from '@hapi/boom';
+import { badRequest, conflict, forbidden, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { File } from 'koas-body-parser';
@@ -367,6 +367,19 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
   let result: Partial<App>;
 
+  const dbApp = await App.findOne({
+    where: { id: appId },
+    include: [{ model: AppScreenshot, attributes: ['id'] }],
+  });
+
+  if (!dbApp) {
+    throw notFound('App not found');
+  }
+
+  if (dbApp.locked) {
+    throw forbidden('App is currently locked.');
+  }
+
   try {
     result = {};
 
@@ -434,15 +447,6 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       result.yaml = jsYaml.safeDump(definition);
     }
 
-    const dbApp = await App.findOne({
-      where: { id: appId },
-      include: [{ model: AppScreenshot, attributes: ['id'] }],
-    });
-
-    if (!dbApp) {
-      throw notFound('App not found');
-    }
-
     const checkPermissions: Permission[] = [];
 
     if (
@@ -480,6 +484,27 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
   } catch (error: unknown) {
     handleAppValidationError(error as Error, result);
   }
+}
+
+export async function setAppLock(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+    request: {
+      body: { locked },
+    },
+  } = ctx;
+
+  const app = await App.findOne({
+    where: { id: appId },
+    include: [{ model: AppScreenshot, attributes: ['id'] }],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+  await app.update({ locked });
 }
 
 export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
@@ -677,6 +702,10 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
     const app = await App.findByPk(appId);
     if (!app) {
       throw notFound('App not found.');
+    }
+
+    if (app.locked) {
+      throw forbidden('App is currently locked.');
     }
 
     const block = await BlockVersion.findOne({
