@@ -79,7 +79,7 @@ export async function updateApp({
     const remote = appsembleContext?.remote ?? options.remote;
     const id = appsembleContext?.id ?? options.id;
     const template = appsembleContext?.template ?? options.template ?? false;
-    const isPrivate = appsembleContext?.private ?? options.private ?? false;
+    const isPrivate = appsembleContext?.private ?? options.private;
     logger.info(`App id: ${id}`);
     logger.verbose(`App remote: ${remote}`);
     logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
@@ -89,12 +89,8 @@ export async function updateApp({
         'The app id must be passed as a command line flag or in the context',
       );
     }
-    if (template) {
-      formData.append('template', 'true');
-    }
-    if (isPrivate) {
-      formData.append('private', 'true');
-    }
+    formData.append('template', String(template));
+    formData.append('private', String(isPrivate));
 
     await authenticate(remote, 'apps:write', clientCredentials);
     const { data } = await axios.patch(`/api/apps/${id}`, formData, { baseURL: remote });

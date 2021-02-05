@@ -37,7 +37,7 @@ export async function traverseAppDirectory(
         }
         if (context && 'context' in rc && Object.hasOwnProperty.call(rc.context, context)) {
           discoveredContext = rc.context[context];
-          logger.verbose(`Using context: ${inspect(discoveredContext)}`);
+          logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
         }
         break;
       }

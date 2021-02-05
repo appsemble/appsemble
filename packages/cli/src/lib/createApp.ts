@@ -85,7 +85,7 @@ export async function createApp({
   const remote = appsembleContext?.remote ?? options.remote;
   const organizationId = appsembleContext?.organization ?? options.organization;
   const template = appsembleContext?.template ?? options.template ?? false;
-  const isPrivate = appsembleContext?.private ?? options.private ?? false;
+  const isPrivate = appsembleContext?.private ?? options.private;
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organzation: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
@@ -96,12 +96,8 @@ export async function createApp({
     );
   }
   formData.append('OrganizationId', organizationId);
-  if (template) {
-    formData.append('template', 'true');
-  }
-  if (isPrivate) {
-    formData.append('private', 'true');
-  }
+  formData.append('template', String(template));
+  formData.append('private', String(isPrivate));
 
   await authenticate(remote, 'apps:write', clientCredentials);
   const { data } = await axios.post('/api/apps', formData, { baseURL: remote });
