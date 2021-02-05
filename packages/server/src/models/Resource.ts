@@ -6,7 +6,6 @@ import {
   CreatedAt,
   DataType,
   Default,
-  DeletedAt,
   ForeignKey,
   HasMany,
   Model,
@@ -17,7 +16,7 @@ import {
 
 import { App, Asset, ResourceSubscription, User } from '.';
 
-@Table({ tableName: 'Resource', paranoid: true })
+@Table({ tableName: 'Resource' })
 export class Resource extends Model {
   @PrimaryKey
   @AutoIncrement
@@ -43,9 +42,6 @@ export class Resource extends Model {
 
   @UpdatedAt
   updated: Date;
-
-  @DeletedAt
-  deleted: Date;
 
   @ForeignKey(() => App)
   @Column
