@@ -1,12 +1,12 @@
-import { useToggle } from '@appsemble/react-components';
+import { MenuSection, useSideMenu } from '@appsemble/react-components';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { FunctionComponent, ReactElement } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import { NavLink } from '../NavLink';
-import { SideMenu } from '../SideMenu';
-import { SideNavLink } from '../SideNavLink';
+import { MenuItem } from '../MenuItem';
 import styles from './index.css';
+import { messages } from './messages';
 
 interface MDXModule {
   default: FunctionComponent;
@@ -38,42 +38,50 @@ const docs = context
  */
 export function Docs(): ReactElement {
   const { url } = useRouteMatch();
-  const collapsed = useToggle();
 
   function getUrl(path: string): string {
     return path === '/' ? url : `${url}/${path.replace(/\/$/, '')}`;
   }
 
-  return (
-    <div className={`${styles.container} is-flex`}>
-      <SideMenu isCollapsed={collapsed.enabled} toggleCollapse={collapsed.toggle}>
-        {docs
-          .filter(({ path }) => path.endsWith('/'))
-          .map(({ icon, path, title }) => (
-            <SideNavLink exact icon={icon} key={path} label={title} to={getUrl(path)}>
-              {docs
-                .filter((subRoute) => subRoute.path !== path && subRoute.path.startsWith(path))
-                .map((subRoute) => (
-                  <NavLink key={subRoute.path} to={getUrl(subRoute.path)}>
+  useSideMenu(
+    <MenuSection label={<FormattedMessage {...messages.title} />}>
+      {docs
+        .filter(({ path }) => path.endsWith('/'))
+        .map(({ icon, path, title }) => {
+          const subRoutes = docs.filter(
+            (subRoute) => subRoute.path !== path && subRoute.path.startsWith(path),
+          );
+          return [
+            <MenuItem exact icon={icon} key={`${path}-title`} to={getUrl(path)}>
+              {title}
+            </MenuItem>,
+            subRoutes.length ? (
+              <MenuSection key={`${path}-section`}>
+                {subRoutes.map((subRoute) => (
+                  <MenuItem key={subRoute.path} to={getUrl(subRoute.path)}>
                     {subRoute.title}
-                  </NavLink>
+                  </MenuItem>
                 ))}
-            </SideNavLink>
-          ))}
-      </SideMenu>
-      <main className={`container content px-6 py-4 ${styles.doc}`}>
-        <Switch>
-          {docs.map(({ Component, path }) => (
-            <Route exact key={path} path={getUrl(path)} strict>
-              <Component />
-            </Route>
-          ))}
-          {docs.map(({ path }) => (
-            <Redirect exact from={`${getUrl(path)}/`} key={path} to={getUrl(path)} />
-          ))}
-          <Redirect to={url} />
-        </Switch>
-      </main>
-    </div>
+              </MenuSection>
+            ) : null,
+          ];
+        })}
+    </MenuSection>,
+  );
+
+  return (
+    <main className={`container content px-2 py-2 ${styles.doc}`}>
+      <Switch>
+        {docs.map(({ Component, path }) => (
+          <Route exact key={path} path={getUrl(path)} strict>
+            <Component />
+          </Route>
+        ))}
+        {docs.map(({ path }) => (
+          <Redirect exact from={`${getUrl(path)}/`} key={path} to={getUrl(path)} />
+        ))}
+        <Redirect to={url} />
+      </Switch>
+    </main>
   );
 }
