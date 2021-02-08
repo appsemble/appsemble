@@ -15,5 +15,6 @@ export const messages = defineMessages({
   view: 'View App',
   resources: 'Resources',
   resourcesDescription: 'Copy any resources that are allowed to be cloned.',
-  screenshot: 'Screenshot of {app}',
+  readMore: 'Read more',
+  readLess: 'Read less',
 });

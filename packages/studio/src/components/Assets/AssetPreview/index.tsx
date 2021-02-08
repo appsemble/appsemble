@@ -1,6 +1,6 @@
 import { Button, Content } from '@appsemble/react-components';
 import { extension } from 'mime-types';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Asset } from '..';

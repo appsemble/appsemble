@@ -1,22 +1,23 @@
 import { request, setTestApp } from 'axios-test-instance';
 
 import { EmailAuthorization, Member, Organization, User } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
 let user: User;
-let authorization: string;
 
 beforeAll(createTestSchema('user'));
 
 beforeAll(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
+  user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -30,7 +31,8 @@ afterAll(closeTestSchema);
 
 describe('getUser', () => {
   it('should return a user profile', async () => {
-    const response = await request.get('/api/user', { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.get('/api/user');
 
     expect(response).toMatchObject({
       status: 200,
@@ -55,9 +57,8 @@ describe('getUserOrganizations', () => {
     const organizationB = await Organization.create({ id: 'testorganizationb' });
     await Member.create({ OrganizationId: organizationB.id, UserId: user.id });
 
-    const response = await request.get('/api/user/organizations', {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get('/api/user/organizations');
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -70,11 +71,8 @@ describe('getUserOrganizations', () => {
 
 describe('updateUser', () => {
   it('should update the user display name', async () => {
-    const response = await request.put(
-      '/api/user',
-      { name: 'John' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put('/api/user', { name: 'John' });
 
     expect(response).toMatchObject({
       status: 200,
@@ -89,11 +87,11 @@ describe('updateUser', () => {
       UserId: user.id,
     });
 
-    const response = await request.put(
-      '/api/user',
-      { name: 'Test User', email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put('/api/user', {
+      name: 'Test User',
+      email: 'test2@example.com',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -103,11 +101,11 @@ describe('updateUser', () => {
   });
 
   it('should not set a non-existent email as primary email', async () => {
-    const response = await request.put(
-      '/api/user',
-      { name: 'Test User', email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put('/api/user', {
+      name: 'Test User',
+      email: 'test2@example.com',
+    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -120,17 +118,13 @@ describe('updateUser', () => {
   });
 
   it('should not set an unverified email as primary email', async () => {
-    await request.post(
-      '/api/user/email',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    await request.post('/api/user/email', { email: 'test2@example.com' });
 
-    const response = await request.put(
-      '/api/user',
-      { name: 'Test User', email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    const response = await request.put('/api/user', {
+      name: 'Test User',
+      email: 'test2@example.com',
+    });
 
     expect(response).toMatchObject({
       status: 406,
@@ -145,17 +139,12 @@ describe('updateUser', () => {
 
 describe('addEmail', () => {
   it('should be possible to add new email addresses', async () => {
-    const response = await request.post(
-      '/api/user/email',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/user/email', { email: 'test2@example.com' });
 
     expect(response).toMatchObject({ status: 201 });
 
-    const responseB = await request.get('/api/user/email', {
-      headers: { authorization },
-    });
+    const responseB = await request.get('/api/user/email');
     expect(responseB).toMatchObject({
       status: 200,
       data: [
@@ -172,11 +161,8 @@ describe('addEmail', () => {
   });
 
   it('should not be possible to register the same email twice', async () => {
-    const response = await request.post(
-      '/api/user/email',
-      { email: 'test@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/user/email', { email: 'test@example.com' });
 
     expect(response).toMatchObject({ status: 409 });
   });
@@ -190,14 +176,14 @@ describe('removeEmail', () => {
       UserId: user.id,
     });
 
+    authorizeStudio();
     const response = await request.delete('/api/user/email', {
-      headers: { authorization },
       data: { email: 'test2@example.com' },
     });
 
     expect(response).toMatchObject({ status: 204 });
 
-    const { data } = await request.get('/api/user', { headers: { authorization } });
+    const { data } = await request.get('/api/user');
 
     expect(data.emails).not.toContainEqual({
       email: 'test2@example.com',
@@ -207,8 +193,8 @@ describe('removeEmail', () => {
   });
 
   it('should not delete non-associated emails', async () => {
+    authorizeStudio();
     const response = await request.delete('/api/user/email', {
-      headers: { authorization },
       data: { email: 'test2@example.com' },
     });
 
@@ -223,8 +209,8 @@ describe('removeEmail', () => {
   });
 
   it('should not delete the last login method', async () => {
+    authorizeStudio();
     const response = await request.delete('/api/user/email', {
-      headers: { authorization },
       data: { email: 'test@example.com' },
     });
 

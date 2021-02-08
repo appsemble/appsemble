@@ -1,6 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React, { MouseEvent, ReactElement, useCallback, useEffect, useState } from 'react';
+import { MouseEvent, ReactElement, useCallback, useEffect, useState } from 'react';
+import { FormattedNumber } from 'react-intl';
 
 import styles from './index.css';
 
@@ -39,6 +40,8 @@ export interface StarRatingProps {
 
 /**
  * Render a star rating component.
+ *
+ * If no value or change handler is specified, nothing is returned.
  */
 export function StarRating({
   className,
@@ -66,6 +69,10 @@ export function StarRating({
   useEffect(() => {
     setLocalRating(value);
   }, [value]);
+
+  if (!onChange && !value) {
+    return null;
+  }
 
   const inactiveIcons = [];
   const activeIcons = [];
@@ -115,7 +122,11 @@ export function StarRating({
           {activeIcons}
         </span>
       </div>
-      {count == null || <span>({count})</span>}
+      {count == null || (
+        <span>
+          (<FormattedNumber value={count} />)
+        </span>
+      )}
     </span>
   );
 }

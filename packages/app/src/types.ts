@@ -8,6 +8,7 @@ import {
   BlockDefinition,
   BlockManifest,
   Remapper,
+  TeamMember,
   UserInfo,
 } from '@appsemble/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
@@ -64,6 +65,7 @@ declare global {
         type: 'oauth2' | 'saml';
       }[];
       sentryDsn: string;
+      sentryEnvironment: string;
     };
   }
 }
@@ -88,6 +90,8 @@ export interface FlowActions {
   next: (data: any) => Promise<any>;
 }
 
+export type UpdateTeam = (team: Pick<TeamMember, 'id' | 'role'>) => void;
+
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;
   definition: D;
@@ -100,6 +104,9 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   ee: EventEmitter;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showMessage: ShowMessage;
+  userInfo: UserInfo;
+  updateTeam: UpdateTeam;
+  teams: TeamMember[];
 }
 
 export type Permission = NotificationPermission | 'pending';

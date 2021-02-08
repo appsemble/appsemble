@@ -5,10 +5,10 @@ import { GetApiKeyUser, GetHttpUser, GetOAuth2User } from 'koas-security';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models';
-import { Argv } from '../types';
+import { argv } from './argv';
 
 interface LoggedInUser {
-  id: string | number;
+  id: number | string;
 }
 
 interface AuthenticationCheckers {
@@ -18,12 +18,14 @@ interface AuthenticationCheckers {
   studio: GetApiKeyUser<LoggedInUser>;
 }
 
-export function authentication({ host, secret }: Argv): AuthenticationCheckers {
+export function authentication(): AuthenticationCheckers {
+  const { host, secret } = argv;
+
   return {
     async basic(email: string, password: string) {
       const { User: user } = await EmailAuthorization.findOne({
         include: [User],
-        where: { email },
+        where: { email: email.toLowerCase() },
       });
       const isValidPassword = await compare(password, user.password);
       return isValidPassword ? user : null;

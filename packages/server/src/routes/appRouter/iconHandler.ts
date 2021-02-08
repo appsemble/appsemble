@@ -1,35 +1,20 @@
-import { Theme } from '@appsemble/types';
-
 import { Organization } from '../../models';
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
-import { readAsset } from '../../utils/readAsset';
-import { serveIcon } from '../serveIcon';
+import { serveIcon } from '../../utils/icon';
 
 interface Params {
-  format: string;
+  format: 'png' | 'tiff' | 'webp';
   height: string;
   width: string;
 }
 
 export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
-  const { params } = ctx;
+  const { params, query } = ctx;
   const app = await getApp(ctx, {
-    attributes: ['definition', 'icon'],
+    attributes: ['definition', 'icon', 'maskableIcon', 'iconBackground'],
     include: [{ model: Organization, attributes: ['icon'] }],
   });
-  const icon = app.icon || app.Organization.icon || (await readAsset('appsemble.svg'));
-  const width = Number(params.width);
-  const height = Number(params.height || params.width);
-  const { format } = params;
-  const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
-  let background;
 
-  if (opaque) {
-    const { themeColor = '#ffffff', splashColor = themeColor } =
-      app.definition.theme || ({} as Theme);
-    background = splashColor;
-  }
-
-  await serveIcon(ctx, { background, format, height, icon, width });
+  await serveIcon(ctx, app, { size: Number(params.width), maskable: query.maskable });
 }

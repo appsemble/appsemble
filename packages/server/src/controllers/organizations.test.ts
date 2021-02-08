@@ -1,17 +1,16 @@
 import { randomBytes } from 'crypto';
-import { promises as fs } from 'fs';
-import { join } from 'path';
 
+import { createFormData, readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
 
 import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
 let organization: Organization;
 let server: Koa;
 let user: User;
@@ -19,12 +18,13 @@ let user: User;
 beforeAll(createTestSchema('organizations'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  server = await createServer();
   await setTestApp(server);
 });
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
+  user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -40,9 +40,8 @@ afterAll(closeTestSchema);
 
 describe('getOrganization', () => {
   it('should fetch an organization', async () => {
-    const response = await request.get('/api/organizations/testorganization', {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get('/api/organizations/testorganization');
 
     expect(response).toMatchObject({
       status: 200,
@@ -54,7 +53,8 @@ describe('getOrganization', () => {
   });
 
   it('should not fetch a non-existent organization', async () => {
-    const response = await request.get('/api/organizations/foo', { headers: { authorization } });
+    authorizeStudio();
+    const response = await request.get('/api/organizations/foo');
 
     expect(response).toMatchObject({
       status: 404,
@@ -65,7 +65,7 @@ describe('getOrganization', () => {
 
 describe('getOrganizationIcon', () => {
   it('should return the organization logo', async () => {
-    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'testpattern.png'));
+    const buffer = await readFixture('testpattern.png');
     await organization.update({ icon: buffer });
     const response = await request.get(`/api/organizations/${organization.id}/icon`, {
       responseType: 'arraybuffer',
@@ -77,24 +77,22 @@ describe('getOrganizationIcon', () => {
 
 describe('patchOrganization', () => {
   it('should update the name of the organization', async () => {
-    const formData = new FormData();
-    formData.append('name', 'Test');
-
-    const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
-      headers: { authorization, ...formData.getHeaders() },
-    });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/organizations/${organization.id}`,
+      createFormData({ name: 'Test' }),
+    );
     expect(response).toMatchObject({ data: { id: organization.id, name: 'Test' } });
   });
 
   it('should update the logo of the organization', async () => {
     const formData = new FormData();
-    const buffer = await fs.readFile(join(__dirname, '__fixtures__', 'testpattern.png'));
+    const buffer = await readFixture('testpattern.png');
 
     formData.append('icon', buffer, { filename: 'icon.png' });
 
-    const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
-      headers: { authorization, ...formData.getHeaders() },
-    });
+    authorizeStudio();
+    const response = await request.patch(`/api/organizations/${organization.id}`, formData);
 
     await organization.reload();
 
@@ -107,12 +105,12 @@ describe('patchOrganization', () => {
       { role: 'Member' },
       { where: { OrganizationId: organization.id, UserId: user.id } },
     );
-    const formData = new FormData();
-    formData.append('name', 'Test');
 
-    const response = await request.patch(`/api/organizations/${organization.id}`, formData, {
-      headers: { authorization, ...formData.getHeaders() },
-    });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/organizations/${organization.id}`,
+      createFormData({ name: 'Test' }),
+    );
     expect(response).toMatchObject({
       data: { message: 'User does not have sufficient permissions.' },
       status: 403,
@@ -122,11 +120,8 @@ describe('patchOrganization', () => {
 
 describe('createOrganization', () => {
   it('should create a new organization', async () => {
-    const response = await request.post(
-      '/api/organizations',
-      { id: 'foo', name: 'Foooo' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
 
     expect(response).toMatchObject({
       status: 201,
@@ -149,11 +144,8 @@ describe('createOrganization', () => {
   it('should not create a new organization if user is unverified', async () => {
     await EmailAuthorization.update({ verified: false }, { where: { UserId: user.id } });
 
-    const response = await request.post(
-      '/api/organizations',
-      { id: 'foo', name: 'Foooo' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
 
     expect(response).toMatchObject({
       status: 403,
@@ -166,17 +158,10 @@ describe('createOrganization', () => {
   });
 
   it('should not create an organization with the same identifier', async () => {
-    await request.post(
-      '/api/organizations',
-      { id: 'foo', name: 'Foooo' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
 
-    const response = await request.post(
-      '/api/organizations',
-      { id: 'foo', name: 'Foooo' },
-      { headers: { authorization } },
-    );
+    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
 
     expect(response).toMatchObject({
       status: 409,
@@ -187,9 +172,8 @@ describe('createOrganization', () => {
 
 describe('getMembers', () => {
   it('should fetch organization members', async () => {
-    const response = await request.get('/api/organizations/testorganization/members', {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get('/api/organizations/testorganization/members');
 
     expect(response).toMatchObject({
       status: 200,
@@ -215,9 +199,8 @@ describe('getInvites', () => {
       OrganizationId: 'testorganization',
     });
 
-    const response = await request.get('/api/organizations/testorganization/invites', {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get('/api/organizations/testorganization/invites');
 
     expect(response).toMatchObject({
       status: 200,
@@ -234,11 +217,10 @@ describe('inviteMembers', () => {
   it('should require the InviteMember permission', async () => {
     await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
 
-    const response = await request.post(
-      '/api/organizations/testorganization/invites',
-      [{ email: 'a@example.com' }],
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations/testorganization/invites', [
+      { email: 'a@example.com' },
+    ]);
     expect(response).toMatchObject({
       status: 403,
       data: {
@@ -259,11 +241,11 @@ describe('inviteMembers', () => {
     await EmailAuthorization.create({ UserId: userB.id, email: 'b@example.com' });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id });
 
-    const response = await request.post(
-      '/api/organizations/testorganization/invites',
-      [{ email: 'a@example.com' }, { email: 'b@example.com' }],
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations/testorganization/invites', [
+      { email: 'a@example.com' },
+      { email: 'b@example.com' },
+    ]);
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -286,11 +268,11 @@ describe('inviteMembers', () => {
       key: randomBytes(20).toString('hex'),
     });
 
-    const response = await request.post(
-      '/api/organizations/testorganization/invites',
-      [{ email: 'a@example.com' }, { email: 'b@example.com' }],
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations/testorganization/invites', [
+      { email: 'a@example.com' },
+      { email: 'b@example.com' },
+    ]);
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -307,11 +289,10 @@ describe('inviteMembers', () => {
     await EmailAuthorization.create({ UserId: userA.id, email: 'a@example.com' });
     await EmailAuthorization.create({ UserId: userA.id, email: 'aa@example.com' });
 
-    const response = await request.post(
-      '/api/organizations/testorganization/invites',
-      [{ email: 'aa@example.com' }],
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations/testorganization/invites', [
+      { email: 'aa@example.com' },
+    ]);
     expect(response).toMatchObject({
       status: 201,
       data: [{ email: 'a@example.com' }],
@@ -335,11 +316,10 @@ describe('inviteMembers', () => {
   });
 
   it('should invite unknown email addresses', async () => {
-    const response = await request.post(
-      '/api/organizations/testorganization/invites',
-      [{ email: 'a@example.com' }],
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations/testorganization/invites', [
+      { email: 'a@example.com' },
+    ]);
     expect(response).toMatchObject({
       status: 201,
       data: [{ email: 'a@example.com' }],
@@ -371,11 +351,10 @@ describe('resendInvitation', () => {
       OrganizationId: 'testorganization',
     });
 
-    const response = await request.post(
-      '/api/organizations/testorganization/invites/resend',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations/testorganization/invites/resend', {
+      email: 'test2@example.com',
+    });
 
     expect(response).toMatchObject({ status: 204 });
     expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
@@ -393,17 +372,14 @@ describe('resendInvitation', () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
 
-    await request.post(
-      '/api/organizations/testorganization/invites',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    await request.post('/api/organizations/testorganization/invites', {
+      email: 'test2@example.com',
+    });
 
-    const response = await request.post(
-      '/api/organizations/testorganization/invites/resend',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    const response = await request.post('/api/organizations/testorganization/invites/resend', {
+      email: 'test2@example.com',
+    });
 
     expect(response).toMatchObject({
       status: 403,
@@ -420,11 +396,10 @@ describe('resendInvitation', () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
 
-    const response = await request.post(
-      '/api/organizations/testorganization/invites/resend',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations/testorganization/invites/resend', {
+      email: 'test2@example.com',
+    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -438,11 +413,10 @@ describe('resendInvitation', () => {
   });
 
   it('should not resend an invitation for a non-existent organization', async () => {
-    const response = await request.post(
-      '/api/organizations/foo/invites/resend',
-      { email: 'test2@example.com' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/organizations/foo/invites/resend', {
+      email: 'test2@example.com',
+    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -464,8 +438,8 @@ describe('removeInvite', () => {
       OrganizationId: 'testorganization',
     });
 
+    authorizeStudio();
     const response = await request.delete('/api/organizations/testorganization/invites', {
-      headers: { authorization },
       data: { email: 'test2@example.com' },
     });
 
@@ -481,8 +455,8 @@ describe('removeInvite', () => {
 
     await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
 
+    authorizeStudio();
     const response = await request.delete('/api/organizations/testorganization/invites', {
-      headers: { authorization },
       data: { email: 'test2@example.com' },
     });
 
@@ -497,8 +471,8 @@ describe('removeInvite', () => {
   });
 
   it('should not revoke a non-existent invite', async () => {
+    authorizeStudio();
     const response = await request.delete('/api/organizations/testorganization/invites', {
-      headers: { authorization },
       data: { email: 'test2@example.com' },
     });
 
@@ -514,8 +488,8 @@ describe('removeInvite', () => {
       key: 'abcde',
       OrganizationId: 'org',
     });
+    authorizeStudio();
     const response = await request.delete('/api/organizations/org/invites', {
-      headers: { authorization },
       data: { email: 'test2@example.com' },
     });
 
@@ -536,9 +510,8 @@ describe('removeMember', () => {
     const userB = await User.create();
     await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
-    const result = await request.delete(`/api/organizations/testorganization/members/${user.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const result = await request.delete(`/api/organizations/testorganization/members/${user.id}`);
 
     expect(result.status).toBe(204);
   });
@@ -547,23 +520,17 @@ describe('removeMember', () => {
     const userB = await User.create();
     await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
+    authorizeStudio();
     const { status } = await request.delete(
       `/api/organizations/testorganization/members/${userB.id}`,
-      {
-        headers: { authorization },
-      },
     );
 
     expect(status).toBe(204);
   });
 
   it('should not remove the only remaining member in an organization', async () => {
-    const response = await request.delete(
-      `/api/organizations/testorganization/members/${user.id}`,
-      {
-        headers: { authorization },
-      },
-    );
+    authorizeStudio();
+    const response = await request.delete(`/api/organizations/testorganization/members/${user.id}`);
 
     expect(response).toMatchObject({
       status: 406,
@@ -576,13 +543,11 @@ describe('removeMember', () => {
 
   it('should not remove non-members or non-existing users from an organization', async () => {
     const userB = await User.create();
+    authorizeStudio();
     const responseA = await request.delete(
       `/api/organizations/testorganization/members/${userB.id}`,
-      { headers: { authorization } },
     );
-    const responseB = await request.delete('/api/organizations/testorganization/members/0', {
-      headers: { authorization },
-    });
+    const responseB = await request.delete('/api/organizations/testorganization/members/0', {});
 
     expect(responseA).toMatchObject({
       status: 404,
@@ -601,10 +566,10 @@ describe('setRole', () => {
     const userB = await User.create({ name: 'Foo', primaryEmail: 'test2@example.com' });
     await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
+    authorizeStudio();
     const response = await request.put(
       `/api/organizations/testorganization/members/${userB.id}/role`,
       { role: 'AppEditor' },
-      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({

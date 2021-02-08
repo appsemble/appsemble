@@ -1,5 +1,5 @@
 import { Portal } from '@appsemble/react-components';
-import React, { ReactChild, ReactElement } from 'react';
+import { ReactChild, ReactElement } from 'react';
 
 import { shouldShowMenu } from '../../utils/layout';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -19,13 +19,13 @@ interface TitleBarProps {
  */
 export function TitleBar({ children }: TitleBarProps): ReactElement {
   const { definition } = useAppDefinition();
-  const { role } = useUser();
+  const { role, teams } = useUser();
 
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
       <div className={`is-flex ${styles.container}`}>
         {!(definition?.layout?.navigation || definition?.layout?.navigation === 'left-menu') &&
-          shouldShowMenu(definition, role) && (
+          shouldShowMenu(definition, role, teams) && (
             <div className="navbar-brand">
               <span>
                 <SideMenuButton />

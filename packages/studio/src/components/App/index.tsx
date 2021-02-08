@@ -1,12 +1,18 @@
-import { Confirmation, ErrorHandler, MessagesProvider } from '@appsemble/react-components';
+import {
+  Confirmation,
+  ErrorHandler,
+  MessagesProvider,
+  SideMenuProvider,
+} from '@appsemble/react-components';
 import { MDXProvider } from '@mdx-js/react';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Helmet } from 'react-helmet';
 import { BrowserRouter, Route } from 'react-router-dom';
 
 import { ErrorFallback } from '../ErrorFallback';
 import { MDXAnchor, MDXCode, MDXPre } from '../MDX';
 import { Routes } from '../Routes';
+import { SideMenuBase } from '../SideMenuBase';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
 import { Toolbar } from '../Toolbar';
 import { UserProvider } from '../UserProvider';
@@ -28,8 +34,10 @@ export function App(): ReactElement {
                 <Confirmation>
                   <MessagesProvider>
                     <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
-                    <Toolbar />
-                    <Routes />
+                    <SideMenuProvider base={<SideMenuBase />}>
+                      <Toolbar />
+                      <Routes />
+                    </SideMenuProvider>
                   </MessagesProvider>
                 </Confirmation>
               </ErrorHandler>

@@ -5,6 +5,8 @@ const scopes = {
   openid: 'Login the user to the requesting app using OpenID.',
   profile: 'Read the user profile, including the display name and profile picture.',
   'resources:manage': 'Manage app resources on behalf of a user.',
+  'teams:read': 'Read the teams the user is a part of.',
+  'teams:write': 'Add new members to a team.',
 };
 
 export const app: OpenAPIV3.OAuth2SecurityScheme = {

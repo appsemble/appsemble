@@ -49,7 +49,7 @@ pages:
   - name: Report litter
     blocks:
       - type: form
-        version: 0.15.10
+        version: 0.17.5
         parameters:
           fields:
             - name: location
@@ -86,22 +86,28 @@ pages:
   - name: Litter Overview
     blocks:
       - type: data-loader
-        version: 0.15.10
+        version: 0.17.5
         actions:
           onLoad:
             type: resource.query
             resource: litter
             query:
-              '$orderby': '$created desc'
-              '$top': 50
+              object.from:
+                $orderby: $created desc
+                $top: 50
         events:
           emit:
             data: data
       - type: map
-        version: 0.15.10
+        version: 0.17.5
         parameters:
-          latitude: location.latitude
-          longitude: location.longitude
+          latitude:
+            - prop: location
+            - prop: latitude
+          longitude:
+            - prop: location
+            - prop: longitude
+
         actions:
           onMarkerClick:
             to: Litter details
@@ -110,7 +116,7 @@ pages:
           listen:
             data: data
       - type: action-button
-        version: 0.15.10
+        version: 0.17.5
         parameters:
           icon: plus
         actions:
@@ -123,7 +129,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.15.10
+        version: 0.17.5
         actions:
           onLoad:
             type: resource.get
@@ -132,7 +138,7 @@ pages:
           emit:
             data: data
       - type: detail-viewer
-        version: 0.15.10
+        version: 0.17.5
         parameters:
           fields:
             - value: { prop: location }

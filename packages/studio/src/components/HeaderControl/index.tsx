@@ -1,5 +1,5 @@
 import { Title } from '@appsemble/react-components';
-import React, { ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react';
+import { ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react';
 
 import styles from './index.css';
 
@@ -15,7 +15,7 @@ interface HeaderControlProps extends ComponentPropsWithoutRef<typeof Title> {
  */
 export function HeaderControl({ control, ...props }: HeaderControlProps): ReactElement {
   return (
-    <header className={`is-flex mt-4 ${styles.root}`}>
+    <header className={`is-flex ${styles.root}`}>
       <Title className="is-marginless" {...props} />
       {control}
     </header>

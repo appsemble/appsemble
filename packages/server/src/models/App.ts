@@ -37,7 +37,7 @@ import {
 } from '.';
 
 @Table({ tableName: 'App', paranoid: true })
-export class App extends Model<App> {
+export class App extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -58,6 +58,12 @@ export class App extends Model<App> {
   @Column
   icon: Buffer;
 
+  @Column
+  maskableIcon: Buffer;
+
+  @Column
+  iconBackground: string;
+
   @Unique('UniquePathIndex')
   @Column
   path: string;
@@ -71,6 +77,9 @@ export class App extends Model<App> {
   @Default(false)
   @Column
   template: boolean;
+
+  @Column(DataType.TEXT)
+  longDescription: string;
 
   @Column(DataType.TEXT)
   coreStyle: string;

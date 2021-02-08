@@ -1,7 +1,7 @@
 import { Button, Title, useData, useToggle } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import classNames from 'classnames';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { AsyncDataView } from '../../AsyncDataView';
@@ -11,7 +11,7 @@ import { messages } from './messages';
 
 interface CollapsibleListProps {
   target: string;
-  title: string | ReactElement;
+  title: ReactElement | string;
   filter?: string;
   sortFunction: (a: App, b: App) => number;
   reverse: boolean;
@@ -36,7 +36,7 @@ export function CollapsibleList({
           iconPosition="right"
           onClick={collapsed.toggle}
         >
-          <Title className="mb-0" level={4}>
+          <Title className="mb-0" size={4}>
             {title}
           </Title>
         </Button>

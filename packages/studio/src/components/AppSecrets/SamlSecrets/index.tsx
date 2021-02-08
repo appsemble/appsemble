@@ -1,7 +1,7 @@
 import { Button, useData, useToggle } from '@appsemble/react-components';
 import { AppSamlSecret } from '@appsemble/types';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '../../AppContext';
@@ -17,6 +17,8 @@ const initialSecret: AppSamlSecret = {
   idpCertificate: '',
   entityId: '',
   ssoUrl: '',
+  emailAttribute: '',
+  nameAttribute: '',
 };
 
 /**
@@ -46,14 +48,14 @@ export function SamlSecrets(): ReactElement {
   );
 
   return (
-    <>
+    <div>
       <HeaderControl
         control={
           <Button icon="plus" onClick={modal.enable}>
             <FormattedMessage {...messages.addNew} />
           </Button>
         }
-        level={2}
+        size={4}
       >
         <FormattedMessage {...messages.title} />
       </HeaderControl>
@@ -72,6 +74,6 @@ export function SamlSecrets(): ReactElement {
         )}
       </AsyncDataView>
       <SamlModal onSubmit={create} secret={initialSecret} toggle={modal} />
-    </>
+    </div>
   );
 }

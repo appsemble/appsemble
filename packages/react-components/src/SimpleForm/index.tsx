@@ -1,10 +1,11 @@
-import React, {
+import {
   ComponentPropsWithoutRef,
   createContext,
   ReactElement,
   ReactNode,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import { Promisable } from 'type-fest';
@@ -99,22 +100,23 @@ export function SimpleForm<T extends {}>({
     [preprocess, setFormError, values],
   );
 
+  const value = useMemo(
+    () => ({
+      formErrors,
+      pristine,
+      setFormError,
+      setValue,
+      setValues,
+      submitError,
+      submitting,
+      values,
+    }),
+    [formErrors, pristine, setFormError, setValue, submitError, submitting, values],
+  );
+
   return (
     <Form {...props} onSubmit={doSubmit}>
-      <Context.Provider
-        value={{
-          formErrors,
-          pristine,
-          setFormError,
-          setValue,
-          setValues,
-          submitError,
-          submitting,
-          values,
-        }}
-      >
-        {children}
-      </Context.Provider>
+      <Context.Provider value={value}>{children}</Context.Provider>
     </Form>
   );
 }

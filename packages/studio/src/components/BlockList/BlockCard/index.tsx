@@ -1,6 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import styles from './index.css';

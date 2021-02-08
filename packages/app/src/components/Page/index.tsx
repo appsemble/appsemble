@@ -4,7 +4,7 @@ import { Button, Content, Message, useLocationString } from '@appsemble/react-co
 import { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ import { messages } from './messages';
 export function Page(): ReactElement {
   const { definition } = useAppDefinition();
   const redirect = useLocationString();
-  const { isLoggedIn, role, userInfo } = useUser();
+  const { isLoggedIn, role, teams, userInfo } = useUser();
   const {
     params: { lang, pageId },
     path,
@@ -59,7 +59,7 @@ export function Page(): ReactElement {
 
   const remapWithContext = useCallback(
     (mappers: Remapper, input: any, context: Record<string, any>) =>
-      remap(mappers, input, { getMessage, userInfo, context, root: input }),
+      remap(mappers, input, { appId, getMessage, userInfo, context, root: input }),
     [getMessage, userInfo],
   );
 
@@ -87,7 +87,10 @@ export function Page(): ReactElement {
 
   const checkPagePermissions = (p: PageDefinition): boolean => {
     const roles = p.roles || definition.roles || [];
-    return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
+
+    return (
+      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+    );
   };
 
   // If the user is on an existing page and is allowed to view it, render it.
@@ -181,8 +184,8 @@ export function Page(): ReactElement {
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = definition.pages.find((p) => checkPagePermissions(p) && !p.parameters);
   if (redirectPage) {
-    const i = definition.pages.indexOf(defaultPage);
-    let pageName = defaultPage.name;
+    const i = definition.pages.indexOf(redirectPage);
+    let pageName = redirectPage.name;
 
     if (messageIds.includes(`pages.${i}`)) {
       pageName = getMessage({ id: `pages.${i}` }).format() as string;

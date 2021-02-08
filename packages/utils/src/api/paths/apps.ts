@@ -30,6 +30,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
                 },
+                longDescription: {
+                  $ref: '#/components/schemas/App/properties/longDescription',
+                },
                 yaml: {
                   type: 'string',
                   format: 'binary',
@@ -43,6 +46,12 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
+                maskableIcon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
+                iconBackground: { $ref: '#/components/schemas/Color' },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',
@@ -168,6 +177,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
                 },
+                longDescription: {
+                  $ref: '#/components/schemas/App/properties/longDescription',
+                },
                 yaml: {
                   type: 'string',
                   format: 'binary',
@@ -178,6 +190,12 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
+                maskableIcon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
+                iconBackground: { $ref: '#/components/schemas/Color' },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',
@@ -518,6 +536,55 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
+  '/api/apps/{appId}/screenshots': {
+    post: {
+      tags: ['app'],
+      description: 'Add one or multiple screenshots of an app.',
+      operationId: 'createAppScreenshot',
+      requestBody: {
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              properties: {
+                screenshots: {
+                  type: 'array',
+                  description: 'Screenshots to showcase in the store',
+                  minItems: 1,
+                  items: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
+              },
+            },
+            encoding: {
+              screenshots: {
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The screenshots have been successfully created.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'integer',
+                  description: 'The ID of the newly created screenshot.',
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+    },
+  },
   '/api/apps/{appId}/screenshots/{screenshotId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
@@ -532,6 +599,17 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The app screenshot',
         },
       },
+    },
+    delete: {
+      tags: ['app'],
+      description: 'Delete an existing screenshot.',
+      operationId: 'deleteAppScreenshot',
+      responses: {
+        200: {
+          description: 'The screenshot has been successfully deleted.',
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/apps/{appId}/style/core': {
@@ -645,7 +723,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['teams:read'] }],
     },
     post: {
       tags: ['app'],
@@ -745,6 +823,10 @@ export const paths: OpenAPIV3.PathsObject = {
               properties: {
                 name: {
                   type: 'string',
+                },
+                annotations: {
+                  type: 'object',
+                  additionalProperties: { type: 'string' },
                 },
               },
             },
@@ -847,7 +929,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['teams:write'] }],
     },
   },
   '/api/apps/{appId}/teams/{teamId}/members/{memberId}': {

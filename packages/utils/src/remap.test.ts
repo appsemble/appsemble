@@ -22,6 +22,7 @@ function runTests(tests: Record<string, TestCase>): void {
           new IntlMessageFormat(messages?.[id] ?? defaultMessage),
         userInfo,
         context,
+        appId: 6789,
       });
       expect(result).toStrictEqual(expected);
     },
@@ -44,6 +45,16 @@ describe('Primitive values', () => {
       input: 'a string',
       mappers: false,
       expected: false,
+    },
+  });
+});
+
+describe('app', () => {
+  runTests({
+    'return the app id': {
+      input: {},
+      mappers: { app: 'id' },
+      expected: 6789,
     },
   });
 });

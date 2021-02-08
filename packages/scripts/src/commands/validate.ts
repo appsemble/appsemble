@@ -1,9 +1,8 @@
 import { basename, dirname, join, relative } from 'path';
 
 import { getWorkspaces, logger, opendirSafe } from '@appsemble/node-utils';
-import { Config } from '@jest/types';
 import extractMessages from 'extract-react-intl-messages';
-import { readJson } from 'fs-extra';
+import { existsSync, readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
@@ -69,67 +68,57 @@ type Assert = (assertion: boolean, filename: string, message: string, workspace?
 async function validateTranslations(assert: Assert): Promise<void> {
   const workspaces = ['app', 'react-components', 'studio'];
   const developerLocales = ['nl', 'en-US'].sort();
-  const allLocales = [...developerLocales, 'da'].sort();
   const defaultLocale = 'en-US';
+  const translations: Record<string, Record<string, string>> = {};
 
-  for (const workspace of workspaces) {
-    const translatedMessages = await extractMessages.extractReactIntl(
-      allLocales,
-      `./packages/${workspace}/src/**/messages.ts`,
-      {
-        format: 'json',
-        flat: true,
-        defaultLocale,
-        overwriteDefault: true,
-      },
-    );
+  await opendirSafe('./translations', async (filepath, stat) => {
+    if (stat.name === 'index.ts') {
+      return;
+    }
 
-    const translated: string[] = [];
+    if (!stat.isFile() || !filepath.endsWith('.json')) {
+      assert(false, filepath, 'should be a json file');
+      return;
+    }
 
-    await opendirSafe(`./packages/${workspace}/translations`, async (filepath, stat) => {
-      if (stat.name === 'index.ts') {
-        return;
-      }
+    const [language] = stat.name.split('.json');
+    const messages = await readJson(filepath);
+    translations[language] = messages;
+  });
 
-      if (!stat.isFile() || !filepath.endsWith('.json')) {
-        assert(false, filepath, 'should be a json file');
-        return;
-      }
+  const allLocales = [...new Set([...developerLocales, ...Object.keys(translations)])].sort();
+  const translatedMessages = await extractMessages.extractReactIntl(
+    allLocales,
+    `./packages/@(${workspaces.join('|')})/src/**/messages.ts`,
+    {
+      format: 'json',
+      flat: true,
+      defaultLocale,
+      overwriteDefault: true,
+    },
+  );
 
-      const [language] = stat.name.split('.json');
+  for (const language of allLocales) {
+    const path = `translations/${language}.json`;
+    const messages = translations[language];
+    if (language === defaultLocale) {
+      assert(
+        isEqual(messages, translatedMessages[language]),
+        path,
+        `${defaultLocale} messages should be equal when extracted`,
+      );
+    }
 
-      if (!allLocales.includes(language)) {
-        assert(false, filepath, `Language ${language} should be supported.`);
-        return;
-      }
-
-      translated.push(language);
-      const messages = await readJson(filepath);
-      if (stat.name === `${defaultLocale}.json`) {
-        assert(
-          isEqual(messages, translatedMessages[language]),
-          filepath,
-          `${defaultLocale} messages should be equal when extracted`,
-        );
-      } else {
-        assert(
-          isEqual(Object.keys(messages), Object.keys(translatedMessages[language]).sort()),
-          filepath,
-          'Keys should be the same',
-        );
-        if (developerLocales.includes(language)) {
-          const untranslatedMessages = Object.values(messages).filter((message) => !message);
-          assert(untranslatedMessages.length === 0, filepath, 'Messages should be translated');
-        }
-      }
-    });
-
-    assert(
-      isEqual(allLocales, translated.sort()),
-      '',
-      'should have translations for each supported language',
-      `packages/${workspace}`,
-    );
+    if (developerLocales.includes(language)) {
+      const untranslatedMessages = Object.values(messages).filter((message) => !message);
+      assert(untranslatedMessages.length === 0, path, 'Messages should be translated');
+    } else {
+      assert(
+        isEqual(Object.keys(messages), Object.keys(translatedMessages[language]).sort()),
+        path,
+        'Keys should be the same',
+      );
+    }
   }
 }
 
@@ -263,29 +252,13 @@ async function validate(
   }
 
   /**
-   * Validate jest.config.js
+   * Validate jest.config.js exists
    */
-  const jestConfig: Config.InitialOptions = await import(join(dir, 'jest.config')).catch(
-    () => null,
+  assert(
+    existsSync(join(dir, 'jest.config.js')),
+    'jest.config.js',
+    'Projects should have a Jest configuration',
   );
-  assert(Boolean(jestConfig), 'jest.config.js', 'Projects should have a Jest configuration');
-  if (jestConfig) {
-    assert(jestConfig.clearMocks === true, 'jest.config.js', 'clearMocks should be true');
-    assert(jestConfig.displayName === pkg.name, 'jest.config.js', `Display name be '${pkg.name}'`);
-    assert(
-      (jestConfig.globals?.['ts-jest'] as any).isolatedModules,
-      'jest.config.js',
-      "Global 'ts-jest'.isolatedModules should be true",
-    );
-    assert(
-      jestConfig.moduleNameMapper?.[/@appsemble\/([\w-]+)/.source] === '@appsemble/$1/src',
-      'jest.config.js',
-      "Module name mapper [/@appsemble\\/([\\w-]+)/.source] should map to '@appsemble/$1/src'",
-    );
-    assert(jestConfig.preset === 'ts-jest', 'jest.config.js', "Preset should be 'ts-jest'");
-    assert(jestConfig.resetMocks === true, 'jest.config.js', 'resetMocks should be true');
-    assert(jestConfig.restoreMocks === true, 'jest.config.js', 'restoreMocks should be true');
-  }
 }
 
 export async function handler(): Promise<void> {

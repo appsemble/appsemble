@@ -41,7 +41,7 @@ export async function createTeam(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found.');
   }
 
-  await checkRole(ctx, app.OrganizationId, Permission.ManageMembers);
+  await checkRole(ctx, app.OrganizationId, Permission.ManageTeams);
 
   let team: Team;
   await transactional(async (transaction) => {
@@ -78,6 +78,7 @@ export async function getTeam(ctx: KoaContext<Params>): Promise<void> {
     id: team.id,
     name: team.name,
     ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
+    ...(team.annotations && { annotations: team.annotations }),
   };
 }
 
@@ -91,7 +92,7 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
     include: [
       {
         model: Team,
-        include: [{ model: User, where: { id: user.id }, required: false }],
+        include: [{ model: User, required: false }],
       },
     ],
   });
@@ -99,10 +100,13 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found.');
   }
 
+  // Filter to just the user’s teams if it’s requested from an app.
   ctx.body = app.Teams.map((team) => ({
     id: team.id,
     name: team.name,
-    ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
+    size: team.Users.length,
+    role: team.Users.find((u) => u.id === user.id)?.TeamMember.role,
+    annotations: team.annotations ?? {},
   }));
 }
 
@@ -110,7 +114,7 @@ export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, teamId },
     request: {
-      body: { name },
+      body: { annotations, name },
     },
     user,
   } = ctx;
@@ -127,12 +131,13 @@ export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Team not found.');
   }
 
-  await checkRole(ctx, team.App.OrganizationId, Permission.ManageMembers);
+  await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
-  await team.update({ name });
+  await team.update({ name, ...(annotations && { annotations }) });
   ctx.body = {
     id: team.id,
     name,
+    ...(annotations && { annotations }),
     ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
   };
 }
@@ -154,7 +159,7 @@ export async function deleteTeam(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Team not found.');
   }
 
-  await checkRole(ctx, team.App.OrganizationId, Permission.ManageMembers);
+  await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
   await team.destroy();
 }
@@ -183,10 +188,12 @@ export async function getTeamMembers(ctx: KoaContext<Params>): Promise<void> {
 
 export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
   const {
+    clients,
     params: { appId, teamId },
     request: {
       body: { id },
     },
+    user,
   } = ctx;
 
   const team = await Team.findOne({
@@ -207,10 +214,17 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Team not found.');
   }
 
-  try {
-    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
-  } catch {
-    await checkTeamPermission(ctx, team);
+  // Allow app users to add themselves to a team.
+  if ('app' in clients) {
+    if (id !== user.id) {
+      throw forbidden('App users may only modify add themselves as team member');
+    }
+  } else {
+    try {
+      await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
+    } catch {
+      await checkTeamPermission(ctx, team);
+    }
   }
 
   if (
@@ -225,12 +239,12 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
     throw badRequest('This user is already a member of this team.');
   }
 
-  const [user] = team.App.Users.length ? team.App.Users : team.App.Organization.Users;
+  const [member] = team.App.Users.length ? team.App.Users : team.App.Organization.Users;
   await TeamMember.create({ UserId: id, TeamId: team.id, role: TeamRole.Member });
   ctx.body = {
-    id: user.id,
-    name: user.name,
-    primaryEmail: user.primaryEmail,
+    id: member.id,
+    name: member.name,
+    primaryEmail: member.primaryEmail,
     role: TeamRole.Member,
   };
 }
@@ -253,7 +267,7 @@ export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   try {
-    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
+    await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
   } catch {
     await checkTeamPermission(ctx, team);
   }
@@ -286,7 +300,7 @@ export async function updateTeamMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   try {
-    await checkRole(ctx, team.App.OrganizationId, Permission.InviteMember);
+    await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
   } catch {
     await checkTeamPermission(ctx, team);
   }

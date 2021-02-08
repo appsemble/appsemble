@@ -5,7 +5,7 @@ module.exports = {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: ['./blocks/*/tsconfig.json', './packages/*/tsconfig.json', './tsconfig.json'],
+        project: ['./tsconfig.json'],
       },
     },
     node: {
@@ -25,7 +25,9 @@ module.exports = {
       { definedTags: ['format', 'maximum', 'minimum', 'TJS-pattern', 'TJS-type'] },
     ],
 
+    'unicorn/consistent-destructuring': 'off',
     'unicorn/no-unsafe-regex': 'off',
+    'unicorn/prefer-spread': 'off',
   },
   overrides: [
     {
@@ -56,6 +58,9 @@ module.exports = {
         '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-shadow': ['error', { hoist: 'functions' }],
+
+        'import/no-deprecated': 'off',
+        'import/no-unresolved': 'off',
 
         'node/no-unsupported-features/es-syntax': 'off',
       },

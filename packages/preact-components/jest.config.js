@@ -1,17 +1,1 @@
-module.exports = {
-  clearMocks: true,
-  displayName: '@appsemble/preact-components',
-  globals: {
-    'ts-jest': {
-      isolatedModules: true,
-    },
-  },
-  moduleNameMapper: {
-    [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src',
-    [/\.css$/.source]: 'identity-obj-proxy',
-  },
-  preset: 'ts-jest',
-  resetMocks: true,
-  restoreMocks: true,
-  snapshotSerializers: ['enzyme-to-json/serializer'],
-};
+module.exports = require('../../config/jest/config')(__dirname);

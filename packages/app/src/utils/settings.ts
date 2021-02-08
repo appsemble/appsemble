@@ -6,6 +6,7 @@ export const {
   languages,
   logins,
   sentryDsn,
+  sentryEnvironment,
   vapidPublicKey,
 } = window.settings;
 delete window.settings;

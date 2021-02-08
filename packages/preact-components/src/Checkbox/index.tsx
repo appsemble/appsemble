@@ -1,11 +1,11 @@
 import classNames from 'classnames';
-import { ComponentChild, ComponentProps, h } from 'preact';
+import { ComponentChild, ComponentProps, JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
 type CheckboxProps = Omit<
   ComponentProps<'input'>,
-  'value' | 'label' | 'onChange' | 'onInput' | 'title'
+  'label' | 'onChange' | 'onInput' | 'title' | 'value'
 > & {
   /**
    * If true, render an error color.
@@ -15,7 +15,7 @@ type CheckboxProps = Omit<
   /**
    * This is fired when the input value has changed.
    */
-  onChange: (event: h.JSX.TargetedEvent<HTMLInputElement>, value: boolean) => void;
+  onChange: (event: JSX.TargetedEvent<HTMLInputElement>, value: boolean) => void;
 
   /**
    * The title to display right of the checkbox.
@@ -49,7 +49,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     ref,
   ) => {
     const handleChange = useCallback(
-      (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+      (event: JSX.TargetedEvent<HTMLInputElement>) => {
         onChange(event, event.currentTarget.checked);
       },
       [onChange],

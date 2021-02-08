@@ -62,20 +62,38 @@ interface AssetMarkerIcon extends AbstractMarkerIcon {
   /**
    * The id of an asset to use.
    */
-  asset: number;
+  asset: string;
 }
 
 declare module '@appsemble/sdk' {
   interface Parameters {
     /**
-     * The name of the field used to retrieve the longitude
+     * The remapper used to retrieve the latitude.
      */
-    latitude: string;
+    latitude: Remapper;
 
     /**
-     * The name of the field used to retrieve the latitude
+     * The remapper used to retrieve the longitude.
      */
-    longitude: string;
+    longitude: Remapper;
+
+    /**
+     * The name of the latitude property in the resource.
+     *
+     * These are used for filtering purposes.
+     *
+     * @default 'lat'
+     */
+    filterLatitudeName?: string;
+
+    /**
+     * The name of the longitude property in the resource.
+     *
+     * These are used for filtering purposes.
+     *
+     * @default 'lng'
+     */
+    filterLongitudeName?: string;
 
     /**
      * The location (latitude, longitude) to default to when the user’s location cannot be found.
@@ -103,7 +121,7 @@ declare module '@appsemble/sdk' {
     /**
      * Custom icon configuration.
      */
-    icons?: FontAwesomeMarkerIcon | AssetMarkerIcon;
+    icons?: AssetMarkerIcon | FontAwesomeMarkerIcon;
 
     /**
      * The maximum radius that a cluster will cover from the central marker (in pixels).
@@ -132,6 +150,19 @@ declare module '@appsemble/sdk' {
      * Compatible data that is received will be displayed. Must be a set of data.
      */
     data: never;
+
+    /**
+     * An event that can be triggered to center the map’s position to the user’s current location.
+     */
+    center: never;
+
+    /**
+     * Toggles whether or not the map should follow the user’s location. Defaults to not following.
+     *
+     * If the value is exactly `true` or `false`, the following state will be set to that value.
+     * Otherwise, it will toggle between following and not following.
+     */
+    follow: never;
   }
 
   interface EventEmitters {

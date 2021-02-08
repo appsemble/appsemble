@@ -32,7 +32,7 @@ export function dialog({
             }),
           },
           blocks: definition.blocks,
-          closable: definition.closable,
+          closable: definition.closable ?? true,
           data,
           close() {
             reject(new Error('closed'));

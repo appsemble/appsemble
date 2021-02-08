@@ -1,7 +1,7 @@
 import { Button, Icon } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
@@ -52,6 +52,16 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
                 <Icon className={styles.icon} icon="wrench" />
                 <span>
                   <FormattedMessage {...messages.settings} />
+                </span>
+              </NavLink>
+            </li>
+          )}
+          {layout?.feedback === 'navigation' && (
+            <li>
+              <NavLink activeClassName={styles.active} to={`${url}/Feedback`}>
+                <Icon className={styles.icon} icon="comment" />
+                <span>
+                  <FormattedMessage {...messages.feedback} />
                 </span>
               </NavLink>
             </li>

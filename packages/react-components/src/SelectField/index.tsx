@@ -1,9 +1,12 @@
-import React, { ComponentPropsWithoutRef, forwardRef } from 'react';
+import { ComponentPropsWithoutRef, forwardRef } from 'react';
 
 import { FormComponent, Select, SharedFormComponentProps } from '..';
 
-type SelectFieldProps = SharedFormComponentProps &
-  Omit<ComponentPropsWithoutRef<typeof Select>, keyof SharedFormComponentProps>;
+type SelectFieldProps = Omit<
+  ComponentPropsWithoutRef<typeof Select>,
+  keyof SharedFormComponentProps
+> &
+  SharedFormComponentProps;
 
 /**
  * A Bulma styled form select element.

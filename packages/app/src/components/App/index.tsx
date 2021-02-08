@@ -1,5 +1,5 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
 import { AppDefinitionProvider } from '../AppDefinitionProvider';

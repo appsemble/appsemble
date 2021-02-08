@@ -2,6 +2,154 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.17.5](https://gitlab.com/appsemble/appsemble/-/releases/0.17.5)] - 2021-02-03
+
+### Changed
+
+- Server: App, block, and organization icons are now cached.
+- Server: Email addresses are now treated as case insensitive.
+
+## \[[0.17.4](https://gitlab.com/appsemble/appsemble/-/releases/0.17.4)] - 2021-02-02
+
+### Fixed
+
+- Server: Include translations
+
+## \[[0.17.3](https://gitlab.com/appsemble/appsemble/-/releases/0.17.3)] - 2021-02-02
+
+### Added
+
+- App: Add support for maskable icons.
+- CLI: Add support for maskable icons.
+- Studio: Add French language selection.
+- Studio: Add German language selection.
+- Studio: Add tool for managing app icons.
+- Studio: Display author in resources table.
+
+### Changed
+
+- App: App icons are now scaled, not cropped.
+- Studio: Display maskable app icons.
+- Studio: Include app styles when cloning apps.
+
+### Fixed
+
+- Block(`form`): Fix loading initial values for enum fields that have asynchronous options.
+
+## \[[0.17.2](https://gitlab.com/appsemble/appsemble/-/releases/0.17.2)] - 2021-01-26
+
+### Added
+
+- Block(`map`): Add `center` and `follow` event listeners.
+- Cli: Upload `readme.md` files as the long description for apps.
+- Server: Add support for long descriptions for apps.
+- Studio: Render long descriptions in the app details pages.
+
+### Changed
+
+- Studio: Add `ManageTeams` permission to `Manager` role in organizations. Organization managers now
+  have full access to teams for apps.
+- Studio: Add various design changes.
+
+### Fixed
+
+- App: Fix `resource.delete` and `resource.update` ID resolution.
+
+### Security
+
+- Server: Resource API calls made from Appsemble Studio or client credentials now use the
+  organization security model instead of the app security model.
+
+## \[[0.17.1](https://gitlab.com/appsemble/appsemble/-/releases/0.17.1)] - 2021-01-21
+
+### Added
+
+- App: Add a remapper for the body of request actions.
+- App: The `team.join` action allows blocks to join a team.
+- App: The `team.list` action allows blocks to access all teams in the app.
+- Server: Add a remapper for the body of request actions.
+- Server: Add endpoints for manually replacing, creating, and removing app screenshots.
+- Studio: Add option to upload and delete screenshots.
+
+### Changed
+
+- Server: Remove the user filter from the teams API if it’s called from an app.
+
+### Fixed
+
+- Block(`form`): Fix selecting enum option values that aren’t strings.
+
+### Security
+
+- Server: Allow users to join a team from within an app.
+
+## \[[0.17.0](https://gitlab.com/appsemble/appsemble/-/releases/0.17.0)] - 2021-01-14
+
+### Added
+
+- Block(`map`): Add `filterLatitudeName` and `filterLongitudeName` parameters.
+- App: Add support for `$team:member` and `$team:manager` roles in `page.roles`.
+- Server: Add option to filter resources by user ID by applying the appropriate OData filter. For
+  example: `$filter=$author/id eq 11111111-a111-11a1-aa11-111a1a11aa1a"`.
+- Server: Added possibility to upload and link assets with resources.
+- Utils: Add the app remapper.
+
+### Changed
+
+- Block(`map`): Change parameters `longitude` and `latitude` to accept remappers instead of property
+  paths.
+- App: Adapted the updated resource API.
+
+### Removed
+
+- App: Remove `parameters` property from `link` actions. This functionality can be replaced by using
+  `remap`.
+- Appsemble: Remove the `base` property of `request` actions. This can be replicated using remappers
+  in `onSuccess` and/or `onError`.
+- Studio: Remove the alpha tag from the header.
+
+## \[[0.16.2](https://gitlab.com/appsemble/appsemble/-/releases/0.16.2)] - 2021-01-06
+
+### Fixed
+
+- Block(`form`): Fix issue where submit button is incorrectly disabled.
+
+## \[[0.16.1](https://gitlab.com/appsemble/appsemble/-/releases/0.16.1)] - 2021-01-05
+
+### Fixed
+
+- Block(`form`): Fix issue where form validation overwrites unresolved errors.
+
+## \[[0.16.0](https://gitlab.com/appsemble/appsemble/-/releases/0.16.0)] - 2020-12-21
+
+### Changed
+
+- Block(`form`): Add `error` to context of `formRequirement` errors.
+- Sdk: Changed asset IDs to string.
+- Server: Add `size` property to `/api/apps/{id}/teams`.
+- Server: Add support for fetching teams from app. This is automatically filtered to only include
+  teams the user is a member of.
+- Server: Changed asset IDs to string.
+
+## \[[0.15.12](https://gitlab.com/appsemble/appsemble/-/releases/0.15.12)] - 2020-12-11
+
+### Added
+
+- Block(`form`): Add support for enum fields to receive options from events.
+- App: Added support for sending feedback using the Sentry feedback API.
+- App: Allow the user to send feedback when a crash is reported.
+- Cli: Added support for custom block events.
+- Studio: Added auto completion and validation in app editor.
+- Studio: Added support for sending feedback using the Sentry feedback API.
+- Studio: Allow the user to send feedback when a crash is reported.
+
+## \[[0.15.11](https://gitlab.com/appsemble/appsemble/-/releases/0.15.11)] - 2020-12-08
+
+### Added
+
+- Server: Add support for the OData `$select` query parameter when querying resources.
+- Studio: Add support for collapsing lists of apps.
+
 ## \[[0.15.10](https://gitlab.com/appsemble/appsemble/-/releases/0.15.10)] - 2020-12-02
 
 ### Added

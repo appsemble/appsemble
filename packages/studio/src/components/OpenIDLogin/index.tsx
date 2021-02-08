@@ -1,6 +1,6 @@
 import { Button, Content, Loader, Message, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -32,7 +32,15 @@ export function OpenIDLogin(): ReactElement {
   const redirectUri = qs.get('redirect_uri');
   const scope = qs.get('scope');
   const isRequestValid = useMemo(
-    () => verifyOAuth2LoginRequest(qs, ['email', 'openid', 'profile', 'resources:manage']),
+    () =>
+      verifyOAuth2LoginRequest(qs, [
+        'email',
+        'openid',
+        'profile',
+        'resources:manage',
+        'teams:read',
+        'teams:write',
+      ]),
     [qs],
   );
 

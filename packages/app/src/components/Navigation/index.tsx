@@ -1,6 +1,6 @@
 import { PageDefinition } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { BottomNavigation } from '../BottomNavigation';
@@ -14,12 +14,15 @@ import { useUser } from '../UserProvider';
  */
 export function Navigation(): ReactElement {
   const { definition } = useAppDefinition();
-  const { role } = useUser();
+  const { role, teams } = useUser();
 
   const navigation = definition?.layout?.navigation || 'left-menu';
   const checkPagePermissions = (page: PageDefinition): boolean => {
     const roles = page.roles || definition.roles || [];
-    return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
+
+    return (
+      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+    );
   };
 
   const pages = definition.pages.filter(

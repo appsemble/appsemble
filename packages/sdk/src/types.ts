@@ -9,22 +9,22 @@
  *
  * @format remapper
  */
-export type Remapper = string | number | boolean | object | object[];
+export type Remapper = object[] | boolean | number | object | string;
 
 /**
  * Common HTTP methods, but either all upper case or all lower case.
  */
 export type HTTPMethods =
-  | 'delete'
-  | 'get'
-  | 'patch'
-  | 'post'
-  | 'put'
   | 'DELETE'
+  | 'delete'
   | 'GET'
+  | 'get'
   | 'PATCH'
+  | 'patch'
   | 'POST'
-  | 'PUT';
+  | 'post'
+  | 'PUT'
+  | 'put';
 
 export interface BaseAction<T extends string> {
   /**
@@ -40,11 +40,11 @@ export interface BaseAction<T extends string> {
 
 export type RequestLikeActionTypes =
   | 'request'
+  | 'resource.count'
   | 'resource.create'
   | 'resource.delete'
   | 'resource.get'
   | 'resource.query'
-  | 'resource.count'
   | 'resource.update';
 
 export interface LinkAction extends BaseAction<'link'> {
@@ -58,7 +58,7 @@ export interface LogAction extends BaseAction<'log'> {
   /**
    * The logging level.
    */
-  level: 'info' | 'warn' | 'error';
+  level: 'error' | 'info' | 'warn';
 }
 
 export interface RequestLikeAction<T extends RequestLikeActionTypes> extends BaseAction<T> {
@@ -84,47 +84,49 @@ export type ResourceUpdateAction = RequestLikeAction<'resource.update'>;
  * An action that can be called from within a block.
  */
 export type Action =
-  | BaseAction<'dialog'>
   | BaseAction<'dialog.error'>
   | BaseAction<'dialog.ok'>
-  | BaseAction<'event'>
+  | BaseAction<'dialog'>
   | BaseAction<'email'>
+  | BaseAction<'event'>
   | BaseAction<'flow.back'>
   | BaseAction<'flow.cancel'>
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
+  | BaseAction<'message'>
   | BaseAction<'noop'>
-  | BaseAction<'throw'>
+  | BaseAction<'resource.subscription.status'>
+  | BaseAction<'resource.subscription.subscribe'>
+  | BaseAction<'resource.subscription.toggle'>
+  | BaseAction<'resource.subscription.unsubscribe'>
   | BaseAction<'static'>
+  | BaseAction<'team.join'>
+  | BaseAction<'team.list'>
+  | BaseAction<'throw'>
   | LinkAction
   | LogAction
   | RequestAction
-  | ResourceGetAction
-  | ResourceQueryAction
   | ResourceCountAction
   | ResourceCreateAction
-  | ResourceUpdateAction
   | ResourceDeleteAction
-  | BaseAction<'resource.subscription.subscribe'>
-  | BaseAction<'resource.subscription.unsubscribe'>
-  | BaseAction<'resource.subscription.toggle'>
-  | BaseAction<'resource.subscription.status'>
-  | BaseAction<'message'>;
+  | ResourceGetAction
+  | ResourceQueryAction
+  | ResourceUpdateAction;
 
 /**
  * A color known to Bulma.
  */
 export type BulmaColor =
+  | 'danger'
   | 'dark'
-  | 'primary'
-  | 'link'
   | 'info'
+  | 'link'
+  | 'primary'
   | 'success'
   | 'warning'
-  | 'danger'
   | 'white';
 
-export type BulmaSize = 'small' | 'normal' | 'medium' | 'large';
+export type BulmaSize = 'large' | 'medium' | 'normal' | 'small';
 
 export interface BaseMessage {
   /**

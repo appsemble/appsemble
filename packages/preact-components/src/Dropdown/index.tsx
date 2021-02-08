@@ -1,6 +1,6 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { ComponentChildren, h, VNode } from 'preact';
+import { ComponentChildren, VNode } from 'preact';
 import { useCallback, useRef } from 'preact/hooks';
 
 import { Button, useClickOutside, useToggle } from '..';

@@ -7,7 +7,7 @@ import {
   Toggle,
   useData,
 } from '@appsemble/react-components';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Member, TeamMember } from '../../../types';

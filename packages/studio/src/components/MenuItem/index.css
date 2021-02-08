@@ -1,0 +1,9 @@
+.root {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.middle {
+  vertical-align: middle;
+}

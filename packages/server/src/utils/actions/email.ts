@@ -44,17 +44,17 @@ export async function email({
       sub: user.id,
       name: user.name,
       email: user.primaryEmail,
-      email_verified: user.EmailAuthorizations[0].verified,
+      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
     },
   );
 
   const to = remap(action.to, data, context) as string;
-  const cc = remap(action.cc, data, context) as string | string[];
-  const bcc = remap(action.bcc, data, context) as string | string[];
+  const cc = remap(action.cc, data, context) as string[] | string;
+  const bcc = remap(action.bcc, data, context) as string[] | string;
   const body = remap(action.body, data, context) as string;
   const sub = remap(action.subject, data, context) as string;
   const attachmentUrls = []
-    .concat(remap(action.attachments, data, context) as (string | Attachment)[])
+    .concat(remap(action.attachments, data, context) as (Attachment | string)[])
     .filter(Boolean)
     .map((a) => (typeof a === 'object' ? a : { target: String(a) }));
   const attachments: SendMailOptions['attachments'] = [];
@@ -83,8 +83,6 @@ export async function email({
           attachment?.filename || a.filename || (ext ? `${a.id}.${ext}` : String(a.id));
         return { content: a.data, filename };
       }),
-    );
-    attachments.push(
       ...assetUrls.map((a) => ({
         path: a.target,
         ...(a.filename && { filename: a.filename }),

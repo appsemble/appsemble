@@ -55,7 +55,7 @@ yarn start --help
 
 The blocks can be published using the Appsemble CLI. Note that in order to publish blocks, you need
 to be authenticated in the CLI. After having registered an Appsemble account, you can authenticate
-yourself using `yarn appsemble auth login`.
+yourself using `yarn appsemble login`.
 
 To publish a new block version, the following command can be used.
 
@@ -72,7 +72,7 @@ information about block development and hot-reloading can be found
 In order for users to create apps from within the Appsemble Studio, existing apps that can be used
 as a starting point must be marked as templates. This can be done using the Appsemble CLI. Note that
 in order to publish blocks, you need to be authenticated in the CLI. After having registered an
-Appsemble account, you can authenticate yourself using `yarn appsemble auth login`.
+Appsemble account, you can authenticate yourself using `yarn appsemble login`.
 
 ```sh
 yarn appsemble app create --organization appsemble --template apps/*

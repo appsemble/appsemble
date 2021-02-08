@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build",
   "compilerOptions": {
-    "jsxFactory": "h",
+    "jsxImportSource": "preact",
     "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "dist",
     "rootDir": "src"

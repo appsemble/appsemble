@@ -1,4 +1,5 @@
-import React, { ReactElement } from 'react';
+import { SideMenuButton } from '@appsemble/react-components';
+import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
@@ -14,7 +15,8 @@ export function Toolbar(): ReactElement {
   return (
     <nav className={`navbar is-fixed-top is-dark is-flex ${styles.root}`}>
       <div className="navbar-brand">
-        <Link to={url}>
+        <SideMenuButton />
+        <Link className={styles.logo} to={url}>
           <header className="navbar-item">
             <img alt={formatMessage(messages.iconAlt)} className="mr-2" src="/icon-64.png" />
             <h4 className="has-text-white title">Appsemble</h4>
@@ -26,7 +28,7 @@ export function Toolbar(): ReactElement {
           rel="noopener noreferrer"
           target="_blank"
         >
-          {`alpha ${process.env.APPSEMBLE_VERSION}`}
+          {process.env.APPSEMBLE_VERSION}
         </a>
       </div>
       <div className="navbar-menu">

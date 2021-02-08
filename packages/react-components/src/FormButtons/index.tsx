@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Children, ReactElement, ReactNode } from 'react';
+import { Children, ReactElement, ReactNode } from 'react';
 
 import styles from './index.css';
 
@@ -15,10 +15,10 @@ interface FormButtonsProps {
  * them.
  */
 export function FormButtons({ children, className }: FormButtonsProps): ReactElement {
-  const count = Children.count(children);
+  const { length } = Children.toArray(children).filter(Boolean);
 
   return (
-    <div className={classNames(styles.root, count > 1 ? styles.multiple : styles.one, className)}>
+    <div className={classNames(styles.root, length > 1 ? styles.multiple : styles.one, className)}>
       {children}
     </div>
   );

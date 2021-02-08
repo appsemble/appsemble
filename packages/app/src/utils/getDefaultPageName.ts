@@ -3,7 +3,7 @@ import { AppDefinition } from '@appsemble/types';
 export function getDefaultPageName(
   isLoggedIn: boolean,
   role: string,
-  definition: Pick<AppDefinition, 'security' | 'defaultPage'>,
+  definition: Pick<AppDefinition, 'defaultPage' | 'security'>,
 ): string {
   if (!isLoggedIn) {
     return definition.defaultPage;

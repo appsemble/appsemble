@@ -1,5 +1,4 @@
-import { StringField } from 'blocks/form/block';
-
+import { StringField } from '../../../block';
 import { validateString } from './validateString';
 
 describe('validateString', () => {

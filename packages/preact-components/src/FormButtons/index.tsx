@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentChildren, h, toChildArray, VNode } from 'preact';
+import { ComponentChildren, toChildArray, VNode } from 'preact';
 
 import styles from './index.css';
 

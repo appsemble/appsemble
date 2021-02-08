@@ -1,0 +1,44 @@
+.maskableIconWapper {
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  background-image: linear-gradient(45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
+    linear-gradient(-45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, hsl(0, 0%, 86%) 75%),
+    linear-gradient(-45deg, transparent 75%, hsl(0, 0%, 86%) 75%);
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  background-size: 20px 20px;
+  border: 0.1rem solid hsl(0, 0%, 86%);
+}
+
+.icon {
+  height: unset !important;
+  margin: 0 auto;
+  max-height: 100%;
+  max-width: 100%;
+  width: unset !important;
+}
+
+.preview {
+  object-fit: contain;
+}
+
+.maskableIcon {
+  align-items: center;
+  justify-content: center;
+  transition: clip-path 1s;
+}
+
+.contain {
+  /*
+   * https://css-tricks.com/maskable-icons-android-maskable-icons-for-your-pwa/
+   *
+   * The safe are is a radius of 40%, or a diameter of 80%.
+   * The width and height of a square inside a circle is sine(π / 4)
+   * This means the allowed width and height is sine(π / 4) * 80%.
+   * The square surrounding the safe area is
+   */
+  object-fit: contain;
+}
+
+.fill {
+  object-fit: cover;
+}

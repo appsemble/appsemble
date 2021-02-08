@@ -1,5 +1,5 @@
 import { useQuery } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Redirect, Route, RouteProps, useParams } from 'react-router-dom';
 
 import { useUser } from '../UserProvider';

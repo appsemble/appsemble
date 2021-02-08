@@ -14,7 +14,7 @@ import {
 import { User } from '.';
 
 @Table({ tableName: 'ResetPasswordToken' })
-export class ResetPasswordToken extends Model<ResetPasswordToken> {
+export class ResetPasswordToken extends Model {
   @PrimaryKey
   @Column
   token: string;

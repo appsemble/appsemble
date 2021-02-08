@@ -67,7 +67,7 @@ interface AssetMarkerIcon {
   /**
    * The id of an asset to use.
    */
-  asset: number;
+  asset: string;
 }
 
 declare module '@appsemble/sdk' {
@@ -163,7 +163,7 @@ declare module '@appsemble/sdk' {
        * @default 28
        */
       size?: number;
-    } & (FontAwesomeMarkerIcon | AssetMarkerIcon);
+    } & (AssetMarkerIcon | FontAwesomeMarkerIcon);
   }
 
   interface Actions {

@@ -1,11 +1,13 @@
 import { Transporter } from 'nodemailer';
 
+import { setArgv } from '../argv';
 import { Mailer } from './Mailer';
 
 let mailer: Mailer;
 
 beforeEach(() => {
-  mailer = new Mailer({ host: '' });
+  setArgv({ host: '' });
+  mailer = new Mailer();
 });
 
 describe('verify', () => {

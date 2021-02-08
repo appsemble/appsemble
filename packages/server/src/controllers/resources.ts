@@ -1,13 +1,8 @@
 import { logger } from '@appsemble/node-utils';
-import {
-  checkAppRole,
-  Permission,
-  SchemaValidationError,
-  TeamRole,
-  validate,
-} from '@appsemble/utils';
+import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
-import { addMilliseconds, isPast, parseISO } from 'date-fns';
+import { addMilliseconds, isPast } from 'date-fns';
+import { pick } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
 import { Op, Order, WhereOptions } from 'sequelize';
@@ -15,24 +10,30 @@ import { Op, Order, WhereOptions } from 'sequelize';
 import {
   App,
   AppSubscription,
+  Asset,
   Organization,
   Resource,
   ResourceSubscription,
+  Team,
   TeamMember,
+  transactional,
   User,
 } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
-import { processHooks, processReferenceHooks, renameOData } from '../utils/resource';
+import {
+  processHooks,
+  processReferenceHooks,
+  processResourceBody,
+  renameOData,
+  verifyResourceBody,
+} from '../utils/resource';
 
 interface Params {
   appId: number;
   resourceType: string;
   resourceId: number;
-  $filter: string;
-  $orderby: string;
-  $top: number;
 }
 
 const specialRoles = new Set(['$author', ...Object.values(TeamRole).map((r) => `$team:${r}`)]);
@@ -82,7 +83,8 @@ function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOpt
       odataFilterToSequelize(
         $filter
           .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__')
+          .replace(/(^|\B)\$author\/id(\b|$)/g, '__author__'),
         Resource,
         renameOData,
       );
@@ -113,25 +115,35 @@ async function verifyPermission(
   ctx: KoaContext,
   app: App,
   resourceType: string,
-  action: 'create' | 'delete' | 'get' | 'query' | 'update' | 'count',
+  action: 'count' | 'create' | 'delete' | 'get' | 'query' | 'update',
 ): Promise<WhereOptions> {
-  if (!app.definition.resources[resourceType] || !app.definition.resources[resourceType][action]) {
+  if (!app.definition.resources[resourceType] && !app.definition.resources[resourceType][action]) {
     return;
   }
 
-  const { user } = ctx;
-  let { roles } = app.definition.resources[resourceType][action];
+  const {
+    query: { $team },
+    user,
+    users,
+  } = ctx;
 
-  if (!roles || !roles.length) {
-    if (app.definition.roles?.length) {
-      ({ roles } = app.definition);
-    } else {
-      return;
-    }
+  if ('studio' in users || 'cli' in users) {
+    await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
+    return;
+  }
+
+  let roles = app.definition.resources?.[resourceType]?.[action]?.roles ?? [];
+
+  if ((!roles || !roles.length) && app.definition.roles?.length) {
+    ({ roles } = app.definition);
   }
 
   const functionalRoles = roles.filter((r) => specialRoles.has(r));
   const appRoles = roles.filter((r) => !specialRoles.has(r));
+
+  if ($team && !functionalRoles.includes(`$team:${$team}`)) {
+    functionalRoles.push(`$team:${$team}`);
+  }
 
   if (!functionalRoles.length && !appRoles.length) {
     return;
@@ -149,17 +161,16 @@ async function verifyPermission(
 
   if (functionalRoles.includes(`$team:${TeamRole.Member}`)) {
     const teamIds = (
-      await TeamMember.findAll({
-        where: { UserId: user.id, role: TeamRole.Member },
-        raw: true,
-        attributes: ['TeamId'],
+      await Team.findAll({
+        where: { AppId: app.id },
+        include: [{ model: User, where: { id: user.id } }],
+        attributes: ['id'],
       })
-    ).map((t) => t.TeamId);
+    ).map((t) => t.id);
 
     const userIds = (
       await TeamMember.findAll({
         attributes: ['UserId'],
-        raw: true,
         where: { TeamId: teamIds },
       })
     ).map((tm) => tm.UserId);
@@ -168,12 +179,14 @@ async function verifyPermission(
 
   if (functionalRoles.includes(`$team:${TeamRole.Manager}`)) {
     const teamIds = (
-      await TeamMember.findAll({
-        where: { UserId: user.id },
-        raw: true,
-        attributes: ['TeamId'],
+      await Team.findAll({
+        where: { AppId: app.id },
+        include: [
+          { model: User, where: { id: user.id }, through: { where: { role: TeamRole.Manager } } },
+        ],
+        attributes: ['id'],
       })
-    ).map((t) => t.TeamId);
+    ).map((t) => t.id);
 
     const userIds = (
       await TeamMember.findAll({
@@ -187,7 +200,7 @@ async function verifyPermission(
 
   if (app.definition.security) {
     const member = app.Users.find((u) => u.id === user.id);
-    const { policy, role: defaultRole } = app.definition?.security?.default;
+    const { policy, role: defaultRole } = app.definition.security.default;
     let role: string;
 
     if (member) {
@@ -214,10 +227,13 @@ async function verifyPermission(
       }
     }
 
-    if (!appRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
-      if (!result.length) {
-        throw forbidden('User does not have sufficient permissions.');
-      }
+    // Team roles are checked separately
+    // XXX unify this logic?
+    if (
+      !appRoles.some((r) => checkAppRole(app.definition.security, r, role, null)) &&
+      !result.length
+    ) {
+      throw forbidden('User does not have sufficient permissions.');
     }
   }
 
@@ -231,7 +247,7 @@ async function verifyPermission(
 export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    query: { $top },
+    query: { $select, $top },
     user,
   } = ctx;
 
@@ -271,7 +287,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     },
   });
 
-  ctx.body = resources.map((resource) => ({
+  let response = resources.map((resource) => ({
     ...resource.data,
     id: resource.id,
     $created: resource.created,
@@ -282,6 +298,13 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     }),
     ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
   }));
+
+  if ($select) {
+    const select = $select.split(',').map((s: string) => s.trim());
+    response = response.map((resource) => pick(resource, select));
+  }
+
+  ctx.body = response;
 }
 
 export async function countResources(ctx: KoaContext<Params>): Promise<void> {
@@ -499,16 +522,14 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
 export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
-    request: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      body: { $expires = null, id: _, ...resource },
-    },
     user,
   } = ctx;
+  const [resource, assets, $expires] = processResourceBody(ctx);
   const action = 'create';
 
-  const app = await App.findByPk(appId, {
-    ...(user && {
+  const app = await App.findByPk(
+    appId,
+    user && {
       include: [
         { model: Organization, attributes: ['id'] },
         {
@@ -519,33 +540,22 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
           through: { attributes: ['role'] },
         },
       ],
-    }),
-  });
+    },
+  );
 
   verifyResourceDefinition(app, resourceType);
   await verifyPermission(ctx, app, resourceType, action);
 
   const { expires, schema } = app.definition.resources[resourceType];
-
-  try {
-    await validate(schema, resource);
-  } catch (err: unknown) {
-    if (!(err instanceof SchemaValidationError)) {
-      throw err;
-    }
-
-    const boom = badRequest(err.message);
-    (boom.output.payload as any).data = err.data;
-    throw boom;
-  }
+  const [preparedAssets] = verifyResourceBody(resourceType, schema, resource, assets);
 
   let expireDate: Date;
   // Manual $expire takes precedence over the default calculated expiration date
   if ($expires) {
-    expireDate = parseISO($expires);
-    if (isPast(expireDate)) {
+    if (isPast($expires)) {
       throw badRequest('Expiration date has already passed.');
     }
+    expireDate = $expires;
   } else if (expires) {
     const expireDuration = parseDuration(expires);
 
@@ -554,12 +564,22 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     }
   }
 
-  const createdResource = await Resource.create({
-    AppId: app.id,
-    type: resourceType,
-    data: resource,
-    UserId: user?.id,
-    expires: expireDate,
+  await user?.reload({ attributes: ['name'] });
+  let createdResource: Resource;
+  await transactional(async (transaction) => {
+    createdResource = await Resource.create(
+      { AppId: app.id, type: resourceType, data: resource, UserId: user?.id, expires: expireDate },
+      { transaction },
+    );
+    await Asset.bulkCreate(
+      preparedAssets.map((asset) => ({
+        ...asset,
+        AppId: app.id,
+        ResourceId: createdResource.id,
+        UserId: user?.id,
+      })),
+      { logging: false, transaction },
+    );
   });
 
   ctx.body = {
@@ -567,31 +587,25 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
     id: createdResource.id,
     $created: createdResource.created,
     $updated: createdResource.updated,
-    ...(createdResource.expires != null && {
-      $expires: createdResource.expires,
-    }),
-    ...(resource.UserId != null && {
-      $author: { id: resource.UserId, name: resource.User.name },
-    }),
+    $expires: createdResource.expires ?? undefined,
+    $author: user ? { id: user.id, name: user.name } : undefined,
   };
-  ctx.status = 201;
 
-  processReferenceHooks(ctx.argv.host, ctx.user, app, createdResource, action);
-  processHooks(ctx.argv.host, ctx.user, app, createdResource, action);
+  processReferenceHooks(user, app, createdResource, action);
+  processHooks(user, app, createdResource, action);
 }
 
 export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceId, resourceType },
-    request: {
-      body: { $clonable: clonable = false, $expires = null, ...updatedResource },
-    },
     user,
   } = ctx;
+  const [updatedResource, assets, $expires, clonable] = processResourceBody(ctx);
   const action = 'update';
 
-  const app = await App.findByPk(appId, {
-    ...(user && {
+  const app = await App.findByPk(
+    appId,
+    user && {
       include: [
         { model: Organization, attributes: ['id'] },
         {
@@ -602,15 +616,18 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
           through: { attributes: ['role'] },
         },
       ],
-    }),
-  });
+    },
+  );
 
   verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
-  let resource = await Resource.findOne({
+  const resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
-    include: [{ model: User, attributes: ['id', 'name'], required: false }],
+    include: [
+      { model: User, attributes: ['id', 'name'], required: false },
+      { model: Asset, attributes: ['id'], required: false },
+    ],
   });
 
   if (!resource) {
@@ -618,50 +635,49 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   }
 
   const { schema } = app.definition.resources[resourceType];
-
-  try {
-    await validate(schema, updatedResource);
-  } catch (err: unknown) {
-    if (!(err instanceof SchemaValidationError)) {
-      throw err;
-    }
-
-    const boom = badRequest(err.message);
-    (boom.output.payload as any).data = err.data;
-    throw boom;
-  }
+  const [preparedAssets, deletedAssetIds] = verifyResourceBody(
+    resourceType,
+    schema,
+    updatedResource,
+    assets,
+    resource.Assets.map((asset) => asset.id),
+  );
 
   let { expires } = resource;
   if ($expires) {
-    expires = parseISO($expires);
-    if (isPast(expires)) {
+    if (isPast($expires)) {
       throw badRequest('Expiration date has already passed.');
     }
+    expires = $expires;
   }
 
-  resource.changed('updated', true);
-  resource = await resource.update(
-    { data: updatedResource, clonable, expires },
-    { where: { id: resourceId, type: resourceType, AppId: appId } },
+  await transactional((transaction) =>
+    Promise.all([
+      resource.update({ data: updatedResource, clonable, expires }, { transaction }),
+      Asset.bulkCreate(
+        preparedAssets.map((asset) => ({
+          ...asset,
+          AppId: app.id,
+          ResourceId: resource.id,
+          UserId: user?.id,
+        })),
+        { logging: false, transaction },
+      ),
+      Asset.destroy({ where: { id: deletedAssetIds } }),
+    ]),
   );
 
-  await resource.reload();
-
   ctx.body = {
-    ...resource.get('data', { plain: true }),
+    ...resource.data,
     id: resourceId,
     $created: resource.created,
     $updated: resource.updated,
-    ...(resource.expires != null && {
-      $expires: resource.expires,
-    }),
-    ...(resource.UserId != null && {
-      $author: { id: resource.UserId, name: resource.User.name },
-    }),
+    $expires: resource.expires ?? undefined,
+    $author: resource.UserId ? { id: resource.UserId, name: resource.User.name } : undefined,
   };
 
-  processReferenceHooks(ctx.argv.host, ctx.user, app, resource, action);
-  processHooks(ctx.argv.host, ctx.user, app, resource, action);
+  processReferenceHooks(user, app, resource, action);
+  processHooks(user, app, resource, action);
 }
 
 export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
@@ -701,6 +717,6 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   await resource.destroy();
   ctx.status = 204;
 
-  processReferenceHooks(ctx.argv.host, ctx.user, app, resource, action);
-  processHooks(ctx.argv.host, ctx.user, app, resource, action);
+  processReferenceHooks(user, app, resource, action);
+  processHooks(user, app, resource, action);
 }

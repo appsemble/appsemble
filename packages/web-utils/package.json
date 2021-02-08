@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/web-utils",
-  "version": "0.15.10",
+  "version": "0.17.5",
   "private": true,
   "description": "Browser specific utility functions used in Appsemble internally",
   "keywords": [
@@ -24,5 +24,8 @@
   "main": "src",
   "scripts": {
     "test": "jest"
+  },
+  "dependencies": {
+    "@sentry/browser": "^6.0.2"
   }
 }

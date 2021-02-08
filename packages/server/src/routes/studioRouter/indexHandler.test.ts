@@ -3,16 +3,16 @@ import Koa from 'koa';
 
 import { studioRouter } from '.';
 import { KoaContext } from '../../types';
+import { setArgv } from '../../utils/argv';
 
-let app: Koa;
 let templateName: string;
 let templateData: Record<string, unknown>;
 
 jest.mock('crypto');
 
 beforeAll(async () => {
-  app = new Koa();
-  app.context.argv = { host: 'https://app.example:9999' };
+  setArgv({ host: 'https://app.example:9999' });
+  const app = new Koa();
   app.use((ctx: KoaContext, next) => {
     ctx.state.render = (template, data) => {
       templateName = template;
@@ -26,9 +26,9 @@ beforeAll(async () => {
 });
 
 it('should serve the studio index page with correct headers', async () => {
-  app.context.argv = {
+  setArgv({
     host: 'http://localhost:9999',
-  };
+  });
   const response = await request.get('/');
   expect(response).toMatchObject({
     headers: expect.objectContaining({
@@ -52,13 +52,13 @@ it('should serve the studio index page with correct headers', async () => {
 });
 
 it('should pass login options from argv to the studio', async () => {
-  app.context.argv = {
+  setArgv({
     disableRegistration: true,
     host: 'http://localhost:9999',
     gitlabClientId: 'GitLab secret',
     googleClientId: 'Google secret',
     sentryDsn: 'https://secret@sentry.io/path',
-  };
+  });
   const response = await request.get('/');
   expect(response).toMatchObject({
     headers: expect.objectContaining({

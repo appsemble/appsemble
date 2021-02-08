@@ -1,12 +1,11 @@
 import { RequestAction, RequestLikeAction, RequestLikeActionTypes } from '@appsemble/sdk';
 import { RequestLikeActionDefinition } from '@appsemble/types';
-import { formatRequestAction, remapData, validate } from '@appsemble/utils';
+import { formatRequestAction } from '@appsemble/utils';
 import axios, { Method } from 'axios';
 
 import { MakeActionParameters } from '../../types';
-import { RecursiveValue } from '../extractBlobs';
+import { serializeResource } from '../serializers';
 import { apiUrl, appId } from '../settings';
-import { uploadBlobs } from '../uploadBlobs';
 import { xmlToJson } from '../xmlToJson';
 
 export function requestLikeAction<T extends RequestLikeActionTypes>({
@@ -14,7 +13,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
   prefix,
   remap,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
-  const { base, blobs = {}, method = 'GET', proxy = true, schema, url, serialize } = definition;
+  const { body, method = 'GET', proxy = true, schema, url } = definition;
 
   return {
     type: 'request',
@@ -28,48 +27,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
         : formatRequestAction(definition, data, remap);
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
-        let body;
-
-        if (serialize && serialize === 'formdata') {
-          const formData = new FormData();
-
-          const processFormData = (key: string, value: Blob | any[] | object | string): void => {
-            if (value instanceof Blob) {
-              formData.append(key, value);
-            } else if (Array.isArray(value)) {
-              value.forEach((item) => {
-                // Recursively iterate over values
-                processFormData(key, item);
-              });
-            } else if (value instanceof Object) {
-              formData.append(key, JSON.stringify(value));
-            } else {
-              // Primitives
-              formData.append(key, value);
-            }
-          };
-
-          Object.entries(data as object).forEach(([key, value]) => {
-            processFormData(key, value);
-          });
-
-          body = formData;
-        } else {
-          switch (blobs.type) {
-            case 'upload': {
-              body = await uploadBlobs(data as RecursiveValue, blobs);
-              break;
-            }
-            default:
-              body = data;
-          }
-        }
-
-        if (schema) {
-          await validate(schema, body);
-        }
-
-        req.data = body;
+        req.data = serializeResource(body ? remap(body, data) : data);
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
       }
@@ -78,10 +36,6 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       let responseBody = response.data;
       if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
         responseBody = xmlToJson(responseBody, schema);
-      }
-
-      if (base) {
-        responseBody = remapData(base, responseBody);
       }
 
       return responseBody;

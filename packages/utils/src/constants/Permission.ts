@@ -15,4 +15,5 @@ export enum Permission {
   ManageResources,
   InviteMember,
   EditOrganization,
+  ManageTeams,
 }

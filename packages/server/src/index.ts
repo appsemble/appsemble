@@ -8,6 +8,7 @@ import * as migrate from './commands/migrate';
 import * as restore from './commands/restore';
 import * as runCronJobs from './commands/runCronJobs';
 import * as start from './commands/start';
+import { setArgv } from './utils/argv';
 import { readPackageJson } from './utils/readPackageJson';
 
 /**
@@ -23,6 +24,7 @@ export {
   migrateHandler as migrate,
   cleanupResourcesHandler as cleanupResources,
   runCronJobsHandler as runCronJobs,
+  setArgv,
 };
 
 /**
@@ -47,7 +49,7 @@ function main(argv: string[]): void {
       describe: 'Decrease verbosity',
       type: 'count',
     })
-    .middleware([configureLogger])
+    .middleware([setArgv, configureLogger])
     .command(cleanup as CommandModule)
     .command(cleanupResources as CommandModule)
     .command(runCronJobs as CommandModule)

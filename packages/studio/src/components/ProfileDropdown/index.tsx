@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
+import { sentryDsn } from '../../utils/settings';
 import { NavbarDropdown } from '../NavbarDropdown';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
@@ -39,11 +40,18 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
       label={
         userInfo ? (
           <figure className="image is-32x32">
-            <img
-              alt={formatMessage(messages.pfp)}
-              className={`is-rounded ${styles.gravatar}`}
-              src={userInfo.picture}
-            />
+            {userInfo?.picture ? (
+              <img
+                alt={formatMessage(messages.pfp)}
+                className={`is-rounded ${styles.gravatar}`}
+                src={userInfo.picture}
+              />
+            ) : (
+              <Icon
+                className={`is-rounded has-background-grey-dark has-text-white-ter ${styles.gravatarFallback}`}
+                icon="user"
+              />
+            )}
           </figure>
         ) : (
           <span>
@@ -72,6 +80,14 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
           <FormattedMessage {...messages.documentation} />
         </span>
       </Link>
+      {sentryDsn && (
+        <Link className={`dropdown-item ${styles.logoutButton}`} to={`${url}/feedback`}>
+          <Icon icon="comment" />
+          <span>
+            <FormattedMessage {...messages.feedback} />
+          </span>
+        </Link>
+      )}
       <hr className="dropdown-divider" />
       {userInfo ? (
         <Button

@@ -99,7 +99,7 @@ export interface Utils {
   /**
    * Show a bulma style message.
    */
-  showMessage: (message: string | Message) => void;
+  showMessage: (message: Message | string) => void;
 
   /**
    * Get a URL serving an asset for the given asset id.
@@ -107,7 +107,7 @@ export interface Utils {
    * @param assetId - The id of the asset whose URL to get.
    * @returns The URL that matches the given asset id.
    */
-  asset: (assetId: number | string) => string;
+  asset: (assetId: string) => string;
 }
 
 export interface Events {

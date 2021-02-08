@@ -2,6 +2,7 @@ import {
   AllowNull,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   Table,
@@ -11,7 +12,7 @@ import {
 import { App, User } from '.';
 
 @Table({ tableName: 'AppMember' })
-export class AppMember extends Model<AppMember> {
+export class AppMember extends Model {
   @AllowNull(false)
   @Column
   role: string;
@@ -27,6 +28,6 @@ export class AppMember extends Model<AppMember> {
   AppId: number;
 
   @ForeignKey(() => User)
-  @Column
-  UserId: number;
+  @Column(DataType.UUID)
+  UserId: string;
 }

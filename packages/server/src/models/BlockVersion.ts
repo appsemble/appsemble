@@ -17,7 +17,7 @@ import { Definition } from 'typescript-json-schema';
 import { BlockAsset, Organization } from '.';
 
 @Table({ tableName: 'BlockVersion', updatedAt: false })
-export class BlockVersion extends Model<BlockVersion> {
+export class BlockVersion extends Model {
   @PrimaryKey
   @ForeignKey(() => Organization)
   @AllowNull(false)
@@ -37,7 +37,7 @@ export class BlockVersion extends Model<BlockVersion> {
   version: string;
 
   @Column(DataType.STRING)
-  layout?: 'float' | 'static' | 'grow' | 'hidden' | null;
+  layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
 
   @Column
   icon: Buffer;

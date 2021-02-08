@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { enableRegistration } from '../../utils/settings';
@@ -17,6 +17,8 @@ import { OrganizationInvite } from '../OrganizationInvite';
 import { ProtectedRoute } from '../ProtectedRoute';
 import { Register } from '../Register';
 import { ResetPassword } from '../ResetPassword';
+import { SAMLResponse } from '../SAMLResponse';
+import { SentryFeedback } from '../SentryFeedback';
 import { Settings } from '../Settings';
 import { VerifyEmail } from '../VerifyEmail';
 
@@ -39,6 +41,9 @@ export function Routes(): ReactElement {
       </Route>
       <ProtectedRoute path={`${path}/settings`}>
         <Settings />
+      </ProtectedRoute>
+      <ProtectedRoute path={`${path}/feedback`}>
+        <SentryFeedback />
       </ProtectedRoute>
       <ProtectedRoute exact path={`${path}/connect/authorize`}>
         <OpenIDLogin />
@@ -77,6 +82,9 @@ export function Routes(): ReactElement {
       </Route>
       <Route exact path={`${path}/verify`}>
         <VerifyEmail />
+      </Route>
+      <Route exact path={`${path}/saml/response/:code?`}>
+        <SAMLResponse />
       </Route>
       <Route path={`${path}/docs`}>
         <Docs />

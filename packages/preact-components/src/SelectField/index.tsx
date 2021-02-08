@@ -1,10 +1,10 @@
-import { ComponentProps, h } from 'preact';
+import { ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { FormComponent, Select, SharedFormComponentProps } from '..';
 
-type SelectFieldProps = SharedFormComponentProps &
-  Omit<ComponentProps<typeof Select>, keyof SharedFormComponentProps>;
+type SelectFieldProps = Omit<ComponentProps<typeof Select>, keyof SharedFormComponentProps> &
+  SharedFormComponentProps;
 
 /**
  * A Bulma styled form select element.
@@ -18,6 +18,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       label,
       required,
       icon,
+      name,
       id = name,
       tag,
       optionalLabel,

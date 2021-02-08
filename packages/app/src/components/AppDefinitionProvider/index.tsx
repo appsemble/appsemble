@@ -1,6 +1,6 @@
 import { useEventListener } from '@appsemble/react-components';
 import { AppDefinition, BlockManifest } from '@appsemble/types';
-import React, {
+import {
   createContext,
   ReactElement,
   ReactNode,
@@ -10,7 +10,6 @@ import React, {
   useState,
 } from 'react';
 
-import { resolveJsonPointers } from '../../utils/resolveJsonPointers';
 import {
   apiUrl,
   blockManifests as initialBlockManifests,
@@ -59,7 +58,7 @@ export function AppDefinitionProvider({ children }: AppDefinitionProviderProps):
         replaceStyle('appsemble-style-core', data.coreStyle);
         replaceStyle('appsemble-style-shared', data.sharedStyle);
         setBlockManifests(data.blockManifests);
-        setDefinition(resolveJsonPointers(data.definition) as AppDefinition);
+        setDefinition(data.definition);
         setRevision(revision + 1);
       }
     },

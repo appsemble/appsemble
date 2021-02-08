@@ -6,7 +6,7 @@ import { promises as fs } from 'fs';
  * @param string - The string to handle.
  * @returns The handled string.
  */
-export async function readFileOrString(string: string | Buffer): Promise<string | Buffer> {
+export async function readFileOrString(string: Buffer | string): Promise<Buffer | string> {
   try {
     return await fs.readFile(string);
   } catch (err: unknown) {

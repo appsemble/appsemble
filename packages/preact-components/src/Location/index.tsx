@@ -1,6 +1,5 @@
 import 'leaflet/dist/leaflet.css';
 
-// eslint-disable-next-line import/no-deprecated
 import { BlockProps, withBlock } from '@appsemble/preact';
 import { Theme } from '@appsemble/sdk';
 import {
@@ -13,7 +12,7 @@ import {
   Marker,
   TileLayer,
 } from 'leaflet';
-import { Component, createRef, h, VNode } from 'preact';
+import { Component, createRef, VNode } from 'preact';
 
 export interface LocationProps {
   className?: string;
@@ -21,13 +20,13 @@ export interface LocationProps {
   longitude: number;
   mapOptions?: MapOptions;
   theme: Theme;
-  marker?: Icon | DivIcon;
+  marker?: DivIcon | Icon;
 }
 
 /**
  * Render a location based marker based on leaflet.
  */
-class LocationComponent extends Component<LocationProps & BlockProps> {
+class LocationComponent extends Component<BlockProps & LocationProps> {
   ref = createRef<HTMLDivElement>();
 
   componentDidMount(): void {
@@ -67,5 +66,4 @@ class LocationComponent extends Component<LocationProps & BlockProps> {
   }
 }
 
-// eslint-disable-next-line import/no-deprecated
 export const Location = withBlock<LocationProps>(LocationComponent);

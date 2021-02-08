@@ -13,7 +13,9 @@ export const paths: OpenAPIV3.PathsObject = {
       parameters: [
         { $ref: '#/components/parameters/$filter' },
         { $ref: '#/components/parameters/$orderby' },
+        { $ref: '#/components/parameters/$select' },
         { $ref: '#/components/parameters/$top' },
+        { $ref: '#/components/parameters/$team' },
       ],
       responses: {
         200: {
@@ -35,7 +37,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
     post: {
       tags: ['resource'],
@@ -51,7 +53,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
   },
   // XXX: Temporary workaround until this is fixed in Koas
@@ -65,7 +67,10 @@ export const paths: OpenAPIV3.PathsObject = {
       tags: ['resource'],
       description: 'Get a count of all resources of this app.',
       operationId: 'countResources',
-      parameters: [{ $ref: '#/components/parameters/$filter' }],
+      parameters: [
+        { $ref: '#/components/parameters/$filter' },
+        { $ref: '#/components/parameters/$team' },
+      ],
       responses: {
         200: {
           description: 'The count of all this app’s resources of this type.',
@@ -78,32 +83,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
-    },
-  },
-  '/api/apps/{appId}/resources/{resourceType}/count': {
-    parameters: [
-      { $ref: '#/components/parameters/appId' },
-      { $ref: '#/components/parameters/resourceType' },
-    ],
-    get: {
-      tags: ['resource'],
-      description: 'Get a count of all resources of this app.',
-      operationId: 'countResources',
-      parameters: [{ $ref: '#/components/parameters/$filter' }],
-      responses: {
-        200: {
-          description: 'The count of all this app’s resources of this type.',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'number',
-              },
-            },
-          },
-        },
-      },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
   },
   '/api/apps/{appId}/resources/{resourceType}/subscriptions': {
@@ -147,7 +127,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
     put: {
       tags: ['resource'],
@@ -163,7 +143,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
     delete: {
       tags: ['resource'],
@@ -175,7 +155,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
   },
   '/api/apps/{appId}/resources/{resourceType}/{resourceId}/subscriptions': {

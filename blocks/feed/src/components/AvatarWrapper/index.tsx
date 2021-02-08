@@ -1,5 +1,5 @@
 import { Action } from '@appsemble/sdk';
-import { ComponentChildren, h, VNode } from 'preact';
+import { ComponentChildren, VNode } from 'preact';
 
 import styles from './index.css';
 

@@ -1,5 +1,5 @@
 import { Content, Title } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { HelmetIntl } from '../HelmetIntl';
@@ -11,7 +11,7 @@ export function AppSecrets(): ReactElement {
   return (
     <Content>
       <HelmetIntl title={messages.title} />
-      <Title level={1}>
+      <Title>
         <FormattedMessage {...messages.title} />
       </Title>
       <OAuth2Secrets />

@@ -15,7 +15,7 @@ import {
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { extension } from 'mime-types';
-import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { download } from '../../utils/download';
@@ -40,7 +40,7 @@ export function Assets(): ReactElement {
     `/api/apps/${app.id}/assets`,
   );
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
-  const [dialog, setDialog] = useState<'upload' | 'preview'>(null);
+  const [dialog, setDialog] = useState<'preview' | 'upload'>(null);
   const [previewedAsset, setPreviewedAsset] = useState<Asset>(null);
   const [file, setFile] = useState<File>();
 

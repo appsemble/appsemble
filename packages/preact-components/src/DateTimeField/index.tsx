@@ -1,14 +1,14 @@
 import 'flatpickr/dist/flatpickr.css';
 
 import flatpickr from 'flatpickr';
-import { ComponentProps, h, VNode } from 'preact';
+import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { FormComponent, Input, SharedFormComponentProps } from '..';
 
-type DateTimeFieldProps = SharedFormComponentProps &
-  Omit<ComponentProps<typeof Input>, 'error'> &
-  Pick<flatpickr.Options.Options, 'enableTime' | 'noCalendar' | 'mode' | 'minDate' | 'maxDate'> & {
+type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
+  Pick<flatpickr.Options.Options, 'enableTime' | 'maxDate' | 'minDate' | 'mode' | 'noCalendar'> &
+  SharedFormComponentProps & {
     /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
      * used.
@@ -22,7 +22,7 @@ type DateTimeFieldProps = SharedFormComponentProps &
      * element, to emulate an event.
      * @param value - The value that was selected.
      */
-    onChange?: (event: h.JSX.TargetedEvent<HTMLInputElement>, value: Date | string) => void;
+    onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: Date | string) => void;
 
     /**
      * The current value as a Date object or an ISO8601 formatted string.
@@ -57,7 +57,7 @@ export function DateTimeField({
   const [picker, setPicker] = useState<flatpickr.Instance>(null);
 
   const handleChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>) => {
+    (event: JSX.TargetedEvent<HTMLInputElement>) => {
       if (picker) {
         onChange(event, iso ? picker.selectedDates[0].toISOString() : picker.selectedDates[0]);
       }

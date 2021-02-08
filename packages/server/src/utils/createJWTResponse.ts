@@ -1,7 +1,7 @@
 import { TokenResponse } from '@appsemble/types';
 import { sign } from 'jsonwebtoken';
 
-import { Argv } from '../types';
+import { argv } from './argv';
 
 interface Options {
   /**
@@ -32,15 +32,13 @@ interface Options {
  * @see https://www.iana.org/assignments/jwt/jwt.xhtml
  *
  * @param sub - The id of the user that is authenticated using the token.
- * @param argv - CLI arguments passed to the server.
  * @param options - The options for creating the JWS response.
  *
  * @returns A JWT based OAuth2 response body.
  */
 export function createJWTResponse(
   sub: string,
-  { host, secret }: Argv,
-  { aud = host, expires = 3600, refreshToken = true, scope }: Options = {},
+  { aud = argv.host, expires = 3600, refreshToken = true, scope }: Options = {},
 ): TokenResponse {
   const iat = Math.floor(Date.now() / 1000);
   const payload = {
@@ -49,20 +47,20 @@ export function createJWTResponse(
     // This token is issued at the current time.
     iat,
     // This token was issued by the Appsemble host.
-    iss: host,
+    iss: argv.host,
     scope,
     // This token can be used to authenticate the user having this id.
     sub,
   };
   const response: TokenResponse = {
     // The access token token expires in an hour.
-    access_token: sign({ ...payload, exp: iat + expires }, secret),
+    access_token: sign({ ...payload, exp: iat + expires }, argv.secret),
     expires_in: expires,
     token_type: 'bearer',
   };
   if (refreshToken) {
     // The refresh token token expires in a month.
-    response.refresh_token = sign({ ...payload, exp: iat + 60 * 60 * 24 * 30 }, secret);
+    response.refresh_token = sign({ ...payload, exp: iat + 60 * 60 * 24 * 30 }, argv.secret);
   }
   return response;
 }

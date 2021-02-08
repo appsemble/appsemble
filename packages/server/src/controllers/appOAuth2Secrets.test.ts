@@ -1,35 +1,28 @@
 import { request, setTestApp } from 'axios-test-instance';
 import { sign } from 'jsonwebtoken';
 
-import {
-  App,
-  AppOAuth2Secret,
-  Member,
-  OAuth2AuthorizationCode,
-  Organization,
-  User,
-} from '../models';
+import { App, AppOAuth2Secret, Member, OAuth2AuthorizationCode, Organization } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import * as oauth2 from '../utils/oauth2';
+import { authorizeStudio, createTestUser, getTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
 let app: App;
-let authorization: string;
 let member: Member;
-let user: User;
 
 beforeAll(createTestSchema('appnotifications'));
 
 beforeAll(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 
 afterEach(truncate);
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
+  const user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -47,20 +40,17 @@ afterAll(closeTestSchema);
 
 describe('createAppOAuth2Secret', () => {
   it('should be possible to create an app secret', async () => {
-    const response = await request.post(
-      `/api/apps/${app.id}/secrets/oauth2`,
-      {
-        authorizationUrl: 'https://example.com/oauth/authorize',
-        clientId: 'example_client_id',
-        clientSecret: 'example_client_secret',
-        icon: 'example',
-        name: 'Example',
-        scope: 'email openid profile',
-        tokenUrl: 'https://example.com/oauth/token',
-        userInfoUrl: 'https://example.com/oauth/userinfo',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/secrets/oauth2`, {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
     expect(response).toMatchObject({
       status: 201,
       data: {
@@ -79,20 +69,17 @@ describe('createAppOAuth2Secret', () => {
   });
 
   it('should throw 404 if no app is found', async () => {
-    const response = await request.post(
-      '/api/apps/99999/secrets/oauth2',
-      {
-        authorizationUrl: 'https://example.com/oauth/authorize',
-        clientId: 'example_client_id',
-        clientSecret: 'example_client_secret',
-        icon: 'example',
-        name: 'Example',
-        scope: 'email openid profile',
-        tokenUrl: 'https://example.com/oauth/token',
-        userInfoUrl: 'https://example.com/oauth/userinfo',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/apps/99999/secrets/oauth2', {
+      authorizationUrl: 'https://example.com/oauth/authorize',
+      clientId: 'example_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'example',
+      name: 'Example',
+      scope: 'email openid profile',
+      tokenUrl: 'https://example.com/oauth/token',
+      userInfoUrl: 'https://example.com/oauth/userinfo',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
@@ -130,9 +117,8 @@ describe('getAppOAuth2Secrets', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
-    const response = await request.get(`/api/apps/${app.id}/secrets/oauth2`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/secrets/oauth2`);
     expect(response).toMatchObject({
       status: 200,
       data: [
@@ -152,9 +138,8 @@ describe('getAppOAuth2Secrets', () => {
   });
 
   it('should throw 404 if no app is found', async () => {
-    const response = await request.get('/api/apps/99999/secrets/oauth2', {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get('/api/apps/99999/secrets/oauth2');
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
@@ -208,20 +193,17 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
-    const response = await request.put(
-      `/api/apps/${app.id}/secrets/oauth2/${secret.id}`,
-      {
-        authorizationUrl: 'https://other.example/oauth/authorize',
-        clientId: 'other_client_id',
-        clientSecret: 'example_client_secret',
-        icon: 'updated',
-        name: 'Updated Example',
-        scope: 'custom',
-        tokenUrl: 'https://other.example/oauth/token',
-        userInfoUrl: 'https://other.example/oauth/userinfo',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://other.example/oauth/authorize',
+      clientId: 'other_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'updated',
+      name: 'Updated Example',
+      scope: 'custom',
+      tokenUrl: 'https://other.example/oauth/token',
+      userInfoUrl: 'https://other.example/oauth/userinfo',
+    });
     expect(response).toMatchObject({
       status: 200,
       data: {
@@ -249,20 +231,17 @@ describe('updateAppOAuth2Secret', () => {
   });
 
   it('should handle if the app id is invalid', async () => {
-    const response = await request.put(
-      '/api/apps/123/secrets/oauth2/1',
-      {
-        authorizationUrl: 'https://other.example/oauth/authorize',
-        clientId: 'other_client_id',
-        clientSecret: 'example_client_secret',
-        icon: 'updated',
-        name: 'Updated Example',
-        scope: 'custom',
-        tokenUrl: 'https://other.example/oauth/token',
-        userInfoUrl: 'https://other.example/oauth/userinfo',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put('/api/apps/123/secrets/oauth2/1', {
+      authorizationUrl: 'https://other.example/oauth/authorize',
+      clientId: 'other_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'updated',
+      name: 'Updated Example',
+      scope: 'custom',
+      tokenUrl: 'https://other.example/oauth/token',
+      userInfoUrl: 'https://other.example/oauth/userinfo',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
@@ -270,20 +249,17 @@ describe('updateAppOAuth2Secret', () => {
   });
 
   it('should handle if the secret id is invalid', async () => {
-    const response = await request.put(
-      `/api/apps/${app.id}/secrets/oauth2/1`,
-      {
-        authorizationUrl: 'https://other.example/oauth/authorize',
-        clientId: 'other_client_id',
-        clientSecret: 'example_client_secret',
-        icon: 'updated',
-        name: 'Updated Example',
-        scope: 'custom',
-        tokenUrl: 'https://other.example/oauth/token',
-        userInfoUrl: 'https://other.example/oauth/userinfo',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/1`, {
+      authorizationUrl: 'https://other.example/oauth/authorize',
+      clientId: 'other_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'updated',
+      name: 'Updated Example',
+      scope: 'custom',
+      tokenUrl: 'https://other.example/oauth/token',
+      userInfoUrl: 'https://other.example/oauth/userinfo',
+    });
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', message: 'OAuth2 secret not found', statusCode: 404 },
@@ -303,20 +279,17 @@ describe('updateAppOAuth2Secret', () => {
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
     await member.update({ role: 'Member' });
-    const response = await request.put(
-      `/api/apps/${app.id}/secrets/oauth2/${secret.id}`,
-      {
-        authorizationUrl: 'https://other.example/oauth/authorize',
-        clientId: 'other_client_id',
-        clientSecret: 'example_client_secret',
-        icon: 'updated',
-        name: 'Updated Example',
-        scope: 'custom',
-        tokenUrl: 'https://other.example/oauth/token',
-        userInfoUrl: 'https://other.example/oauth/userinfo',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.put(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`, {
+      authorizationUrl: 'https://other.example/oauth/authorize',
+      clientId: 'other_client_id',
+      clientSecret: 'example_client_secret',
+      icon: 'updated',
+      name: 'Updated Example',
+      scope: 'custom',
+      tokenUrl: 'https://other.example/oauth/token',
+      userInfoUrl: 'https://other.example/oauth/userinfo',
+    });
     expect(response).toMatchObject({
       status: 403,
       data: {
@@ -346,11 +319,12 @@ describe('verifyAppOAuth2SecretCode', () => {
   });
 
   it('should throw 400 if the referer is missing', async () => {
-    const response = await request.post(
-      `/api/apps/9999/secrets/oauth2/${secret.id}/verify`,
-      { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/9999/secrets/oauth2/${secret.id}/verify`, {
+      code: 'authorization_code',
+      redirectUri: 'http://localhost',
+      scope: 'resources:manage',
+    });
     expect(response).toMatchObject({
       status: 400,
       data: { error: 'Bad Request', message: 'The referer header is invalid', statusCode: 400 },
@@ -358,11 +332,12 @@ describe('verifyAppOAuth2SecretCode', () => {
   });
 
   it('should throw 400 if the referer is invalid', async () => {
-    const response = await request.post(
-      `/api/apps/9999/secrets/oauth2/${secret.id}/verify`,
-      { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
-      { headers: { authorization, referer: 'http://invalid.example' } },
-    );
+    authorizeStudio();
+    const response = await request.post(`/api/apps/9999/secrets/oauth2/${secret.id}/verify`, {
+      code: 'authorization_code',
+      redirectUri: 'http://localhost',
+      scope: 'resources:manage',
+    });
     expect(response).toMatchObject({
       status: 400,
       data: { error: 'Bad Request', message: 'The referer header is invalid', statusCode: 400 },
@@ -370,10 +345,11 @@ describe('verifyAppOAuth2SecretCode', () => {
   });
 
   it('should throw 404 if no app is found', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/9999/secrets/oauth2/${secret.id}/verify`,
       { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
-      { headers: { authorization, referer: 'http://localhost' } },
+      { headers: { referer: 'http://localhost' } },
     );
     expect(response).toMatchObject({
       status: 404,
@@ -382,10 +358,11 @@ describe('verifyAppOAuth2SecretCode', () => {
   });
 
   it('should throw 404 if no secret is found', async () => {
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/secrets/oauth2/9999/verify`,
       { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
-      { headers: { authorization, referer: 'http://localhost' } },
+      { headers: { referer: 'http://localhost' } },
     );
     expect(response).toMatchObject({
       status: 404,
@@ -412,6 +389,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       token_type: 'bearer',
     });
 
+    authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
       {
@@ -419,7 +397,7 @@ describe('verifyAppOAuth2SecretCode', () => {
         redirectUri: 'http://app.appsemble.localhost',
         scope: 'resources:manage',
       },
-      { headers: { authorization, referer: 'http://localhost' } },
+      { headers: { referer: 'http://localhost' } },
     );
     expect(response).toMatchObject({
       status: 200,
@@ -433,7 +411,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       expires: expect.any(Date),
       redirectUri: 'http://app.appsemble.localhost',
       scope: 'resources:manage',
-      UserId: user.id,
+      UserId: getTestUser().id,
     });
   });
 });

@@ -3,7 +3,7 @@ import { Op } from 'sequelize';
 import { Argv } from 'yargs';
 
 import { initDB, Resource } from '../models';
-import { Argv as Args } from '../types';
+import { argv } from '../utils/argv';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';
 
@@ -13,7 +13,8 @@ export const description = 'Deletes all expired resources from the database.';
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs);
 }
-export async function handler(argv: Args): Promise<void> {
+
+export async function handler(): Promise<void> {
   let db;
 
   try {

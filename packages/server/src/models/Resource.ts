@@ -6,7 +6,6 @@ import {
   CreatedAt,
   DataType,
   Default,
-  DeletedAt,
   ForeignKey,
   HasMany,
   Model,
@@ -15,10 +14,10 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, ResourceSubscription, User } from '.';
+import { App, Asset, ResourceSubscription, User } from '.';
 
-@Table({ tableName: 'Resource', paranoid: true })
-export class Resource extends Model<Resource> {
+@Table({ tableName: 'Resource' })
+export class Resource extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -44,9 +43,6 @@ export class Resource extends Model<Resource> {
   @UpdatedAt
   updated: Date;
 
-  @DeletedAt
-  deleted: Date;
-
   @ForeignKey(() => App)
   @Column
   AppId: number;
@@ -60,6 +56,9 @@ export class Resource extends Model<Resource> {
 
   @BelongsTo(() => User)
   User: User;
+
+  @HasMany(() => Asset)
+  Assets: Asset[];
 
   @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })
   ResourceSubscriptions: ResourceSubscription[];

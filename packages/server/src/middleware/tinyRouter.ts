@@ -5,10 +5,10 @@ import { KoaMiddleware } from '../types';
 type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
 
 type Route = {
-  route: string | RegExp;
-  any?: KoaMiddleware;
-} & {
   [method in HttpMethod]?: KoaMiddleware;
+} & {
+  route: RegExp | string;
+  any?: KoaMiddleware;
 };
 
 /**

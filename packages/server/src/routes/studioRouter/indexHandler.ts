@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto';
 import { URL } from 'url';
 
 import { KoaContext } from '../../types';
+import { argv } from '../../utils/argv';
 import { createSettings } from '../../utils/createSettings';
 import { makeCSP } from '../../utils/makeCSP';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
@@ -14,9 +15,17 @@ import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
  */
 export async function indexHandler(ctx: KoaContext): Promise<void> {
   const {
-    argv: { disableRegistration, githubClientId, gitlabClientId, googleClientId, host, sentryDsn },
     state: { render },
   } = ctx;
+  const {
+    disableRegistration,
+    githubClientId,
+    gitlabClientId,
+    googleClientId,
+    host,
+    sentryDsn,
+    sentryEnvironment,
+  } = argv;
   const logins = [];
   if (githubClientId) {
     logins.push({
@@ -51,11 +60,15 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     enableRegistration: !disableRegistration,
     logins,
     sentryDsn,
+    sentryEnvironment,
   });
   const csp = makeCSP({
     'report-uri': [sentry?.reportUri],
     // This is needed for Webpack.
-    'connect-src': [process.env.NODE_ENV !== 'production' && '*'],
+    'connect-src':
+      process.env.NODE_ENV === 'production'
+        ? [sentryDsn && 'https://sentry.io', sentryDsn && new URL(sentryDsn).origin, "'self'"]
+        : ['*'],
     'default-src': ["'self'", sentry?.origin],
     'img-src': ['blob:', 'data:', '*'],
     'script-src': [

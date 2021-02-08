@@ -4,22 +4,22 @@ import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { decode } from 'jsonwebtoken';
-import Koa from 'koa';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
+import { setArgv } from '../../utils/argv';
+import { createJWTResponse } from '../../utils/createJWTResponse';
 import { createServer } from '../../utils/createServer';
+import { createTestUser } from '../../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
-import { testToken } from '../../utils/test/testToken';
 
 let clock: InstalledClock;
-let server: Koa;
 let user: User;
-let refreshToken: string;
 
 beforeAll(createTestSchema('tokenhandler'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 
@@ -27,7 +27,7 @@ beforeEach(async () => {
   clock = FakeTimers.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
   await truncate();
-  ({ refreshToken, user } = await testToken('resources:manage'));
+  user = await createTestUser();
 });
 
 afterEach(truncate);
@@ -412,7 +412,7 @@ describe('refresh_token', () => {
       '/oauth2/token',
       new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token: refreshToken,
+        refresh_token: createJWTResponse(user.id).refresh_token,
         scope: 'resources:manage',
       }),
     );

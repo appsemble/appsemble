@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
 import { DivIcon, Icon } from 'leaflet';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import { GeoCoordinatesField, RendererProps } from '../../../block';
@@ -21,7 +21,7 @@ export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordin
   const value = utils.remap(field.value, data);
   const lat = field.latitude ? utils.remap(field.latitude, value ?? data) : value.lat;
   const lng = field.longitude ? utils.remap(field.longitude, value ?? data) : value.lng;
-  const [marker, setMarker] = useState<Icon | DivIcon>(null);
+  const [marker, setMarker] = useState<DivIcon | Icon>(null);
 
   useEffect(() => {
     createIcon(block).then(setMarker);

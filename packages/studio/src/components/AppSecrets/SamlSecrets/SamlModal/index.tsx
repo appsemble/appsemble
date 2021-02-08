@@ -9,7 +9,7 @@ import {
 } from '@appsemble/react-components';
 import { AppSamlSecret } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../../../AppContext';
@@ -99,6 +99,23 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         placeholder="https://example.com/saml/metadata.xml"
         type="url"
         validityMessages={{ typeMismatch: <FormattedMessage {...messages.badUrl} /> }}
+      />
+      <SimpleFormField
+        datalist={['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress']}
+        help={<FormattedMessage {...messages.emailAttributeHelp} />}
+        icon="envelope"
+        label={<FormattedMessage {...messages.emailAttributeLabel} />}
+        name="emailAttribute"
+      />
+      <SimpleFormField
+        datalist={[
+          'http://schemas.microsoft.com/identity/claims/displayname',
+          'http://schemas.microsoft.com/identity/claims/name',
+        ]}
+        help={<FormattedMessage {...messages.nameAttributeHelp} />}
+        icon="user"
+        label={<FormattedMessage {...messages.nameAttributeLabel} />}
+        name="nameAttribute"
       />
       <SimpleFormField
         className={styles.certificate}

@@ -5,7 +5,7 @@ interface SentrySettings {
   origin: string;
 }
 
-export function sentryDsnToReportUri(dsn: string): undefined | SentrySettings {
+export function sentryDsnToReportUri(dsn: string): SentrySettings | undefined {
   if (!dsn) {
     return;
   }

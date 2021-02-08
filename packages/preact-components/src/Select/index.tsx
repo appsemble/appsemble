@@ -1,7 +1,9 @@
 import classNames from 'classnames';
-import { ComponentProps, h } from 'preact';
+import { ComponentProps, JSX, toChildArray, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
+
+import { Option, OptionProps } from '..';
 
 export interface SelectProps
   extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {
@@ -18,19 +20,32 @@ export interface SelectProps
   /**
    * This is fired when the input value has changed.
    */
-  onChange?: (event: h.JSX.TargetedEvent<HTMLSelectElement>, value: string) => void;
+  onChange?: (event: JSX.TargetedEvent<HTMLSelectElement>, value: any) => void;
+
+  /**
+   * The current value.
+   */
+  value: any;
 }
 
 /**
  * A Bulma styled form select element.
  */
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, fullWidth, loading, name, onChange, id = name, ...props }, ref) => {
+  (
+    { children, className, fullWidth, loading, name, onChange, value, id = name, ...props },
+    ref,
+  ) => {
+    const childArray = toChildArray(children).filter(
+      (child): child is VNode<OptionProps> =>
+        typeof child !== 'string' && typeof child !== 'number' && child.type === Option,
+    );
+
     const handleChange = useCallback(
-      (event: h.JSX.TargetedEvent<HTMLSelectElement>) => {
-        onChange(event, event.currentTarget.value);
+      (event: JSX.TargetedEvent<HTMLSelectElement>) => {
+        onChange(event, childArray[Number(event.currentTarget.value)].props.value);
       },
-      [onChange],
+      [childArray, onChange],
     );
 
     return (
@@ -47,7 +62,16 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           onChange={handleChange}
           ref={ref}
           {...props}
-        />
+        >
+          {childArray.map((child, index) => (
+            <Option
+              key={child.key}
+              {...child.props}
+              selected={child.props.value === value}
+              value={index}
+            />
+          ))}
+        </select>
       </div>
     );
   },

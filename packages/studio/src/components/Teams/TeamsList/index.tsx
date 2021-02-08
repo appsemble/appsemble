@@ -11,7 +11,7 @@ import {
 import { Team } from '@appsemble/types';
 import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
@@ -43,7 +43,7 @@ const newTeam = {
  * The rendered list items are links to the team settings page.
  */
 export function TeamsList(): ReactElement {
-  const { organizations, userInfo } = useUser();
+  const { organizations } = useUser();
   const { url } = useRouteMatch();
   const { app } = useApp();
   const modal = useToggle();
@@ -63,7 +63,7 @@ export function TeamsList(): ReactElement {
   );
 
   const organization = organizations.find((o) => o.id === app.OrganizationId);
-  const mayCreateTeam = organization && checkRole(organization.role, Permission.ManageMembers);
+  const mayCreateTeam = organization && checkRole(organization.role, Permission.ManageTeams);
 
   return (
     <>
@@ -75,7 +75,6 @@ export function TeamsList(): ReactElement {
             </Button>
           )
         }
-        level={4}
       >
         <FormattedMessage {...messages.teams} />
       </HeaderControl>
@@ -118,7 +117,6 @@ export function TeamsList(): ReactElement {
           title={<FormattedMessage {...messages.creatingNewTeam} />}
         >
           <SimpleFormField
-            disabled={!userInfo.email_verified}
             icon="briefcase"
             label={<FormattedMessage {...messages.teamName} />}
             name="name"

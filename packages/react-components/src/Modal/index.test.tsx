@@ -1,5 +1,4 @@
-import { shallow } from 'enzyme';
-import React from 'react';
+import { fireEvent, render } from '@testing-library/react';
 
 import { Modal } from '.';
 
@@ -16,55 +15,55 @@ jest.mock('react-intl', () => {
 });
 
 it('should not render a bulma modal when it is inactive', () => {
-  const wrapper = shallow(<Modal isActive={false}>test</Modal>);
-  expect(wrapper).toMatchSnapshot();
+  const { container } = render(<Modal isActive={false}>test</Modal>);
+  expect(container).toMatchSnapshot();
 });
 
 it('should render a bulma modal when it is active', () => {
-  const wrapper = shallow(<Modal isActive>test</Modal>);
-  expect(wrapper).toMatchSnapshot();
+  const { container } = render(<Modal isActive>test</Modal>);
+  expect(container).toMatchSnapshot();
 });
 
 it('should close the modal when the close button is clicked', () => {
   const onClose = jest.fn();
-  const wrapper = shallow(
-    <Modal isActive onClose={onClose}>
+  const { getByLabelText } = render(
+    <Modal closeButtonLabel="Test close" isActive onClose={() => onClose()}>
       test
     </Modal>,
   );
-  wrapper.find('.delete').simulate('click');
+  getByLabelText('Test close').click();
   expect(onClose).toHaveBeenCalledWith();
 });
 
 it('should close the modal when the background is clicked', () => {
   const onClose = jest.fn();
-  const wrapper = shallow(
-    <Modal isActive onClose={onClose}>
+  const { getByRole } = render(
+    <Modal isActive onClose={() => onClose()}>
       test
     </Modal>,
   );
-  wrapper.find('.modal-background').simulate('click');
+  getByRole('presentation').click();
   expect(onClose).toHaveBeenCalledWith();
 });
 
 it('should close the modal escape is pressed on the background', () => {
   const onClose = jest.fn();
-  const wrapper = shallow(
-    <Modal isActive onClose={onClose}>
+  const { getByRole } = render(
+    <Modal isActive onClose={() => onClose()}>
       test
     </Modal>,
   );
-  wrapper.find('.modal-background').simulate('keydown', { key: 'Escape' });
-  expect(onClose).toHaveBeenCalledWith(expect.any(Object));
+  fireEvent.keyDown(getByRole('presentation'), { key: 'Escape' });
+  expect(onClose).toHaveBeenCalledWith();
 });
 
 it('should not close the modal another key is pressed on the background', () => {
   const onClose = jest.fn();
-  const wrapper = shallow(
-    <Modal isActive onClose={onClose}>
+  const { getByRole } = render(
+    <Modal isActive onClose={() => onClose()}>
       test
     </Modal>,
   );
-  wrapper.find('.modal-background').simulate('keydown', { key: 'Space' });
+  fireEvent.keyDown(getByRole('presentation'));
   expect(onClose).not.toHaveBeenCalled();
 });

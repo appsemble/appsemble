@@ -4,7 +4,7 @@ import { Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript
  * Define database metadata.
  */
 @Table({ tableName: 'Meta', createdAt: false, updatedAt: false })
-export class Meta extends Model<Meta> {
+export class Meta extends Model {
   /**
    * The current version of the database.
    *

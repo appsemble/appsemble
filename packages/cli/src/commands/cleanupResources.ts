@@ -41,6 +41,7 @@ export function builder(yargs: Argv): Argv {
 }
 
 export async function handler(argv: BaseArguments): Promise<void> {
-  const cleanupResources = await serverImport('cleanupResources');
-  return cleanupResources(argv);
+  const { cleanupResources, setArgv } = await serverImport('setArgv', 'cleanupResources');
+  setArgv(argv);
+  return cleanupResources();
 }

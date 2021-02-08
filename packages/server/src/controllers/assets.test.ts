@@ -1,29 +1,30 @@
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, Asset, Member, Organization, User } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let organizationId: string;
+let organization: Organization;
 let user: User;
-let authorization: string;
 let app: App;
 
 beforeAll(createTestSchema('assets'));
 
 beforeAll(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
-  ({ id: organizationId } = await Organization.create({
+  user = await createTestUser();
+  organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
-  }));
-  await Member.create({ OrganizationId: organizationId, UserId: user.id, role: 'Owner' });
+  });
+  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 
   app = await App.create({
     definition: {
@@ -42,7 +43,7 @@ beforeEach(async () => {
     path: 'test-app',
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
-    OrganizationId: organizationId,
+    OrganizationId: organization.id,
   });
 });
 
@@ -116,7 +117,7 @@ describe('getAssets', () => {
       path: 'test-app-B',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
     await Asset.create({
       AppId: appB.id,
@@ -175,7 +176,7 @@ describe('getAssetById', () => {
       path: 'test-app-B',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
     const data = Buffer.from('buffer');
     const asset = await Asset.create({
@@ -211,7 +212,7 @@ describe('createAsset', () => {
     });
     expect(createResponse).toMatchObject({
       status: 201,
-      data: { id: expect.any(Number) },
+      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
     });
 
     const getResponse = await request.get(`/api/apps/${app.id}/assets/${createResponse.data.id}`, {
@@ -232,7 +233,7 @@ describe('createAsset', () => {
     });
     expect(response).toMatchObject({
       status: 201,
-      data: { id: expect.any(Number) },
+      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
     });
   });
 
@@ -245,15 +246,16 @@ describe('createAsset', () => {
   });
 
   it('should associate the user if the user is authenticated', async () => {
+    authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/assets`, Buffer.alloc(0), {
-      headers: { authorization, 'content-type': 'application/octet-stream' },
+      headers: { 'content-type': 'application/octet-stream' },
     });
     const asset = await Asset.findByPk(response.data.id);
 
     expect(asset.UserId).toStrictEqual(user.id);
     expect(response).toMatchObject({
       status: 201,
-      data: { id: expect.any(Number) },
+      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
     });
   });
 });
@@ -267,9 +269,8 @@ describe('deleteAsset', () => {
       data: Buffer.from('buffer'),
     });
 
-    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
 
     expect(response.status).toStrictEqual(204);
   });
@@ -284,9 +285,8 @@ describe('deleteAsset', () => {
       data: Buffer.from('buffer'),
     });
 
-    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
 
     expect(response).toMatchObject({
       status: 403,
@@ -312,7 +312,7 @@ describe('deleteAsset', () => {
       path: 'test-app-B',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: organization.id,
     });
 
     const asset = await Asset.create({
@@ -322,9 +322,8 @@ describe('deleteAsset', () => {
       data: Buffer.from('buffer'),
     });
 
-    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`, {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
 
     expect(response).toMatchObject({
       status: 404,

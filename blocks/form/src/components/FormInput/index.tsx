@@ -1,9 +1,7 @@
-import { useBlock } from '@appsemble/preact';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
 
-import { Field, FieldError, InputProps } from '../../../block';
-import { validate } from '../../utils/validators';
+import { Field, InputProps } from '../../../block';
 import { BooleanInput } from '../BooleanInput';
 import { DateInput } from '../DateInput';
 import { DateTimeInput } from '../DateTimeInput';
@@ -21,15 +19,14 @@ type FormInputProps = Omit<InputProps<any, Field>, 'dirty'>;
  * Render any type of form input.
  */
 export function FormInput({ field, onChange, ...props }: FormInputProps): VNode {
-  const { utils } = useBlock();
   const [dirty, setDirty] = useState(false);
 
   const handleChange = useCallback(
-    (event: never, value: any, validity?: FieldError) => {
+    (event: never, value: any) => {
       setDirty(true);
-      onChange(field.name, value, validity || validate(field, value, utils));
+      onChange(field.name, value);
     },
-    [field, onChange, utils],
+    [field, onChange],
   );
 
   switch (field.type) {

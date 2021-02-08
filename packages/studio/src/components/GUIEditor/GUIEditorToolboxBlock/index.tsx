@@ -1,7 +1,7 @@
 import { InputField, ValuePickerProvider } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { NamedEvent } from '@appsemble/web-utils';
-import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { GUIEditorBlockItem } from '../GUIEditorBlockItem';

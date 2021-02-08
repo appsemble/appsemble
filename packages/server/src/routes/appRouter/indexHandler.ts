@@ -13,6 +13,7 @@ import {
 } from '../../models';
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
+import { argv } from '../../utils/argv';
 import { createSettings } from '../../utils/createSettings';
 import { makeCSP } from '../../utils/makeCSP';
 import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
@@ -26,9 +27,9 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
 export async function indexHandler(ctx: KoaContext): Promise<void> {
   ctx.type = 'text/html';
   const {
-    argv: { host, sentryDsn },
     state: { render },
   } = ctx;
+  const { host, sentryDsn, sentryEnvironment } = argv;
 
   const app = await getApp(ctx, {
     attributes: ['definition', 'id', 'sharedStyle', 'coreStyle', 'vapidPublicKey'],
@@ -107,10 +108,11 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
     sentryDsn,
+    sentryEnvironment,
   });
   const csp = {
     'report-uri': [sentry?.reportUri],
-    'connect-src': ['*', 'blob:', 'data:', sentry?.origin],
+    'connect-src': ['*', 'blob:', 'data:', sentry?.origin, sentryDsn && 'https://sentry.io'],
     'default-src': ["'self'"],
     'script-src': [
       "'self'",

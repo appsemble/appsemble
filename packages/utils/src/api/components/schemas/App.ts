@@ -49,6 +49,14 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching for templates.',
     },
+    longDescription: {
+      type: 'string',
+      description: `
+A long description for the app.
+
+The long desciption will be rendered on the app details page. Markdown content is supported.
+`,
+    },
     definition: {
       type: 'object',
       required: ['name', 'defaultPage', 'pages'],
@@ -102,6 +110,16 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
                 \`navigation\`.
               `,
             },
+            feedback: {
+              type: 'string',
+              enum: ['navbar', 'navigation', 'hidden'],
+              description: `
+                The location of the feedback button.
+
+                If set to \`navigation\`, it will only be visible if \`login\` is also visible in
+                \`navigation\`.
+              `,
+            },
             navigation: {
               type: 'string',
               enum: ['bottom', 'left-menu', 'hidden'],
@@ -127,7 +145,7 @@ export const App: OpenAPIV3.NonArraySchemaObject = {
         },
         defaultLanguage: {
           type: 'string',
-          default: 'en-US',
+          default: 'en-us',
           minLength: 2,
           description: 'The default language for the app.',
         },

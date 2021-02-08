@@ -4,7 +4,7 @@ import { Title, useMessages } from '@appsemble/react-components';
 import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
-import React, { ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ import { prefixBlockURL } from '../../utils/prefixBlockURL';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
+import { useUser } from '../UserProvider';
 import styles from './index.css';
 
 const FA_URL = [...document.styleSheets]
@@ -76,6 +77,7 @@ export function Block({
   const route = useRouteMatch<{ lang: string }>();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
+  const { teams, updateTeam, userInfo } = useUser();
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<(() => void)[]>([]);
@@ -105,7 +107,7 @@ export function Block({
 
     const actions = makeActions({
       actions: manifest.actions,
-      definition,
+      app: definition,
       context: block,
       history,
       showDialog,
@@ -118,6 +120,9 @@ export function Block({
       ee,
       remap,
       showMessage: push,
+      teams,
+      updateTeam,
+      userInfo,
     });
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
     const [bulmaBase] = BULMA_URL.href.split('?');
@@ -194,6 +199,9 @@ export function Block({
     remap,
     route,
     showDialog,
+    teams,
+    updateTeam,
+    userInfo,
   ]);
 
   const { layout = manifest.layout } = block;

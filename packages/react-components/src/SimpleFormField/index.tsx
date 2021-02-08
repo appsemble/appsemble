@@ -1,4 +1,4 @@
-import React, {
+import {
   ChangeEvent,
   ComponentPropsWithoutRef,
   ComponentType,
@@ -15,7 +15,7 @@ type ValidityMessages = {
   [key in keyof Omit<ValidityState, 'valid'>]?: ReactNode;
 };
 
-interface MinimalHTMLElement {
+export interface MinimalHTMLElement {
   value: any;
   validity?: ValidityState;
 }
@@ -57,7 +57,7 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
       if (onChange) {
         onChange(event, val);
       }
-      const { validity } = event.currentTarget;
+      const validity = event?.currentTarget?.validity;
       let message: ReactNode;
       if (validity && !validity.valid) {
         const reason = Object.entries(validityMessages).find(

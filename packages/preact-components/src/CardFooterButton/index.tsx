@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentProps, h, VNode } from 'preact';
+import { ComponentProps, VNode } from 'preact';
 
 import { Button } from '..';
 import styles from './index.css';

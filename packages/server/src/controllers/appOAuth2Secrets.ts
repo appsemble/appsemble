@@ -14,6 +14,7 @@ import {
   User,
 } from '../models';
 import { KoaContext } from '../types';
+import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
 
@@ -114,7 +115,6 @@ export async function updateAppOAuth2Secret(ctx: KoaContext<Params>): Promise<vo
 
 export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
     headers,
     params: { appId, appOAuth2SecretId },
     request: {
@@ -129,7 +129,7 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
   } catch {
     throw badRequest('The referer header is invalid');
   }
-  if (referer.origin !== new URL(host).origin) {
+  if (referer.origin !== new URL(argv.host).origin) {
     throw badRequest('The referer header is invalid');
   }
 
@@ -161,7 +161,7 @@ export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promis
   } = await getAccessToken(
     secret.tokenUrl,
     code,
-    String(new URL('/callback', host)),
+    String(new URL('/callback', argv.host)),
     secret.clientId,
     secret.clientSecret,
   );

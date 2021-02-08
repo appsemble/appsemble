@@ -1,7 +1,11 @@
+// Adding this to package.json causes yarn to fail in production mode.
+// eslint-disable-next-line import/no-extraneous-dependencies
+const studioPkg = require('@appsemble/server/package.json');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const { EnvironmentPlugin } = require('webpack');
 
 /**
  * This webpack configuration is shared by all webpack builds.
@@ -68,7 +72,12 @@ module.exports = (env, { mode }) => {
         },
       ],
     },
-    plugins: [new CaseSensitivePathsPlugin()],
+    plugins: [
+      new CaseSensitivePathsPlugin(),
+      new EnvironmentPlugin({
+        APPSEMBLE_VERSION: studioPkg.version,
+      }),
+    ],
     optimization: {
       minimizer: [
         new TerserPlugin({

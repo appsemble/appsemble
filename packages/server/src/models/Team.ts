@@ -5,6 +5,7 @@ import {
   BelongsToMany,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -15,7 +16,7 @@ import {
 import { App, TeamMember, User } from '.';
 
 @Table({ tableName: 'Team' })
-export class Team extends Model<Team> {
+export class Team extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column
@@ -24,6 +25,9 @@ export class Team extends Model<Team> {
   @AllowNull(false)
   @Column
   name: string;
+
+  @Column(DataType.JSON)
+  annotations: Record<string, string>;
 
   @AllowNull(false)
   @ForeignKey(() => App)

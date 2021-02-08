@@ -20,7 +20,7 @@ import {
 import { AppMessages } from '@appsemble/types';
 import { getLanguageDisplayName, iterApp, langmap } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { findMessageIds } from '../../utils/findMessageIds';
@@ -142,7 +142,7 @@ export function MessageEditor(): ReactElement {
 
   return (
     <>
-      <Title level={2}>
+      <Title>
         <FormattedMessage {...messages.title} />
       </Title>
       <SelectField
@@ -171,7 +171,7 @@ export function MessageEditor(): ReactElement {
 
       {languages.length > 0 && (
         <>
-          <Title className="my-4" level={3}>
+          <Title className="my-4" size={4}>
             <FormattedMessage {...messages.messages} />
           </Title>
           <SimpleForm

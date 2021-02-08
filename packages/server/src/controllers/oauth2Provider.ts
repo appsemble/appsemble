@@ -59,7 +59,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
 
   const picture = user.primaryEmail
     ? `https://www.gravatar.com/avatar/${createHash('md5')
-        .update(user.primaryEmail.toLowerCase())
+        .update(user.primaryEmail)
         .digest('hex')}?s=128&d=mp`
     : null;
 
@@ -75,7 +75,6 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
 
 export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv,
     request: {
       body: { appId, redirectUri, scope },
     },
@@ -111,14 +110,13 @@ export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void
   }
 
   ctx.body = {
-    ...(await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user)),
+    ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user)),
     isAllowed: true,
   };
 }
 
 export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv,
     request: {
       body: { appId, redirectUri, scope },
     },
@@ -142,5 +140,5 @@ export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void>
   }
 
   await OAuth2Consent.upsert({ AppId: appId, UserId: user.id, scope });
-  ctx.body = await createOAuth2AuthorizationCode(argv, app, redirectUri, scope, user);
+  ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user);
 }

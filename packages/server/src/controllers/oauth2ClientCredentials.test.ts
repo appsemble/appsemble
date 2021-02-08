@@ -2,27 +2,26 @@ import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { OAuth2ClientCredentials, User } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
 let clock: FakeTimers.InstalledClock;
-
 let user: User;
 
 beforeAll(createTestSchema('oauth2clientcredentials'));
 
 beforeAll(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 
 beforeEach(async () => {
   clock = FakeTimers.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  ({ authorization, user } = await testToken());
-  request.defaults.headers.authorization = authorization;
+  user = await createTestUser();
 });
 
 afterEach(truncate);
@@ -35,6 +34,7 @@ afterAll(closeTestSchema);
 
 describe('registerOAuth2ClientCredentials', () => {
   it('should register OAuth2 client credentials', async () => {
+    authorizeStudio();
     const response = await request.post('/api/oauth2/client-credentials', {
       description: 'Test client',
       expires: '2345-01-02T03:04:05Z',
@@ -54,6 +54,7 @@ describe('registerOAuth2ClientCredentials', () => {
   });
 
   it('should not allow to create already expired client credentials', async () => {
+    authorizeStudio();
     const response = await request.post('/api/oauth2/client-credentials', {
       description: 'Test client',
       expires: '1999-01-02T03:04:05Z',
@@ -72,7 +73,7 @@ describe('registerOAuth2ClientCredentials', () => {
 
 describe('listOAuth2ClientCredentials', () => {
   it('should list register OAuth2 client credentials for the authenticated user', async () => {
-    const { user: otherUser } = await testToken(undefined, 'someone.else@example.com');
+    const otherUser = await User.create();
     await OAuth2ClientCredentials.create({
       description: 'Test client',
       expires: new Date('2000-02-02T00:00:00Z'),
@@ -90,6 +91,7 @@ describe('listOAuth2ClientCredentials', () => {
       UserId: otherUser.id,
     });
 
+    authorizeStudio();
     const response = await request.get('/api/oauth2/client-credentials');
     expect(response).toMatchObject({
       status: 200,
@@ -123,6 +125,7 @@ describe('listOAuth2ClientCredentials', () => {
       UserId: user.id,
     });
 
+    authorizeStudio();
     const response = await request.get('/api/oauth2/client-credentials');
     expect(response).toMatchObject({
       status: 200,

@@ -29,7 +29,7 @@ import {
 } from '.';
 
 @Table({ tableName: 'User', paranoid: true })
-export class User extends Model<User> {
+export class User extends Model {
   @PrimaryKey
   @IsUUID(4)
   @Default(DataType.UUIDV4)

@@ -11,7 +11,7 @@ export async function request({
   data,
   user,
 }: ServerActionParameters<RequestLikeActionDefinition>): Promise<any> {
-  let method: 'PUT' | 'GET' | 'POST' | 'DELETE';
+  let method: 'DELETE' | 'GET' | 'POST' | 'PUT';
 
   if (!action.method) {
     switch (action.type) {
@@ -36,7 +36,7 @@ export async function request({
       sub: user.id,
       name: user.name,
       email: user.primaryEmail,
-      email_verified: user.EmailAuthorizations[0].verified,
+      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
     },
   );
   const axiosConfig = formatRequestAction({ ...action, method }, data, (remapper, d) =>

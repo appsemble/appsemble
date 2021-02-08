@@ -8,10 +8,8 @@ import {
   ResourceUpdateAction,
 } from '@appsemble/sdk';
 import {
-  BlobUploadType,
   ResourceCountActionDefinition,
   ResourceCreateActionDefinition,
-  ResourceDefinition,
   ResourceDeleteActionDefinition,
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
@@ -26,15 +24,6 @@ import axios from 'axios';
 import { MakeActionParameters, ServiceWorkerRegistrationContextType } from '../../types';
 import { apiUrl, appId } from '../settings';
 import { requestLikeAction } from './request';
-
-function getBlobs(resource: ResourceDefinition): BlobUploadType {
-  const { blobs } = resource;
-  const type = blobs?.type || 'upload';
-  const method = blobs?.method || 'post';
-  const url = blobs?.url ?? `${apiUrl}/api/apps/${appId}/assets`;
-
-  return { type, method, url, serialize: blobs?.serialize ? blobs.serialize : null };
-}
 
 export function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceGetAction {
   const { app, definition } = args;
@@ -51,11 +40,15 @@ export function get(args: MakeActionParameters<ResourceGetActionDefinition>): Re
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
-        blobs: getBlobs(resource),
+        query: definition?.query ?? resource?.get?.query,
         method,
         proxy: false,
-        url: url.includes(`{${id}}`) ? url : `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
+        url: {
+          'string.format': {
+            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+            values: { id: { prop: id as string } },
+          },
+        },
         schema: resource.schema,
       },
     }),
@@ -79,8 +72,7 @@ export function query(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
-        blobs: getBlobs(resource),
+        query: definition?.query ?? resource?.query?.query,
         method,
         proxy: false,
         url,
@@ -96,9 +88,9 @@ export function count(
 ): ResourceCountAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = resource?.query?.method || 'GET';
+  const method = resource?.count?.method || 'GET';
   const url =
-    resource?.query?.url ??
+    resource?.count?.url ??
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/$count`;
 
@@ -107,8 +99,7 @@ export function count(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
-        blobs: getBlobs(resource),
+        query: definition?.query ?? resource?.count?.query,
         method,
         proxy: false,
         url,
@@ -135,8 +126,7 @@ export function create(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
-        blobs: getBlobs(resource),
+        query: definition?.query ?? resource?.create?.query,
         method,
         proxy: false,
         url,
@@ -164,11 +154,15 @@ export function update(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
-        blobs: getBlobs(resource),
+        query: definition?.query ?? resource?.update?.query,
         method,
         proxy: false,
-        url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
+        url: {
+          'string.format': {
+            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+            values: { id: { prop: id as string } },
+          },
+        },
         schema: resource.schema,
       },
     }),
@@ -181,9 +175,9 @@ export function remove(
 ): ResourceDeleteAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = resource?.update?.method || 'DELETE';
+  const method = resource?.delete?.method || 'DELETE';
   const url =
-    resource?.update?.url ||
+    resource?.delete?.url ||
     resource.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
@@ -193,12 +187,16 @@ export function remove(
       ...args,
       definition: {
         ...definition,
-        query: { ...resource?.query?.query, ...definition.query },
+        query: definition?.query ?? resource?.delete?.query,
         type: 'resource.delete',
-        blobs: getBlobs(resource),
         method,
         proxy: false,
-        url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
+        url: {
+          'string.format': {
+            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+            values: { id: { prop: id as string } },
+          },
+        },
         schema: resource.schema,
       },
     }),
@@ -232,9 +230,7 @@ export function subscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<
-  'resource.subscription.subscribe'
-> {
+}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscription.subscribe'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -259,9 +255,7 @@ export function unsubscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<
-  'resource.subscription.unsubscribe'
-> {
+}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<'resource.subscription.unsubscribe'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -286,9 +280,7 @@ export function toggleSubscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<
-  'resource.subscription.toggle'
-> {
+}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<'resource.subscription.toggle'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -312,9 +304,7 @@ export function subscriptionStatus({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<
-  'resource.subscription.status'
-> {
+}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<'resource.subscription.status'> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 

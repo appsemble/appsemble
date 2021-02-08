@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 
 interface SubtitleProps {
   /**
@@ -16,17 +16,29 @@ interface SubtitleProps {
    * The header level.
    *
    * Note that this should be two higher than any `title` component.
+   *
+   * By default this is determined from the specified size.
    */
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  level?: 3 | 4 | 5 | 6;
+
+  /**
+   * The size of the header.
+   *
+   * @default 5
+   */
+  size?: 4 | 5 | 6;
 }
 
 /**
  * A bulma styled subtitle element.
  */
-export function Subtitle({ children, className, level = 5 }: SubtitleProps): ReactElement {
+export function Subtitle({
+  children,
+  className,
+  size = 5,
+  level = Math.max(size - 2, 6) as SubtitleProps['size'],
+}: SubtitleProps): ReactElement {
   const Component = `h${level}` as 'h1';
 
-  return (
-    <Component className={classNames(`subtitle is-${level}`, className)}>{children}</Component>
-  );
+  return <Component className={classNames(`subtitle is-${size}`, className)}>{children}</Component>;
 }

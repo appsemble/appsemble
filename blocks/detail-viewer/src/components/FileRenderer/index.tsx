@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import { FileField, RendererProps } from '../../../block';
 import { ImageField } from '../ImageField';

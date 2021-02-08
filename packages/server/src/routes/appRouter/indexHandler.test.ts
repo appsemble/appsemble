@@ -1,6 +1,7 @@
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, BlockAsset, BlockVersion, Organization } from '../../models';
+import { setArgv } from '../../utils/argv';
 import { createServer } from '../../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
@@ -173,8 +174,8 @@ beforeAll(async () => {
     vapidPublicKey: '',
     vapidPrivateKey: '',
   });
+  setArgv({ host: 'http://host.example', secret: 'test' });
   const server = await createServer({
-    argv: { host: 'http://host.example', secret: 'test' },
     middleware(ctx, next) {
       Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
       Object.defineProperty(ctx, 'hostname', { value: 'app.test.host.example' });

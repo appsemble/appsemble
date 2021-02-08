@@ -1,11 +1,11 @@
 import classNames from 'classnames';
-import { ComponentProps, h } from 'preact';
+import { ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { FormComponent, SharedFormComponentProps, TextArea } from '..';
 
-type TextAreaFieldProps = SharedFormComponentProps &
-  Omit<ComponentProps<typeof TextArea>, keyof SharedFormComponentProps>;
+type TextAreaFieldProps = Omit<ComponentProps<typeof TextArea>, keyof SharedFormComponentProps> &
+  SharedFormComponentProps;
 
 /**
  * A Bulma styled textarea element.

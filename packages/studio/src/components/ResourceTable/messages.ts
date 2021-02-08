@@ -2,7 +2,9 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   title: '{name} · Resource {resourceName}',
+  header: 'Resource {resourceName}',
   resources: 'Resources',
+  actions: 'Actions',
   cancelButton: 'Cancel',
   createButton: 'Create',
   newTitle: 'Creating new {resource}',

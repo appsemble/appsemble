@@ -20,7 +20,7 @@ interface ConfigureLoggerParams {
 }
 
 const levels = ['crit', 'error', 'warn', 'info', 'verbose', 'silly'] as const;
-const DEFAULT_LEVEL = levels.findIndex((level) => level === 'info');
+const DEFAULT_LEVEL = levels.indexOf('info');
 const padding = Math.max(...levels.map(({ length }) => length));
 
 function headerCase(header: string): string {

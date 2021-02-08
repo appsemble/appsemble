@@ -3,14 +3,13 @@ import https from 'https';
 
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
-import { captureException, init, withScope } from '@sentry/node';
-import Koa from 'koa';
+import { captureException, init } from '@sentry/node';
 import { Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
 import { migrations } from '../migrations';
 import { initDB } from '../models';
-import { Argv as Args } from '../types';
+import { argv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { configureDNS } from '../utils/dns';
 import { migrate } from '../utils/migrate';
@@ -30,6 +29,9 @@ export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
     .option('sentry-dsn', {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
+    })
+    .option('sentry-environment', {
+      desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
     })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
@@ -117,10 +119,8 @@ export function builder(yargs: Argv): Argv {
     });
 }
 
-export async function handler(
-  argv: Args,
-  { webpackConfigs }: AdditionalArguments = {},
-): Promise<void> {
+export async function handler({ webpackConfigs }: AdditionalArguments = {}): Promise<void> {
+  const { version } = readPackageJson();
   try {
     initDB({
       host: argv.databaseHost,
@@ -139,27 +139,27 @@ export async function handler(
     await migrate(argv.migrateTo, migrations);
   }
 
-  await configureDNS(argv);
+  await configureDNS();
 
   if (argv.sentryDsn) {
-    init({ dsn: argv.sentryDsn });
+    init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: version });
   }
 
-  const app = await createServer({ argv, webpackConfigs });
+  const app = await createServer({ webpackConfigs });
 
   app.on('error', (err, ctx) => {
-    if (err instanceof Koa.HttpError) {
-      // It is thrown by `ctx.throw()`.
+    if (err.expose) {
+      // It is thrown by `ctx.throw()` or `ctx.assert()`.
       return;
     }
     logger.error(err);
-    withScope((scope) => {
-      scope.setTag('ip', ctx.ip);
-      scope.setTag('level', 'error');
-      scope.setTag('method', ctx.method);
-      scope.setTag('url', String(ctx.URL));
-      scope.setTag('User-Agent', ctx.headers['user-agent']);
-      captureException(err);
+    captureException(err, {
+      tags: {
+        ip: ctx.ip,
+        method: ctx.method,
+        url: String(ctx.URL),
+        'User-Agent': ctx.headers['user-agent'],
+      },
     });
   });
 
@@ -176,6 +176,6 @@ export async function handler(
 
   httpServer.listen(argv.port || PORT, '0.0.0.0', () => {
     logger.info(asciiLogo);
-    logger.info(api(readPackageJson().version, argv).info.description);
+    logger.info(api(version, argv).info.description);
   });
 }

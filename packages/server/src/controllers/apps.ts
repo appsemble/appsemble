@@ -34,6 +34,7 @@ import {
 } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
+import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
 
@@ -106,6 +107,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
         definition,
         domain,
         icon,
+        longDescription,
         private: isPrivate = true,
         screenshots,
         sharedStyle,
@@ -125,6 +127,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       definition,
       OrganizationId,
       coreStyle: validateStyle(coreStyle?.contents),
+      longDescription,
       sharedStyle: validateStyle(sharedStyle?.contents),
       domain: domain || null,
       private: Boolean(isPrivate),
@@ -261,75 +264,6 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
   ctx.body = apps.map((app) => getAppFromRecord(app, ['yaml']));
 }
 
-export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
-  const {
-    params: { appId },
-    request: {
-      body: { coreStyle, definition, domain, path, screenshots, sharedStyle, yaml },
-    },
-  } = ctx;
-
-  let result: Partial<App>;
-
-  try {
-    result = {
-      definition,
-      coreStyle: validateStyle(coreStyle?.contents),
-      sharedStyle: validateStyle(sharedStyle?.contents),
-      domain,
-      path: path || normalize(definition.name),
-      yaml: yaml?.toString('utf8'),
-    };
-
-    if (yaml) {
-      let appFromYaml;
-      try {
-        // The YAML should be valid YAML.
-        appFromYaml = jsYaml.safeLoad(yaml.contents);
-      } catch {
-        throw badRequest('Provided YAML was invalid.');
-      }
-
-      // The YAML should be the same when converted to JSON.
-      if (!isEqual(appFromYaml, definition)) {
-        throw badRequest('Provided YAML was not equal to definition when converted.');
-      }
-    } else {
-      result.yaml = jsYaml.safeDump(definition);
-    }
-
-    await validateAppDefinition(definition, getBlockVersions);
-
-    const dbApp = await App.findByPk(appId);
-
-    if (!dbApp) {
-      throw notFound('App not found');
-    }
-
-    await checkRole(ctx, dbApp.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
-
-    await transactional(async (transaction) => {
-      await dbApp.update(result, { where: { id: appId }, transaction });
-      await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
-      if (screenshots?.length) {
-        logger.verbose(`Saving ${screenshots.length} screenshots`);
-        dbApp.AppScreenshots = await AppScreenshot.bulkCreate(
-          screenshots.map((screenshot: File) => ({
-            screenshot: screenshot.contents,
-            AppId: dbApp.id,
-          })),
-          // These queries provide huge logs.
-          { transaction, logging: false },
-        );
-      }
-    });
-
-    ctx.body = getAppFromRecord(dbApp);
-  } catch (error: unknown) {
-    handleAppValidationError(error as Error, result);
-  }
-}
-
 export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
@@ -339,6 +273,9 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         definition,
         domain,
         icon,
+        iconBackground,
+        longDescription,
+        maskableIcon,
         path,
         private: isPrivate,
         screenshots,
@@ -375,6 +312,10 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       result.domain = domain;
     }
 
+    if (longDescription !== undefined) {
+      result.longDescription = longDescription;
+    }
+
     if (coreStyle) {
       result.coreStyle = validateStyle(coreStyle.contents);
     }
@@ -385,6 +326,14 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
     if (icon) {
       result.icon = icon.contents;
+    }
+
+    if (maskableIcon) {
+      result.maskableIcon = maskableIcon.contents;
+    }
+
+    if (iconBackground) {
+      result.iconBackground = iconBackground;
     }
 
     if (yaml) {
@@ -474,22 +423,30 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
+    query: { maskable, raw = false, size = 128 },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['icon'],
+    attributes: ['icon', maskable && 'maskableIcon', maskable && 'iconBackground'].filter(Boolean),
     include: [{ model: Organization, attributes: ['icon'] }],
   });
+
+  if (!raw) {
+    return serveIcon(ctx, app, { maskable, size: Number.parseInt(size) });
+  }
 
   if (!app) {
     throw notFound('App not found');
   }
 
-  const icon = app.icon || app.Organization.icon || (await readAsset('appsemble.svg'));
-  const metadata = await sharp(icon).metadata();
+  const icon =
+    (maskable && app.maskableIcon) ||
+    app.icon ||
+    app.Organization.icon ||
+    (await readAsset('appsemble.png'));
 
+  const { format } = await sharp(icon).metadata();
   ctx.body = icon;
-  // Type svg resolves to text/xml instead of image/svg+xml.
-  ctx.type = metadata.format === 'svg' ? 'image/svg+xml' : metadata.format;
+  ctx.type = format;
 }
 
 export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
@@ -521,6 +478,60 @@ export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
   const { mime } = await fromBuffer(screenshot);
   ctx.body = screenshot;
   ctx.type = mime;
+}
+
+export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+    request: {
+      body: { screenshots },
+    },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'OrganizationId'],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+
+  await transactional(async (transaction) => {
+    logger.verbose(`Saving ${screenshots.length} screenshots`);
+    const result = await AppScreenshot.bulkCreate(
+      screenshots.map((screenshot: File) => ({
+        screenshot: screenshot.contents,
+        AppId: app.id,
+      })),
+      // These queries provide huge logs.
+      { transaction, logging: false },
+    );
+
+    ctx.body = result.map((screenshot) => screenshot.id);
+  });
+}
+
+export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, screenshotId },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+    include: [{ model: AppScreenshot, where: { id: screenshotId }, required: false }],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+
+  if (!app.AppScreenshots.length) {
+    throw notFound('Screenshot not found');
+  }
+
+  await app.AppScreenshots[0].destroy();
 }
 
 export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {

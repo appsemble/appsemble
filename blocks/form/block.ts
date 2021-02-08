@@ -126,22 +126,22 @@ interface RangeRequirement extends BaseRequirement {
 /**
  * All requirements applicable to string fields.
  */
-export type StringRequirement = RegexRequirement | LengthRequirement | RequiredRequirement;
+export type StringRequirement = LengthRequirement | RegexRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to number fields.
  */
-export type NumberRequirement = StepRequirement | MinMaxRequirement | RequiredRequirement;
+export type NumberRequirement = MinMaxRequirement | RequiredRequirement | StepRequirement;
 
 /**
  * All requirements applicable to file fields.
  */
-export type FileRequirement = AcceptRequirement | RequiredRequirement | LengthRequirement;
+export type FileRequirement = AcceptRequirement | LengthRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to date-time fields.
  */
-export type DateTimeRequirement = RequiredRequirement | RangeRequirement;
+export type DateTimeRequirement = RangeRequirement | RequiredRequirement;
 
 /**
  * All requirements applicable to object fields.
@@ -306,9 +306,9 @@ interface SyncEnumField extends AbstractEnumField {
 }
 
 /**
- * A dropdown list containing a list of predetermined values.
+ * A dropdown list containing a list of values based on the output of an action.
  */
-interface AsyncEnumField extends AbstractEnumField {
+interface ActionEnumField extends AbstractEnumField {
   /**
    * This action will be fired to fetch dynamic enum options.
    *
@@ -326,7 +326,28 @@ interface AsyncEnumField extends AbstractEnumField {
   loadError?: Remapper;
 }
 
-export type EnumField = SyncEnumField | AsyncEnumField;
+/**
+ * A dropdown list containing a list of values based on the output of an event.
+ */
+interface EventEnumField extends AbstractEnumField {
+  /**
+   * Wait until an event has been fired containing the list of options.
+   *
+   * The event should return an array of objects that contain the `label` and `value` property.
+   *
+   * @format event-listener
+   */
+  event: string;
+
+  /**
+   * This message is displayed if the options failed to load.
+   *
+   * @default 'Error loading options'
+   */
+  loadError?: Remapper;
+}
+
+export type EnumField = ActionEnumField | EventEnumField | SyncEnumField;
 
 /**
  * An input field used to upload files.
@@ -531,20 +552,20 @@ export interface ObjectField extends AbstractField {
 
 export type Field =
   | BooleanField
+  | DateField
+  | DateTimeField
   | EnumField
   | FileField
   | GeoCoordinatesField
   | HiddenField
   | NumberField
-  | StringField
+  | ObjectField
   | RadioField
-  | DateTimeField
-  | DateField
-  | ObjectField;
+  | StringField;
 
 export type Values = Record<string, unknown>;
 
-export type FieldError = boolean | string | FieldErrorMap | FieldError[];
+export type FieldError = FieldError[] | FieldErrorMap | boolean | string;
 
 // Not using an interface causes an invalid circular reference.
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
@@ -576,7 +597,7 @@ export interface InputProps<T, F extends Field> {
   /**
    * A callback for when the value changes.
    */
-  onChange: (name: string | Event, value: T, validity?: FieldError) => void;
+  onChange: (name: Event | string, value?: T) => void;
 
   /**
    * Whether ot not the input has been modified by the user.
@@ -615,6 +636,11 @@ declare module '@appsemble/sdk' {
      * `fields` parameter.
      */
     data: never;
+
+    /**
+     * Custom event listeners that can be used to receive data for specific types of form fields.
+     */
+    [key: string]: never;
   }
 
   interface EventEmitters {

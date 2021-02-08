@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { CheckboxField } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import { BooleanField, InputProps } from '../../../block';
 import { isRequired } from '../../utils/requirements';

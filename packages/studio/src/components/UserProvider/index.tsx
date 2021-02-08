@@ -1,8 +1,9 @@
 import { Loader } from '@appsemble/react-components';
 import { JwtPayload, Organization, TokenResponse, UserInfo } from '@appsemble/types';
+import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
-import React, {
+import {
   createContext,
   ReactElement,
   ReactNode,
@@ -62,6 +63,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
 
   const refreshUserInfo = useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/connect/userinfo');
+    setUser({ id: data.sub });
     setUserInfo(data);
   }, []);
 
@@ -79,6 +81,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   );
 
   const logout = useCallback(() => {
+    setUser(null);
     setUserInfo(null);
     setOrganizations([]);
     delete axios.defaults.headers.authorization;
@@ -108,7 +111,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     axios.defaults.headers.authorization = `Bearer ${tokenResponse.access_token}`;
 
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
-    const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
+    const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const timeoutId = setTimeout(async () => {
       try {
         const { data } = await axios.post<TokenResponse>('/api/refresh', {

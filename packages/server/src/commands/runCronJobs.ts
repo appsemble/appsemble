@@ -5,8 +5,8 @@ import { Op } from 'sequelize';
 import { Argv } from 'yargs';
 
 import { App, initDB } from '../models';
-import { Argv as Args } from '../types';
 import { actions, ServerActionParameters } from '../utils/actions';
+import { argv } from '../utils/argv';
 import { iterTable } from '../utils/database';
 import { Mailer } from '../utils/email/Mailer';
 import { handleDBError } from '../utils/sqlUtils';
@@ -20,7 +20,18 @@ async function handleAction(
   params: ServerActionParameters,
 ): Promise<void> {
   logger.info(`Running action: ${params.action.type}`);
-  let data = 'remap' in params.action ? remap(params.action.remap, params.data, null) : params.data;
+  let data =
+    'remap' in params.action
+      ? remap(params.action.remap, params.data, {
+          appId: params.app.id,
+          context: {},
+          // XXX: Implement getMessage and default language selections
+          getMessage() {
+            return null;
+          },
+          userInfo: undefined,
+        })
+      : params.data;
 
   try {
     data = await action({ ...params, data });
@@ -73,7 +84,7 @@ export function builder(yargs: Argv): Argv {
     });
 }
 
-export async function handler(argv: Args): Promise<void> {
+export async function handler(): Promise<void> {
   let db;
 
   try {
@@ -90,7 +101,7 @@ export async function handler(argv: Args): Promise<void> {
     handleDBError(error as Error);
   }
 
-  const mailer = new Mailer(argv);
+  const mailer = new Mailer();
 
   // 1 hour ago
   const startDate = Date.now() - 60 * 60 * 1e3;

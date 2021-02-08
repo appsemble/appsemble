@@ -1,10 +1,10 @@
-import { ComponentChild, h, VNode } from 'preact';
+import { ComponentChild, JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { useValuePicker } from '..';
 
 interface RadioButtonProps<T>
-  extends Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'name' | 'onChange' | 'value'> {
+  extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'name' | 'onChange' | 'value'> {
   /**
    * The node to render as a label.
    */
@@ -40,7 +40,7 @@ export function RadioButton<T>({
   const { name, onChange, value: currentValue } = useValuePicker();
 
   const handleChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>) => onChange(event, value),
+    (event: JSX.TargetedEvent<HTMLInputElement>) => onChange(event, value),
     [onChange, value],
   );
 

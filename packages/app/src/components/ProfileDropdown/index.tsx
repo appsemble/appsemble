@@ -1,5 +1,5 @@
 import { Button, Dropdown, Icon } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -33,20 +33,37 @@ export function ProfileDropdown(): ReactElement {
       className="is-right"
       label={
         <figure className="image is-32x32">
-          <img
-            alt={formatMessage(messages.pfp)}
-            className={`is-rounded ${styles.gravatar}`}
-            src={userInfo?.picture}
-          />
+          {userInfo?.picture ? (
+            <img
+              alt={formatMessage(messages.pfp)}
+              className={`is-rounded ${styles.gravatar}`}
+              src={userInfo.picture}
+            />
+          ) : (
+            <Icon
+              className={`is-rounded has-background-grey-dark has-text-white-ter ${styles.gravatarFallback}`}
+              icon="user"
+            />
+          )}
         </figure>
       }
     >
-      <Link className="dropdown-item" to="/Settings">
-        <Icon icon="wrench" />
-        <span>
-          <FormattedMessage {...messages.settings} />
-        </span>
-      </Link>
+      {(layout?.settings ?? 'navbar') === 'navbar' && (
+        <Link className="dropdown-item" to="/Settings">
+          <Icon icon="wrench" />
+          <span>
+            <FormattedMessage {...messages.settings} />
+          </span>
+        </Link>
+      )}
+      {(layout?.feedback ?? 'navbar') === 'navbar' && (
+        <Link className="dropdown-item" to="/Feedback">
+          <Icon icon="comment" />
+          <span>
+            <FormattedMessage {...messages.feedback} />
+          </span>
+        </Link>
+      )}
       {showLogin && (
         <>
           <hr className="dropdown-divider" />

@@ -1,25 +1,25 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppMessages, Member, Organization, Resource, User } from '../models';
+import { App, AppBlockStyle, AppMessages, Member, Organization, Resource } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
-import { testToken } from '../utils/test/testToken';
 
-let authorization: string;
 let templates: App[];
-let user: User;
 let clock: FakeTimers.InstalledClock;
 
 beforeAll(createTestSchema('templates'));
 
 beforeAll(async () => {
-  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  const server = await createServer();
   await setTestApp(server);
 });
 
 beforeEach(async () => {
-  ({ authorization, user } = await testToken());
+  const user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
@@ -45,6 +45,8 @@ beforeEach(async () => {
     ...template,
     path: 'test-template-2',
     definition: { ...template.definition, name: 'Test App 2' },
+    coreStyle: '.foo { color: blue; }',
+    sharedStyle: '.bar { color: yellow; }',
     resources: {
       test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
     },
@@ -56,6 +58,13 @@ beforeEach(async () => {
     language: 'nl-nl',
     messages: { test: 'Dit is een testbericht' },
   });
+  t2.AppBlockStyles = [
+    await AppBlockStyle.create({
+      AppId: t2.id,
+      block: '@appsemble/test',
+      style: 'a { color: red; }',
+    }),
+  ];
 
   templates = [t1, t2];
 });
@@ -70,9 +79,8 @@ afterAll(closeTestSchema);
 
 describe('getAppTemplates', () => {
   it('should return a list of available templates', async () => {
-    const response = await request.get('/api/templates', {
-      headers: { authorization },
-    });
+    authorizeStudio();
+    const response = await request.get('/api/templates');
 
     expect(response).toMatchObject({
       status: 200,
@@ -96,16 +104,13 @@ describe('getAppTemplates', () => {
 
 describe('createTemplateApp', () => {
   it('should create a new app using a template', async () => {
-    const response = await request.post(
-      '/api/templates',
-      {
-        templateId: templates[0].id,
-        name: 'Test app',
-        description: 'This is a test app',
-        organizationId: 'testorganization',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/templates', {
+      templateId: templates[0].id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+    });
 
     expect(response).toMatchObject({
       status: 201,
@@ -130,17 +135,14 @@ describe('createTemplateApp', () => {
 
   it('should create a new app with example resources', async () => {
     const [, template] = templates;
-    const response = await request.post(
-      '/api/templates',
-      {
-        templateId: template.id,
-        name: 'Test app',
-        description: 'This is a test app',
-        organizationId: 'testorganization',
-        resources: true,
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      resources: true,
+    });
 
     const { id } = response.data;
     const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } });
@@ -148,19 +150,35 @@ describe('createTemplateApp', () => {
     expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
   });
 
+  it('should include the app’s styles when cloning an app', async () => {
+    const [, template] = templates;
+    authorizeStudio();
+    const response = await request.post('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      resources: true,
+    });
+
+    const { id } = response.data;
+    const app = await App.findByPk(id, { include: [{ model: AppBlockStyle }] });
+
+    expect(app.coreStyle).toStrictEqual(template.coreStyle);
+    expect(app.sharedStyle).toStrictEqual(template.sharedStyle);
+    expect(app.AppBlockStyles[0].style).toStrictEqual(template.AppBlockStyles[0].style);
+  });
+
   it('should copy app message when cloning an app', async () => {
     const [, template] = templates;
-    const response = await request.post<App>(
-      '/api/templates',
-      {
-        templateId: template.id,
-        name: 'Test app',
-        description: 'This is a test app',
-        organizationId: 'testorganization',
-        resources: true,
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post<App>('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+      resources: true,
+    });
 
     const { id } = response.data;
     const { data: messages } = await request.get<AppMessages>(`/api/apps/${id}/messages/nl-nl`);
@@ -172,27 +190,20 @@ describe('createTemplateApp', () => {
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {
-    await request.post(
-      '/api/templates',
-      {
-        templateId: templates[0].id,
-        name: 'Test app',
-        description: 'This is a test app',
-        organizationId: 'testorganization',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    await request.post('/api/templates', {
+      templateId: templates[0].id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+    });
 
-    const response = await request.post(
-      '/api/templates',
-      {
-        templateId: templates[0].id,
-        name: 'Test app',
-        description: 'This is also a test app',
-        organizationId: 'testorganization',
-      },
-      { headers: { authorization } },
-    );
+    const response = await request.post('/api/templates', {
+      templateId: templates[0].id,
+      name: 'Test app',
+      description: 'This is also a test app',
+      organizationId: 'testorganization',
+    });
 
     expect(response).toMatchObject({
       status: 201,
@@ -204,7 +215,7 @@ describe('createTemplateApp', () => {
 
   it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
     await Promise.all(
-      [...new Array(11)].map((_, index) =>
+      [...Array.from({ length: 11 })].map((_, index) =>
         App.create(
           {
             path: index + 1 === 1 ? 'test-app' : `test-app-${index + 1}`,
@@ -218,16 +229,13 @@ describe('createTemplateApp', () => {
       ),
     );
 
-    const response = await request.post(
-      '/api/templates',
-      {
-        templateId: templates[0].id,
-        name: 'Test app',
-        description: 'This is a test app',
-        organizationId: 'testorganization',
-      },
-      { headers: { authorization } },
-    );
+    authorizeStudio();
+    const response = await request.post('/api/templates', {
+      templateId: templates[0].id,
+      name: 'Test app',
+      description: 'This is a test app',
+      organizationId: 'testorganization',
+    });
 
     expect(response).toMatchObject({
       status: 201,

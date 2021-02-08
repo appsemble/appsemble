@@ -1,7 +1,7 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, CardFooterButton, Form, Modal, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { Fragment, h } from 'preact';
+import { Fragment, JSX } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { FilterValue, FilterValues } from '../block';
@@ -59,7 +59,7 @@ bootstrap(
 
     const onChange = useCallback(
       (
-        { currentTarget: { name } }: h.JSX.TargetedEvent<HTMLInputElement | HTMLButtonElement>,
+        { currentTarget: { name } }: JSX.TargetedEvent<HTMLButtonElement | HTMLInputElement>,
         value: FilterValue,
       ) => {
         const newValues = {

@@ -72,7 +72,7 @@ describe('checkBlocks', () => {
     expect(error).toBeInstanceOf(AppsembleValidationError);
     expect(error.message).toBe('Block validation failed');
     expect(error.data).toStrictEqual({
-      'pages.0.blocks.0.parameters.prop': 'should be string',
+      'pages.0.blocks.0.parameters/prop': 'should be string',
     });
   });
 
@@ -178,6 +178,118 @@ describe('checkBlocks', () => {
       'pages.0.blocks.0.actions': 'This block doesn’t support any actions',
     });
   });
+
+  it('should throw on unknown event emitters', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            events: { emit: { test: 'bla' } },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: {},
+            events: {},
+            parameters: {
+              type: 'object',
+              properties: { customAction: { type: 'string', format: 'action' } },
+            },
+          },
+        ],
+      );
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0.events.emit.test': 'Unknown event emitter',
+    });
+  });
+
+  it('should throw on unknown event listeners', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            events: { listen: { test: 'bla' } },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: {},
+            events: {},
+          },
+        ],
+      );
+    } catch (err: unknown) {
+      error = err as AppsembleValidationError;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0.events.listen.test': 'Unknown event listener',
+    });
+  });
+
+  it('should allow wildcard event emitters', () => {
+    expect(() =>
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            events: { emit: { test: 'bla' } },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: {},
+            events: { emit: { $any: {} } },
+          },
+        ],
+      ),
+    ).not.toThrow();
+  });
+
+  it('should allow wildcard event listeners', () => {
+    expect(() =>
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            events: { listen: { test: 'bla' } },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: {},
+            events: { listen: { $any: {} } },
+          },
+        ],
+      ),
+    ).not.toThrow();
+  });
 });
 
 describe('validateSecurity', () => {
@@ -281,6 +393,26 @@ describe('validateSecurity', () => {
     expect(() => validateSecurity(definition)).toThrow(
       new AppsembleValidationError('Role ‘Admins’ in page ‘Test Page C’ roles does not exist.'),
     );
+  });
+
+  it('should allow team roles for pages', () => {
+    const definition: AppDefinition = {
+      defaultPage: '',
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [
+        { name: 'Test Page A', roles: ['$team:member'], blocks: [] },
+        { name: 'Test Page B', roles: ['$team:manager'], blocks: [] },
+        { name: 'Test Page C', blocks: [] },
+      ],
+    };
+
+    expect(() => validateSecurity(definition)).not.toThrow();
   });
 
   it('should check for non-existent block roles', () => {

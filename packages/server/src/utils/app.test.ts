@@ -2,6 +2,7 @@ import { UserInfo } from '@appsemble/types';
 
 import { App, AppMessages, Organization } from '../models';
 import { getApp, getRemapperContext } from './app';
+import { setArgv } from './argv';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
 let dbApp: App;
@@ -20,6 +21,12 @@ afterEach(truncate);
 afterAll(closeTestSchema);
 
 describe('getApp', () => {
+  beforeEach(() => {
+    setArgv({
+      host: 'http://localhost:9999',
+    });
+  });
+
   it('should resolve an app by its default domain', async () => {
     dbApp = await App.create({
       definition: {
@@ -33,12 +40,7 @@ describe('getApp', () => {
     });
 
     const app = await getApp(
-      {
-        argv: {
-          host: 'http://localhost:9999',
-        },
-        origin: 'http://test-app.test-organization.localhost:9999',
-      },
+      { origin: 'http://test-app.test-organization.localhost:9999' },
       {
         attributes: [
           'definition',
@@ -75,12 +77,7 @@ describe('getApp', () => {
     });
 
     const app = await getApp(
-      {
-        argv: {
-          host: 'http://localhost:9999',
-        },
-        origin: 'http://localhost:9999',
-      },
+      { origin: 'http://localhost:9999' },
       {
         attributes: [
           'definition',
@@ -119,12 +116,7 @@ describe('getApp', () => {
     });
 
     const app = await getApp(
-      {
-        argv: {
-          host: 'http://localhost:9999',
-        },
-        origin: 'http://example.com',
-      },
+      { origin: 'http://example.com' },
       {
         attributes: [
           'definition',

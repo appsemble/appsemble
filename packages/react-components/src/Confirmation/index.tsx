@@ -1,12 +1,5 @@
 import { BulmaColor } from '@appsemble/sdk';
-import React, {
-  createContext,
-  ReactElement,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
+import { createContext, ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
 import { PromiseValue } from 'type-fest';
 
 import { CardFooterButton, Modal } from '..';
@@ -63,7 +56,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactElement {
 
   const confirm = useCallback(async (opts: ConfirmationOptions<any, any[]>, args) => {
     try {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         setOptions({ ...opts, resolve, reject });
         setActive(true);
       });

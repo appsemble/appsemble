@@ -1,35 +1,47 @@
-import {
-  da as reactComponentsDA,
-  nl as reactComponentsNL,
-  useLocationString,
-} from '@appsemble/react-components';
+import { Loader, useLocationString } from '@appsemble/react-components';
 import { detectLocale, has } from '@appsemble/utils';
-import React, { ReactElement, ReactNode } from 'react';
+import axios from 'axios';
+import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
-import studioDA from '../../../translations/da.json';
-import studioNL from '../../../translations/nl.json';
 import { supportedLanguages } from '../../utils/constants';
 
 interface IntlMessagesProviderProps {
   children: ReactNode;
 }
 
-const providedMessages: Record<string, Record<string, string>> = {
-  da: { ...reactComponentsDA, ...studioDA },
-  nl: { ...reactComponentsNL, ...studioNL },
-};
+interface Messages {
+  language: string;
+  messages: Record<string, string>;
+}
 
 const defaultLanguage = 'en-us';
 
 export function StudioMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const redirect = useLocationString();
+  const [messages, setMessages] = useState<Record<string, string>>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!has(supportedLanguages, lang)) {
+      return;
+    }
+
+    axios.get<Messages>(`/api/messages/${lang}?context=studio`).then((response) => {
+      setMessages(response.data.messages);
+      setLoading(false);
+    });
+  }, [lang]);
 
   if (has(supportedLanguages, lang)) {
+    if (loading) {
+      return <Loader />;
+    }
+
     return (
-      <IntlProvider defaultLocale="en-US" locale={lang} messages={providedMessages[lang]}>
+      <IntlProvider defaultLocale={defaultLanguage} locale={lang} messages={messages}>
         {children}
       </IntlProvider>
     );

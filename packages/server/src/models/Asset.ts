@@ -1,11 +1,10 @@
 import {
   AllowNull,
-  AutoIncrement,
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
-  DeletedAt,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -13,14 +12,14 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, User } from '.';
+import { App, Resource, User } from '.';
 
-@Table({ tableName: 'Asset', paranoid: true })
-export class Asset extends Model<Asset> {
+@Table({ tableName: 'Asset' })
+export class Asset extends Model {
   @PrimaryKey
-  @AutoIncrement
+  @Default(DataType.UUIDV4)
   @Column
-  id: number;
+  id: string;
 
   @Column
   mime: string;
@@ -38,9 +37,6 @@ export class Asset extends Model<Asset> {
   @UpdatedAt
   updated: Date;
 
-  @DeletedAt
-  deleted: Date;
-
   @ForeignKey(() => App)
   @Column
   AppId: number;
@@ -54,4 +50,11 @@ export class Asset extends Model<Asset> {
 
   @BelongsTo(() => User)
   User: User;
+
+  @ForeignKey(() => Resource)
+  @Column
+  ResourceId: number;
+
+  @BelongsTo(() => Resource)
+  Resource: Resource;
 }

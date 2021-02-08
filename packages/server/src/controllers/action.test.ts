@@ -5,6 +5,7 @@ import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-te
 import Koa, { ParameterizedContext } from 'koa';
 
 import { App, Asset, Organization } from '../models';
+import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { readPackageJson } from '../utils/readPackageJson';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
@@ -15,7 +16,8 @@ let server: Koa;
 beforeAll(createTestSchema('apps'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  setArgv({ host: 'http://localhost', secret: 'test' });
+  server = await createServer();
 
   await setTestApp(server);
 });

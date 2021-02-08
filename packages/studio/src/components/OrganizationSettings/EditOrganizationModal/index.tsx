@@ -7,7 +7,7 @@ import {
   Toggle,
   useObjectURL,
 } from '@appsemble/react-components';
-import React, { ChangeEvent, ReactElement } from 'react';
+import { ChangeEvent, ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { UserOrganization } from '../../UserProvider';

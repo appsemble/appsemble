@@ -15,7 +15,7 @@ import {
 import { Organization, User } from '.';
 
 @Table({ tableName: 'Member' })
-export class Member extends Model<Member> {
+export class Member extends Model {
   @Default('Member')
   @Column(DataType.ENUM(...Object.keys(roles)))
   role: Role;
@@ -33,8 +33,8 @@ export class Member extends Model<Member> {
 
   @AllowNull(false)
   @ForeignKey(() => User)
-  @Column
-  UserId: number;
+  @Column(DataType.UUID)
+  UserId: string;
 
   @BelongsTo(() => Organization)
   Organization: Organization;

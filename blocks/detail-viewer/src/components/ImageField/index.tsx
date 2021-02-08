@@ -1,14 +1,14 @@
 import { useBlock } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
 import { Remapper } from '@appsemble/sdk';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import styles from './ImageField.css';
 
 interface ImageFieldProps {
   label?: Remapper;
   name?: Remapper;
-  src: string | Blob;
+  src: Blob | string;
 }
 
 export function ImageField({ label, name, src }: ImageFieldProps): VNode {

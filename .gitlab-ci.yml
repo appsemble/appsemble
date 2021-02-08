@@ -11,9 +11,9 @@ stages:
 workflow:
   rules:
     # By default, run jobs for every merge request.
-    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
     # By default, run jobs for every commit on master.
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == 'master'
     # By default, run jobs for every schedule
     - if: $CI_PIPELINE_SOURCE == 'schedule'
     # By default, run jobs for every tag
@@ -37,14 +37,6 @@ workflow:
 .helm:
   image: dtzar/helm-kubectl:3.2.1
   dependencies: []
-
-# A job preset for deleting Helm Charts.
-.helm-delete:
-  extends: .helm
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - helm delete "$CI_ENVIRONMENT_SLUG"
 
 # A preconfigured environment for using Yarn.
 .yarn:
@@ -88,8 +80,6 @@ remark lint:
 stylelint:
   extends: .yarn
   script:
-    # The --report-needless-disables flag is broken. Add this in package.json when it works again.
-    # https://github.com/stylelint/stylelint/issues/4203
     - yarn stylelint .
 
 # Run unittests using NodeJS 12.
@@ -139,6 +129,16 @@ validate:
   extends: .yarn
   script:
     - yarn scripts validate
+
+# Workaround for upstream bug in GitLab
+weblate:
+  image: busybox
+  rules:
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == 'i18n'
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo 'This is a workaround for https://gitlab.com/gitlab-org/gitlab/-/issues/300792'
 
 ###################################################################################################
 #  Build Stage                                                                                    #
@@ -211,6 +211,18 @@ publish npm:
     - npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
     - find . -exec npm publish --access public {} \;
 
+# Perform various post release actions.
+sentry release:
+  extends: .yarn
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - apt-get update
+    - apt-get install --yes --no-install-recommends git
+    - yarn sentry-cli releases new --finalize --project appsemble "$CI_COMMIT_TAG"
+    - yarn sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+
 ###################################################################################################
 #  Deploy Stage                                                                                   #
 ###################################################################################################
@@ -234,7 +246,7 @@ review:
     - build docker image
   rules:
     - if: $CI_MERGE_REQUEST_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
       when: manual
   environment:
     name: review/$CI_MERGE_REQUEST_IID
@@ -265,19 +277,24 @@ review:
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "proxy=true"
+      --set "sentryEnvironment=$CI_ENVIRONMENT_NAME"
       --set "sentrySecret=sentry"
 
 # Stop a review environment.
 stop review:
-  extends: .helm-delete
+  extends: .helm
   stage: deploy
   rules:
-    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
       when: manual
   allow_failure: true
   environment:
     name: review/$CI_MERGE_REQUEST_IID
     action: stop
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - helm delete "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for master to the staging environment.
 staging:
@@ -316,6 +333,7 @@ staging:
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "proxy=true"
+      --set "sentryEnvironment=staging"
       --set "sentrySecret=sentry"
 
 production:
@@ -347,6 +365,8 @@ production:
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
       --set "proxy=true"
+      --set "sentryEnvironment=production"
+      --set "sentrySecret=sentry"
       --wait
 
 # Perform various post release actions.
@@ -370,16 +390,17 @@ provision review:
   extends: .yarn
   stage: provision
   rules:
-    - if: $CI_MERGE_REQUEST_ID
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
   needs:
     - review
   environment:
     name: review/provision/$CI_COMMIT_REF_SLUG
   script:
+    - yarn appsemble config set context review
     - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
     - yarn appsemble organization create appsemble --name Appsemble
     - yarn appsemble block publish blocks/*
-    - yarn appsemble app create --template --organization appsemble apps/*
+    - yarn appsemble app create apps/*
 
 # Provision the staging environment with the blocks that were built in the build stage.
 provision staging:
@@ -392,10 +413,11 @@ provision staging:
   environment:
     name: staging/provision
   script:
+    - yarn appsemble config set context staging
     - yarn appsemble config set remote https://staging.appsemble.review
     - yarn appsemble organization create appsemble --name Appsemble
     - yarn appsemble block publish blocks/*
-    - yarn appsemble app create --organization appsemble --template apps/*
+    - yarn appsemble app create apps/*
 
 # Provision the production environment with the blocks that were built in the build stage.
 provision production:
@@ -408,9 +430,11 @@ provision production:
   environment:
     name: production provision
   script:
+    - yarn appsemble config set context production
     - yarn appsemble config set remote https://appsemble.app
     - yarn appsemble config set ignore-conflict true
     - yarn appsemble block publish blocks/*
+    - yarn appsemble app update apps/*
 
 ###################################################################################################
 #  End to End Stage                                                                               #
@@ -421,10 +445,6 @@ lighthouse:
   interruptible: true
   stage: end 2 end
   dependencies: []
-  needs:
-    - provision staging
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies
@@ -432,9 +452,9 @@ lighthouse:
     - yarn lhci assert
   artifacts:
     expose_as: Lighthouse reports
+    when: always
     paths:
       - .lighthouseci
-    expire_in: 7 days
 
 # Test 10 Second Dance in the staging environment.
 10 second dance:

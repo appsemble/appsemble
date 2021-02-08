@@ -5,5 +5,8 @@ export const scopes = [
   'apps:write',
   'blocks:write',
   'organizations:write',
-  'resources:manage',
+  'resources:read',
+  'resources:write',
+  'teams:read',
+  'teams:write',
 ] as const;

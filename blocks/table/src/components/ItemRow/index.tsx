@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { h, VNode } from 'preact';
+import { VNode } from 'preact';
 
 import { RepeatedField } from '../../../block';
 import { ItemCell } from '../ItemCell';

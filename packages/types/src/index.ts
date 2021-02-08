@@ -64,14 +64,14 @@ export interface BlockDefinition {
    * For floating blocks this propert defines where the block should float.
    */
   position?:
-    | 'top left'
-    | 'top'
-    | 'top right'
+    | 'bottom left'
+    | 'bottom right'
+    | 'bottom'
     | 'left'
     | 'right'
-    | 'bottom left'
-    | 'bottom'
-    | 'bottom right';
+    | 'top left'
+    | 'top right'
+    | 'top';
 
   /**
    * The theme of the block.
@@ -201,6 +201,15 @@ export interface TokenResponse {
 
 export interface Remappers {
   /**
+   * Get app metadata.
+   *
+   * Supported properties:
+   *
+   * - `id`: Get the app id.
+   */
+  app: 'id';
+
+  /**
    * Get a property from the context.
    */
   context: string;
@@ -309,11 +318,11 @@ export interface Remappers {
 }
 
 export type Remapper =
-  | RequireExactlyOne<Remappers>[]
   | RequireExactlyOne<Remappers>
-  | string
+  | RequireExactlyOne<Remappers>[]
+  | boolean
   | number
-  | boolean;
+  | string;
 
 export interface SubscriptionResponseResource {
   create: boolean;
@@ -334,7 +343,7 @@ export interface Security {
   login?: 'password';
   default: {
     role: string;
-    policy?: 'everyone' | 'organization' | 'invite';
+    policy?: 'everyone' | 'invite' | 'organization';
   };
   roles: Record<
     string,
@@ -346,12 +355,12 @@ export interface Security {
   >;
 }
 
-export type Navigation = 'bottom' | 'left-menu' | 'hidden';
-export type LayoutPosition = 'navigation' | 'navbar' | 'hidden';
+export type Navigation = 'bottom' | 'hidden' | 'left-menu';
+export type LayoutPosition = 'hidden' | 'navbar' | 'navigation';
 
 export interface NotificationDefinition {
   to?: string[];
-  subscribe?: 'all' | 'single' | 'both';
+  subscribe?: 'all' | 'both' | 'single';
   data?: {
     title: string;
     content: string;
@@ -385,16 +394,16 @@ export interface ResourceCall {
   /**
    * Query parameters to pass along with the request.
    */
-  query?: Record<string, string>;
+  query?: Remapper;
 
   /**
-   * THe roles that are allowed to perform this action.
+   * The roles that are allowed to perform this action.
    */
   roles?: string[];
 }
 
 interface ResourceReferenceAction {
-  trigger: ('create' | 'update' | 'delete')[];
+  trigger: ('create' | 'delete' | 'update')[];
 }
 
 interface ResourceReference {
@@ -440,11 +449,6 @@ export interface ResourceDefinition {
   update?: ResourceCall;
 
   /**
-   * How to upload blobs.
-   */
-  blobs?: BlobUploadType;
-
-  /**
    * The property to use as the id.
    *
    * @default `id`
@@ -474,13 +478,6 @@ export interface ResourceDefinition {
    * Example: 1d 8h 30m
    */
   expires?: string;
-}
-
-export interface BlobUploadType {
-  type?: 'upload';
-  method?: HTTPMethods;
-  serialize?: 'custom';
-  url?: string;
 }
 
 export interface BaseActionDefinition<T extends Action['type']> {
@@ -574,11 +571,6 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
    * This should be a page name.
    */
   to: string;
-
-  /**
-   * Parameters to use for formatting the link.
-   */
-  parameters?: Record<string, any>;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
@@ -593,16 +585,6 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
 export interface RequestLikeActionDefinition<
   T extends RequestLikeActionTypes = RequestLikeActionTypes
 > extends BaseActionDefinition<T> {
-  /**
-   * The element to use as the base when returning the response data.
-   */
-  base?: string;
-
-  /**
-   * Specify how to handle blobs in the object to upload.
-   */
-  blobs?: BlobUploadType;
-
   /**
    * The HTTP method to use for making a request.
    */
@@ -623,7 +605,7 @@ export interface RequestLikeActionDefinition<
   /**
    * Query parameters to pass along with the request.
    */
-  query?: Record<string, string>;
+  query?: Remapper;
 
   /**
    * The URL to which to make the request.
@@ -631,9 +613,11 @@ export interface RequestLikeActionDefinition<
   url?: Remapper;
 
   /**
-   * How to serialize the request body.
+   * A remapper for the request body.
+   *
+   * If this isn’t specified, the raw input data is used.
    */
-  serialize?: 'formdata';
+  body?: Remapper;
 }
 
 export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
@@ -662,20 +646,14 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   /**
    * The action to subscribe to. Defaults to `update` if not specified.
    */
-  action?: 'create' | 'update' | 'delete';
+  action?: 'create' | 'delete' | 'update';
 }
 
-export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.subscribe'
->;
+export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
 
-export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.unsubscribe'
->;
+export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
 
-export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<
-  'resource.subscription.toggle'
->;
+export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
 
 export type ResourceSubscriptionStatusActionDefinition = Omit<
   BaseResourceSubscribeActionDefinition<'resource.subscription.status'>,
@@ -712,32 +690,33 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
   };
 
 export type ActionDefinition =
+  | BaseActionDefinition<'email'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
   | BaseActionDefinition<'flow.next'>
-  | BaseActionDefinition<'email'>
   | BaseActionDefinition<'noop'>
+  | BaseActionDefinition<'team.join'>
+  | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'throw'>
   | DialogActionDefinition
   | EventActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
+  | MessageActionDefinition
   | RequestActionDefinition
+  // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
+  | RequestLikeActionDefinition
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
   | ResourceQueryActionDefinition
-  | ResourceUpdateActionDefinition
   | ResourceSubscribeActionDefinition
-  | ResourceUnsubscribeActionDefinition
-  | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionStatusActionDefinition
-  | StaticActionDefinition
-  | MessageActionDefinition
-
-  // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
-  | RequestLikeActionDefinition;
+  | ResourceSubscriptionToggleActionDefinition
+  | ResourceUnsubscribeActionDefinition
+  | ResourceUpdateActionDefinition
+  | StaticActionDefinition;
 
 export interface ActionType {
   /**
@@ -789,7 +768,7 @@ export interface BlockManifest {
   /**
    * The type of layout to be used for the block.
    */
-  layout?: 'float' | 'static' | 'grow' | 'hidden' | null;
+  layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
 
   /**
    * Array of urls associated to the files of the block.
@@ -907,7 +886,7 @@ export interface AppDefinition {
   /**
    * The default language of the app.
    *
-   * @default 'en-US'
+   * @default 'en-us'
    */
   defaultLanguage?: string;
 
@@ -947,6 +926,15 @@ export interface AppDefinition {
      * @default 'navbar'
      */
     settings?: LayoutPosition;
+
+    /**
+     * The location of the feedback button
+     *
+     * If set to `navigation`, it will only be visible if `login` is also visible in `navigation`.
+     *
+     * @default 'navbar'
+     */
+    feedback?: LayoutPosition;
 
     /**
      * The navigation type to use.
@@ -1019,6 +1007,11 @@ export interface App {
    */
   OrganizationId?: string;
 
+  /**
+   * The long description of the app.
+   */
+  longDescription: string;
+
   path: string;
   private: boolean;
 
@@ -1039,7 +1032,7 @@ export interface App {
     count: number;
 
     /**
-     * THe average app rating.
+     * The average app rating.
      */
     average: number;
   };
@@ -1053,6 +1046,16 @@ export interface App {
    * A list of URLs to app screenshots
    */
   screenshotUrls?: string[];
+
+  /**
+   * True if the app supports an maskable icon.
+   */
+  hasMaskableIcon: boolean;
+
+  /**
+   * True if the app supports an maskable icon.
+   */
+  iconBackground: string;
 
   /**
    * An app icon url
@@ -1134,6 +1137,15 @@ export interface Team {
    * The display name of the team.
    */
   name: string;
+
+  /**
+   * Custom annotations for the team.
+   */
+  annotations?: Record<string, string>;
+}
+
+export interface TeamMember extends Team {
+  role: 'manager' | 'member';
 }
 
 /**
@@ -1265,6 +1277,16 @@ export interface WritableAppSamlSecret {
    * The URL of the identity provider where the user will be redirected to in order to login.
    */
   ssoUrl: string;
+
+  /**
+   * The custom SAML attribute that’s used to specify the user display name.
+   */
+  nameAttribute: string;
+
+  /**
+   * The custom SAML attribute that’s used to specify the user email address.
+   */
+  emailAttribute: string;
 }
 
 export interface AppSamlSecret extends WritableAppSamlSecret {
@@ -1278,3 +1300,13 @@ export interface AppSamlSecret extends WritableAppSamlSecret {
    */
   spCertificate?: string;
 }
+
+export type SAMLStatus =
+  | 'badsignature'
+  | 'emailconflict'
+  | 'invalidrelaystate'
+  | 'invalidsecret'
+  | 'invalidstatuscode'
+  | 'invalidsubjectconfirmation'
+  | 'missingnameid'
+  | 'missingsubject';

@@ -2,11 +2,6 @@
   max-width: 960px;
 }
 
-.icon {
-  height: 192px;
-  width: 192px;
-}
-
 .appMeta {
   flex: 1 1 auto;
 }
@@ -25,25 +20,25 @@
   flex-flow: column;
 }
 
-.screenshots {
-  height: 24em;
-  -webkit-overflow-scrolling: touch;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
-}
+.descriptionHidden {
+  height: 12rem;
+  position: relative;
 
-.screenshotWrapper {
-  display: inline-block;
-  height: 100%;
-
-  &:last-child {
-    margin-right: 0 !important;
+  &::after {
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(255, 255, 255, 1) 90%);
+    bottom: 0;
+    content: '';
+    height: 6em;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
   }
 }
 
-.screenshot {
-  height: 100%;
-  max-width: unset;
-  width: initial;
+.descriptionToggle {
+  bottom: 12px;
+  position: absolute;
+  right: 12px;
+  z-index: 1;
 }

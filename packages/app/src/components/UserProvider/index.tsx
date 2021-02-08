@@ -1,8 +1,9 @@
 import { Loader } from '@appsemble/react-components';
-import { AppMember, UserInfo } from '@appsemble/types';
+import { AppMember, TeamMember, UserInfo } from '@appsemble/types';
+import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
-import React, {
+import {
   createContext,
   ReactElement,
   useCallback,
@@ -12,6 +13,7 @@ import React, {
   useState,
 } from 'react';
 
+import { UpdateTeam } from '../../types';
 import { oauth2Scope } from '../../utils/constants';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -27,6 +29,7 @@ const initialState: LoginState = {
   isLoggedIn: false,
   role: null,
   userInfo: null,
+  teams: [],
 };
 
 interface PasswordLoginParams {
@@ -44,12 +47,14 @@ interface LoginState {
   isLoggedIn: boolean;
   role: string;
   userInfo: UserInfo;
+  teams: TeamMember[];
 }
 
 interface UserContext extends LoginState {
   passwordLogin: (params: PasswordLoginParams) => Promise<void>;
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   logout: () => any;
+  updateTeam: UpdateTeam;
 }
 
 interface UserProviderProps {
@@ -89,6 +94,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
    * Reset everything to its initial state for a logged out user.
    */
   const logout = useCallback(() => {
+    setUser(null);
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
     setState(initialState);
@@ -132,7 +138,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       try {
         const [auth, { sub }] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
-        const [{ data: userInfo }, role] = await Promise.all([
+        const [{ data: userInfo }, role, { data: teams }] = await Promise.all([
           axios.get<UserInfo>(`${apiUrl}/api/connect/userinfo`, config),
           axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
             ({ data }) => data.role,
@@ -149,11 +155,14 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
               throw error;
             },
           ),
+          axios.get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams`, config),
         ]);
+        setUser({ id: userInfo.sub });
         setState({
           isLoggedIn: true,
           role,
           userInfo,
+          teams,
         });
       } catch (error: unknown) {
         logout();
@@ -182,6 +191,13 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     (credentials: AuthorizationCodeLoginParams) => login('authorization_code', credentials),
     [login],
   );
+
+  const updateTeam: UpdateTeam = useCallback(({ id, role }) => {
+    setState(({ teams, ...oldState }) => ({
+      ...oldState,
+      teams: teams.map((t) => (t.id === id ? { ...t, role } : t)),
+    }));
+  }, []);
 
   // Initialize the login session/
   useEffect(() => {
@@ -252,12 +268,10 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   }, [authorization]);
 
   // The value is memoized to prevent unnecessary rerenders.
-  const value = useMemo(() => ({ authorizationCodeLogin, passwordLogin, logout, ...state }), [
-    authorizationCodeLogin,
-    passwordLogin,
-    logout,
-    state,
-  ]);
+  const value = useMemo(
+    () => ({ authorizationCodeLogin, passwordLogin, logout, updateTeam, ...state }),
+    [authorizationCodeLogin, passwordLogin, logout, state, updateTeam],
+  );
 
   // If security hasn’t been initialized yet, show a loader instead of the children. This prevents
   // children from crashing when the context is still undefined.

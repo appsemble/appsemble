@@ -2,7 +2,7 @@ import '@creativebulma/bulma-tagsinput/dist/css/bulma-tagsinput.css';
 
 import { NamedEvent } from '@appsemble/web-utils';
 import BulmaTagsInput, { BulmaTagsInputOptions } from '@creativebulma/bulma-tagsinput';
-import React, { ComponentPropsWithoutRef, forwardRef, useEffect, useRef } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, useEffect, useRef } from 'react';
 
 import { InputField, useCombinedRefs } from '..';
 

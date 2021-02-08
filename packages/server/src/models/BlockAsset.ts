@@ -20,7 +20,7 @@ import { BlockVersion, Organization } from '.';
  * the primary key..
  */
 @Table({ tableName: 'BlockAsset', updatedAt: false })
-export class BlockAsset extends Model<BlockAsset> {
+export class BlockAsset extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column

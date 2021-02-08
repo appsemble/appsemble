@@ -1,5 +1,6 @@
 import { join, parse } from 'path';
 
+import normalizePath from 'normalize-path';
 import { RequireDirectoryOptions } from 'yargs';
 
 /**
@@ -15,5 +16,5 @@ import { RequireDirectoryOptions } from 'yargs';
  */
 export function commandDirOptions(filename: string): [string, RequireDirectoryOptions] {
   const { dir, ext, name } = parse(filename);
-  return [join(dir, name), { extensions: [ext.slice(1)] }];
+  return [normalizePath(join(dir, name)), { extensions: [ext.slice(1)] }];
 }

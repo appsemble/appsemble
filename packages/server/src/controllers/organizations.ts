@@ -7,6 +7,7 @@ import { Op, UniqueConstraintError } from 'sequelize';
 import { EmailAuthorization, Organization, OrganizationInvite, User } from '../models';
 import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
+import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { readAsset } from '../utils/readAsset';
 
@@ -51,7 +52,7 @@ export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void
   }
 
   await serveIcon(ctx, {
-    icon: organization.icon ?? (await readAsset('appsemble.svg')),
+    icon: organization.icon ?? (await readAsset('appsemble.png')),
     ...(!organization.icon && { width: 128, height: 128, format: 'png' }),
   });
 }
@@ -231,13 +232,12 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
 
 export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
     mailer,
     params: { organizationId },
     request: { body },
   } = ctx;
 
-  const allInvites = (body as OrganizationInvite[]).map((invite) => invite.email);
+  const allInvites = (body as OrganizationInvite[]).map((invite) => invite.email.toLowerCase());
 
   const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
     include: [
@@ -284,7 +284,12 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
       const user = userMap.get(email);
       const key = randomBytes(20).toString('hex');
       return user
-        ? { email: user.primaryEmail, UserId: user.id, key, OrganizationId: organizationId }
+        ? {
+            email: user?.primaryEmail ?? email,
+            UserId: user.id,
+            key,
+            OrganizationId: organizationId,
+          }
         : { email, key, OrganizationId: organizationId };
     }),
   );
@@ -293,7 +298,7 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
     result.map((invite) =>
       mailer.sendTemplateEmail({ ...invite.User, email: invite.email }, 'organizationInvite', {
         organization: organizationId,
-        url: `${host}/organization-invite?token=${invite.key}`,
+        url: `${argv.host}/organization-invite?token=${invite.key}`,
       }),
     ),
   );
@@ -302,14 +307,12 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
 
 export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
   const {
-    argv: { host },
     mailer,
     params: { organizationId },
-    request: {
-      body: { email },
-    },
+    request,
   } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const organization = await Organization.findByPk(organizationId, {
     include: [OrganizationInvite],
   });
@@ -319,7 +322,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   await checkRole(ctx, organization.id, Permission.InviteMember);
 
-  const invite = await organization.OrganizationInvites.find((i) => i.email === email);
+  const invite = organization.OrganizationInvites.find((i) => i.email === email);
   if (!invite) {
     throw notFound('This person was not invited previously.');
   }
@@ -331,7 +334,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
     'organizationInvite',
     {
       organization: organization.id,
-      url: `${host}/organization-invite?token=${invite.key}`,
+      url: `${argv.host}/organization-invite?token=${invite.key}`,
     },
   );
 
@@ -339,12 +342,9 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function removeInvite(ctx: KoaContext): Promise<void> {
-  const {
-    request: {
-      body: { email },
-    },
-  } = ctx;
+  const { request } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const invite = await OrganizationInvite.findOne({ where: { email } });
   if (!invite) {
     throw notFound('This invite does not exist.');

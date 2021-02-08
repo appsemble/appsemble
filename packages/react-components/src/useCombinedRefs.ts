@@ -2,7 +2,7 @@ import { MutableRefObject, RefCallback, useCallback } from 'react';
 
 import { applyRefs } from '.';
 
-type MutableRef<T> = RefCallback<T> | MutableRefObject<T>;
+type MutableRef<T> = MutableRefObject<T> | RefCallback<T>;
 
 /**
  * Combine multiple refs into one functional ref.

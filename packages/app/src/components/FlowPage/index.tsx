@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { useMessages } from '@appsemble/react-components';
 import { BootstrapParams } from '@appsemble/sdk';
 import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';
@@ -11,6 +11,7 @@ import { makeActions } from '../../utils/makeActions';
 import { BlockList } from '../BlockList';
 import { DotProgressBar } from '../DotProgressBar';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
+import { useUser } from '../UserProvider';
 
 interface FlowPageProps {
   definition: AppDefinition;
@@ -35,6 +36,7 @@ export function FlowPage({
   const [data, setData] = useState({});
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
+  const { teams, updateTeam, userInfo } = useUser();
 
   // XXX Something weird is going on here.
   // eslint-disable-next-line prefer-const
@@ -104,7 +106,7 @@ export function FlowPage({
     () =>
       makeActions({
         actions: { onFlowFinish: {}, onFlowCancel: {} },
-        definition,
+        app: definition,
         context: page,
         history,
         showDialog,
@@ -117,6 +119,9 @@ export function FlowPage({
         remap,
         route,
         showMessage,
+        teams,
+        updateTeam,
+        userInfo,
       }),
     [
       definition,
@@ -130,6 +135,9 @@ export function FlowPage({
       route,
       showDialog,
       showMessage,
+      teams,
+      userInfo,
+      updateTeam,
     ],
   );
 

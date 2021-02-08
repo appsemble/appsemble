@@ -17,7 +17,7 @@ export function onFetch(event: FetchEvent): void {
   const { origin, pathname } = new URL(request.url);
 
   // This is a request to an external service or the Appsemble API. This should not be cached.
-  if (origin !== self.location.origin) {
+  if (origin !== globalThis.location.origin) {
     return;
   }
 
@@ -34,6 +34,18 @@ export function onFetch(event: FetchEvent): void {
 
   // Block version requests are immutable and should be cached.
   if (/^\/api\/blocks\/@(?:[\da-z-]+\/){2}versions\//.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // Cache appsemble messages
+  if (/^\/api\/messages/.test(pathname)) {
+    event.respondWith(cacheFirst(request));
+    return;
+  }
+
+  // Cache app messages
+  if (/^\/api\/apps\/\d+\/messages/.test(pathname)) {
     event.respondWith(cacheFirst(request));
     return;
   }

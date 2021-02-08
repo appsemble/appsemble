@@ -7,24 +7,25 @@ import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models';
 import { KoaContext } from '../types';
+import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
 
-function mayRegister({ argv }: KoaContext): void {
+function mayRegister(): void {
   if (argv.disableRegistration) {
     throw forbidden('Registration is disabled');
   }
 }
 
 export async function registerEmail(ctx: KoaContext): Promise<void> {
-  await mayRegister(ctx);
+  mayRegister();
   const {
-    argv,
     mailer,
     request: {
-      body: { email, name, password },
+      body: { name, password },
     },
   } = ctx;
 
+  const email = ctx.request.body.email.toLowerCase();
   const hashedPassword = await hash(password, 10);
   const key = randomBytes(40).toString('hex');
   let user: User;
@@ -62,7 +63,7 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
       logger.error(error);
     });
 
-  ctx.body = createJWTResponse(user.id, argv);
+  ctx.body = createJWTResponse(user.id);
 }
 
 export async function verifyEmail(ctx: KoaContext): Promise<void> {
@@ -86,19 +87,14 @@ export async function verifyEmail(ctx: KoaContext): Promise<void> {
 }
 
 export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
-  const {
-    argv: { host },
-    mailer,
-    request: {
-      body: { email },
-    },
-  } = ctx;
+  const { mailer, request } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const record = await EmailAuthorization.findByPk(email, { raw: true });
   if (record && !record.verified) {
     const { key } = record;
     await mailer.sendTemplateEmail(record, 'resend', {
-      url: `${host}/verify?token=${key}`,
+      url: `${argv.host}/verify?token=${key}`,
     });
   }
 
@@ -106,14 +102,9 @@ export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
 }
 
 export async function requestResetPassword(ctx: KoaContext): Promise<void> {
-  const {
-    argv: { host },
-    mailer,
-    request: {
-      body: { email },
-    },
-  } = ctx;
+  const { mailer, request } = ctx;
 
+  const email = request.body.email.toLowerCase();
   const emailRecord = await EmailAuthorization.findByPk(email);
 
   if (emailRecord) {
@@ -123,7 +114,7 @@ export async function requestResetPassword(ctx: KoaContext): Promise<void> {
     const token = randomBytes(40).toString('hex');
     await ResetPasswordToken.create({ UserId: user.id, token });
     await mailer.sendTemplateEmail({ email, name }, 'reset', {
-      url: `${host}/edit-password?token=${token}`,
+      url: `${argv.host}/edit-password?token=${token}`,
     });
   }
 

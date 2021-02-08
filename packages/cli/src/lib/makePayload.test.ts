@@ -1,5 +1,4 @@
-import { join } from 'path';
-
+import { resolveFixture } from '@appsemble/node-utils';
 import concat from 'concat-stream';
 
 import { makePayload } from './makePayload';
@@ -10,7 +9,7 @@ it('should create a form-data payload', async () => {
     name: '@org/block',
     output: 'output',
     version: '1.2.3',
-    dir: join(__dirname, '__fixtures__', 'makePayload', 'no-icon'),
+    dir: resolveFixture('makePayload/no-icon'),
     parameters: { type: 'object' },
     actions: { onClick: {} },
     events: { listen: { test: {} } },
@@ -55,7 +54,7 @@ it('should include an icon if one is present', async () => {
     name: '@org/block',
     output: 'output',
     version: '1.2.3',
-    dir: join(__dirname, '__fixtures__', 'makePayload', 'with-icon'),
+    dir: resolveFixture('makePayload/with-icon'),
     parameters: {},
     actions: {},
     events: {},

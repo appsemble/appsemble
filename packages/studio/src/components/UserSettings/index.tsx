@@ -18,7 +18,7 @@ import {
 } from '@appsemble/react-components';
 import { has } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -51,15 +51,16 @@ export function UserSettings(): ReactElement {
   );
 
   const onAddNewEmail = useCallback(
-    async (values) => {
-      await axios.post('/api/user/email', values);
+    async (values: { email: string }) => {
+      const email = values.email.toLowerCase();
+      await axios.post('/api/user/email', { email });
       push({
         body: formatMessage(messages.addEmailSuccess),
         color: 'success',
       });
       setEmails(
         emails
-          .concat({ ...values, verified: false })
+          .concat({ email, verified: false })
           .sort(({ email: a }, { email: b }) => a.localeCompare(b)),
       );
     },
@@ -149,7 +150,7 @@ export function UserSettings(): ReactElement {
             required
           >
             {Object.entries(supportedLanguages).map(([code, name]) => (
-              <option key={code} value={code.toLowerCase()}>
+              <option key={code} value={code}>
                 {name}
               </option>
             ))}
@@ -163,7 +164,7 @@ export function UserSettings(): ReactElement {
       </Content>
       <hr />
       <Content>
-        <Title>
+        <Title size={4}>
           <FormattedMessage {...messages.emails} />
         </Title>
         <SimpleForm defaultValues={{ email: '' }} onSubmit={onAddNewEmail} resetOnSuccess>

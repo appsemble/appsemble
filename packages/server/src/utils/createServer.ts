@@ -33,7 +33,8 @@ import { frontend } from '../middleware/frontend';
 import { tinyRouter } from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
 import { bulmaHandler } from '../routes/bulmaHandler';
-import { Argv, KoaContext, KoaMiddleware } from '../types';
+import { KoaContext, KoaMiddleware } from '../types';
+import { argv } from './argv';
 import { authentication } from './authentication';
 import { convertToCsv } from './convertToCsv';
 import { Mailer } from './email/Mailer';
@@ -56,11 +57,6 @@ async function xWwwFormUrlencodedParser(
 
 interface CreateServerOptions {
   /**
-   * The CLI arguments processed by yargs.
-   */
-  argv: Argv;
-
-  /**
    * Additional middleware to inject before any other middleware.
    *
    * This is used for testing purposes.
@@ -74,10 +70,9 @@ interface CreateServerOptions {
 }
 
 export async function createServer({
-  argv = {},
   middleware,
   webpackConfigs,
-}: CreateServerOptions): Promise<Koa> {
+}: CreateServerOptions = {}): Promise<Koa> {
   const app = new Koa();
   app.keys = [argv.secret];
   app.proxy = argv.proxy;
@@ -87,7 +82,7 @@ export async function createServer({
   app.use(loggerMiddleware());
   app.use(boomMiddleware());
   app.use(range);
-  Object.assign(app.context, { argv, mailer: new Mailer(argv) });
+  Object.assign(app.context, { mailer: new Mailer() });
 
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
@@ -120,7 +115,7 @@ export async function createServer({
         await koas(api(readPackageJson().version, argv), [
           specHandler(),
           swaggerUI({ url: '/api-explorer' }),
-          security(authentication(argv) as any),
+          security(authentication() as any),
           parameters(),
           bodyParser({
             parsers: {

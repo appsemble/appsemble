@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
-import { h, VNode } from 'preact';
+import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
 import { DateField, InputProps } from '../../../block';
@@ -31,13 +31,13 @@ export function DateInput({
   const required = isRequired(field);
 
   const handleOnChange = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLInputElement>, v: string): void =>
+    (event: JSX.TargetedEvent<HTMLInputElement>, v: string): void =>
       onChange(event, extractDate(new Date(v))),
     [onChange],
   );
 
-  const maxDate = useMemo(() => extractDate(getMaxDate(field)), [field]);
-  const minDate = useMemo(() => extractDate(getMinDate(field)), [field]);
+  const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
+  const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
 
   return (
     <DateTimeComponent

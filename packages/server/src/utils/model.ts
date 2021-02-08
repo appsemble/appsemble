@@ -8,7 +8,7 @@ import yaml from 'js-yaml';
 import { omit } from 'lodash';
 
 import * as models from '../models';
-import { Argv } from '../types';
+import { argv } from './argv';
 
 /**
  * Normalizes an app record for consistant return values.
@@ -32,17 +32,19 @@ export function getAppFromRecord(
     domain: record.domain || null,
     path: record.path,
     private: Boolean(record.private),
+    hasMaskableIcon: Boolean(record.maskableIcon),
+    iconBackground: record.iconBackground || '#ffffff',
     iconUrl: `/api/apps/${record.id}/icon`,
+    longDescription: record.longDescription,
     definition,
     yaml: record.yaml || yaml.safeDump(record.definition),
-    ...(record.get('RatingCount') && {
-      rating: {
-        average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,
-        count: record.get('RatingCount') ? Number(record.get('RatingCount')) : null,
-      },
-    }),
-    ...(record.get('ResourceCount') &&
-      record.template && { resources: record.get('ResourceCount') > 0 }),
+    rating: record.get('RatingCount')
+      ? {
+          average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,
+          count: record.get('RatingCount') ? Number(record.get('RatingCount')) : null,
+        }
+      : undefined,
+    resources: record.template && record.get('ResourceCount') ? true : undefined,
     OrganizationId: record.OrganizationId,
     screenshotUrls: record.AppScreenshots?.map(
       ({ id }) => `/api/apps/${record.id}/screenshots/${id}`,
@@ -53,13 +55,12 @@ export function getAppFromRecord(
 }
 
 export async function createOAuth2AuthorizationCode(
-  { host }: Argv,
   app: models.App,
   redirectUri: string,
   scope: string,
   user: models.User,
 ): Promise<types.OAuth2AuthorizationCode> {
-  const appHost = `${app.path}.${app.OrganizationId}.${new URL(host).hostname}`;
+  const appHost = `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
   const redirectHost = new URL(redirectUri).hostname;
   if (redirectHost !== appHost && redirectHost !== app.domain) {
     throw forbidden('Invalid redirectUri');

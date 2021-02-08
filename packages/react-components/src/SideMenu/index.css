@@ -1,0 +1,40 @@
+@value menu-width: 18rem;
+
+.button {
+  background: none;
+  border: none;
+  color: hsl(0, 0%, 100%);
+  outline: none;
+}
+
+.sideMenuWrapper {
+  height: 100%;
+
+  @media screen and (min-width: 1024px) {
+    padding-left: menu-width;
+  }
+}
+
+.sideMenu {
+  background-color: hsl(0, 0%, 100%);
+  bottom: 0;
+  box-shadow: 0 0 1em -0.125em hsl(0deg 0% 4% / 10%);
+  /* stylelint-disable-next-line function-calc-no-invalid, function-calc-no-unspaced-operator */
+  left: calc(-1 * menu-width);
+  overflow-y: auto;
+  position: fixed;
+
+  /* This matches the size of the navbar */
+  top: 3.25rem;
+  transition: left 0.15s;
+  width: menu-width;
+  z-index: 5;
+
+  @media screen and (min-width: 1024px) {
+    left: 0;
+  }
+
+  &.open {
+    left: 0;
+  }
+}

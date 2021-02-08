@@ -15,6 +15,7 @@ import {
 } from '../../models';
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
+import { argv } from '../../utils/argv';
 import { createJWTResponse } from '../../utils/createJWTResponse';
 import { hasScope } from '../../utils/oauth2';
 
@@ -37,7 +38,7 @@ class GrantError extends Error {
 }
 
 function checkTokenRequestParameters(
-  query: Record<string, string | string[]>,
+  query: Record<string, string[] | string>,
   allowed: string[],
 ): Record<string, string> {
   Object.entries(query).forEach(([key, value]) => {
@@ -59,7 +60,7 @@ function checkTokenRequestParameters(
  * @param ctx - The Koa context.
  */
 export async function tokenHandler(ctx: KoaContext): Promise<void> {
-  const { argv, header } = ctx;
+  const { header } = ctx;
   let aud: string;
   let refreshToken: boolean;
   let scope: string;
@@ -166,7 +167,7 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         // Validate user credentials
         const emailAuth = await EmailAuthorization.findOne({
           include: [User],
-          where: { email: username },
+          where: { email: username.toLowerCase() },
         });
         if (!emailAuth) {
           throw new GrantError('invalid_grant');
@@ -205,5 +206,5 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
     throw error;
   }
 
-  ctx.body = createJWTResponse(sub, argv, { aud, refreshToken, scope });
+  ctx.body = createJWTResponse(sub, { aud, refreshToken, scope });
 }
