@@ -2,6 +2,7 @@ import { relative } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockManifest } from '@appsemble/types';
+import normalizePath from 'normalize-path';
 import {
   createProgram,
   findConfigFile,
@@ -276,7 +277,7 @@ export function getBlockConfigFromTypeScript(
         }
         const { line } = sourceFile.getLineAndCharacterOfPosition(iface.getStart(sourceFile));
         // Line numbers are 0 indexed, whereas they are usually represented as 1 indexed.
-        const loc = `${fileName}:${line + 1}`;
+        const loc = normalizePath(`${fileName}:${line + 1}`);
 
         switch (iface.name.text) {
           case 'Actions':
