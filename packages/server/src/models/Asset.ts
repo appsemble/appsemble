@@ -5,7 +5,6 @@ import {
   CreatedAt,
   DataType,
   Default,
-  DeletedAt,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -15,7 +14,7 @@ import {
 
 import { App, Resource, User } from '.';
 
-@Table({ tableName: 'Asset', paranoid: true })
+@Table({ tableName: 'Asset' })
 export class Asset extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
@@ -37,9 +36,6 @@ export class Asset extends Model {
 
   @UpdatedAt
   updated: Date;
-
-  @DeletedAt
-  deleted: Date;
 
   @ForeignKey(() => App)
   @Column
