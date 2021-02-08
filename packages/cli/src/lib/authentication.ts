@@ -8,6 +8,8 @@ import { BaseArguments } from '../types';
 
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 
+const authorizedRemotes = new Set<string>();
+
 function validate(credentials: string): boolean {
   return /.+:.+/.test(credentials);
 }
@@ -124,13 +126,29 @@ export async function authenticate(
   inputCredentials: string,
 ): Promise<void> {
   const credentials = await getClientCredentials(remote, inputCredentials);
+  if (authorizedRemotes.has(remote)) {
+    logger.verbose(`Already logged in to ${remote}`);
+    return;
+  }
   logger.verbose(`Logging in to ${remote}`);
   const { data } = await axios.post(
     '/oauth2/token',
     new URLSearchParams({ grant_type: 'client_credentials', scope }),
-    { headers: { authorization: `Basic ${Buffer.from(credentials).toString('base64')}` } },
+    {
+      headers: { authorization: `Basic ${Buffer.from(credentials).toString('base64')}` },
+      baseURL: remote,
+    },
   );
-  axios.defaults.headers.common.authorization = `Bearer ${data.access_token}`;
-  logger.info('Logged in succesfully');
+  authorizedRemotes.add(remote);
+  axios.interceptors.request.use((config) => {
+    if (config.baseURL === remote) {
+      return {
+        ...config,
+        headers: { authorization: `Bearer ${data.access_token}`, ...config.headers },
+      };
+    }
+    return config;
+  });
+  logger.info(`Logged in to ${remote} succesfully`);
   logger.verbose(`Login scope: ${scope}`);
 }

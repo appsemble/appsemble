@@ -1,30 +1,33 @@
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
+import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { authenticate } from '../../lib/authentication';
 import { updateApp } from '../../lib/updateApp';
 import { BaseArguments } from '../../types';
 
-interface CreateAppArguments extends BaseArguments {
-  path: string;
-  appId: number;
+interface UpdateAppArguments extends BaseArguments {
+  context: string;
+  paths: string[];
+  id: number;
   private: boolean;
   template: boolean;
 }
 
-export const command = 'update <path>';
-export const description = 'Updated a new App based on a specified YAML file or directory.';
+export const command = 'update <paths...>';
+export const description = 'Update an app based on a specified YAML file or directory.';
 
 export function builder(yargs: Argv): Argv {
   return yargs
-    .positional('path', {
+    .positional('paths', {
       describe: 'The path to the app to register',
       normalize: true,
     })
-    .option('app-id', {
+    .option('context', {
+      describe: 'If specified, use the specified context from .appsemblerc.yaml',
+    })
+    .option('id', {
       describe: 'The ID of the app to update.',
-      demand: true,
       type: 'number',
     })
     .option('private', {
@@ -40,14 +43,31 @@ export function builder(yargs: Argv): Argv {
 }
 
 export async function handler({
-  appId,
   clientCredentials,
-  path,
+  context,
+  id,
+  paths,
   private: isPrivate,
   remote,
   template,
-}: CreateAppArguments): Promise<void> {
-  await authenticate(remote, 'apps:write', clientCredentials);
-  logger.info(`Updating App ${appId}`);
-  await updateApp({ appId, path: normalizePath(path), private: isPrivate, remote, template });
+}: UpdateAppArguments): Promise<void> {
+  if (id != null && paths.length) {
+    throw new AppsembleError('Only one path may be specified when specifying an app id');
+  }
+
+  const normalizedPaths = paths.map((path) => normalizePath(path));
+  const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
+
+  logger.info(`Updating ${directories.length} apps`);
+  for (const dir of directories) {
+    await updateApp({
+      clientCredentials,
+      context,
+      id,
+      path: dir,
+      private: isPrivate,
+      remote,
+      template,
+    });
+  }
 }
