@@ -14,7 +14,7 @@ interface UpdateAppArguments extends BaseArguments {
   template: boolean;
 }
 
-export const command = 'update <paths...>;
+export const command = 'update <paths...>';
 export const description = 'Update an app based on a specified YAML file or directory.';
 
 export function builder(yargs: Argv): Argv {
