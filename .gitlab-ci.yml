@@ -130,6 +130,16 @@ validate:
   script:
     - yarn scripts validate
 
+# Workaround for upstream bug in GitLab
+weblate:
+  image: busybox
+  rules:
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == 'i18n'
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo 'This is a workaround for https://gitlab.com/gitlab-org/gitlab/-/issues/300792'
+
 ###################################################################################################
 #  Build Stage                                                                                    #
 ###################################################################################################
