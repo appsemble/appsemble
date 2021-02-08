@@ -1898,6 +1898,7 @@ describe('setAppBlockStyle', () => {
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
         OrganizationId: organization.id,
+        locked: true,
       },
       { raw: true },
     );
@@ -2021,8 +2022,15 @@ describe('setAppBlockStyle', () => {
 
   it('should not allow to update an app using non-existent blocks', async () => {
     authorizeStudio();
+    const { id } = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
     const response = await request.patch(
-      '/api/apps/1',
+      `/api/apps/${id}`,
       createFormData({
         'organization.id': organization.id,
         definition: {
@@ -2051,8 +2059,15 @@ describe('setAppBlockStyle', () => {
 
   it('should not allow to update an app using non-existent block versions', async () => {
     authorizeStudio();
+    const { id } = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
     const response = await request.patch(
-      '/api/apps/1',
+      `/api/apps/${id}`,
       createFormData({
         definition: {
           name: 'Test App',
