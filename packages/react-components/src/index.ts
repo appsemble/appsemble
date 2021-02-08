@@ -26,6 +26,7 @@ export * from './MarkdownContent';
 export * from './MenuSection';
 export * from './Message';
 export * from './MessagesProvider';
+export * from './Meta';
 export * from './Modal';
 export * from './OAuth2LoginButton';
 export * from './PasswordField';

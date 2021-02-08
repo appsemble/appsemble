@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  title: 'Settings',
   chooseFile: 'Choose file…',
   noFile: 'No file chosen',
   icon: 'Icon',

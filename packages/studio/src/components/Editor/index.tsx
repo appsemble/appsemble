@@ -5,6 +5,7 @@ import {
   useBeforeUnload,
   useConfirmation,
   useMessages,
+  useMeta,
 } from '@appsemble/react-components';
 import { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
@@ -28,7 +29,6 @@ import { getAppUrl } from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import { GUIEditor } from '../GUIEditor';
 import { GuiEditorStep } from '../GUIEditor/types';
-import { HelmetIntl } from '../HelmetIntl';
 import { MonacoEditor } from '../MonacoEditor';
 import { EditorNavBar } from './EditorNavBar';
 import styles from './index.css';
@@ -51,9 +51,10 @@ const monacoGuiOptions: Options = {
 };
 
 export function Editor(): ReactElement {
+  useMeta(messages.title);
+
   const { app, setApp } = useApp();
 
-  const [appName, setAppName] = useState('');
   const [recipe, setRecipe] = useState<string>(null);
   const [coreStyle, setCoreStyle] = useState('');
   const [sharedStyle, setSharedStyle] = useState('');
@@ -113,7 +114,6 @@ export function Editor(): ReactElement {
       push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
     }
 
-    setAppName(definition.name);
     setRecipe(yamlRecipe);
     setInitialRecipe(yamlRecipe);
     setPath(p);
@@ -227,7 +227,6 @@ export function Editor(): ReactElement {
       return;
     }
 
-    setAppName(definition.name);
     setDirty(true);
     setInitialRecipe(recipe);
   }, [formatMessage, params, push, recipe, sharedStyle, coreStyle, setApp, valid]);
@@ -305,7 +304,6 @@ export function Editor(): ReactElement {
 
   return (
     <div className={`${styles.root} is-flex`}>
-      <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
         <Form onSubmit={onSave}>
           <EditorNavBar

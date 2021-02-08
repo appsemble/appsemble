@@ -1,10 +1,9 @@
-import { Content, Message, SentryForm, Title } from '@appsemble/react-components';
+import { Content, Message, SentryForm, Title, useMeta } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { sentryDsn } from '../../utils/settings';
-import { HelmetIntl } from '../HelmetIntl';
 import { Toolbar } from '../Toolbar';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
@@ -20,11 +19,11 @@ interface ErrorFallbackProps {
  * Capture renderer errors using Sentry.
  */
 export function ErrorFallback({ eventId }: ErrorFallbackProps): ReactElement {
+  useMeta(messages.title);
   const user = useUser();
 
   return (
     <>
-      <HelmetIntl title={messages.title} />
       <Toolbar />
       <Content className="py-3">
         <Message color="danger">

@@ -1,7 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Block Details · {name}',
   blockIcon: 'Block Icon',
   error: 'Something went wrong when fetching this block.',
 });

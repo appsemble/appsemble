@@ -1,4 +1,11 @@
-import { AsyncSelect, Table, Title, useData, useMessages } from '@appsemble/react-components';
+import {
+  AsyncSelect,
+  Table,
+  Title,
+  useData,
+  useMessages,
+  useMeta,
+} from '@appsemble/react-components';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -6,7 +13,6 @@ import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import { AsyncDataView } from '../AsyncDataView';
-import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
 
@@ -18,6 +24,7 @@ export interface Member {
 }
 
 export function Roles(): ReactElement {
+  useMeta(messages.title);
   const { formatMessage } = useIntl();
   const push = useMessages();
   const { lang } = useParams<{ lang: string }>();
@@ -51,7 +58,6 @@ export function Roles(): ReactElement {
 
   return (
     <>
-      <HelmetIntl title={messages.title} />
       <Title>
         <FormattedMessage {...messages.members} />
       </Title>

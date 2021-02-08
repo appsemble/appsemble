@@ -6,6 +6,7 @@ import {
   SimpleSubmit,
   Title,
   useMessages,
+  useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
@@ -13,10 +14,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
-import { HelmetIntl } from '../HelmetIntl';
 import { messages } from './messages';
 
 export function Notifications(): ReactElement {
+  useMeta(messages.title);
+
   const { app } = useApp();
   const { lang } = useParams<{ lang: string }>();
 
@@ -39,8 +41,6 @@ export function Notifications(): ReactElement {
 
   return (
     <Content>
-      <HelmetIntl title={messages.title} />
-
       <Title>
         <FormattedMessage {...messages.title} />
       </Title>

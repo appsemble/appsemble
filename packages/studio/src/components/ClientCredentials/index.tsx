@@ -16,6 +16,7 @@ import {
   Title,
   useConfirmation,
   useData,
+  useMeta,
   useToggle,
 } from '@appsemble/react-components';
 import { scopes as knownScopes } from '@appsemble/utils';
@@ -24,11 +25,12 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import { OAuth2ClientCredentials } from '../../types';
-import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
 import { messages } from './messages';
 
 export function ClientCredentials(): ReactElement {
+  useMeta(messages.title);
+
   const { formatMessage } = useIntl();
   const { data: clients, error, loading, refresh, setData: setClients } = useData<
     OAuth2ClientCredentials[]
@@ -90,7 +92,6 @@ export function ClientCredentials(): ReactElement {
 
   return (
     <>
-      <HelmetIntl title={messages.title} />
       <Title>
         <FormattedMessage {...messages.title} />
       </Title>

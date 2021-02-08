@@ -2,6 +2,7 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   title: 'Login',
+  description: 'Login to Appsemble',
   loginFailed: 'Login failed',
   emailLabel: 'Email',
   emailInvalid: 'This must be a valid email address',

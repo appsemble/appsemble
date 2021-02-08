@@ -1,8 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Settings · Social login',
-  header: 'Social login',
+  title: 'Social login',
   connectAccount: 'Connect {name} account',
   disconnectAccount: 'Disconnect {name} account',
   disconnectError: 'There was a problem disconnecting {name}',

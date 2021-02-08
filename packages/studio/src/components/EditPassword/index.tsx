@@ -7,6 +7,7 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
+  useMeta,
   useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
@@ -14,10 +15,11 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { HelmetIntl } from '../HelmetIntl';
 import { messages } from './messages';
 
 export function EditPassword(): ReactElement {
+  useMeta(messages.title);
+
   const qs = useQuery();
   const [success, setSuccess] = useState(false);
   const token = qs.get('token');
@@ -36,7 +38,6 @@ export function EditPassword(): ReactElement {
 
   return (
     <Content padding>
-      <HelmetIntl title={messages.title} />
       {success ? (
         <Message color="success">
           <FormattedMessage {...messages.requestSuccess} />

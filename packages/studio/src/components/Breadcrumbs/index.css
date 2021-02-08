@@ -1,0 +1,12 @@
+.root {
+  margin: 0 auto;
+  max-width: 960px;
+}
+
+.breadcrumb:not(:last-child) {
+  &::after {
+    content: '>';
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+}

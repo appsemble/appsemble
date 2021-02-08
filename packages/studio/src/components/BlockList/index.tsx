@@ -3,7 +3,6 @@ import { BlockManifest } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HelmetIntl } from '../HelmetIntl';
 import { BlockCard } from './BlockCard';
 import styles from './index.css';
 import { messages } from './messages';
@@ -34,16 +33,13 @@ export function BlockList(): ReactElement {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <>
-      <HelmetIntl title={messages.title} />
-      <div className={styles.blockList}>
-        {appsembleBlocks.map((block) => (
-          <BlockCard block={block} key={block.name} />
-        ))}
-        {thirdPartyBlocks.map((block) => (
-          <BlockCard block={block} key={block.name} />
-        ))}
-      </div>
-    </>
+    <div className={styles.blockList}>
+      {appsembleBlocks.map((block) => (
+        <BlockCard block={block} key={block.name} />
+      ))}
+      {thirdPartyBlocks.map((block) => (
+        <BlockCard block={block} key={block.name} />
+      ))}
+    </div>
   );
 }

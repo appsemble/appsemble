@@ -1,14 +1,16 @@
+import { MetaSwitch } from '@appsemble/react-components/src';
 import { ReactElement } from 'react';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { CMSRoot } from '../CMSRoot';
 import { ResourceTable } from '../ResourceTable';
+import { messages } from './messages';
 
 export function CMS(): ReactElement {
   const { path, url } = useRouteMatch();
 
   return (
-    <Switch>
+    <MetaSwitch title={messages.title}>
       <Route exact path={path}>
         <CMSRoot />
       </Route>
@@ -16,6 +18,6 @@ export function CMS(): ReactElement {
         <ResourceTable />
       </Route>
       <Redirect to={url} />
-    </Switch>
+    </MetaSwitch>
   );
 }

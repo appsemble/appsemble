@@ -7,6 +7,7 @@ import {
   Subtitle,
   Title,
   useData,
+  useMeta,
 } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { Fragment, ReactElement, useCallback } from 'react';
@@ -14,7 +15,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import { Definition } from 'typescript-json-schema';
 
-import { HelmetIntl } from '../HelmetIntl';
 import { ActionTable } from './ActionTable';
 import { EventTable } from './EventTable';
 import styles from './index.css';
@@ -61,6 +61,10 @@ export function BlockDetails(): ReactElement {
     [history, url, urlVersion],
   );
 
+  const selectedBlockManifest = blockVersions?.find((block) => block.version === urlVersion);
+
+  useMeta(`@${organization}/${blockName}`, selectedBlockManifest?.description);
+
   if (error) {
     return (
       <Message color="danger">
@@ -73,96 +77,89 @@ export function BlockDetails(): ReactElement {
     return <Loader />;
   }
 
-  const selectedBlockManifest = blockVersions.find((block) => block.version === urlVersion);
-
   if (!selectedBlockManifest) {
     return <Redirect to={`${url}/${blockVersions[0].version}`} />;
   }
 
   return (
-    <>
-      <HelmetIntl title={messages.title} titleValues={{ name: `@${organization}/${blockName}` }} />
-      <Content className={`content ${styles.content}`}>
-        <div>
-          <figure className="image is-inline-block is-marginless is-64x64 mr-4">
-            <img
-              alt={formatMessage(messages.blockIcon)}
-              src={`/api/blocks/@${organization}/${blockName}/versions/${urlVersion}/icon`}
-            />
-          </figure>
-          <header className="is-inline-block">
-            <Title level={2}>{blockName}</Title>
-            <Subtitle level={4}>@{organization}</Subtitle>
-          </header>
-        </div>
-        <SelectField
-          disabled={blockVersions.length === 1}
-          label={untranslatedMessages.selectedVersion}
-          name="selectedVersion"
-          onChange={onSelectedVersionChange}
-          required
-          value={urlVersion}
-        >
-          {blockVersions.map(({ version }) => (
-            <option key={version} value={version}>
-              {version}
-            </option>
-          ))}
-        </SelectField>
-
-        <Title level={4}>{untranslatedMessages.description}</Title>
-        {selectedBlockManifest.description && (
-          <Message>{selectedBlockManifest.description}</Message>
-        )}
-        {selectedBlockManifest.longDescription && (
-          <MarkdownContent
-            className={styles.description}
-            content={selectedBlockManifest.longDescription}
+    <Content className={`content ${styles.content}`}>
+      <div>
+        <figure className="image is-inline-block is-marginless is-64x64 mr-4">
+          <img
+            alt={formatMessage(messages.blockIcon)}
+            src={`/api/blocks/@${organization}/${blockName}/versions/${urlVersion}/icon`}
           />
-        )}
+        </figure>
+        <header className="is-inline-block">
+          <Title level={2}>{blockName}</Title>
+          <Subtitle level={4}>@{organization}</Subtitle>
+        </header>
+      </div>
+      <SelectField
+        disabled={blockVersions.length === 1}
+        label={untranslatedMessages.selectedVersion}
+        name="selectedVersion"
+        onChange={onSelectedVersionChange}
+        required
+        value={urlVersion}
+      >
+        {blockVersions.map(({ version }) => (
+          <option key={version} value={version}>
+            {version}
+          </option>
+        ))}
+      </SelectField>
 
-        {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
-          <>
-            <Title level={4}>{untranslatedMessages.parameters}</Title>
-            <ParameterTable parameters={selectedBlockManifest.parameters} />
-          </>
-        )}
-        {Object.keys(selectedBlockManifest.actions || {}).length > 0 && (
-          <>
-            <Title level={4}>{untranslatedMessages.actions}</Title>
-            <ActionTable manifest={selectedBlockManifest} />
-          </>
-        )}
-        {(selectedBlockManifest.events?.emit || selectedBlockManifest.events?.listen) && (
-          <>
-            <Title level={4}>{untranslatedMessages.events}</Title>
-            <EventTable manifest={selectedBlockManifest} />
-          </>
-        )}
+      <Title level={4}>{untranslatedMessages.description}</Title>
+      {selectedBlockManifest.description && <Message>{selectedBlockManifest.description}</Message>}
+      {selectedBlockManifest.longDescription && (
+        <MarkdownContent
+          className={styles.description}
+          content={selectedBlockManifest.longDescription}
+        />
+      )}
 
-        {selectedBlockManifest.parameters?.definitions && (
-          <>
-            <Title level={4}>{untranslatedMessages.definitions}</Title>
-            {Object.entries((selectedBlockManifest.parameters as any).definitions).map(
-              ([key, definition]: [string, Definition]) => (
-                <Fragment key={key}>
-                  <Title level={5}>
-                    <a href={`${url}#${key}`} id={key}>
-                      {key}
-                    </a>
-                  </Title>
-                  {definition.description && <MarkdownContent content={definition.description} />}
-                  {definition.type === 'object' || definition.type === 'array' ? (
-                    <ParameterTable parameters={definition} />
-                  ) : (
-                    <TypeTable definition={definition} />
-                  )}
-                </Fragment>
-              ),
-            )}
-          </>
-        )}
-      </Content>
-    </>
+      {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
+        <>
+          <Title level={4}>{untranslatedMessages.parameters}</Title>
+          <ParameterTable parameters={selectedBlockManifest.parameters} />
+        </>
+      )}
+      {Object.keys(selectedBlockManifest.actions || {}).length > 0 && (
+        <>
+          <Title level={4}>{untranslatedMessages.actions}</Title>
+          <ActionTable manifest={selectedBlockManifest} />
+        </>
+      )}
+      {(selectedBlockManifest.events?.emit || selectedBlockManifest.events?.listen) && (
+        <>
+          <Title level={4}>{untranslatedMessages.events}</Title>
+          <EventTable manifest={selectedBlockManifest} />
+        </>
+      )}
+
+      {selectedBlockManifest.parameters?.definitions && (
+        <>
+          <Title level={4}>{untranslatedMessages.definitions}</Title>
+          {Object.entries((selectedBlockManifest.parameters as any).definitions).map(
+            ([key, definition]: [string, Definition]) => (
+              <Fragment key={key}>
+                <Title level={5}>
+                  <a href={`${url}#${key}`} id={key}>
+                    {key}
+                  </a>
+                </Title>
+                {definition.description && <MarkdownContent content={definition.description} />}
+                {definition.type === 'object' || definition.type === 'array' ? (
+                  <ParameterTable parameters={definition} />
+                ) : (
+                  <TypeTable definition={definition} />
+                )}
+              </Fragment>
+            ),
+          )}
+        </>
+      )}
+    </Content>
   );
 }

@@ -11,6 +11,7 @@ import {
   TextAreaField,
   useConfirmation,
   useMessages,
+  useMeta,
 } from '@appsemble/react-components';
 import { domainPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
@@ -37,6 +38,8 @@ function preprocessDomain(domain: string): string {
  * Render the app settings view.
  */
 export function AppSettings(): ReactElement {
+  useMeta(messages.title);
+
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 
