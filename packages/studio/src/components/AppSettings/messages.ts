@@ -26,4 +26,7 @@ export const messages = defineMessages({
   errorDelete: 'Something went wrong trying to delete this app',
   cancel: 'Cancel',
   dangerZone: 'Dangerous actions',
+  longDescription: 'Long description',
+  longDescriptionDescription:
+    'The long description of the app. This field can be used to describe the app in more detail than the app’s description. Supports Markdown syntax.',
 });

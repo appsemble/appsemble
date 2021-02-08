@@ -223,6 +223,8 @@
   "studio.src.components.AppSettings.errorDelete": "Something went wrong trying to delete this app",
   "studio.src.components.AppSettings.icon": "Icon",
   "studio.src.components.AppSettings.iconDescription": "The icon that will be shown to the user.",
+  "studio.src.components.AppSettings.longDescription": "Long description",
+  "studio.src.components.AppSettings.longDescriptionDescription": "The long description of the app. This field can be used to describe the app in more detail than the app’s description. Supports Markdown syntax.",
   "studio.src.components.AppSettings.noFile": "No file chosen",
   "studio.src.components.AppSettings.path": "Path",
   "studio.src.components.AppSettings.pathDescription": "The path used to access the app.",
