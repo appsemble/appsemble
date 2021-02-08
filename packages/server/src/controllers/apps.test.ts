@@ -856,7 +856,70 @@ pages:
   });
 });
 
-describe('updateApp', () => {
+describe('patchApp', () => {
+  it('should update an app', async () => {
+    const app = await App.create(
+      {
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        path: 'test-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        private: 'true',
+        definition: {
+          name: 'Foobar',
+          defaultPage: app.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: app.id,
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        domain: null,
+        private: true,
+        path: 'test-app',
+        iconUrl: `/api/apps/${app.id}/icon`,
+        OrganizationId: organization.id,
+        definition: {
+          name: 'Foobar',
+          defaultPage: app.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
+        yaml: `name: Foobar
+defaultPage: Test Page
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 0.0.0
+`,
+      },
+    });
+  });
+
   it('should not update a non-existent app', async () => {
     authorizeStudio();
     const response = await request.patch(
@@ -883,71 +946,8 @@ describe('updateApp', () => {
     });
   });
 
-  it('should update an app', async () => {
-    const appA = await App.create(
-      {
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        path: 'test-app',
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
-
-    authorizeStudio();
-    const response = await request.patch(
-      `/api/apps/${appA.id}`,
-      createFormData({
-        private: 'true',
-        definition: {
-          name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
-      }),
-    );
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: appA.id,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        domain: null,
-        private: true,
-        path: 'test-app',
-        iconUrl: `/api/apps/${appA.id}/icon`,
-        OrganizationId: organization.id,
-        definition: {
-          name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
-        yaml: `name: Foobar
-defaultPage: Test Page
-pages:
-  - name: Test Page
-    blocks:
-      - type: test
-        version: 0.0.0
-`,
-      },
-    });
-  });
-
   it('should verify the YAML on validity when updating an app', async () => {
-    const appA = await App.create(
+    const app = await App.create(
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -960,11 +960,11 @@ pages:
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/apps/${appA.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         definition: {
           name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
+          defaultPage: app.definition.defaultPage,
           pages: [
             {
               name: 'Test Page',
@@ -987,7 +987,7 @@ pages:
   });
 
   it('should verify if the supplied YAML is the same as the app definition when updating an app', async () => {
-    const appA = await App.create({
+    const app = await App.create({
       path: 'test-app',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
@@ -997,11 +997,11 @@ pages:
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/apps/${appA.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         definition: {
           name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
+          defaultPage: app.definition.defaultPage,
           pages: [
             {
               name: 'Test Page',
@@ -1031,7 +1031,7 @@ pages:
   });
 
   it('should allow for formatted YAML when updating an app', async () => {
-    const appA = await App.create({
+    const app = await App.create({
       path: 'test-app',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
@@ -1051,12 +1051,12 @@ pages:
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/apps/${appA.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         yaml: Buffer.from(yaml),
         definition: {
           name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
+          defaultPage: app.definition.defaultPage,
           pages: [
             {
               name: 'Test Page',
@@ -1070,17 +1070,17 @@ pages:
     expect(response).toMatchObject({
       status: 200,
       data: {
-        id: appA.id,
+        id: app.id,
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
         private: false,
         path: 'test-app',
-        iconUrl: `/api/apps/${appA.id}/icon`,
+        iconUrl: `/api/apps/${app.id}/icon`,
         OrganizationId: organization.id,
         definition: {
           name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
+          defaultPage: app.definition.defaultPage,
           pages: [
             {
               name: 'Test Page',
@@ -1094,7 +1094,7 @@ pages:
   });
 
   it('should update the app domain', async () => {
-    const appA = await App.create({
+    const app = await App.create({
       path: 'foo',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
@@ -1104,7 +1104,7 @@ pages:
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/apps/${appA.id}`,
+      `/api/apps/${app.id}`,
       createFormData({ domain: 'appsemble.app' }),
     );
 
@@ -1117,7 +1117,7 @@ pages:
   });
 
   it('should set the app domain to null', async () => {
-    const appA = await App.create(
+    const app = await App.create(
       {
         path: 'foo',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -1129,7 +1129,7 @@ pages:
     );
 
     authorizeStudio();
-    const response = await request.patch(`/api/apps/${appA.id}`, createFormData({ domain: '' }));
+    const response = await request.patch(`/api/apps/${app.id}`, createFormData({ domain: '' }));
 
     expect(response).toMatchObject({
       status: 200,
@@ -1140,7 +1140,7 @@ pages:
   });
 
   it('should save formatted YAML when updating an app', async () => {
-    const appA = await App.create(
+    const app = await App.create(
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -1164,11 +1164,11 @@ pages:
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/apps/${appA.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         definition: {
           name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
+          defaultPage: app.definition.defaultPage,
           pages: [
             {
               name: 'Test Page',
@@ -1186,7 +1186,7 @@ pages:
 
   it('should not update an app of another organization', async () => {
     const newOrganization = await Organization.create({ id: 'Test Organization 2' });
-    const appA = await App.create({
+    const app = await App.create({
       path: 'test-app',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
@@ -1196,11 +1196,11 @@ pages:
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/apps/${appA.id}`,
+      `/api/apps/${app.id}`,
       createFormData({
         definition: {
           name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
+          defaultPage: app.definition.defaultPage,
           pages: [
             {
               name: 'Test Page',
@@ -1232,7 +1232,7 @@ pages:
   });
 
   it('should validate an app on update', async () => {
-    const appA = await App.create({
+    const app = await App.create({
       path: 'foo',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
@@ -1242,7 +1242,7 @@ pages:
 
     authorizeStudio();
     const response = await request.patch(
-      `/api/apps/${appA.id}`,
+      `/api/apps/${app.id}`,
       createFormData({ definition: { name: 'Foobar' } }),
     );
 
@@ -1250,6 +1250,155 @@ pages:
       status: 400,
       data: {},
     });
+  });
+
+  it('should validate and update css when updating an app', async () => {
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const form = createFormData({
+      definition: {
+        name: 'Foobar',
+        defaultPage: app.definition.defaultPage,
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'test', version: '0.0.0' }],
+          },
+        ],
+      },
+    });
+    form.append('coreStyle', Buffer.from('body { color: yellow; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    form.append('sharedStyle', Buffer.from('body { color: blue; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}`, form);
+
+    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
+    const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
+
+    expect(response).toMatchObject({ status: 200 });
+    expect(coreStyle).toMatchObject({ status: 200, data: 'body { color: yellow; }' });
+    expect(sharedStyle).toMatchObject({ status: 200, data: 'body { color: blue; }' });
+  });
+
+  it('should not allow invalid core stylesheets when updating an app', async () => {
+    const app = await App.create(
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    const formA = createFormData({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        path: 'a',
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'test', version: '0.0.0' }],
+          },
+        ],
+      },
+    });
+    formA.append('coreStyle', Buffer.from('this is invalid css'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    authorizeStudio();
+    const responseA = await request.patch(`/api/apps/${app.id}`, formA);
+
+    const formB = createFormData({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        path: 'a',
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'test', version: '0.0.0' }],
+          },
+        ],
+      },
+    });
+    formB.append('coreStyle', Buffer.from('.foo { margin: 0 auto; }'), {
+      contentType: 'application/json',
+      filename: 'style.json',
+    });
+    authorizeStudio();
+    const responseB = await request.patch(`/api/apps/${app.id}`, formB);
+
+    expect(responseA.status).toBe(400);
+    expect(responseB.status).toBe(400);
+  });
+
+  it('should not allow invalid shared stylesheets when updating an app', async () => {
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const formA = createFormData({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        path: 'a',
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'testblock' }],
+          },
+        ],
+      },
+    });
+    formA.append('sharedStyle', Buffer.from('this is invalid css'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    authorizeStudio();
+    const responseA = await request.patch(`/api/apps/${app.id}`, formA);
+
+    const formB = createFormData({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        path: 'a',
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'testblock' }],
+          },
+        ],
+      },
+    });
+    formB.append('sharedStyle', Buffer.from('.foo { margin: 0 auto; }'), {
+      contentType: 'application/json',
+      filename: 'style.json',
+    });
+    authorizeStudio();
+    const responseB = await request.patch(`/api/apps/${app.id}`, formB);
+
+    expect(responseA.status).toBe(400);
+    expect(responseB.status).toBe(400);
   });
 });
 
@@ -1400,157 +1549,6 @@ describe('getAppIcon', () => {
     });
     expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
     expect(response.data).toMatchImageSnapshot();
-  });
-});
-
-describe('patchApp', () => {
-  it('should validate and update css when updating an app', async () => {
-    const app = await App.create({
-      path: 'bar',
-      definition: { name: 'Test App', defaultPage: 'Test Page' },
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    const form = createFormData({
-      definition: {
-        name: 'Foobar',
-        defaultPage: app.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
-      },
-    });
-    form.append('coreStyle', Buffer.from('body { color: yellow; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-    form.append('sharedStyle', Buffer.from('body { color: blue; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-    authorizeStudio();
-    const response = await request.patch(`/api/apps/${app.id}`, form);
-
-    const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
-    const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
-
-    expect(response).toMatchObject({ status: 200 });
-    expect(coreStyle).toMatchObject({ status: 200, data: 'body { color: yellow; }' });
-    expect(sharedStyle).toMatchObject({ status: 200, data: 'body { color: blue; }' });
-  });
-
-  it('should not allow invalid core stylesheets when updating an app', async () => {
-    const app = await App.create(
-      {
-        path: 'bar',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
-
-    const formA = createFormData({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        path: 'a',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
-      },
-    });
-    formA.append('coreStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-    authorizeStudio();
-    const responseA = await request.patch(`/api/apps/${app.id}`, formA);
-
-    const formB = createFormData({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        path: 'a',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
-      },
-    });
-    formB.append('coreStyle', Buffer.from('.foo { margin: 0 auto; }'), {
-      contentType: 'application/json',
-      filename: 'style.json',
-    });
-    authorizeStudio();
-    const responseB = await request.patch(`/api/apps/${app.id}`, formB);
-
-    expect(responseA.status).toBe(400);
-    expect(responseB.status).toBe(400);
-  });
-
-  it('should not allow invalid shared stylesheets when updating an app', async () => {
-    const app = await App.create({
-      path: 'bar',
-      definition: { name: 'Test App', defaultPage: 'Test Page' },
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    const formA = createFormData({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        path: 'a',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      },
-    });
-    formA.append('sharedStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-    authorizeStudio();
-    const responseA = await request.patch(`/api/apps/${app.id}`, formA);
-
-    const formB = createFormData({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        path: 'a',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      },
-    });
-    formB.append('sharedStyle', Buffer.from('.foo { margin: 0 auto; }'), {
-      contentType: 'application/json',
-      filename: 'style.json',
-    });
-    authorizeStudio();
-    const responseB = await request.patch(`/api/apps/${app.id}`, formB);
-
-    expect(responseA.status).toBe(400);
-    expect(responseB.status).toBe(400);
   });
 });
 
