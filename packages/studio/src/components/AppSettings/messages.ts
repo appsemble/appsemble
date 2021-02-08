@@ -28,5 +28,5 @@ export const messages = defineMessages({
   dangerZone: 'Dangerous actions',
   longDescription: 'Long description',
   longDescriptionDescription:
-    'The long description of the app. This field can be used to describe the app in more detail than the app’s description. Supports Markdown syntax.',
+    'This field can be used to describe the app in more detail than the app’s description. Supports Markdown syntax.',
 });
