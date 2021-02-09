@@ -201,7 +201,7 @@ export function AppSettings(): ReactElement {
           <p className="content">
             <FormattedMessage {...messages.deleteHelp} />
           </p>
-          <Button color="danger" icon="trash-alt" onClick={onDelete}>
+          <Button color="danger" disabled={app.locked} icon="trash-alt" onClick={onDelete}>
             <FormattedMessage {...messages.delete} />
           </Button>
         </Message>

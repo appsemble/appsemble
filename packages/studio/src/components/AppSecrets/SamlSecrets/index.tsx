@@ -51,7 +51,7 @@ export function SamlSecrets(): ReactElement {
     <div>
       <HeaderControl
         control={
-          <Button icon="plus" onClick={modal.enable}>
+          <Button disabled={app.locked} icon="plus" onClick={modal.enable}>
             <FormattedMessage {...messages.addNew} />
           </Button>
         }

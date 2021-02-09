@@ -13,6 +13,7 @@ import { AppOAuth2Secret } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { useApp } from '../../../AppContext';
 import { messages } from './messages';
 
 interface AppSecretCardProps {
@@ -40,6 +41,9 @@ interface AppSecretCardProps {
  */
 export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): ReactElement {
   const { formatMessage } = useIntl();
+  const {
+    app: { locked },
+  } = useApp();
 
   return (
     <Modal
@@ -58,6 +62,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
       title={<FormattedMessage {...messages.modalTitle} />}
     >
       <SimpleFormField
+        disabled={locked}
         help={<FormattedMessage {...messages.nameHelp} />}
         icon="tag"
         label={<FormattedMessage {...messages.nameLabel} />}
@@ -65,6 +70,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
         required
       />
       <SimpleFormField
+        disabled={locked}
         help={<FormattedMessage {...messages.iconHelp} />}
         icon="image"
         label={<FormattedMessage {...messages.iconLabel} />}
@@ -81,6 +87,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
         value={`${window.location.origin}/callback`}
       />
       <SimpleFormField
+        disabled={locked}
         help={<FormattedMessage {...messages.authorizationUrlHelp} />}
         icon="external-link-alt"
         label={<FormattedMessage {...messages.authorizationUrlLabel} />}
@@ -93,6 +100,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
         }}
       />
       <SimpleFormField
+        disabled={locked}
         help={<FormattedMessage {...messages.tokenUrlHelp} />}
         icon="bezier-curve"
         label={<FormattedMessage {...messages.tokenUrlLabel} />}
@@ -105,6 +113,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
         }}
       />
       <SimpleFormField
+        disabled={locked}
         help={<FormattedMessage {...messages.clientIdHelp} />}
         icon="fingerprint"
         label={<FormattedMessage {...messages.clientIdLabel} />}
@@ -115,6 +124,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
         // https://stackoverflow.com/questions/15738259
         autoComplete="one-time-code"
         component={PasswordField}
+        disabled={locked}
         help={<FormattedMessage {...messages.clientSecretHelp} />}
         label={<FormattedMessage {...messages.clientSecretLabel} />}
         name="clientSecret"
@@ -123,12 +133,14 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
       <SimpleFormField
         component={TagsField}
         delimiter=" "
+        disabled={locked}
         help={<FormattedMessage {...messages.scopeHelp} />}
         label={<FormattedMessage {...messages.scopeLabel} />}
         name="scope"
         required
       />
       <SimpleFormField
+        disabled={locked}
         help={<FormattedMessage {...messages.userInfoUrlHelp} />}
         icon="id-card"
         label={<FormattedMessage {...messages.userInfoUrlLabel} />}
@@ -141,6 +153,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
       />
       <SimpleFormField
         component={JSONField}
+        disabled={locked}
         help={<FormattedMessage {...messages.remapperHelp} />}
         label={<FormattedMessage {...messages.remapperLabel} />}
         name="remapper"
