@@ -31,11 +31,10 @@ export function Toolbar(): ReactElement {
           {process.env.APPSEMBLE_VERSION}
         </a>
       </div>
-      <div className="navbar-menu">
-        <div className="navbar-end">
-          <LanguageDropdown />
-          <ProfileDropdown />
-        </div>
+
+      <div className={`navbar-end ${styles.dropdowns}`}>
+        <LanguageDropdown className={styles.dropdown} />
+        <ProfileDropdown className={styles.dropdown} />
       </div>
     </nav>
   );

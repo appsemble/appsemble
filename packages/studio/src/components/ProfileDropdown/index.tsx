@@ -61,37 +61,37 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
       }
     >
       {userInfo && (
-        <Link className="dropdown-item" to={`${url}/settings`}>
+        <Link className="navbar-item" to={`${url}/settings`}>
           <Icon icon="wrench" />
           <span>
             <FormattedMessage {...messages.settings} />
           </span>
         </Link>
       )}
-      <Link className="dropdown-item" to={`${url}/blocks`}>
+      <Link className="navbar-item" to={`${url}/blocks`}>
         <Icon icon="cubes" />
         <span>
           <FormattedMessage {...messages.blocks} />
         </span>
       </Link>
-      <Link className="dropdown-item" to={`${url}/docs`}>
+      <Link className="navbar-item" to={`${url}/docs`}>
         <Icon icon="book" />
         <span>
           <FormattedMessage {...messages.documentation} />
         </span>
       </Link>
       {sentryDsn && (
-        <Link className={`dropdown-item ${styles.logoutButton}`} to={`${url}/feedback`}>
+        <Link className={`navbar-item ${styles.logoutButton}`} to={`${url}/feedback`}>
           <Icon icon="comment" />
           <span>
             <FormattedMessage {...messages.feedback} />
           </span>
         </Link>
       )}
-      <hr className="dropdown-divider" />
+      <hr className="navbar-divider" />
       {userInfo ? (
         <Button
-          className={`dropdown-item pl-5 ${styles.logoutButton}`}
+          className={`navbar-item pl-5 ${styles.logoutButton}`}
           icon="sign-out-alt"
           onClick={logout}
         >
@@ -99,7 +99,7 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
         </Button>
       ) : (
         <Link
-          className={`button dropdown-item ${styles.logoutButton}`}
+          className={`button navbar-item ${styles.logoutButton}`}
           to={{ pathname: `${url}/login`, search: `?${search}` }}
         >
           <Icon icon="sign-in-alt" />
