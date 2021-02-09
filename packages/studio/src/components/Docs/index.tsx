@@ -70,7 +70,7 @@ export function Docs(): ReactElement {
   );
 
   return (
-    <main className={`container content px-2 py-2 ${styles.doc}`}>
+    <main className={`container content pl-6 pr-2 py-2 ${styles.doc}`}>
       <Switch>
         {docs.map(({ Component, path }) => (
           <Route exact key={path} path={getUrl(path)} strict>

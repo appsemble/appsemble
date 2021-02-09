@@ -50,7 +50,7 @@ export function AppList(): ReactElement {
   return (
     <>
       <HelmetIntl title={messages.title} />
-      <Content className={styles.content} main padding>
+      <Content className={styles.content} main>
         <div className="is-flex">
           <InputField
             className="mr-4 mb-0"

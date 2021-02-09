@@ -82,7 +82,7 @@ export function BlockDetails(): ReactElement {
   return (
     <>
       <HelmetIntl title={messages.title} titleValues={{ name: `@${organization}/${blockName}` }} />
-      <Content className={`content px-3 py-3 ${styles.content}`}>
+      <Content className={`content ${styles.content}`}>
         <div>
           <figure className="image is-inline-block is-marginless is-64x64 mr-4">
             <img

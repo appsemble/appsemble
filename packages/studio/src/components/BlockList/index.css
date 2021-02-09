@@ -1,12 +1,13 @@
 .blockList {
   align-items: center;
-  display: flex;
+  display: grid;
   flex-flow: row wrap;
+  grid-auto-rows: 1fr;
+  grid-gap: 1rem;
+
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   justify-content: space-around;
   margin: 0 auto;
   max-width: 960px;
-}
-
-.blockList > div {
-  width: 450px;
 }
