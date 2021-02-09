@@ -32,7 +32,7 @@ export function Register(): ReactElement {
   );
 
   return (
-    <Content padding>
+    <Content>
       <HelmetIntl title={messages.title} />
       <SimpleForm defaultValues={{ email: '', name: '', password: '' }} onSubmit={register}>
         <SimpleFormError>

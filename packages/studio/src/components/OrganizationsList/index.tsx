@@ -66,7 +66,7 @@ export function OrganizationsList(): ReactElement {
   );
 
   return (
-    <Content fullwidth main padding>
+    <Content fullwidth main>
       <HelmetIntl title={messages.title} />
       <HeaderControl
         control={

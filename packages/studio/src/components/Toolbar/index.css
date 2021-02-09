@@ -1,5 +1,12 @@
 .root {
   justify-content: space-between;
+
+  /*
+   * This should overlay any other navbars.
+   *
+   * Bulma navbars have a z-index of 30.
+   */
+  z-index: 31 !important;
 }
 
 .tag {

@@ -33,7 +33,7 @@ export function Settings(): ReactElement {
   );
 
   return (
-    <Content fullwidth padding>
+    <Content fullwidth>
       <Switch>
         <Route exact path={`${path}/user`}>
           <UserSettings />

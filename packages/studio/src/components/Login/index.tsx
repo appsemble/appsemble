@@ -54,7 +54,7 @@ export function Login({ disableRegistration }: LoginProps): ReactElement {
   );
 
   return (
-    <Content padding>
+    <Content>
       <HelmetIntl title={messages.title} />
       <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={onPasswordLogin}>
         <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>

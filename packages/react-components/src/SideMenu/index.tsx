@@ -49,7 +49,7 @@ export function SideMenuProvider({ base, children }: SideMenuProviderProps): Rea
 
   return (
     <Context.Provider value={useMemo(() => [isOpen, setOpen, setMenu], [isOpen])}>
-      <div className={styles.sideMenuWrapper}>
+      <div className={`px-3 py-3 ${styles.sideMenuWrapper}`}>
         <aside className={classNames(`menu ${styles.sideMenu}`, { [styles.open]: isOpen })}>
           {base}
           {menu}

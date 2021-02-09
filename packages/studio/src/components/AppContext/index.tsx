@@ -20,7 +20,6 @@ import { Roles } from '../Roles';
 import { TeamSettings } from '../Teams/TeamSettings';
 import { TeamsList } from '../Teams/TeamsList';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
 import { messages } from './messages';
 
 /**
@@ -143,94 +142,90 @@ export function AppContext(): ReactElement {
 
   return (
     <Context.Provider value={value}>
-      <div className={styles.container}>
-        <div className={`${styles.content} px-3 py-3`}>
-          <Switch>
-            <Route exact path={path}>
-              <AppDetails />
-            </Route>
-            <ProtectedRoute
-              exact
-              organization={organization}
-              path={`${path}/edit`}
-              permission={Permission.EditApps}
-            >
-              <Editor />
-            </ProtectedRoute>
-            <ProtectedRoute
-              organization={organization}
-              path={`${path}/assets`}
-              permission={Permission.EditApps}
-            >
-              <Assets />
-            </ProtectedRoute>
-            <ProtectedRoute
-              organization={organization}
-              path={`${path}/resources`}
-              permission={Permission.EditApps}
-            >
-              <CMS />
-            </ProtectedRoute>
-            <ProtectedRoute
-              exact
-              organization={organization}
-              path={`${path}/translations`}
-              permission={Permission.EditAppMessages}
-            >
-              <MessageEditor />
-            </ProtectedRoute>
-            <ProtectedRoute
-              exact
-              organization={organization}
-              path={`${path}/roles`}
-              permission={Permission.EditApps}
-            >
-              <Roles />
-            </ProtectedRoute>
-            <ProtectedRoute
-              exact
-              organization={organization}
-              path={`${path}/teams`}
-              permission={Permission.InviteMember}
-            >
-              <TeamsList />
-            </ProtectedRoute>
-            <ProtectedRoute
-              exact
-              organization={organization}
-              path={`${path}/teams/:teamId`}
-              permission={Permission.InviteMember}
-            >
-              <TeamSettings />
-            </ProtectedRoute>
-            <ProtectedRoute
-              exact
-              organization={organization}
-              path={`${path}/settings`}
-              permission={Permission.EditAppSettings}
-            >
-              <AppSettings />
-            </ProtectedRoute>
-            <ProtectedRoute
-              exact
-              organization={organization}
-              path={`${path}/notifications`}
-              permission={Permission.PushNotifications}
-            >
-              <Notifications />
-            </ProtectedRoute>
-            <ProtectedRoute
-              exact
-              organization={organization}
-              path={`${path}/secrets`}
-              permission={Permission.EditApps}
-            >
-              <AppSecrets />
-            </ProtectedRoute>
-            <Redirect to={url} />
-          </Switch>
-        </div>
-      </div>
+      <Switch>
+        <Route exact path={path}>
+          <AppDetails />
+        </Route>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/edit`}
+          permission={Permission.EditApps}
+        >
+          <Editor />
+        </ProtectedRoute>
+        <ProtectedRoute
+          organization={organization}
+          path={`${path}/assets`}
+          permission={Permission.EditApps}
+        >
+          <Assets />
+        </ProtectedRoute>
+        <ProtectedRoute
+          organization={organization}
+          path={`${path}/resources`}
+          permission={Permission.EditApps}
+        >
+          <CMS />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/translations`}
+          permission={Permission.EditAppMessages}
+        >
+          <MessageEditor />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/roles`}
+          permission={Permission.EditApps}
+        >
+          <Roles />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/teams`}
+          permission={Permission.InviteMember}
+        >
+          <TeamsList />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/teams/:teamId`}
+          permission={Permission.InviteMember}
+        >
+          <TeamSettings />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/settings`}
+          permission={Permission.EditAppSettings}
+        >
+          <AppSettings />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/notifications`}
+          permission={Permission.PushNotifications}
+        >
+          <Notifications />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/secrets`}
+          permission={Permission.EditApps}
+        >
+          <AppSecrets />
+        </ProtectedRoute>
+        <Redirect to={url} />
+      </Switch>
     </Context.Provider>
   );
 }
