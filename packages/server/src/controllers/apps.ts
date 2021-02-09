@@ -351,6 +351,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         coreStyle,
         definition,
         domain,
+        force,
         icon,
         iconBackground,
         longDescription,
@@ -376,7 +377,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
-  if (dbApp.locked) {
+  if (dbApp.locked && !force) {
     throw forbidden('App is currently locked.');
   }
 

@@ -18,6 +18,7 @@ import { uploadMessages } from './uploadMessages';
  */
 export async function updateApp({
   appId,
+  force,
   path,
   private: isPrivate,
   remote,
@@ -28,6 +29,7 @@ export async function updateApp({
     const formData = new FormData();
     formData.append('private', String(isPrivate));
     formData.append('template', String(template));
+    formData.append('force', Boolean(force));
 
     if (file.isFile()) {
       // Assuming file is App YAML

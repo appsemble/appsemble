@@ -1527,6 +1527,35 @@ describe('patchApp', () => {
     expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
   });
 
+  it('should ignore the lock if force is set to true', async () => {
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: true,
+    });
+
+    const form = createFormData({
+      definition: {
+        name: 'Foobar',
+        defaultPage: app.definition.defaultPage,
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'test', version: '0.0.0' }],
+          },
+        ],
+      },
+      force: true,
+    });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}`, form);
+
+    expect(response).toMatchObject({ status: 200 });
+  });
+
   it('should not allow invalid core stylesheets when updating an app', async () => {
     const app = await App.create(
       {

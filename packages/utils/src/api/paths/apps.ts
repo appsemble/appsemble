@@ -180,6 +180,10 @@ export const paths: OpenAPIV3.PathsObject = {
                 longDescription: {
                   $ref: '#/components/schemas/App/properties/longDescription',
                 },
+                force: {
+                  type: 'boolean',
+                  description: 'Whether the locked property should be ignored.',
+                },
                 yaml: {
                   type: 'string',
                   format: 'binary',
