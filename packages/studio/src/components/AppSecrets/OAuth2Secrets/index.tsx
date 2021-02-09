@@ -56,7 +56,7 @@ export function OAuth2Secrets(): ReactElement {
     <div className="mb-3">
       <HeaderControl
         control={
-          <Button icon="plus" onClick={modal.enable}>
+          <Button disabled={app.locked} icon="plus" onClick={modal.enable}>
             <FormattedMessage {...messages.addNew} />
           </Button>
         }

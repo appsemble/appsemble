@@ -21,7 +21,11 @@ const shapes = {
   square: 'inset(0)',
 };
 
-export function IconTool(): ReactElement {
+interface IconToolProps {
+  disabled?: boolean;
+}
+
+export function IconTool({ disabled }: IconToolProps): ReactElement {
   const { formatMessage } = useIntl();
   const { app } = useApp();
   const { setValue, values } = useSimpleForm();
@@ -72,7 +76,7 @@ export function IconTool(): ReactElement {
       </Link>
       <div className="is-flex">
         <div className="mb-2 mr-2">
-          <IconPicker name="icon" onChange={handleChange}>
+          <IconPicker disabled={disabled} name="icon" onChange={handleChange}>
             <figure className={`image is-flex is-128x128 ${styles.icon}`}>
               <img
                 alt={formatMessage(messages.iconPreview)}
@@ -83,7 +87,7 @@ export function IconTool(): ReactElement {
           </IconPicker>
         </div>
         <div className="mb-2 mr-2">
-          <IconPicker name="maskableIcon" onChange={handleChange}>
+          <IconPicker disabled={disabled} name="maskableIcon" onChange={handleChange}>
             <figure
               className={`image is-flex is-128x128 ${styles.maskableIcon}`}
               // eslint-disable-next-line react/forbid-dom-props
@@ -103,6 +107,7 @@ export function IconTool(): ReactElement {
           </IconPicker>
           <Input
             className="mt-2 is-paddingless"
+            disabled={disabled}
             name="iconBackground"
             onChange={handleChange}
             type="color"
@@ -111,16 +116,16 @@ export function IconTool(): ReactElement {
         </div>
         <div>
           <RadioGroup name="shape" onChange={shapeShift} value={shape}>
-            <RadioButton id="shape-minimal" value="minimal">
+            <RadioButton disabled={disabled} id="shape-minimal" value="minimal">
               <FormattedMessage {...messages.minimal} />
             </RadioButton>
-            <RadioButton id="shape-circle" value="circle">
+            <RadioButton disabled={disabled} id="shape-circle" value="circle">
               <FormattedMessage {...messages.circle} />
             </RadioButton>
-            <RadioButton id="shape-rounded" value="rounded">
+            <RadioButton disabled={disabled} id="shape-rounded" value="rounded">
               <FormattedMessage {...messages.rounded} />
             </RadioButton>
-            <RadioButton id="shape-square" value="square">
+            <RadioButton disabled={disabled} id="shape-square" value="square">
               <FormattedMessage {...messages.square} />
             </RadioButton>
           </RadioGroup>

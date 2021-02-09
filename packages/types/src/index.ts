@@ -1012,8 +1012,20 @@ export interface App {
    */
   longDescription: string;
 
+  /**
+   * The path the app is available from.
+   */
   path: string;
+
+  /**
+   * Whether the app should be visible for users outside of the app’s organization.
+   */
   private: boolean;
+
+  /**
+   * Whether the app is currently locked.
+   */
+  locked: boolean;
 
   definition: AppDefinition;
 
@@ -1062,8 +1074,14 @@ export interface App {
    */
   iconUrl?: string;
 
+  /**
+   * The creation date of the app.
+   */
   $created?: string;
 
+  /**
+   * The date when the app was last updated.
+   */
   $updated?: string;
 }
 

@@ -180,6 +180,10 @@ export const paths: OpenAPIV3.PathsObject = {
                 longDescription: {
                   $ref: '#/components/schemas/App/properties/longDescription',
                 },
+                force: {
+                  type: 'boolean',
+                  description: 'Whether the locked property should be ignored.',
+                },
                 yaml: {
                   type: 'string',
                   format: 'binary',
@@ -244,6 +248,37 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       security: [{ studio: [] }],
+    },
+  },
+  '/api/apps/{appId}/lock': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      description: 'Update the locked property an app.',
+      operationId: 'setAppLock',
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['locked'],
+              properties: {
+                locked: {
+                  $ref: '#/components/schemas/App/properties/locked',
+                  description: 'Whether the app should be locked.',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'Lock status successfully changed',
+        },
+      },
+      security: [{ studio: [] }, {}],
     },
   },
   '/api/apps/{appId}/icon': {

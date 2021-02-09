@@ -5,5 +5,6 @@ export interface FormValues {
   path: string;
   private: boolean;
   domain: string;
+  locked: boolean;
   longDescription: string;
 }

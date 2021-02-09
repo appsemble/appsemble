@@ -946,6 +946,63 @@ pages:
     });
   });
 
+  it('should not update an app if it is currently locked', async () => {
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: true,
+    });
+
+    const form = createFormData({
+      definition: {
+        name: 'Foobar',
+        defaultPage: app.definition.defaultPage,
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'test', version: '0.0.0' }],
+          },
+        ],
+      },
+    });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}`, form);
+
+    expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
+  });
+
+  it('should ignore the lock if force is set to true', async () => {
+    const app = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: true,
+    });
+
+    const form = createFormData({
+      definition: {
+        name: 'Foobar',
+        defaultPage: app.definition.defaultPage,
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'test', version: '0.0.0' }],
+          },
+        ],
+      },
+      force: true,
+    });
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}`, form);
+
+    expect(response).toMatchObject({ status: 200 });
+  });
+
   it('should verify the YAML on validity when updating an app', async () => {
     const app = await App.create(
       {
@@ -1402,6 +1459,61 @@ pages:
   });
 });
 
+describe('setAppLock', () => {
+  it('should set the locked property to true', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: true });
+    await app.reload();
+    expect(response.status).toStrictEqual(204);
+    expect(app.locked).toStrictEqual(true);
+  });
+
+  it('should set the locked property to false', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: true,
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
+    await app.reload();
+    expect(response.status).toStrictEqual(204);
+    expect(app.locked).toStrictEqual(false);
+  });
+
+  it('should not be possible to set the lock status as an app editor', async () => {
+    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+
+    authorizeStudio();
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      locked: true,
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'User does not have sufficient permissions.' },
+    });
+  });
+});
+
 describe('deleteApp', () => {
   it('should delete an app', async () => {
     authorizeStudio();
@@ -1794,6 +1906,42 @@ describe('setAppBlockStyle', () => {
     expect(style).toBeNull();
   });
 
+  it('should not update an app if it is currently locked', async () => {
+    await BlockVersion.create({
+      name: 'testblock',
+      OrganizationId: 'appsemble',
+      description: 'This is a test block for testing purposes.',
+      version: '0.0.0',
+    });
+
+    const { id } = await App.create(
+      {
+        path: 'bar',
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test', blocks: { type: 'testblock', version: '0.0.0' } }],
+        },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        locked: true,
+      },
+      { raw: true },
+    );
+
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: yellow; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form);
+
+    expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
+  });
+
   it('should not allow invalid stylesheets when uploading block stylesheets to an app', async () => {
     await BlockVersion.create({
       OrganizationId: 'appsemble',
@@ -1901,8 +2049,15 @@ describe('setAppBlockStyle', () => {
 
   it('should not allow to update an app using non-existent blocks', async () => {
     authorizeStudio();
+    const { id } = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
     const response = await request.patch(
-      '/api/apps/1',
+      `/api/apps/${id}`,
       createFormData({
         'organization.id': organization.id,
         definition: {
@@ -1931,8 +2086,15 @@ describe('setAppBlockStyle', () => {
 
   it('should not allow to update an app using non-existent block versions', async () => {
     authorizeStudio();
+    const { id } = await App.create({
+      path: 'bar',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
     const response = await request.patch(
-      '/api/apps/1',
+      `/api/apps/${id}`,
       createFormData({
         definition: {
           name: 'Test App',

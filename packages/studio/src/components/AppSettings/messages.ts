@@ -9,6 +9,16 @@ export const messages = defineMessages({
   private: 'Private',
   privateDescription:
     'If checked, prevent this app from appearing on the app list if the user is not part of this app’s organization.',
+  appLock: 'App lock',
+  lockApp: 'Lock app',
+  unlockApp: 'Unlock app',
+  lockedDescription:
+    'If the app is locked, it is prevented from being updated without unlocking it first.',
+  unlockAppDescription: 'Are you sure you want to unlock this app?',
+  lockAppDescription: 'Are you sure you want to lock this app?',
+  lockedSuccessfully: 'Successfully locked the app.',
+  unlockedSuccessfully: 'Successfully unlocked the app.',
+  lockError: 'Something went wrong when trying to change the locked status of the app.',
   path: 'Path',
   pathDescription: 'The path used to access the app.',
   domain: 'Domain name',

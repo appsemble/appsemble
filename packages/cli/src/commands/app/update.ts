@@ -12,6 +12,7 @@ interface UpdateAppArguments extends BaseArguments {
   id: number;
   private: boolean;
   template: boolean;
+  force: boolean;
 }
 
 export const command = 'update <paths...>';
@@ -39,12 +40,18 @@ export function builder(yargs: Argv): Argv {
       describe: 'Whether the app should be marked as a template.',
       default: false,
       type: 'boolean',
+    })
+    .option('force', {
+      describe: 'Whether the lock property should be ignored.',
+      default: false,
+      type: 'boolean',
     });
 }
 
 export async function handler({
   clientCredentials,
   context,
+  force,
   id,
   paths,
   private: isPrivate,
@@ -68,6 +75,7 @@ export async function handler({
       private: isPrivate,
       remote,
       template,
+      force,
     });
   }
 }

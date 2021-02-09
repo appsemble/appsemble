@@ -39,6 +39,11 @@ export interface UpdateAppArguments extends BaseArguments {
    * Whether the app should be marked as a template.
    */
   template: boolean;
+
+  /**
+   * Whether the locked property should be ignored.
+   */
+  force: boolean;
 }
 
 export interface BlockConfig

@@ -5,6 +5,7 @@ export const key = '0.17.6';
 
 /**
  * Summary:
+ * - Add column App.locked
  * - Remove soft deleted assets.
  * - Remove column Asset.deleted
  * - Remove soft deleted resources.
@@ -14,6 +15,9 @@ export const key = '0.17.6';
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.info('Adding column App.locked');
+  await queryInterface.addColumn('App', 'locked', DataTypes.BOOLEAN);
 
   logger.warn('Deleting soft deleted assets');
   await queryInterface.bulkDelete('Asset', { [Op.not]: { deleted: null } });
@@ -30,6 +34,7 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
+ * - Remove column App.locked
  * - Add column Resource.deleted
  * - Add column Asset.deleted
  *
@@ -37,6 +42,9 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.info('Removing column App.locked');
+  await queryInterface.removeColumn('App', 'locked');
 
   logger.info('Removing column Resource.deleted');
   await queryInterface.addColumn('Resource', 'deleted', { type: DataTypes.DATE });

@@ -68,6 +68,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
       title={<FormattedMessage {...messages.modalTitle} />}
     >
       <SimpleFormField
+        disabled={app.locked}
         help={<FormattedMessage {...messages.nameHelp} />}
         icon="user"
         label={<FormattedMessage {...messages.nameLabel} />}
@@ -75,6 +76,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         required
       />
       <SimpleFormField
+        disabled={app.locked}
         help={<FormattedMessage {...messages.iconHelp} />}
         icon="image"
         label={<FormattedMessage {...messages.iconLabel} />}
@@ -82,6 +84,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         required
       />
       <SimpleFormField
+        disabled={app.locked}
         help={<FormattedMessage {...messages.ssoUrlHelp} />}
         icon="user"
         label={<FormattedMessage {...messages.ssoUrlLabel} />}
@@ -92,6 +95,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         validityMessages={{ typeMismatch: <FormattedMessage {...messages.badUrl} /> }}
       />
       <SimpleFormField
+        disabled={app.locked}
         help={<FormattedMessage {...messages.idpEntityIdHelp} />}
         icon="code"
         label={<FormattedMessage {...messages.idpEntityIdLabel} />}
@@ -102,6 +106,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
       />
       <SimpleFormField
         datalist={['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress']}
+        disabled={app.locked}
         help={<FormattedMessage {...messages.emailAttributeHelp} />}
         icon="envelope"
         label={<FormattedMessage {...messages.emailAttributeLabel} />}
@@ -112,6 +117,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
           'http://schemas.microsoft.com/identity/claims/displayname',
           'http://schemas.microsoft.com/identity/claims/name',
         ]}
+        disabled={app.locked}
         help={<FormattedMessage {...messages.nameAttributeHelp} />}
         icon="user"
         label={<FormattedMessage {...messages.nameAttributeLabel} />}
@@ -120,6 +126,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
       <SimpleFormField
         className={styles.certificate}
         component={TextAreaField}
+        disabled={app.locked}
         help={<FormattedMessage {...messages.idpCertificateHelp} />}
         label={<FormattedMessage {...messages.idpCertificateLabel} />}
         name="idpCertificate"
@@ -155,6 +162,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         component={FormOutput}
         copyErrorMessage={formatMessage(messages.spCertificateCopyError)}
         copySuccessMessage={formatMessage(messages.spCertificateCopySuccess)}
+        disabled={app.locked}
         help={<FormattedMessage {...messages.spCertificateHelp} />}
         label={<FormattedMessage {...messages.spCertificateLabel} />}
         multiline

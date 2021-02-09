@@ -48,6 +48,11 @@ interface UpdateAppParams {
    * Whether the App should be marked as a template.
    */
   template: boolean;
+
+  /**
+   * Whether the locked property should be ignored.
+   */
+  force: boolean;
 }
 
 /**
@@ -58,12 +63,14 @@ interface UpdateAppParams {
 export async function updateApp({
   clientCredentials,
   context,
+  force,
   path,
   ...options
 }: UpdateAppParams): Promise<void> {
   try {
     const file = await fs.stat(path);
     const formData = new FormData();
+    formData.append('force', Boolean(force));
     let appsembleContext: AppsembleContext;
 
     if (file.isFile()) {

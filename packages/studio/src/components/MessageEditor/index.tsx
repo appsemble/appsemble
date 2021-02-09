@@ -61,6 +61,10 @@ export function MessageEditor(): ReactElement {
 
   const onSubmit = useCallback(
     async (values: AppMessages['messages']) => {
+      if (app.locked) {
+        return;
+      }
+
       setSubmitting(true);
       await axios.post(`/api/apps/${app.id}/messages`, {
         language: languageId,
@@ -162,11 +166,16 @@ export function MessageEditor(): ReactElement {
         <Button
           className="mr-2"
           color="danger"
-          disabled={submitting}
+          disabled={submitting || app.locked}
           icon="minus"
           onClick={onDeleteLanguage}
         />
-        <Button color="success" disabled={submitting} icon="plus" onClick={modal.enable} />
+        <Button
+          color="success"
+          disabled={submitting || app.locked}
+          icon="plus"
+          onClick={modal.enable}
+        />
       </div>
 
       {languages.length > 0 && (
@@ -185,10 +194,17 @@ export function MessageEditor(): ReactElement {
             </SimpleFormError>
             <SimpleBeforeUnload />
             {messageIds.map((id) => (
-              <SimpleFormField component={TextAreaField} key={id} label={id} name={id} rows={2} />
+              <SimpleFormField
+                component={TextAreaField}
+                disabled={submitting || app.locked}
+                key={id}
+                label={id}
+                name={id}
+                rows={2}
+              />
             ))}
             <FormButtons>
-              <SimpleSubmit disabled={submitting}>
+              <SimpleSubmit disabled={submitting || app.locked}>
                 <FormattedMessage {...messages.submit} />
               </SimpleSubmit>
             </FormButtons>

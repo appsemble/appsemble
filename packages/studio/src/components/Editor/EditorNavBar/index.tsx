@@ -48,12 +48,17 @@ export function EditorNavBar({
       >
         <div className="navbar-brand">
           <span className="navbar-item">
-            <Button disabled={!dirty} icon="vial" type="submit">
+            <Button disabled={!dirty || app.locked} icon="vial" type="submit">
               <FormattedMessage {...messages.preview} />
             </Button>
           </span>
           <span className="navbar-item">
-            <Button className="button" disabled={!valid || dirty} icon="save" onClick={onUpload}>
+            <Button
+              className="button"
+              disabled={!valid || dirty || app.locked}
+              icon="save"
+              onClick={onUpload}
+            >
               <FormattedMessage {...messages.publish} />
             </Button>
           </span>

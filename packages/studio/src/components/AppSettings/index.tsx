@@ -37,7 +37,7 @@ function preprocessDomain(domain: string): string {
  * Render the app settings view.
  */
 export function AppSettings(): ReactElement {
-  const { app } = useApp();
+  const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 
   const push = useMessages();
@@ -53,6 +53,7 @@ export function AppSettings(): ReactElement {
       iconBackground: app.iconBackground,
       path: app.path,
       private: app.private,
+      locked: app.locked,
       longDescription: app.longDescription || '',
     }),
     [app],
@@ -99,12 +100,36 @@ export function AppSettings(): ReactElement {
     },
   });
 
+  const onToggleLock = useConfirmation({
+    title: <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />,
+    body: (
+      <FormattedMessage
+        {...(app.locked ? messages.unlockAppDescription : messages.lockAppDescription)}
+      />
+    ),
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />,
+    async action() {
+      const { id, locked } = app;
+      try {
+        await axios.post(`/api/apps/${id}/lock`, { locked: !locked });
+        setApp({ ...app, locked: !locked });
+        push({
+          body: formatMessage(locked ? messages.unlockedSuccessfully : messages.lockedSuccessfully),
+          color: 'info',
+        });
+      } catch {
+        push(formatMessage(messages.lockError));
+      }
+    },
+  });
+
   return (
     <>
       <Content fullwidth>
         <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
           <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
-          <IconTool />
+          <IconTool disabled={app.locked} />
           <SimpleFormField
             component={TextAreaField}
             help={<FormattedMessage {...messages.longDescriptionDescription} />}
@@ -113,6 +138,7 @@ export function AppSettings(): ReactElement {
           />
           <SimpleFormField
             component={CheckboxField}
+            disabled={app.locked}
             help={<FormattedMessage {...messages.privateDescription} />}
             label={<FormattedMessage {...messages.privateLabel} />}
             name="private"
@@ -124,6 +150,7 @@ export function AppSettings(): ReactElement {
                 {`.${app.OrganizationId}.${window.location.host}`}
               </span>
             }
+            disabled={app.locked}
             help={<FormattedMessage {...messages.pathDescription} />}
             label={<FormattedMessage {...messages.path} />}
             maxLength={30}
@@ -133,6 +160,7 @@ export function AppSettings(): ReactElement {
             required
           />
           <SimpleFormField
+            disabled={app.locked}
             help={
               <FormattedMessage
                 {...messages.domainDescription}
@@ -154,7 +182,7 @@ export function AppSettings(): ReactElement {
             }}
           />
           <FormButtons>
-            <SimpleSubmit color="primary" type="submit">
+            <SimpleSubmit color="primary" disabled={app.locked} type="submit">
               <FormattedMessage {...messages.saveChanges} />
             </SimpleSubmit>
           </FormButtons>
@@ -163,6 +191,18 @@ export function AppSettings(): ReactElement {
       <hr />
       <Content>
         <Message
+          className={styles.appLock}
+          color="warning"
+          header={<FormattedMessage {...messages.appLock} />}
+        >
+          <p className="content">
+            <FormattedMessage {...messages.lockedDescription} />
+          </p>
+          <Button color="warning" icon={app.locked ? 'unlock' : 'lock'} onClick={onToggleLock}>
+            <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />
+          </Button>
+        </Message>
+        <Message
           className={styles.dangerZone}
           color="danger"
           header={<FormattedMessage {...messages.dangerZone} />}
@@ -170,7 +210,7 @@ export function AppSettings(): ReactElement {
           <p className="content">
             <FormattedMessage {...messages.deleteHelp} />
           </p>
-          <Button color="danger" icon="trash-alt" onClick={onDelete}>
+          <Button color="danger" disabled={app.locked} icon="trash-alt" onClick={onDelete}>
             <FormattedMessage {...messages.delete} />
           </Button>
         </Message>
