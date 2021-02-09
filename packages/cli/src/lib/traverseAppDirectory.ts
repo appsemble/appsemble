@@ -1,21 +1,29 @@
 import { createReadStream, promises as fs } from 'fs';
 import { join } from 'path';
+import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe } from '@appsemble/node-utils';
 import FormData from 'form-data';
 import yaml from 'js-yaml';
 
-import { AppsembleRC } from '../types';
+import { AppsembleContext, AppsembleRC } from '../types';
 import { processCss } from './processCss';
 
 /**
  * Traverses an app directory and appends the files it finds to the given FormData object.
  *
  * @param path - The path of the app directory to traverse.
- * @param formData - The FormData object to append the results into.
+ * @param context - The Context to use from `.appsemblerc.yaml`.
+ * @param formData - The FormData object to append the results into..
+ * @returns The context from `.appsemblerc.yaml` if a match was found.
  */
-export async function traverseAppDirectory(path: string, formData: FormData): Promise<void> {
+export async function traverseAppDirectory(
+  path: string,
+  context: string,
+  formData: FormData,
+): Promise<AppsembleContext> {
   let appFound: string;
+  let discoveredContext: AppsembleContext;
 
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, stat) => {
@@ -23,9 +31,13 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
       case '.appsemblerc.yaml': {
         logger.info(`Reading app settings from ${filepath}`);
         const text = await fs.readFile(filepath, 'utf8');
-        const { iconBackground } = yaml.safeLoad(text) as AppsembleRC;
-        if (iconBackground) {
-          formData.append('iconBackground', iconBackground);
+        const rc = yaml.safeLoad(text) as AppsembleRC;
+        if ('iconBackground' in rc) {
+          formData.append('iconBackground', rc.iconBackground);
+        }
+        if (context && 'context' in rc && Object.hasOwnProperty.call(rc.context, context)) {
+          discoveredContext = rc.context[context];
+          logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
         }
         break;
       }
@@ -93,4 +105,5 @@ export async function traverseAppDirectory(path: string, formData: FormData): Pr
   if (!appFound) {
     throw new AppsembleError('No app definition found');
   }
+  return discoveredContext;
 }

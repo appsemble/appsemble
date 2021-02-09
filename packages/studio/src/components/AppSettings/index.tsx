@@ -8,6 +8,7 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
+  TextAreaField,
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
@@ -53,6 +54,7 @@ export function AppSettings(): ReactElement {
       path: app.path,
       private: app.private,
       locked: app.locked,
+      longDescription: app.longDescription || '',
     }),
     [app],
   );
@@ -63,6 +65,7 @@ export function AppSettings(): ReactElement {
     data.set('path', values.path);
     data.set('private', String(values.private));
     data.set('iconBackground', values.iconBackground);
+    data.set('longDescription', values.longDescription);
     if (values.icon !== app.iconUrl) {
       data.set('icon', values.icon);
     }
@@ -127,6 +130,12 @@ export function AppSettings(): ReactElement {
         <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
           <SimpleFormError>{() => <FormattedMessage {...messages.updateError} />}</SimpleFormError>
           <IconTool disabled={app.locked} />
+          <SimpleFormField
+            component={TextAreaField}
+            help={<FormattedMessage {...messages.longDescriptionDescription} />}
+            label={<FormattedMessage {...messages.longDescription} />}
+            name="longDescription"
+          />
           <SimpleFormField
             component={CheckboxField}
             disabled={app.locked}

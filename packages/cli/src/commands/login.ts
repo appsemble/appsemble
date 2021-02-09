@@ -1,4 +1,4 @@
-import { login } from '../../lib/authentication';
+import { login } from '../lib/authentication';
 
 export const command = 'login';
 export const description =
