@@ -144,7 +144,7 @@ bootstrap(
 
         const requirementErrors = new Map<number, string>();
         Promise.all(
-          requirements.map((requirement) =>
+          requirements?.map((requirement) =>
             actions[requirement.action].dispatch(newValues).then(
               () => requirementErrors.set(requirements.indexOf(requirement), null),
               (errorResponse) => {
@@ -156,7 +156,7 @@ bootstrap(
                 );
               },
             ),
-          ),
+          ) ?? [],
         ).then((patchedValues) => {
           setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
           setFormErrors((oldErrors) =>
