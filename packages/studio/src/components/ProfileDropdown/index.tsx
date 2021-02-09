@@ -1,14 +1,22 @@
-import { Button, Dropdown, Icon, useLocationString, useQuery } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { Button, Icon, useLocationString, useQuery } from '@appsemble/react-components';
+import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { sentryDsn } from '../../utils/settings';
+import { NavbarDropdown } from '../NavbarDropdown';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
 
-export function ProfileDropdown(): ReactElement {
+interface LanguageDropdownProps {
+  /**
+   * An optional class name to add to the root element.
+   */
+  className?: string;
+}
+
+export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElement {
   const { formatMessage } = useIntl();
   const { logout, userInfo } = useUser();
   const location = useLocation();
@@ -27,8 +35,8 @@ export function ProfileDropdown(): ReactElement {
   }
 
   return (
-    <Dropdown
-      className="is-right"
+    <NavbarDropdown
+      className={`is-right ${className}`}
       label={
         userInfo ? (
           <figure className="image is-32x32">
@@ -53,37 +61,37 @@ export function ProfileDropdown(): ReactElement {
       }
     >
       {userInfo && (
-        <Link className="dropdown-item" to={`${url}/settings`}>
+        <Link className="navbar-item" to={`${url}/settings`}>
           <Icon icon="wrench" />
           <span>
             <FormattedMessage {...messages.settings} />
           </span>
         </Link>
       )}
-      <Link className="dropdown-item" to={`${url}/blocks`}>
+      <Link className="navbar-item" to={`${url}/blocks`}>
         <Icon icon="cubes" />
         <span>
           <FormattedMessage {...messages.blocks} />
         </span>
       </Link>
-      <Link className="dropdown-item" to={`${url}/docs`}>
+      <Link className="navbar-item" to={`${url}/docs`}>
         <Icon icon="book" />
         <span>
           <FormattedMessage {...messages.documentation} />
         </span>
       </Link>
       {sentryDsn && (
-        <Link className={`dropdown-item ${styles.logoutButton}`} to={`${url}/feedback`}>
+        <Link className={`navbar-item ${styles.logoutButton}`} to={`${url}/feedback`}>
           <Icon icon="comment" />
           <span>
             <FormattedMessage {...messages.feedback} />
           </span>
         </Link>
       )}
-      <hr className="dropdown-divider" />
+      <hr className="navbar-divider" />
       {userInfo ? (
         <Button
-          className={`dropdown-item pl-5 ${styles.logoutButton}`}
+          className={`navbar-item pl-5 ${styles.logoutButton}`}
           icon="sign-out-alt"
           onClick={logout}
         >
@@ -91,7 +99,7 @@ export function ProfileDropdown(): ReactElement {
         </Button>
       ) : (
         <Link
-          className={`button dropdown-item ${styles.logoutButton}`}
+          className={`button navbar-item ${styles.logoutButton}`}
           to={{ pathname: `${url}/login`, search: `?${search}` }}
         >
           <Icon icon="sign-in-alt" />
@@ -100,6 +108,6 @@ export function ProfileDropdown(): ReactElement {
           </span>
         </Link>
       )}
-    </Dropdown>
+    </NavbarDropdown>
   );
 }
