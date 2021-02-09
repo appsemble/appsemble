@@ -137,7 +137,7 @@ const mapperImplementations: MapperImplementations = {
   prop: (prop, obj: Record<string, unknown>) =>
     String(prop)
       .split('.')
-      .reduce((acc, p) => acc?.[p] ?? null, obj),
+      .reduce((acc, p) => acc?.[p], obj),
 
   'date.parse': (format, input: string) =>
     format ? parse(input, format, new Date()) : parseISO(input),
