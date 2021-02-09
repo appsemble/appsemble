@@ -39,6 +39,9 @@ bootstrap(
     const [submitting, setSubmitting] = useState(false);
 
     const [values, setValues] = useState(defaultValues);
+    const [pristine, setPristine] = useState(
+      Object.fromEntries(fields.map((field) => field.name).map((field) => [field, true])),
+    );
     const [lastChanged, setLastChanged] = useState<string>(null);
     const errors = useMemo(() => generateDefaultValidity(fields, values, utils), [
       fields,
@@ -51,6 +54,7 @@ bootstrap(
     const onChange = useCallback((name: string, value: Values) => {
       setValues((oldValues) => ({ ...oldValues, [name]: value }));
       setLastChanged(name);
+      setPristine((p) => ({ ...p, [name]: false }));
       setSubmitErrorResult(null);
     }, []);
 
@@ -199,7 +203,7 @@ bootstrap(
         {fields.map((f) => (
           <FormInput
             disabled={loading || submitting}
-            error={errors[f.name]}
+            error={!pristine[f.name] && errors[f.name]}
             field={f}
             key={f.name}
             name={f.name}
