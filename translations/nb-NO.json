@@ -235,6 +235,8 @@
   "studio.src.components.AppSettings.errorDelete": "",
   "studio.src.components.AppSettings.icon": "",
   "studio.src.components.AppSettings.iconDescription": "",
+  "studio.src.components.AppSettings.longDescription": "",
+  "studio.src.components.AppSettings.longDescriptionDescription": "",
   "studio.src.components.AppSettings.noFile": "",
   "studio.src.components.AppSettings.path": "",
   "studio.src.components.AppSettings.pathDescription": "",

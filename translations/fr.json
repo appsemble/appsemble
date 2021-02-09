@@ -235,6 +235,8 @@
   "studio.src.components.AppSettings.errorDelete": "Quelque chose a mal tourné en essayant de supprimer cette application",
   "studio.src.components.AppSettings.icon": "Icône",
   "studio.src.components.AppSettings.iconDescription": "Icône qui sera affichée à l’utilisateur.",
+  "studio.src.components.AppSettings.longDescription": "",
+  "studio.src.components.AppSettings.longDescriptionDescription": "",
   "studio.src.components.AppSettings.noFile": "Aucun fichier choisi",
   "studio.src.components.AppSettings.path": "Chemin",
   "studio.src.components.AppSettings.pathDescription": "Le chemin utilisé pour accéder à l’application.",

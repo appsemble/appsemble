@@ -235,6 +235,8 @@
   "studio.src.components.AppSettings.errorDelete": "Noget gik galt forsøger at slette denne app",
   "studio.src.components.AppSettings.icon": "Ikon",
   "studio.src.components.AppSettings.iconDescription": "Ikonet, der vises til brugeren.",
+  "studio.src.components.AppSettings.longDescription": "",
+  "studio.src.components.AppSettings.longDescriptionDescription": "",
   "studio.src.components.AppSettings.noFile": "Der er ikke valgt nogen fil",
   "studio.src.components.AppSettings.path": "Sti",
   "studio.src.components.AppSettings.pathDescription": "Den sti, der bruges til at få adgang til appen.",

@@ -235,6 +235,8 @@
   "studio.src.components.AppSettings.errorDelete": "Er is iets misgegaan bij het verwijderen van deze app",
   "studio.src.components.AppSettings.icon": "Logo",
   "studio.src.components.AppSettings.iconDescription": "Het logo dat aan de gebruiker wordt getoond.",
+  "studio.src.components.AppSettings.longDescription": "Uitgebreide beschrijving",
+  "studio.src.components.AppSettings.longDescriptionDescription": "Dit veld kan gebruikt worden om de app in meer detail te beschrijven. Markdown is ondersteund.",
   "studio.src.components.AppSettings.noFile": "Geen bestand gekozen",
   "studio.src.components.AppSettings.path": "Pad",
   "studio.src.components.AppSettings.pathDescription": "Het pad dat gebruikt wordt om bij de app te komen.",
