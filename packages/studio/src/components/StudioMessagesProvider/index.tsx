@@ -24,9 +24,11 @@ export function StudioMessagesProvider({ children }: IntlMessagesProviderProps):
 
   useEffect(() => {
     if (!has(supportedLanguages, lang)) {
+      document.documentElement.lang = defaultLocale;
       return;
     }
 
+    document.documentElement.lang = lang;
     axios.get<Messages>(`/api/messages/${lang}?context=studio`).then((response) => {
       setMessages(response.data.messages);
       setLoading(false);

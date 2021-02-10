@@ -1,5 +1,6 @@
 import { MarkdownContent, Table, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
+import { defaultLocale } from '@appsemble/utils/src';
 import { ReactElement } from 'react';
 
 import { messages } from './messages';
@@ -27,7 +28,7 @@ export function EventTable({ manifest }: EventTableProps): ReactElement {
                 <th>{messages.description}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody lang={defaultLocale}>
               {Object.entries(manifest.events.emit).map(([key, event]) => (
                 <tr key={key}>
                   <td>{key}</td>
@@ -50,7 +51,7 @@ export function EventTable({ manifest }: EventTableProps): ReactElement {
                 <th>{messages.description}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody lang={defaultLocale}>
               {Object.entries(manifest.events.listen).map(([key, event]) => (
                 <tr key={key}>
                   <td>{key}</td>

@@ -1,5 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
+import { defaultLocale } from '@appsemble/utils/src';
 import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -15,6 +16,7 @@ interface AppCardProps {
 export function AppCard({ app }: AppCardProps): ReactElement {
   const { formatMessage } = useIntl();
   const { url } = useRouteMatch();
+  const lang = app.definition.defaultLanguage || defaultLocale;
 
   return (
     <Link className="card" title={app.definition.description} to={`${url}/${app.id}`}>
@@ -28,10 +30,10 @@ export function AppCard({ app }: AppCardProps): ReactElement {
             />
           </figure>
         </div>
-        <Title className={styles.ellipsis} size={5}>
+        <Title className={styles.ellipsis} lang={lang} size={5}>
           {app.definition.name}
         </Title>
-        <Subtitle className={`mb-0 ${styles.ellipsis}`} size={6}>
+        <Subtitle className={`mb-0 ${styles.ellipsis}`} lang={lang} size={6}>
           @{app.OrganizationId}
         </Subtitle>
         <StarRating className={`pt-4 ${styles.rating}`} value={app.rating?.average || 0} />

@@ -1,4 +1,5 @@
 import { Table } from '@appsemble/react-components';
+import { defaultLocale } from '@appsemble/utils/src';
 import { ReactElement } from 'react';
 import { Definition } from 'typescript-json-schema';
 
@@ -27,7 +28,7 @@ export function ParameterTable({ parameters }: ParameterTableProps): ReactElemen
           <th>{messages.description}</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody lang={defaultLocale}>
         {Object.entries(parameters.properties).map(([key, value]) => (
           <ParameterRow
             key={key}

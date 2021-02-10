@@ -14,7 +14,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { Organization } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { defaultLocale, Permission } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
@@ -61,6 +61,8 @@ export function AppDetails(): ReactElement {
   const createOrganizations =
     organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) ?? [];
 
+  const lang = app.definition.defaultLanguage || defaultLocale;
+
   return (
     <Content className={styles.root}>
       <div className="card my-3">
@@ -74,12 +76,14 @@ export function AppDetails(): ReactElement {
           </figure>
           <div className={`mx-4 ${styles.appMeta}`}>
             <header>
-              <Title className="is-marginless">{app.definition.name}</Title>
-              <Subtitle className="is-marginless" size={4}>
+              <Title className="is-marginless" lang={lang}>
+                {app.definition.name}
+              </Title>
+              <Subtitle className="is-marginless" lang={lang} size={4}>
                 {loading || error ? `@${app.OrganizationId}` : organization.name}
               </Subtitle>
             </header>
-            {app.definition.description && <p>{app.definition.description}</p>}
+            {app.definition.description && <p lang={lang}>{app.definition.description}</p>}
             <StarRating className="is-inline" count={app.rating.count} value={app.rating.average} />
           </div>
           <div className={`is-flex ${styles.buttonContainer}`}>
@@ -183,7 +187,7 @@ export function AppDetails(): ReactElement {
               <FormattedMessage {...messages.readMore} />
             )}
           </Button>
-          <MarkdownContent content={app.longDescription} />
+          <MarkdownContent content={app.longDescription} lang={lang} />
         </div>
       )}
       <AppRatings />
