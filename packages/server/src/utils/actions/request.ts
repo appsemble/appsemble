@@ -1,5 +1,5 @@
 import { RequestLikeActionDefinition } from '@appsemble/types';
-import { formatRequestAction, remap } from '@appsemble/utils';
+import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import axios from 'axios';
 
 import { ServerActionParameters } from '.';
@@ -31,7 +31,7 @@ export async function request({
 
   const context = await getRemapperContext(
     app,
-    app.definition.defaultLanguage || 'en',
+    app.definition.defaultLanguage || defaultLocale,
     user && {
       sub: user.id,
       name: user.name,

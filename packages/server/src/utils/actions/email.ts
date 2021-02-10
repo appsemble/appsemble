@@ -1,5 +1,5 @@
 import { EmailActionDefinition } from '@appsemble/types';
-import { remap } from '@appsemble/utils';
+import { defaultLocale, remap } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
 import { extension } from 'mime-types';
 import { SendMailOptions } from 'nodemailer';
@@ -39,7 +39,7 @@ export async function email({
 
   const context = await getRemapperContext(
     app,
-    app.definition.defaultLanguage || 'en',
+    app.definition.defaultLanguage || defaultLocale,
     user && {
       sub: user.id,
       name: user.name,

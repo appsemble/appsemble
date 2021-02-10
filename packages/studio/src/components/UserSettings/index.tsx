@@ -17,7 +17,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { has } from '@appsemble/utils';
+import { defaultLocale, has } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -129,7 +129,7 @@ export function UserSettings(): ReactElement {
             name: userInfo.name || '',
             locale: has(supportedLanguages, userInfo.locale?.toLowerCase())
               ? userInfo.locale?.toLowerCase()
-              : localStorage.getItem('preferredLanguage') || 'en',
+              : localStorage.getItem('preferredLanguage') || defaultLocale,
           }}
           onSubmit={onSaveProfile}
         >

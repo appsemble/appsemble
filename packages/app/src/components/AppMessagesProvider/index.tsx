@@ -1,6 +1,13 @@
 import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
 import { AppMessages } from '@appsemble/types';
-import { detectLocale, IntlMessage, MessageGetter, normalize, objectCache } from '@appsemble/utils';
+import {
+  defaultLocale,
+  detectLocale,
+  IntlMessage,
+  MessageGetter,
+  normalize,
+  objectCache,
+} from '@appsemble/utils';
 import axios from 'axios';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
@@ -55,7 +62,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const [appsembleMessagesLoading, setAppsembleMessagesLoading] = useState(true);
 
   useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || 'en';
+    const defaultLanguage = definition.defaultLanguage || defaultLocale;
     if (lang === defaultLanguage || languages.includes(lang)) {
       return;
     }
@@ -74,7 +81,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   }, [definition, history, lang, redirect]);
 
   useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || 'en';
+    const defaultLanguage = definition.defaultLanguage || defaultLocale;
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       return;
     }
@@ -87,7 +94,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   }, [definition, lang]);
 
   useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || 'en';
+    const defaultLanguage = definition.defaultLanguage || defaultLocale;
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       return;
     }
@@ -136,7 +143,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   return (
     <Context.Provider value={value}>
-      <IntlProvider defaultLocale="en" locale={lang} messages={appsembleMessages}>
+      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={appsembleMessages}>
         {children}
       </IntlProvider>
     </Context.Provider>

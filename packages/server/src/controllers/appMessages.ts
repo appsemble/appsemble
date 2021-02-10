@@ -1,5 +1,5 @@
 import { AppMessages as AppMessagesInterface } from '@appsemble/types';
-import { Permission, validateLanguage } from '@appsemble/utils';
+import { defaultLocale, Permission, validateLanguage } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
@@ -53,7 +53,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     !app.AppMessages.length ||
     (merge && !app.AppMessages.some((m) => m.language === language.toLowerCase()))
   ) {
-    if (language !== (app.definition.defaultLanguage || 'en')) {
+    if (language !== (app.definition.defaultLanguage || defaultLocale)) {
       throw notFound(`Language “${language}” could not be found`);
     }
     ctx.body = { language, messages: {} };
@@ -135,7 +135,7 @@ export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = [
     ...new Set([
       ...app.AppMessages.map((message) => message.language),
-      app.definition.defaultLanguage || 'en',
+      app.definition.defaultLanguage || defaultLocale,
     ]),
   ].sort();
 }

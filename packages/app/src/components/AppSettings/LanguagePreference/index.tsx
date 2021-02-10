@@ -1,5 +1,5 @@
 import { SelectField } from '@appsemble/react-components';
-import { getLanguageDisplayName } from '@appsemble/utils';
+import { defaultLocale, getLanguageDisplayName } from '@appsemble/utils';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -12,7 +12,7 @@ export function LanguagePreference(): ReactElement {
   const { url } = useRouteMatch();
 
   const [preferredLanguage, setPreferredLanguage] = useState(
-    localStorage.getItem('preferredLanguage') ?? definition.defaultLanguage ?? 'en',
+    localStorage.getItem('preferredLanguage') ?? definition.defaultLanguage ?? defaultLocale,
   );
 
   const onLanguageChange = useCallback(

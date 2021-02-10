@@ -4,7 +4,7 @@ import {
   EmailActionDefinition,
   RequestLikeActionDefinition,
 } from '@appsemble/types';
-import { formatRequestAction, remap } from '@appsemble/utils';
+import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
 import { ParameterizedContext } from 'koa';
@@ -109,7 +109,7 @@ async function handleRequestProxy(
 
   const context = await getRemapperContext(
     app,
-    app.definition.defaultLanguage || 'en',
+    app.definition.defaultLanguage || defaultLocale,
     user && {
       sub: user.id,
       name: user.name,

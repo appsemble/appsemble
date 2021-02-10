@@ -1,5 +1,5 @@
 import { Loader, useLocationString } from '@appsemble/react-components';
-import { detectLocale, has } from '@appsemble/utils';
+import { defaultLocale, detectLocale, has } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
@@ -15,8 +15,6 @@ interface Messages {
   language: string;
   messages: Record<string, string>;
 }
-
-const defaultLanguage = 'en';
 
 export function StudioMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
@@ -41,7 +39,7 @@ export function StudioMessagesProvider({ children }: IntlMessagesProviderProps):
     }
 
     return (
-      <IntlProvider defaultLocale={defaultLanguage} locale={lang} messages={messages}>
+      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={messages}>
         {children}
       </IntlProvider>
     );
@@ -51,7 +49,7 @@ export function StudioMessagesProvider({ children }: IntlMessagesProviderProps):
   const detected =
     (has(supportedLanguages, preferredLanguage)
       ? preferredLanguage
-      : detectLocale(Object.keys(supportedLanguages), navigator.languages)) || defaultLanguage;
+      : detectLocale(Object.keys(supportedLanguages), navigator.languages)) || defaultLocale;
 
   return <Redirect to={`/${detected}${redirect}`} />;
 }
