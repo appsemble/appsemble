@@ -1,34 +1,34 @@
 import { useBreadcrumbs } from '@appsemble/react-components';
 import { ReactElement } from 'react';
+import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import styles from './index.css';
+import { messages } from './messages';
 
 /**
  * Render breadcrumbs based on the `<MetaProvider />`.
  */
 export function Breadcrumbs(): ReactElement {
   const breadcrumbs = useBreadcrumbs();
+  const { formatMessage } = useIntl();
 
   return (
-    <div className={`pb-3 has-text-grey ${styles.root}`}>
-      {breadcrumbs.map(({ title, url }, index) =>
-        index === breadcrumbs.length - 1 ? (
-          // There’s one specific case in the documentation that causes a URL to appear twice in the
-          // breadcrumbs. For this reason we can’t use the URL as the key.
-          // eslint-disable-next-line react/no-array-index-key
-          <span className={`has-text-weight-bold ${styles.breadcrumb}`} key={index}>
-            {title}
-          </span>
-        ) : (
-          // eslint-disable-next-line react/no-array-index-key
-          <span className={styles.breadcrumb} key={index}>
-            <Link className="has-text-grey" to={url}>
-              {title}
-            </Link>
-          </span>
-        ),
-      )}
-    </div>
+    <nav aria-label={formatMessage(messages.breadcrumbs)} className="breadcrumb">
+      <ul>
+        {breadcrumbs.map(({ title, url }, index) => {
+          const current = index === breadcrumbs.length - 1;
+          return (
+            <li
+              aria-current={current ? 'page' : null}
+              className={current ? 'is-active' : null}
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
+            >
+              <Link to={url}>{title}</Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 }
