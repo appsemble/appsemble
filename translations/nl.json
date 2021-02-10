@@ -317,7 +317,7 @@
   "studio.src.components.ClientCredentials.scope": "Scope",
   "studio.src.components.ClientCredentials.submit": "Aanmaken",
   "studio.src.components.ClientCredentials.title": "OAuth2 inloggegevens",
-  "studio.src.components.ClientCredentials.unknownScope": "Onbekende scope",
+  "studio.src.components.ClientCredentials.unknownScope": "Deze scope is onbekend. Het is aangeraden om deze client in te trekken.",
   "studio.src.components.Docs.title": "Documentatie",
   "studio.src.components.EditPassword.passwordLabel": "Wachtwoord",
   "studio.src.components.EditPassword.passwordRequired": "Een nieuw wachtwoord is vereist",
