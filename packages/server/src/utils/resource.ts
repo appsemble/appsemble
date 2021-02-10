@@ -1,5 +1,5 @@
 import { NotificationDefinition } from '@appsemble/types';
-import { remap } from '@appsemble/utils';
+import { defaultLocale, remap } from '@appsemble/utils';
 import { parseISO } from 'date-fns';
 import { Schema, ValidationError, Validator } from 'jsonschema';
 import { File } from 'koas-body-parser';
@@ -150,7 +150,7 @@ export async function processHooks(
 
     const remapperContext = await getRemapperContext(
       app,
-      app.definition.defaultLanguage || 'en',
+      app.definition.defaultLanguage || defaultLocale,
       user && {
         sub: user.id,
         name: user.name,

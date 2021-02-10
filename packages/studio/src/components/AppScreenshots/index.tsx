@@ -6,7 +6,7 @@ import {
   useObjectURL,
   useToggle,
 } from '@appsemble/react-components';
-import { Permission } from '@appsemble/utils/src';
+import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

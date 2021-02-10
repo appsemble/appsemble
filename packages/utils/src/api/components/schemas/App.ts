@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { normalized } from '../../../constants';
+import { defaultLocale, normalized } from '../../../constants';
 
 export const App: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -151,7 +151,7 @@ The long desciption will be rendered on the app details page. Markdown content i
         },
         defaultLanguage: {
           type: 'string',
-          default: 'en',
+          default: defaultLocale,
           minLength: 2,
           description: 'The default language for the app.',
         },

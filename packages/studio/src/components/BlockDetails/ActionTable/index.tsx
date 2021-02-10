@@ -1,5 +1,6 @@
 import { Icon, Table } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
+import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 
 import { messages } from './messages';
@@ -24,7 +25,7 @@ export function ActionTable({ manifest }: ActionTableProps): ReactElement {
           <th>{messages.description}</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody lang={defaultLocale}>
         {Object.entries(manifest.actions).map(([key, value]) => (
           <tr key={key}>
             <td>{key === '$any' ? messages.anyAction : key}</td>

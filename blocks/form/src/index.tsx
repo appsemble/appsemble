@@ -18,6 +18,7 @@ bootstrap(
     parameters: {
       fields,
       formRequirementError = 'One of the requirements of this form is invalid.',
+      invalidLabel = 'This value is invalid',
       previousLabel,
       requirements,
       submitError = 'There was a problem submitting this form',
@@ -40,8 +41,9 @@ bootstrap(
 
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string>(null);
-    const errors = useMemo(() => generateDefaultValidity(fields, values, utils), [
+    const errors = useMemo(() => generateDefaultValidity(fields, values, utils, invalidLabel), [
       fields,
+      invalidLabel,
       utils,
       values,
     ]);
@@ -144,7 +146,7 @@ bootstrap(
 
         const requirementErrors = new Map<number, string>();
         Promise.all(
-          requirements.map((requirement) =>
+          requirements?.map((requirement) =>
             actions[requirement.action].dispatch(newValues).then(
               () => requirementErrors.set(requirements.indexOf(requirement), null),
               (errorResponse) => {
@@ -156,7 +158,7 @@ bootstrap(
                 );
               },
             ),
-          ),
+          ) ?? [],
         ).then((patchedValues) => {
           setValues((oldValues) => Object.assign({}, oldValues, ...patchedValues));
           setFormErrors((oldErrors) =>

@@ -15,6 +15,11 @@ interface MarkdownContentProps {
   content: string;
 
   /**
+   * The locale of the markdown content.
+   */
+  lang?: string;
+
+  /**
    * If true, sanitize the HTML output.
    */
   sanitize?: boolean;
@@ -26,6 +31,7 @@ interface MarkdownContentProps {
 export function MarkdownContent({
   className,
   content,
+  lang,
   sanitize = true,
 }: MarkdownContentProps): ReactElement {
   const location = useLocation();
@@ -35,6 +41,7 @@ export function MarkdownContent({
       dangerouslySetInnerHTML={{
         __html: marked(content, { sanitize, baseUrl: `${location.pathname}${location.search}` }),
       }}
+      lang={lang}
     />
   ) : null;
 }

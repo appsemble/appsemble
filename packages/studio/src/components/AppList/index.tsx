@@ -1,5 +1,5 @@
 import { Content, InputField, SelectField } from '@appsemble/react-components';
-import { App } from '@appsemble/types/src';
+import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

@@ -20,7 +20,7 @@ export function NumberInput({
   value,
 }: NumberInputProps): VNode {
   const {
-    parameters: { invalidLabel = 'This value is invalid', optionalLabel },
+    parameters: { optionalLabel },
     utils,
   } = useBlock();
   const { icon, label, placeholder, readOnly, tag } = field;
@@ -29,7 +29,7 @@ export function NumberInput({
     <InputField
       className="appsemble-number"
       disabled={disabled}
-      error={dirty && error && utils.remap(invalidLabel, value)}
+      error={dirty && error}
       icon={icon}
       label={label}
       max={getMax(field)}

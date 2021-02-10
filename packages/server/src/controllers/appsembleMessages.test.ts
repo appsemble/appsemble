@@ -12,7 +12,7 @@ beforeAll(async () => {
 describe('getAppsembleLanguages', () => {
   it('should return the list of languages appsemble supports', async () => {
     const result = await request('/api/messages');
-    expect(result).toMatchObject({ status: 200, data: ['da', 'de', 'en', 'fr', 'nb-no', 'nl'] });
+    expect(result).toMatchObject({ status: 200, data: expect.arrayContaining(['en', 'nl']) });
   });
 });
 
