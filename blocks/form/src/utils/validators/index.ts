@@ -26,12 +26,17 @@ type Validator = (
   remap?: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
 ) => BaseRequirement;
 
-export function validate(field: Field, value: any, utils: Utils): boolean | string {
+export function validate(
+  field: Field,
+  value: any,
+  utils: Utils,
+  defaultError: Remapper,
+): boolean | string {
   if (!Object.hasOwnProperty.call(validators, field.type)) {
     return;
   }
   const requirement = validators[field.type](field, value, utils.remap);
   if (requirement) {
-    return utils.remap(requirement.errorMessage, value) || true;
+    return utils.remap(requirement.errorMessage, value) || utils.remap(defaultError, value) || true;
   }
 }

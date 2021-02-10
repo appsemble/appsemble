@@ -709,7 +709,7 @@ declare module '@appsemble/sdk' {
     formRequirementError?: Remapper;
 
     /**
-     * Text that is shown when a field is invalid.
+     * Text that is shown when a field is invalid and there is no other error message available.
      *
      * @default 'This value is invalid'
      */

@@ -9,7 +9,7 @@ interface RadioGroupProps
   /**
    * An error message to render.
    */
-  error?: VNode;
+  error?: ComponentChild;
 
   /**
    * The label to display above the checkbox.
