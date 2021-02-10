@@ -1,4 +1,4 @@
-import { MetaSwitch } from '@appsemble/react-components/src';
+import { MetaSwitch } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
