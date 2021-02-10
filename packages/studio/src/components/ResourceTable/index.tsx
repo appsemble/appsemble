@@ -8,6 +8,7 @@ import {
   Title,
   useData,
   useMessages,
+  useMeta,
   useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
@@ -17,7 +18,6 @@ import { useParams } from 'react-router-dom';
 
 import { download } from '../../utils/download';
 import { useApp } from '../AppContext';
-import { HelmetIntl } from '../HelmetIntl';
 import { JSONSchemaEditor } from '../JSONSchemaEditor';
 import { messages } from './messages';
 import { ResourceRow } from './ResourceRow';
@@ -43,6 +43,7 @@ export function ResourceTable(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const { id: appId, resourceName } = useParams<RouteParams>();
+  useMeta(resourceName);
   const push = useMessages();
 
   const modal = useToggle();
@@ -130,15 +131,7 @@ export function ResourceTable(): ReactElement {
 
   if (!loading && resources === undefined) {
     if (!Object.hasOwnProperty.call(app.definition.resources, resourceName)) {
-      return (
-        <>
-          <HelmetIntl
-            title={messages.title}
-            titleValues={{ name: app.definition.name, resourceName }}
-          />
-          <FormattedMessage {...messages.notFound} />
-        </>
-      );
+      return <FormattedMessage {...messages.notFound} />;
     }
 
     const { url } = app.definition.resources[resourceName];
@@ -159,10 +152,6 @@ export function ResourceTable(): ReactElement {
 
   return (
     <>
-      <HelmetIntl
-        title={messages.title}
-        titleValues={{ name: app.definition.name, resourceName }}
-      />
       <Title>
         <FormattedMessage {...messages.header} values={{ resourceName }} />
       </Title>

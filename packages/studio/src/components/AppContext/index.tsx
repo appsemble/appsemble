@@ -1,9 +1,16 @@
-import { Loader, MenuSection, Message, useData, useSideMenu } from '@appsemble/react-components';
+import {
+  Loader,
+  MenuSection,
+  Message,
+  MetaSwitch,
+  useData,
+  useSideMenu,
+} from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { createContext, Dispatch, ReactElement, SetStateAction, useContext, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { checkRole } from '../../utils/checkRole';
 import { AppDetails } from '../AppDetails';
@@ -142,7 +149,7 @@ export function AppContext(): ReactElement {
 
   return (
     <Context.Provider value={value}>
-      <Switch>
+      <MetaSwitch description={app.definition.description} title={app.definition.name}>
         <Route exact path={path}>
           <AppDetails />
         </Route>
@@ -225,7 +232,7 @@ export function AppContext(): ReactElement {
           <AppSecrets />
         </ProtectedRoute>
         <Redirect to={url} />
-      </Switch>
+      </MetaSwitch>
     </Context.Provider>
   );
 }

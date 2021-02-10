@@ -8,6 +8,7 @@ import {
   useData,
   useLocationString,
   useMessages,
+  useMeta,
   useToggle,
 } from '@appsemble/react-components';
 import { OAuth2Provider } from '@appsemble/types';
@@ -16,7 +17,6 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { logins } from '../../utils/settings';
-import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
 import { messages } from './messages';
 
@@ -28,6 +28,8 @@ interface ConnectedAccount {
  * Managed OAuth2 accounts linked to the current user.
  */
 export function OAuthSettings(): ReactElement {
+  useMeta(messages.title);
+
   const { formatMessage } = useIntl();
   const push = useMessages();
   const location = useLocationString();
@@ -68,41 +70,38 @@ export function OAuthSettings(): ReactElement {
 
   return (
     <Content>
-      <HelmetIntl title={messages.title} />
-      <Content>
-        <Title>
-          <FormattedMessage {...messages.header} />
-        </Title>
-        {logins.map((provider) =>
-          accounts.some((account) => account.authorizationUrl === provider.authorizationUrl) ? (
-            <AsyncButton
-              className={`${styles.button} mb-4`}
-              disabled={connecting.enabled}
-              icon={provider.icon}
-              iconPrefix="fab"
-              key={provider.authorizationUrl}
-              onClick={() => disconnect(provider)}
-            >
-              <FormattedMessage {...messages.disconnectAccount} values={{ name: provider.name }} />
-            </AsyncButton>
-          ) : (
-            <OAuth2LoginButton
-              authorizationUrl={provider.authorizationUrl}
-              className={`${styles.button} mb-4`}
-              clientId={provider.clientId}
-              disabled={connecting.enabled}
-              icon={provider.icon}
-              key={provider.authorizationUrl}
-              onClick={connecting.enable}
-              redirect={location}
-              redirectUrl="/callback"
-              scope={provider.scope}
-            >
-              <FormattedMessage {...messages.connectAccount} values={{ name: provider.name }} />
-            </OAuth2LoginButton>
-          ),
-        )}
-      </Content>
+      <Title>
+        <FormattedMessage {...messages.title} />
+      </Title>
+      {logins.map((provider) =>
+        accounts.some((account) => account.authorizationUrl === provider.authorizationUrl) ? (
+          <AsyncButton
+            className={`${styles.button} mb-4`}
+            disabled={connecting.enabled}
+            icon={provider.icon}
+            iconPrefix="fab"
+            key={provider.authorizationUrl}
+            onClick={() => disconnect(provider)}
+          >
+            <FormattedMessage {...messages.disconnectAccount} values={{ name: provider.name }} />
+          </AsyncButton>
+        ) : (
+          <OAuth2LoginButton
+            authorizationUrl={provider.authorizationUrl}
+            className={`${styles.button} mb-4`}
+            clientId={provider.clientId}
+            disabled={connecting.enabled}
+            icon={provider.icon}
+            key={provider.authorizationUrl}
+            onClick={connecting.enable}
+            redirect={location}
+            redirectUrl="/callback"
+            scope={provider.scope}
+          >
+            <FormattedMessage {...messages.connectAccount} values={{ name: provider.name }} />
+          </OAuth2LoginButton>
+        ),
+      )}
     </Content>
   );
 }

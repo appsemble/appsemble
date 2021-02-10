@@ -6,12 +6,12 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
+  useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HelmetIntl } from '../HelmetIntl';
 import { messages } from './messages';
 
 interface FormValues {
@@ -19,6 +19,7 @@ interface FormValues {
 }
 
 export function ResetPassword(): ReactElement {
+  useMeta(messages.title);
   const [success, setSuccess] = useState(false);
 
   const submit = useCallback(async ({ email }: FormValues): Promise<void> => {
@@ -28,7 +29,6 @@ export function ResetPassword(): ReactElement {
 
   return (
     <Content>
-      <HelmetIntl title={messages.title} />
       {success ? (
         <Message color="success">
           <FormattedMessage {...messages.requestSuccess} />

@@ -1,11 +1,10 @@
-import { Button, Content, Loader, Message, useQuery } from '@appsemble/react-components';
+import { Button, Content, Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, MessageDescriptor } from 'react-intl';
+import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../utils/oauth2Utils';
-import { HelmetIntl } from '../HelmetIntl';
 import styles from './index.css';
 import { messages } from './messages';
 
@@ -15,6 +14,7 @@ import { messages } from './messages';
 export function OpenIDLogin(): ReactElement {
   const qs = useQuery();
   const { lang } = useParams<{ lang: string }>();
+  const { formatMessage } = useIntl();
 
   const [appLoading, setAppLoading] = useState(true);
   const [appName, setAppName] = useState<string>();
@@ -28,6 +28,8 @@ export function OpenIDLogin(): ReactElement {
       return Number(match[1]);
     }
   }, [qs]);
+
+  useMeta(formatMessage(messages.title, { app: appName || appId }));
   const scopes = useMemo(() => qs.get('scope')?.split(' '), [qs]);
   const redirectUri = qs.get('redirect_uri');
   const scope = qs.get('scope');
@@ -105,7 +107,6 @@ export function OpenIDLogin(): ReactElement {
   if (!isAllowed) {
     return (
       <Content padding>
-        <HelmetIntl title={messages.title} titleValues={{ app: appName }} />
         <div className="content">
           <Message color="warning">
             <FormattedMessage
@@ -129,7 +130,6 @@ export function OpenIDLogin(): ReactElement {
 
   return (
     <Content padding>
-      <HelmetIntl title={messages.title} titleValues={{ app: appName }} />
       <div className="content">
         <p>
           <FormattedMessage

@@ -7,6 +7,7 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
+  useMeta,
   useQuery,
   useToggle,
 } from '@appsemble/react-components';
@@ -16,7 +17,6 @@ import { FormattedMessage } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { enableRegistration, logins } from '../../utils/settings';
-import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
@@ -31,6 +31,7 @@ interface LoginProps {
 }
 
 export function Login({ disableRegistration }: LoginProps): ReactElement {
+  useMeta(messages.title, messages.description);
   const location = useLocation();
   const { login } = useUser();
   const qs = useQuery();
@@ -55,7 +56,6 @@ export function Login({ disableRegistration }: LoginProps): ReactElement {
 
   return (
     <Content>
-      <HelmetIntl title={messages.title} />
       <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={onPasswordLogin}>
         <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
         <SimpleFormField

@@ -12,6 +12,7 @@ import {
   useConfirmation,
   useData,
   useMessages,
+  useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { extension } from 'mime-types';
@@ -20,7 +21,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { download } from '../../utils/download';
 import { useApp } from '../AppContext';
-import { HelmetIntl } from '../HelmetIntl';
 import { AssetPreview } from './AssetPreview';
 import styles from './index.css';
 import { messages } from './messages';
@@ -32,6 +32,8 @@ export interface Asset {
 }
 
 export function Assets(): ReactElement {
+  useMeta(messages.title);
+
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const push = useMessages();
@@ -145,9 +147,8 @@ export function Assets(): ReactElement {
 
   return (
     <>
-      <HelmetIntl title={messages.title} titleValues={{ name: app.definition.name }} />
       <Title>
-        <FormattedMessage {...messages.assets} />
+        <FormattedMessage {...messages.title} />
       </Title>
       <div className="buttons">
         <Button color="primary" icon="upload" onClick={onUploadClick}>

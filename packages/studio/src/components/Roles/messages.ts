@@ -1,7 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Settings · Roles',
+  title: 'Roles',
   members: 'Members',
   member: 'Member',
   role: 'Role',

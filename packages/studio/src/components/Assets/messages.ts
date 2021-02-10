@@ -1,8 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: '{name} · Assets',
-  assets: 'Assets',
+  title: 'Assets',
   uploadButton: 'Upload new asset',
   deleteButton: 'Delete {amount} {amount, plural, one {asset} other {assets}}',
   id: 'Id',

@@ -6,12 +6,12 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
+  useMeta,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
 
@@ -22,6 +22,8 @@ interface RegistrationFormValues {
 }
 
 export function Register(): ReactElement {
+  useMeta(messages.title, messages.description);
+
   const { login } = useUser();
   const register = useCallback(
     async (values: RegistrationFormValues) => {
@@ -33,7 +35,6 @@ export function Register(): ReactElement {
 
   return (
     <Content>
-      <HelmetIntl title={messages.title} />
       <SimpleForm defaultValues={{ email: '', name: '', password: '' }} onSubmit={register}>
         <SimpleFormError>
           {({ error }: { error: AxiosError }) =>

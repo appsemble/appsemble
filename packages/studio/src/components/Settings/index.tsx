@@ -1,7 +1,7 @@
-import { Content, MenuSection, useSideMenu } from '@appsemble/react-components';
+import { Content, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { ClientCredentials } from '../ClientCredentials';
 import { MenuItem } from '../MenuItem';
@@ -14,7 +14,7 @@ export function Settings(): ReactElement {
   const { path, url } = useRouteMatch();
 
   useSideMenu(
-    <MenuSection label={<FormattedMessage {...messages.settings} />}>
+    <MenuSection label={<FormattedMessage {...messages.title} />}>
       <MenuItem icon="user" to={`${url}/user`}>
         <FormattedMessage {...messages.user} />
       </MenuItem>
@@ -34,7 +34,7 @@ export function Settings(): ReactElement {
 
   return (
     <Content fullwidth>
-      <Switch>
+      <MetaSwitch title={messages.title}>
         <Route exact path={`${path}/user`}>
           <UserSettings />
         </Route>
@@ -48,7 +48,7 @@ export function Settings(): ReactElement {
           <ClientCredentials />
         </Route>
         <Redirect to={`${url}/user`} />
-      </Switch>
+      </MetaSwitch>
     </Content>
   );
 }

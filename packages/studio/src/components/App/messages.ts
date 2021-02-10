@@ -1,5 +1,5 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  error: 'Something went wrong when fetching all blocks.',
+  description: 'The open source low-code app building platform',
 });

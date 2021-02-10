@@ -1,10 +1,11 @@
-import { MenuSection, useSideMenu } from '@appsemble/react-components';
+import { MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { FunctionComponent, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { MenuItem } from '../MenuItem';
+import { Doc } from './Doc';
 import styles from './index.css';
 import { messages } from './messages';
 
@@ -71,17 +72,17 @@ export function Docs(): ReactElement {
 
   return (
     <main className={`container content pl-6 pr-2 py-2 ${styles.doc}`}>
-      <Switch>
-        {docs.map(({ Component, path }) => (
+      <MetaSwitch title={messages.title}>
+        {docs.map(({ Component, path, title }) => (
           <Route exact key={path} path={getUrl(path)} strict>
-            <Component />
+            <Doc component={Component} title={title} />
           </Route>
         ))}
         {docs.map(({ path }) => (
           <Redirect exact from={`${getUrl(path)}/`} key={path} to={getUrl(path)} />
         ))}
         <Redirect to={url} />
-      </Switch>
+      </MetaSwitch>
     </main>
   );
 }

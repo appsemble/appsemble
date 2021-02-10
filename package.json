@@ -79,7 +79,6 @@
     "@types/postcss-url": "^8.0.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
-    "@types/react-helmet": "^6.1.0",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-transition-group": "^4.4.0",
     "@types/semver": "^7.3.4",

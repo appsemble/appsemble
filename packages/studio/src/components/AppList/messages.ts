@@ -1,7 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Apps',
   search: 'Search',
   error: 'There was a problem loading the apps. Please try reloading the page.',
   ascending: 'Ascending',

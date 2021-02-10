@@ -5,6 +5,7 @@ import {
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
+  useMeta,
   useToggle,
 } from '@appsemble/react-components';
 import { Organization } from '@appsemble/types';
@@ -15,7 +16,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
 import { HeaderControl } from '../HeaderControl';
-import { HelmetIntl } from '../HelmetIntl';
 import { ListButton } from '../List/ListButton';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
@@ -48,6 +48,7 @@ const newOrganization = {
  * The rendered list items are links to the organization settings page.
  */
 export function OrganizationsList(): ReactElement {
+  useMeta(messages.title);
   const { organizations, setOrganizations, userInfo } = useUser();
   const { url } = useRouteMatch();
   const modal = useToggle();
@@ -67,7 +68,6 @@ export function OrganizationsList(): ReactElement {
 
   return (
     <Content fullwidth main>
-      <HelmetIntl title={messages.title} />
       <HeaderControl
         control={
           <Button disabled={!userInfo.email_verified} onClick={modal.enable}>

@@ -15,6 +15,7 @@ import {
   useConfirmation,
   useData,
   useMessages,
+  useMeta,
 } from '@appsemble/react-components';
 import { has } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
@@ -24,12 +25,12 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { UserEmail } from '../../types';
 import { supportedLanguages } from '../../utils/constants';
-import { HelmetIntl } from '../HelmetIntl';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
 
 export function UserSettings(): ReactElement {
+  useMeta(messages.title);
   const { formatMessage } = useIntl();
   const history = useHistory();
   const match = useRouteMatch<{ lang: string }>();
@@ -119,7 +120,6 @@ export function UserSettings(): ReactElement {
 
   return (
     <>
-      <HelmetIntl title={messages.title} />
       <Content>
         <Title>
           <FormattedMessage {...messages.profile} />

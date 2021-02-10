@@ -15,6 +15,7 @@ import {
   useConfirmation,
   useData,
   useMessages,
+  useMeta,
   useToggle,
 } from '@appsemble/react-components';
 import { AppMessages } from '@appsemble/types';
@@ -28,6 +29,8 @@ import { useApp } from '../AppContext';
 import { messages } from './messages';
 
 export function MessageEditor(): ReactElement {
+  useMeta(messages.title);
+
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();

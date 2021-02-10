@@ -50,7 +50,6 @@
     "openapi-types": "^7.2.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-helmet": "^6.1.0",
     "react-intl": "^5.10.19",
     "react-router-dom": "^5.2.0",
     "resize-observer-polyfill": "^1.5.1",

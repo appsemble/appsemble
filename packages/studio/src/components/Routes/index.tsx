@@ -3,10 +3,6 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { enableRegistration } from '../../utils/settings';
 import { AnonymousRoute } from '../AnonymousRoute';
-import { AppContext } from '../AppContext';
-import { AppList } from '../AppList';
-import { BlockDetails } from '../BlockDetails';
-import { BlockList } from '../BlockList';
 import { Docs } from '../Docs';
 import { EditPassword } from '../EditPassword';
 import { ForwardOAuth2Login } from '../ForwardOAuth2Login';
@@ -21,6 +17,8 @@ import { SAMLResponse } from '../SAMLResponse';
 import { SentryFeedback } from '../SentryFeedback';
 import { Settings } from '../Settings';
 import { VerifyEmail } from '../VerifyEmail';
+import { AppRoutes } from './AppRoutes';
+import { BlockRoutes } from './BlockRoutes';
 
 /**
  * Render all top level routes.
@@ -30,14 +28,11 @@ export function Routes(): ReactElement {
 
   return (
     <Switch>
-      <Route exact path={`${path}/apps`}>
-        <AppList />
+      <Route path={`${path}/apps`}>
+        <AppRoutes />
       </Route>
-      <Route exact path={`${path}/blocks`}>
-        <BlockList />
-      </Route>
-      <Route exact path={`${path}/blocks/@:organization/:blockName/:version?`}>
-        <BlockDetails />
+      <Route path={`${path}/blocks`}>
+        <BlockRoutes />
       </Route>
       <ProtectedRoute path={`${path}/settings`}>
         <Settings />
@@ -50,9 +45,6 @@ export function Routes(): ReactElement {
       </ProtectedRoute>
       <Route exact path={`${path}/connect/authorize/:type/:id`}>
         <ForwardOAuth2Login />
-      </Route>
-      <Route path={`${path}/apps/:id(\\d+)`}>
-        <AppContext />
       </Route>
       <AnonymousRoute exact path={`${path}/edit-password`}>
         <EditPassword />
