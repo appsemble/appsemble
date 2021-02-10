@@ -150,7 +150,7 @@ export async function processHooks(
 
     const remapperContext = await getRemapperContext(
       app,
-      app.definition.defaultLanguage || 'en-us',
+      app.definition.defaultLanguage || 'en',
       user && {
         sub: user.id,
         name: user.name,

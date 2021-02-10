@@ -68,9 +68,9 @@ describe('getMessages', () => {
     expect(response).toMatchObject({ status: 200, data: { language: 'nl-nl', messages: {} } });
   });
 
-  it('should return a 200 if a en-us is not supported and is default language unset', async () => {
-    const response = await request.get(`/api/apps/${app.id}/messages/en-us`);
-    expect(response).toMatchObject({ status: 200, data: { language: 'en-us', messages: {} } });
+  it('should return a 200 if a en is not supported and is default language unset', async () => {
+    const response = await request.get(`/api/apps/${app.id}/messages/en`);
+    expect(response).toMatchObject({ status: 200, data: { language: 'en', messages: {} } });
   });
 
   it('should merge messages with the base language if merge is enabled', async () => {
@@ -158,7 +158,7 @@ describe('getLanguages', () => {
 
   it('should fallback to the default value of defaultLanguage', async () => {
     const { data } = await request.get(`/api/apps/${app.id}/messages`);
-    expect(data).toStrictEqual(['en-us']);
+    expect(data).toStrictEqual(['en']);
   });
 
   it('should return a list of available languages', async () => {
@@ -178,6 +178,6 @@ describe('getLanguages', () => {
 
     const { data } = await request.get(`/api/apps/${app.id}/messages`);
 
-    expect(data).toStrictEqual(['en', 'en-gb', 'en-us', 'nl']);
+    expect(data).toStrictEqual(['en', 'en-gb', 'nl']);
   });
 });

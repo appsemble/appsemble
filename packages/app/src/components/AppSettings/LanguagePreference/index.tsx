@@ -12,7 +12,7 @@ export function LanguagePreference(): ReactElement {
   const { url } = useRouteMatch();
 
   const [preferredLanguage, setPreferredLanguage] = useState(
-    localStorage.getItem('preferredLanguage') ?? definition.defaultLanguage ?? 'en-us',
+    localStorage.getItem('preferredLanguage') ?? definition.defaultLanguage ?? 'en',
   );
 
   const onLanguageChange = useCallback(

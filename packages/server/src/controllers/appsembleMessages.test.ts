@@ -12,7 +12,7 @@ beforeAll(async () => {
 describe('getAppsembleLanguages', () => {
   it('should return the list of languages appsemble supports', async () => {
     const result = await request('/api/messages');
-    expect(result).toMatchObject({ status: 200, data: ['da', 'de', 'en-us', 'fr', 'nb-no', 'nl'] });
+    expect(result).toMatchObject({ status: 200, data: ['da', 'de', 'en', 'fr', 'nb-no', 'nl'] });
   });
 });
 
@@ -42,8 +42,8 @@ describe('getAppsembleMessages', () => {
   });
 
   it('should return empty messages if requesting the default language', async () => {
-    const result = await request('/api/messages/en-us');
-    expect(result).toMatchObject({ status: 200, data: { language: 'en-us', messages: {} } });
+    const result = await request('/api/messages/en');
+    expect(result).toMatchObject({ status: 200, data: { language: 'en', messages: {} } });
   });
 
   it('should return 404 on languages that aren’t supported', async () => {

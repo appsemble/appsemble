@@ -98,7 +98,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     languages: [
       ...new Set([
         ...app.AppMessages.map(({ language }) => language),
-        app.definition.defaultLanguage || 'en-us',
+        app.definition.defaultLanguage || 'en',
       ]),
     ].sort(),
     logins: [

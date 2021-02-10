@@ -16,7 +16,7 @@ interface Messages {
   messages: Record<string, string>;
 }
 
-const defaultLanguage = 'en-us';
+const defaultLanguage = 'en';
 
 export function StudioMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();

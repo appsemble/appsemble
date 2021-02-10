@@ -15,7 +15,7 @@ export async function handler(): Promise<void> {
 
   logger.info(`Updating messages for ${locales.join(', ')}`);
   await extractMessages(locales, 'packages/*/src/**/messages.ts', translationsDir, {
-    defaultLocale: 'en-US',
+    defaultLocale: 'en',
     overwriteDefault: true,
   });
   logger.info('Updated messages');

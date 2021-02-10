@@ -129,7 +129,7 @@ export function UserSettings(): ReactElement {
             name: userInfo.name || '',
             locale: has(supportedLanguages, userInfo.locale?.toLowerCase())
               ? userInfo.locale?.toLowerCase()
-              : localStorage.getItem('preferredLanguage') || 'en-us',
+              : localStorage.getItem('preferredLanguage') || 'en',
           }}
           onSubmit={onSaveProfile}
         >
