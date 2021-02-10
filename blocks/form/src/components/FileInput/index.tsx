@@ -67,7 +67,7 @@ export function FileInput({
           />
           {(value as string[]).map((val, index) => (
             <FileEntry
-              error={error}
+              error={dirty && error}
               field={field}
               // eslint-disable-next-line react/no-array-index-key
               key={index}
@@ -79,14 +79,14 @@ export function FileInput({
         </div>
       ) : (
         <FileEntry
-          error={error}
+          error={dirty && error}
           field={field}
           name={name}
           onChange={onChange}
           value={value as string}
         />
       )}
-      {error && <p className="help is-danger">{error}</p>}
+      {dirty && error && <p className="help is-danger">{error}</p>}
     </FormComponent>
   );
 }

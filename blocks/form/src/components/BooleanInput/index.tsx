@@ -21,7 +21,7 @@ export function BooleanInput({
   value,
 }: BooleanInputProps): VNode {
   const {
-    parameters: { invalidLabel = 'This value is invalid', optionalLabel },
+    parameters: { optionalLabel },
     utils,
   } = useBlock();
   const { label, labelText, readOnly, tag } = field;
@@ -35,7 +35,7 @@ export function BooleanInput({
       checked={Boolean(value)}
       className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
-      error={dirty && error && utils.remap(invalidLabel, value)}
+      error={dirty && error}
       help={utils.remap(labelText, value) ?? checkboxLabel ?? null}
       label={checkboxLabel}
       name={name}

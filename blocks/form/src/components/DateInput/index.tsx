@@ -21,7 +21,7 @@ export function DateInput({
   value = null,
 }: DateTimeInputProps): VNode {
   const {
-    parameters: { invalidLabel = 'This value is invalid', optionalLabel },
+    parameters: { optionalLabel },
     utils,
   } = useBlock();
   const { label, name, placeholder, readOnly, tag } = field;
@@ -42,7 +42,7 @@ export function DateInput({
   return (
     <DateTimeComponent
       disabled={disabled}
-      error={dirty && error && utils.remap(invalidLabel, value)}
+      error={dirty && error}
       id={name}
       label={checkboxLabel}
       maxDate={maxDate}

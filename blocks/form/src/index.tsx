@@ -18,6 +18,7 @@ bootstrap(
     parameters: {
       fields,
       formRequirementError = 'One of the requirements of this form is invalid.',
+      invalidLabel = 'This value is invalid',
       previousLabel,
       requirements,
       submitError = 'There was a problem submitting this form',
@@ -39,12 +40,10 @@ bootstrap(
     const [submitting, setSubmitting] = useState(false);
 
     const [values, setValues] = useState(defaultValues);
-    const [pristine, setPristine] = useState(
-      Object.fromEntries(fields.map((field) => field.name).map((field) => [field, true])),
-    );
     const [lastChanged, setLastChanged] = useState<string>(null);
-    const errors = useMemo(() => generateDefaultValidity(fields, values, utils), [
+    const errors = useMemo(() => generateDefaultValidity(fields, values, utils, invalidLabel), [
       fields,
+      invalidLabel,
       utils,
       values,
     ]);
@@ -54,7 +53,6 @@ bootstrap(
     const onChange = useCallback((name: string, value: Values) => {
       setValues((oldValues) => ({ ...oldValues, [name]: value }));
       setLastChanged(name);
-      setPristine((p) => ({ ...p, [name]: false }));
       setSubmitErrorResult(null);
     }, []);
 
@@ -203,7 +201,7 @@ bootstrap(
         {fields.map((f) => (
           <FormInput
             disabled={loading || submitting}
-            error={!pristine[f.name] && errors[f.name]}
+            error={errors[f.name]}
             field={f}
             key={f.name}
             name={f.name}

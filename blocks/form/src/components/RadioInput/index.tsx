@@ -21,7 +21,7 @@ export function RadioInput({
   value,
 }: RadioInputProps): VNode {
   const {
-    parameters: { invalidLabel = 'This value is invalid', optionalLabel },
+    parameters: { optionalLabel },
     utils,
   } = useBlock();
   const { label, options, tag } = field;
@@ -31,7 +31,7 @@ export function RadioInput({
     <RadioGroup
       className="appsemble-radio"
       disabled={disabled}
-      error={dirty && error && utils.remap(invalidLabel, value)}
+      error={dirty && error}
       label={utils.remap(label, value)}
       name={name}
       onChange={onChange}
