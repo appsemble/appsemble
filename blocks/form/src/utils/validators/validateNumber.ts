@@ -2,7 +2,7 @@ import { NumberField, NumberRequirement } from '../../../block';
 
 export function validateNumber(field: NumberField, value: number): NumberRequirement {
   return field.requirements?.find((requirement) => {
-    if ('required' in requirement && value == null) {
+    if ('required' in requirement && !Number.isFinite(value)) {
       return true;
     }
 
