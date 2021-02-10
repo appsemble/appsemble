@@ -15,6 +15,9 @@ export function shouldShowMenu(app: AppDefinition, userRole: string, teams: Team
         return true;
       }
       return roles.some((r) => checkAppRole(app.security, r, userRole, teams));
-    }).length > 1
+    }).length > 1 ||
+    app.layout?.feedback === 'navigation' ||
+    app.layout?.login === 'navigation' ||
+    app.layout?.settings === 'navigation'
   );
 }
