@@ -55,7 +55,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const [appsembleMessagesLoading, setAppsembleMessagesLoading] = useState(true);
 
   useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || 'en-us';
+    const defaultLanguage = definition.defaultLanguage || 'en';
     if (lang === defaultLanguage || languages.includes(lang)) {
       return;
     }
@@ -74,7 +74,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   }, [definition, history, lang, redirect]);
 
   useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || 'en-us';
+    const defaultLanguage = definition.defaultLanguage || 'en';
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       return;
     }
@@ -87,7 +87,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   }, [definition, lang]);
 
   useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || 'en-us';
+    const defaultLanguage = definition.defaultLanguage || 'en';
     if (lang !== defaultLanguage && !languages.includes(lang)) {
       return;
     }
@@ -136,7 +136,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   return (
     <Context.Provider value={value}>
-      <IntlProvider defaultLocale="en-us" locale={lang} messages={appsembleMessages}>
+      <IntlProvider defaultLocale="en" locale={lang} messages={appsembleMessages}>
         {children}
       </IntlProvider>
     </Context.Provider>

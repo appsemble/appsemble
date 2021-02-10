@@ -43,7 +43,7 @@ export async function getAppsembleMessages(ctx: KoaContext<Params>): Promise<voi
     throw notFound(`Language “${language}” could not be found`);
   }
 
-  if (lang === 'en-us') {
+  if (lang === 'en') {
     ctx.body = { language, messages: {} };
     return;
   }

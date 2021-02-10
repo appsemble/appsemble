@@ -151,7 +151,7 @@ The long desciption will be rendered on the app details page. Markdown content i
         },
         defaultLanguage: {
           type: 'string',
-          default: 'en-us',
+          default: 'en',
           minLength: 2,
           description: 'The default language for the app.',
         },

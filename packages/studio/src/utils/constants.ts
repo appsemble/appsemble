@@ -6,5 +6,5 @@ export const supportedLanguages = {
   de: 'German (Deutsch)',
   fr: 'French (Français)',
   nl: 'Dutch (Nederlands)',
-  'en-us': 'English',
+  en: 'English',
 };

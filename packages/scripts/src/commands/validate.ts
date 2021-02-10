@@ -67,8 +67,8 @@ type Assert = (assertion: boolean, filename: string, message: string, workspace?
 
 async function validateTranslations(assert: Assert): Promise<void> {
   const workspaces = ['app', 'react-components', 'studio'];
-  const developerLocales = ['nl', 'en-US'].sort();
-  const defaultLocale = 'en-US';
+  const developerLocales = ['nl', 'en'].sort();
+  const defaultLocale = 'en';
   const translations: Record<string, Record<string, string>> = {};
 
   await opendirSafe('./translations', async (filepath, stat) => {

@@ -53,7 +53,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     !app.AppMessages.length ||
     (merge && !app.AppMessages.some((m) => m.language === language.toLowerCase()))
   ) {
-    if (language !== (app.definition.defaultLanguage || 'en-us')) {
+    if (language !== (app.definition.defaultLanguage || 'en')) {
       throw notFound(`Language “${language}” could not be found`);
     }
     ctx.body = { language, messages: {} };
@@ -135,7 +135,7 @@ export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = [
     ...new Set([
       ...app.AppMessages.map((message) => message.language),
-      app.definition.defaultLanguage || 'en-us',
+      app.definition.defaultLanguage || 'en',
     ]),
   ].sort();
 }
