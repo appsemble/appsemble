@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.17.6](https://gitlab.com/appsemble/appsemble/-/releases/0.17.6)] - 2021-02-10
+
+### Added
+
+- Cli: Add contexts in `.appsemblerc.yaml`.
+- Server: Add `locked` property to apps.
+- Studio: Add app locking option. This can be used to put apps in a read only state.
+- Studio: Add option to edit the long description of an app in the app’s settings.
+
+### Changed
+
+- App: Prevent returning null when fetching undefined properties in `prop` remapper.
+- Cli: Change `appsemble auth login` command to `appsemble login`.
+- Cli: Change `appsemble auth remove` command to `appsemble logout`.
+- Server: App assets are now hard deleted instead of soft deleted.
+- Server: App resources are now hard deleted instead of soft deleted.
+
 ## \[[0.17.5](https://gitlab.com/appsemble/appsemble/-/releases/0.17.5)] - 2021-02-03
 
 ### Changed

@@ -1,8 +1,8 @@
 {
   "private": true,
   "dependencies": {
-    "@appsemble/preact": "0.17.5",
-    "@appsemble/sdk": "0.17.5",
+    "@appsemble/preact": "0.17.6",
+    "@appsemble/sdk": "0.17.6",
     "preact": "^10.3.0"
   }
 }
