@@ -10,6 +10,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
+import { defaultLocale } from '@appsemble/utils';
 import { Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
@@ -91,8 +92,12 @@ export function BlockDetails(): ReactElement {
           />
         </figure>
         <header className="is-inline-block">
-          <Title level={2}>{blockName}</Title>
-          <Subtitle level={4}>@{organization}</Subtitle>
+          <Title lang={defaultLocale} level={2}>
+            {blockName}
+          </Title>
+          <Subtitle lang={defaultLocale} level={4}>
+            @{organization}
+          </Subtitle>
         </header>
       </div>
       <SelectField
@@ -116,6 +121,7 @@ export function BlockDetails(): ReactElement {
         <MarkdownContent
           className={styles.description}
           content={selectedBlockManifest.longDescription}
+          lang={defaultLocale}
         />
       )}
 
@@ -144,7 +150,7 @@ export function BlockDetails(): ReactElement {
           {Object.entries((selectedBlockManifest.parameters as any).definitions).map(
             ([key, definition]: [string, Definition]) => (
               <Fragment key={key}>
-                <Title level={5}>
+                <Title lang={defaultLocale} level={5}>
                   <a href={`${url}#${key}`} id={key}>
                     {key}
                   </a>

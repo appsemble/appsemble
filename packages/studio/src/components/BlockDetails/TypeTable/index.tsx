@@ -1,4 +1,5 @@
 import { Join, Table } from '@appsemble/react-components';
+import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Definition } from 'typescript-json-schema';
 
@@ -24,7 +25,7 @@ export function TypeTable({ definition }: TypeTableProps): ReactElement {
           <th>{messages.enum}</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody lang={defaultLocale}>
         <tr>
           <td>{definition.type}</td>
           <td>{definition.format}</td>

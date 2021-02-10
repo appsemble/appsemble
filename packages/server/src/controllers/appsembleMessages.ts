@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { join, resolve } from 'path';
 
-import { validateLanguage } from '@appsemble/utils';
+import { defaultLocale, validateLanguage } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import tags from 'language-tags';
 
@@ -43,7 +43,7 @@ export async function getAppsembleMessages(ctx: KoaContext<Params>): Promise<voi
     throw notFound(`Language “${language}” could not be found`);
   }
 
-  if (lang === 'en') {
+  if (lang === defaultLocale) {
     ctx.body = { language, messages: {} };
     return;
   }

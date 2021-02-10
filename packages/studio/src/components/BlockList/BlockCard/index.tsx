@@ -1,5 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
+import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 
@@ -34,10 +35,10 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
               </figure>
             </div>
             <div className={`media-content ${styles.headerContent}`}>
-              <Title className={styles.ellipsis} level={5} size={4}>
+              <Title className={styles.ellipsis} lang={defaultLocale} level={5} size={4}>
                 {name}
               </Title>
-              <Subtitle className={styles.ellipsis} level={6}>
+              <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
                 {org}
               </Subtitle>
             </div>
@@ -47,7 +48,10 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
           </div>
         </div>
       </header>
-      <div className={`card-content ${styles.description}`}>
+      <div
+        className={`card-content ${styles.description}`}
+        lang={block.description ? defaultLocale : null}
+      >
         {block.description ?? <span className="has-text-grey-light">{messages.noDescription}</span>}
       </div>
       <footer className="card-footer">

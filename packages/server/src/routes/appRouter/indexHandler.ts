@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 import { URLSearchParams } from 'url';
 
-import { filterBlocks, getAppBlocks } from '@appsemble/utils';
+import { defaultLocale, filterBlocks, getAppBlocks } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import {
@@ -98,7 +98,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     languages: [
       ...new Set([
         ...app.AppMessages.map(({ language }) => language),
-        app.definition.defaultLanguage || 'en',
+        app.definition.defaultLanguage || defaultLocale,
       ]),
     ].sort(),
     logins: [

@@ -13,6 +13,11 @@ interface TitleProps {
   className?: string;
 
   /**
+   * The locale of the title content.
+   */
+  lang?: string;
+
+  /**
    * The header level.
    *
    * By default this is determined from the specified size.
@@ -33,10 +38,15 @@ interface TitleProps {
 export function Title({
   children,
   className,
+  lang,
   size = 3,
   level = (size - 2) as TitleProps['size'],
 }: TitleProps): ReactElement {
   const Component = `h${level}` as 'h1';
 
-  return <Component className={classNames(`title is-${size}`, className)}>{children}</Component>;
+  return (
+    <Component className={classNames(`title is-${size}`, className)} lang={lang}>
+      {children}
+    </Component>
+  );
 }

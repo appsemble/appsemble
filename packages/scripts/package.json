@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.17.5",
+    "@appsemble/utils": "0.17.5",
     "axios": "^0.21.1",
     "date-fns": "^2.16.1",
     "extract-react-intl-messages": "^4.1.1",

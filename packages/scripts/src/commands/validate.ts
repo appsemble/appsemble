@@ -1,6 +1,7 @@
 import { basename, dirname, join, relative } from 'path';
 
 import { getWorkspaces, logger, opendirSafe } from '@appsemble/node-utils';
+import { defaultLocale } from '@appsemble/utils';
 import extractMessages from 'extract-react-intl-messages';
 import { existsSync, readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
@@ -67,8 +68,7 @@ type Assert = (assertion: boolean, filename: string, message: string, workspace?
 
 async function validateTranslations(assert: Assert): Promise<void> {
   const workspaces = ['app', 'react-components', 'studio'];
-  const developerLocales = ['nl', 'en'].sort();
-  const defaultLocale = 'en';
+  const developerLocales = [defaultLocale, 'nl'].sort();
   const translations: Record<string, Record<string, string>> = {};
 
   await opendirSafe('./translations', async (filepath, stat) => {
