@@ -283,6 +283,7 @@
   "studio.src.components.BlockDetails.blockIcon": "Block Icon",
   "studio.src.components.BlockDetails.error": "Something went wrong when fetching this block.",
   "studio.src.components.BlockList.error": "Something went wrong when fetching all blocks.",
+  "studio.src.components.Breadcrumbs.breadcrumbs": "Breadcrumbs",
   "studio.src.components.CMS.title": "Resources",
   "studio.src.components.CMSRoot.hasResources": "This app has the following resources: ",
   "studio.src.components.CMSRoot.noResources": "This app has no resources.",

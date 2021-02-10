@@ -283,6 +283,7 @@
   "studio.src.components.BlockDetails.blockIcon": "Bloker ikon",
   "studio.src.components.BlockDetails.error": "Der gik noget galt, da denne blok blev hentet.",
   "studio.src.components.BlockList.error": "Noget gik galt, da alle blokke blev hentet.",
+  "studio.src.components.Breadcrumbs.breadcrumbs": "",
   "studio.src.components.CMS.title": "Ressourcer",
   "studio.src.components.CMSRoot.hasResources": "Denne app har følgende ressourcer: ",
   "studio.src.components.CMSRoot.noResources": "Denne app har ingen ressourcer.",

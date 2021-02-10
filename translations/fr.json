@@ -283,6 +283,7 @@
   "studio.src.components.BlockDetails.blockIcon": "Icône de blocage",
   "studio.src.components.BlockDetails.error": "Quelque chose s’est mal passé en allant chercher ce bloc.",
   "studio.src.components.BlockList.error": "Quelque chose a mal tourné en allant chercher tous les blocs.",
+  "studio.src.components.Breadcrumbs.breadcrumbs": "",
   "studio.src.components.CMS.title": "Ressources",
   "studio.src.components.CMSRoot.hasResources": "Cette application dispose des ressources suivantes :",
   "studio.src.components.CMSRoot.noResources": "Cette appli n’a aucune ressource.",

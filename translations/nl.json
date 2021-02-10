@@ -283,6 +283,7 @@
   "studio.src.components.BlockDetails.blockIcon": "Blokicoon",
   "studio.src.components.BlockDetails.error": "Er is iets misgegaan bij het ophalen van dit blok.",
   "studio.src.components.BlockList.error": "Er is iets misgegaan bij het ophalen van de blokken.",
+  "studio.src.components.Breadcrumbs.breadcrumbs": "Breadcrumbs",
   "studio.src.components.CMS.title": "Resources",
   "studio.src.components.CMSRoot.hasResources": "Deze app heeft de volgende resources: ",
   "studio.src.components.CMSRoot.noResources": "Deze app heeft geen resources.",

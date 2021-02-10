@@ -283,6 +283,7 @@
   "studio.src.components.BlockDetails.blockIcon": "Block-Symbol",
   "studio.src.components.BlockDetails.error": "Beim Holen dieses Blocks ist etwas schief gelaufen.",
   "studio.src.components.BlockList.error": "Beim Holen aller Blöcke ist etwas schief gelaufen.",
+  "studio.src.components.Breadcrumbs.breadcrumbs": "",
   "studio.src.components.CMS.title": "Ressource",
   "studio.src.components.CMSRoot.hasResources": "Diese App verfügt über die folgenden Ressourcen:",
   "studio.src.components.CMSRoot.noResources": "Diese App hat keine Ressourcen.",
