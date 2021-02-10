@@ -339,16 +339,21 @@ describe('prop', () => {
     'handle null': {
       input: { name: 'Spongebob' },
       mappers: { prop: null },
-      expected: null,
+      expected: undefined,
     },
     'handle properties named null': {
       input: { null: 'Spongebob' },
       mappers: { prop: null },
       expected: 'Spongebob',
     },
-    'handle null values': {
+    'handle undefined values': {
       input: {},
-      mappers: { prop: 'foo.bar' },
+      mappers: { prop: 'foo' },
+      expected: undefined,
+    },
+    'handle null values': {
+      input: { foo: null },
+      mappers: { prop: 'foo' },
       expected: null,
     },
   });
