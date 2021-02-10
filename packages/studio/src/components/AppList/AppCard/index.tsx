@@ -1,6 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
-import { defaultLocale } from '@appsemble/utils/src';
+import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';

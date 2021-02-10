@@ -1,6 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
-import { defaultLocale } from '@appsemble/utils/src';
+import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 

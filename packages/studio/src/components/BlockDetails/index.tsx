@@ -10,7 +10,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
-import { defaultLocale } from '@appsemble/utils/src';
+import { defaultLocale } from '@appsemble/utils';
 import { Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';

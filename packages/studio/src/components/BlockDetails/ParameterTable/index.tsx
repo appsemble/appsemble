@@ -1,5 +1,5 @@
 import { Table } from '@appsemble/react-components';
-import { defaultLocale } from '@appsemble/utils/src';
+import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Definition } from 'typescript-json-schema';
 

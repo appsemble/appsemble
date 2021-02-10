@@ -1,6 +1,6 @@
 import { MarkdownContent, Table, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
-import { defaultLocale } from '@appsemble/utils/src';
+import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 
 import { messages } from './messages';
