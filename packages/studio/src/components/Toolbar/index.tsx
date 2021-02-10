@@ -5,6 +5,7 @@ import { Link, useRouteMatch } from 'react-router-dom';
 
 import { ProfileDropdown } from '../ProfileDropdown';
 import styles from './index.css';
+import { LanguageDropdown } from './LanguageDropdown';
 import { messages } from './messages';
 
 export function Toolbar(): ReactElement {
@@ -30,10 +31,10 @@ export function Toolbar(): ReactElement {
           {process.env.APPSEMBLE_VERSION}
         </a>
       </div>
-      <div className="navbar-brand">
-        <div className="navbar-item is-paddingless px-1">
-          <ProfileDropdown />
-        </div>
+
+      <div className={`navbar-end ${styles.dropdowns}`}>
+        <LanguageDropdown className={styles.dropdown} />
+        <ProfileDropdown className={styles.dropdown} />
       </div>
     </nav>
   );
