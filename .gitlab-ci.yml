@@ -434,7 +434,7 @@ provision production:
     - yarn appsemble config set remote https://appsemble.app
     - yarn appsemble config set ignore-conflict true
     - yarn appsemble block publish blocks/*
-    - yarn appsemble app update apps/*
+    - yarn appsemble app update --force apps/*
 
 ###################################################################################################
 #  End to End Stage                                                                               #
