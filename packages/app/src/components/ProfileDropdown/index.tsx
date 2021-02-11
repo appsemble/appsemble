@@ -1,9 +1,10 @@
-import { Button, Dropdown, Icon } from '@appsemble/react-components';
+import { Button, Icon } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
+import { NavbarDropdown } from '../NavbarDropdown';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
@@ -22,14 +23,14 @@ export function ProfileDropdown(): ReactElement {
 
   if (!isLoggedIn) {
     return (
-      <Link className="button" to="/Login">
+      <Link className={`navbar-item ${styles.login}`} to="/Login">
         <FormattedMessage {...messages.login} />
       </Link>
     );
   }
 
   return (
-    <Dropdown
+    <NavbarDropdown
       className="is-right"
       label={
         <figure className="image is-32x32">
@@ -49,7 +50,7 @@ export function ProfileDropdown(): ReactElement {
       }
     >
       {(layout?.settings ?? 'navbar') === 'navbar' && (
-        <Link className="dropdown-item" to="/Settings">
+        <Link className="navbar-item" to="/Settings">
           <Icon icon="wrench" />
           <span>
             <FormattedMessage {...messages.settings} />
@@ -57,7 +58,7 @@ export function ProfileDropdown(): ReactElement {
         </Link>
       )}
       {(layout?.feedback ?? 'navbar') === 'navbar' && (
-        <Link className="dropdown-item" to="/Feedback">
+        <Link className="navbar-item" to="/Feedback">
           <Icon icon="comment" />
           <span>
             <FormattedMessage {...messages.feedback} />
@@ -66,9 +67,9 @@ export function ProfileDropdown(): ReactElement {
       )}
       {showLogin && (
         <>
-          <hr className="dropdown-divider" />
+          <hr className="navbar-divider" />
           <Button
-            className={`dropdown-item pl-5 ${styles.logoutButton}`}
+            className={`navbar-item pl-5 ${styles.logoutButton}`}
             icon="sign-out-alt"
             onClick={logout}
           >
@@ -76,6 +77,6 @@ export function ProfileDropdown(): ReactElement {
           </Button>
         </>
       )}
-    </Dropdown>
+    </NavbarDropdown>
   );
 }
