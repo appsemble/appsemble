@@ -28,6 +28,7 @@ export * from './Message';
 export * from './MessagesProvider';
 export * from './Meta';
 export * from './Modal';
+export * from './NavbarDropdown';
 export * from './OAuth2LoginButton';
 export * from './PasswordField';
 export * from './Portal';

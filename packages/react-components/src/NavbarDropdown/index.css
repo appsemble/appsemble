@@ -2,4 +2,9 @@
   background: transparent;
   border: none;
   height: 100%;
+
+  &:focus,
+  &:hover {
+    background: transparent;
+  }
 }

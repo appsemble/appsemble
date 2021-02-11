@@ -1,7 +1,8 @@
-import { Button, useClickOutside, useToggle } from '@appsemble/react-components';
+import { BulmaColor } from '@appsemble/sdk';
 import classNames from 'classnames';
-import React, { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
+import { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
+import { useClickOutside, useToggle } from '..';
 import styles from './index.css';
 
 interface NavbarDropdownProps {
@@ -21,9 +22,19 @@ interface NavbarDropdownProps {
    * The label to render on the menu toggle button.
    */
   label: ReactNode;
+
+  /**
+   * The color applied to the toggle button.
+   */
+  color?: BulmaColor;
 }
 
-export function NavbarDropdown({ children, className, label }: NavbarDropdownProps): ReactElement {
+export function NavbarDropdown({
+  children,
+  className,
+  color,
+  label,
+}: NavbarDropdownProps): ReactElement {
   const toggle = useToggle();
 
   const onKeyDown = useCallback(
@@ -48,14 +59,14 @@ export function NavbarDropdown({ children, className, label }: NavbarDropdownPro
       ])}
       ref={ref}
     >
-      <Button
+      <button
         className={`navbar-link ${styles.dropdown}`}
-        color="dark"
+        color={color}
         onClick={toggle.toggle}
         type="button"
       >
         {label}
-      </Button>
+      </button>
       <div
         className="navbar-dropdown is-right"
         onClick={toggle.disable}

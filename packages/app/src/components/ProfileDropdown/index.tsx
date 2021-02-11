@@ -1,10 +1,9 @@
-import { Button, Icon } from '@appsemble/react-components';
+import { Button, Icon, NavbarDropdown } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
-import { NavbarDropdown } from '../NavbarDropdown';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
 import { messages } from './messages';
