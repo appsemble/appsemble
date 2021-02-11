@@ -31,7 +31,7 @@ export function ProfileDropdown(): ReactElement {
 
   return (
     <NavbarDropdown
-      className="is-right"
+      className={`is-right ${styles.dropdown}`}
       label={
         <figure className="image is-32x32">
           {userInfo?.picture ? (
