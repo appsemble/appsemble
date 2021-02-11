@@ -70,7 +70,6 @@ export async function updateApp({
   try {
     const file = await fs.stat(path);
     const formData = new FormData();
-    formData.append('force', Boolean(force));
     let appsembleContext: AppsembleContext;
 
     if (file.isFile()) {
@@ -96,6 +95,7 @@ export async function updateApp({
         'The app id must be passed as a command line flag or in the context',
       );
     }
+    formData.append('force', String(force));
     formData.append('template', String(template));
     formData.append('private', String(isPrivate));
 
