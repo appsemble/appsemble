@@ -13,7 +13,12 @@ export function SimpleSubmit({ disabled, ...props }: SimpleSubmitProps): ReactEl
     <Button
       {...props}
       color="primary"
-      disabled={disabled || pristine || submitting || Object.values(formErrors).some(Boolean)}
+      disabled={
+        disabled ||
+        Object.values(pristine).every(Boolean) ||
+        submitting ||
+        Object.values(formErrors).some(Boolean)
+      }
       loading={submitting}
       type="submit"
     />

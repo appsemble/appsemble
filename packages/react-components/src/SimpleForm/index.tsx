@@ -27,7 +27,7 @@ type FormValues = Record<string, any>;
 
 interface SimpleFormContext {
   formErrors: FormErrors;
-  pristine: boolean;
+  pristine: Record<string, boolean>;
   setFormError: (name: string, errorMessage: ReactNode) => void;
   setValue: (name: string, value: any, errorMessage?: ReactNode) => void;
   setValues: (values: FormValues) => void;
@@ -49,12 +49,14 @@ export function SimpleForm<T extends {}>({
   const [values, setValues] = useState(defaultValues);
   const [submitError, setSubmitError] = useState<Error>(null);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
-  const [pristine, setPristine] = useState(true);
+  const [pristine, setPristine] = useState(
+    Object.fromEntries(Object.keys(defaultValues).map((key) => [key, true])),
+  );
   const [submitting, setSubmitting] = useState(false);
 
   const reset = useCallback(() => {
     setValues(defaultValues);
-    setPristine(true);
+    setPristine(Object.fromEntries(Object.keys(defaultValues).map((key) => [key, true])));
   }, [defaultValues]);
 
   const doSubmit = useCallback(async () => {
@@ -86,7 +88,7 @@ export function SimpleForm<T extends {}>({
 
   const setValue = useCallback(
     (name: string, value: any, errorMessage?: ReactNode) => {
-      setPristine(false);
+      setPristine((p) => ({ ...p, [name]: false }));
       let newValues = {
         ...values,
         [name]: value,
