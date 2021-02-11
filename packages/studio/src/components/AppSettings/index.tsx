@@ -112,6 +112,7 @@ export function AppSettings(): ReactElement {
     ),
     cancelLabel: <FormattedMessage {...messages.cancel} />,
     confirmLabel: <FormattedMessage {...(app.locked ? messages.unlockApp : messages.lockApp)} />,
+    color: 'warning',
     async action() {
       const { id, locked } = app;
       try {
