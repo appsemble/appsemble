@@ -81,7 +81,7 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
         </span>
       </Link>
       {sentryDsn && (
-        <Link className={`navbar-item ${styles.logoutButton}`} to={`${url}/feedback`}>
+        <Link className="navbar-item" to={`${url}/feedback`}>
           <Icon icon="comment" />
           <span>
             <FormattedMessage {...messages.feedback} />
@@ -98,10 +98,7 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
           <FormattedMessage {...messages.logoutButton} />
         </Button>
       ) : (
-        <Link
-          className={`button navbar-item ${styles.logoutButton}`}
-          to={{ pathname: `${url}/login`, search: `?${search}` }}
-        >
+        <Link className="navbar-item" to={{ pathname: `${url}/login`, search: `?${search}` }}>
           <Icon icon="sign-in-alt" />
           <span>
             <FormattedMessage {...messages.login} />
