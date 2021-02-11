@@ -59,7 +59,9 @@
   z-index: 20;
 }
 
-.dropdown button {
+.dropdown button,
+.dropdown button:hover {
+  color: hsl(0, 0%, 100%);
   font-size: 0.875rem;
 }
 
