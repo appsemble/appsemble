@@ -135,6 +135,7 @@ export function AppSettings(): ReactElement {
           <IconTool disabled={app.locked} />
           <SimpleFormField
             component={TextAreaField}
+            disabled={app.locked}
             help={<FormattedMessage {...messages.longDescriptionDescription} />}
             label={<FormattedMessage {...messages.longDescription} />}
             name="longDescription"
