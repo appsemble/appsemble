@@ -81,7 +81,7 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
     // @ts-expect-error XXX This shouldn’t be necessary.
     <Component
       disabled={disabled || submitting}
-      error={!pristine && formErrors[name]}
+      error={!pristine[name] && formErrors[name]}
       name={name}
       onChange={internalOnChange}
       ref={ref}

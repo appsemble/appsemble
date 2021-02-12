@@ -54,7 +54,9 @@ export function SimpleModalFooter({
       <CardFooterButton
         color={color}
         disabled={
-          (allowPristine && pristine) || submitting || Object.values(formErrors).some(Boolean)
+          (allowPristine && Object.values(pristine).every(Boolean)) ||
+          submitting ||
+          Object.values(formErrors).some(Boolean)
         }
         loading={submitting}
         type="submit"
