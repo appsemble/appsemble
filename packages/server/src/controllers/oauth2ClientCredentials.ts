@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { badRequest, notFound } from '@hapi/boom';
+import { hash } from 'bcrypt';
 import { isPast, parseISO } from 'date-fns';
 import { Op } from 'sequelize';
 
@@ -33,7 +34,7 @@ export async function registerOAuth2ClientCredentials(ctx: KoaContext): Promise<
     expires,
     id,
     scopes,
-    secret,
+    secret: await hash(secret, 10),
     UserId: user.id,
   });
 

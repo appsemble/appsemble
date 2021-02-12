@@ -1,5 +1,6 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import { compare } from 'bcrypt';
 
 import { OAuth2ClientCredentials, User } from '../models';
 import { setArgv } from '../utils/argv';
@@ -51,6 +52,8 @@ describe('registerOAuth2ClientCredentials', () => {
         secret: expect.stringMatching(/^[\da-z]{64}$/),
       },
     });
+    const credentials = await OAuth2ClientCredentials.findOne();
+    expect(await compare(response.data.secret, credentials.secret)).toBe(true);
   });
 
   it('should not allow to create already expired client credentials', async () => {

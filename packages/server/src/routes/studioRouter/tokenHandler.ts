@@ -127,14 +127,17 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         if (!credentials) {
           throw new GrantError('invalid_client');
         }
+        const [, id, secret] = credentials;
         const client = await OAuth2ClientCredentials.findOne({
-          attributes: ['expires', 'id', 'scopes', 'UserId'],
-          raw: true,
-          where: {
-            id: credentials[1],
-            secret: credentials[2],
-          },
+          attributes: ['expires', 'id', 'scopes', 'secret', 'UserId'],
+          where: { id },
         });
+        if (!client) {
+          throw new GrantError('invalid_client');
+        }
+        if (!(await compare(secret, client.secret))) {
+          throw new GrantError('invalid_client');
+        }
         if (!client) {
           throw new GrantError('invalid_client');
         }
@@ -144,7 +147,7 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         if (!hasScope(client.scopes, requestedScope || '')) {
           throw new GrantError('invalid_scope');
         }
-        aud = client.id;
+        aud = id;
         refreshToken = false;
         scope = requestedScope;
         sub = client.UserId;
