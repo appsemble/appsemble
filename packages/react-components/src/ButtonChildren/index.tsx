@@ -7,7 +7,7 @@ interface ButtonChildrenProps {
   /**
    * Children to render
    */
-  children: ReactNode;
+  children?: ReactNode;
 
   /**
    * A Font Awesome icon name to render left of the button text.
