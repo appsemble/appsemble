@@ -201,8 +201,10 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
         [fn('COUNT', col('Resources.id')), 'ResourceCount'],
+        [literal('icon IS NOT NULL'), 'icon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'maskableIcon'],
       ],
-      exclude: ['icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
     },
     include: [
       { model: AppRating, attributes: [] },
@@ -375,7 +377,10 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       domain !== undefined ||
       path !== undefined ||
       isPrivate !== undefined ||
-      template !== undefined
+      template !== undefined ||
+      icon !== undefined ||
+      maskableIcon !== undefined ||
+      iconBackground !== undefined
     ) {
       checkPermissions.push(Permission.EditAppSettings);
     }
@@ -473,6 +478,46 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const { format } = await sharp(icon).metadata();
   ctx.body = icon;
   ctx.type = format;
+}
+
+export async function deleteAppIcon(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'icon', 'OrganizationId'],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.icon) {
+    throw notFound('App has no icon');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+  await app.update({ icon: null });
+}
+
+export async function deleteAppMaskableIcon(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'maskableIcon', 'OrganizationId'],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.maskableIcon) {
+    throw notFound('App has no maskable icon');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+  await app.update({ maskableIcon: null });
 }
 
 export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {

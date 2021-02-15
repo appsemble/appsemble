@@ -33,6 +33,7 @@ export function getAppFromRecord(
     path: record.path,
     private: Boolean(record.private),
     locked: Boolean(record.locked),
+    hasIcon: Boolean(record.icon),
     hasMaskableIcon: Boolean(record.maskableIcon),
     iconBackground: record.iconBackground || '#ffffff',
     iconUrl: `/api/apps/${record.id}/icon`,

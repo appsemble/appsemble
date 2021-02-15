@@ -42,3 +42,7 @@
 .fill {
   object-fit: cover;
 }
+
+.deleteButton {
+  width: 100%;
+}
