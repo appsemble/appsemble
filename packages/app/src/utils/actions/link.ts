@@ -1,5 +1,5 @@
-import { LinkAction } from '@appsemble/sdk';
-import { LinkActionDefinition } from '@appsemble/types';
+import { BaseAction, LinkAction } from '@appsemble/sdk';
+import { BaseActionDefinition, LinkActionDefinition } from '@appsemble/types';
 import { normalize, partialNormalized } from '@appsemble/utils';
 
 import { MakeActionParameters } from '../../types';
@@ -57,6 +57,30 @@ export function link({
     },
     href(args: any = {}) {
       return href(args);
+    },
+  };
+}
+
+export function back({
+  history,
+}: MakeActionParameters<BaseActionDefinition<'link.back'>>): BaseAction<'link.back'> {
+  return {
+    type: 'link.back',
+    dispatch(data) {
+      history.goBack();
+      return data;
+    },
+  };
+}
+
+export function next({
+  history,
+}: MakeActionParameters<BaseActionDefinition<'link.next'>>): BaseAction<'link.next'> {
+  return {
+    type: 'link.next',
+    dispatch(data) {
+      history.goForward();
+      return data;
     },
   };
 }
