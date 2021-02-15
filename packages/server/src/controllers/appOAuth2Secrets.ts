@@ -15,6 +15,7 @@ import {
 } from '../models';
 import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
+import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
 
@@ -37,6 +38,7 @@ export async function createAppOAuth2Secret(ctx: KoaContext<Params>): Promise<vo
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   ctx.body = await AppOAuth2Secret.create({ ...body, AppId: appId });
