@@ -1,8 +1,7 @@
-import { Icon } from '@appsemble/react-components';
+import { Icon, NavLink } from '@appsemble/react-components';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { ReactElement, ReactNode } from 'react';
 
-import { NavLink } from '../NavLink';
 import styles from './index.css';
 
 interface SideNavLinkProps {

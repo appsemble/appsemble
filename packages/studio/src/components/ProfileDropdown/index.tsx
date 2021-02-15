@@ -1,13 +1,13 @@
 import {
-  Button,
   Icon,
   NavbarDropdown,
+  NavbarItem,
   useLocationString,
   useQuery,
 } from '@appsemble/react-components';
 import React, { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useLocation, useRouteMatch } from 'react-router-dom';
+import { useLocation, useRouteMatch } from 'react-router-dom';
 
 import { sentryDsn } from '../../utils/settings';
 import { useUser } from '../UserProvider';
@@ -67,49 +67,24 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
       }
     >
       {userInfo && (
-        <Link className="navbar-item" to={`${url}/settings`}>
-          <Icon icon="wrench" />
-          <span>
-            <FormattedMessage {...messages.settings} />
-          </span>
-        </Link>
+        <NavbarItem icon="wrench" to={`${url}/settings`}>
+          <FormattedMessage {...messages.settings} />
+        </NavbarItem>
       )}
-      <Link className="navbar-item" to={`${url}/blocks`}>
-        <Icon icon="cubes" />
-        <span>
-          <FormattedMessage {...messages.blocks} />
-        </span>
-      </Link>
-      <Link className="navbar-item" to={`${url}/docs`}>
-        <Icon icon="book" />
-        <span>
-          <FormattedMessage {...messages.documentation} />
-        </span>
-      </Link>
       {sentryDsn && (
-        <Link className="navbar-item" to={`${url}/feedback`}>
-          <Icon icon="comment" />
-          <span>
-            <FormattedMessage {...messages.feedback} />
-          </span>
-        </Link>
+        <NavbarItem icon="comment" to={`${url}/feedback`}>
+          <FormattedMessage {...messages.feedback} />
+        </NavbarItem>
       )}
       <hr className="navbar-divider" />
       {userInfo ? (
-        <Button
-          className={`navbar-item pl-5 ${styles.logoutButton}`}
-          icon="sign-out-alt"
-          onClick={logout}
-        >
+        <NavbarItem icon="sign-out-alt" onClick={logout}>
           <FormattedMessage {...messages.logoutButton} />
-        </Button>
+        </NavbarItem>
       ) : (
-        <Link className="navbar-item" to={{ pathname: `${url}/login`, search: `?${search}` }}>
-          <Icon icon="sign-in-alt" />
-          <span>
-            <FormattedMessage {...messages.login} />
-          </span>
-        </Link>
+        <NavbarItem icon="sign-in-alt" to={{ pathname: `${url}/login`, search: `?${search}` }}>
+          <FormattedMessage {...messages.login} />
+        </NavbarItem>
       )}
     </NavbarDropdown>
   );

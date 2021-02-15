@@ -1,4 +1,4 @@
-import { Button, Icon, NavbarDropdown } from '@appsemble/react-components';
+import { Icon, NavbarDropdown, NavbarItem } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -49,31 +49,21 @@ export function ProfileDropdown(): ReactElement {
       }
     >
       {(layout?.settings ?? 'navbar') === 'navbar' && (
-        <Link className="navbar-item" to="/Settings">
-          <Icon icon="wrench" />
-          <span>
-            <FormattedMessage {...messages.settings} />
-          </span>
-        </Link>
+        <NavbarItem icon="wrench" to="/Settings">
+          <FormattedMessage {...messages.settings} />
+        </NavbarItem>
       )}
       {(layout?.feedback ?? 'navbar') === 'navbar' && (
-        <Link className="navbar-item" to="/Feedback">
-          <Icon icon="comment" />
-          <span>
-            <FormattedMessage {...messages.feedback} />
-          </span>
-        </Link>
+        <NavbarItem icon="comment" to="/Feedback">
+          <FormattedMessage {...messages.feedback} />
+        </NavbarItem>
       )}
       {showLogin && (
         <>
           <hr className="navbar-divider" />
-          <Button
-            className={`navbar-item pl-5 ${styles.logoutButton}`}
-            icon="sign-out-alt"
-            onClick={logout}
-          >
+          <NavbarItem icon="sign-out-alt" onClick={logout}>
             <FormattedMessage {...messages.logoutButton} />
-          </Button>
+          </NavbarItem>
         </>
       )}
     </NavbarDropdown>

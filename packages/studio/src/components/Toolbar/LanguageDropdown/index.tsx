@@ -1,7 +1,6 @@
-import { NavbarDropdown } from '@appsemble/react-components';
-import classNames from 'classnames';
-import React, { ReactElement } from 'react';
-import { Link, useLocation, useRouteMatch } from 'react-router-dom';
+import { NavbarDropdown, NavbarItem } from '@appsemble/react-components';
+import { ReactElement } from 'react';
+import { useLocation, useRouteMatch } from 'react-router-dom';
 
 import { supportedLanguages } from '../../../utils/constants';
 
@@ -21,13 +20,9 @@ export function LanguageDropdown({ className }: LanguageDropdownProps): ReactEle
   return (
     <NavbarDropdown className={className} color="dark" label={lang.split('-')[0].toUpperCase()}>
       {Object.entries(supportedLanguages).map(([language, name]) => (
-        <Link
-          className={classNames(['navbar-item px-2', { 'is-active': language === lang }])}
-          key={language}
-          to={pathname.replace(lang, language)}
-        >
+        <NavbarItem key={language} to={pathname.replace(lang, language)}>
           {name}
-        </Link>
+        </NavbarItem>
       ))}
     </NavbarDropdown>
   );
