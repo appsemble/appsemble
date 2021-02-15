@@ -1,6 +1,5 @@
 const { join } = require('path');
 
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 
@@ -60,7 +59,6 @@ module.exports = ({ dir, name }, argv) => {
           ignore: ['**/package.json', '**/*.test.{js,ts,tsx}'],
         },
       }),
-      production && new CleanWebpackPlugin(),
-    ].filter(Boolean),
+    ],
   };
 };
