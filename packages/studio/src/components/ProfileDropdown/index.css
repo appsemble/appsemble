@@ -10,4 +10,6 @@
 
 .logoutButton {
   border: none;
+  cursor: pointer;
+  width: 100%;
 }

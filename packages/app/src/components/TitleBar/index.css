@@ -6,3 +6,10 @@
 .title {
   flex: 1;
 }
+
+.dropdownContainer {
+  align-items: stretch;
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
+}
