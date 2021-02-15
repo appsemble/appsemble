@@ -14,7 +14,7 @@ import {
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 type SideMenuContext = [

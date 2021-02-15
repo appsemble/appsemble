@@ -4,7 +4,7 @@ import { VNode } from 'preact';
 
 import { FileField, RendererProps } from '../../../block';
 import { ImageField } from '../ImageField';
-import styles from './index.css';
+import styles from './index.module.css';
 
 /**
  * Renders a file as an image.

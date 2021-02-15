@@ -1,3 +1,5 @@
+import './index.css';
+
 import { useBlock } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
 import { DivIcon, Icon } from 'leaflet';
@@ -6,7 +8,7 @@ import { useEffect, useState } from 'preact/hooks';
 
 import { GeoCoordinatesField, RendererProps } from '../../../block';
 import { createIcon } from '../utils/createIcon';
-import styles from './index.css';
+import styles from './index.module.css';
 
 /**
  * An map for an object type schema which implements GeoCoordinates.

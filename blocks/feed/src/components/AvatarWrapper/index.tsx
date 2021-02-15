@@ -1,7 +1,7 @@
 import { Action } from '@appsemble/sdk';
 import { ComponentChildren, VNode } from 'preact';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 export interface CardProps {
   onAvatarClick: (event: Event) => void;

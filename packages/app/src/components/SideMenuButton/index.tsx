@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 
 import { useMenu } from '../MenuProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 /**

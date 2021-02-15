@@ -4,7 +4,7 @@ import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface BlockCardProps {

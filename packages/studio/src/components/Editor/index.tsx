@@ -31,7 +31,7 @@ import { GUIEditor } from '../GUIEditor';
 import { GuiEditorStep } from '../GUIEditor/types';
 import { MonacoEditor } from '../MonacoEditor';
 import { EditorNavBar } from './EditorNavBar';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;

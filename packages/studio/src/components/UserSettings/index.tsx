@@ -26,7 +26,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import { UserEmail } from '../../types';
 import { supportedLanguages } from '../../utils/constants';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function UserSettings(): ReactElement {

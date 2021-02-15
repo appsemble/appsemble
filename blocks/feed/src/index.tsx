@@ -3,7 +3,7 @@ import { Loader } from '@appsemble/preact-components';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { Card } from './components/Card';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface Item {
   id: number;

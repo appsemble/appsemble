@@ -3,7 +3,7 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
 import { ElementType, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface ListButtonProps {
   alt?: string;

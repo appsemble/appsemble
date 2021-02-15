@@ -4,7 +4,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../../AppContext';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface AppScreenshotProps {

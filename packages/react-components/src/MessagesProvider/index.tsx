@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { Message, useForceUpdate } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export interface Msg extends BaseMessage {

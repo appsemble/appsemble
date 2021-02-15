@@ -11,7 +11,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../../AppContext';
 import { IconPicker } from '../IconPicker';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 const shapes = {

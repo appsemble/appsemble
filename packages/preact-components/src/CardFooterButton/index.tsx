@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ComponentProps, VNode } from 'preact';
 
 import { Button } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 
 export function CardFooterButton({
   className,

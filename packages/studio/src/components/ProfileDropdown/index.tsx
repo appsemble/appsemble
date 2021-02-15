@@ -6,7 +6,7 @@ import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 import { sentryDsn } from '../../utils/settings';
 import { NavbarDropdown } from '../NavbarDropdown';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface LanguageDropdownProps {

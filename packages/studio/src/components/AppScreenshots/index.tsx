@@ -15,7 +15,7 @@ import { checkRole } from '../../utils/checkRole';
 import { useApp } from '../AppContext';
 import { useUser } from '../UserProvider';
 import { AppScreenshot } from './AppScreenshot';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function AppScreenshots(): ReactElement {

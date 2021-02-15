@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { ButtonsField, FieldComponentProps } from '../../../block';
-import styles from './index.css';
+import styles from './index.module.css';
 
 export function ButtonsFieldComponent({
   className,

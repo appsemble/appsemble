@@ -2,7 +2,7 @@ import { Button, Loader, Message, UseAxiosResult } from '@appsemble/react-compon
 import { ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface AsyncDataViewProps<T> {

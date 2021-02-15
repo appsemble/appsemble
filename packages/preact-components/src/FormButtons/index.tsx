@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { ComponentChildren, toChildArray, VNode } from 'preact';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface FormButtonsProps {
   children: ComponentChildren;

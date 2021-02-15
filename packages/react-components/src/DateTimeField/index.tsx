@@ -6,7 +6,7 @@ import { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } fro
 
 import { FormComponent, Input, SharedFormComponentProps } from '..';
 import { useCombinedRefs } from '../useCombinedRefs';
-import styles from './index.css';
+import styles from './index.module.css';
 
 type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> &
   Pick<flatpickr.Options.Options, 'enableTime' | 'mode'> &

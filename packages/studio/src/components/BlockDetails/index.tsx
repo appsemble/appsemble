@@ -18,7 +18,7 @@ import { Definition } from 'typescript-json-schema';
 
 import { ActionTable } from './ActionTable';
 import { EventTable } from './EventTable';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages, untranslatedMessages } from './messages';
 import { ParameterTable } from './ParameterTable';
 import { TypeTable } from './TypeTable';

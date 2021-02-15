@@ -1,7 +1,7 @@
 import { Title } from '@appsemble/react-components';
 import { ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface HeaderControlProps extends ComponentPropsWithoutRef<typeof Title> {
   /**

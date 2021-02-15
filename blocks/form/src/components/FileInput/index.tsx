@@ -7,7 +7,7 @@ import { useCallback } from 'preact/hooks';
 import { FileField, InputProps } from '../../../block';
 import { isRequired } from '../../utils/requirements';
 import { FileEntry } from '../FileEntry';
-import styles from './index.css';
+import styles from './index.module.css';
 
 type FileInputProps = InputProps<(Blob | string)[] | Blob | string, FileField>;
 

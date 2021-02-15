@@ -19,7 +19,7 @@ import { PageDialog } from '../PageDialog';
 import { TabsPage } from '../TabsPage';
 import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function Page(): ReactElement {

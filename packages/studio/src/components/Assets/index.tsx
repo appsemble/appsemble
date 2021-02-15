@@ -22,7 +22,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { download } from '../../utils/download';
 import { useApp } from '../AppContext';
 import { AssetPreview } from './AssetPreview';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export interface Asset {

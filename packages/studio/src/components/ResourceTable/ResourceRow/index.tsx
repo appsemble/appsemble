@@ -18,7 +18,7 @@ import { Resource, RouteParams } from '..';
 import { useApp } from '../../AppContext';
 import { JSONSchemaEditor } from '../../JSONSchemaEditor';
 import { ClonableCheckbox } from '../ClonableCheckbox';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface ResourceRowProps {

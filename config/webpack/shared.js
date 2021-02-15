@@ -37,37 +37,19 @@ module.exports = (env, { mode }) => {
       rules: [
         {
           test: /\.css$/,
-          oneOf: [
+          use: [
+            MiniCssExtractPlugin.loader,
             {
-              test: /node_modules/,
-              use: [
-                MiniCssExtractPlugin.loader,
-                {
-                  loader: 'css-loader',
-                  options: {
-                    importLoaders: 1,
-                    sourceMap: true,
-                  },
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+                modules: {
+                  auto: true,
+                  localIdentName: production ? '[hash:base64:5]' : '[path][name]_[local]',
                 },
-                'postcss-loader',
-              ],
+              },
             },
-            {
-              use: [
-                MiniCssExtractPlugin.loader,
-                {
-                  loader: 'css-loader',
-                  options: {
-                    importLoaders: 1,
-                    sourceMap: true,
-                    modules: {
-                      localIdentName: production ? '[hash:base64:5]' : '[path][name]_[local]',
-                    },
-                  },
-                },
-                'postcss-loader',
-              ],
-            },
+            'postcss-loader',
           ],
         },
       ],

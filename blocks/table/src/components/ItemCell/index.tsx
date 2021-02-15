@@ -5,7 +5,7 @@ import { useCallback } from 'preact/hooks';
 
 import { Dropdown as DropdownType, Field } from '../../../block';
 import { DropdownOption } from '../DropdownOption';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface ItemCellProps extends ComponentProps<'td'> {
   /**

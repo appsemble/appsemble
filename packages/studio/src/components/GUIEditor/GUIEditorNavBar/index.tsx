@@ -8,7 +8,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { GUIEditorDelete } from '../GUIEditorDelete';
 import { EditLocation, GuiEditorStep } from '../types';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface GUIEditorNavBarProps {

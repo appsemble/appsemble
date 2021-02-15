@@ -4,7 +4,7 @@ import { cloneElement, isValidElement, ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Icon } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 /**
