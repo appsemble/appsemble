@@ -1,0 +1,10 @@
+.button {
+  border: none;
+  cursor: pointer;
+  width: 100%;
+
+  &:focus,
+  &:hover {
+    background-color: hsl(0, 0%, 96%) !important;
+  }
+}

@@ -1,4 +1,4 @@
-import { Button, Dropdown, Icon } from '@appsemble/react-components';
+import { Icon, NavbarDropdown, NavbarItem } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -22,15 +22,15 @@ export function ProfileDropdown(): ReactElement {
 
   if (!isLoggedIn) {
     return (
-      <Link className="button" to="/Login">
+      <Link className={`navbar-item ${styles.login}`} to="/Login">
         <FormattedMessage {...messages.login} />
       </Link>
     );
   }
 
   return (
-    <Dropdown
-      className="is-right"
+    <NavbarDropdown
+      className={`is-right ${styles.dropdown}`}
       label={
         <figure className="image is-32x32">
           {userInfo?.picture ? (
@@ -49,33 +49,23 @@ export function ProfileDropdown(): ReactElement {
       }
     >
       {(layout?.settings ?? 'navbar') === 'navbar' && (
-        <Link className="dropdown-item" to="/Settings">
-          <Icon icon="wrench" />
-          <span>
-            <FormattedMessage {...messages.settings} />
-          </span>
-        </Link>
+        <NavbarItem icon="wrench" to="/Settings">
+          <FormattedMessage {...messages.settings} />
+        </NavbarItem>
       )}
       {(layout?.feedback ?? 'navbar') === 'navbar' && (
-        <Link className="dropdown-item" to="/Feedback">
-          <Icon icon="comment" />
-          <span>
-            <FormattedMessage {...messages.feedback} />
-          </span>
-        </Link>
+        <NavbarItem icon="comment" to="/Feedback">
+          <FormattedMessage {...messages.feedback} />
+        </NavbarItem>
       )}
       {showLogin && (
         <>
-          <hr className="dropdown-divider" />
-          <Button
-            className={`dropdown-item pl-5 ${styles.logoutButton}`}
-            icon="sign-out-alt"
-            onClick={logout}
-          >
+          <hr className="navbar-divider" />
+          <NavbarItem icon="sign-out-alt" onClick={logout}>
             <FormattedMessage {...messages.logoutButton} />
-          </Button>
+          </NavbarItem>
         </>
       )}
-    </Dropdown>
+    </NavbarDropdown>
   );
 }
