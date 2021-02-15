@@ -1,7 +1,7 @@
 import { ComponentPropsWithoutRef, MouseEventHandler, ReactElement } from 'react';
 
 import { ButtonChildren, NavLink } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 
 type NavbarItemProps = ComponentPropsWithoutRef<typeof ButtonChildren> &
   Partial<ComponentPropsWithoutRef<typeof NavLink>> & {
