@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { ComponentProps, ReactElement } from 'react';
 
 interface IconProps extends ComponentProps<'span'> {
-  className?: string;
   icon: IconName;
   iconSize?: '2x' | '3x' | 'lg';
   prefix?: IconPrefix;
