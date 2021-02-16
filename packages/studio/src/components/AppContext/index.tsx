@@ -1,4 +1,5 @@
 import {
+  Icon,
   Loader,
   MenuSection,
   Message,
@@ -8,8 +9,9 @@ import {
 } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
+import classNames from 'classnames';
 import { createContext, Dispatch, ReactElement, SetStateAction, useContext, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { checkRole } from '../../utils/checkRole';
@@ -55,6 +57,7 @@ export function AppContext(): ReactElement {
   const { organizations } = useUser();
   const { data: app, error, loading, setData: setApp } = useData<App>(`/api/apps/${id}`);
   const value = useMemo(() => ({ app, setApp }), [app, setApp]);
+  const { formatMessage } = useIntl();
 
   const organization = organizations?.find((org) => org.id === app?.OrganizationId);
 
@@ -69,7 +72,14 @@ export function AppContext(): ReactElement {
 
   useSideMenu(
     organization && (
-      <MenuSection label={app.definition.name}>
+      <MenuSection
+        label={
+          <div>
+            {app.locked && <Icon icon="lock" title={formatMessage(messages.locked)} />}
+            <span className={classNames({ 'pl-1': !app.locked })}>{app.definition.name}</span>
+          </div>
+        }
+      >
         <MenuItem exact icon="info" to={url}>
           <FormattedMessage {...messages.details} />
         </MenuItem>

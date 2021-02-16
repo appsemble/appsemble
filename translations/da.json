@@ -66,6 +66,7 @@
   "studio.src.components.AppContext.assets": "Aktiver",
   "studio.src.components.AppContext.details": "Detaljer",
   "studio.src.components.AppContext.editor": "Editor",
+  "studio.src.components.AppContext.locked": "",
   "studio.src.components.AppContext.notFound": "Den app, du leder efter, blev ikke fundet.",
   "studio.src.components.AppContext.notifications": "Notifikationer",
   "studio.src.components.AppContext.resources": "Ressourcer",

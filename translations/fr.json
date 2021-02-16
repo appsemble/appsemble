@@ -66,6 +66,7 @@
   "studio.src.components.AppContext.assets": "Équipements",
   "studio.src.components.AppContext.details": "Détails",
   "studio.src.components.AppContext.editor": "Éditeur",
+  "studio.src.components.AppContext.locked": "",
   "studio.src.components.AppContext.notFound": "L’application que vous recherchez est introuvable.",
   "studio.src.components.AppContext.notifications": "Notifications",
   "studio.src.components.AppContext.resources": "Ressources",

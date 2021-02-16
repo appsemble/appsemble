@@ -66,6 +66,7 @@
   "studio.src.components.AppContext.assets": "Assets",
   "studio.src.components.AppContext.details": "Details",
   "studio.src.components.AppContext.editor": "Editor",
+  "studio.src.components.AppContext.locked": "Deze app is momenteel vergrendeld. Er kunnen geen wijzigingen gemaakt worden tot de app in de instellingen wordt ontgrendeld.",
   "studio.src.components.AppContext.notFound": "Deze app kon niet worden gevonden.",
   "studio.src.components.AppContext.notifications": "Meldingen",
   "studio.src.components.AppContext.resources": "Resources",

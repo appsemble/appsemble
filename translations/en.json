@@ -66,6 +66,7 @@
   "studio.src.components.AppContext.assets": "Assets",
   "studio.src.components.AppContext.details": "Details",
   "studio.src.components.AppContext.editor": "Editor",
+  "studio.src.components.AppContext.locked": "This app is currently locked. No changes can be made without first unlocking the app in the settings.",
   "studio.src.components.AppContext.notFound": "The app you are looking for could not be found.",
   "studio.src.components.AppContext.notifications": "Notifications",
   "studio.src.components.AppContext.resources": "Resources",
