@@ -13,4 +13,6 @@ export const messages = defineMessages({
   roles: 'Roles',
   teams: 'Teams',
   translations: 'Translations',
+  locked:
+    'This app is currently locked. No changes can be made without first unlocking the app in the settings.',
 });

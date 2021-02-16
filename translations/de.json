@@ -66,6 +66,7 @@
   "studio.src.components.AppContext.assets": "Bestand",
   "studio.src.components.AppContext.details": "Details",
   "studio.src.components.AppContext.editor": "Editor",
+  "studio.src.components.AppContext.locked": "",
   "studio.src.components.AppContext.notFound": "Das gewünschte Unternehmen wurde nicht gefunden.",
   "studio.src.components.AppContext.notifications": "Benachrichtigungen",
   "studio.src.components.AppContext.resources": "Rohstoffe",
