@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { supportedLanguages } from '../../../utils/constants';

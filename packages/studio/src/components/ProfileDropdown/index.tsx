@@ -1,5 +1,5 @@
 import { Button, Icon, useLocationString, useQuery } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useRouteMatch } from 'react-router-dom';
 

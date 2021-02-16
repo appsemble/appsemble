@@ -9,7 +9,7 @@ import {
   useSimpleForm,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import React, { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
