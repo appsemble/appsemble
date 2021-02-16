@@ -1,6 +1,7 @@
 const { join } = require('path');
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const UnusedWebpackPlugin = require('unused-webpack-plugin');
 
 const shared = require('./shared');
@@ -21,6 +22,10 @@ module.exports = ({ dir, name }, argv) => {
     entry: [srcPath],
     output: {
       filename: `${blockName}.js`,
+    },
+    resolve: {
+      ...sharedConfig.resolve,
+      plugins: [new TsconfigPathsPlugin({ configFile: join(dir, 'tsconfig.json') })],
     },
     module: {
       rules: [

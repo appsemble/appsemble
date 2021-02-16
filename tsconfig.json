@@ -2,6 +2,8 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
+    // This is needed due to https://github.com/dividab/tsconfig-paths/issues/143
+    "baseUrl": ".",
     "noEmit": true,
     "paths": {
       "@appsemble/*": ["./packages/*/src"]

@@ -4,6 +4,7 @@ const yaml = require('js-yaml');
 const autolink = require('remark-autolink-headings');
 const frontmatter = require('remark-frontmatter');
 const slug = require('remark-slug');
+const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const visit = require('unist-util-visit');
 
 const shared = require('./shared');
@@ -16,11 +17,16 @@ const shared = require('./shared');
 module.exports = (env, argv) => {
   const { mode, publicPath } = argv;
   const production = mode === 'production';
+  const configFile = join(resolve(__dirname, '../..'), 'packages', env, 'tsconfig.json');
 
   const sharedConfig = shared(env, argv);
 
   return {
     ...sharedConfig,
+    resolve: {
+      ...sharedConfig.resolve,
+      plugins: [new TsconfigPathsPlugin({ configFile })],
+    },
     module: {
       ...sharedConfig.module,
       rules: [
@@ -130,7 +136,7 @@ module.exports = (env, argv) => {
           loader: 'ts-loader',
           options: {
             transpileOnly: true,
-            configFile: join(resolve(__dirname, '../..'), 'packages', env, 'tsconfig.json'),
+            configFile,
           },
         },
         {
