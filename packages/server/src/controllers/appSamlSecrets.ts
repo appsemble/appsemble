@@ -6,6 +6,7 @@ import { pki } from 'node-forge';
 import { App, AppSamlSecret } from '../models';
 import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
+import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 
 interface Params {
@@ -28,6 +29,7 @@ export async function createAppSamlSecret(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const { privateKey, publicKey } = await new Promise<pki.rsa.KeyPair>((resolve, reject) => {
@@ -94,6 +96,7 @@ export async function updateAppSamlSecret(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const [secret] = app.AppSamlSecrets;
