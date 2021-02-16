@@ -1,4 +1,4 @@
-import { dirname } from 'path';
+import { dirname, join, resolve } from 'path';
 import { parse } from 'querystring';
 
 import { loggerMiddleware } from '@appsemble/node-utils';
@@ -55,6 +55,9 @@ async function xWwwFormUrlencodedParser(
   return data;
 }
 
+const distDir = resolve(__dirname, '..', '..', '..', '..', 'dist');
+const year = 365 * 24 * 60 * 60 * 1000;
+
 interface CreateServerOptions {
   /**
    * Additional middleware to inject before any other middleware.
@@ -104,7 +107,7 @@ export async function createServer({
     ]),
   );
 
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'production') {
     app.use(await frontend(webpackConfigs));
   }
 
@@ -138,9 +141,10 @@ export async function createServer({
           }
           return next();
         },
+        serve(join(distDir, 'studio'), { immutable: true, maxage: year }),
         studioRouter,
       ]),
-      appRouter,
+      compose([serve(join(distDir, 'app'), { immutable: true, maxage: year }), appRouter]),
     ),
   );
 

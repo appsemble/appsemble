@@ -48,7 +48,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
 
   if (!app) {
     ctx.status = 404;
-    return render(ctx, 'error.html', {
+    return render(ctx, 'app/error.html', {
       bulmaURL,
       faURL,
       message: 'The app you are looking for could not be found.',
@@ -124,7 +124,8 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
-  await render(ctx, 'app.html', {
+  ctx.set('Content-Security-Policy', makeCSP(csp));
+  return render(ctx, 'app/index.html', {
     app,
     bulmaURL: `${bulmaURL}?${new URLSearchParams(app.definition.theme)}`,
     faURL,
@@ -132,5 +133,4 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     settings,
     themeColor: app.definition.theme?.themeColor || '#ffffff',
   });
-  ctx.set('Content-Security-Policy', makeCSP(csp));
 }

@@ -11,8 +11,9 @@ import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
  * Serve `index.html` for editor related routes.
  *
  * @param ctx - The Koa context.
+ * @returns void
  */
-export async function indexHandler(ctx: KoaContext): Promise<void> {
+export function indexHandler(ctx: KoaContext): Promise<void> {
   const {
     disableRegistration,
     githubClientId,
@@ -84,5 +85,5 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     'frame-src': [`*.${new URL(host).host}`, host],
   });
   ctx.set('Content-Security-Policy', csp);
-  await render(ctx, 'studio.html', { nonce, settings });
+  return render(ctx, 'studio/index.html', { nonce, settings });
 }
