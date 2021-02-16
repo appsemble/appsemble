@@ -5,7 +5,7 @@ const bulmaPkg = require('bulma/package.json');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
+const UnusedWebpackPlugin = require('unused-webpack-plugin');
 
 const core = require('./core');
 const minify = require('./html-minifier.json');
@@ -41,10 +41,10 @@ module.exports = (env, argv) => {
         filename: 'studio.html',
         minify,
       }),
-      new UnusedFilesWebpackPlugin({
+      new UnusedWebpackPlugin({
+        directories: [studioEntry],
+        exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', '**/types.ts'],
         failOnUnused: production,
-        patterns: ['studio/**/*.*'],
-        globOptions: { ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,ts,tsx}'] },
       }),
       new MiniCssExtractPlugin({
         filename: production ? '_/[contentHash].css' : '_/studio/[name].css',
