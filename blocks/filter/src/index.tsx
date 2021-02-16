@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { FilterValue, FilterValues } from '../block';
 import { FieldComponent } from './components/FieldComponent';
-import styles from './index.css';
+import styles from './index.module.css';
 import { toOData } from './utils/toOData';
 
 bootstrap(

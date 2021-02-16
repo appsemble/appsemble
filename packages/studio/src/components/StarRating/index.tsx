@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { MouseEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedNumber } from 'react-intl';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 export interface StarRatingProps {
   /**

@@ -695,6 +695,8 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
   | BaseActionDefinition<'flow.next'>
+  | BaseActionDefinition<'link.back'>
+  | BaseActionDefinition<'link.next'>
   | BaseActionDefinition<'noop'>
   | BaseActionDefinition<'team.join'>
   | BaseActionDefinition<'team.list'>

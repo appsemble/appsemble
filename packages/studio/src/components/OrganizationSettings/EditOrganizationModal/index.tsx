@@ -11,7 +11,7 @@ import { ChangeEvent, ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { UserOrganization } from '../../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface EditOrganizationModalProps {

@@ -1,7 +1,7 @@
 import { BootstrapParams } from '@appsemble/sdk';
 import { DivIcon, Icon } from 'leaflet';
 
-import styles from './createIcon.css';
+import styles from './createIcon.module.css';
 
 /**
  * A set of Font Awesome markers known to represent a pin.

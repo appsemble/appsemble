@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 
 import { Values } from '../block';
 import { FormInput } from './components/FormInput';
-import styles from './index.css';
+import styles from './index.module.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
 import { generateDefaultValues } from './utils/generateDefaultValues';
 import { isFormValid } from './utils/validity';

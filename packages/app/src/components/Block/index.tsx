@@ -19,7 +19,7 @@ import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 
 const FA_URL = [...document.styleSheets]
   .map((sheet) => sheet.href)

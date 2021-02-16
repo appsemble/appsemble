@@ -4,7 +4,7 @@ import { VNode } from 'preact';
 
 import { InputProps, RadioField } from '../../../block';
 import { isRequired } from '../../utils/requirements';
-import styles from './index.css';
+import styles from './index.module.css';
 
 type RadioInputProps = InputProps<any, RadioField>;
 

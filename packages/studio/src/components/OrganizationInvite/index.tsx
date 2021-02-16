@@ -18,7 +18,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { Organization } from '../../types';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function OrganizationInvite(): ReactElement {

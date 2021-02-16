@@ -6,7 +6,7 @@ import { dialog } from './dialog';
 import { email } from './email';
 import { event } from './event';
 import * as flow from './flow';
-import { link } from './link';
+import { back, link, next } from './link';
 import { log } from './log';
 import { message } from './message';
 import { noop } from './noop';
@@ -25,6 +25,8 @@ export type ActionCreators = {
 
 export const actionCreators = {
   link,
+  'link.back': back,
+  'link.next': next,
   log,
   message,
   noop,

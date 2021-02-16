@@ -12,7 +12,7 @@ import {
   validateAppDefinition,
   validateStyle,
 } from '@appsemble/utils';
-import { badRequest, conflict, forbidden, notFound } from '@hapi/boom';
+import { badRequest, conflict, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { File } from 'koas-body-parser';
@@ -33,6 +33,7 @@ import {
   transactional,
 } from '../models';
 import { KoaContext } from '../types';
+import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
@@ -274,7 +275,6 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         coreStyle,
         definition,
         domain,
-        force,
         icon,
         iconBackground,
         longDescription,
@@ -300,9 +300,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
-  if (dbApp.locked && !force) {
-    throw forbidden('App is currently locked.');
-  }
+  checkAppLock(ctx, dbApp);
 
   try {
     result = {};
@@ -566,6 +564,7 @@ export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
   await transactional(async (transaction) => {
@@ -596,6 +595,7 @@ export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
   if (!app.AppScreenshots.length) {
@@ -664,16 +664,13 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
   const css = String(style.contents).trim();
 
   try {
-    validateStyle(css);
-
     const app = await App.findByPk(appId);
     if (!app) {
       throw notFound('App not found.');
     }
 
-    if (app.locked) {
-      throw forbidden('App is currently locked.');
-    }
+    checkAppLock(ctx, app);
+    validateStyle(css);
 
     const block = await BlockVersion.findOne({
       where: { name: blockId, OrganizationId: organizationId },

@@ -6,7 +6,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { ProfileDropdown } from '../ProfileDropdown';
 import { SideMenuButton } from '../SideMenuButton';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface TitleBarProps {
   children?: ReactChild;
@@ -36,7 +36,7 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
           <h2 className="navbar-item title is-4">{children || definition.name}</h2>
         </div>
         {(definition?.layout?.login == null || definition?.layout?.login === 'navbar') && (
-          <div className="navbar-brand">
+          <div className={`navbar-end ${styles.dropdownContainer}`}>
             <div className="navbar-item is-paddingless px-1">
               <ProfileDropdown />
             </div>

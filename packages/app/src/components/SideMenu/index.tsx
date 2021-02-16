@@ -10,7 +10,7 @@ import {
 import { useHistory } from 'react-router-dom';
 
 import { useMenu } from '../MenuProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface SideMenuProps {
   children: ReactNode;

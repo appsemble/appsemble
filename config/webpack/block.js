@@ -1,8 +1,8 @@
 const { join } = require('path');
 
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
+const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
+const UnusedWebpackPlugin = require('unused-webpack-plugin');
 
 const shared = require('./shared');
 
@@ -22,6 +22,10 @@ module.exports = ({ dir, name }, argv) => {
     entry: [srcPath],
     output: {
       filename: `${blockName}.js`,
+    },
+    resolve: {
+      ...sharedConfig.resolve,
+      plugins: [new TsconfigPathsPlugin({ configFile: join(dir, 'tsconfig.json') })],
     },
     module: {
       rules: [
@@ -52,15 +56,11 @@ module.exports = ({ dir, name }, argv) => {
       new MiniCssExtractPlugin({
         filename: `${blockName}.css`,
       }),
-      new UnusedFilesWebpackPlugin({
+      new UnusedWebpackPlugin({
+        directories: [srcPath],
+        exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', '**/types.ts'],
         failOnUnused: production,
-        patterns: ['**/*.*'],
-        globOptions: {
-          cwd: srcPath,
-          ignore: ['**/package.json', '**/*.test.{js,ts,tsx}'],
-        },
       }),
-      production && new CleanWebpackPlugin(),
-    ].filter(Boolean),
+    ],
   };
 };

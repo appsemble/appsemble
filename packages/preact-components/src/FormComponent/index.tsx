@@ -4,7 +4,7 @@ import { cloneElement, ComponentChild, isValidElement, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { Icon } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 
 /**
  * These props are typically inherited by a component that implements `FormComponent`.

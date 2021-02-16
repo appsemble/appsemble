@@ -25,7 +25,7 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import { OAuth2ClientCredentials } from '../../types';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function ClientCredentials(): ReactElement {

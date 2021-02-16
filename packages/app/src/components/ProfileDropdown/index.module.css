@@ -1,45 +1,31 @@
-.root {
-  justify-content: space-between;
-
-  /*
-   * This should overlay any other navbars.
-   *
-   * Bulma navbars have a z-index of 30.
-   */
-  z-index: 31 !important;
+.gravatar {
+  max-height: unset !important;
 }
 
-.tag {
-  display: none !important;
-  text-decoration: none !important;
-
-  @media screen and (min-width: 1024px) {
-    display: inline-flex !important;
-  }
+.gravatarFallback {
+  border-radius: 50%;
+  height: 100% !important;
+  width: 100% !important;
 }
 
-.logo {
-  display: none;
+.login,
+.login:visited,
+.login:hover,
+.login:active {
+  color: var(--primary-color-invert) !important;
+}
 
-  @media screen and (min-width: 1024px) {
-    display: unset;
-  }
+.logoutButton {
+  border: none;
 }
 
 /* CSS hacks to override Bulma’s media queries */
-.dropdowns {
-  align-items: stretch;
-  display: flex;
-  justify-content: flex-end;
-  margin-left: auto;
-}
-
 .dropdown > button {
   align-items: center;
   display: flex;
 
   &::after {
-    border-color: hsl(0, 0%, 100%) !important;
+    border-color: var(--primary-color-invert) !important;
   }
 }
 
@@ -84,7 +70,6 @@
   }
 
   & > button {
-    background-color: hsl(0, 0%, 16%);
     color: hsl(0, 0%, 100%);
   }
 }

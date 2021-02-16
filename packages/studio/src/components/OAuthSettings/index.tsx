@@ -17,7 +17,7 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { logins } from '../../utils/settings';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface ConnectedAccount {

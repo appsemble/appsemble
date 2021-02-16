@@ -12,7 +12,7 @@ import { useUser } from '../../UserProvider';
 import { AddMembersModal } from '../AddMembersModal';
 import { InviteRow } from '../InviteRow';
 import { MemberRow } from '../MemberRow';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function MemberTable(): ReactElement {

@@ -25,6 +25,8 @@ export const actions = {
   'flow.finish': noop,
   'flow.next': noop,
   link: noop,
+  'link.back': noop,
+  'link.next': noop,
   log: noop,
   message: noop,
   noop,

@@ -17,7 +17,7 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 import { ExtendedOAuth2State } from '../../types';
 import { logins } from '../../utils/settings';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface OAuth2StudioCallbackProps {

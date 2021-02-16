@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 import { useAnimation } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface ModalProps<T extends ElementType> {
   /**

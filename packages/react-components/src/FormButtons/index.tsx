@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { Children, ReactElement, ReactNode } from 'react';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface FormButtonsProps {
   children: ReactNode;

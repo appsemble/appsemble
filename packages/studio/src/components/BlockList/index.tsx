@@ -4,7 +4,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { BlockCard } from './BlockCard';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 /**

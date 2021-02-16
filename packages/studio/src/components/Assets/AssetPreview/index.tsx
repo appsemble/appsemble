@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { Asset } from '..';
 import { download } from '../../../utils/download';
 import { useApp } from '../../AppContext';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function AssetPreview({ asset }: { asset: Asset }): ReactElement {

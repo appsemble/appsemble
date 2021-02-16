@@ -4,7 +4,7 @@ import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import { useApp } from '../AppContext';
-import styles from './index.css';
+import styles from './index.module.css';
 import './custom';
 
 editor.setTheme('vs');

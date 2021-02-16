@@ -24,7 +24,6 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "main": "dist",
-  "types": "dist",
   "files": [
     "dist"
   ],

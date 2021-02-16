@@ -8,7 +8,7 @@ import { checkRole } from '../../utils/checkRole';
 import { useUser } from '../UserProvider';
 import { CollapsibleList } from './CollapsibleList';
 import { CreateAppButton } from './CreateAppButton';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 const sortFunctions = {

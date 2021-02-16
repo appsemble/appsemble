@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import { ChangeEvent, ReactElement, ReactNode, useCallback } from 'react';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface IconPickerProps {
   children: ReactNode;

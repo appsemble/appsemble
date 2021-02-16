@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import { Button } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 
 export function CardFooterButton({
   className,

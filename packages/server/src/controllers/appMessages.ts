@@ -6,6 +6,7 @@ import { Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
 import { KoaContext } from '../types';
+import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 
 interface Params {
@@ -82,6 +83,7 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
 
   try {
@@ -107,6 +109,7 @@ export async function deleteMessages(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
 
   const affectedRows = await AppMessages.destroy({

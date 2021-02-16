@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function CMSRoot(): ReactElement {

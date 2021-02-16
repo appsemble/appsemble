@@ -4,7 +4,7 @@ import { ComponentPropsWithoutRef, ReactElement, useMemo } from 'react';
 import { shouldShowMenu } from '../../utils/layout';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 
 type MainProps = ComponentPropsWithoutRef<'main'>;
 

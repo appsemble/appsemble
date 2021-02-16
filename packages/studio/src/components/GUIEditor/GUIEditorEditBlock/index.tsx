@@ -8,7 +8,7 @@ import { FormattedMessage } from 'react-intl';
 import { JSONSchemaEditor } from '../../JSONSchemaEditor';
 import { ActionsEditor } from '../ActionsEditor';
 import { EditLocation } from '../types';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface GUIEditorEditBlockProps {

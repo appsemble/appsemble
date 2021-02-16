@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { AvatarWrapper } from '../AvatarWrapper';
 import { createIcon } from '../utils/createIcon';
-import styles from './index.css';
+import styles from './index.module.css';
 
 export interface CardProps {
   /**

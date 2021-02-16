@@ -1,0 +1,12 @@
+.root {
+  box-shadow: 0 5px 11px 0 hsla(0, 0%, 4%, 0.07);
+  margin-bottom: 2em;
+}
+
+.map {
+  height: 240px;
+  left: 0;
+  position: relative;
+  right: 0;
+  z-index: 1;
+}
