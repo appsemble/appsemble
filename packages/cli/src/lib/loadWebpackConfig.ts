@@ -1,5 +1,3 @@
-import { resolve } from 'path';
-
 import { logger } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
 import { Configuration } from 'webpack';
@@ -28,6 +26,8 @@ export async function loadWebpackConfig(
     configPath = require.resolve(block.webpack, requireOptions);
   } else {
     try {
+      // This is resolved relative to the block root, not to this file.
+      // eslint-disable-next-line node/no-unpublished-require
       configPath = require.resolve('./webpack.config', requireOptions);
     } catch (error: unknown) {
       if (
@@ -36,8 +36,6 @@ export async function loadWebpackConfig(
           (error as any).requireStack[0] === __filename
         )
       ) {
-        debugger;
-        console.dir(error.message);
         throw error;
       }
       configPath = require.resolve('@appsemble/webpack-config', requireOptions);
