@@ -5,7 +5,7 @@ import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../utils/oauth2Utils';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 /**

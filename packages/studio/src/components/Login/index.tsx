@@ -18,7 +18,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { enableRegistration, logins } from '../../utils/settings';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface LoginFormValues {

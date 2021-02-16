@@ -6,7 +6,7 @@ import { VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { GeoCoordinatesField, InputProps } from '../../../block';
-import styles from './index.css';
+import styles from './index.module.css';
 
 type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField>;
 

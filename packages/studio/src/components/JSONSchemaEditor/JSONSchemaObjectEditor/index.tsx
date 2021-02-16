@@ -5,7 +5,7 @@ import { ReactElement, useCallback } from 'react';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
-import styles from './index.css';
+import styles from './index.module.css';
 
 export function JSONSchemaObjectEditor({
   disabled,

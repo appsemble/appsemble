@@ -6,7 +6,7 @@ import { oauth2Scope } from '../../utils/constants';
 import { apiUrl, appId, definition, logins } from '../../utils/settings';
 import { Main } from '../Main';
 import { TitleBar } from '../TitleBar';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function OpenIDLogin(): ReactElement {

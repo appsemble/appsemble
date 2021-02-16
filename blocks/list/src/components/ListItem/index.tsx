@@ -6,7 +6,7 @@ import { useCallback } from 'preact/hooks';
 
 import { Item } from '../../../block';
 import { ListItemWrapper } from '../ListItemWrapper';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface ListItemProps {
   item: Item;

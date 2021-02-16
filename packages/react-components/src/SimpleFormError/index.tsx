@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ComponentType, ReactElement } from 'react';
 
 import { Message, useSimpleForm } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface SimpleFormErrorProps {
   children: ComponentType<{ error: Error }>;

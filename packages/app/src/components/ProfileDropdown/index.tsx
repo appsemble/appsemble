@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function ProfileDropdown(): ReactElement {

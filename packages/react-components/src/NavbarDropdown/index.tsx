@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
 import { useClickOutside, useToggle } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface NavbarDropdownProps {
   /**

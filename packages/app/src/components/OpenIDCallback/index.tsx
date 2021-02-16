@@ -10,7 +10,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { Main } from '../Main';
 import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 /**

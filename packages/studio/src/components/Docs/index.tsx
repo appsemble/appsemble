@@ -7,7 +7,7 @@ import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { MenuItem } from '../MenuItem';
 import { Doc } from './Doc';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface MDXModule {

@@ -28,7 +28,7 @@ import { AppRatings } from '../AppRatings';
 import { AppScreenshots } from '../AppScreenshots';
 import { StarRating } from '../StarRating';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function AppDetails(): ReactElement {

@@ -8,7 +8,7 @@ import { shouldShowMenu } from '../../utils/layout';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface BottomNavigationProps {
   pages: PageDefinition[];

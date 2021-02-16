@@ -1,7 +1,7 @@
 import { Checkbox, useToggle } from '@appsemble/react-components';
 import { ReactElement, useCallback } from 'react';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface ClonableCheckboxProps {
   checked: boolean;

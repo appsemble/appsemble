@@ -2,7 +2,7 @@ import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
   /**

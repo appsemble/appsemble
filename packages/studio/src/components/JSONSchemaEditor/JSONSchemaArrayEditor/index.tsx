@@ -6,7 +6,7 @@ import { MouseEvent, ReactElement, useCallback } from 'react';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
-import styles from './index.css';
+import styles from './index.module.css';
 
 const defaults = {
   array: [] as const,

@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { AsyncDataView } from '../../AsyncDataView';
 import { AppCard } from '../AppCard';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface CollapsibleListProps {

@@ -15,7 +15,7 @@ import { useRouteMatch } from 'react-router-dom';
 import { checkRole } from '../../utils/checkRole';
 import { useUser } from '../UserProvider';
 import { EditOrganizationModal } from './EditOrganizationModal';
-import styles from './index.css';
+import styles from './index.module.css';
 import { MemberTable } from './MemberTable';
 import { messages } from './messages';
 

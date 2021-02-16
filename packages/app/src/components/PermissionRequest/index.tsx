@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 
 /**
  * Render all different authentication methods for an app.

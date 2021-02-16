@@ -6,7 +6,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { ProfileDropdown } from '../ProfileDropdown';
 import { SideMenuButton } from '../SideMenuButton';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface TitleBarProps {
   children?: ReactChild;

@@ -21,7 +21,7 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import { IconTool } from './IconTool';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 import { FormValues } from './types';
 

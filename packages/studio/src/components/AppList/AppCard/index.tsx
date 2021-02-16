@@ -6,7 +6,7 @@ import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { StarRating } from '../../StarRating';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface AppCardProps {

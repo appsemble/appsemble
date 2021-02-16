@@ -1,4 +1,4 @@
-:global(.leaflet-container) {
+.leaflet-container {
   height: 100%;
   position: absolute;
   width: 100%;

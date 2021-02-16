@@ -7,7 +7,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { apiUrl, appId } from '../../../utils/settings';
 import { useAppDefinition } from '../../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../../ServiceWorkerRegistrationProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 type ResourceState = Record<string, SubscriptionState>;

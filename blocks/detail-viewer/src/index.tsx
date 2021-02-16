@@ -4,7 +4,7 @@ import { useEffect, useState } from 'preact/hooks';
 
 import { Field } from './components/Field';
 import { FieldGroup } from './components/FieldGroup';
-import styles from './index.css';
+import styles from './index.module.css';
 
 bootstrap(({ data: blockData, events, parameters, ready }) => {
   const [data, setData] = useState(blockData);
