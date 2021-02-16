@@ -21,10 +21,8 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "main": "dist",
-  "types": "dist",
   "files": [
-    "dist",
-    "index.js"
+    "dist"
   ],
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",

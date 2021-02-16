@@ -5,13 +5,13 @@
     "packages/*"
   ],
   "scripts": {
-    "appsemble": "ts-node -TP packages/cli/tsconfig.json packages/cli/src",
+    "appsemble": "ts-node -r tsconfig-paths/register -TP packages/cli/tsconfig.json packages/cli/src",
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:studio": "webpack --config config/webpack/studio.js --mode production",
-    "create-appsemble": "ts-node -TP packages/create-appsemble/tsconfig.json packages/create-appsemble/src",
+    "create-appsemble": "ts-node -r tsconfig-paths/register -TP packages/create-appsemble/tsconfig.json packages/create-appsemble/src",
     "prettier": "prettier --check",
-    "scripts": "ts-node -TP packages/scripts/tsconfig.json packages/scripts/src",
-    "start": "ts-node -TP packages/cli/tsconfig.json packages/cli/src start",
+    "scripts": "ts-node -r tsconfig-paths/register -TP packages/scripts/tsconfig.json packages/scripts/src",
+    "start": "ts-node -r tsconfig-paths/register -TP packages/cli/tsconfig.json packages/cli/src start",
     "stylelint": "stylelint --report-needless-disables",
     "test": "jest"
   },
@@ -181,6 +181,8 @@
     "ts-jest": "^26.4.4",
     "ts-loader": "^8.0.14",
     "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.9.0",
+    "tsconfig-paths-webpack-plugin": "^3.3.0",
     "typescript": "^4.1.3",
     "unified": "^9.2.0",
     "unist-util-visit": "^2.0.3",

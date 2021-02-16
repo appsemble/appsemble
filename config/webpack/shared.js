@@ -23,12 +23,6 @@ module.exports = (env, { mode }) => {
         './images/layers.png$': 'leaflet/dist/images/layers.png',
         './images/layers-2x.png$': 'leaflet/dist/images/layers-2x.png',
         './images/marker-icon.png$': 'leaflet/dist/images/marker-icon.png',
-
-        // These packages need to have their main set to dist, but this needs to resolve to src in
-        // the Appsemble repository internally.
-        '@appsemble/preact': '@appsemble/preact/src',
-        '@appsemble/utils': '@appsemble/utils/src',
-        '@appsemble/sdk': '@appsemble/sdk/src',
       },
     },
     devtool: 'source-map',

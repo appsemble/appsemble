@@ -20,8 +20,7 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "main": "dist/main",
-  "types": "dist",
+  "main": "dist",
   "bin": {
     "appsemble": "dist/index.js"
   },

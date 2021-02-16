@@ -1,7 +1,6 @@
 {
   "name": "@appsemble/utils",
   "version": "0.17.6",
-  "private": true,
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -21,7 +20,10 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
-  "types": "src",
+  "main": "dist",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",
     "test": "jest"

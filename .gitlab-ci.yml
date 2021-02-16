@@ -163,8 +163,12 @@ pack:
     - yarn workspace @appsemble/sdk pack
     - yarn workspace @appsemble/preact pack
     - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/utils pack
+    - yarn workspace @appsemble/server pack
     - yarn workspace @appsemble/cli pack
     - yarn workspace appsemble pack
+    # This needs to be built for CLI, but it shouldn’t be published.
+    - rm packages/server/*.tgz
     - mkdir build/
     - find packages -name '*.tgz' -exec mv {} ./build/ \;
   artifacts:
