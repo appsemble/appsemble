@@ -1062,12 +1062,17 @@ export interface App {
   screenshotUrls?: string[];
 
   /**
-   * True if the app supports an maskable icon.
+   * True if the app has its own icon.
+   */
+  hasIcon: boolean;
+
+  /**
+   * True if the app supports a maskable icon.
    */
   hasMaskableIcon: boolean;
 
   /**
-   * True if the app supports an maskable icon.
+   * The background color used for maskable icons.
    */
   iconBackground: string;
 

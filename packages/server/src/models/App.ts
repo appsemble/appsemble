@@ -161,4 +161,7 @@ export class App extends Model {
   RatingAverage?: number;
 
   RatingCount?: number;
+
+  hasIcon?: boolean;
+  hasMaskableIcon?: boolean;
 }

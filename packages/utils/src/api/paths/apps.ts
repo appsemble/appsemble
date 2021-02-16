@@ -278,14 +278,14 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'Lock status successfully changed',
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/apps/{appId}/icon': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
-      description: 'Get the current app Icon.',
+      description: 'Get the current app icon.',
       operationId: 'getAppIcon',
       responses: {
         200: {
@@ -298,6 +298,31 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+    },
+    delete: {
+      tags: ['app'],
+      description: 'Delete the current app icon.',
+      operationId: 'deleteAppIcon',
+      responses: {
+        204: {
+          description: 'The icon has been successfully removed',
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/maskableIcon': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    delete: {
+      tags: ['app'],
+      description: 'Delete the current app’s maskable icon.',
+      operationId: 'deleteAppMaskableIcon',
+      responses: {
+        204: {
+          description: 'The icon has been successfully removed',
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/apps/{appId}/subscriptions': {
