@@ -2,7 +2,6 @@ import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import { studioRouter } from '.';
-import { KoaContext } from '../../types';
 import { setArgv } from '../../utils/argv';
 import * as render from '../../utils/render';
 

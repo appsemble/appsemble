@@ -84,6 +84,5 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     'frame-src': [`*.${new URL(host).host}`, host],
   });
   ctx.set('Content-Security-Policy', csp);
-  ctx.body = await render(ctx, 'studio.html', { nonce, settings });
-  ctx.type = 'text/html';
+  await render(ctx, 'studio.html', { nonce, settings });
 }

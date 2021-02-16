@@ -19,7 +19,7 @@ export function createSettings(settings: unknown): [digest: string, script: stri
   return [`'sha256-${hash}'`, `<script>${script}</script>`];
 }
 
-export type ContentSecurityPolicy = Record<string, (false | string)[]>;
+export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 /**
  * Convert a CSP key / values pair object into a real content security policy string.
