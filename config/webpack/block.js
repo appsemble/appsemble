@@ -1,6 +1,5 @@
 const { join } = require('path');
 
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UnusedWebpackPlugin = require('unused-webpack-plugin');
 
@@ -57,7 +56,6 @@ module.exports = ({ dir, name }, argv) => {
         exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', '**/types.ts'],
         failOnUnused: production,
       }),
-      production && new CleanWebpackPlugin(),
-    ].filter(Boolean),
+    ],
   };
 };
