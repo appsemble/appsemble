@@ -3,6 +3,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { App, BlockAsset, BlockVersion, Organization } from '../../models';
 import { setArgv } from '../../utils/argv';
 import { createServer } from '../../utils/createServer';
+import * as render from '../../utils/render';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
 let templateName: string;
@@ -179,16 +180,20 @@ beforeAll(async () => {
     middleware(ctx, next) {
       Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
       Object.defineProperty(ctx, 'hostname', { value: 'app.test.host.example' });
-      // eslint-disable-next-line require-await
-      ctx.state.render = async (name, params) => {
-        templateName = name;
-        templateParams = params;
-        return '';
-      };
       return next();
     },
   });
   await setTestApp(server);
+});
+
+beforeEach(() => {
+  // eslint-disable-next-line require-await
+  jest.spyOn(render, 'render').mockImplementation(async (ctx, name, params) => {
+    templateName = name;
+    templateParams = params;
+    ctx.body = '<!doctype html>';
+    ctx.type = 'html';
+  });
 });
 
 afterEach(() => {

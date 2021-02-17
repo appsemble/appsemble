@@ -14,8 +14,7 @@ import {
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { argv } from '../../utils/argv';
-import { createSettings } from '../../utils/createSettings';
-import { makeCSP } from '../../utils/makeCSP';
+import { createSettings, makeCSP, render } from '../../utils/render';
 import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
 import { bulmaURL, faURL } from '../../utils/styleURL';
 
@@ -23,12 +22,10 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  * https://developers.google.com/web/fundamentals/web-app-manifest
  *
  * @param ctx - The Koa context.
+ * @returns void
  */
 export async function indexHandler(ctx: KoaContext): Promise<void> {
   ctx.type = 'text/html';
-  const {
-    state: { render },
-  } = ctx;
   const { host, sentryDsn, sentryEnvironment } = argv;
 
   const app = await getApp(ctx, {
@@ -50,13 +47,12 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
   });
 
   if (!app) {
-    ctx.body = await render('error.html', {
+    ctx.status = 404;
+    return render(ctx, 'error.html', {
       bulmaURL,
       faURL,
       message: 'The app you are looking for could not be found.',
     });
-    ctx.status = 404;
-    return;
   }
 
   const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
@@ -128,7 +124,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
-  ctx.body = await render('app.html', {
+  await render(ctx, 'app.html', {
     app,
     bulmaURL: `${bulmaURL}?${new URLSearchParams(app.definition.theme)}`,
     faURL,
