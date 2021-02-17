@@ -1,4 +1,3 @@
-import { BlockManifest } from '@appsemble/types';
 import { PackageJson } from 'read-pkg-up';
 import { JsonObject } from 'type-fest';
 
@@ -44,35 +43,6 @@ export interface UpdateAppArguments extends BaseArguments {
    * Whether the locked property should be ignored.
    */
   force: boolean;
-}
-
-export interface BlockConfig
-  extends Pick<
-    BlockManifest,
-    | 'actions'
-    | 'description'
-    | 'events'
-    | 'layout'
-    | 'longDescription'
-    | 'name'
-    | 'parameters'
-    | 'resources'
-    | 'version'
-  > {
-  /**
-   * The path to the webpack configuration file relative to the block project directory.
-   */
-  webpack: string;
-
-  /**
-   * The build output directory relative to the block project directory.
-   */
-  output: string;
-
-  /**
-   * The absolute directory of the block project.
-   */
-  dir: string;
 }
 
 export interface MonoRepoPackageJson extends PackageJson {
