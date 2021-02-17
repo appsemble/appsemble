@@ -20,10 +20,7 @@ export function DateTimeInput({
   onChange,
   value = null,
 }: DateTimeInputProps): VNode {
-  const {
-    parameters: { optionalLabel },
-    utils,
-  } = useBlock();
+  const { utils } = useBlock();
   const { label, name, placeholder, readOnly, tag } = field;
 
   const checkboxLabel = utils.remap(label, value);
@@ -50,7 +47,7 @@ export function DateTimeInput({
       minDate={minDate}
       name={name}
       onChange={handleOnChange}
-      optionalLabel={utils.remap(optionalLabel, value)}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       placeholder={utils.remap(placeholder, value)}
       readOnly={readOnly}
       required={required}

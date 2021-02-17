@@ -19,12 +19,7 @@ export function EnumInput({
   onChange,
   value,
 }: EnumInputProps): VNode {
-  const {
-    actions,
-    events,
-    parameters: { optionalLabel },
-    utils,
-  } = useBlock();
+  const { actions, events, utils } = useBlock();
   const [loading, setLoading] = useState('action' in field);
   const [options, setOptions] = useState('action' in field || 'event' in field ? [] : field.enum);
   const [error, setError] = useState<string>(null);
@@ -85,7 +80,7 @@ export function EnumInput({
       loading={loading}
       name={name}
       onChange={onChange}
-      optionalLabel={utils.remap(optionalLabel, value)}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       required={required}
       tag={utils.remap(tag, value)}
       value={value}

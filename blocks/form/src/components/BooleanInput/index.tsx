@@ -20,10 +20,7 @@ export function BooleanInput({
   onChange,
   value,
 }: BooleanInputProps): VNode {
-  const {
-    parameters: { optionalLabel },
-    utils,
-  } = useBlock();
+  const { utils } = useBlock();
   const { label, labelText, readOnly, tag } = field;
 
   const checkboxLabel = utils.remap(label, value);
@@ -40,7 +37,7 @@ export function BooleanInput({
       label={checkboxLabel}
       name={name}
       onChange={onChange}
-      optionalLabel={utils.remap(optionalLabel, value)}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       readOnly={readOnly}
       required={required}
       tag={utils.remap(tag, value)}
