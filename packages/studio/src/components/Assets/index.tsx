@@ -90,12 +90,13 @@ export function Assets(): ReactElement {
         selectedAssets.map((asset) => axios.delete(`/api/apps/${app.id}/assets/${asset}`)),
       );
 
-      push(
-        formatMessage(messages.deleteSuccess, {
+      push({
+        body: formatMessage(messages.deleteSuccess, {
           amount: selectedAssets.length,
           assets: selectedAssets.sort().join(', '),
         }),
-      );
+        color: 'info',
+      });
       setAssets(assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
       setSelectedAssets([]);
     },

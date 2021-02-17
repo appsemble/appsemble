@@ -78,6 +78,7 @@ export function AppSettings(): ReactElement {
 
     await axios.patch(`/api/apps/${app.id}`, data);
     push({ color: 'success', body: formatMessage(messages.updateSuccess) });
+    setApp({ ...app, hasIcon: data.has('icon'), hasMaskableIcon: data.has('maskableIcon') });
   };
 
   const onDelete = useConfirmation({

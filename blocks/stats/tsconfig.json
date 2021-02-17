@@ -4,6 +4,6 @@
     "jsx": "react",
     "jsxFactory": "h",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["css-modules", "node"]
+    "types": ["@appsemble/webpack-config/types", "node"]
   }
 }

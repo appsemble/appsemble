@@ -1,10 +1,14 @@
 import {
+  Button,
   Input,
   RadioButton,
   RadioGroup,
+  useConfirmation,
+  useMessages,
   useObjectURL,
   useSimpleForm,
 } from '@appsemble/react-components';
+import axios from 'axios';
 import { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
@@ -27,7 +31,8 @@ interface IconToolProps {
 
 export function IconTool({ disabled }: IconToolProps): ReactElement {
   const { formatMessage } = useIntl();
-  const { app } = useApp();
+  const push = useMessages();
+  const { app, setApp } = useApp();
   const { setValue, values } = useSimpleForm();
   const { lang } = useParams<{ lang: string }>();
 
@@ -45,8 +50,9 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: unknown) => {
       setValue(event.currentTarget.name, value);
+      setApp({ ...app, [event.currentTarget.name]: Boolean(value) });
     },
-    [setValue],
+    [setValue, setApp, app],
   );
 
   const handleMaskableIconLoad = useCallback(
@@ -65,6 +71,54 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
     },
     [],
   );
+
+  const onDeleteIcon = useConfirmation({
+    title: <FormattedMessage {...messages.deleteIconWarningTitle} />,
+    body: <FormattedMessage {...messages.deleteIconWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.delete} />,
+    async action() {
+      const { id } = app;
+
+      try {
+        await axios.delete(`/api/apps/${id}/icon`);
+        push({
+          body: formatMessage(messages.deleteIconSuccess),
+          color: 'info',
+        });
+        const url = `${app.iconUrl.replace(/#\d+/, '')}#${Date.now()}`;
+        setApp({ ...app, hasIcon: false, iconUrl: url });
+        setValue('icon', url);
+      } catch {
+        push(formatMessage(messages.errorIconDelete));
+      }
+    },
+  });
+
+  const onDeleteMaskableIcon = useConfirmation({
+    title: <FormattedMessage {...messages.deleteIconWarningTitle} />,
+    body: <FormattedMessage {...messages.deleteIconWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.delete} />,
+    async action() {
+      const { id } = app;
+
+      try {
+        await axios.delete(`/api/apps/${id}/maskableIcon`);
+        push({
+          body: formatMessage(messages.deleteIconSuccess),
+          color: 'info',
+        });
+        setApp({
+          ...app,
+          hasMaskableIcon: false,
+        });
+        setValue('maskableIcon', null);
+      } catch {
+        push(formatMessage(messages.errorIconDelete));
+      }
+    },
+  });
 
   return (
     <div>
@@ -85,6 +139,13 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
               />
             </figure>
           </IconPicker>
+          <Button
+            className={`${styles.deleteButton} mt-1`}
+            color="danger"
+            disabled={!app.hasIcon}
+            icon="trash-alt"
+            onClick={onDeleteIcon}
+          />
         </div>
         <div className="mb-2 mr-2">
           <IconPicker disabled={disabled} name="maskableIcon" onChange={handleChange}>
@@ -105,13 +166,12 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
               />
             </figure>
           </IconPicker>
-          <Input
-            className="mt-2 is-paddingless"
-            disabled={disabled}
-            name="iconBackground"
-            onChange={handleChange}
-            type="color"
-            value={values.iconBackground}
+          <Button
+            className={`${styles.deleteButton} mt-1`}
+            color="danger"
+            disabled={!app.hasMaskableIcon}
+            icon="trash-alt"
+            onClick={onDeleteMaskableIcon}
           />
         </div>
         <div>
@@ -129,6 +189,14 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
               <FormattedMessage {...messages.square} />
             </RadioButton>
           </RadioGroup>
+          <Input
+            className="is-paddingless"
+            disabled={disabled}
+            name="iconBackground"
+            onChange={handleChange}
+            type="color"
+            value={values.iconBackground}
+          />
         </div>
       </div>
     </div>

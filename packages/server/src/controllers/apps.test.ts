@@ -1664,6 +1664,80 @@ describe('getAppIcon', () => {
   });
 });
 
+describe('deleteAppIcon', () => {
+  it('should delete existing app icons', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/icon`);
+    await app.reload();
+    expect(response.status).toStrictEqual(204);
+    expect(app.maskableIcon).toBeNull();
+  });
+
+  it('should not delete icons from non-existent apps', async () => {
+    authorizeStudio();
+    const response = await request.delete('/api/apps/0/icon');
+    expect(response).toMatchObject({ status: 404, data: { message: 'App not found' } });
+  });
+
+  it('should not delete non-existent icons from apps', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/icon`);
+    expect(response).toMatchObject({ status: 404, data: { message: 'App has no icon' } });
+  });
+});
+
+describe('deleteAppMaskableIcon', () => {
+  it('should delete existing app maskable icons', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      maskableIcon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/maskableIcon`);
+    await app.reload();
+    expect(response.status).toStrictEqual(204);
+    expect(app.maskableIcon).toBeNull();
+  });
+
+  it('should not delete maskable icons from non-existent apps', async () => {
+    authorizeStudio();
+    const response = await request.delete('/api/apps/0/maskableIcon');
+    expect(response).toMatchObject({ status: 404, data: { message: 'App not found' } });
+  });
+
+  it('should not delete non-existent maskable icons from apps', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/maskableIcon`);
+    expect(response).toMatchObject({ status: 404, data: { message: 'App has no maskable icon' } });
+  });
+});
+
 describe('getAppScreenshots', () => {
   it('should throw a 404 if the app doesn’t exist', async () => {
     const response = await request.get('/api/apps/1/screenshots/1');

@@ -3,11 +3,10 @@ import { join } from 'path';
 import { inspect } from 'util';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { BlockConfig } from '@appsemble/types';
 import { cyan, green, underline } from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
 import { readJSON } from 'fs-extra';
-
-import { BlockConfig } from '../types';
 
 /**
  * Get the block configuration from a block directory.
@@ -41,7 +40,7 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
     longDescription,
     name: pkg.name,
     version: pkg.version,
-    webpack: 'webpack.config',
+    webpack: undefined,
     ...config,
     dir,
   };
