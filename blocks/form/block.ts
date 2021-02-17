@@ -652,6 +652,16 @@ declare module '@appsemble/sdk' {
     change: never;
   }
 
+  interface Messages {
+    submitLabel: never;
+    submitError: never;
+    optionalLabel: never;
+    fieldErrorLabel: never;
+    formRequirementError: never;
+    invalidLabel: never;
+    previousLabel: never;
+  }
+
   interface Parameters {
     /**
      * A list of objects describing each field that can be entered in the form.
@@ -659,60 +669,13 @@ declare module '@appsemble/sdk' {
     fields: Field[];
 
     /**
-     * The text to display when the form submission failed.
-     *
-     * @default 'There was a problem submitting this form'
+     * Whether the previous button should be shown.
      */
-    submitError?: Remapper;
-
-    /**
-     * The text that is shown in the submit button.
-     *
-     * @default 'Submit'
-     */
-    submitLabel?: Remapper;
-
-    /**
-     * The text that is shown in the previous button.
-     *
-     * If not defined, the previous button will be hidden.
-     */
-    previousLabel?: Remapper;
+    previous?: boolean;
 
     /**
      * A list of requirements that are checked across all of the form data.
      */
     requirements?: FormRequirement[];
-
-    /**
-     * The label that is displayed by default next to optional fields.
-     *
-     * Won’t display if the field has no label of its own.
-     *
-     * @default '(Optional)''
-     */
-    optionalLabel?: Remapper;
-
-    /**
-     * Text that is shown below a field if a form requirement wasn’t met.
-     *
-     * @default 'One of the requirements of this field is invalid.'
-     */
-    fieldErrorLabel?: Remapper;
-
-    /**
-     * The text that is shown when a form requirement wasn’t met
-     * and the requirement does not have its own error message.
-     *
-     * @default 'One of the requirements of this form is invalid.'
-     */
-    formRequirementError?: Remapper;
-
-    /**
-     * Text that is shown when a field is invalid and there is no other error message available.
-     *
-     * @default 'This value is invalid'
-     */
-    invalidLabel?: Remapper;
   }
 }

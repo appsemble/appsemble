@@ -11,22 +11,7 @@ import { generateDefaultValues } from './utils/generateDefaultValues';
 import { isFormValid } from './utils/validity';
 
 bootstrap(
-  ({
-    actions,
-    data,
-    events,
-    parameters: {
-      fields,
-      formRequirementError = 'One of the requirements of this form is invalid.',
-      invalidLabel = 'This value is invalid',
-      previousLabel,
-      requirements,
-      submitError = 'There was a problem submitting this form',
-      submitLabel = 'Submit',
-    },
-    ready,
-    utils,
-  }) => {
+  ({ actions, data, events, parameters: { fields, previous, requirements }, ready, utils }) => {
     const defaultValues = useMemo<Values>(() => ({ ...generateDefaultValues(fields), ...data }), [
       data,
       fields,
@@ -41,12 +26,10 @@ bootstrap(
 
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string>(null);
-    const errors = useMemo(() => generateDefaultValidity(fields, values, utils, invalidLabel), [
-      fields,
-      invalidLabel,
-      utils,
-      values,
-    ]);
+    const errors = useMemo(
+      () => generateDefaultValidity(fields, values, utils, utils.formatMessage('invalidLabel')),
+      [fields, utils, values],
+    );
 
     const lock = useRef<symbol>();
 
@@ -87,9 +70,9 @@ bootstrap(
             (errorResponse) => {
               requirementErrors.set(
                 requirements.indexOf(requirement),
-                utils.remap(requirement.errorMessage ?? formRequirementError, values, {
-                  error: errorResponse,
-                }),
+                requirement.errorMessage
+                  ? utils.remap(requirement.errorMessage, values, { error: errorResponse })
+                  : utils.formatMessage('formRequirementError'),
               );
             },
           ),
@@ -106,7 +89,7 @@ bootstrap(
           ),
         );
       });
-    }, [actions, errors, events, formRequirementError, lastChanged, requirements, utils, values]);
+    }, [actions, errors, events, lastChanged, requirements, utils, values]);
 
     const onSubmit = useCallback(() => {
       if (!submitting) {
@@ -127,12 +110,12 @@ bootstrap(
             const error =
               typeof submitActionError === 'string'
                 ? submitActionError
-                : utils.remap(submitError, values);
+                : utils.formatMessage('submitError');
             setSubmitErrorResult(error);
           })
           .finally(() => setSubmitting(false));
       }
-    }, [actions, errors, fields, formErrors, submitError, submitting, utils, values]);
+    }, [actions, errors, fields, formErrors, submitting, utils, values]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious.dispatch(values);
@@ -152,9 +135,9 @@ bootstrap(
               (errorResponse) => {
                 requirementErrors.set(
                   requirements.indexOf(requirement),
-                  utils.remap(requirement.errorMessage ?? formRequirementError, newValues, {
-                    error: errorResponse,
-                  }),
+                  requirement.errorMessage
+                    ? utils.remap(requirement.errorMessage, newValues, { error: errorResponse })
+                    : utils.formatMessage('formRequirementError'),
                 );
               },
             ),
@@ -168,7 +151,7 @@ bootstrap(
           );
         });
       },
-      [actions, defaultValues, formRequirementError, requirements, utils],
+      [actions, defaultValues, requirements, utils],
     );
 
     useEffect(() => {
@@ -210,9 +193,9 @@ bootstrap(
           />
         ))}
         <FormButtons className="mt-4">
-          {previousLabel && (
+          {previous && (
             <Button className="mr-4" disabled={loading || submitting} onClick={onPrevious}>
-              {utils.remap(previousLabel, {})}
+              {utils.formatMessage('previousLabel')}
             </Button>
           )}
           <Button
@@ -220,7 +203,7 @@ bootstrap(
             disabled={loading || submitting || formErrors.some(Boolean) || !isFormValid(errors)}
             type="submit"
           >
-            {utils.remap(submitLabel, {})}
+            {utils.formatMessage('submitLabel')}
           </Button>
         </FormButtons>
       </Form>
