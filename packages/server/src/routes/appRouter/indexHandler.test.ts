@@ -207,7 +207,7 @@ afterAll(closeTestSchema);
 
 it('should render the index page', async () => {
   const { headers, status } = await request.get('/');
-  expect(templateName).toBe('app.html');
+  expect(templateName).toBe('app/index.html');
   expect(status).toBe(200);
   expect(headers['content-type']).toBe('text/html; charset=utf-8');
   const [, settingsString] = templateParams.settings.match(
