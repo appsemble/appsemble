@@ -783,6 +783,11 @@ export interface BlockManifest {
   actions?: Record<string, ActionType>;
 
   /**
+   * The messages that are supported by a block.
+   */
+  messages?: Record<string, Record<string, any> | never>;
+
+  /**
    * The events that are supported by a block.
    */
   events?: {
@@ -1349,6 +1354,7 @@ export interface BlockConfig
     | 'events'
     | 'layout'
     | 'longDescription'
+    | 'messages'
     | 'name'
     | 'parameters'
     | 'resources'
