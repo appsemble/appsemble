@@ -30,7 +30,7 @@ export async function handler({ languages, paths }: BuildBlockArguments): Promis
   const normalizedPaths = paths.map((path) => normalizePath(path));
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
   const langs = [...new Set(['en', ...languages.map((language) => language.toLowerCase())])];
-  logger.info(`Publishing ${directories.length} Blocks`);
+  logger.info(`Extracting messages from ${directories.length} Blocks`);
   for (const dir of directories) {
     logger.info('');
     const config = await getBlockConfig(dir);

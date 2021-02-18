@@ -2,7 +2,7 @@ import { join } from 'path';
 
 import { logger } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
-import { ensureDir, readdir, readJSON } from 'fs-extra';
+import { ensureDir, readdir, readJSON, writeJSON } from 'fs-extra';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
@@ -13,11 +13,18 @@ export async function processBlockMessages(
   const path = join(config.dir, 'i18n');
   await ensureDir(path);
   const dir = await readdir(path);
-  const block = getBlockConfigFromTypeScript(config);
-  logger.info(block);
+  const { messages } = getBlockConfigFromTypeScript(config);
+
+  if (!messages) {
+    logger.warn(`Block ${config.name} has no messages.`);
+    return;
+  }
+
+  const keys = Object.keys(messages).sort();
+  const base = Object.fromEntries(keys.map((key) => [key, '']));
 
   for (const language of languages) {
-    const existingMessages = {};
+    const existingMessages = { ...base };
     const name = `${language}.json`;
     const langPath = join(path, name);
 
@@ -26,6 +33,15 @@ export async function processBlockMessages(
       Object.assign(existingMessages, m);
     }
 
-    logger.info(existingMessages);
+    const extraKeys = Object.keys(existingMessages).filter((key) => !keys.includes(key));
+    if (extraKeys.length) {
+      logger.info(`Found ${extraKeys.length} keys too many. Removing: ${extraKeys.join(', ')}`);
+      extraKeys.forEach((key) => delete existingMessages[key]);
+    }
+
+    await writeJSON(langPath, existingMessages, { spaces: 2 });
+    logger.info(`Wrote to file ‘${langPath}’`);
   }
+  logger.info(`Finished extracting messages for ${config.name}.`);
+  logger.info('');
 }

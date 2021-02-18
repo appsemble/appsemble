@@ -1,9 +1,9 @@
 {
-  "submitError": "There was a problem submitting this form",
-  "submitLabel": "Submit",
-  "previousLabel": "Previous",
-  "optionalLabel": "(Optional)",
   "fieldErrorLabel": "One of the requirements of this field is invalid.",
-  "formErrorLabel": "One of the requirements of this form is invalid.",
-  "invalidLabel": "This value is invalid"
+  "formRequirementError": "One of the requirements of this form is invalid.",
+  "invalidLabel": "This value is invalid",
+  "optionalLabel": "(Optional)",
+  "previousLabel": "Previous",
+  "submitError": "There was a problem submitting this form",
+  "submitLabel": "Submit"
 }
