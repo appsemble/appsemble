@@ -1,0 +1,171 @@
+import {
+  Content,
+  Loader,
+  MarkdownContent,
+  Message,
+  SelectField,
+  Subtitle,
+  Title,
+  useData,
+  useMeta,
+} from '@appsemble/react-components';
+import { BlockManifest } from '@appsemble/types';
+import { defaultLocale } from '@appsemble/utils';
+import { Fragment, ReactElement, useCallback } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { Definition } from 'typescript-json-schema';
+
+import { ActionTable } from './ActionTable';
+import { EventTable } from './EventTable';
+import styles from './index.module.css';
+import { messages, untranslatedMessages } from './messages';
+import { ParameterTable } from './ParameterTable';
+import { TypeTable } from './TypeTable';
+
+interface BlockDetailsRoutesMatch {
+  /**
+   * The organization of the block.
+   */
+  organization: string;
+
+  /**
+   * The name of the block.
+   */
+  blockName: string;
+
+  /**
+   * The version of the block.
+   */
+  version: string;
+}
+
+/**
+ * Render documentation for blocks.
+ */
+export function BlockPage(): ReactElement {
+  const { formatMessage } = useIntl();
+  const {
+    params: { blockName, organization, version: urlVersion },
+    url,
+  } = useRouteMatch<BlockDetailsRoutesMatch>();
+  const history = useHistory();
+
+  const { data: blockVersions, error, loading } = useData<BlockManifest[]>(
+    `/api/blocks/@${organization}/${blockName}/versions`,
+  );
+
+  const onSelectedVersionChange = useCallback(
+    (event, value: string) => {
+      history.push(url.replace(urlVersion, value));
+    },
+    [history, url, urlVersion],
+  );
+
+  const selectedBlockManifest = blockVersions?.find((block) => block.version === urlVersion);
+
+  useMeta(`@${organization}/${blockName}`, selectedBlockManifest?.description);
+
+  if (error) {
+    return (
+      <Message color="danger">
+        <FormattedMessage {...messages.error} />
+      </Message>
+    );
+  }
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (!selectedBlockManifest) {
+    return <Redirect to={`${url}/${blockVersions[0].version}`} />;
+  }
+
+  return (
+    <Content className={`content ${styles.content}`}>
+      <div>
+        <figure className="image is-inline-block is-marginless is-64x64 mr-4">
+          <img
+            alt={formatMessage(messages.blockIcon)}
+            src={`/api/blocks/@${organization}/${blockName}/versions/${urlVersion}/icon`}
+          />
+        </figure>
+        <header className="is-inline-block">
+          <Title lang={defaultLocale} level={2}>
+            {blockName}
+          </Title>
+          <Subtitle lang={defaultLocale} level={4}>
+            @{organization}
+          </Subtitle>
+        </header>
+      </div>
+      <SelectField
+        disabled={blockVersions.length === 1}
+        label={untranslatedMessages.selectedVersion}
+        name="selectedVersion"
+        onChange={onSelectedVersionChange}
+        required
+        value={urlVersion}
+      >
+        {blockVersions.map(({ version }) => (
+          <option key={version} value={version}>
+            {version}
+          </option>
+        ))}
+      </SelectField>
+
+      <Title level={4}>{untranslatedMessages.description}</Title>
+      {selectedBlockManifest.description && <Message>{selectedBlockManifest.description}</Message>}
+      {selectedBlockManifest.longDescription && (
+        <MarkdownContent
+          className={styles.description}
+          content={selectedBlockManifest.longDescription}
+          lang={defaultLocale}
+        />
+      )}
+
+      {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
+        <>
+          <Title level={4}>{untranslatedMessages.parameters}</Title>
+          <ParameterTable parameters={selectedBlockManifest.parameters} />
+        </>
+      )}
+      {Object.keys(selectedBlockManifest.actions || {}).length > 0 && (
+        <>
+          <Title level={4}>{untranslatedMessages.actions}</Title>
+          <ActionTable manifest={selectedBlockManifest} />
+        </>
+      )}
+      {(selectedBlockManifest.events?.emit || selectedBlockManifest.events?.listen) && (
+        <>
+          <Title level={4}>{untranslatedMessages.events}</Title>
+          <EventTable manifest={selectedBlockManifest} />
+        </>
+      )}
+
+      {selectedBlockManifest.parameters?.definitions && (
+        <>
+          <Title level={4}>{untranslatedMessages.definitions}</Title>
+          {Object.entries((selectedBlockManifest.parameters as any).definitions).map(
+            ([key, definition]: [string, Definition]) => (
+              <Fragment key={key}>
+                <Title lang={defaultLocale} level={5}>
+                  <a href={`${url}#${key}`} id={key}>
+                    {key}
+                  </a>
+                </Title>
+                {definition.description && <MarkdownContent content={definition.description} />}
+                {definition.type === 'object' || definition.type === 'array' ? (
+                  <ParameterTable parameters={definition} />
+                ) : (
+                  <TypeTable definition={definition} />
+                )}
+              </Fragment>
+            ),
+          )}
+        </>
+      )}
+    </Content>
+  );
+}

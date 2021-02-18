@@ -10,9 +10,9 @@ import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useApp } from 'studio/src/pages/apps/app';
 
 import { checkRole } from '../../utils/checkRole';
-import { useApp } from '../AppContext';
 import { useUser } from '../UserProvider';
 import { AppScreenshot } from './AppScreenshot';
 import styles from './index.module.css';

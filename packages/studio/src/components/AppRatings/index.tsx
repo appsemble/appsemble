@@ -2,8 +2,8 @@ import { useData, useMessages } from '@appsemble/react-components';
 import { Rating } from '@appsemble/types';
 import { ReactElement, useCallback } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
+import { useApp } from 'studio/src/pages/apps/app';
 
-import { useApp } from '../AppContext';
 import { AsyncDataView } from '../AsyncDataView';
 import { HeaderControl } from '../HeaderControl';
 import { RateApp } from '../RateApp';

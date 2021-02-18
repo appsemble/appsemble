@@ -2,8 +2,8 @@ import { Button, useConfirmation } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useApp } from 'studio/src/pages/apps/app';
 
-import { useApp } from '../../AppContext';
 import styles from './index.module.css';
 import { messages } from './messages';
 
