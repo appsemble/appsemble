@@ -46,7 +46,7 @@ it('should serve the studio index page with correct headers', async () => {
     }),
     data: '<!doctype html>',
   });
-  expect(templateName).toBe('studio.html');
+  expect(templateName).toBe('studio/index.html');
   expect(templateData).toStrictEqual({
     nonce: 'AAAAAAAAAAAAAAAAAAAAAA==',
     settings: '<script>window.settings={"enableRegistration":true,"logins":[]}</script>',
@@ -77,7 +77,7 @@ it('should pass login options from argv to the studio', async () => {
     }),
     data: '<!doctype html>',
   });
-  expect(templateName).toBe('studio.html');
+  expect(templateName).toBe('studio/index.html');
   expect(templateData).toStrictEqual({
     nonce: 'AAAAAAAAAAAAAAAAAAAAAA==',
     settings: `<script>window.settings=${JSON.stringify({
