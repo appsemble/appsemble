@@ -3,6 +3,7 @@ FROM node:14-slim AS build
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile
+RUN yarn install-chrome-dependencies
 RUN yarn build:app
 RUN yarn build:studio
 RUN yarn workspace @appsemble/types prepack

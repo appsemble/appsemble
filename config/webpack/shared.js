@@ -13,6 +13,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const autolink = require('remark-autolink-headings');
 const frontmatter = require('remark-frontmatter');
+const { remarkMermaid } = require('remark-mermaidjs');
 const slug = require('remark-slug');
 const TerserPlugin = require('terser-webpack-plugin');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
@@ -125,6 +126,7 @@ module.exports = (env, argv) => {
               loader: '@mdx-js/loader',
               options: {
                 remarkPlugins: [
+                  remarkMermaid,
                   frontmatter,
                   () => (ast, vfile) => {
                     ast.children.forEach((node, index) => {
