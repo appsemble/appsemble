@@ -20,22 +20,8 @@ export class BlockMessages extends Model implements MessagesType {
   @AllowNull(false)
   @Unique('blockVersionComposite')
   @ForeignKey(() => BlockVersion)
-  @Column
-  OrganizationId: string;
-
-  @PrimaryKey
-  @AllowNull(false)
-  @ForeignKey(() => BlockVersion)
-  @Unique('blockVersionComposite')
-  @Column
-  name: string;
-
-  @PrimaryKey
-  @AllowNull(false)
-  @Unique('blockVersionComposite')
-  @ForeignKey(() => BlockVersion)
-  @Column
-  version: string;
+  @Column(DataType.UUID)
+  BlockVersionId: string;
 
   @PrimaryKey
   @AllowNull(false)

@@ -49,6 +49,7 @@ interface Params {
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
   const blockVersions = await BlockVersion.findAll({
     raw: true,
+    attributes: { exclude: ['id'] },
     where: {
       [Op.or]: uniqWith(
         Object.values(blocks).map(({ type, version }) => {

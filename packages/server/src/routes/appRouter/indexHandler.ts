@@ -67,9 +67,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
         attributes: ['filename'],
         model: BlockAsset,
         where: {
-          name: { [Op.col]: 'BlockVersion.name' },
-          OrganizationId: { [Op.col]: 'BlockVersion.OrganizationId' },
-          version: { [Op.col]: 'BlockVersion.version' },
+          BlockVersionId: { [Op.col]: 'BlockVersion.id' },
         },
       },
     ],

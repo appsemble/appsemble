@@ -4,6 +4,7 @@ import {
   BelongsTo,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -37,9 +38,9 @@ export class BlockAsset extends Model {
   @Column
   mime: string;
 
-  @ForeignKey(() => BlockVersion)
   @AllowNull(false)
-  @Column
+  @ForeignKey(() => BlockVersion)
+  @Column(DataType.UUID)
   BlockVersionId: string;
 
   @CreatedAt

@@ -30,12 +30,10 @@ export class BlockVersion extends Model {
   @Column
   OrganizationId: string;
 
-  @ForeignKey(() => BlockAsset)
   @Unique('blockVersionComposite')
   @Column
   name: string;
 
-  @ForeignKey(() => BlockAsset)
   @Unique('blockVersionComposite')
   @Column
   version: string;
@@ -70,7 +68,7 @@ export class BlockVersion extends Model {
   @BelongsTo(() => Organization)
   Organization: Organization;
 
-  @HasMany(() => BlockAsset, { foreignKey: 'name', sourceKey: 'name' })
+  @HasMany(() => BlockAsset)
   BlockAssets?: BlockAsset[];
 
   @HasMany(() => BlockMessages)

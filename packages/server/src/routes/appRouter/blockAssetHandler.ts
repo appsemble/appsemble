@@ -1,6 +1,6 @@
 import { notFound } from '@hapi/boom';
 
-import { BlockAsset } from '../../models';
+import { BlockAsset, BlockVersion } from '../../models';
 import { KoaContext } from '../../types';
 
 interface Params {
@@ -20,16 +20,15 @@ export async function blockAssetHandler(ctx: KoaContext<Params>): Promise<void> 
   } = ctx;
   const [org, blockId] = name.split('/');
 
-  const blockAsset = await BlockAsset.findOne({
-    raw: true,
-    attributes: ['mime', 'content'],
-    where: { filename, name: blockId, OrganizationId: org.slice(1), version },
+  const blockVersion = await BlockVersion.findOne({
+    where: { name: blockId, version, OrganizationId: org.slice(1) },
+    include: [{ model: BlockAsset, attributes: ['mime', 'content'], where: { filename } }],
   });
 
-  if (!blockAsset) {
+  if (!blockVersion) {
     throw notFound('Block asset not found');
   }
 
-  ctx.body = blockAsset.content;
-  ctx.type = blockAsset.mime;
+  ctx.body = blockVersion.BlockAssets[0].content;
+  ctx.type = blockVersion.BlockAssets[0].mime;
 }

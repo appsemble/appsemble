@@ -146,6 +146,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         actions = null,
         description = null,
         events,
+        id,
         layout = null,
         longDescription = null,
         parameters,
@@ -163,8 +164,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
       await BlockAsset.bulkCreate(
         files.map((file) => ({
           name: blockId,
-          OrganizationId,
-          version,
+          BlockVersionId: id,
           filename: decodeURIComponent(file.filename),
           mime: file.mime,
           content: file.contents,
@@ -202,6 +202,7 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
 
   const version = await BlockVersion.findOne({
     attributes: [
+      'id',
       'actions',
       'events',
       'layout',
@@ -210,26 +211,26 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
       'description',
       'longDescription',
     ],
-    raw: true,
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
+    include: [{ model: BlockAsset, attributes: ['filename'] }],
   });
 
   if (!version) {
     throw notFound('Block version not found');
   }
 
-  const files = await BlockAsset.findAll({
-    attributes: ['filename'],
-    raw: true,
-    where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
-  });
-
   ctx.body = {
-    files: files.map((f) => f.filename),
+    files: version.BlockAssets.map((f) => f.filename),
     iconUrl: `/api/blocks/${name}/versions/${blockVersion}/icon`,
     name,
     version: blockVersion,
-    ...version,
+    actions: version.actions,
+    events: version.events,
+    layout: version.layout,
+    resources: version.resources,
+    parameters: version.parameters,
+    description: version.description,
+    longDescription: version.longDescription,
   };
 }
 
