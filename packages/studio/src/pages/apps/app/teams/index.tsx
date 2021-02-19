@@ -4,6 +4,7 @@ import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { IndexPage } from './Index';
 import { messages } from './messages';
+import { TeamPage } from './team';
 
 export function TeamsRoutes(): ReactElement {
   useMeta(messages.title);
@@ -14,6 +15,9 @@ export function TeamsRoutes(): ReactElement {
     <MetaSwitch>
       <Route exact path={path}>
         <IndexPage />
+      </Route>
+      <Route exact path={`${path}/:teamId`}>
+        <TeamPage />
       </Route>
       <Redirect to={url} />
     </MetaSwitch>
