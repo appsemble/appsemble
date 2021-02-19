@@ -10,7 +10,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { BlockVersion, Organization } from '.';
+import { BlockVersion } from '.';
 
 /**
  * Blob assets may be stored in the database before a block version itself is actually stored.
@@ -26,9 +26,11 @@ export class BlockAsset extends Model {
   @Column
   id: number;
 
+  @AllowNull(false)
   @Column
   content: Buffer;
 
+  @AllowNull(false)
   @Column
   filename: string;
 
@@ -36,21 +38,13 @@ export class BlockAsset extends Model {
   mime: string;
 
   @ForeignKey(() => BlockVersion)
+  @AllowNull(false)
   @Column
-  name: string;
-
-  @ForeignKey(() => BlockVersion)
-  @Column
-  version: string;
+  BlockVersionId: string;
 
   @CreatedAt
   created: Date;
 
-  @AllowNull(false)
-  @ForeignKey(() => Organization)
-  @Column
-  OrganizationId: string;
-
-  @BelongsTo(() => Organization)
-  Organization: Organization;
+  @BelongsTo(() => BlockVersion)
+  BlockVersion: BlockVersion;
 }

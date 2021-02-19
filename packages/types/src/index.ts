@@ -1199,9 +1199,9 @@ export interface AppMember {
 }
 
 /**
- * Translated messages for an app.
+ * Translated messages for an or block.
  */
-export interface AppMessages {
+export interface Messages {
   /**
    * The language represented by these messages.
    */

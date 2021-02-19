@@ -1,4 +1,4 @@
-import { AppMessages as AppMessagesInterface } from '@appsemble/types';
+import { Messages as MessagesInterface } from '@appsemble/types';
 import { defaultLocale, Permission, validateLanguage } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import tags from 'language-tags';
@@ -61,7 +61,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     return;
   }
 
-  const base: AppMessagesInterface = app.AppMessages.find(
+  const base: MessagesInterface = app.AppMessages.find(
     (m) => m.language === String(baseLanguage).toLowerCase(),
   );
   const messages = app.AppMessages.find((m) => m.language === language.toLowerCase());

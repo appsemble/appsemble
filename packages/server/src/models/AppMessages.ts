@@ -1,4 +1,4 @@
-import { AppMessages as AppMessagesType } from '@appsemble/types';
+import { Messages as MessagesType } from '@appsemble/types';
 import {
   BelongsTo,
   Column,
@@ -14,7 +14,7 @@ import {
 import { App } from '.';
 
 @Table({ tableName: 'AppMessages', paranoid: false })
-export class AppMessages extends Model implements AppMessagesType {
+export class AppMessages extends Model implements MessagesType {
   @PrimaryKey
   @ForeignKey(() => App)
   @Column

@@ -5,6 +5,7 @@ import {
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   HasMany,
   Model,
@@ -14,23 +15,26 @@ import {
 } from 'sequelize-typescript';
 import { Definition } from 'typescript-json-schema';
 
-import { BlockAsset, Organization } from '.';
+import { BlockAsset, BlockMessages, Organization } from '.';
 
 @Table({ tableName: 'BlockVersion', updatedAt: false })
 export class BlockVersion extends Model {
   @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
+  id: string;
+
+  @Unique('blockVersionComposite')
   @ForeignKey(() => Organization)
   @AllowNull(false)
   @Column
   OrganizationId: string;
 
-  @PrimaryKey
   @ForeignKey(() => BlockAsset)
   @Unique('blockVersionComposite')
   @Column
   name: string;
 
-  @PrimaryKey
   @ForeignKey(() => BlockAsset)
   @Unique('blockVersionComposite')
   @Column
@@ -68,6 +72,9 @@ export class BlockVersion extends Model {
 
   @HasMany(() => BlockAsset, { foreignKey: 'name', sourceKey: 'name' })
   BlockAssets?: BlockAsset[];
+
+  @HasMany(() => BlockMessages)
+  BlockMessages: BlockMessages[];
 
   @CreatedAt
   created: Date;
