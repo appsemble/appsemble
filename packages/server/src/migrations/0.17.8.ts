@@ -88,6 +88,8 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.changeColumn('BlockAsset', 'BlockVersionId', {
     type: DataTypes.UUID,
     allowNull: false,
+    onDelete: 'cascade',
+    onUpdate: 'cascade',
     references: {
       model: 'BlockVersion',
       key: 'id',
@@ -105,7 +107,8 @@ export async function up(db: Sequelize): Promise<void> {
       type: DataTypes.UUID,
       primaryKey: true,
       allowNull: false,
-      unique: 'blockVersionComposite',
+      onDelete: 'cascade',
+      onUpdate: 'cascade',
       references: {
         model: 'BlockVersion',
         key: 'id',
@@ -113,7 +116,6 @@ export async function up(db: Sequelize): Promise<void> {
     },
     language: {
       type: DataTypes.STRING,
-      unique: 'blockVersionComposite',
       primaryKey: true,
       allowNull: false,
     },

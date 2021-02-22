@@ -8,7 +8,6 @@ import {
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 
@@ -18,14 +17,12 @@ import { BlockVersion } from '.';
 export class BlockMessages extends Model implements MessagesType {
   @PrimaryKey
   @AllowNull(false)
-  @Unique('blockVersionComposite')
   @ForeignKey(() => BlockVersion)
   @Column(DataType.UUID)
   BlockVersionId: string;
 
   @PrimaryKey
   @AllowNull(false)
-  @Unique('blockVersionComposite')
   @Column
   language: string;
 

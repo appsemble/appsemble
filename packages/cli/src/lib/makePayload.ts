@@ -61,9 +61,17 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
     const messagesResult: Record<string, Record<string, string>> = {};
     const messagesPath = join(dir, 'i18n');
 
-    const translations = await fs.readdir(messagesPath);
+    const translations = (await fs.readdir(messagesPath)).map((language) => language.toLowerCase());
     if (!translations.includes('en.json')) {
       throw new AppsembleError('Could not find ‘en.json’. Try running extract-messages');
+    }
+
+    const duplicates = translations.filter(
+      (language, index) => translations.indexOf(language) !== index,
+    );
+
+    if (duplicates.length) {
+      throw new AppsembleError(`Found duplicate language codes: ‘${duplicates.join('’, ')}`);
     }
 
     for (const languageFile of translations.filter((t) => t.endsWith('.json'))) {
@@ -84,6 +92,8 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
       logger.info(`Including ${language} translations from ‘${languagePath}’`);
       messagesResult[language] = m;
     }
+
+    form.append('messages', JSON.stringify(messagesResult));
   }
 
   await opendirSafe(
