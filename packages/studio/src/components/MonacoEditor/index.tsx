@@ -3,7 +3,7 @@ import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import { useApp } from '../AppContext';
+import { useApp } from '../../pages/apps/app';
 import styles from './index.module.css';
 import './custom';
 

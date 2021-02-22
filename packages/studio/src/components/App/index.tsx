@@ -9,10 +9,10 @@ import { MDXProvider } from '@mdx-js/react';
 import { ReactElement } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
+import { Routes } from '../../pages';
 import { Breadcrumbs } from '../Breadcrumbs';
 import { ErrorFallback } from '../ErrorFallback';
 import { MDXAnchor, MDXCode, MDXPre } from '../MDX';
-import { Routes } from '../Routes';
 import { SideMenuBase } from '../SideMenuBase';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
 import { Toolbar } from '../Toolbar';
