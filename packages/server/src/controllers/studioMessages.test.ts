@@ -16,7 +16,7 @@ describe('getAppsembleLanguages', () => {
   });
 });
 
-describe('getAppsembleMessages', () => {
+describe('getStudioMessages', () => {
   it('should return all translations for a language', async () => {
     const result = await request('/api/messages/nl');
     const keys = Object.keys(result.data.messages);

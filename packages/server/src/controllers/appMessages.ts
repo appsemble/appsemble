@@ -1,13 +1,20 @@
 import { Messages as MessagesInterface } from '@appsemble/types';
-import { defaultLocale, Permission, validateLanguage } from '@appsemble/utils';
+import {
+  defaultLocale,
+  filterBlocks,
+  getAppBlocks,
+  Permission,
+  validateLanguage,
+} from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 
-import { App, AppMessages } from '../models';
+import { App, AppMessages, BlockMessages, BlockVersion } from '../models';
 import { KoaContext } from '../types';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
+import { getAppsembleMessages } from '../utils/getAppsembleMessages';
 
 interface Params {
   appId: string;
@@ -50,6 +57,31 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
+  /**
+   * We need:
+   * - Appsemble Core translations
+   * - Block translations
+   * - Custom translations
+   */
+
+  const coreMessages = await getAppsembleMessages(language, baseLanguage && String(baseLanguage));
+  const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
+  const blockMessages = await BlockVersion.findAll({
+    attributes: ['name', 'version', 'OrganizationId', 'id'],
+    where: {
+      [Op.or]: blocks.map((block) => {
+        const [org, name] = block.type.split('/');
+        return { OrganizationId: org.slice(1), name, version: block.version };
+      }),
+    },
+    include: [
+      {
+        model: BlockMessages,
+        where: { language: baseLanguage ? [language, String(baseLanguage)] : language },
+      },
+    ],
+  });
+
   if (
     !app.AppMessages.length ||
     (merge && !app.AppMessages.some((m) => m.language === language.toLowerCase()))
@@ -65,8 +97,21 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     (m) => m.language === String(baseLanguage).toLowerCase(),
   );
   const messages = app.AppMessages.find((m) => m.language === language.toLowerCase());
+  const bm: Record<string, Record<string, Record<string, string>>> = {};
 
-  ctx.body = { language: messages.language, messages: { ...base?.messages, ...messages.messages } };
+  blockMessages.forEach((version) => {
+    const name = `${version.OrganizationId}/${version.name}`;
+    if (!bm[name]) {
+      bm[name] = { [version.version]: version.BlockMessages[0].messages };
+    }
+
+    bm[name][version.version] = version.BlockMessages[0].messages;
+  });
+
+  ctx.body = {
+    language: messages.language,
+    messages: { core: coreMessages, blocks: bm, app: { ...base?.messages, ...messages.messages } },
+  };
 }
 
 export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
