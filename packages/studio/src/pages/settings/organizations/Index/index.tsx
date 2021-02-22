@@ -16,7 +16,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
 import { HeaderControl } from '../../../../components/HeaderControl';
-import { ListButton } from '../../../../components/List/ListButton';
+import { ListButton } from '../../../../components/ListButton';
 import { useUser } from '../../../../components/UserProvider';
 import { messages } from './messages';
 

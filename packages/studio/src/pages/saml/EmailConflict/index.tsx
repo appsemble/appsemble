@@ -11,8 +11,8 @@ import axios from 'axios';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
-import { useUser } from 'studio/src/components/UserProvider';
 
+import { useUser } from '../../../components/UserProvider';
 import { UserEmail } from '../../../types';
 import { messages } from './messages';
 

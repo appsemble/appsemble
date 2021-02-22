@@ -2,13 +2,13 @@ import { useData, useMessages } from '@appsemble/react-components';
 import { Rating } from '@appsemble/types';
 import { ReactElement, useCallback } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
-import { useApp } from 'studio/src/pages/apps/app';
 
-import { AsyncDataView } from '../AsyncDataView';
-import { HeaderControl } from '../HeaderControl';
-import { RateApp } from '../RateApp';
-import { StarRating } from '../StarRating';
-import { useUser } from '../UserProvider';
+import { useApp } from '../..';
+import { AsyncDataView } from '../../../../../components/AsyncDataView';
+import { HeaderControl } from '../../../../../components/HeaderControl';
+import { RateApp } from '../../../../../components/RateApp';
+import { StarRating } from '../../../../../components/StarRating';
+import { useUser } from '../../../../../components/UserProvider';
 import styles from './index.module.css';
 import { messages } from './messages';
 

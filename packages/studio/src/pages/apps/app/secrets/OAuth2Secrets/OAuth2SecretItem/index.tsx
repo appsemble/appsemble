@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 
 import { useApp } from '../../..';
-import { ListButton } from '../../../../../../components/List/ListButton';
+import { ListButton } from '../../../../../../components/ListButton';
 import { OAuth2Modal } from '../OAuth2Modal';
 
 interface OAuth2SecretItemProps {

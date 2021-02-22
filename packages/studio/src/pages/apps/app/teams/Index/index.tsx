@@ -14,11 +14,11 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
-import { ListButton } from 'studio/src/components/List/ListButton';
 
 import { useApp } from '../..';
 import { AsyncDataView } from '../../../../../components/AsyncDataView';
 import { HeaderControl } from '../../../../../components/HeaderControl';
+import { ListButton } from '../../../../../components/ListButton';
 import { useUser } from '../../../../../components/UserProvider';
 import { checkRole } from '../../../../../utils/checkRole';
 import { messages } from './messages';

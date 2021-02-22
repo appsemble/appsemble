@@ -18,9 +18,9 @@ import axios from 'axios';
 import { extension } from 'mime-types';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { download } from 'studio/src/utils/download';
 
 import { useApp } from '..';
+import { download } from '../../../../utils/download';
 import { AssetPreview } from './AssetPreview';
 import styles from './index.module.css';
 import { messages } from './messages';

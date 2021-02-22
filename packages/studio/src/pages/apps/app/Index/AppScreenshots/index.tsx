@@ -10,10 +10,10 @@ import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useApp } from 'studio/src/pages/apps/app';
 
-import { checkRole } from '../../utils/checkRole';
-import { useUser } from '../UserProvider';
+import { useApp } from '../..';
+import { useUser } from '../../../../../components/UserProvider';
+import { checkRole } from '../../../../../utils/checkRole';
 import { AppScreenshot } from './AppScreenshot';
 import styles from './index.module.css';
 import { messages } from './messages';

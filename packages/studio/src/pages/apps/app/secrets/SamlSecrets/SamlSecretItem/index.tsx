@@ -5,7 +5,7 @@ import { ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import { useApp } from '../../..';
-import { ListButton } from '../../../../../../components/List/ListButton';
+import { ListButton } from '../../../../../../components/ListButton';
 import { SamlModal } from '../SamlModal';
 import { messages } from './messages';
 
