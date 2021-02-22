@@ -1,5 +1,3 @@
-import { partialNormalized } from '@appsemble/utils';
-
 import { tinyRouter } from '../../middleware/tinyRouter';
 import { faviconHandler } from './faviconHandler';
 import { iconHandler } from './iconHandler';
@@ -24,7 +22,11 @@ export const studioRouter = tinyRouter([
     any() {},
   },
   {
-    route: new RegExp(`^(/${partialNormalized.source})*`),
+    route: /\.\w+$/,
+    any() {},
+  },
+  {
+    route: /.*/,
     get: indexHandler,
   },
 ]);
