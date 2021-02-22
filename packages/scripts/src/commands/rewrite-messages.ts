@@ -4,8 +4,6 @@ import { join } from 'path';
 import { AppsembleError, logger } from '@appsemble/node-utils';
 
 /**
- * README
- *
  * This script aims to help keep existing translations if a messages file has been moved.
  *
  * Running this script requires these replacements to have been implemented.
