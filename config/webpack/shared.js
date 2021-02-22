@@ -72,6 +72,18 @@ module.exports = (env, argv) => {
       }),
     ],
     optimization: {
+      splitChunks: {
+        cacheGroups: {
+          styles: {
+            name: 'styles',
+            // Type: 'css/mini-extract',
+            // For webpack@4
+            test: /\.css$/,
+            chunks: 'all',
+            enforce: true,
+          },
+        },
+      },
       minimizer: [
         new TerserPlugin({
           cache: true,
