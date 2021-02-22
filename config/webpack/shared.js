@@ -126,7 +126,7 @@ module.exports = (env, argv) => {
               loader: '@mdx-js/loader',
               options: {
                 remarkPlugins: [
-                  remarkMermaid,
+                  production && remarkMermaid,
                   frontmatter,
                   () => (ast, vfile) => {
                     ast.children.forEach((node, index) => {
@@ -200,7 +200,7 @@ module.exports = (env, argv) => {
                       },
                     },
                   ],
-                ],
+                ].filter(Boolean),
               },
             },
           ],
