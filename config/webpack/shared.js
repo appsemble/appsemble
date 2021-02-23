@@ -122,7 +122,7 @@ module.exports = (env, argv) => {
               },
             },
             {
-              loader: '@mdx-js/loader',
+              loader: 'xdm/webpack.cjs',
               options: {
                 remarkPlugins: [
                   frontmatter,
@@ -130,17 +130,61 @@ module.exports = (env, argv) => {
                     ast.children.forEach((node, index) => {
                       if (node.type === 'heading' && node.depth === 1) {
                         ast.children.push({
-                          type: 'export',
-                          value: `export const title = ${JSON.stringify(node.children[0].value)};`,
+                          type: 'mdxjsEsm',
+                          data: {
+                            estree: {
+                              type: 'Program',
+                              sourceType: 'module',
+                              comments: [],
+                              body: [
+                                {
+                                  type: 'ExportNamedDeclaration',
+                                  specifiers: [],
+                                  declaration: {
+                                    type: 'VariableDeclaration',
+                                    kind: 'const',
+                                    declarations: [
+                                      {
+                                        type: 'VariableDeclarator',
+                                        id: { type: 'Identifier', name: 'title' },
+                                        init: { type: 'Literal', value: node.children[0].value },
+                                      },
+                                    ],
+                                  },
+                                },
+                              ],
+                            },
+                          },
                         });
                       }
                       if (node.type === 'yaml') {
                         // eslint-disable-next-line no-param-reassign
                         ast.children[index] = {
-                          type: 'export',
-                          value: `export const meta = ${JSON.stringify(
-                            yaml.safeLoad(node.value),
-                          )};`,
+                          type: 'mdxjsEsm',
+                          data: {
+                            estree: {
+                              type: 'Program',
+                              sourceType: 'module',
+                              comments: [],
+                              body: [
+                                {
+                                  type: 'ExportNamedDeclaration',
+                                  specifiers: [],
+                                  declaration: {
+                                    type: 'VariableDeclaration',
+                                    kind: 'const',
+                                    declarations: Object.entries(yaml.safeLoad(node.value)).map(
+                                      ([name, value]) => ({
+                                        type: 'VariableDeclarator',
+                                        id: { type: 'Identifier', name },
+                                        init: { type: 'Literal', value },
+                                      }),
+                                    ),
+                                  },
+                                },
+                              ],
+                            },
+                          },
                         };
                       }
                     });
@@ -172,14 +216,59 @@ module.exports = (env, argv) => {
                     const images = [];
                     visit(ast, { type: 'image' }, (node, index, parent) => {
                       const identifier = `__image_${images.length}__`;
-                      images.push({
-                        type: 'import',
-                        value: `import ${identifier} from ${JSON.stringify(node.url)}`,
+                      images.unshift({
+                        type: 'mdxjsEsm',
+                        data: {
+                          estree: {
+                            type: 'Program',
+                            sourceType: 'module',
+                            comments: [],
+                            body: [
+                              {
+                                type: 'ImportDeclaration',
+                                specifiers: [
+                                  {
+                                    type: 'ImportDefaultSpecifier',
+                                    local: { type: 'Identifier', name: identifier },
+                                  },
+                                ],
+                                source: {
+                                  type: 'Literal',
+                                  value: node.url,
+                                },
+                              },
+                            ],
+                          },
+                        },
                       });
                       // eslint-disable-next-line no-param-reassign
                       parent.children[index] = {
-                        type: 'jsx',
-                        value: `<img alt=${JSON.stringify(node.alt)} src={${identifier}} />`,
+                        type: 'mdxJsxFlowElement',
+                        name: 'img',
+                        attributes: [
+                          { type: 'mdxJsxAttribute', name: 'alt', value: node.alt },
+                          {
+                            type: 'mdxJsxAttribute',
+                            name: 'src',
+                            value: {
+                              type: 'mdxJsxAttributeValueExpression',
+                              data: {
+                                estree: {
+                                  type: 'Program',
+                                  sourceType: 'module',
+                                  comments: [],
+                                  body: [
+                                    {
+                                      type: 'ExpressionStatement',
+                                      expression: { type: 'Identifier', name: identifier },
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                          },
+                        ],
+                        children: [],
                       };
                     });
                     ast.children.unshift(...images);

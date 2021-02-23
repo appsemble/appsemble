@@ -5,14 +5,12 @@ import {
   MetaProvider,
   SideMenuProvider,
 } from '@appsemble/react-components';
-import { MDXProvider } from '@mdx-js/react';
 import { ReactElement } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
 import { Routes } from '../../pages';
 import { Breadcrumbs } from '../Breadcrumbs';
 import { ErrorFallback } from '../ErrorFallback';
-import { MDXAnchor, MDXCode, MDXPre } from '../MDX';
 import { SideMenuBase } from '../SideMenuBase';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
 import { Toolbar } from '../Toolbar';
@@ -24,29 +22,21 @@ export function App(): ReactElement {
     <BrowserRouter>
       <Route path="/:lang?">
         <StudioMessagesProvider>
-          <MDXProvider
-            components={{
-              a: MDXAnchor,
-              pre: MDXPre,
-              code: MDXCode,
-            }}
-          >
-            <UserProvider>
-              <ErrorHandler fallback={ErrorFallback}>
-                <Confirmation>
-                  <MessagesProvider>
-                    <MetaProvider description={messages.description} title="Appsemble">
-                      <SideMenuProvider base={<SideMenuBase />}>
-                        <Toolbar />
-                        <Breadcrumbs />
-                        <Routes />
-                      </SideMenuProvider>
-                    </MetaProvider>
-                  </MessagesProvider>
-                </Confirmation>
-              </ErrorHandler>
-            </UserProvider>
-          </MDXProvider>
+          <UserProvider>
+            <ErrorHandler fallback={ErrorFallback}>
+              <Confirmation>
+                <MessagesProvider>
+                  <MetaProvider description={messages.description} title="Appsemble">
+                    <SideMenuProvider base={<SideMenuBase />}>
+                      <Toolbar />
+                      <Breadcrumbs />
+                      <Routes />
+                    </SideMenuProvider>
+                  </MetaProvider>
+                </MessagesProvider>
+              </Confirmation>
+            </ErrorHandler>
+          </UserProvider>
         </StudioMessagesProvider>
       </Route>
     </BrowserRouter>

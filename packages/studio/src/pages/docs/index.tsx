@@ -12,9 +12,7 @@ import { messages } from './messages';
 
 interface MDXModule {
   default: FunctionComponent;
-  meta: {
-    icon: IconName;
-  };
+  icon: IconName;
   title: string;
 }
 
@@ -22,10 +20,10 @@ const context = require.context('../../../../../docs', true, /\.mdx?$/);
 const docs = context
   .keys()
   .map((key) => {
-    const { default: Component, meta, title } = context(key) as MDXModule;
+    const { default: Component, icon, title } = context(key) as MDXModule;
     return {
       Component,
-      icon: meta?.icon,
+      icon,
       path: key
         .replace(/^\.\//, '')
         .replace(/\.mdx?$/, '')
