@@ -50,16 +50,13 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const history = useHistory();
   const redirect = useLocationString();
 
-  const [messages, setMessages] = useState<AppMessages['messages']>({});
-  const [appsembleMessages, setAppsembleMessages] = useState<AppMessages['messages']>();
   const messageCache = useMemo(
     () => objectCache((message) => new IntlMessageFormat(message, lang, undefined, { formatters })),
     [lang],
   );
+  const [messages, setMessages] = useState<AppMessages['messages']>();
   const [messagesError, setMessagesError] = useState(false);
-  const [appMessagesError, setAppMessagesError] = useState(false);
-  const [appMessagesLoading, setAppMessagesLoading] = useState(true);
-  const [appsembleMessagesLoading, setAppsembleMessagesLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(true);
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
@@ -90,32 +87,14 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
       .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
       .then(({ data }) => setMessages(data.messages))
       .catch(() => setMessagesError(true))
-      .finally(() => setAppMessagesLoading(false));
-  }, [definition, lang]);
-
-  useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || defaultLocale;
-    if (lang !== defaultLanguage && !languages.includes(lang)) {
-      return;
-    }
-
-    axios
-      .get<AppMessages>(`${apiUrl}/api/messages/${lang}?context=app`)
-      .then(({ data }) => setAppsembleMessages(data.messages))
-      .catch((error) => {
-        if (error?.response?.status === 404) {
-          // Set messages to an empty object to fall back to the default messages
-          setAppsembleMessages({});
-        } else {
-          setAppMessagesError(true);
-        }
-      })
-      .finally(() => setAppsembleMessagesLoading(false));
+      .finally(() => setMessagesLoading(false));
   }, [definition, lang]);
 
   const getMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
-      const message = Object.hasOwnProperty.call(messages, id) ? messages[id] : defaultMessage;
+      const message = Object.hasOwnProperty.call(messages.app, id)
+        ? messages.app[id]
+        : defaultMessage;
       return messageCache(message);
     },
     [messageCache, messages],
@@ -124,16 +103,16 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const value = useMemo(
     () => ({
       getMessage,
-      messageIds: Object.keys(messages),
+      messageIds: Object.keys(messages.app),
     }),
     [getMessage, messages],
   );
 
-  if (appMessagesLoading || appsembleMessagesLoading) {
+  if (messagesLoading) {
     return <Loader />;
   }
 
-  if (appMessagesError || messagesError) {
+  if (messagesError) {
     return (
       <Content>
         <Message color="danger">There was a problem loading the app.</Message>
@@ -143,7 +122,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   return (
     <Context.Provider value={value}>
-      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={appsembleMessages}>
+      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={messages.app}>
         {children}
       </IntlProvider>
     </Context.Provider>

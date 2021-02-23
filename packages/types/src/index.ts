@@ -1199,7 +1199,7 @@ export interface AppMember {
 }
 
 /**
- * Translated messages for an or block.
+ * Translated messages for an app or block.
  */
 export interface Messages {
   /**
@@ -1211,6 +1211,48 @@ export interface Messages {
    * A mapping of message id to message content.
    */
   messages: Record<string, string>;
+}
+
+export interface AppMessages {
+  /**
+   * The language represented by these messages.
+   */
+  language: string;
+
+  /**
+   * The messages available to the app
+   */
+  messages: {
+    /**
+     * Messages related to the Appsemble core.
+     *
+     * This may be an empty object if the language is the default locale.
+     */
+    core: Record<string, string>;
+
+    /**
+     * A list of messages specific to the app.
+     */
+    app: Record<string, string>;
+
+    /**
+     * A list of messages specific to each block used in the app.
+     *
+     * At root the keys represent a block type.
+     * One layer deep the keys represent a block version.
+     * Two layers deep the keys represent the key/message pairs.
+     *
+     * @example
+     * {
+     *   "<at>example/test": {
+     *     "0.0.0": {
+     *       "exampleKey": "Example Message"
+     *     }
+     *   }
+     * }
+     */
+    block: Record<string, Record<string, string>>;
+  };
 }
 
 /**
