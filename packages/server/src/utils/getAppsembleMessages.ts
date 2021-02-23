@@ -24,17 +24,21 @@ export async function getAppsembleMessages(
   const languages = await getSupportedLanguages();
   const messages = {};
 
-  if (baseLang && languages.has(baseLanguage)) {
+  if (baseLang && baseLang !== defaultLocale && languages.has(baseLanguage)) {
     Object.assign(
       messages,
       JSON.parse(await fs.readFile(join(translationsDir, `${baseLang}.json`), 'utf-8')),
     );
   }
 
-  if (languages.has(lang)) {
+  if (lang !== defaultLocale && languages.has(lang)) {
     Object.assign(
       messages,
-      JSON.parse(await fs.readFile(join(translationsDir, `${lang}.json`), 'utf-8')),
+      Object.fromEntries(
+        Object.entries(
+          JSON.parse(await fs.readFile(join(translationsDir, `${lang}.json`), 'utf-8')),
+        ).filter(([, value]) => Boolean(value)),
+      ),
     );
   }
 

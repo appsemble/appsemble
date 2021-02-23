@@ -1,8 +1,9 @@
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppMessages, Member, Organization } from '../models';
+import { App, AppMessages, BlockMessages, BlockVersion, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { getAppsembleMessages } from '../utils/getAppsembleMessages';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
@@ -49,7 +50,10 @@ describe('getMessages', () => {
     });
 
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
-    expect(data).toMatchObject({ language: 'en-gb', messages: { test: 'Test.' } });
+    expect(data).toMatchObject({
+      language: 'en-gb',
+      messages: { core: {}, blocks: {}, app: { test: 'Test.' } },
+    });
   });
 
   it('should return a 404 if a language is not supported', async () => {
@@ -87,7 +91,218 @@ describe('getMessages', () => {
 
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB?merge=true`);
 
-    expect(data).toMatchObject({ language: 'en-gb', messages: { test: 'Test.', bla: 'blah' } });
+    expect(data).toMatchObject({
+      language: 'en-gb',
+      messages: { core: {}, blocks: {}, app: { test: 'Test.', bla: 'blah' } },
+    });
+  });
+
+  it('should include translated block messages', async () => {
+    authorizeStudio();
+    await Organization.create({
+      id: 'appsemble',
+      name: 'Appsemble',
+    });
+    const blockA = await BlockVersion.create({
+      OrganizationId: 'testorganization',
+      name: 'test',
+      version: '0.0.0',
+    });
+    const blockB = await BlockVersion.create({
+      OrganizationId: 'testorganization',
+      name: 'test',
+      version: '0.0.1',
+    });
+    const blockC = await BlockVersion.create({
+      OrganizationId: 'appsemble',
+      name: 'form',
+      version: '0.0.0',
+    });
+    await BlockMessages.create({
+      BlockVersionId: blockA.id,
+      language: 'en',
+      messages: { foo: 'bar', bla: 'bla' },
+    });
+    await BlockMessages.create({
+      BlockVersionId: blockB.id,
+      language: 'en',
+      messages: { foo: 'bar', test: 'test', bla: 'blablabla' },
+    });
+    await BlockMessages.create({
+      BlockVersionId: blockC.id,
+      language: 'en',
+      messages: { form: 'form' },
+    });
+    app.update({
+      definition: {
+        name: 'Test App',
+        description: 'Description',
+        pages: [
+          {
+            name: 'test',
+            blocks: [
+              { type: '@testorganization/test', version: '0.0.0' },
+              { type: '@testorganization/test', version: '0.0.1' },
+              { type: 'form', version: '0.0.0' },
+            ],
+          },
+        ],
+      },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/messages/en`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        language: 'en',
+        messages: {
+          app: {},
+          core: {},
+          blocks: {
+            '@appsemble/form': { '0.0.0': { form: 'form' } },
+            '@testorganization/test': {
+              '0.0.0': { foo: 'bar', bla: 'bla' },
+              '0.0.1': { foo: 'bar', test: 'test', bla: 'blablabla' },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  it('should merge translations if other language’s translations are incomplete', async () => {
+    authorizeStudio();
+    const blockA = await BlockVersion.create({
+      OrganizationId: 'testorganization',
+      name: 'test',
+      version: '0.0.0',
+    });
+    await BlockMessages.create({
+      BlockVersionId: blockA.id,
+      language: 'en',
+      messages: { foo: 'bar', bla: 'bla' },
+    });
+    await BlockMessages.create({
+      BlockVersionId: blockA.id,
+      language: 'nl',
+      messages: { foo: 'foo but dutch', bla: '' },
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: { test: 'test translation' },
+    });
+    app.update({
+      definition: {
+        name: 'Test App',
+        description: 'Description',
+        pages: [
+          {
+            name: 'test',
+            blocks: [{ type: '@testorganization/test', version: '0.0.0' }],
+          },
+        ],
+      },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/messages/nl`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        language: 'nl',
+        messages: {
+          app: { test: 'test translation' },
+          core: {},
+          blocks: {
+            '@testorganization/test': {
+              '0.0.0': { foo: 'foo but dutch', bla: 'bla' },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  it('should merge block translations with the base language', async () => {
+    authorizeStudio();
+    const blockA = await BlockVersion.create({
+      OrganizationId: 'testorganization',
+      name: 'test',
+      version: '0.0.0',
+    });
+    await BlockMessages.create({
+      BlockVersionId: blockA.id,
+      language: 'en',
+      messages: { foo: 'bar', bla: 'bla' },
+    });
+    await BlockMessages.create({
+      BlockVersionId: blockA.id,
+      language: 'en-gb',
+      messages: { foo: '', bla: 'blah' },
+    });
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'en-gb',
+      messages: { test: 'test translation' },
+    });
+    app.update({
+      definition: {
+        name: 'Test App',
+        description: 'Description',
+        pages: [
+          {
+            name: 'test',
+            blocks: [{ type: '@testorganization/test', version: '0.0.0' }],
+          },
+        ],
+      },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/messages/en-gb`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        language: 'en-gb',
+        messages: {
+          app: { test: 'test translation' },
+          core: {},
+          blocks: {
+            '@testorganization/test': {
+              '0.0.0': { foo: 'bar', bla: 'blah' },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  it('should include dutch core translations', async () => {
+    authorizeStudio();
+    const messages = await getAppsembleMessages('nl');
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: { test: 'test translation' },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/messages/nl`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        language: 'nl',
+        messages: {
+          app: { test: 'test translation' },
+          core: {
+            ...Object.fromEntries(
+              Object.entries(messages).filter(
+                ([key]) => key.startsWith('app') || key.startsWith('react-components'),
+              ),
+            ),
+          },
+          blocks: {},
+        },
+      },
+    });
   });
 });
 

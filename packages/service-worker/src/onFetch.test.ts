@@ -90,7 +90,7 @@ it('should cache static app file requests', async () => {
 });
 
 it('should cache appsemble messages', async () => {
-  const request = new Request('/api/messages/nl-nl?context=studio');
+  const request = new Request('/api/messages/nl-nl');
   await trigger('fetch', request);
   expect(utils.cacheFirst).toHaveBeenCalledWith(request);
   expect(utils.requestFirst).not.toHaveBeenCalled();

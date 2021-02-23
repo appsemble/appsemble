@@ -29,7 +29,7 @@ export async function getStudioMessages(ctx: KoaContext<Params>): Promise<void> 
   ).toLowerCase();
 
   const messages = await getAppsembleMessages(lang, baseLanguage);
-  if (messages === {} && baseLanguage !== defaultLocale) {
+  if (Object.keys(messages).length === 0 && baseLanguage !== defaultLocale) {
     throw notFound(`Language “${language}” could not be found`);
   }
 

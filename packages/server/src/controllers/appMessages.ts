@@ -33,9 +33,11 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     throw badRequest(`Language “${language}” is invalid`);
   }
 
+  const lang = language.toLowerCase();
   const baseLanguage = tags(language)
     .subtags()
     .find((sub) => sub.type() === 'language');
+  const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
 
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
@@ -43,11 +45,11 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
       {
         model: AppMessages,
         where:
-          merge && baseLanguage
+          merge && baseLang
             ? {
-                language: { [Op.or]: [String(baseLanguage).toLowerCase(), language.toLowerCase()] },
+                language: { [Op.or]: [baseLang, lang] },
               }
-            : { language: language.toLowerCase() },
+            : { language: lang },
         required: false,
       },
     ],
@@ -57,14 +59,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
-  /**
-   * We need:
-   * - Appsemble Core translations
-   * - Block translations
-   * - Custom translations
-   */
-
-  const coreMessages = await getAppsembleMessages(language, baseLanguage && String(baseLanguage));
+  const coreMessages = await getAppsembleMessages(lang, baseLang);
   const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
   const blockMessages = await BlockVersion.findAll({
     attributes: ['name', 'version', 'OrganizationId', 'id'],
@@ -77,40 +72,60 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     include: [
       {
         model: BlockMessages,
-        where: { language: baseLanguage ? [language, String(baseLanguage)] : language },
+        where: {
+          language: baseLang ? [lang, baseLang, defaultLocale] : [lang, defaultLocale],
+        },
       },
     ],
   });
 
   if (
-    !app.AppMessages.length ||
-    (merge && !app.AppMessages.some((m) => m.language === language.toLowerCase()))
+    (!app.AppMessages.length || (merge && !app.AppMessages.some((m) => m.language === lang))) &&
+    lang !== (app.definition.defaultLanguage || defaultLocale)
   ) {
-    if (language !== (app.definition.defaultLanguage || defaultLocale)) {
-      throw notFound(`Language “${language}” could not be found`);
-    }
-    ctx.body = { language, messages: {} };
-    return;
+    throw notFound(`Language “${language}” could not be found`);
   }
 
-  const base: MessagesInterface = app.AppMessages.find(
-    (m) => m.language === String(baseLanguage).toLowerCase(),
-  );
-  const messages = app.AppMessages.find((m) => m.language === language.toLowerCase());
+  const base: MessagesInterface = app.AppMessages.find((m) => m.language === baseLang);
+  const messages = app.AppMessages.find((m) => m.language === lang);
   const bm: Record<string, Record<string, Record<string, string>>> = {};
 
   blockMessages.forEach((version) => {
-    const name = `${version.OrganizationId}/${version.name}`;
-    if (!bm[name]) {
-      bm[name] = { [version.version]: version.BlockMessages[0].messages };
-    }
+    const name = `@${version.OrganizationId}/${version.name}`;
+    const defaultMessages = version.BlockMessages.find((m) => m.language === defaultLocale);
+    const baseLanguageMessages =
+      baseLang && version.BlockMessages.find((m) => m.language === baseLang);
+    const languageMessages = version.BlockMessages.find((m) => m.language === language);
 
-    bm[name][version.version] = version.BlockMessages[0].messages;
+    const blockVersionMessages = {
+      ...defaultMessages.messages,
+      ...Object.fromEntries(
+        Object.entries(baseLanguageMessages?.messages ?? {}).filter(([, value]) => value),
+      ),
+      ...Object.fromEntries(
+        Object.entries(languageMessages?.messages ?? {}).filter(([, value]) => value),
+      ),
+    };
+    if (bm[name]) {
+      bm[name][version.version] = blockVersionMessages;
+    } else {
+      bm[name] = {
+        [version.version]: blockVersionMessages,
+      };
+    }
   });
 
   ctx.body = {
-    language: messages.language,
-    messages: { core: coreMessages, blocks: bm, app: { ...base?.messages, ...messages.messages } },
+    language: lang,
+    messages: {
+      core: Object.fromEntries(
+        Object.entries(coreMessages).filter(
+          ([key]) => key.startsWith('app') || key.startsWith('react-components'),
+        ),
+      ),
+      blocks: bm,
+      app: { ...base?.messages, ...messages?.messages },
+    },
   };
 }
 
