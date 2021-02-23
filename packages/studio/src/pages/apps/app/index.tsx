@@ -10,7 +10,16 @@ import {
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import classNames from 'classnames';
-import { createContext, Dispatch, ReactElement, SetStateAction, useContext, useMemo } from 'react';
+import {
+  createContext,
+  Dispatch,
+  lazy,
+  ReactElement,
+  SetStateAction,
+  Suspense,
+  useContext,
+  useMemo,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
@@ -19,7 +28,6 @@ import { ProtectedRoute } from '../../../components/ProtectedRoute';
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';
 import { AssetsPage } from './assets';
-import { EditPage } from './edit';
 import { IndexPage } from './Index';
 import { messages } from './messages';
 import { NotificationsPage } from './notifications';
@@ -46,6 +54,8 @@ interface AppValueContext {
 }
 
 const Context = createContext<AppValueContext>(null);
+
+const EditPage = lazy(() => import('./edit'));
 
 export function AppRoutes(): ReactElement {
   const {
@@ -168,7 +178,9 @@ export function AppRoutes(): ReactElement {
           path={`${path}/edit`}
           permission={Permission.EditApps}
         >
-          <EditPage />
+          <Suspense fallback={<Loader />}>
+            <EditPage />
+          </Suspense>
         </ProtectedRoute>
         <ProtectedRoute
           organization={organization}

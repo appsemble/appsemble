@@ -50,7 +50,9 @@ const monacoGuiOptions: Options = {
   readOnly: true,
 };
 
-export function EditPage(): ReactElement {
+// `React.lazy` works with default exports.
+// eslint-disable-next-line import/no-default-export
+export default function EditPage(): ReactElement {
   useMeta(messages.title);
 
   const { app, setApp } = useApp();
