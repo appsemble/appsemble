@@ -176,16 +176,16 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
         </div>
         <div>
           <RadioGroup name="shape" onChange={shapeShift} value={shape}>
-            <RadioButton disabled={disabled} id="shape-minimal" value="minimal">
+            <RadioButton id="shape-minimal" value="minimal">
               <FormattedMessage {...messages.minimal} />
             </RadioButton>
-            <RadioButton disabled={disabled} id="shape-circle" value="circle">
+            <RadioButton id="shape-circle" value="circle">
               <FormattedMessage {...messages.circle} />
             </RadioButton>
-            <RadioButton disabled={disabled} id="shape-rounded" value="rounded">
+            <RadioButton id="shape-rounded" value="rounded">
               <FormattedMessage {...messages.rounded} />
             </RadioButton>
-            <RadioButton disabled={disabled} id="shape-square" value="square">
+            <RadioButton id="shape-square" value="square">
               <FormattedMessage {...messages.square} />
             </RadioButton>
           </RadioGroup>
