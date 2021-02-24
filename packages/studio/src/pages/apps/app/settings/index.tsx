@@ -152,7 +152,7 @@ export function SettingsPage(): ReactElement {
           />
           <SimpleFormField
             addon={
-              <Button className="is-static">
+              <Button component="span" className="is-static">
                 {`.${app.OrganizationId}.${window.location.host}`}
               </Button>
             }
