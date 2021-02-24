@@ -2,8 +2,8 @@ import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import { studioRouter } from '.';
-import { KoaContext } from '../../types';
 import { setArgv } from '../../utils/argv';
+import * as render from '../../utils/render';
 
 let templateName: string;
 let templateData: Record<string, unknown>;
@@ -13,16 +13,18 @@ jest.mock('crypto');
 beforeAll(async () => {
   setArgv({ host: 'https://app.example:9999' });
   const app = new Koa();
-  app.use((ctx: KoaContext, next) => {
-    ctx.state.render = (template, data) => {
-      templateName = template;
-      templateData = data;
-      return Promise.resolve('<!doctype html>');
-    };
-    return next();
-  });
   app.use(studioRouter);
   await setTestApp(app);
+});
+
+beforeEach(() => {
+  // eslint-disable-next-line require-await
+  jest.spyOn(render, 'render').mockImplementation(async (ctx, template, data) => {
+    templateName = template;
+    templateData = data;
+    ctx.body = '<!doctype html>';
+    ctx.type = 'html';
+  });
 });
 
 it('should serve the studio index page with correct headers', async () => {
@@ -44,7 +46,7 @@ it('should serve the studio index page with correct headers', async () => {
     }),
     data: '<!doctype html>',
   });
-  expect(templateName).toBe('studio.html');
+  expect(templateName).toBe('studio/index.html');
   expect(templateData).toStrictEqual({
     nonce: 'AAAAAAAAAAAAAAAAAAAAAA==',
     settings: '<script>window.settings={"enableRegistration":true,"logins":[]}</script>',
@@ -75,7 +77,7 @@ it('should pass login options from argv to the studio', async () => {
     }),
     data: '<!doctype html>',
   });
-  expect(templateName).toBe('studio.html');
+  expect(templateName).toBe('studio/index.html');
   expect(templateData).toStrictEqual({
     nonce: 'AAAAAAAAAAAAAAAAAAAAAA==',
     settings: `<script>window.settings=${JSON.stringify({

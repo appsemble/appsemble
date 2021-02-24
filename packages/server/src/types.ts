@@ -10,10 +10,6 @@ declare module 'koa' {
   }
 }
 
-export interface AppsembleState extends DefaultState {
-  render: (template: string, params: Record<string, unknown>) => Promise<string>;
-}
-
 export interface AppsembleContext<P = unknown> {
   /**
    * The client the request is from including its scopes
@@ -56,6 +52,6 @@ export interface AppsembleContext<P = unknown> {
   };
 }
 
-export type KoaContext<P = unknown> = ParameterizedContext<AppsembleState, AppsembleContext<P>>;
+export type KoaContext<P = unknown> = ParameterizedContext<DefaultState, AppsembleContext<P>>;
 
 export type KoaMiddleware<P = unknown> = compose.Middleware<KoaContext<P>>;

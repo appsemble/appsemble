@@ -7,12 +7,11 @@ import {
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
-import { ParameterizedContext } from 'koa';
 import { get, pick } from 'lodash';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization } from '../models';
-import { AppsembleContext, AppsembleState, KoaMiddleware } from '../types';
+import { KoaContext, KoaMiddleware } from '../types';
 import { email } from '../utils/actions/email';
 import { getRemapperContext } from '../utils/app';
 import { readPackageJson } from '../utils/readPackageJson';
@@ -37,7 +36,7 @@ const allowResponseHeaders = [
 const supportedActions = ['email', 'request'];
 
 async function handleEmail(
-  ctx: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
+  ctx: KoaContext<Params>,
   app: App,
   action: EmailActionDefinition,
 ): Promise<void> {
@@ -70,7 +69,7 @@ async function handleEmail(
 }
 
 async function handleRequestProxy(
-  ctx: ParameterizedContext<AppsembleState, AppsembleContext<Params>>,
+  ctx: KoaContext<Params>,
   app: App,
   action: RequestLikeActionDefinition,
   useBody: boolean,

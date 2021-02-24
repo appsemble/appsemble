@@ -1,0 +1,254 @@
+import {
+  Icon,
+  Loader,
+  MenuSection,
+  Message,
+  MetaSwitch,
+  useData,
+  useSideMenu,
+} from '@appsemble/react-components';
+import { App } from '@appsemble/types';
+import { Permission } from '@appsemble/utils';
+import classNames from 'classnames';
+import {
+  createContext,
+  Dispatch,
+  lazy,
+  ReactElement,
+  SetStateAction,
+  Suspense,
+  useContext,
+  useMemo,
+} from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Redirect, Route, useRouteMatch } from 'react-router-dom';
+
+import { MenuItem } from '../../../components/MenuItem';
+import { ProtectedRoute } from '../../../components/ProtectedRoute';
+import { useUser } from '../../../components/UserProvider';
+import { checkRole } from '../../../utils/checkRole';
+import { AssetsPage } from './assets';
+import { IndexPage } from './Index';
+import { messages } from './messages';
+import { NotificationsPage } from './notifications';
+import { ResourcesRoutes } from './resources';
+import { RolesPage } from './roles';
+import { SecretsPage } from './secrets';
+import { SettingsPage } from './settings';
+import { TeamsRoutes } from './teams';
+import { TranslationsPage } from './translations';
+
+/**
+ * A wrapper which fetches the app definition and makes sure it is available to its children.
+ */
+interface AppValueContext {
+  /**
+   * The app in the current URL context.
+   */
+  app: App;
+
+  /**
+   * Update the app in the current context.
+   */
+  setApp: Dispatch<SetStateAction<App>>;
+}
+
+const Context = createContext<AppValueContext>(null);
+
+const EditPage = lazy(() => import('./edit'));
+
+export function AppRoutes(): ReactElement {
+  const {
+    params: { id },
+    path,
+    url,
+  } = useRouteMatch<{ id: string; lang: string }>();
+  const { organizations } = useUser();
+  const { data: app, error, loading, setData: setApp } = useData<App>(`/api/apps/${id}`);
+  const value = useMemo(() => ({ app, setApp }), [app, setApp]);
+  const { formatMessage } = useIntl();
+
+  const organization = organizations?.find((org) => org.id === app?.OrganizationId);
+
+  const editPermission = organization && checkRole(organization.role, Permission.EditApps);
+  const editMessagePermission =
+    organization && checkRole(organization.role, Permission.EditAppMessages);
+  const pushNotificationPermission =
+    organization && checkRole(organization.role, Permission.PushNotifications);
+
+  const resourceNames = app?.definition.resources && Object.keys(app?.definition.resources);
+  const mayEditResources = Boolean(editPermission && resourceNames?.length);
+
+  useSideMenu(
+    organization && (
+      <MenuSection
+        label={
+          <div>
+            {app.locked && <Icon icon="lock" title={formatMessage(messages.locked)} />}
+            <span className={classNames({ 'pl-1': !app.locked })}>{app.definition.name}</span>
+          </div>
+        }
+      >
+        <MenuItem exact icon="info" to={url}>
+          <FormattedMessage {...messages.details} />
+        </MenuItem>
+        {editPermission && (
+          <MenuItem icon="edit" to={`${url}/edit`}>
+            <FormattedMessage {...messages.editor} />
+          </MenuItem>
+        )}
+        {editPermission && (
+          <MenuItem icon="layer-group" to={`${url}/assets`}>
+            <FormattedMessage {...messages.assets} />
+          </MenuItem>
+        )}
+        {mayEditResources && (
+          <MenuItem icon="cubes" to={`${url}/resources`}>
+            <FormattedMessage {...messages.resources} />
+          </MenuItem>
+        )}
+        {mayEditResources && (
+          <MenuSection>
+            {resourceNames.sort().map((resource) => (
+              <MenuItem key={resource} to={`${url}/resources/${resource}`}>
+                {resource}
+              </MenuItem>
+            ))}
+          </MenuSection>
+        )}
+        {editMessagePermission && (
+          <MenuItem icon="language" to={`${url}/translations`}>
+            <FormattedMessage {...messages.translations} />
+          </MenuItem>
+        )}
+        {pushNotificationPermission && (
+          <MenuItem icon="paper-plane" to={`${url}/notifications`}>
+            <FormattedMessage {...messages.notifications} />
+          </MenuItem>
+        )}
+        {editPermission && app.definition.security && (
+          <MenuItem icon="users" to={`${url}/roles`}>
+            <FormattedMessage {...messages.roles} />
+          </MenuItem>
+        )}
+        {editPermission && app.definition.security && (
+          <MenuItem icon="hands-helping" to={`${url}/teams`}>
+            <FormattedMessage {...messages.teams} />
+          </MenuItem>
+        )}
+        {editPermission && (
+          <MenuItem icon="cogs" to={`${url}/settings`}>
+            <FormattedMessage {...messages.settings} />
+          </MenuItem>
+        )}
+        {editPermission && (
+          <MenuItem icon="key" to={`${url}/secrets`}>
+            <FormattedMessage {...messages.secrets} />
+          </MenuItem>
+        )}
+      </MenuSection>
+    ),
+  );
+
+  if (error) {
+    return (
+      <Message color="danger">
+        {error.response?.status === 404 ? (
+          <FormattedMessage {...messages.notFound} />
+        ) : (
+          <FormattedMessage {...messages.uncaughtError} />
+        )}
+      </Message>
+    );
+  }
+
+  if (!organizations || loading) {
+    return <Loader />;
+  }
+
+  return (
+    <Context.Provider value={value}>
+      <MetaSwitch description={app.definition.description} title={app.definition.name}>
+        <Route exact path={path}>
+          <IndexPage />
+        </Route>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/edit`}
+          permission={Permission.EditApps}
+        >
+          <Suspense fallback={<Loader />}>
+            <EditPage />
+          </Suspense>
+        </ProtectedRoute>
+        <ProtectedRoute
+          organization={organization}
+          path={`${path}/assets`}
+          permission={Permission.EditApps}
+        >
+          <AssetsPage />
+        </ProtectedRoute>
+        <ProtectedRoute
+          organization={organization}
+          path={`${path}/resources`}
+          permission={Permission.EditApps}
+        >
+          <ResourcesRoutes />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/translations`}
+          permission={Permission.EditAppMessages}
+        >
+          <TranslationsPage />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/roles`}
+          permission={Permission.EditApps}
+        >
+          <RolesPage />
+        </ProtectedRoute>
+        <ProtectedRoute
+          organization={organization}
+          path={`${path}/teams`}
+          permission={Permission.InviteMember}
+        >
+          <TeamsRoutes />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/settings`}
+          permission={Permission.EditAppSettings}
+        >
+          <SettingsPage />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/notifications`}
+          permission={Permission.PushNotifications}
+        >
+          <NotificationsPage />
+        </ProtectedRoute>
+        <ProtectedRoute
+          exact
+          organization={organization}
+          path={`${path}/secrets`}
+          permission={Permission.EditApps}
+        >
+          <SecretsPage />
+        </ProtectedRoute>
+        <Redirect to={url} />
+      </MetaSwitch>
+    </Context.Provider>
+  );
+}
+
+export function useApp(): AppValueContext {
+  return useContext(Context);
+}

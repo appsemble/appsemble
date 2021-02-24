@@ -3,7 +3,11 @@ const { join, relative, resolve } = require('path');
 // Adding this to package.json causes yarn to fail in production mode.
 // eslint-disable-next-line import/no-extraneous-dependencies
 const studioPkg = require('@appsemble/server/package.json');
+const faPkg = require('@fortawesome/fontawesome-free/package.json');
+const bulmaPkg = require('bulma/package.json');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const yaml = require('js-yaml');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -13,36 +17,73 @@ const slug = require('remark-slug');
 const TerserPlugin = require('terser-webpack-plugin');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const visit = require('unist-util-visit');
+const UnusedWebpackPlugin = require('unused-webpack-plugin');
 const { EnvironmentPlugin } = require('webpack');
+
+const minify = require('./html-minifier.json');
 
 /**
  * This webpack configuration is used by the Appsemble core parts.
  */
 module.exports = (env, argv) => {
-  const { mode, publicPath } = argv;
+  const { mode } = argv;
   const production = mode === 'production';
-  const configFile = join(resolve(__dirname, '../..'), 'packages', env, 'tsconfig.json');
+  const root = resolve(__dirname, '../..');
+  const configFile = join(root, 'packages', env, 'tsconfig.json');
+  const entry = join(root, 'packages', env, 'src');
+  const publicPath = production ? undefined : `/${env}`;
 
   return {
+    name: `@appsemble/${env}`,
     devtool: 'source-map',
     mode,
+    entry: [entry],
+    output: {
+      filename: production ? '[contentHash].js' : `${env}.js`,
+      publicPath,
+      path: production ? join(root, 'dist', env) : publicPath,
+    },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
-      alias: {
-        // These are required by leaflet CSS in a way which doesn’t work with webpack by default.
-        './images/layers.png$': 'leaflet/dist/images/layers.png',
-        './images/layers-2x.png$': 'leaflet/dist/images/layers-2x.png',
-        './images/marker-icon.png$': 'leaflet/dist/images/marker-icon.png',
-      },
       plugins: [new TsconfigPathsPlugin({ configFile })],
     },
     plugins: [
+      new CleanWebpackPlugin(),
+      new HtmlWebpackPlugin({
+        template: join(entry, 'index.html'),
+        templateParameters: {
+          bulmaURL: `/bulma/${bulmaPkg.version}/bulma.min.css`,
+          faURL: `/fa/${faPkg.version}/css/all.min.css`,
+        },
+        filename: 'index.html',
+        minify,
+      }),
       new CaseSensitivePathsPlugin(),
       new EnvironmentPlugin({
         APPSEMBLE_VERSION: studioPkg.version,
       }),
+      new MiniCssExtractPlugin({
+        filename: production ? '[contentHash].css' : `${env}.css`,
+      }),
+      new UnusedWebpackPlugin({
+        directories: [entry],
+        exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', '**/types.ts'],
+        failOnUnused: production,
+      }),
     ],
     optimization: {
+      splitChunks: {
+        cacheGroups: {
+          styles: {
+            name: 'styles',
+            // Type: 'css/mini-extract',
+            // For webpack@4
+            test: /\.css$/,
+            chunks: 'all',
+            enforce: true,
+          },
+        },
+      },
       minimizer: [
         new TerserPlugin({
           cache: true,
@@ -183,7 +224,7 @@ module.exports = (env, argv) => {
           test: /\.(gif|jpe?g|png|svg|ttf|woff2?)$/,
           loader: 'file-loader',
           options: {
-            name: production ? '_/[contentHash].[ext]' : '_/[name].[ext]',
+            name: production ? '[contentHash].[ext]' : '[path][name].[ext]',
             publicPath,
           },
         },
