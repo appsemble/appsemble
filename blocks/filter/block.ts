@@ -129,27 +129,6 @@ declare module '@appsemble/sdk' {
      * This means this field will be displayed directly on the screen instead of in the modal.
      */
     highlight?: string;
-
-    /**
-     * The title of the modal.
-     *
-     * @default 'Filter'
-     */
-    modalTitle?: Remapper;
-
-    /**
-     * The label of the clear button.
-     *
-     * @default 'Clear'
-     */
-    clearLabel?: Remapper;
-
-    /**
-     * The label of the filter button.
-     *
-     * @default 'Filter'
-     */
-    submitLabel?: Remapper;
   }
 
   interface Messages {
