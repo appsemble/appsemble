@@ -28,12 +28,12 @@ passed as a command line parameter instead, if desired.
 | `DATABASE_PASSWORD`    |              | The password to use to login to the database.                                                                          |
 | `DATABASE_URL`         |              | A connection string for the database to connect to. This is an alternative to the separate database related variables. |
 | `SENTRY_DSN`           |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
-| `GITHUB_CLIENT_ID`     |              | The OAUth2 client ID used for logging in with GitHub in Appsemble Studio.                                              |
-| `GITHUB_CLIENT_SECRET` |              | The OAUth2 client secret used for logging in with GitHub in Appsemble Studio.                                          |
-| `GITLAB_CLIENT_ID`     |              | The OAUth2 client ID used for logging in with GitLab in Appsemble Studio.                                              |
-| `GITLAB_CLIENT_SECRET` |              | The OAUth2 client secret used for logging in with GitLab in Appsemble Studio.                                          |
-| `GOOGLE_CLIENT_ID`     |              | The OAUth2 client ID used for logging in with Google in Appsemble Studio.                                              |
-| `GOOGLE_CLIENT_SECRET` |              | The OAUth2 client secret used for logging in with Google in Appsemble Studio.                                          |
+| `GITHUB_CLIENT_ID`     |              | The OAuth2 client ID used for logging in with GitHub in Appsemble Studio.                                              |
+| `GITHUB_CLIENT_SECRET` |              | The OAuth2 client secret used for logging in with GitHub in Appsemble Studio.                                          |
+| `GITLAB_CLIENT_ID`     |              | The OAuth2 client ID used for logging in with GitLab in Appsemble Studio.                                              |
+| `GITLAB_CLIENT_SECRET` |              | The OAuth2 client secret used for logging in with GitLab in Appsemble Studio.                                          |
+| `GOOGLE_CLIENT_ID`     |              | The OAuth2 client ID used for logging in with Google in Appsemble Studio.                                              |
+| `GOOGLE_CLIENT_SECRET` |              | The OAuth2 client secret used for logging in with Google in Appsemble Studio.                                          |
 | `SMTP_HOST`            |              | The host of the SMTP server to connect to.                                                                             |
 | `SMTP_PORT`            |              | The port of the SMTP server to connect to.                                                                             |
 | `SMTP_SECURE`          | `false`      | Use TLS when connecting to the SMTP server.                                                                            |

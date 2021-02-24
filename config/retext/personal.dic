@@ -28,10 +28,12 @@ workspace/mare
 # Technical slang and libraries
 API/URL
 Airbnb
+BCC
 Bulma
 CLI/URL
 Cloudflare
 CNAME
+CORS
 CSS
 CSV
 cronjob/job
@@ -61,6 +63,7 @@ OpenID
 OpenStreetMap
 PEM
 Preact
+prerelease/release
 remapper/mapper
 Redux
 SDK
@@ -71,6 +74,8 @@ Stylelint
 SVG
 SwaggerUI
 TSDoc
+TLS
+TTL
 util/kitten
 UUID
 Vue

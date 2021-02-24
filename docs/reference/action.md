@@ -26,14 +26,14 @@ The email action can be used to send emails via the Appsemble server.
 If `to`, `cc`, and `bcc` all end up being empty, no emails will be sent but the action will still
 continue as normal.
 
-| Parameter   | Required | Description                                                                                                                                                   |
-| ----------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| to          | false    | The address the email should be sent to. Can be either in the format of `test@example.com`, or `John Doe <test@example.com>`. Supports remappers.             |
-| cc          | false    | The list of additional email addresses email should be sent to. Uses the same format as `to`. Every email address in the CC is visible to all recipients.     |
-| bcc         | false    | The list of additional email addresses email should be sent to. Uses the same format as `to`. Email addresses in the BCC are hidden from other recipients.    |
-| subject     | true     | The subject of the email. Supports remappers.                                                                                                                 |
-| body        | true     | The body of the email. The content of the body is converted to HTML using the Markdown syntax. Supports remappers.                                            |
-| attachments | false    | Remapper for the attachments to include in the email. Must resolve into an array of either asset IDs that are associated with the same app, or absolute URLs. |
+| Parameter     | Required | Description                                                                                                                                                   |
+| ------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `to`          | false    | The address the email should be sent to. Can be either in the format of `test@example.com`, or `John Doe <test@example.com>`. Supports remappers.             |
+| `cc`          | false    | The list of additional email addresses email should be sent to. Uses the same format as `to`. Every email address in the CC is visible to all recipients.     |
+| `bcc`         | false    | The list of additional email addresses email should be sent to. Uses the same format as `to`. Email addresses in the BCC are hidden from other recipients.    |
+| `subject`     | true     | The subject of the email. Supports remappers.                                                                                                                 |
+| `body`        | true     | The body of the email. The content of the body is converted to HTML using the Markdown syntax. Supports remappers.                                            |
+| `attachments` | false    | Remapper for the attachments to include in the email. Must resolve into an array of either asset IDs that are associated with the same app, or absolute URLs. |
 
 ## `link`
 
@@ -41,7 +41,7 @@ The link action can be used to redirect the user to other pages or absolute URLs
 
 | Parameter | Required | Description                                                                                                                                                                         |
 | --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| to        | true     | The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage. |
+| `to`      | true     | The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage. |
 
 ### Example
 
@@ -75,12 +75,12 @@ development.
 Displays a message to the user. This is useful in combination with action chaining to notify users
 they have performed a certain action.
 
-| Parameter   | Required | Description                                                                                                                                               |
-| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| body        | true     | The body of the message. Supports [Remappers](../guide/remappers.md).                                                                                     |
-| color       |          | The Bulma color to apply to the message. Supported values are: `dark`, `primary`, `link`, `success`, `info`, `warning`, and `danger`. Defaults to `info`. |
-| dismissable |          | Boolean value indicating whether the user is able to dismiss the message manually. Defaults to `false`.                                                   |
-| timeout     |          | The time in milliseconds how long the message should be visible. Defaults to 5000 milliseconds.                                                           |
+| Parameter     | Required | Description                                                                                                                                               |
+| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `body`        | true     | The body of the message. Supports [Remappers](../guide/remappers.md).                                                                                     |
+| `color`       |          | The Bulma color to apply to the message. Supported values are: `dark`, `primary`, `link`, `success`, `info`, `warning`, and `danger`. Defaults to `info`. |
+| `dismissable` |          | Boolean value indicating whether the user is able to dismiss the message manually. Defaults to `false`.                                                   |
+| `timeout`     |          | The time in milliseconds how long the message should be visible. Defaults to 5000 milliseconds.                                                           |
 
 ## `noop`
 
@@ -114,9 +114,9 @@ on the resource definition. Resource actions are described in more detail
 [here](../guide/resources.md#resource-actions). All parameters that apply to request actions can
 also be used with resource actions.
 
-| Parameter | Required | Description                      |
-| --------- | -------- | -------------------------------- |
-| resource  | true     | The name of the resource to use. |
+| Parameter  | Required | Description                      |
+| ---------- | -------- | -------------------------------- |
+| `resource` | true     | The name of the resource to use. |
 
 ## `request`
 
@@ -128,17 +128,17 @@ request using the [form block](/blocks/@appsemble/form).
 If the content type of the request is `text/xml` or `application/xml`, the data will be converted to
 JSON.
 
-| Parameter  | Required | Description                                                                                                                                                                                                                                       |
-| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| url        | true     | A remapper that results in the URL to send the request to. Can be a relative URL (Eg. `/api/health`) for usage with the Appsemble API or an absolute URL (Eg. `https://example.com`) for usage with external sites.                               |
-| method     |          | The type of request to make. Defaults to `GET` if omitted.                                                                                                                                                                                        |
-| query      |          | A remapper that results in either an object containing each property of the querystring, or a string that gets passed through as-is.                                                                                                              |
-| body       |          | A remapper that results in the request body to send. If not specified, the raw input data is used.                                                                                                                                                |
-| proxy      |          | By default requests will be proxied through the Appsemble API. This allows to protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behaviour can be disabled by setting this to `false`. |
-| schema     |          | The name of the schema to validate against before submitting data.                                                                                                                                                                                |
-| serialize  |          | The method used to serialize the request data. Setting this to `formdata` will send the request as a `multipart/form-data` request. By default the data is serialized as an `application/json` request.                                           |
-| blobs      |          | An object containing a range of parameters used to upload files to the server.                                                                                                                                                                    |
-| blobs.type |          | The method used to upload files to the server. Supports `upload` to override the default behavior.                                                                                                                                                |
+| Parameter    | Required | Description                                                                                                                                                                                                                                      |
+| ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `url`        | true     | A remapper that results in the URL to send the request to. Can be a relative URL (E.g. `/api/health`) for usage with the Appsemble API or an absolute URL (E.g. `https://example.com`) for usage with external sites.                            |
+| `method`     |          | The type of request to make. Defaults to `GET` if omitted.                                                                                                                                                                                       |
+| `query`      |          | A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.                                                                                                            |
+| `body`       |          | A remapper that results in the request body to send. If not specified, the raw input data is used.                                                                                                                                               |
+| `proxy`      |          | By default requests will be proxied through the Appsemble API. This allows to protect user data and ensures [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be disabled by setting this to `false`. |
+| `schema`     |          | The name of the schema to validate against before submitting data.                                                                                                                                                                               |
+| `serialize`  |          | The method used to serialize the request data. Setting this to `formdata` will send the request as a `multipart/form-data` request. By default the data is serialized as an `application/json` request.                                          |
+| `blobs`      |          | An object containing a range of parameters used to upload files to the server.                                                                                                                                                                   |
+| `blobs.type` |          | The method used to upload files to the server. Supports `upload` to override the default behavior.                                                                                                                                               |
 
 ## `throw`
 
@@ -175,11 +175,11 @@ temporarily.
 Dialogs can be closed by calling the [`dialog.ok`](#dialogok) and [`dialog.error`](#dialogok). Users
 can still manually close dialogs, which should be supported by the app.
 
-| Parameter  | Required | Description                                                                                                      |
-| ---------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
-| blocks     | true     | The list of blocks to render.                                                                                    |
-| closable   |          | Whether users are allowed to close the dialog by clicking outside of it or on the close button. Defaults to true |
-| fullscreen |          | Whether the dialog should be displayed fullscreen as if it's a new page, or as a pop-up.                         |
+| Parameter    | Required | Description                                                                                                      |
+| ------------ | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| `blocks`     | true     | The list of blocks to render.                                                                                    |
+| `closable`   |          | Whether users are allowed to close the dialog by clicking outside of it or on the close button. Defaults to true |
+| `fullscreen` |          | Whether the dialog should be displayed full screen as if it’s a new page, or as a pop-up.                        |
 
 ## `dialog.ok`
 
@@ -197,8 +197,8 @@ by sending an event action that matches the name of what the block is listening 
 
 | Parameter | Required | Description                                                                                       |
 | --------- | -------- | ------------------------------------------------------------------------------------------------- |
-| event     | true     | The name of the event to emit.                                                                    |
-| waitFor   | false    | If specified, the action will wait for this event to have been emitted and respond with its data. |
+| `event`   | true     | The name of the event to emit.                                                                    |
+| `waitFor` | false    | If specified, the action will wait for this event to have been emitted and respond with its data. |
 
 ## `static`
 
@@ -207,4 +207,4 @@ for stubbing data.
 
 | Parameter | Required | Description                |
 | --------- | -------- | -------------------------- |
-| value     | true     | The static value to return |
+| `value`   | true     | The static value to return |
