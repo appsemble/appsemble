@@ -13,6 +13,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const autolink = require('remark-autolink-headings');
 const frontmatter = require('remark-frontmatter');
+const gfm = require('remark-gfm');
 const slug = require('remark-slug');
 const TerserPlugin = require('terser-webpack-plugin');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
@@ -126,6 +127,7 @@ module.exports = (env, argv) => {
               options: {
                 remarkPlugins: [
                   frontmatter,
+                  gfm,
                   () => (ast, vfile) => {
                     ast.children.forEach((node, index) => {
                       if (node.type === 'heading' && node.depth === 1) {
