@@ -140,8 +140,23 @@ export function TranslationsPage(): ReactElement {
         }
       },
     });
-    return [...[...new Set(pages)].sort(), ...[...new Set(actions)].sort()];
-  }, [app.definition]);
+
+    const blockMessages = appMessages
+      ? Object.entries(appMessages.messages.blocks).flatMap(([name, versions]) =>
+          Object.entries(versions).flatMap(([version, versionMessages]) =>
+            Object.keys(versionMessages).map(
+              (versionMessage) => `${name}/${version}/${versionMessage}`,
+            ),
+          ),
+        )
+      : [];
+
+    return [
+      ...[...new Set(pages)].sort(),
+      ...[...new Set(actions)].sort(),
+      ...blockMessages.sort(),
+    ];
+  }, [app.definition, appMessages]);
 
   if (loadingLanguages || loadingMessages) {
     return <Loader />;
