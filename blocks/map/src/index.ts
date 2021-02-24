@@ -16,7 +16,7 @@ attach((params) => {
     parameters,
     shadowRoot,
     theme: { primaryColor, tileLayer },
-    utils: { addCleanup, remap, showMessage },
+    utils: { addCleanup, formatMessage, remap, showMessage },
   } = params;
   const node = document.createElement('div');
   shadowRoot.append(node);
@@ -32,7 +32,6 @@ attach((params) => {
     defaultLocation = [51.476_852, 0],
     filterLatitudeName = 'lat',
     filterLongitudeName = 'lng',
-    locationError = 'Couldn’t find your location. Are location services enabled?',
   } = parameters;
 
   let following = false;
@@ -67,7 +66,7 @@ attach((params) => {
     .once('locationerror', (error) => {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
       if (error?.code === 1) {
-        showMessage({ body: remap(locationError, {}) });
+        showMessage({ body: formatMessage('locationError') });
       }
       // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
     })
