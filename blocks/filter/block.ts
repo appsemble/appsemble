@@ -152,6 +152,23 @@ declare module '@appsemble/sdk' {
     submitLabel?: Remapper;
   }
 
+  interface Messages {
+    /**
+     * The title of the modal.
+     */
+    modalTitle: never;
+
+    /**
+     * The label of the filter button.
+     */
+    submitLabel: never;
+
+    /**
+     * The label of the clear button.
+     */
+    clearLabel: never;
+  }
+
   interface Actions {
     /**
      * The action to dispatch to load data. Typically this is a `resource.query` action.
