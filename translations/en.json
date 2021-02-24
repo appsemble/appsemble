@@ -204,7 +204,7 @@
   "studio.src.pages.apps.app.assets.deleteButton": "Delete {amount} {amount, plural, one {asset} other {assets}}",
   "studio.src.pages.apps.app.assets.deleteSuccess": "Successfully deleted {amount, plural, one {asset} other {assets}} {assets}",
   "studio.src.pages.apps.app.assets.deleteWarning": "Are you sure you want to delete {amount} {amount, plural, one {asset} other {assets}}? This action cannot be reverted.",
-  "studio.src.pages.apps.app.assets.deleteWarningTitle": "Deleting {amount} {amount, plural,\n    one {asset}\n    other {assets}\n  }",
+  "studio.src.pages.apps.app.assets.deleteWarningTitle": "Deleting {amount} {amount, plural, one {asset} other {assets}}",
   "studio.src.pages.apps.app.assets.error": "Something went wrong when fetching this app’s assets.",
   "studio.src.pages.apps.app.assets.file": "File",
   "studio.src.pages.apps.app.assets.filename": "Filename",
