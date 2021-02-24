@@ -6,14 +6,9 @@ export async function frontend(webpackConfigs: Configuration[]): Promise<KoaMidd
   // eslint-disable-next-line node/no-unpublished-import
   const { default: koaWebpack } = await import('koa-webpack');
   const { default: webpack } = await import('webpack');
-  // @ts-expect-error This includes an untyped JavaScript file.
-  // eslint-disable-next-line node/no-unpublished-import
-  const { default: webpackConfigApp } = await import('../../../../config/webpack/app');
-  // @ts-expect-error This includes an untyped JavaScript file.
-  // eslint-disable-next-line node/no-unpublished-import
-  const { default: webpackConfigStudio } = await import('../../../../config/webpack/studio');
-  const configApp = webpackConfigApp(null, { mode: 'development' });
-  const configStudio = webpackConfigStudio(null, { mode: 'development' });
+  const { createAppConfig, createStudioConfig } = await import('@appsemble/webpack-core');
+  const configApp = createAppConfig({ mode: 'development' });
+  const configStudio = createStudioConfig({ mode: 'development' });
   const compiler = (webpack([configApp, configStudio, ...webpackConfigs]) as ICompiler) as Compiler;
   return koaWebpack({
     compiler,

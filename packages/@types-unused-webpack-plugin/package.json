@@ -1,0 +1,8 @@
+{
+  "name": "@types/unused-webpack-plugin",
+  "version": "2.4.0",
+  "private": true,
+  "dependencies": {
+    "webpack": "^4.44.2"
+  }
+}

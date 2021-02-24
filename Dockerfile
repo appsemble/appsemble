@@ -3,8 +3,7 @@ FROM node:14-slim AS build
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile
-RUN yarn build:app
-RUN yarn build:studio
+RUN yarn scripts build
 RUN yarn workspace @appsemble/types prepack
 RUN yarn workspace @appsemble/sdk prepack
 RUN yarn workspace @appsemble/utils prepack
