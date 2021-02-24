@@ -83,10 +83,10 @@ export function AppRoutes(): ReactElement {
     organization && (
       <MenuSection
         label={
-          <div>
+          <>
             {app.locked && <Icon icon="lock" title={formatMessage(messages.locked)} />}
             <span className={classNames({ 'pl-1': !app.locked })}>{app.definition.name}</span>
-          </div>
+          </>
         }
       >
         <MenuItem exact icon="info" to={url}>
