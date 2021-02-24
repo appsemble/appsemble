@@ -33,6 +33,11 @@ interface IntlMessagesProviderProps {
 
 interface AppMessageContext {
   getMessage: MessageGetter;
+  getBlockMessage: (
+    blockVersion: string,
+    blockName: string,
+    message: IntlMessage,
+  ) => IntlMessageFormat;
   messageIds: string[];
 }
 
@@ -100,12 +105,21 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     [messageCache, messages],
   );
 
+  const getBlockMessage = useCallback(
+    (blockName: string, blockVersion: string, { defaultMessage, id }: IntlMessage) => {
+      const message = messages.blocks?.[blockName]?.[blockVersion]?.[id] ?? defaultMessage ?? '';
+      return messageCache(message);
+    },
+    [messageCache, messages],
+  );
+
   const value = useMemo(
     () => ({
       getMessage,
-      messageIds: Object.keys(messages.app),
+      getBlockMessage,
+      messageIds: messages?.app ? Object.keys(messages.app) : [],
     }),
-    [getMessage, messages],
+    [getMessage, getBlockMessage, messages],
   );
 
   if (messagesLoading) {

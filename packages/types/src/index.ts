@@ -1251,7 +1251,7 @@ export interface AppMessages {
      *   }
      * }
      */
-    block: Record<string, Record<string, string>>;
+    blocks: Record<string, Record<string, Record<string, string>>>;
   };
 }
 
