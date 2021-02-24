@@ -63,7 +63,7 @@ export function TranslationsPage(): ReactElement {
   }, [app, languageId]);
 
   const onSubmit = useCallback(
-    async (values: AppMessages['messages']) => {
+    async (values: AppMessages['messages']['app']) => {
       if (app.locked) {
         return;
       }
@@ -188,7 +188,7 @@ export function TranslationsPage(): ReactElement {
           </Title>
           <SimpleForm
             defaultValues={Object.fromEntries(
-              messageIds.map((id) => [id, appMessages?.messages[id]]),
+              messageIds.map((id) => [id, appMessages?.messages.app[id]]),
             )}
             onSubmit={onSubmit}
           >
