@@ -11,9 +11,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const yaml = require('js-yaml');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const autolink = require('remark-autolink-headings');
+const autolink = require('rehype-autolink-headings');
+const slug = require('rehype-slug');
 const frontmatter = require('remark-frontmatter');
-const slug = require('remark-slug');
 const TerserPlugin = require('terser-webpack-plugin');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const visit = require('unist-util-visit');
@@ -185,6 +185,8 @@ module.exports = (env, argv) => {
                     ast.children.unshift(...images);
                     return ast;
                   },
+                ],
+                rehypePlugins: [
                   slug,
                   [
                     autolink,
