@@ -205,7 +205,6 @@
   "studio.src.pages.apps.app.assets.deleteSuccess": "",
   "studio.src.pages.apps.app.assets.deleteWarning": "Er du sikker på, at du vil slette {amount} {amount, plural, one {aktiv} other {aktiver}}? Denne handling kan ikke gendannes.",
   "studio.src.pages.apps.app.assets.deleteWarningTitle": "Slette {amount} {amount, plural, one {aktiv} other {aktiver}}",
-  "studio.src.pages.apps.app.assets.downloadError": "Der gik noget galt, da dette aktiv blev downloadet.",
   "studio.src.pages.apps.app.assets.error": "Der gik noget galt ved hentning af denne apps aktiver.",
   "studio.src.pages.apps.app.assets.file": "Fil",
   "studio.src.pages.apps.app.assets.filename": "Filnavn",
