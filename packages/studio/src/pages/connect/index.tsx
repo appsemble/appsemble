@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import { ProtectedRoute } from '../../components/ProtectedRoute';
-import { IndexPage } from './Index';
+import { IndexPage } from './IndexPage';
 import { TypePage } from './type';
 
 export function ConnectRoutes(): ReactElement {

@@ -28,7 +28,7 @@ import { ProtectedRoute } from '../../../components/ProtectedRoute';
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';
 import { AssetsPage } from './assets';
-import { IndexPage } from './Index';
+import { IndexPage } from './IndexPage';
 import { messages } from './messages';
 import { NotificationsPage } from './notifications';
 import { ResourcesRoutes } from './resources';
