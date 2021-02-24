@@ -115,184 +115,174 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.mdx?$/,
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                plugins: ['@babel/plugin-transform-react-jsx'],
-              },
-            },
-            {
-              loader: 'xdm/webpack.cjs',
-              options: {
-                remarkPlugins: [
-                  frontmatter,
-                  gfm,
-                  () => (ast, vfile) => {
-                    ast.children.forEach((node, index) => {
-                      if (node.type === 'heading' && node.depth === 1) {
-                        ast.children.push({
-                          type: 'mdxjsEsm',
-                          data: {
-                            estree: {
-                              type: 'Program',
-                              sourceType: 'module',
-                              comments: [],
-                              body: [
-                                {
-                                  type: 'ExportNamedDeclaration',
-                                  specifiers: [],
-                                  declaration: {
-                                    type: 'VariableDeclaration',
-                                    kind: 'const',
-                                    declarations: [
-                                      {
-                                        type: 'VariableDeclarator',
-                                        id: { type: 'Identifier', name: 'title' },
-                                        init: { type: 'Literal', value: node.children[0].value },
-                                      },
-                                    ],
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        });
-                      }
-                      if (node.type === 'yaml') {
-                        // eslint-disable-next-line no-param-reassign
-                        ast.children[index] = {
-                          type: 'mdxjsEsm',
-                          data: {
-                            estree: {
-                              type: 'Program',
-                              sourceType: 'module',
-                              comments: [],
-                              body: [
-                                {
-                                  type: 'ExportNamedDeclaration',
-                                  specifiers: [],
-                                  declaration: {
-                                    type: 'VariableDeclaration',
-                                    kind: 'const',
-                                    declarations: Object.entries(yaml.safeLoad(node.value)).map(
-                                      ([name, value]) => ({
-                                        type: 'VariableDeclarator',
-                                        id: { type: 'Identifier', name },
-                                        init: { type: 'Literal', value },
-                                      }),
-                                    ),
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        };
-                      }
-                    });
-                    visit(ast, { type: 'link' }, (node) => {
-                      if (/^(https?:\/)?\//.test(node.url)) {
-                        // External URLs or absolute URLs to Appsemble Studio
-                        return;
-                      }
-                      const chunks = node.url.split('#');
-                      if (!chunks[0]) {
-                        // Internal hash URLs
-                        return;
-                      }
-                      // Resolve the link from the directory containing the file.
-                      const resolved = resolve(vfile.dirname, chunks[0]);
-                      // Resolve the path relative to the CWD. This works, because the directory
-                      // containing the docs and the URL prefix are the same. Otherwise, this would
-                      // need to be replaced as well.
-                      const rel = relative(vfile.cwd, resolved);
-                      // Strip the `.md` extension and `index` filename.
-                      const stripped = rel.replace(/(\/?index)?\.mdx?$/, '');
-                      // Make the URL absolute, so no weird routing happens at runtime.
-                      const prefixed = `/${stripped}`;
-                      chunks[0] = prefixed;
-                      // Update the node URL, taking the URL hash into account.
-                      // eslint-disable-next-line no-param-reassign
-                      node.url = chunks.join('#');
-                    });
-                    const images = [];
-                    visit(ast, { type: 'image' }, (node, index, parent) => {
-                      const identifier = `__image_${images.length}__`;
-                      images.unshift({
-                        type: 'mdxjsEsm',
-                        data: {
-                          estree: {
-                            type: 'Program',
-                            sourceType: 'module',
-                            comments: [],
-                            body: [
-                              {
-                                type: 'ImportDeclaration',
-                                specifiers: [
+          loader: 'xdm/webpack.cjs',
+          options: {
+            remarkPlugins: [
+              frontmatter,
+              gfm,
+              () => (ast, vfile) => {
+                ast.children.forEach((node, index) => {
+                  if (node.type === 'heading' && node.depth === 1) {
+                    ast.children.push({
+                      type: 'mdxjsEsm',
+                      data: {
+                        estree: {
+                          type: 'Program',
+                          sourceType: 'module',
+                          comments: [],
+                          body: [
+                            {
+                              type: 'ExportNamedDeclaration',
+                              specifiers: [],
+                              declaration: {
+                                type: 'VariableDeclaration',
+                                kind: 'const',
+                                declarations: [
                                   {
-                                    type: 'ImportDefaultSpecifier',
-                                    local: { type: 'Identifier', name: identifier },
+                                    type: 'VariableDeclarator',
+                                    id: { type: 'Identifier', name: 'title' },
+                                    init: { type: 'Literal', value: node.children[0].value },
                                   },
                                 ],
-                                source: {
-                                  type: 'Literal',
-                                  value: node.url,
-                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    });
+                  }
+                  if (node.type === 'yaml') {
+                    // eslint-disable-next-line no-param-reassign
+                    ast.children[index] = {
+                      type: 'mdxjsEsm',
+                      data: {
+                        estree: {
+                          type: 'Program',
+                          sourceType: 'module',
+                          comments: [],
+                          body: [
+                            {
+                              type: 'ExportNamedDeclaration',
+                              specifiers: [],
+                              declaration: {
+                                type: 'VariableDeclaration',
+                                kind: 'const',
+                                declarations: Object.entries(yaml.safeLoad(node.value)).map(
+                                  ([name, value]) => ({
+                                    type: 'VariableDeclarator',
+                                    id: { type: 'Identifier', name },
+                                    init: { type: 'Literal', value },
+                                  }),
+                                ),
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    };
+                  }
+                });
+                visit(ast, { type: 'link' }, (node) => {
+                  if (/^(https?:\/)?\//.test(node.url)) {
+                    // External URLs or absolute URLs to Appsemble Studio
+                    return;
+                  }
+                  const chunks = node.url.split('#');
+                  if (!chunks[0]) {
+                    // Internal hash URLs
+                    return;
+                  }
+                  // Resolve the link from the directory containing the file.
+                  const resolved = resolve(vfile.dirname, chunks[0]);
+                  // Resolve the path relative to the CWD. This works, because the directory
+                  // containing the docs and the URL prefix are the same. Otherwise, this would
+                  // need to be replaced as well.
+                  const rel = relative(vfile.cwd, resolved);
+                  // Strip the `.md` extension and `index` filename.
+                  const stripped = rel.replace(/(\/?index)?\.mdx?$/, '');
+                  // Make the URL absolute, so no weird routing happens at runtime.
+                  const prefixed = `/${stripped}`;
+                  chunks[0] = prefixed;
+                  // Update the node URL, taking the URL hash into account.
+                  // eslint-disable-next-line no-param-reassign
+                  node.url = chunks.join('#');
+                });
+                const images = [];
+                visit(ast, { type: 'image' }, (node, index, parent) => {
+                  const identifier = `__image_${images.length}__`;
+                  images.unshift({
+                    type: 'mdxjsEsm',
+                    data: {
+                      estree: {
+                        type: 'Program',
+                        sourceType: 'module',
+                        comments: [],
+                        body: [
+                          {
+                            type: 'ImportDeclaration',
+                            specifiers: [
+                              {
+                                type: 'ImportDefaultSpecifier',
+                                local: { type: 'Identifier', name: identifier },
                               },
                             ],
-                          },
-                        },
-                      });
-                      // eslint-disable-next-line no-param-reassign
-                      parent.children[index] = {
-                        type: 'mdxJsxFlowElement',
-                        name: 'img',
-                        attributes: [
-                          { type: 'mdxJsxAttribute', name: 'alt', value: node.alt },
-                          {
-                            type: 'mdxJsxAttribute',
-                            name: 'src',
-                            value: {
-                              type: 'mdxJsxAttributeValueExpression',
-                              data: {
-                                estree: {
-                                  type: 'Program',
-                                  sourceType: 'module',
-                                  comments: [],
-                                  body: [
-                                    {
-                                      type: 'ExpressionStatement',
-                                      expression: { type: 'Identifier', name: identifier },
-                                    },
-                                  ],
-                                },
-                              },
+                            source: {
+                              type: 'Literal',
+                              value: node.url,
                             },
                           },
                         ],
-                        children: [],
-                      };
-                    });
-                    ast.children.unshift(...images);
-                    return ast;
-                  },
-                  slug,
-                  [
-                    autolink,
-                    {
-                      content: {
-                        type: 'element',
-                        tagName: 'span',
-                        properties: {
-                          className: ['fas', 'fa-link', 'fa-xs', 'has-text-grey-lighter', 'mr-2'],
-                        },
                       },
                     },
-                  ],
-                ],
+                  });
+                  // eslint-disable-next-line no-param-reassign
+                  parent.children[index] = {
+                    type: 'mdxJsxFlowElement',
+                    name: 'img',
+                    attributes: [
+                      { type: 'mdxJsxAttribute', name: 'alt', value: node.alt },
+                      {
+                        type: 'mdxJsxAttribute',
+                        name: 'src',
+                        value: {
+                          type: 'mdxJsxAttributeValueExpression',
+                          data: {
+                            estree: {
+                              type: 'Program',
+                              sourceType: 'module',
+                              comments: [],
+                              body: [
+                                {
+                                  type: 'ExpressionStatement',
+                                  expression: { type: 'Identifier', name: identifier },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    ],
+                    children: [],
+                  };
+                });
+                ast.children.unshift(...images);
+                return ast;
               },
-            },
-          ],
+              slug,
+              [
+                autolink,
+                {
+                  content: {
+                    type: 'element',
+                    tagName: 'span',
+                    properties: {
+                      className: ['fas', 'fa-link', 'fa-xs', 'has-text-grey-lighter', 'mr-2'],
+                    },
+                  },
+                },
+              ],
+            ],
+          },
         },
         {
           test: /[/\\]messages\.ts$/,

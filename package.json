@@ -37,7 +37,6 @@
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
-    "@babel/plugin-transform-react-jsx": "^7.12.12",
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@lhci/cli": "^0.6.1",
     "@sentry/cli": "^1.61.0",
