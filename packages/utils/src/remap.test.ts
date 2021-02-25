@@ -19,7 +19,7 @@ function runTests(tests: Record<string, TestCase>): void {
     (_, { context, expected, input, mappers, messages, userInfo }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
-          new IntlMessageFormat(messages?.[id] ?? defaultMessage),
+          new IntlMessageFormat(messages.app?.[id] ?? defaultMessage),
         userInfo,
         context,
         appId: 6789,
@@ -438,7 +438,11 @@ describe('string.format', () => {
       },
       expected: 'Krabby Patty',
       messages: {
-        patty: '{type} Patty',
+        core: {},
+        blocks: {},
+        app: {
+          patty: '{type} Patty',
+        },
       },
     },
   });
