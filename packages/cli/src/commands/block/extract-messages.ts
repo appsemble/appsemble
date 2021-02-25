@@ -1,10 +1,10 @@
 import { logger } from '@appsemble/node-utils';
-import { processBlockMessages } from 'cli/src/lib/processBlockMessages';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
 import { getBlockConfig } from '../../lib/getBlockConfig';
+import { processBlockMessages } from '../../lib/processBlockMessages';
 import { BaseArguments } from '../../types';
 
 interface BuildBlockArguments extends BaseArguments {
