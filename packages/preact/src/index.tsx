@@ -1,5 +1,5 @@
-import { BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
-import { ComponentType, createContext, render } from 'preact';
+import { BootstrapParams, Messages, bootstrap as sdkBootstrap } from '@appsemble/sdk';
+import { ComponentChild, ComponentType, createContext, render, VNode } from 'preact';
 import { useContext } from 'preact/hooks';
 
 export interface BlockProps extends BootstrapParams {
@@ -61,4 +61,27 @@ export function withBlock<P extends {}>(
 
 export function useBlock(): BlockProps {
   return useContext(Context);
+}
+
+interface FormattedMessagePropsWithoutValues<M extends keyof Messages> {
+  id: M;
+}
+
+interface FormattedMessagePropsWithValues<M extends keyof Messages> {
+  id: M;
+  values: Messages[M] extends never ? undefined : Messages[M];
+}
+
+/**
+ * Render an Appsemble message.
+ */
+export function FormattedMessage<M extends keyof Messages>(
+  props: Messages[M] extends never
+    ? FormattedMessagePropsWithoutValues<M>
+    : FormattedMessagePropsWithValues<M>,
+): VNode {
+  const { utils } = useBlock();
+
+  // @ts-expect-error The messages interface isn’t implemented within the Preact SDK.
+  return (utils.formatMessage(props.id, props.values) as ComponentChild) as VNode;
 }

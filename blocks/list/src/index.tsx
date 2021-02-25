@@ -1,4 +1,4 @@
-import { bootstrap } from '@appsemble/preact';
+import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { Loader, Message } from '@appsemble/preact-components';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -50,7 +50,9 @@ bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
   if (error) {
     return (
       <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
-        <span>{utils.formatMessage('error')}</span>
+        <span>
+          <FormattedMessage id="error" />
+        </span>
       </Message>
     );
   }
@@ -58,7 +60,9 @@ bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
   if (!data.length) {
     return (
       <Message className="mt-4 mr-6 mb-4 ml-5">
-        <span>{utils.formatMessage('noData')}</span>
+        <span>
+          <FormattedMessage id="noData" />
+        </span>
       </Message>
     );
   }
