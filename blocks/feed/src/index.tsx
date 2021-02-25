@@ -1,4 +1,4 @@
-import { bootstrap } from '@appsemble/preact';
+import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -11,7 +11,7 @@ interface Item {
   fotos: string[];
 }
 
-bootstrap(({ events, parameters: { emptyLabel = 'No data to display' }, ready, utils }) => {
+bootstrap(({ events, ready }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
 
@@ -37,7 +37,11 @@ bootstrap(({ events, parameters: { emptyLabel = 'No data to display' }, ready, u
   }
 
   if (!data.length) {
-    return <div className={styles.empty}>{utils.remap(emptyLabel, data)}</div>;
+    return (
+      <div className={styles.empty}>
+        <FormattedMessage id="emptyLabel" />
+      </div>
+    );
   }
 
   return (

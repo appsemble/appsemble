@@ -20,27 +20,6 @@ interface Reply {
    * @default [{ prop: 'content' }]
    */
   content?: Remapper;
-
-  /**
-   * The name to display for replies without known user names.
-   *
-   * @default 'Anonymous'
-   */
-  anonymousLabel?: Remapper;
-
-  /**
-   * The error message shown when an error occurs while submitting a reply.
-   *
-   * @default 'Something went wrong trying to send this message.'
-   */
-  replyErrorMessage?: Remapper;
-
-  /**
-   * The placeholder text used for the reply input.
-   *
-   * @default 'Leave a message…'
-   */
-  replyLabel: Remapper;
 }
 
 /**
@@ -71,6 +50,28 @@ interface AssetMarkerIcon {
 }
 
 declare module '@appsemble/sdk' {
+  interface Messages {
+    /**
+     * The name to display for replies without known user names.
+     */
+    anonymousLabel: never;
+
+    /**
+     * The error message shown when an error occurs while submitting a reply.
+     */
+    replyErrorMessage: never;
+
+    /**
+     * The placeholder text used for the reply input.
+     */
+    replyLabel: never;
+
+    /**
+     * The label that’s displayed when there are no feed items available.
+     */
+    emptyLabel: never;
+  }
+
   interface Parameters {
     /**
      * The text that displays inside the button.
@@ -118,13 +119,6 @@ declare module '@appsemble/sdk' {
      * The description or content of the card.
      */
     description?: Remapper;
-
-    /**
-     * The label that’s displayed when there are no feed items available.
-     *
-     * @default 'No data to display'
-     */
-    emptyLabel?: Remapper;
 
     /**
      * The location marker that is displayed on the card.
