@@ -117,15 +117,15 @@ export function OrganizationInvitePage(): ReactElement {
         <p>
           <FormattedMessage {...messages.loginPrompt} />
         </p>
-        <Link
-          className="button is-primary my-3"
+        <Button
+          className="my-3"
+          color="primary"
+          component={Link}
+          icon="sign-in-alt"
           to={{ pathname: `/${lang}/login`, search: `?${search}` }}
         >
-          <Icon icon="sign-in-alt" />
-          <span>
-            <FormattedMessage {...messages.login} />
-          </span>
-        </Link>
+          <FormattedMessage {...messages.login} />
+        </Button>
       </Content>
     );
   }

@@ -205,7 +205,6 @@
   "studio.src.pages.apps.app.assets.deleteSuccess": "Erfolgreich gelöscht {amount, plural {Vermögen}} other {Vermögen}} {Vermögenswerte}",
   "studio.src.pages.apps.app.assets.deleteWarning": "Sind Sie sicher, dass Sie {amount} {amount, plural {Vermögen} other {Vermögen}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
   "studio.src.pages.apps.app.assets.deleteWarningTitle": "Löschen von {amount} {amount, plural, one {Vermögen} other {Vermögenswerte}}",
-  "studio.src.pages.apps.app.assets.downloadError": "Beim Herunterladen dieses Assets ist etwas schief gelaufen.",
   "studio.src.pages.apps.app.assets.error": "Beim Abrufen der Assets dieser App ist etwas schief gelaufen.",
   "studio.src.pages.apps.app.assets.file": "Datei",
   "studio.src.pages.apps.app.assets.filename": "Dateiname",

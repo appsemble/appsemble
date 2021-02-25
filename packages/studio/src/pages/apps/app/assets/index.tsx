@@ -15,12 +15,10 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { extension } from 'mime-types';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '..';
-import { download } from '../../../../utils/download';
 import { AssetPreview } from './AssetPreview';
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -107,20 +105,6 @@ export function AssetsPage(): ReactElement {
     setDialog('preview');
   }, []);
 
-  const downloadAsset = useCallback(
-    async (asset) => {
-      try {
-        const { filename, id } = asset;
-        const mime = extension(asset.mime);
-
-        await download(`/api/apps/${app.id}/assets/${id}`, filename || mime ? `${id}.${mime}` : id);
-      } catch {
-        push(formatMessage(messages.downloadError));
-      }
-    },
-    [app, formatMessage, push],
-  );
-
   const onAssetCheckboxClick = useCallback(
     (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
       const id = event.currentTarget.name.replace(/^asset/, '');
@@ -194,7 +178,13 @@ export function AssetsPage(): ReactElement {
                   name={`asset${asset.id}`}
                   onChange={onAssetCheckboxClick}
                 />
-                <Button color="primary" icon="download" onClick={() => downloadAsset(asset)} />
+                <Button
+                  color="primary"
+                  component="a"
+                  download
+                  href={`/api/apps/${app.id}/assets/${asset.id}`}
+                  icon="download"
+                />
               </td>
               <td>{asset.id}</td>
               <td>{asset.mime}</td>

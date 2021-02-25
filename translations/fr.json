@@ -205,7 +205,6 @@
   "studio.src.pages.apps.app.assets.deleteSuccess": "Supprimé avec succès {amount, plural, one {asset} other {asset}} {assets}",
   "studio.src.pages.apps.app.assets.deleteWarning": "Êtes-vous sûr de vouloir supprimer {amount} {amount, plural, one {actifs} other {actifs}} ? Cette action ne peut pas être annulée.",
   "studio.src.pages.apps.app.assets.deleteWarningTitle": "Suppression de {amount} {amount, plural, one {asset} other {actifs}}",
-  "studio.src.pages.apps.app.assets.downloadError": "Quelque chose a mal tourné lors du téléchargement de cet actif.",
   "studio.src.pages.apps.app.assets.error": "Quelque chose s’est mal passé lors de la récupération des actifs de cette application.",
   "studio.src.pages.apps.app.assets.file": "Fichier",
   "studio.src.pages.apps.app.assets.filename": "Nom du fichier",

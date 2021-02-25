@@ -11,10 +11,7 @@ export const messages = defineMessages({
   preview: 'Preview',
   cancel: 'Cancel',
   delete: 'Delete',
-  deleteWarningTitle: `Deleting {amount} {amount, plural,
-    one {asset}
-    other {assets}
-  }`,
+  deleteWarningTitle: 'Deleting {amount} {amount, plural, one {asset} other {assets}}',
   deleteWarning:
     'Are you sure you want to delete {amount} {amount, plural, one {asset} other {assets}}? This action cannot be reverted.',
   deleteSuccess: 'Successfully deleted {amount, plural, one {asset} other {assets}} {assets}',
@@ -25,5 +22,4 @@ export const messages = defineMessages({
   noFile: 'No file chosen',
   uploadSuccess: 'Successfully uploaded asset {id}',
   error: 'Something went wrong when fetching this app’s assets.',
-  downloadError: 'Something went wrong when downloading this asset.',
 });

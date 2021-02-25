@@ -87,14 +87,15 @@ export function IndexPage(): ReactElement {
             <StarRating className="is-inline" count={app.rating.count} value={app.rating.average} />
           </div>
           <div className={`is-flex ${styles.buttonContainer}`}>
-            <a
-              className="button is-primary"
+            <Button
+              color="primary"
+              component="a"
               href={getAppUrl(app.OrganizationId, app.path, app.domain)}
               rel="noopener noreferrer"
               target="_blank"
             >
               <FormattedMessage {...messages.view} />
-            </a>
+            </Button>
             {createOrganizations.length > 0 && (
               <>
                 <Button className="mt-3" onClick={cloneDialog.enable}>

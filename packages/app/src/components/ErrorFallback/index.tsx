@@ -1,4 +1,4 @@
-import { Content, Message, SentryForm } from '@appsemble/react-components';
+import { Button, Content, Message, SentryForm } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -31,9 +31,9 @@ export function ErrorFallback({ eventId }: ErrorFallbackProps): ReactElement {
         eventId={eventId}
         name={user?.userInfo?.name}
         recovery={
-          <Link className="button mb-3" to="/">
+          <Button className="mb-3" component={Link} to="/">
             <FormattedMessage {...messages.home} />
-          </Link>
+          </Button>
         }
       />
     </Content>

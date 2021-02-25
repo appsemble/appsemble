@@ -53,27 +53,20 @@ export function EditorNavBar({
             </Button>
           </span>
           <span className="navbar-item">
-            <Button
-              className="button"
-              disabled={!valid || dirty || app.locked}
-              icon="save"
-              onClick={onUpload}
-            >
+            <Button disabled={!valid || dirty || app.locked} icon="save" onClick={onUpload}>
               <FormattedMessage {...messages.publish} />
             </Button>
           </span>
           <span className="navbar-item">
-            <a
-              className="button"
+            <Button
+              component="a"
               href={getAppUrl(app.OrganizationId, app.path, app.domain)}
+              icon="share-square"
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon icon="share-square" />
-              <span>
-                <FormattedMessage {...messages.viewLive} />
-              </span>
-            </a>
+              <FormattedMessage {...messages.viewLive} />
+            </Button>
           </span>
           <span className="navbar-item">
             <Button color="primary" icon="random" onClick={switchEditor}>
