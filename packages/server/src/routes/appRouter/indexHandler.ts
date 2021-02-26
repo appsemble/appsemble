@@ -15,7 +15,7 @@ import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { argv } from '../../utils/argv';
 import { createSettings, makeCSP, render } from '../../utils/render';
-import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
+import { sentryDsnToReportUri } from '../../utils/sentry';
 import { bulmaURL, faURL } from '../../utils/styleURL';
 
 /**
