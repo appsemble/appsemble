@@ -3,7 +3,7 @@ import https from 'https';
 
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
-import { captureException, init } from '@sentry/node';
+import { captureException } from '@sentry/node';
 import { Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
@@ -27,12 +27,6 @@ export const description = 'Start the Appsemble server';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
-    .option('sentry-dsn', {
-      desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
-    })
-    .option('sentry-environment', {
-      desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
-    })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
     })
@@ -140,10 +134,6 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
   }
 
   await configureDNS();
-
-  if (argv.sentryDsn) {
-    init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: version });
-  }
 
   const app = await createServer({ webpackConfigs });
 
