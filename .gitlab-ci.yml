@@ -165,11 +165,11 @@ pack:
     - yarn workspace @appsemble/node-utils pack
     - yarn workspace @appsemble/utils pack
     - yarn workspace @appsemble/webpack-config pack
-    - yarn workspace @appsemble/server pack
+    # Server and webpack-core need to be built for CLI, but they shouldn’t be published.
+    - yarn workspace @appsemble/webpack-core prepack
+    - yarn workspace @appsemble/server prepack
     - yarn workspace @appsemble/cli pack
     - yarn workspace appsemble pack
-    # This needs to be built for CLI, but it shouldn’t be published.
-    - rm packages/server/*.tgz
     - mkdir build/
     - find packages -name '*.tgz' -exec mv {} ./build/ \;
   artifacts:

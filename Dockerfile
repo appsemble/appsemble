@@ -8,6 +8,7 @@ RUN yarn workspace @appsemble/types prepack
 RUN yarn workspace @appsemble/sdk prepack
 RUN yarn workspace @appsemble/utils prepack
 RUN yarn workspace @appsemble/node-utils prepack
+RUN yarn workspace @appsemble/webpack-core prepack
 RUN yarn workspace @appsemble/server prepack
 
 # Install production dependencies
