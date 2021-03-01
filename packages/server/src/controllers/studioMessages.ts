@@ -37,8 +37,7 @@ export async function getStudioMessages(ctx: KoaContext<Params>): Promise<void> 
     language,
     messages: Object.fromEntries(
       Object.entries(messages).filter(
-        ([key, value]) =>
-          (key.startsWith('studio') || key.startsWith('react-components')) && Boolean(value),
+        ([key, value]) => (key.startsWith('studio') || key.startsWith('react-components')) && value,
       ),
     ),
   };

@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { basename, join } from 'path';
 
 import { logger } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
@@ -23,7 +23,10 @@ export async function processBlockMessages(
   const keys = Object.keys(messages).sort();
   const base = Object.fromEntries(keys.map((key) => [key, '']));
 
-  for (const language of languages) {
+  const existingLanguages = dir
+    .filter((filename) => filename.endsWith('.json'))
+    .map((filename) => basename(filename, '.json'));
+  for (const language of [...new Set([...languages, ...existingLanguages])]) {
     const existingMessages = { ...base };
     const name = `${language}.json`;
     const langPath = join(path, name);

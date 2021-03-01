@@ -1,4 +1,4 @@
-import { useBlock } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { Option, SelectField } from '@appsemble/preact-components';
 import { VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
@@ -80,7 +80,7 @@ export function EnumInput({
       loading={loading}
       name={name}
       onChange={onChange}
-      optionalLabel={utils.formatMessage('optionalLabel')}
+      optionalLabel={<FormattedMessage id="optionalLabel" />}
       required={required}
       tag={utils.remap(tag, value)}
       value={value}

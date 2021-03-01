@@ -64,11 +64,21 @@ export function useBlock(): BlockProps {
 }
 
 interface FormattedMessagePropsWithoutValues<M extends keyof Messages> {
+  /**
+   * The ID of the message to render.
+   */
   id: M;
 }
 
 interface FormattedMessagePropsWithValues<M extends keyof Messages> {
+  /**
+   * The ID of the message to render.
+   */
   id: M;
+
+  /**
+   * Values to pass to the formatted message.
+   */
   values: Messages[M] extends never ? undefined : Messages[M];
 }
 

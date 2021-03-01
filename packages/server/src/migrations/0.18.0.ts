@@ -2,7 +2,7 @@ import { AppsembleError, logger } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
 import { v4 } from 'uuid';
 
-export const key = '0.17.8';
+export const key = '0.18.0';
 
 /**
  * Summary:
@@ -145,5 +145,5 @@ export async function up(db: Sequelize): Promise<void> {
 }
 
 export function down(): Promise<void> {
-  throw new AppsembleError('Due to complexity, down migrations from 0.17.8 are not supported.');
+  throw new AppsembleError('Due to complexity, down migrations from 0.18.0 are not supported.');
 }

@@ -1,4 +1,4 @@
-import { useBlock } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
@@ -47,7 +47,7 @@ export function DateTimeInput({
       minDate={minDate}
       name={name}
       onChange={handleOnChange}
-      optionalLabel={utils.formatMessage('optionalLabel')}
+      optionalLabel={<FormattedMessage id="optionalLabel" />}
       placeholder={utils.remap(placeholder, value)}
       readOnly={readOnly}
       required={required}

@@ -145,10 +145,10 @@ export function Block({
     const utils: Utils = {
       remap,
       showMessage: push,
-      addCleanup(fn: () => void) {
+      addCleanup(fn) {
         cleanups.current.push(fn);
       },
-      asset(id: string) {
+      asset(id) {
         return `${apiUrl}/api/apps/${appId}/assets/${id}`;
       },
       formatMessage(message, args = {}) {

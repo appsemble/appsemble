@@ -6,11 +6,6 @@ import { Action, Message, Remapper, Theme } from './types';
 export * from './types';
 
 /**
- * The format used to define a message for the block.
- */
-export type TranslatedMessage = Record<string, any> | never;
-
-/**
  * Actions defined on a block.
  *
  * If a block uses actions, extend this interface using module augmentation. The keys are the names

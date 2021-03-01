@@ -23,6 +23,7 @@ export function builder(yargs: Argv): Argv {
     .option('languages', {
       type: 'array',
       describe: 'The languages to extract.',
+      default: [],
     });
 }
 

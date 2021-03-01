@@ -133,7 +133,7 @@ describe('getMessages', () => {
       language: 'en',
       messages: { form: 'form' },
     });
-    app.update({
+    await app.update({
       definition: {
         name: 'Test App',
         description: 'Description',
@@ -192,7 +192,7 @@ describe('getMessages', () => {
       language: 'nl',
       messages: { test: 'test translation' },
     });
-    app.update({
+    await app.update({
       definition: {
         name: 'Test App',
         description: 'Description',
@@ -245,7 +245,7 @@ describe('getMessages', () => {
       language: 'en-gb',
       messages: { test: 'test translation' },
     });
-    app.update({
+    await app.update({
       definition: {
         name: 'Test App',
         description: 'Description',

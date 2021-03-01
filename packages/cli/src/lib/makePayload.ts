@@ -1,5 +1,5 @@
 import { createReadStream, promises as fs } from 'fs';
-import { join, relative, resolve } from 'path';
+import { basename, join, relative, resolve } from 'path';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe } from '@appsemble/node-utils';
@@ -75,7 +75,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
     }
 
     for (const languageFile of translations.filter((t) => t.endsWith('.json'))) {
-      const [language] = languageFile.split('.json');
+      const language = basename(languageFile, '.json');
       const languagePath = join(messagesPath, languageFile);
       const m: Record<string, string> = await readJSON(languagePath);
       const languageKeys = Object.keys(m).sort();

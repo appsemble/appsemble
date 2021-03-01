@@ -13,7 +13,7 @@ import {
 
 import { BlockVersion } from '.';
 
-@Table({ tableName: 'BlockMessages', paranoid: false })
+@Table({ tableName: 'BlockMessages' })
 export class BlockMessages extends Model implements MessagesType {
   @PrimaryKey
   @AllowNull(false)
