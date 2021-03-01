@@ -15,13 +15,13 @@ optional. User profiles are public to any organizations the user is a member of.
 using Appsemble may request user information if they require a login. The login process requires
 explicit consent from the user upon login.
 
-### Login with GitHub, GitLab, or Google
+### Login with GitHub, Google, and other login providers
 
-Appsemble Studio offers users the ability to link a GitHub, GitLab, or Google account to their
-Appsemble account. Appsemble uses this to allow the user to provide a single sign-on experience
-using these login providers. If a user chooses to link one of these services to their account,
-Appsemble will use the user’s name and email address to complete their Appsemble profile. The user
-is free to change this information afterwards.
+Appsemble offers users the ability to link their account to various third party login providers,
+such as Google and GitHub. Appsemble uses this to allow the user to provide a single sign-on
+experience. If a user chooses to link one of these services to their account, Appsemble will use the
+user’s name and email address to complete their Appsemble profile. The user is free to change this
+information afterwards.
 
 ## With whom we share your data
 
