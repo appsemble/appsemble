@@ -1,4 +1,4 @@
-.doc {
+.root {
   & :global(.is-pulled-right) + * {
     display: none;
     float: right;

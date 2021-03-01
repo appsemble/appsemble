@@ -1,5 +1,4 @@
 import { MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
-import { defaultLocale } from '@appsemble/utils';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { FunctionComponent, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -7,7 +6,6 @@ import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { MenuItem } from '../../components/MenuItem';
 import { Doc } from './Doc';
-import styles from './index.module.css';
 import { messages } from './messages';
 
 interface MDXModule {
@@ -72,18 +70,16 @@ export function DocsRoutes(): ReactElement {
   );
 
   return (
-    <main className={`container content pl-6 pr-2 py-2 ${styles.doc}`} lang={defaultLocale}>
-      <MetaSwitch title={messages.title}>
-        {docs.map(({ Component, path, title }) => (
-          <Route exact key={path} path={getUrl(path)} strict>
-            <Doc component={Component} title={title} />
-          </Route>
-        ))}
-        {docs.map(({ path }) => (
-          <Redirect exact from={`${getUrl(path)}/`} key={path} to={getUrl(path)} />
-        ))}
-        <Redirect to={url} />
-      </MetaSwitch>
-    </main>
+    <MetaSwitch title={messages.title}>
+      {docs.map(({ Component, path, title }) => (
+        <Route exact key={path} path={getUrl(path)} strict>
+          <Doc component={Component} title={title} />
+        </Route>
+      ))}
+      {docs.map(({ path }) => (
+        <Redirect exact from={`${getUrl(path)}/`} key={path} to={getUrl(path)} />
+      ))}
+      <Redirect to={url} />
+    </MetaSwitch>
   );
 }

@@ -19,6 +19,8 @@
   background-color: hsl(0, 0%, 100%);
   bottom: 0;
   box-shadow: 0 0 1em -0.125em hsl(0deg 0% 4% / 10%);
+  display: flex;
+  flex-flow: column;
   /* stylelint-disable-next-line function-calc-no-invalid, function-calc-no-unspaced-operator */
   left: calc(-1 * menu-width);
   overflow-y: auto;
