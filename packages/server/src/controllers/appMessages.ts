@@ -133,7 +133,7 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
     request: {
-      body: { language, messages },
+      body: { language },
     },
   } = ctx;
 
@@ -152,6 +152,9 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
     throw badRequest(`Language “${language}” is invalid`);
   }
 
+  const messages = Object.fromEntries(
+    Object.entries(ctx.request.body.messages).filter(([, value]) => value),
+  );
   await AppMessages.upsert({ AppId: app.id, language: language.toLowerCase(), messages });
   ctx.body = { language: language.toLowerCase(), messages };
 }

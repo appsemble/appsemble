@@ -108,8 +108,8 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const getBlockMessage = useCallback(
     (blockName: string, blockVersion: string, { id }: IntlMessage) => {
       const message =
-        messages.app?.[`${blockName}/${blockVersion}/${id}`] ??
-        messages.blocks?.[blockName]?.[blockVersion]?.[id] ??
+        messages.app?.[`${blockName}/${blockVersion}/${id}`] ||
+        messages.blocks?.[blockName]?.[blockVersion]?.[id] ||
         '';
       return messageCache(message);
     },
@@ -139,7 +139,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   return (
     <Context.Provider value={value}>
-      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={messages.app}>
+      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={messages.core}>
         {children}
       </IntlProvider>
     </Context.Provider>
