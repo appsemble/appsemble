@@ -15,7 +15,7 @@ import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { argv } from '../../utils/argv';
 import { createSettings, makeCSP, render } from '../../utils/render';
-import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
+import { sentryDsnToReportUri } from '../../utils/sentry';
 import { bulmaURL, faURL } from '../../utils/styleURL';
 
 /**
@@ -63,9 +63,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
         attributes: ['filename'],
         model: BlockAsset,
         where: {
-          name: { [Op.col]: 'BlockVersion.name' },
-          OrganizationId: { [Op.col]: 'BlockVersion.OrganizationId' },
-          version: { [Op.col]: 'BlockVersion.version' },
+          BlockVersionId: { [Op.col]: 'BlockVersion.id' },
         },
       },
     ],

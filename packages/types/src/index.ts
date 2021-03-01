@@ -783,6 +783,11 @@ export interface BlockManifest {
   actions?: Record<string, ActionType>;
 
   /**
+   * The messages that are supported by a block.
+   */
+  messages?: Record<string, Record<string, any> | never>;
+
+  /**
    * The events that are supported by a block.
    */
   events?: {
@@ -1194,9 +1199,9 @@ export interface AppMember {
 }
 
 /**
- * Translated messages for an app.
+ * Translated messages for an app or block.
  */
-export interface AppMessages {
+export interface Messages {
   /**
    * The language represented by these messages.
    */
@@ -1206,6 +1211,48 @@ export interface AppMessages {
    * A mapping of message id to message content.
    */
   messages: Record<string, string>;
+}
+
+export interface AppMessages {
+  /**
+   * The language represented by these messages.
+   */
+  language: string;
+
+  /**
+   * The messages available to the app
+   */
+  messages: {
+    /**
+     * Messages related to the Appsemble core.
+     *
+     * This may be an empty object if the language is the default locale.
+     */
+    core: Record<string, string>;
+
+    /**
+     * A list of messages specific to the app.
+     */
+    app: Record<string, string>;
+
+    /**
+     * A list of messages specific to each block used in the app.
+     *
+     * At root the keys represent a block type.
+     * One layer deep the keys represent a block version.
+     * Two layers deep the keys represent the key/message pairs.
+     *
+     * @example
+     * {
+     *   "<at>example/test": {
+     *     "0.0.0": {
+     *       "exampleKey": "Example Message"
+     *     }
+     *   }
+     * }
+     */
+    blocks: Record<string, Record<string, Record<string, string>>>;
+  };
 }
 
 /**
@@ -1349,6 +1396,7 @@ export interface BlockConfig
     | 'events'
     | 'layout'
     | 'longDescription'
+    | 'messages'
     | 'name'
     | 'parameters'
     | 'resources'

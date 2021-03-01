@@ -111,17 +111,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         // Scroll to the bottom of the reply container
         replyContainer.current.scrollTop = replyContainer.current.scrollHeight;
       } catch {
-        utils.showMessage(
-          []
-            .concat(
-              utils.remap(
-                parameters?.reply?.replyErrorMessage ??
-                  'Something went wrong trying to send this message.',
-                content,
-              ),
-            )
-            .join(''),
-        );
+        utils.showMessage(utils.formatMessage('replyErrorMessage'));
       }
     },
     [actions, content, message, parameters, replies, utils, valid],
@@ -230,7 +220,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
                   utils.remap(
                     parameters?.reply.author ?? [{ prop: '$author' }, { prop: 'name' }],
                     reply,
-                  ) || utils.remap(parameters?.reply?.anonymousLabel || 'Anonymous', reply);
+                  ) || utils.formatMessage('anonymousLabel');
                 const replyContent = utils.remap(
                   parameters?.reply.content ?? [{ prop: 'content' }],
                   reply,
@@ -247,9 +237,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
             <form className="is-flex py-2 px-0" noValidate onSubmit={onSubmit}>
               <Input
                 onChange={onChange}
-                placeholder={[]
-                  .concat(utils.remap(parameters?.reply?.replyLabel ?? 'Leave a message…', content))
-                  .join('')}
+                placeholder={utils.formatMessage('replyLabel')}
                 required
                 value={message}
               />

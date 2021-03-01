@@ -23,6 +23,7 @@ describe('getBlockConfigFromTypeScript', () => {
         emit: { testEmit: { description: undefined } },
         listen: { testListener: { description: undefined } },
       },
+      messages: undefined,
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         additionalProperties: false,
@@ -184,6 +185,7 @@ describe('getBlockConfigFromTypeScript', () => {
     expect(result).toStrictEqual({
       actions: undefined,
       events: undefined,
+      messages: undefined,
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         additionalProperties: false,
@@ -243,6 +245,7 @@ describe('getBlockConfigFromTypeScript', () => {
           },
         },
       },
+      messages: undefined,
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         additionalProperties: false,

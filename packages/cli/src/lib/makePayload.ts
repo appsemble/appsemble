@@ -1,10 +1,11 @@
 import { createReadStream, promises as fs } from 'fs';
-import { join, relative, resolve } from 'path';
+import { basename, join, relative, resolve } from 'path';
 import { inspect } from 'util';
 
-import { logger, opendirSafe } from '@appsemble/node-utils';
+import { AppsembleError, logger, opendirSafe } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
 import FormData from 'form-data';
+import { readJSON } from 'fs-extra';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
@@ -19,7 +20,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
   const distPath = resolve(dir, output);
   const form = new FormData();
   const { description, layout, longDescription, name, resources, version } = config;
-  const { actions, events, parameters } = getBlockConfigFromTypeScript(config);
+  const { actions, events, messages, parameters } = getBlockConfigFromTypeScript(config);
   const files = await fs.readdir(dir);
   const icon = files.find((entry) => entry.match(/^icon\.(png|svg)$/));
 
@@ -47,6 +48,52 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
     const iconPath = join(dir, icon);
     logger.info(`Using icon: ${iconPath}`);
     form.append('icon', createReadStream(iconPath));
+  }
+
+  if (messages) {
+    if (!files.includes('i18n')) {
+      throw new AppsembleError(
+        'This block has messages defined, but the message files could not be found. Try running extract-messages',
+      );
+    }
+
+    const messageKeys = Object.keys(messages).sort();
+    const messagesResult: Record<string, Record<string, string>> = {};
+    const messagesPath = join(dir, 'i18n');
+
+    const translations = (await fs.readdir(messagesPath)).map((language) => language.toLowerCase());
+    if (!translations.includes('en.json')) {
+      throw new AppsembleError('Could not find ‘en.json’. Try running extract-messages');
+    }
+
+    const duplicates = translations.filter(
+      (language, index) => translations.indexOf(language) !== index,
+    );
+
+    if (duplicates.length) {
+      throw new AppsembleError(`Found duplicate language codes: ‘${duplicates.join('’, ')}`);
+    }
+
+    for (const languageFile of translations.filter((t) => t.endsWith('.json'))) {
+      const language = basename(languageFile, '.json');
+      const languagePath = join(messagesPath, languageFile);
+      const m: Record<string, string> = await readJSON(languagePath);
+      const languageKeys = Object.keys(m).sort();
+
+      if (
+        languageKeys.length !== messageKeys.length ||
+        languageKeys.some((key) => !messageKeys.includes(key))
+      ) {
+        throw new AppsembleError(
+          `‘${languagePath}’ contains mismatching message keys. Try running extract-messages`,
+        );
+      }
+
+      logger.info(`Including ${language} translations from ‘${languagePath}’`);
+      messagesResult[language] = m;
+    }
+
+    form.append('messages', JSON.stringify(messagesResult));
   }
 
   await opendirSafe(

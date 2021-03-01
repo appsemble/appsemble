@@ -29,7 +29,7 @@ export function StudioMessagesProvider({ children }: IntlMessagesProviderProps):
     }
 
     document.documentElement.lang = lang;
-    axios.get<Messages>(`/api/messages/${lang}?context=studio`).then((response) => {
+    axios.get<Messages>(`/api/messages/${lang}`).then((response) => {
       setMessages(response.data.messages);
       setLoading(false);
     });

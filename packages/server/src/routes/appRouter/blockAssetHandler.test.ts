@@ -4,7 +4,7 @@ import Koa from 'koa';
 
 import { appRouter } from '.';
 import { boomMiddleware } from '../../middleware/boom';
-import { BlockAsset, Organization } from '../../models';
+import { BlockAsset, BlockVersion, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
 beforeAll(createTestSchema('blockassethandler'));
@@ -19,13 +19,16 @@ afterAll(closeTestSchema);
 
 it('should download a block asset', async () => {
   await Organization.create({ id: 'linux', name: 'Linux' });
+  const { id } = await BlockVersion.create({
+    OrganizationId: 'linux',
+    version: '3.1.4',
+    name: 'tux',
+  });
   await BlockAsset.create({
     filename: 'tux.png',
     content: await readFixture('tux.png'),
     mime: 'image/png',
-    OrganizationId: 'linux',
-    name: 'tux',
-    version: '3.1.4',
+    BlockVersionId: id,
   });
   const response = await request.get('/api/blocks/@linux/tux/versions/3.1.4/tux.png', {
     responseType: 'arraybuffer',
