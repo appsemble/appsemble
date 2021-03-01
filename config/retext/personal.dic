@@ -2,7 +2,9 @@ Appsemble
 
 # Unrecognized words
 accessor/processor
+anonymize/synthesize
 changelog/kitten
+decrypt/encrypt
 dialog/kitten
 enum/kitten
 maskable/editable
@@ -28,6 +30,7 @@ workspace/mare
 # Technical slang and libraries
 API/URL
 Airbnb
+Automattic
 BCC
 Bulma
 CLI/URL
@@ -45,6 +48,7 @@ dropdown
 ESLint
 falsy
 GitLab
+Gravatar
 IDP
 JSON
 JSX
@@ -53,6 +57,7 @@ Koa
 Kubernetes
 localhost
 MacOS
+MD5
 NodeJS
 npmjs
 OAuth

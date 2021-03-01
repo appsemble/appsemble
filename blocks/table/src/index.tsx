@@ -61,11 +61,11 @@ bootstrap(({ events, parameters: { fields }, ready, utils }) => {
   }
 
   if (error) {
-    return <p>{utils.formatMessage('error')}</p>;
+    return <p className="px-2 py-2 has-text-centered">{utils.formatMessage('error')}</p>;
   }
 
   if (!data.length) {
-    return <p>{utils.formatMessage('emptyMessage')}</p>;
+    return <p className="px-2 py-2 has-text-centered">{utils.formatMessage('emptyMessage')}</p>;
   }
 
   return (
