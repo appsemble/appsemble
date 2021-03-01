@@ -28,7 +28,7 @@ import { ProtectedRoute } from '../../../components/ProtectedRoute';
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';
 import { AssetsPage } from './assets';
-import { IndexPage } from './Index';
+import { IndexPage } from './IndexPage';
 import { messages } from './messages';
 import { NotificationsPage } from './notifications';
 import { ResourcesRoutes } from './resources';
@@ -83,10 +83,10 @@ export function AppRoutes(): ReactElement {
     organization && (
       <MenuSection
         label={
-          <div>
+          <>
             {app.locked && <Icon icon="lock" title={formatMessage(messages.locked)} />}
             <span className={classNames({ 'pl-1': !app.locked })}>{app.definition.name}</span>
-          </div>
+          </>
         }
       >
         <MenuItem exact icon="info" to={url}>

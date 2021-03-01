@@ -15,6 +15,7 @@ import { AppScreenshot } from './AppScreenshot';
 import { AppSubscription } from './AppSubscription';
 import { Asset } from './Asset';
 import { BlockAsset } from './BlockAsset';
+import { BlockMessages } from './BlockMessages';
 import { BlockVersion } from './BlockVersion';
 import { EmailAuthorization } from './EmailAuthorization';
 import { Member } from './Member';
@@ -59,6 +60,7 @@ export {
   AppMessages,
   Asset,
   BlockAsset,
+  BlockMessages,
   BlockVersion,
   EmailAuthorization,
   Member,
@@ -108,6 +110,7 @@ export function initDB({
       AppMessages,
       Asset,
       BlockAsset,
+      BlockMessages,
       BlockVersion,
       EmailAuthorization,
       Member,

@@ -13,6 +13,7 @@ import { EditPasswordPage } from './edit-password';
 import { FeedbackPage } from './feedback';
 import { LoginPage } from './login';
 import { OrganizationInvitePage } from './organization-invite';
+import { PrivacyPolicyPage } from './privacy';
 import { RegisterPage } from './register';
 import { ResetPasswordPage } from './reset-password';
 import { SAMLResponsePage } from './saml';
@@ -70,6 +71,9 @@ export function Routes(): ReactElement {
       </Route>
       <Route path={`${path}/docs`}>
         <DocsRoutes />
+      </Route>
+      <Route extact path={`${path}/privacy`}>
+        <PrivacyPolicyPage />
       </Route>
       <Redirect to={`${path}/apps`} />
     </Switch>

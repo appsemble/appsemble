@@ -10,6 +10,7 @@ import * as runCronJobs from './commands/runCronJobs';
 import * as start from './commands/start';
 import { setArgv } from './utils/argv';
 import { readPackageJson } from './utils/readPackageJson';
+import { configureSentry } from './utils/sentry';
 
 /**
  * These are exported, so @appsemble/cli can wrap them.
@@ -49,7 +50,13 @@ function main(argv: string[]): void {
       describe: 'Decrease verbosity',
       type: 'count',
     })
-    .middleware([setArgv, configureLogger])
+    .option('sentry-dsn', {
+      desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
+    })
+    .option('sentry-environment', {
+      desc: 'The Sentry environment to use for error reporting. See https://sentry.io for details.',
+    })
+    .middleware([setArgv, configureLogger, configureSentry])
     .command(cleanup as CommandModule)
     .command(cleanupResources as CommandModule)
     .command(runCronJobs as CommandModule)

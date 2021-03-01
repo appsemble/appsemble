@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { BlockPage } from './block';
-import { IndexPage } from './Index';
+import { IndexPage } from './IndexPage';
 import { messages } from './messages';
 
 /**

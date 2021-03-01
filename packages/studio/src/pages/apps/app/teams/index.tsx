@@ -2,7 +2,7 @@ import { MetaSwitch, useMeta } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { IndexPage } from './Index';
+import { IndexPage } from './IndexPage';
 import { messages } from './messages';
 import { TeamPage } from './team';
 

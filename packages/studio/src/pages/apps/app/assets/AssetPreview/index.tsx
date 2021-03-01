@@ -1,23 +1,14 @@
 import { Button, Content } from '@appsemble/react-components';
-import { extension } from 'mime-types';
-import { ReactElement, useCallback } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Asset } from '..';
 import { useApp } from '../..';
-import { download } from '../../../../../utils/download';
 import styles from './index.module.css';
 import { messages } from './messages';
 
 export function AssetPreview({ asset }: { asset: Asset }): ReactElement {
   const { app } = useApp();
-
-  const downloadAsset = useCallback(async () => {
-    const { filename, id, mime } = asset;
-    const ex = extension(mime);
-
-    await download(`/api/apps/${app.id}/assets/${id}`, filename || ex ? `${id}.${ex}` : id);
-  }, [app, asset]);
 
   if (!asset) {
     return null;
@@ -30,7 +21,7 @@ export function AssetPreview({ asset }: { asset: Asset }): ReactElement {
 
   return (
     <Content className={styles.preview}>
-      <Button className="mb-2" icon="download" onClick={downloadAsset}>
+      <Button className="mb-2" component="a" download href={url} icon="download">
         <FormattedMessage {...messages.download} />
       </Button>
       <div className="box">

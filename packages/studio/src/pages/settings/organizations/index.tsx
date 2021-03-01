@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import { IndexPage } from './Index';
+import { IndexPage } from './IndexPage';
 import { OrganizationPage } from './organization';
 
 /**

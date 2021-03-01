@@ -1,5 +1,6 @@
 import {
   AsyncButton,
+  Button,
   Content,
   FormButtons,
   Loader,
@@ -65,15 +66,16 @@ export function EmailConflict(): ReactElement {
         <FormattedMessage {...messages.emailConflictExplanation} />
       </p>
       <FormButtons>
-        <Link
-          className="button is-primary"
+        <Button
+          color="primary"
+          component={Link}
           to={{
             pathname: `/${lang}/Login`,
             search: String(new URLSearchParams({ redirect })),
           }}
         >
           <FormattedMessage {...messages.login} />
-        </Link>
+        </Button>
         <AsyncButton color="danger" onClick={skipLogin}>
           <FormattedMessage {...messages.skipLogin} />
         </AsyncButton>
