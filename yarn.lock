@@ -1807,6 +1807,13 @@
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
 
+"@types/unused-webpack-plugin@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@types/unused-webpack-plugin/-/unused-webpack-plugin-2.4.0.tgz#220ab6abbc035b7ecd5da2ebac8d9a06530c037e"
+  integrity sha512-E+oo3D75dofq6unnV9Eed02Kt7aKgoGziFoXxGo3HxfgmIgClEZGTbVTa3gPYABmPi2nFcE89nvSUtSmwm3oug==
+  dependencies:
+    "@types/webpack" "*"
+
 "@types/uuid@^8.3.0":
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.0.tgz#215c231dff736d5ba92410e6d602050cce7e273f"
