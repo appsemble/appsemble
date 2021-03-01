@@ -165,9 +165,6 @@ pack:
     - yarn workspace @appsemble/node-utils pack
     - yarn workspace @appsemble/utils pack
     - yarn workspace @appsemble/webpack-config pack
-    # Server and webpack-core need to be built for CLI, but they shouldn’t be published.
-    - yarn workspace @appsemble/webpack-core prepack
-    - yarn workspace @appsemble/server prepack
     - yarn workspace @appsemble/cli pack
     - yarn workspace appsemble pack
     - mkdir build/
