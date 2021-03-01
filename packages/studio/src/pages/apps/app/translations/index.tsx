@@ -63,7 +63,7 @@ export function TranslationsPage(): ReactElement {
   }, [app, languageId]);
 
   const onSubmit = useCallback(
-    async (values: AppMessages['messages']) => {
+    async (values: AppMessages['messages']['app']) => {
       if (app.locked) {
         return;
       }
@@ -140,8 +140,23 @@ export function TranslationsPage(): ReactElement {
         }
       },
     });
-    return [...[...new Set(pages)].sort(), ...[...new Set(actions)].sort()];
-  }, [app.definition]);
+
+    const blockMessages = appMessages
+      ? Object.entries(appMessages.messages.blocks).flatMap(([name, versions]) =>
+          Object.entries(versions).flatMap(([version, versionMessages]) =>
+            Object.keys(versionMessages).map(
+              (versionMessage) => `${name}/${version}/${versionMessage}`,
+            ),
+          ),
+        )
+      : [];
+
+    return [
+      ...[...new Set(pages)].sort(),
+      ...[...new Set(actions)].sort(),
+      ...blockMessages.sort(),
+    ];
+  }, [app.definition, appMessages]);
 
   if (loadingLanguages || loadingMessages) {
     return <Loader />;
@@ -188,7 +203,7 @@ export function TranslationsPage(): ReactElement {
           </Title>
           <SimpleForm
             defaultValues={Object.fromEntries(
-              messageIds.map((id) => [id, appMessages?.messages[id]]),
+              messageIds.map((id) => [id, appMessages?.messages.app[id]]),
             )}
             onSubmit={onSubmit}
           >

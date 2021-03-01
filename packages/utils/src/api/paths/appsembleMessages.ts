@@ -31,7 +31,7 @@ export const paths: OpenAPIV3.PathsObject = {
     get: {
       tags: ['language'],
       description: 'Get the Appsemble messages for this language.',
-      operationId: 'getAppsembleMessages',
+      operationId: 'getStudioMessages',
       responses: {
         200: {
           description: 'The app messages for the selected language.',

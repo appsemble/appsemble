@@ -16,28 +16,22 @@ describe('getAppsembleLanguages', () => {
   });
 });
 
-describe('getAppsembleMessages', () => {
+describe('getStudioMessages', () => {
   it('should return all translations for a language', async () => {
     const result = await request('/api/messages/nl');
     const keys = Object.keys(result.data.messages);
     expect(result).toMatchObject({ status: 200, data: { language: 'nl' } });
-    expect(keys.some((key) => key.startsWith('app'))).toStrictEqual(true);
-    expect(keys.some((key) => key.startsWith('studio'))).toStrictEqual(true);
-    expect(keys.some((key) => key.startsWith('react-components'))).toStrictEqual(true);
+    expect(
+      keys.every((key) => key.startsWith('studio') || key.startsWith('react-components')),
+    ).toStrictEqual(true);
   });
 
   it('should filter based on the context given', async () => {
-    const resultStudio = await request('/api/messages/nl?context=studio');
-    const resultApp = await request('/api/messages/nl?context=app');
-
-    const keysStudio = Object.keys(resultStudio.data.messages);
-    const keysApp = Object.keys(resultApp.data.messages);
-
+    const resultStudio = await request('/api/messages/nl');
     expect(
-      keysStudio.every((key) => key.startsWith('studio') || key.startsWith('react-components')),
-    ).toStrictEqual(true);
-    expect(
-      keysApp.every((key) => key.startsWith('app') || key.startsWith('react-components')),
+      Object.keys(resultStudio.data.messages).every(
+        (key) => key.startsWith('studio') || key.startsWith('react-components'),
+      ),
     ).toStrictEqual(true);
   });
 

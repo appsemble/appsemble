@@ -35,6 +35,18 @@ export interface Item {
 }
 
 declare module '@appsemble/sdk' {
+  interface Messages {
+    /**
+     * The text that is shown when no data was found.
+     */
+    noData: never;
+
+    /**
+     * The text that is shown when something went wrong with fetching the data.
+     */
+    error: never;
+  }
+
   interface Parameters {
     /**
      * The header text to display above the list of fields.
@@ -42,20 +54,6 @@ declare module '@appsemble/sdk' {
      * Will not render if undefined.
      */
     header?: Remapper;
-
-    /**
-     * The text that is shown when no data was found.
-     *
-     * @default 'There is no data available.'
-     */
-    noData?: Remapper;
-
-    /**
-     * The text that is shown when something went wrong with fetching the data.
-     *
-     * @default 'An error occurred when fetching the data.'
-     */
-    error?: Remapper;
 
     /**
      * The icon that displays in front of the header.

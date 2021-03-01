@@ -38,15 +38,9 @@ export function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // Cache appsemble messages
-  if (/^\/api\/messages/.test(pathname)) {
-    event.respondWith(cacheFirst(request));
-    return;
-  }
-
   // Cache app messages
   if (/^\/api\/apps\/\d+\/messages/.test(pathname)) {
-    event.respondWith(cacheFirst(request));
+    event.respondWith(requestFirst(request));
     return;
   }
 

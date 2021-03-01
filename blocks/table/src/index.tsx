@@ -9,84 +9,73 @@ interface Item {
   id?: number;
 }
 
-bootstrap(
-  ({
-    events,
-    parameters: {
-      emptyMessage = 'No data is available',
-      errorMessage = 'An error occurred when fetching the data',
-      fields,
-    },
-    ready,
-    utils,
-  }) => {
-    const [data, setData] = useState<Item[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+bootstrap(({ events, parameters: { fields }, ready, utils }) => {
+  const [data, setData] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-    const loadData = useCallback((d: Item[], err: string): void => {
-      if (err) {
-        setError(true);
-      } else {
-        setData(d);
-        setError(false);
-      }
-      setLoading(false);
-    }, []);
+  const loadData = useCallback((d: Item[], err: string): void => {
+    if (err) {
+      setError(true);
+    } else {
+      setData(d);
+      setError(false);
+    }
+    setLoading(false);
+  }, []);
 
-    const headers = useMemo<VNode>(() => {
-      const heads = fields.flatMap((field) => {
-        if ('label' in field) {
-          return utils.remap(field.label, {});
-        }
-
-        if ('repeat' in field) {
-          return field.repeat.map((subField) => utils.remap(subField.label, {}));
-        }
-      });
-
-      // Don’t render any headers if none of the headers have labels
-      if (!heads.some(Boolean)) {
-        return;
+  const headers = useMemo<VNode>(() => {
+    const heads = fields.flatMap((field) => {
+      if ('label' in field) {
+        return utils.remap(field.label, {});
       }
 
-      return (
-        <thead>
-          <tr>
-            {heads.map((header) => (
-              <th key={header}>{header}</th>
-            ))}
-          </tr>
-        </thead>
-      );
-    }, [fields, utils]);
+      if ('repeat' in field) {
+        return field.repeat.map((subField) => utils.remap(subField.label, {}));
+      }
+    });
 
-    useEffect(() => {
-      events.on.data(loadData);
-      ready();
-    }, [events, loadData, ready, utils]);
-
-    if (loading) {
-      return <Loader />;
-    }
-
-    if (error) {
-      return <p>{utils.remap(errorMessage, {})}</p>;
-    }
-
-    if (!data.length) {
-      return <p>{utils.remap(emptyMessage, {})}</p>;
+    // Don’t render any headers if none of the headers have labels
+    if (!heads.some(Boolean)) {
+      return;
     }
 
     return (
-      <table className="table is-hoverable is-striped is-fullwidth" role="grid">
-        {headers}
-        <tbody>
-          {data.map((item, index) => (
-            <ItemRow index={index} item={item} key={item.id || index} />
+      <thead>
+        <tr>
+          {heads.map((header) => (
+            <th key={header}>{header}</th>
           ))}
-        </tbody>
-      </table>
+        </tr>
+      </thead>
     );
-  },
-);
+  }, [fields, utils]);
+
+  useEffect(() => {
+    events.on.data(loadData);
+    ready();
+  }, [events, loadData, ready, utils]);
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <p>{utils.formatMessage('error')}</p>;
+  }
+
+  if (!data.length) {
+    return <p>{utils.formatMessage('emptyMessage')}</p>;
+  }
+
+  return (
+    <table className="table is-hoverable is-striped is-fullwidth" role="grid">
+      {headers}
+      <tbody>
+        {data.map((item, index) => (
+          <ItemRow index={index} item={item} key={item.id || index} />
+        ))}
+      </tbody>
+    </table>
+  );
+});

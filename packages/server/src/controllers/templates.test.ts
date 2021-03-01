@@ -181,11 +181,11 @@ describe('createTemplateApp', () => {
     });
 
     const { id } = response.data;
-    const { data: messages } = await request.get<AppMessages>(`/api/apps/${id}/messages/nl-nl`);
+    const { data: messages } = await request.get(`/api/apps/${id}/messages/nl-nl`);
 
-    expect(messages).toStrictEqual({
-      language: 'nl-nl',
-      messages: { test: 'Dit is een testbericht' },
+    expect(messages.language).toStrictEqual('nl-nl');
+    expect(messages.messages.app).toStrictEqual({
+      test: 'Dit is een testbericht',
     });
   });
 

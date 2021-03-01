@@ -22,6 +22,25 @@ export * from './types';
 export interface Actions {}
 
 /**
+ * Messages defined on a block.
+ *
+ * If a block uses messages, extend this interface using module augmentation.
+ * The keys are the names of the messages.
+ * The types are either `never` if the message doesn’t support parameters
+ * or an object containing the keys of values and the type of the value.
+ *
+ * @example
+ * declare module '<at>appsemble/sdk' {
+ *   interface Messages {
+ *     exampleMessage: never;
+ *     hello: { person: string };
+ *   }
+ * }
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Messages {}
+
+/**
  * Event emitters defined on a block.
  *
  * If a block emits events, extend this interface using module augmentation. The keys are the names
@@ -100,6 +119,14 @@ export interface Utils {
    * Show a bulma style message.
    */
   showMessage: (message: Message | string) => void;
+
+  /**
+   * Formats a message using ICU syntax.
+   */
+  formatMessage: <T extends keyof Messages>(
+    message: T,
+    ...args: Messages[T] extends never ? [] : [Messages[T]]
+  ) => string;
 
   /**
    * Get a URL serving an asset for the given asset id.

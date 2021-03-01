@@ -66,6 +66,14 @@ interface AssetMarkerIcon extends AbstractMarkerIcon {
 }
 
 declare module '@appsemble/sdk' {
+  interface Messages {
+    /**
+     * The error message to display when the location couldn’t be determined.
+     *
+     * @default 'Couldn’t find your location. Are location services enabled?'
+     */
+    locationError: never;
+  }
   interface Parameters {
     /**
      * The remapper used to retrieve the latitude.
@@ -110,13 +118,6 @@ declare module '@appsemble/sdk' {
      * By default markers are clustered if they are too close to each other.
      */
     disableClustering?: boolean;
-
-    /**
-     * The error message to display when the location couldn’t be determined.
-     *
-     * @default 'Couldn’t find your location. Are location services enabled?'
-     */
-    locationError?: Remapper;
 
     /**
      * Custom icon configuration.

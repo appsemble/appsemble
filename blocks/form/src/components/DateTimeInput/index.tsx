@@ -1,4 +1,4 @@
-import { useBlock } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
@@ -20,10 +20,7 @@ export function DateTimeInput({
   onChange,
   value = null,
 }: DateTimeInputProps): VNode {
-  const {
-    parameters: { optionalLabel },
-    utils,
-  } = useBlock();
+  const { utils } = useBlock();
   const { label, name, placeholder, readOnly, tag } = field;
 
   const checkboxLabel = utils.remap(label, value);
@@ -50,7 +47,7 @@ export function DateTimeInput({
       minDate={minDate}
       name={name}
       onChange={handleOnChange}
-      optionalLabel={utils.remap(optionalLabel, value)}
+      optionalLabel={<FormattedMessage id="optionalLabel" />}
       placeholder={utils.remap(placeholder, value)}
       readOnly={readOnly}
       required={required}

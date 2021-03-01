@@ -1,6 +1,29 @@
-import { BulmaColor, Remapper } from '@appsemble/sdk';
+import { BulmaColor } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
+  interface Messages {
+    /**
+     * The label to display on the refresh button of the notification.
+     *
+     * @default 'Refresh'
+     */
+    buttonLabel: never;
+
+    /**
+     * The message to display when new data is available.
+     *
+     * This will be called with the `count` parameter, which refers to the amount of new items.
+     */
+    newMessage: { count: number };
+
+    /**
+     * The message to display when existing data has been changed.
+     *
+     * This will be called with the `count` parameter, which refers to the amount of changed items.
+     */
+    updatedMessage: { count: number };
+  }
+
   interface Parameters {
     /**
      * The property used to identify resources when comparing them in case of array data.
@@ -15,31 +38,6 @@ declare module '@appsemble/sdk' {
      * @default 'dark'
      */
     color?: BulmaColor;
-
-    /**
-     * The label to display on the refresh button of the notification.
-     *
-     * @default 'Refresh'
-     */
-    buttonLabel?: Remapper;
-
-    /**
-     * The message to display when new data is available.
-     *
-     * This will be called with the `count` parameter, which refers to the amount of new items.
-     *
-     * @default 'New data is available'
-     */
-    newMessage?: Remapper;
-
-    /**
-     * The message to display when existing data has been changed.
-     *
-     * This will be called with the `count` parameter, which refers to the amount of changed items.
-     *
-     * @default 'Data has been changed'
-     */
-    updatedMessage?: Remapper;
   }
 
   interface EventEmitters {
