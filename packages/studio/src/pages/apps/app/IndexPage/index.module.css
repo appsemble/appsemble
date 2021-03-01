@@ -2,13 +2,34 @@
   max-width: 960px;
 }
 
+.appLogo {
+  flex: 0 0 auto;
+}
+
+.appMetaWrapper {
+  flex: 1 1 auto;
+  flex-flow: column;
+  overflow-x: hidden;
+
+  @media (min-width: 1024px) {
+    flex-flow: row;
+  }
+}
+
 .appMeta {
   flex: 1 1 auto;
+  overflow-x: hidden;
 }
 
 .titleContainer {
   display: flex;
   justify-content: space-between;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .title {
@@ -17,7 +38,12 @@
 }
 
 .buttonContainer {
-  flex-flow: column;
+  justify-content: flex-end;
+
+  @media (min-width: 1024px) {
+    flex-flow: column;
+    justify-content: flex-start;
+  }
 }
 
 .descriptionHidden {
