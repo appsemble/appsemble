@@ -83,7 +83,7 @@ helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existin
 | `fullnameOverride`                     | `''`                          | This can be used to override the full name in the templates.                                                                              |
 | `service.type`                         | `ClusterIP`                   | The type of the Appsemble service.                                                                                                        |
 | `service.port`                         | 80                            | The HTTP port on which the Appsemble service will be exposed to the cluster.                                                              |
-| `ingress.enabled`                      | `true`                        | Whether or not the the service should be exposed through an ingress.                                                                      |
+| `ingress.enabled`                      | `true`                        | Whether or not the service should be exposed through an ingress.                                                                          |
 | `ingress.annotations`                  |                               | Annotations for the Appsemble ingress.                                                                                                    |
 | `ingress.host`                         | `''`                          | The hosts name on which the ingress will expose the service.                                                                              |
 | `ingress.tls.secretName`               | `nil`                         | The secret name to use to configure TLS.                                                                                                  |
@@ -107,6 +107,6 @@ helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existin
 | `postgresql.fullnameOverride`          | `appsemble-postgresql`        | The name used for the PostgreSQL database.                                                                                                |
 | `postgresql.enabled`                   | `true`                        | Set this to false explicitly to not include a PostgreSQL installation. This is useful if the database is managed by another service.      |
 | `postgresql.persistence.enabled`       | `false`                       | Enable to create a persistent volume for the data.                                                                                        |
-| `postgresSSL`                          | `false`                       | If `true`, connect establish the PosgreSQL connection over SSL.                                                                           |
+| `postgresSSL`                          | `false`                       | If `true`, connect establish the PostgreSQL connection over SSL.                                                                          |
 
 [sentry]: https://sentry.io
