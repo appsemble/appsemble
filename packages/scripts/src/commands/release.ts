@@ -105,7 +105,7 @@ async function processChangesDir(dir: string, prefix: string): Promise<ListItem[
     .map((line) => `${prefix}: ${line}`)
     .map((line) => line.trim())
     .map((line) => (line.endsWith('.') ? line : `${line}.`))
-    .map((line) => createListItem((remark.parse(line) as Root).children as BlockContent[]));
+    .map((line) => createListItem(remark.parse(line).children as BlockContent[]));
 }
 
 async function processChanges(dir: string): Promise<Changes> {
