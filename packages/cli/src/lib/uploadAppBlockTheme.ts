@@ -11,12 +11,14 @@ import { processCss } from './processCss';
  * @param organization - The ID of the organization the block belongs to.
  * @param appId - The ID of the app to upload the theme for.
  * @param block - The name of the block.
+ * @param remote - The HTTP origin to upload the theme to.
  */
 export async function uploadAppBlockTheme(
   filePath: string,
   organization: string,
   appId: number,
   block: string,
+  remote: string,
 ): Promise<void> {
   logger.info(`Upload ${organization}/${block} stylesheet for app ${appId}`);
 
@@ -24,7 +26,9 @@ export async function uploadAppBlockTheme(
   const formData = new FormData();
   formData.append('style', Buffer.from(css), 'style.css');
 
-  await axios.post(`/api/apps/${appId}/style/block/${organization}/${block}`, formData);
+  await axios.post(`/api/apps/${appId}/style/block/${organization}/${block}`, formData, {
+    baseURL: remote,
+  });
 
   logger.info(`Upload of ${organization}/${block} stylesheet successful! 🎉`);
 }

@@ -6,7 +6,7 @@ import { AppMessages } from '@appsemble/types';
 import axios from 'axios';
 import yaml from 'js-yaml';
 
-export async function uploadMessages(path: string, appId: string): Promise<void> {
+export async function uploadMessages(path: string, appId: string, remote: string): Promise<void> {
   if (!existsSync(join(path, 'messages'))) {
     return;
   }
@@ -29,7 +29,7 @@ export async function uploadMessages(path: string, appId: string): Promise<void>
   }
 
   for (const language of result) {
-    await axios.post(`/api/apps/${appId}/messages`, language);
+    await axios.post(`/api/apps/${appId}/messages`, language, { baseURL: remote });
     logger.info(`Successfully uploaded messages for language “${language.language}” 🎉`);
   }
 }
