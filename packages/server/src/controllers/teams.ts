@@ -93,6 +93,7 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
       {
         model: Team,
         include: [{ model: User, required: false }],
+        order: [['name', 'ASC']],
       },
     ],
   });
@@ -100,8 +101,7 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found.');
   }
 
-  // Filter to just the user’s teams if it’s requested from an app.
-  ctx.body = app.Teams.sort((a, b) => a.name.localeCompare(b.name)).map((team) => ({
+  ctx.body = app.Teams.map((team) => ({
     id: team.id,
     name: team.name,
     size: team.Users.length,
