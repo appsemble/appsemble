@@ -67,7 +67,7 @@ export async function renderEmail(
   }
 
   const text = remark.stringify(mdast);
-  const hast = await rehype.run(mdast, { stem: subject });
+  const hast = await rehype.run(mdast);
   const html = rehype.stringify(hast);
   return { html, subject, text };
 }
