@@ -50,6 +50,22 @@ const monacoGuiOptions: Options = {
   readOnly: true,
 };
 
+/**
+ * These properties are passed to the allow attribute of the app preview. For a full list, see
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
+ */
+const allow = [
+  'autoplay',
+  'camera',
+  'geolocation',
+  'microphone',
+  'midi',
+  'payment',
+  'picture-in-picture',
+  'sync-xhr',
+  'usb',
+];
+
 // `React.lazy` works with default exports.
 // eslint-disable-next-line import/no-default-export
 export default function EditPage(): ReactElement {
@@ -286,6 +302,7 @@ export default function EditPage(): ReactElement {
   }
 
   const onValueChange = onMonacoChange;
+  const src = getAppUrl(app.OrganizationId, app.path);
   let value;
   let language;
 
@@ -349,9 +366,10 @@ export default function EditPage(): ReactElement {
       <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
         {path && (
           <iframe
+            allow={allow.map((feature) => `${feature} ${src}`).join('; ')}
             className={styles.appFrame}
             ref={frame}
-            src={getAppUrl(app.OrganizationId, app.path)}
+            src={src}
             title={formatMessage(messages.iframeTitle)}
           />
         )}
