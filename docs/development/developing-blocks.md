@@ -2,18 +2,10 @@
 
 ## Initialize the Project
 
-<!--
-XXX: To be replaced with `yarn create appsemble` when the tooling is ready to be published to npm.
--->
-
 To start developing blocks, first the Appsemble repository needs to be cloned and installed as
 described in the
 [Getting Started](https://gitlab.com/appsemble/appsemble/blob/master/README.md#getting-started)
 instructions in the readme.
-
-<!--
-XXX: It should be possible to simply use a `dev` version to load unpublished blocks in test apps.
--->
 
 Next, publish the existing blocks following the instructions from the
 [Blocks](https://gitlab.com/appsemble/appsemble/blob/master/README.md#blocks) section.
@@ -280,8 +272,6 @@ the node has been attached, or when multiple nodes are appended.
 `pageParameters` is passed in if the block is rendered on a page that has the `parameters` property
 specified. Typically, this is used if a block needs to display data for a single resource, such as a
 detail view or an update form.
-
-<!-- XXX: Render the JSDoc -->
 
 For more details on what a block can do, see the technical documentation of the SDK.
 

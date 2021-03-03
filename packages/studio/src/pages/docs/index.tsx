@@ -1,6 +1,5 @@
 import { MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { FunctionComponent, ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
@@ -8,22 +7,14 @@ import { MenuItem } from '../../components/MenuItem';
 import { Doc } from './Doc';
 import { messages } from './messages';
 
-interface MDXModule {
-  default: FunctionComponent;
-  meta: {
-    icon: IconName;
-  };
-  title: string;
-}
-
 const context = require.context('../../../../../docs', true, /\.mdx?$/);
 const docs = context
   .keys()
   .map((key) => {
-    const { default: Component, meta, title } = context(key) as MDXModule;
+    const { default: Component, icon, title } = context(key) as typeof import('*.md');
     return {
       Component,
-      icon: meta?.icon,
+      icon,
       path: key
         .replace(/^\.\//, '')
         .replace(/\.mdx?$/, '')
