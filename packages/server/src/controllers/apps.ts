@@ -26,6 +26,7 @@ import {
   AppBlockStyle,
   AppRating,
   AppScreenshot,
+  AppSnapshot,
   BlockVersion,
   Member,
   Organization,
@@ -134,7 +135,6 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       domain: domain || null,
       private: Boolean(isPrivate),
       template: Boolean(template),
-      yaml: yaml || jsYaml.safeDump(definition),
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
     };
@@ -172,6 +172,10 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     let record: App;
     await transactional(async (transaction) => {
       record = await App.create(result, { transaction });
+      const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.safeDump(definition);
+      record.AppSnapshots = [
+        await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
+      ];
       logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
       record.AppScreenshots = screenshots?.length
         ? await AppScreenshot.bulkCreate(
@@ -211,6 +215,7 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
     include: [
       { model: AppRating, attributes: [] },
       { model: Resource, attributes: [], where: { clonable: true }, required: false },
+      { model: AppSnapshot, order: [['created', 'DESC']], limit: 1 },
     ],
     group: ['App.id'],
   });
@@ -234,7 +239,7 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['yaml', 'icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     where: { private: false },
     include: [{ model: AppRating, attributes: [] }],
@@ -258,7 +263,7 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['yaml', 'icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
@@ -364,10 +369,6 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       if (!isEqual(appFromYaml, definition)) {
         throw badRequest('Provided YAML was not equal to definition when converted.');
       }
-
-      result.yaml = yaml.contents?.toString('utf8') || yaml;
-    } else if (definition) {
-      result.yaml = jsYaml.safeDump(definition);
     }
 
     const checkPermissions: Permission[] = [];
@@ -392,6 +393,16 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
+      if (definition) {
+        const newYaml = yaml
+          ? yaml.contents?.toString('utf8') || yaml
+          : jsYaml.safeDump(definition);
+        const snapshot = await AppSnapshot.create(
+          { AppId: dbApp.id, yaml: newYaml },
+          { transaction },
+        );
+        dbApp.AppSnapshots.push(snapshot);
+      }
       if (screenshots?.length) {
         await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
         logger.verbose(`Saving ${screenshots.length} screenshots`);
