@@ -10,7 +10,11 @@ import remarkStringify from 'remark-stringify';
 import unified from 'unified';
 import visit from 'unist-util-visit';
 
-const remark = unified().use(remarkParse).use(frontmatter).use(remarkStringify).freeze();
+const remark = unified()
+  .use(remarkParse)
+  .use(frontmatter)
+  .use(remarkStringify, { emphasis: '_' })
+  .freeze();
 
 const rehype = unified().use(remarkRehype).use(rehypeDocument).use(rehypeStringify).freeze();
 
@@ -63,7 +67,7 @@ export async function renderEmail(
   }
 
   const text = remark.stringify(mdast);
-  const hast = await rehype.run(mdast, { stem: subject });
+  const hast = await rehype.run(mdast);
   const html = rehype.stringify(hast);
   return { html, subject, text };
 }

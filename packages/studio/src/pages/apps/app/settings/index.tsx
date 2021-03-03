@@ -152,9 +152,9 @@ export function SettingsPage(): ReactElement {
           />
           <SimpleFormField
             addon={
-              <span className="button is-static">
+              <Button className="is-static" component="span">
                 {`.${app.OrganizationId}.${window.location.host}`}
-              </span>
+              </Button>
             }
             disabled={app.locked}
             help={<FormattedMessage {...messages.pathDescription} />}

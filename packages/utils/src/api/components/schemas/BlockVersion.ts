@@ -93,6 +93,28 @@ export const BlockVersion: OpenAPIV3.NonArraySchemaObject = {
       description: 'deprecated',
       additionalProperties: true,
     },
+    messages: {
+      type: 'object',
+      description: 'The translated messages for the block.',
+      required: ['en'],
+      properties: {
+        en: {
+          type: 'object',
+          additionalProperties: {
+            type: 'string',
+            description: 'The default translations to use.',
+            minLength: 1,
+          },
+        },
+      },
+      additionalProperties: {
+        type: 'object',
+        additionalProperties: {
+          type: 'string',
+          description: 'The translated messages for this language.',
+        },
+      },
+    },
     files: {
       type: 'array',
       description: 'A list of file assets that belong to the app version.',

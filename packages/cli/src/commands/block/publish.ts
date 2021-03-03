@@ -56,5 +56,6 @@ export async function handler({
     }
 
     await publishBlock(config, ignoreConflict);
+    logger.info('Finished extracting messages.');
   }
 }

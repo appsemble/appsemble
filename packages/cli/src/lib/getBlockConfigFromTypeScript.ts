@@ -178,6 +178,20 @@ function processParameters(program: Program, sourceFile: SourceFile): Definition
 }
 
 /**
+ * Get a messages object based on a TypeScript interface node.
+ *
+ * @param iface - The node to base the messages on.
+ * @param checker - The TypeScript type checker.
+ * @returns The action manifest to upload.
+ */
+function processMessages(
+  iface: InterfaceDeclaration,
+  checker: TypeChecker,
+): BlockManifest['messages'] {
+  return processInterface(iface, checker, (name, description) => [name, { description }]);
+}
+
+/**
  * Get the TypeScript program for a given path.
  *
  * @param blockPath - The path for which to get the TypeScript program.
@@ -238,7 +252,7 @@ function getProgram(blockPath: string): Program {
  */
 export function getBlockConfigFromTypeScript(
   blockConfig: BlockConfig,
-): Pick<BlockManifest, 'actions' | 'events' | 'parameters'> {
+): Pick<BlockManifest, 'actions' | 'events' | 'messages' | 'parameters'> {
   if ('actions' in blockConfig && 'events' in blockConfig && 'parameters' in blockConfig) {
     return blockConfig;
   }
@@ -249,6 +263,7 @@ export function getBlockConfigFromTypeScript(
   let actionInterface: InterfaceDeclaration;
   let eventEmitterInterface: InterfaceDeclaration;
   let eventListenerInterface: InterfaceDeclaration;
+  let messagesInterface: InterfaceDeclaration;
   let parametersSourceFile: SourceFile;
 
   program.getSourceFiles().forEach((sourceFile) => {
@@ -306,6 +321,10 @@ export function getBlockConfigFromTypeScript(
             }
             parametersSourceFile = sourceFile;
             break;
+          case 'Messages':
+            logger.info(`Found augmented interface 'Messages' in '${loc}'`);
+            messagesInterface = iface;
+            break;
           default:
             logger.warn(`Detected unused augmented type ${iface.name.text} in ${loc}`);
         }
@@ -324,5 +343,9 @@ export function getBlockConfigFromTypeScript(
       'parameters' in blockConfig
         ? blockConfig.parameters
         : processParameters(program, parametersSourceFile),
+    messages:
+      'messages' in blockConfig
+        ? blockConfig.messages
+        : processMessages(messagesInterface, checker),
   };
 }

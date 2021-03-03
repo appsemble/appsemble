@@ -1,0 +1,9 @@
+{
+  "fieldErrorLabel": "Een van de vereisten van dit veld is ongeldig.",
+  "formRequirementError": "Een van de vereisten van dit formulier is ongeldig.",
+  "invalidLabel": "Deze waarde is ongeldig",
+  "optionalLabel": "(Optioneel)",
+  "previousLabel": "Vorige",
+  "submitError": "Er is iets misgegaan bij het versturen van dit formulier",
+  "submitLabel": "Versturen"
+}

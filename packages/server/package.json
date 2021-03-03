@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.17.6",
+  "version": "0.18.0",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -29,9 +29,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.17.6",
-    "@appsemble/types": "0.17.6",
-    "@appsemble/utils": "0.17.6",
+    "@appsemble/node-utils": "0.18.0",
+    "@appsemble/types": "0.18.0",
+    "@appsemble/utils": "0.18.0",
     "@fortawesome/fontawesome-common-types": "^0.2.34",
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@hapi/boom": "^9.1.1",
@@ -88,10 +88,10 @@
     "reflect-metadata": "^0.1.13",
     "rehype-document": "^5.1.0",
     "rehype-stringify": "^8.0.0",
-    "remark-frontmatter": "^2.0.0",
-    "remark-parse": "^8.0.3",
-    "remark-rehype": "^7.0.0",
-    "remark-stringify": "^8.1.1",
+    "remark-frontmatter": "^3.0.0",
+    "remark-parse": "^9.0.0",
+    "remark-rehype": "^8.0.0",
+    "remark-stringify": "^9.0.1",
     "semver": "^7.3.4",
     "sequelize": "6.5.0",
     "sequelize-typescript": "^2.0.0",

@@ -1,0 +1,25 @@
+.bottom-nav {
+  background-color: hsl(0, 0%, 100%);
+  bottom: 0;
+  box-shadow: 0 -0.25rem 0.25rem 0 hsla(0, 0%, 0%, 0.1);
+  height: 7rem;
+  position: fixed;
+  white-space: nowrap;
+  width: 100%;
+  z-index: 1000;
+}
+
+.bottom-nav-item {
+  flex: 1 0 0;
+}
+
+.bottom-nav-item-link {
+  align-items: center;
+  flex-flow: column;
+  height: 100%;
+  justify-content: flex-end;
+
+  &.is-active {
+    color: var(--primary-color);
+  }
+}

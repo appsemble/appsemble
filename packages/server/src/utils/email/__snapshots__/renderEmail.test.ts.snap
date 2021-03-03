@@ -5,7 +5,6 @@ exports[`emailAdded should render emailAdded 0: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Email added to account</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -47,7 +46,6 @@ exports[`emailAdded should render emailAdded 1: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Email added to account</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -89,7 +87,6 @@ exports[`organizationInvite should render organizationInvite 0: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Invited to organization</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -126,7 +123,6 @@ exports[`organizationInvite should render organizationInvite 1: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Invited to organization</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -163,7 +159,6 @@ exports[`resend should render resend 0: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Confirm account registration</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -205,7 +200,6 @@ exports[`resend should render resend 1: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Confirm account registration</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -247,7 +241,6 @@ exports[`reset should render reset 0: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Password reset</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -284,7 +277,6 @@ exports[`reset should render reset 1: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Password reset</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -321,7 +313,6 @@ exports[`welcome should render welcome 0: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Welcome to Appsemble</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>
@@ -355,7 +346,6 @@ exports[`welcome should render welcome 1: html 1`] = `
 <html lang=\\"en\\">
 <head>
 <meta charset=\\"utf-8\\">
-<title>Welcome to Appsemble</title>
 <meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
 </head>
 <body>

@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { Title, useMessages } from '@appsemble/react-components';
+import { Utils } from '@appsemble/sdk';
 import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
@@ -17,6 +18,7 @@ import { makeActions } from '../../utils/makeActions';
 import { prefixBlockURL } from '../../utils/prefixBlockURL';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
+import { useAppMessages } from '../AppMessagesProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.module.css';
@@ -77,6 +79,7 @@ export function Block({
   const route = useRouteMatch<{ lang: string }>();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
+  const { getBlockMessage } = useAppMessages();
   const { teams, updateTeam, userInfo } = useUser();
 
   const ref = useRef<HTMLDivElement>();
@@ -139,14 +142,19 @@ export function Block({
     const bulmaUrl =
       definition.theme || page.theme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
-    const utils = {
+    const utils: Utils = {
       remap,
       showMessage: push,
-      addCleanup(fn: () => void) {
+      addCleanup(fn) {
         cleanups.current.push(fn);
       },
-      asset(id: string) {
+      asset(id) {
         return `${apiUrl}/api/apps/${appId}/assets/${id}`;
+      },
+      formatMessage(message, args = {}) {
+        return getBlockMessage(blockName, block.version, { id: String(message) }).format(
+          args,
+        ) as string;
       },
     };
 
@@ -180,11 +188,13 @@ export function Block({
     })();
   }, [
     block,
+    blockName,
     data,
     definition,
     ee,
     extraCreators,
     flowActions,
+    getBlockMessage,
     history,
     initialized,
     location,

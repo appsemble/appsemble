@@ -94,21 +94,18 @@ export interface RepeatedField {
 }
 
 declare module '@appsemble/sdk' {
+  interface Messages {
+    /**
+     * The message to display when data could not be loaded.
+     */
+    error: never;
+
+    /**
+     * The message to display when the data to display is empty.
+     */
+    emptyMessage: never;
+  }
   interface Parameters {
-    /**
-     * A message to display when data could not be loaded.
-     *
-     * @default 'An error occurred when fetching the data'
-     */
-    errorMessage?: Remapper;
-
-    /**
-     * A message to display when the data to display is empty.
-     *
-     * @default 'No data is available'
-     */
-    emptyMessage?: Remapper;
-
     /**
      * A list of fields to display.
      */

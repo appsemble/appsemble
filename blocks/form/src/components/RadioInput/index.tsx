@@ -1,4 +1,4 @@
-import { useBlock } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import { VNode } from 'preact';
 
@@ -20,10 +20,7 @@ export function RadioInput({
   onChange,
   value,
 }: RadioInputProps): VNode {
-  const {
-    parameters: { optionalLabel },
-    utils,
-  } = useBlock();
+  const { utils } = useBlock();
   const { label, options, tag } = field;
   const required = isRequired(field);
 
@@ -35,7 +32,7 @@ export function RadioInput({
       label={utils.remap(label, value)}
       name={name}
       onChange={onChange}
-      optionalLabel={utils.remap(optionalLabel, value)}
+      optionalLabel={<FormattedMessage id="optionalLabel" />}
       required={required}
       tag={utils.remap(tag, value)}
       value={value}

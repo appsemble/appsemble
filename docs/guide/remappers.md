@@ -149,10 +149,10 @@ Format a string using remapped input variables.
 
 #### Parameters
 
-| Name       | Description                                                                                                                        |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `template` | The template string to format. This may use the [ICU message format](http://userguide.icu-project.org/formatparse/messages) synax. |
-| `values`   | A set of remappers to convert the input to usable values.                                                                          |
+| Name       | Description                                                                                                                         |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `template` | The template string to format. This may use the [ICU message format](http://userguide.icu-project.org/formatparse/messages) syntax. |
+| `values`   | A set of remappers to convert the input to usable values.                                                                           |
 
 ### `string.replace`
 

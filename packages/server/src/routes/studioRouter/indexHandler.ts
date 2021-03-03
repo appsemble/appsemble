@@ -5,7 +5,7 @@ import { KoaContext } from '../../types';
 import { argv } from '../../utils/argv';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
 import { createSettings, makeCSP, render } from '../../utils/render';
-import { sentryDsnToReportUri } from '../../utils/sentryDsnToReportUri';
+import { sentryDsnToReportUri } from '../../utils/sentry';
 
 /**
  * Serve `index.html` for editor related routes.

@@ -18,7 +18,6 @@ import { useParams } from 'react-router-dom';
 
 import { useApp } from '../..';
 import { JSONSchemaEditor } from '../../../../../components/JSONSchemaEditor';
-import { download } from '../../../../../utils/download';
 import { messages } from './messages';
 import { ResourceRow } from './ResourceRow';
 
@@ -113,14 +112,6 @@ export function ResourcePage(): ReactElement {
     ],
   );
 
-  const downloadCsv = useCallback(async () => {
-    await download(
-      `/api/apps/${app.id}/resources/${resourceName}`,
-      `${resourceName}.csv`,
-      'text/csv',
-    );
-  }, [app, resourceName]);
-
   if (!app || loading) {
     return <Loader />;
   }
@@ -161,7 +152,12 @@ export function ResourcePage(): ReactElement {
             <FormattedMessage {...messages.createButton} />
           </span>
         </Button>
-        <Button icon="download" onClick={downloadCsv}>
+        <Button
+          component="a"
+          download={`${resourceName}.csv`}
+          href={`/api/apps/${app.id}/resources/${resourceName}`}
+          icon="download"
+        >
           <FormattedMessage {...messages.export} />
         </Button>
       </div>

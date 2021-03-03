@@ -4,13 +4,14 @@ import {
   BelongsTo,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
 
-import { BlockVersion, Organization } from '.';
+import { BlockVersion } from '.';
 
 /**
  * Blob assets may be stored in the database before a block version itself is actually stored.
@@ -26,31 +27,25 @@ export class BlockAsset extends Model {
   @Column
   id: number;
 
+  @AllowNull(false)
   @Column
   content: Buffer;
 
+  @AllowNull(false)
   @Column
   filename: string;
 
   @Column
   mime: string;
 
+  @AllowNull(false)
   @ForeignKey(() => BlockVersion)
-  @Column
-  name: string;
-
-  @ForeignKey(() => BlockVersion)
-  @Column
-  version: string;
+  @Column(DataType.UUID)
+  BlockVersionId: string;
 
   @CreatedAt
   created: Date;
 
-  @AllowNull(false)
-  @ForeignKey(() => Organization)
-  @Column
-  OrganizationId: string;
-
-  @BelongsTo(() => Organization)
-  Organization: Organization;
+  @BelongsTo(() => BlockVersion)
+  BlockVersion: BlockVersion;
 }
