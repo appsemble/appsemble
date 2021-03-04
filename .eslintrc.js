@@ -73,5 +73,11 @@ module.exports = {
         'import/no-extraneous-dependencies': 'off',
       },
     },
+    {
+      files: ['**/*.md/*.js'],
+      rules: {
+        'no-undef': 'off',
+      },
+    },
   ],
 };
