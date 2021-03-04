@@ -92,7 +92,7 @@
   "studio.src.components.GUIEditor.GUIEditorEditBlock.noParameters": "{name} n’a pas de paramètres modifiables",
   "studio.src.components.GUIEditor.GUIEditorEditBlock.parameters": "Paramètres",
   "studio.src.components.GUIEditor.GUIEditorNavBar.addBlock": "Ajouter un bloc",
-  "studio.src.components.GUIEditor.GUIEditorNavBar.editBlock": "Modifier ",
+  "studio.src.components.GUIEditor.GUIEditorNavBar.editBlock": "Modifier",
   "studio.src.components.GUIEditor.GUIEditorNavBar.recipe": "Recette",
   "studio.src.components.GUIEditor.GUIEditorToolbox.error": "Il y a eu un problème de chargement des blocs",
   "studio.src.components.GUIEditor.GUIEditorToolbox.moreInfo": "Plus d’infos",
