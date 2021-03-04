@@ -10,7 +10,7 @@ import {
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import classNames from 'classnames';
-import {
+import React, {
   createContext,
   Dispatch,
   lazy,
@@ -35,6 +35,7 @@ import { ResourcesRoutes } from './resources';
 import { RolesPage } from './roles';
 import { SecretsPage } from './secrets';
 import { SettingsPage } from './settings';
+import { SnapshotsRoutes } from './snapshots';
 import { TeamsRoutes } from './teams';
 import { TranslationsPage } from './translations';
 
@@ -134,6 +135,11 @@ export function AppRoutes(): ReactElement {
         {editPermission && app.definition.security && (
           <MenuItem icon="hands-helping" to={`${url}/teams`}>
             <FormattedMessage {...messages.teams} />
+          </MenuItem>
+        )}
+        {editPermission && (
+          <MenuItem icon="clock" to={`${url}/snapshots`}>
+            <FormattedMessage {...messages.snapshots} />
           </MenuItem>
         )}
         {editPermission && (
@@ -242,6 +248,13 @@ export function AppRoutes(): ReactElement {
           permission={Permission.EditApps}
         >
           <SecretsPage />
+        </ProtectedRoute>
+        <ProtectedRoute
+          organization={organization}
+          path={`${path}/snapshots`}
+          permission={Permission.EditApps}
+        >
+          <SnapshotsRoutes />
         </ProtectedRoute>
         <Redirect to={url} />
       </MetaSwitch>
