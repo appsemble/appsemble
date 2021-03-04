@@ -176,6 +176,7 @@ export default function EditPage(): ReactElement {
             layout: data.layout,
             files: data.files,
             actions: data.actions,
+            events: data.events,
           };
         }),
       );
