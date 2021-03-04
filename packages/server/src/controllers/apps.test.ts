@@ -8,6 +8,7 @@ import {
   AppBlockStyle,
   AppRating,
   AppScreenshot,
+  AppSnapshot,
   BlockVersion,
   Member,
   Organization,
@@ -1575,6 +1576,110 @@ describe('deleteApp', () => {
     expect(response).toMatchObject({
       status: 403,
       data: {},
+    });
+  });
+});
+
+describe('getAppSnapshots', () => {
+  it('should return a list of app snapshots', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await AppSnapshot.create({
+      AppId: app.id,
+      UserId: user.id,
+      yaml: "name: Test App\ndefaultPage: 'Test Page'",
+    });
+    await AppSnapshot.create({
+      AppId: app.id,
+      UserId: user.id,
+      yaml: "name: Test App\ndefaultPage: 'Test Page'",
+    });
+
+    authorizeStudio(user);
+    const response = await request.get(`/api/apps/${app.id}/snapshots`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: expect.any(Number),
+          $created: '1970-01-01T00:00:00.000Z',
+          $author: { name: user.name, id: user.id },
+        },
+        {
+          id: expect.any(Number),
+          $created: '1970-01-01T00:00:00.000Z',
+          $author: { name: user.name, id: user.id },
+        },
+      ],
+    });
+  });
+});
+
+describe('getAppSnapshot', () => {
+  it('should return an app snapshot', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const snapshot = await AppSnapshot.create({
+      AppId: app.id,
+      UserId: user.id,
+      yaml: "name: Test App\ndefaultPage: 'Test Page 1'",
+    });
+    await AppSnapshot.create({
+      AppId: app.id,
+      UserId: user.id,
+      yaml: "name: Test App\ndefaultPage: 'Test Page 2'",
+    });
+
+    authorizeStudio(user);
+    const response = await request.get(`/api/apps/${app.id}/snapshots/${snapshot.id}`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: expect.any(Number),
+        $created: '1970-01-01T00:00:00.000Z',
+        $author: { name: user.name, id: user.id },
+        yaml: snapshot.yaml,
+      },
+    });
+  });
+
+  it('should not return an snapshot for a snapshot that doesn’t exist', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await AppSnapshot.create({
+      AppId: app.id,
+      UserId: user.id,
+      yaml: "name: Test App\ndefaultPage: 'Test Page 1'",
+    });
+
+    authorizeStudio(user);
+    const response = await request.get(`/api/apps/${app.id}/snapshots/1000`);
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        message: 'Snapshot not found',
+      },
     });
   });
 });

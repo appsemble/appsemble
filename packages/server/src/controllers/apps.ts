@@ -32,6 +32,7 @@ import {
   Organization,
   Resource,
   transactional,
+  User,
 } from '../models';
 import { KoaContext } from '../types';
 import { checkAppLock } from '../utils/checkAppLock';
@@ -45,6 +46,7 @@ interface Params {
   blockId: string;
   organizationId: string;
   screenshotId: number;
+  snapshotId: number;
 }
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
@@ -460,6 +462,67 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
 
   await app.update({ path: null });
   await app.destroy();
+}
+
+export async function getAppSnapshots(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: {
+      model: AppSnapshot,
+      attributes: { exclude: ['yaml'] },
+      include: [{ model: User, required: false }],
+    },
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  ctx.body = app.AppSnapshots.map((snapshot) => ({
+    id: snapshot.id,
+    $created: snapshot.created,
+    $author: {
+      id: snapshot?.User?.id,
+      name: snapshot?.User?.name,
+    },
+  }));
+}
+
+export async function getAppSnapshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, snapshotId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: {
+      model: AppSnapshot,
+      required: false,
+      include: [{ model: User, required: false }],
+      where: { id: snapshotId },
+    },
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppSnapshots.length) {
+    throw notFound('Snapshot not found');
+  }
+
+  const [snapshot] = app.AppSnapshots;
+  ctx.body = {
+    id: snapshot.id,
+    $created: snapshot.created,
+    $author: {
+      id: snapshot?.User?.id,
+      name: snapshot?.User?.name,
+    },
+    yaml: snapshot.yaml,
+  };
 }
 
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
