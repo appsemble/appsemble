@@ -1,7 +1,7 @@
 import { Table } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
+import { Schema } from 'jsonschema';
 import { ReactElement } from 'react';
-import { Definition } from 'typescript-json-schema';
 
 import { ParameterRow } from '../ParameterRow';
 import { messages } from './messages';
@@ -10,7 +10,7 @@ interface ParameterTableProps {
   /**
    * The parameters that should be rendered.
    */
-  parameters: Definition;
+  parameters: Schema;
 }
 
 /**
@@ -35,7 +35,11 @@ export function ParameterTable({ parameters }: ParameterTableProps): ReactElemen
             name={key}
             parent={parameters}
             recurse
-            value={value as Definition}
+            required={
+              (Array.isArray(parameters.required) && parameters.required.includes(key)) ||
+              value.required === true
+            }
+            value={value}
           />
         ))}
       </tbody>

@@ -1,8 +1,8 @@
 import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
+import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { Fragment, ReactElement } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { Definition } from 'typescript-json-schema';
 
 interface ParameterRowProps {
   /**
@@ -10,7 +10,7 @@ interface ParameterRowProps {
    *
    * This is used to determine whether or not a property is required.
    */
-  parent: Definition;
+  parent: Schema;
 
   /**
    * The name of the property to render.
@@ -18,9 +18,14 @@ interface ParameterRowProps {
   name: string;
 
   /**
+   * WHether or not this property is requir
+   */
+  required: boolean;
+
+  /**
    * The schema to render.
    */
-  value: Definition;
+  value: Schema;
 
   /**
    * Whether recursion should be applied to further render children properties.
@@ -34,7 +39,13 @@ interface ParameterRowProps {
  * Multiple rows are returned if `recurse` is set to true and if the parameter is an object or an
  * array.
  */
-export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps): ReactElement {
+export function ParameterRow({
+  name,
+  parent,
+  recurse,
+  required,
+  value,
+}: ParameterRowProps): ReactElement {
   const {
     params: { lang },
     url,
@@ -43,7 +54,13 @@ export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps
   if (value.type === 'array' && recurse) {
     return (
       <>
-        <ParameterRow name={`${name}[]`} parent={parent} recurse={false} value={value} />
+        <ParameterRow
+          name={`${name}[]`}
+          parent={parent}
+          recurse={false}
+          required={required}
+          value={value}
+        />
         {Object.entries(value.items)
           .filter(([childName, child]) => typeof child === 'object' && childName !== 'anyOf')
           .map(([childName, child]) => (
@@ -52,6 +69,7 @@ export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps
               name={`${name}[].${childName}`}
               parent={value}
               recurse
+              required={required}
               value={child}
             />
           ))}
@@ -62,7 +80,13 @@ export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps
   if (value.type === 'object' && recurse) {
     return (
       <>
-        <ParameterRow name={name} parent={parent} recurse={false} value={value} />
+        <ParameterRow
+          name={name}
+          parent={parent}
+          recurse={false}
+          required={required}
+          value={value}
+        />
         {Object.entries(value.properties)
           .filter(([childName, child]) => typeof child === 'object' && childName !== 'anyOf')
           .map(([childName, child]) => (
@@ -71,7 +95,8 @@ export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps
               name={`${name}.${childName}`}
               parent={value}
               recurse
-              value={child as Definition}
+              required={required}
+              value={child}
             />
           ))}
       </>
@@ -119,11 +144,7 @@ export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps
   return (
     <tr>
       <td>{name}</td>
-      <td>
-        {parent.required?.some((r) => name.replace(/\[]/g, '').endsWith(r)) && (
-          <Icon className="has-text-success" icon="check" />
-        )}
-      </td>
+      <td>{required && <Icon className="has-text-success" icon="check" />}</td>
       <td>
         {value.format === 'remapper' ? (
           <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/guide/remappers`}>
@@ -142,7 +163,7 @@ export function ParameterRow({ name, parent, recurse, value }: ParameterRowProps
           <div>
             {'Array<'}
             <Join separator=" | ">
-              {'type' in (value.items as Definition) && (value.items as Definition).type}
+              {'type' in value.items && value.items?.type}
               {Object.values(value.items)
                 .map(({ type: t }) => t)
                 .filter(Boolean)
