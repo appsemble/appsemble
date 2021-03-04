@@ -13,7 +13,7 @@ import {
 
 import { App, User } from '.';
 
-@Table({ tableName: 'AppSnapshot' })
+@Table({ tableName: 'AppSnapshot', updatedAt: false })
 export class AppSnapshot extends Model {
   @PrimaryKey
   @AutoIncrement
@@ -35,8 +35,11 @@ export class AppSnapshot extends Model {
   @BelongsTo(() => App)
   App: App;
 
+  /**
+   * XXX: Update this to not allow null after the migration has finished
+   */
   @ForeignKey(() => User)
-  @AllowNull(false)
+  @AllowNull(true)
   @Column(DataType.UUID)
   UserId: string;
 

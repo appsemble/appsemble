@@ -40,7 +40,7 @@ export function getAppFromRecord(
     longDescription: record.longDescription,
     definition,
     yaml:
-      record.AppSnapshots[0]?.yaml ||
+      record.AppSnapshots?.[0]?.yaml ??
       (!omittedValues.includes('yaml') && yaml.safeDump(record.definition)),
     rating: record.get('RatingCount')
       ? {

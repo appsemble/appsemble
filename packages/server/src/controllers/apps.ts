@@ -402,7 +402,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
           { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
           { transaction },
         );
-        dbApp.AppSnapshots.push(snapshot);
+        dbApp.AppSnapshots = [snapshot];
       }
       if (screenshots?.length) {
         await AppScreenshot.destroy({ where: { AppId: appId }, transaction });

@@ -2,10 +2,11 @@ import { randomBytes } from 'crypto';
 
 import { normalize, Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
+import { safeDump } from 'js-yaml';
 import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
-import { App, AppBlockStyle, AppMessages, Resource } from '../models';
+import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
@@ -33,8 +34,13 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
     request: {
       body: { description, name, organizationId, private: isPrivate, resources, templateId },
     },
+    user,
   } = ctx;
 
+  /**
+   * XXX: This should include the existing YAML definition
+   * when we get around to editing the YAML’s name/description values
+   */
   const template = await App.findOne({
     where: { id: templateId },
     include: [
@@ -90,6 +96,15 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
     }
 
     const record = await App.create(result, { include: [Resource, AppMessages] });
+    const snapshot = await AppSnapshot.create({
+      AppId: record.id,
+      UserId: user.id,
+      /**
+       * XXX: Replace this with the template’s YAML but with the edited name and description
+       */
+      yaml: safeDump(result.definition),
+    });
+    record.AppSnapshots = [snapshot];
     if (template.AppBlockStyles.length) {
       await AppBlockStyle.bulkCreate(
         template.AppBlockStyles.map((blockStyle) => ({

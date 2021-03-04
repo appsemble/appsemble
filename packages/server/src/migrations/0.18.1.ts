@@ -28,8 +28,7 @@ export async function up(db: Sequelize): Promise<void> {
       },
     },
     UserId: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.UUID,
       references: {
         model: 'User',
         key: 'id',
@@ -51,7 +50,7 @@ export async function up(db: Sequelize): Promise<void> {
     apps.map((app) => {
       const yaml = app.yaml ?? safeDump(app.definition);
       return db.query(
-        'INSERT INTO "AppSnapshot" (id, yaml, "AppId", created) VALUES DEFAULT, ?, ?, NOW()',
+        'INSERT INTO "AppSnapshot" (id, yaml, "AppId", created) VALUES (DEFAULT, ?, ?, NOW())',
         {
           replacements: [yaml, app.id],
           type: QueryTypes.INSERT,
