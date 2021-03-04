@@ -27,6 +27,14 @@ export async function up(db: Sequelize): Promise<void> {
         key: 'id',
       },
     },
+    UserId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      references: {
+        model: 'User',
+        key: 'id',
+      },
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,

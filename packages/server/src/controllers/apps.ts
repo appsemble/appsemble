@@ -293,6 +293,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         yaml,
       },
     },
+    user,
   } = ctx;
 
   let result: Partial<App>;
@@ -398,7 +399,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
           ? yaml.contents?.toString('utf8') || yaml
           : jsYaml.safeDump(definition);
         const snapshot = await AppSnapshot.create(
-          { AppId: dbApp.id, yaml: newYaml },
+          { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
           { transaction },
         );
         dbApp.AppSnapshots.push(snapshot);

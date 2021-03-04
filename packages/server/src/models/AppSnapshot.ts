@@ -11,7 +11,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { App } from '.';
+import { App, User } from '.';
 
 @Table({ tableName: 'AppSnapshot' })
 export class AppSnapshot extends Model {
@@ -34,4 +34,12 @@ export class AppSnapshot extends Model {
 
   @BelongsTo(() => App)
   App: App;
+
+  @ForeignKey(() => User)
+  @AllowNull(false)
+  @Column(DataType.UUID)
+  UserId: string;
+
+  @BelongsTo(() => User)
+  User: User;
 }
