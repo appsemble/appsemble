@@ -361,6 +361,7 @@ production:
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
       --set "ingress.tls.secretName=$INGRESS_TLS_SECRET_NAME"
+      --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
