@@ -1,4 +1,4 @@
 {
-    "emptyMessage": "",
-    "error": ""
+  "emptyMessage": "Ingen tilgængelig data.",
+  "error": "Der opstod en fejl under hentning af data"
 }
