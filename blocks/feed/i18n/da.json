@@ -1,6 +1,6 @@
 {
-    "anonymousLabel": "",
-    "emptyLabel": "",
-    "replyErrorMessage": "",
-    "replyLabel": ""
+  "anonymousLabel": "Anonym",
+  "emptyLabel": "Ingen data til visning",
+  "replyErrorMessage": "Der gik noget galt ved at sende denne besked.",
+  "replyLabel": "Læg en besked…"
 }
