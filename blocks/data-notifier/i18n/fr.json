@@ -1,5 +1,5 @@
 {
-    "buttonLabel": "",
-    "newMessage": "",
-    "updatedMessage": ""
+  "buttonLabel": "Actualiser",
+  "newMessage": "De nouvelles données sont disponibles",
+  "updatedMessage": "Les données ont été modifiées"
 }
