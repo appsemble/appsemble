@@ -18,7 +18,7 @@ interface ParameterRowProps {
   name: string;
 
   /**
-   * WHether or not this property is requir
+   * Whether or not this property is required
    */
   required: boolean;
 

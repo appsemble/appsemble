@@ -61,7 +61,7 @@ export interface ExtendedOAuth2State extends OAuth2State {
 declare module 'jsonschema' {
   interface Schema {
     /**
-     * On optional default value that’s used.
+     * An optional default value that’s used.
      *
      * https://github.com/tdegrunt/jsonschema/pull/335
      */
