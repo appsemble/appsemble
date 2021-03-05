@@ -474,6 +474,7 @@ export async function getAppSnapshots(ctx: KoaContext<Params>): Promise<void> {
       model: AppSnapshot,
       attributes: { exclude: ['yaml'] },
       include: [{ model: User, required: false }],
+      order: [['created', 'DESC']],
     },
   });
 
