@@ -1,4 +1,4 @@
 {
-    "error": "",
-    "noData": ""
+  "error": "Une erreur s'est produite lors de la récupération des données.",
+  "noData": "Il n'y a pas de données disponibles."
 }
