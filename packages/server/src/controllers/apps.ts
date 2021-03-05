@@ -474,7 +474,6 @@ export async function getAppSnapshots(ctx: KoaContext<Params>): Promise<void> {
       model: AppSnapshot,
       attributes: { exclude: ['yaml'] },
       include: [{ model: User, required: false }],
-      order: [['created', 'DESC']],
     },
   });
 
@@ -482,7 +481,7 @@ export async function getAppSnapshots(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
-  ctx.body = app.AppSnapshots.map((snapshot) => ({
+  ctx.body = app.AppSnapshots.sort((a, b) => b.id - a.id).map((snapshot) => ({
     id: snapshot.id,
     $created: snapshot.created,
     $author: {

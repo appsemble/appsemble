@@ -1,6 +1,6 @@
 import { Title, useData } from '@appsemble/react-components';
 import { ReactElement } from 'react';
-import { FormattedDate, FormattedMessage, FormattedTime } from 'react-intl';
+import { FormattedDate, FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 import { ListButton } from 'studio/src/components/ListButton';
 
@@ -36,14 +36,14 @@ export function IndexPage(): ReactElement {
                   snapshot.$author?.id ?? <FormattedMessage {...messages.unknownUser} />
                 }
                 title={
-                  <>
-                    <span className="mr-1">
-                      <FormattedDate value={snapshot.$created} />
-                    </span>
-                    <span>
-                      <FormattedTime value={snapshot.$created} />
-                    </span>
-                  </>
+                  <FormattedDate
+                    day="numeric"
+                    hour="numeric"
+                    minute="numeric"
+                    month="long"
+                    value={snapshot.$created}
+                    year="numeric"
+                  />
                 }
                 to={`${url}/${snapshot.id}`}
               />
