@@ -1,4 +1,4 @@
 {
-    "error": "",
-    "noData": ""
+  "error": "Der opstod en fejl under hentning af data.",
+  "noData": "Der er ingen tilgængelige data."
 }
