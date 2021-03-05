@@ -85,7 +85,9 @@ export function Snapshot(): ReactElement {
         loadingMessage={<FormattedMessage {...messages.loading} />}
         result={result}
       >
-        {(snapshot) => <CodeBlock className="mt-4" code={snapshot.yaml} language="yaml" />}
+        {(snapshot) => (
+          <CodeBlock className="mt-4" code={app.yaml} language="yaml" modified={snapshot.yaml} />
+        )}
       </AsyncDataView>
     </>
   );
