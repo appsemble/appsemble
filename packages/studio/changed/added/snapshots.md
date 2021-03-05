@@ -1,1 +1,1 @@
-Add support for viewing and restoring earlier versions or “snapshots” of apps.
+Add support for viewing and restoring app snapshots.

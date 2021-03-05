@@ -1595,6 +1595,7 @@ describe('getAppSnapshots', () => {
       UserId: user.id,
       yaml: "name: Test App\ndefaultPage: 'Test Page'",
     });
+    clock.tick(60_000);
     await AppSnapshot.create({
       AppId: app.id,
       UserId: user.id,
@@ -1609,7 +1610,7 @@ describe('getAppSnapshots', () => {
       data: [
         {
           id: expect.any(Number),
-          $created: '1970-01-01T00:00:00.000Z',
+          $created: '1970-01-01T00:01:00.000Z',
           $author: { name: user.name, id: user.id },
         },
         {

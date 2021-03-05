@@ -10,7 +10,7 @@ import {
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import classNames from 'classnames';
-import React, {
+import {
   createContext,
   Dispatch,
   lazy,

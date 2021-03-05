@@ -8,25 +8,25 @@ import {
 import { AppDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { safeLoad } from 'js-yaml';
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { Snapshot as SnapshotType } from '..';
+import { Snapshot } from '..';
 import { useApp } from '../..';
 import { AsyncDataView } from '../../../../../components/AsyncDataView';
 import { CodeBlock } from '../../../../../components/CodeBlock';
 import { HeaderControl } from '../../../../../components/HeaderControl';
 import { messages } from './messages';
 
-export function Snapshot(): ReactElement {
+export function SnapshotPage(): ReactElement {
   const { app, setApp } = useApp();
   const push = useMessages();
   const {
     params: { snapshotId },
   } = useRouteMatch<{ snapshotId: string }>();
   const { formatDate, formatMessage } = useIntl();
-  const result = useData<SnapshotType>(`/api/apps/${app.id}/snapshots/${snapshotId}`);
+  const result = useData<Snapshot>(`/api/apps/${app.id}/snapshots/${snapshotId}`);
   const title = result.loading
     ? snapshotId
     : formatDate(result.data?.$created, {

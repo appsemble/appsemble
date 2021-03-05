@@ -4,7 +4,7 @@ import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { IndexPage } from './IndexPage';
 import { messages } from './messages';
-import { Snapshot as SnapshotRoute } from './snapshot';
+import { SnapshotPage } from './snapshot';
 
 export interface Snapshot {
   id: number;
@@ -26,7 +26,7 @@ export function SnapshotsRoutes(): ReactElement {
         <IndexPage />
       </Route>
       <Route exact path={`${path}/:snapshotId`}>
-        <SnapshotRoute />
+        <SnapshotPage />
       </Route>
       <Redirect to={url} />
     </MetaSwitch>
