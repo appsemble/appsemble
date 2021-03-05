@@ -1,9 +1,9 @@
 {
-    "fieldErrorLabel": "",
-    "formRequirementError": "",
-    "invalidLabel": "",
-    "optionalLabel": "",
-    "previousLabel": "",
-    "submitError": "",
-    "submitLabel": ""
+  "fieldErrorLabel": "Eine der Anforderungen dieses Feldes ist ungültig.",
+  "formRequirementError": "Eine der Anforderungen dieses Formulars ist ungültig.",
+  "invalidLabel": "Dieser Wert ist ungültig",
+  "optionalLabel": "(optional)",
+  "previousLabel": "Vorherige",
+  "submitError": "Beim Senden dieses Formulars ist ein Problem aufgetreten",
+  "submitLabel": "Übermitteln"
 }
