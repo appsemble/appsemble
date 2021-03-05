@@ -31,10 +31,8 @@ export function IndexPage(): ReactElement {
               <ListButton
                 icon="file-code"
                 key={snapshot.id}
-                subtitle={
-                  snapshot.$author?.name ??
-                  snapshot.$author?.id ?? <FormattedMessage {...messages.unknownUser} />
-                }
+                /* XXX: The Appsemble fallback should be removed after making user required */
+                subtitle={snapshot.$author?.name ?? snapshot.$author?.id ?? 'Appsemble'}
                 title={
                   <FormattedDate
                     day="numeric"
