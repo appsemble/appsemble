@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
 import { writeJson } from 'fs-extra';
-import webpack, { Configuration } from 'webpack';
+import webpack, { compilation, Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
 export const command = 'build';
@@ -19,28 +19,37 @@ export function builder(argv: Argv): Argv {
       default: true,
       description: 'Disable this flag to skip building @appsemble/studio',
     })
-    .option('stats', {
+    .option('app-stats', {
       normalize: true,
-      description: 'If enabled, write stats to stats.json in the project root',
+      description: 'If specified, write Webpack stats for the app build to this file',
+    })
+    .option('studio-stats', {
+      normalize: true,
+      description: 'If specified, write Webpack stats for the studio build to this file',
     });
 }
 
 interface Args {
   app: boolean;
+  appStats: string;
   studio: boolean;
-  stats: string;
+  studioStats: string;
 }
 
-export async function handler({ app, stats: statsFile, studio }: Args): Promise<void> {
+export async function handler({ app, appStats, studio, studioStats }: Args): Promise<void> {
   const configurations: Configuration[] = [];
+  let appConfig: Configuration;
+  let studioConfig: Configuration;
   if (app) {
-    configurations.push(createAppConfig({ mode: 'production' }));
+    appConfig = createAppConfig({ mode: 'production' });
+    configurations.push(appConfig);
   }
   if (studio) {
-    configurations.push(createStudioConfig({ mode: 'production' }));
+    studioConfig = createStudioConfig({ mode: 'production' });
+    configurations.push(studioConfig);
   }
   const compiler = webpack(configurations);
-  const result = await new Promise((resolve, reject) => {
+  const result = await new Promise<compilation.MultiStats>((resolve, reject) => {
     compiler.run((error, stats) => {
       if (error) {
         reject(error);
@@ -52,7 +61,15 @@ export async function handler({ app, stats: statsFile, studio }: Args): Promise<
       }
     });
   });
-  if (statsFile) {
-    await writeJson(statsFile, result, { spaces: 2 });
+
+  function writeStats(filename: string, config: Configuration): Promise<void> {
+    if (filename && config) {
+      logger.info(`Writing stats for ${config.name} to ${filename}`);
+      return writeJson(filename, result.stats[configurations.indexOf(config)].toJson(), {
+        spaces: 2,
+      });
+    }
   }
+  await writeStats(appStats, appConfig);
+  await writeStats(studioStats, studioConfig);
 }
