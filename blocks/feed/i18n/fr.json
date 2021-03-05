@@ -1,6 +1,6 @@
 {
-    "anonymousLabel": "",
-    "emptyLabel": "",
-    "replyErrorMessage": "",
-    "replyLabel": ""
+  "anonymousLabel": "Anonyme",
+  "emptyLabel": "aucune donnée à afficher",
+  "replyErrorMessage": "Une erreur s'est produite lors de la tentative d'envoi de ce message.",
+  "replyLabel": "Laissez un message…"
 }
