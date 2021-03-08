@@ -28,6 +28,7 @@ import { ProtectedRoute } from '../../../components/ProtectedRoute';
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';
 import { AssetsPage } from './assets';
+import { DefinitionPage } from './definition';
 import { IndexPage } from './IndexPage';
 import { messages } from './messages';
 import { NotificationsPage } from './notifications';
@@ -80,7 +81,7 @@ export function AppRoutes(): ReactElement {
   const mayEditResources = Boolean(editPermission && resourceNames?.length);
 
   useSideMenu(
-    organization && (
+    app && (
       <MenuSection
         label={
           <>
@@ -92,9 +93,13 @@ export function AppRoutes(): ReactElement {
         <MenuItem exact icon="info" to={url}>
           <FormattedMessage {...messages.details} />
         </MenuItem>
-        {editPermission && (
+        {editPermission ? (
           <MenuItem icon="edit" to={`${url}/edit`}>
             <FormattedMessage {...messages.editor} />
+          </MenuItem>
+        ) : (
+          <MenuItem icon="code" to={`${url}/definition`}>
+            <FormattedMessage {...messages.definition} />
           </MenuItem>
         )}
         {editPermission && (
@@ -182,6 +187,9 @@ export function AppRoutes(): ReactElement {
             <EditPage />
           </Suspense>
         </ProtectedRoute>
+        <Route path={`${path}/definition`}>
+          <DefinitionPage />
+        </Route>
         <ProtectedRoute
           organization={organization}
           path={`${path}/assets`}
