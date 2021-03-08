@@ -6,6 +6,7 @@ export const messages = defineMessages({
   assets: 'Assets',
   details: 'Details',
   editor: 'Editor',
+  definition: 'App definition',
   resources: 'Resources',
   settings: 'Settings',
   secrets: 'Secrets',
