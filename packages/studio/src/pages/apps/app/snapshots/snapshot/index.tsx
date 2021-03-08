@@ -5,14 +5,13 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { AppDefinition } from '@appsemble/types';
+import { AppDefinition, Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import { safeLoad } from 'js-yaml';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { Snapshot } from '..';
 import { useApp } from '../..';
 import { AsyncDataView } from '../../../../../components/AsyncDataView';
 import { CodeBlock } from '../../../../../components/CodeBlock';

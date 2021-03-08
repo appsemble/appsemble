@@ -6,16 +6,6 @@ import { IndexPage } from './IndexPage';
 import { messages } from './messages';
 import { SnapshotPage } from './snapshot';
 
-export interface Snapshot {
-  id: number;
-  $created: Date;
-  $author: {
-    id: string;
-    name?: string;
-  };
-  yaml?: string;
-}
-
 export function SnapshotsRoutes(): ReactElement {
   useMeta(messages.title);
   const { path, url } = useRouteMatch();

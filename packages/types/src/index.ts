@@ -11,6 +11,8 @@ import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
 import { Definition } from 'typescript-json-schema';
 
+export * from './author';
+export * from './snapshot';
 export { Theme };
 
 /**
