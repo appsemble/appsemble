@@ -12,6 +12,8 @@ import autolink from 'rehype-autolink-headings';
 import slug from 'rehype-slug';
 import frontmatter from 'remark-frontmatter';
 import gfm from 'remark-gfm';
+import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
+import { remarkMdxImages } from 'remark-mdx-images';
 import ServiceWorkerWebpackPlugin from 'serviceworker-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
@@ -20,9 +22,7 @@ import { CliConfigOptions, Configuration, EnvironmentPlugin } from 'webpack';
 
 import studioPkg from '../package.json';
 import { remarkHeading } from './remark/heading';
-import { remarkImages } from './remark/images';
 import { remarkRewriteLinks } from './remark/rewriteLinks';
-import { remarkYaml } from './remark/yaml';
 
 const minify: MinifyOptions = {
   collapseBooleanAttributes: true,
@@ -139,10 +139,10 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 remarkPlugins: [
                   frontmatter,
                   gfm,
+                  remarkMdxFrontmatter,
+                  remarkMdxImages,
                   remarkHeading,
-                  remarkYaml,
                   remarkRewriteLinks,
-                  remarkImages,
                 ],
                 rehypePlugins: [
                   slug,
