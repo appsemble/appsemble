@@ -43,6 +43,7 @@
     "fs-extra": "^9.1.0",
     "inquirer": "^7.3.3",
     "js-yaml": "^3.14.1",
+    "jsonschema": "^1.4.0",
     "normalize-path": "^3.0.0",
     "postcss": "^7.0.32",
     "postcss-import": "^12.0.1",

@@ -72,7 +72,7 @@ describe('checkBlocks', () => {
     expect(error).toBeInstanceOf(AppsembleValidationError);
     expect(error.message).toBe('Block validation failed');
     expect(error.data).toStrictEqual({
-      'pages.0.blocks.0.parameters/prop': 'should be string',
+      'pages.0.blocks.0.parameters.prop': 'is not of a type(s) string',
     });
   });
 

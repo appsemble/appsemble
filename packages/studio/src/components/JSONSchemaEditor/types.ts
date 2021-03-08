@@ -1,6 +1,5 @@
 import { NamedEvent } from '@appsemble/web-utils';
-import { OpenAPIV3 } from 'openapi-types';
-import { Definition } from 'typescript-json-schema';
+import { Schema } from 'jsonschema';
 
 export interface CommonJSONSchemaEditorProps<T = never> {
   /**
@@ -42,7 +41,7 @@ export interface CommonJSONSchemaEditorProps<T = never> {
   /**
    * The schema used to render the form elements.
    */
-  schema: Definition | OpenAPIV3.SchemaObject;
+  schema: Schema;
 
   /**
    * The value used to populate the editor.

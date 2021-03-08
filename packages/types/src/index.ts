@@ -7,9 +7,9 @@ import {
   Theme,
 } from '@appsemble/sdk/src/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
+import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
-import { Definition } from 'typescript-json-schema';
 
 export { Theme };
 
@@ -798,7 +798,7 @@ export interface BlockManifest {
   /**
    * A JSON schema to validate block parameters.
    */
-  parameters?: Definition;
+  parameters?: Schema;
 
   /**
    * @deprecated
