@@ -106,8 +106,9 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   );
 
   const getBlockMessage = useCallback(
-    (blockName: string, blockVersion: string, { id }: IntlMessage) => {
+    (blockName: string, blockVersion: string, { id }: IntlMessage, prefix: string) => {
       const message =
+        (prefix && messages.app?.[`${prefix}.${id}`]) ||
         messages.app?.[`${blockName}/${blockVersion}/${id}`] ||
         messages.blocks?.[blockName]?.[blockVersion]?.[id] ||
         '';
