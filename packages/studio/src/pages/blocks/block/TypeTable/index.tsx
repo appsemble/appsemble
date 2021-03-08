@@ -1,7 +1,7 @@
 import { Join, Table } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
+import { Schema } from 'jsonschema';
 import { ReactElement } from 'react';
-import { Definition } from 'typescript-json-schema';
 
 import { messages } from './messages';
 
@@ -9,7 +9,7 @@ interface TypeTableProps {
   /**
    * The definition of the type to render.
    */
-  definition: Definition;
+  definition: Schema;
 }
 
 /**

@@ -98,7 +98,6 @@
     "sharp": "^0.27.0",
     "to-ico": "^1.1.5",
     "type-fest": "^0.20.2",
-    "typescript-json-schema": "^0.48.0",
     "unified": "^9.2.0",
     "unist-util-visit": "^2.0.3",
     "uuid": "^8.3.2",

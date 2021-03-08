@@ -3,7 +3,6 @@ export * from './blockUtils';
 export * from './constants';
 export * from './has';
 export * from './normalize';
-export * from './validate';
 export * from './validateStyle';
 export * from './prefix';
 export * from './checkAppRole';

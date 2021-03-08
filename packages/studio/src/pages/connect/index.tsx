@@ -16,7 +16,7 @@ export function ConnectRoutes(): ReactElement {
       <ProtectedRoute exact path={path}>
         <IndexPage />
       </ProtectedRoute>
-      <Route exact path={`${path}/connect/authorize/:type/:id`}>
+      <Route exact path={`${path}/:type/:id`}>
         <TypePage />
       </Route>
       <Redirect to={`/${lang}/apps`} />

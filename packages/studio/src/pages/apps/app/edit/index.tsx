@@ -8,16 +8,10 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { AppDefinition, BlockManifest } from '@appsemble/types';
-import {
-  api,
-  filterBlocks,
-  getAppBlocks,
-  SchemaValidationError,
-  validate,
-  validateStyle,
-} from '@appsemble/utils';
+import { api, filterBlocks, getAppBlocks, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import { safeDump, safeLoad } from 'js-yaml';
+import { Schema, Validator } from 'jsonschema';
 import { isEqual } from 'lodash';
 import { editor } from 'monaco-editor';
 import { OpenAPIV3 } from 'openapi-types';
@@ -33,6 +27,8 @@ import { getAppUrl } from '../../../../utils/getAppUrl';
 import { EditorNavBar } from './EditorNavBar';
 import styles from './index.module.css';
 import { messages } from './messages';
+
+const validator = new Validator();
 
 type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
 
@@ -159,12 +155,22 @@ export default function EditPage(): ReactElement {
       return;
     }
 
+    const validatorResult = validator.validate(
+      definition,
+      (openApiDocument.components.schemas.App as Schema).properties.definition,
+    );
+    if (!validatorResult.valid) {
+      push({
+        body: formatMessage(messages.schemaValidationFailed, {
+          properties: validatorResult.errors
+            .map((err) => err.property.replace(/^instance\./, ''))
+            .join(', '),
+        }),
+      });
+      setValid(false);
+      return;
+    }
     try {
-      await validate(
-        (openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject).properties
-          .definition as OpenAPIV3.SchemaObject,
-        definition,
-      );
       const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
         filterBlocks(Object.values(getAppBlocks(definition))).map(async (block) => {
           const { data } = await axios.get<BlockManifest>(
@@ -188,18 +194,8 @@ export default function EditPage(): ReactElement {
         { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
         getAppUrl(app.OrganizationId, app.path),
       );
-    } catch (error: unknown) {
-      if (error instanceof SchemaValidationError) {
-        const errors = error.data;
-        push({
-          body: formatMessage(messages.schemaValidationFailed, {
-            properties: Object.keys(errors).join(', '),
-          }),
-        });
-      } else {
-        push(formatMessage(messages.unexpected));
-      }
-
+    } catch {
+      push(formatMessage(messages.unexpected));
       setValid(false);
     }
     setDirty(false);

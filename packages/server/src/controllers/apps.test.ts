@@ -671,7 +671,7 @@ pages:
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0.parameters/foo': 'should be number',
+          'pages.0.blocks.0.parameters.foo': 'is not of a type(s) number',
         },
         error: 'Bad Request',
         message: 'Appsemble definition is invalid.',

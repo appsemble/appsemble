@@ -32,8 +32,8 @@
   "dependencies": {
     "@appsemble/sdk": "0.18.0",
     "@fortawesome/fontawesome-common-types": "^0.2.34",
+    "jsonschema": "^1.4.0",
     "openapi-types": "^7.2.3",
-    "type-fest": "^0.20.2",
-    "typescript-json-schema": "^0.48.0"
+    "type-fest": "^0.20.2"
   }
 }
