@@ -26,11 +26,13 @@ import {
   AppBlockStyle,
   AppRating,
   AppScreenshot,
+  AppSnapshot,
   BlockVersion,
   Member,
   Organization,
   Resource,
   transactional,
+  User,
 } from '../models';
 import { KoaContext } from '../types';
 import { checkAppLock } from '../utils/checkAppLock';
@@ -44,6 +46,7 @@ interface Params {
   blockId: string;
   organizationId: string;
   screenshotId: number;
+  snapshotId: number;
 }
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
@@ -134,7 +137,6 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       domain: domain || null,
       private: Boolean(isPrivate),
       template: Boolean(template),
-      yaml: yaml || jsYaml.safeDump(definition),
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
     };
@@ -172,6 +174,10 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     let record: App;
     await transactional(async (transaction) => {
       record = await App.create(result, { transaction });
+      const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.safeDump(definition);
+      record.AppSnapshots = [
+        await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
+      ];
       logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
       record.AppScreenshots = screenshots?.length
         ? await AppScreenshot.bulkCreate(
@@ -211,6 +217,7 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
     include: [
       { model: AppRating, attributes: [] },
       { model: Resource, attributes: [], where: { clonable: true }, required: false },
+      { model: AppSnapshot, order: [['created', 'DESC']], limit: 1 },
     ],
     group: ['App.id'],
   });
@@ -234,7 +241,7 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['yaml', 'icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     where: { private: false },
     include: [{ model: AppRating, attributes: [] }],
@@ -258,7 +265,7 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['yaml', 'icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
@@ -288,6 +295,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         yaml,
       },
     },
+    user,
   } = ctx;
 
   let result: Partial<App>;
@@ -364,10 +372,6 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       if (!isEqual(appFromYaml, definition)) {
         throw badRequest('Provided YAML was not equal to definition when converted.');
       }
-
-      result.yaml = yaml.contents?.toString('utf8') || yaml;
-    } else if (definition) {
-      result.yaml = jsYaml.safeDump(definition);
     }
 
     const checkPermissions: Permission[] = [];
@@ -392,6 +396,16 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
+      if (definition) {
+        const newYaml = yaml
+          ? yaml.contents?.toString('utf8') || yaml
+          : jsYaml.safeDump(definition);
+        const snapshot = await AppSnapshot.create(
+          { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
+          { transaction },
+        );
+        dbApp.AppSnapshots = [snapshot];
+      }
       if (screenshots?.length) {
         await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
         logger.verbose(`Saving ${screenshots.length} screenshots`);
@@ -448,6 +462,67 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
 
   await app.update({ path: null });
   await app.destroy();
+}
+
+export async function getAppSnapshots(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: {
+      model: AppSnapshot,
+      attributes: { exclude: ['yaml'] },
+      include: [{ model: User, required: false }],
+    },
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  ctx.body = app.AppSnapshots.sort((a, b) => b.id - a.id).map((snapshot) => ({
+    id: snapshot.id,
+    $created: snapshot.created,
+    $author: {
+      id: snapshot?.User?.id,
+      name: snapshot?.User?.name,
+    },
+  }));
+}
+
+export async function getAppSnapshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, snapshotId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: {
+      model: AppSnapshot,
+      required: false,
+      include: [{ model: User, required: false }],
+      where: { id: snapshotId },
+    },
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppSnapshots.length) {
+    throw notFound('Snapshot not found');
+  }
+
+  const [snapshot] = app.AppSnapshots;
+  ctx.body = {
+    id: snapshot.id,
+    $created: snapshot.created,
+    $author: {
+      id: snapshot?.User?.id,
+      name: snapshot?.User?.name,
+    },
+    yaml: snapshot.yaml,
+  };
 }
 
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {

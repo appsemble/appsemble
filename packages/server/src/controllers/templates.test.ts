@@ -1,7 +1,16 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import { safeDump } from 'js-yaml';
 
-import { App, AppBlockStyle, AppMessages, Member, Organization, Resource } from '../models';
+import {
+  App,
+  AppBlockStyle,
+  AppMessages,
+  AppSnapshot,
+  Member,
+  Organization,
+  Resource,
+} from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
@@ -64,6 +73,9 @@ beforeEach(async () => {
       block: '@appsemble/test',
       style: 'a { color: red; }',
     }),
+  ];
+  t1.AppSnapshots = [
+    await AppSnapshot.create({ AppId: t1.id, UserId: user.id, yaml: safeDump(t1.definition) }),
   ];
 
   templates = [t1, t2];

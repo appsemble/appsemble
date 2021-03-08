@@ -39,7 +39,9 @@ export function getAppFromRecord(
     iconUrl: `/api/apps/${record.id}/icon`,
     longDescription: record.longDescription,
     definition,
-    yaml: record.yaml || yaml.safeDump(record.definition),
+    yaml:
+      record.AppSnapshots?.[0]?.yaml ??
+      (!omittedValues.includes('yaml') && yaml.safeDump(record.definition)),
     rating: record.get('RatingCount')
       ? {
           average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,
