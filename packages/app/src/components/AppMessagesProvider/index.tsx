@@ -37,6 +37,7 @@ interface AppMessageContext {
     blockVersion: string,
     blockName: string,
     message: IntlMessage,
+    prefix?: string,
   ) => IntlMessageFormat;
   messageIds: string[];
 }
