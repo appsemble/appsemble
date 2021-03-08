@@ -234,7 +234,7 @@ export function TranslationsPage(): ReactElement {
               />
             ))}
             <FormButtons>
-              <SimpleSubmit disabled={submitting || app.locked}>
+              <SimpleSubmit className="mb-4" disabled={submitting || app.locked}>
                 <FormattedMessage {...messages.submit} />
               </SimpleSubmit>
             </FormButtons>
