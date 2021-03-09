@@ -4,7 +4,7 @@ export const messages = defineMessages({
   preview: 'Preview',
   publish: 'Publish',
   viewLive: 'View live',
-  recipe: 'Recipe',
+  app: 'App',
   coreStyle: 'Core style',
   sharedStyle: 'Shared style',
   switchManual: 'Manual editor',
