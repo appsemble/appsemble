@@ -33,7 +33,7 @@ preview of what the app will look like based on these definitions.
 Apps are defined using a data serialization language called `YAML`. To learn more about how YAML
 works, please refer to [this page](https://learnxinyminutes.com/docs/yaml).
 
-The _“Recipe”_ tab contains the app definition in YAML. Changes can be made to the app definition by
+The _“App”_ tab contains the app definition in YAML. Changes can be made to the app definition by
 editing them in this tab and pressing the _“Save”_ button. Doing so will replace the app definition
 in the right-hand panel with the new one, serving as a preview of the changes that have been made.
 Note that some functionality such as the [resource API](resources.md) when defining new resources
