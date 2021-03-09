@@ -8,7 +8,7 @@ import {
 import { AppDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { safeLoad } from 'js-yaml';
-import React, { ReactElement, useCallback } from 'react';
+import React, { lazy, ReactElement, Suspense, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
@@ -18,6 +18,10 @@ import { AsyncDataView } from '../../../../../components/AsyncDataView';
 import { CodeBlock } from '../../../../../components/CodeBlock';
 import { HeaderControl } from '../../../../../components/HeaderControl';
 import { messages } from './messages';
+
+const CodeDiffBlock = lazy(() =>
+  import('../../../../../components/CodeDiffBlock').then((m) => ({ default: m.CodeDiffBlock })),
+);
 
 export function Snapshot(): ReactElement {
   const { app, setApp } = useApp();
@@ -67,18 +71,20 @@ export function Snapshot(): ReactElement {
 
   return (
     <>
-      <HeaderControl
-        control={
-          <Button
-            disabled={result.loading || Boolean(result.error) || result.data.yaml === app.yaml}
-            onClick={onRestoreClick}
-          >
-            <FormattedMessage {...messages.restoreButton} />
-          </Button>
-        }
-      >
-        <FormattedMessage {...messages.title} values={{ name: title }} />
-      </HeaderControl>
+      <div className="mb-4">
+        <HeaderControl
+          control={
+            <Button
+              disabled={result.loading || Boolean(result.error) || result.data.yaml === app.yaml}
+              onClick={onRestoreClick}
+            >
+              <FormattedMessage {...messages.restoreButton} />
+            </Button>
+          }
+        >
+          <FormattedMessage {...messages.title} values={{ name: title }} />
+        </HeaderControl>
+      </div>
       <AsyncDataView
         emptyMessage={<FormattedMessage {...messages.noSnapshot} />}
         errorMessage={<FormattedMessage {...messages.error} />}
@@ -86,7 +92,9 @@ export function Snapshot(): ReactElement {
         result={result}
       >
         {(snapshot) => (
-          <CodeBlock className="mt-4" code={app.yaml} language="yaml" modified={snapshot.yaml} />
+          <Suspense fallback={<CodeBlock code={app.yaml} language="yaml" />}>
+            <CodeDiffBlock language="yaml" modified={snapshot.yaml} original={app.yaml} />
+          </Suspense>
         )}
       </AsyncDataView>
     </>
