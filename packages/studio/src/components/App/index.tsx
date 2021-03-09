@@ -12,7 +12,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import { Routes } from '../../pages';
 import { Breadcrumbs } from '../Breadcrumbs';
 import { ErrorFallback } from '../ErrorFallback';
-import { MDXAnchor, MDXCode, MDXPre, MDXWrapper } from '../MDX';
+import { MDXAnchor, MDXPre, MDXWrapper } from '../MDX';
 import { SideMenuBase } from '../SideMenuBase';
 import { SideMenuBottom } from '../SideMenuBottom';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
@@ -29,7 +29,6 @@ export function App(): ReactElement {
             components={{
               a: MDXAnchor,
               pre: MDXPre,
-              code: MDXCode,
               wrapper: MDXWrapper,
             }}
           >

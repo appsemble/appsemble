@@ -13,6 +13,7 @@ const unified = require('unified');
 module.exports = {
   plugins: [
     'remark-frontmatter',
+    'remark-gfm',
     'remark-lint-heading-increment',
     'remark-lint-no-duplicate-defined-urls',
     'remark-lint-no-duplicate-definitions',

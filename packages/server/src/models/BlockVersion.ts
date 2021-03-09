@@ -1,4 +1,5 @@
 import { ActionType, EventType } from '@appsemble/types';
+import { Schema } from 'jsonschema';
 import {
   AllowNull,
   BelongsTo,
@@ -13,7 +14,6 @@ import {
   Table,
   Unique,
 } from 'sequelize-typescript';
-import { Definition } from 'typescript-json-schema';
 
 import { BlockAsset, BlockMessages, Organization } from '.';
 
@@ -51,7 +51,7 @@ export class BlockVersion extends Model {
   longDescription: string;
 
   @Column(DataType.JSON)
-  parameters: Definition;
+  parameters: Schema;
 
   @Column(DataType.JSON)
   resources: any;

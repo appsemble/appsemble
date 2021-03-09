@@ -1,7 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  recipe: 'Recipe',
-  addBlock: 'Add Block',
-  editBlock: 'Edit',
+  title: 'App definition',
+  description: 'The app definition for {appName}',
 });

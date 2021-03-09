@@ -3,12 +3,36 @@ import { Heading, Root } from 'mdast';
 import { Attacher } from 'unified';
 
 function transformer(ast: Root): void {
-  ast.children.forEach((node: Heading) => {
+  ast.children.some((node: Heading) => {
     if (node.type === 'heading' && node.depth === 1) {
       ast.children.push({
-        type: 'export',
-        value: `export const title = ${JSON.stringify(node.children[0].value)};`,
+        type: 'mdxjsEsm',
+        data: {
+          estree: {
+            type: 'Program',
+            sourceType: 'module',
+            comments: [],
+            body: [
+              {
+                type: 'ExportNamedDeclaration',
+                specifiers: [],
+                declaration: {
+                  type: 'VariableDeclaration',
+                  kind: 'const',
+                  declarations: [
+                    {
+                      type: 'VariableDeclarator',
+                      id: { type: 'Identifier', name: 'title' },
+                      init: { type: 'Literal', value: node.children[0].value },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
       } as any);
+      return true;
     }
   });
 }

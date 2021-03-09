@@ -2,6 +2,7 @@ import { relative } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockConfig, BlockManifest } from '@appsemble/types';
+import { Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
 import {
   createProgram,
@@ -25,7 +26,7 @@ import {
   TypeChecker,
   TypeElement,
 } from 'typescript';
-import { buildGenerator, Definition } from 'typescript-json-schema';
+import { buildGenerator } from 'typescript-json-schema';
 
 /**
  * Get the tsdoc comment for a TypeScript node.
@@ -155,7 +156,7 @@ function processEvents(
  * @param sourceFile - The source file from which to extract parameters.
  * @returns The JSON schema for the block parameters.
  */
-function processParameters(program: Program, sourceFile: SourceFile): Definition {
+function processParameters(program: Program, sourceFile: SourceFile): Schema {
   if (!sourceFile) {
     return;
   }
@@ -174,7 +175,7 @@ function processParameters(program: Program, sourceFile: SourceFile): Definition
   const schema = generator.getSchemaForSymbol('Parameters');
   // This is the tsdoc that has been added to the SDK to aid the block developer.
   delete schema.description;
-  return schema;
+  return schema as Schema;
 }
 
 /**

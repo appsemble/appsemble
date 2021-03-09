@@ -59,7 +59,7 @@ export function createLink(url: string, children: (StaticPhrasingContent | strin
  * @returns A list node.
  */
 export function createList(children: ListItem[]): List {
-  return { type: 'list', children };
+  return { type: 'list', spread: false, children };
 }
 
 /**
@@ -69,7 +69,7 @@ export function createList(children: ListItem[]): List {
  * @returns A list item node.
  */
 export function createListItem(children: BlockContent[]): ListItem {
-  return { type: 'listItem', children };
+  return { type: 'listItem', spread: false, children };
 }
 
 /**
@@ -91,5 +91,5 @@ export function createRoot(children: BlockContent[]): Root {
  */
 export async function dumpMarkdown(mdast: Root, filename: string): Promise<string> {
   const prettierConfig = await prettier.resolveConfig(filename, { editorconfig: true });
-  return prettier.format(remark().stringify(mdast), { ...prettierConfig, parser: 'markdown' });
+  return prettier.format(remark.stringify(mdast), { ...prettierConfig, parser: 'markdown' });
 }

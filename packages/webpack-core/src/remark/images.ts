@@ -8,13 +8,58 @@ function transformer(ast: Root): void {
   visit<Image>(ast, { type: 'image' }, (node, index, parent) => {
     const identifier = `__image_${images.length}__`;
     images.push({
-      type: 'import',
-      value: `import ${identifier} from ${JSON.stringify(node.url)}`,
+      type: 'mdxjsEsm',
+      data: {
+        estree: {
+          type: 'Program',
+          sourceType: 'module',
+          comments: [],
+          body: [
+            {
+              type: 'ImportDeclaration',
+              specifiers: [
+                {
+                  type: 'ImportDefaultSpecifier',
+                  local: { type: 'Identifier', name: identifier },
+                },
+              ],
+              source: {
+                type: 'Literal',
+                value: node.url,
+              },
+            },
+          ],
+        },
+      },
     });
     // eslint-disable-next-line no-param-reassign
     parent.children[index] = {
-      type: 'jsx',
-      value: `<img alt=${JSON.stringify(node.alt)} src={${identifier}} />`,
+      type: 'mdxJsxFlowElement',
+      name: 'img',
+      attributes: [
+        { type: 'mdxJsxAttribute', name: 'alt', value: node.alt },
+        {
+          type: 'mdxJsxAttribute',
+          name: 'src',
+          value: {
+            type: 'mdxJsxAttributeValueExpression',
+            data: {
+              estree: {
+                type: 'Program',
+                sourceType: 'module',
+                comments: [],
+                body: [
+                  {
+                    type: 'ExpressionStatement',
+                    expression: { type: 'Identifier', name: identifier },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      ],
+      children: [],
     };
   });
   ast.children.unshift(...images);

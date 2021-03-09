@@ -5,10 +5,6 @@ declare module '*.md' {
   import { IconName } from '@fortawesome/fontawesome-common-types';
   import { FC } from 'react';
 
-  interface MDXMeta {
-    icon?: IconName;
-  }
-
   /**
    * The MDX document as a React component.
    */
@@ -16,9 +12,9 @@ declare module '*.md' {
   export default mdxComponent;
 
   /**
-   * Frontmatter YAML metadata available as an object.
+   * An icon for the document.
    */
-  export const meta: MDXMeta | undefined;
+  export const icon: IconName | undefined;
 
   /**
    * The level page header of the document as a string.

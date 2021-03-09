@@ -8,16 +8,10 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { AppDefinition, BlockManifest } from '@appsemble/types';
-import {
-  api,
-  filterBlocks,
-  getAppBlocks,
-  SchemaValidationError,
-  validate,
-  validateStyle,
-} from '@appsemble/utils';
+import { api, filterBlocks, getAppBlocks, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import { safeDump, safeLoad } from 'js-yaml';
+import { Schema, Validator } from 'jsonschema';
 import { isEqual } from 'lodash';
 import { editor } from 'monaco-editor';
 import { OpenAPIV3 } from 'openapi-types';
@@ -34,6 +28,8 @@ import { EditorNavBar } from './EditorNavBar';
 import styles from './index.module.css';
 import { messages } from './messages';
 
+const validator = new Validator();
+
 type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
 
 const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
@@ -49,6 +45,22 @@ const monacoGuiOptions: Options = {
   ...monacoDefaultOptions,
   readOnly: true,
 };
+
+/**
+ * These properties are passed to the allow attribute of the app preview. For a full list, see
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
+ */
+const allow = [
+  'autoplay',
+  'camera',
+  'geolocation',
+  'microphone',
+  'midi',
+  'payment',
+  'picture-in-picture',
+  'sync-xhr',
+  'usb',
+];
 
 // `React.lazy` works with default exports.
 // eslint-disable-next-line import/no-default-export
@@ -143,12 +155,22 @@ export default function EditPage(): ReactElement {
       return;
     }
 
+    const validatorResult = validator.validate(
+      definition,
+      (openApiDocument.components.schemas.App as Schema).properties.definition,
+    );
+    if (!validatorResult.valid) {
+      push({
+        body: formatMessage(messages.schemaValidationFailed, {
+          properties: validatorResult.errors
+            .map((err) => err.property.replace(/^instance\./, ''))
+            .join(', '),
+        }),
+      });
+      setValid(false);
+      return;
+    }
     try {
-      await validate(
-        (openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject).properties
-          .definition as OpenAPIV3.SchemaObject,
-        definition,
-      );
       const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
         filterBlocks(Object.values(getAppBlocks(definition))).map(async (block) => {
           const { data } = await axios.get<BlockManifest>(
@@ -160,6 +182,7 @@ export default function EditPage(): ReactElement {
             layout: data.layout,
             files: data.files,
             actions: data.actions,
+            events: data.events,
           };
         }),
       );
@@ -171,18 +194,8 @@ export default function EditPage(): ReactElement {
         { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
         getAppUrl(app.OrganizationId, app.path),
       );
-    } catch (error: unknown) {
-      if (error instanceof SchemaValidationError) {
-        const errors = error.data;
-        push({
-          body: formatMessage(messages.schemaValidationFailed, {
-            properties: Object.keys(errors).join(', '),
-          }),
-        });
-      } else {
-        push(formatMessage(messages.unexpected));
-      }
-
+    } catch {
+      push(formatMessage(messages.unexpected));
       setValid(false);
     }
     setDirty(false);
@@ -286,6 +299,7 @@ export default function EditPage(): ReactElement {
   }
 
   const onValueChange = onMonacoChange;
+  const src = getAppUrl(app.OrganizationId, app.path);
   let value;
   let language;
 
@@ -349,9 +363,10 @@ export default function EditPage(): ReactElement {
       <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
         {path && (
           <iframe
+            allow={allow.map((feature) => `${feature} ${src}`).join('; ')}
             className={styles.appFrame}
             ref={frame}
-            src={getAppUrl(app.OrganizationId, app.path)}
+            src={src}
             title={formatMessage(messages.iframeTitle)}
           />
         )}

@@ -1,12 +1,12 @@
 import { Title, useData } from '@appsemble/react-components';
+import { Snapshot } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
-import { ListButton } from 'studio/src/components/ListButton';
 
-import { Snapshot } from '..';
 import { useApp } from '../..';
 import { AsyncDataView } from '../../../../../components/AsyncDataView';
+import { ListButton } from '../../../../../components/ListButton';
 import { messages } from './messages';
 
 export function IndexPage(): ReactElement {

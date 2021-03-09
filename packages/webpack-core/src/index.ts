@@ -11,6 +11,7 @@ import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import autolink from 'rehype-autolink-headings';
 import slug from 'rehype-slug';
 import frontmatter from 'remark-frontmatter';
+import gfm from 'remark-gfm';
 import ServiceWorkerWebpackPlugin from 'serviceworker-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
@@ -132,16 +133,12 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           test: /\.mdx?$/,
           use: [
             {
-              loader: 'babel-loader',
+              loader: 'xdm/webpack.cjs',
               options: {
-                plugins: ['@babel/plugin-transform-react-jsx'],
-              },
-            },
-            {
-              loader: '@mdx-js/loader',
-              options: {
+                providerImportSource: '@mdx-js/react',
                 remarkPlugins: [
                   frontmatter,
+                  gfm,
                   remarkHeading,
                   remarkYaml,
                   remarkRewriteLinks,

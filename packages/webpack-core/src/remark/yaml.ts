@@ -3,17 +3,37 @@ import { safeLoad } from 'js-yaml';
 import { Root } from 'mdast';
 import { Attacher } from 'unified';
 
-function transformer(ast: Root): Root {
+function transformer(ast: Root): void {
   ast.children.forEach((node, index) => {
     if (node.type === 'yaml') {
       // eslint-disable-next-line no-param-reassign
       ast.children[index] = {
-        type: 'export',
-        value: `export const meta = ${JSON.stringify(safeLoad(node.value))};`,
+        type: 'mdxjsEsm',
+        data: {
+          estree: {
+            type: 'Program',
+            sourceType: 'module',
+            comments: [],
+            body: [
+              {
+                type: 'ExportNamedDeclaration',
+                specifiers: [],
+                declaration: {
+                  type: 'VariableDeclaration',
+                  kind: 'const',
+                  declarations: Object.entries(safeLoad(node.value)).map(([name, value]) => ({
+                    type: 'VariableDeclarator',
+                    id: { type: 'Identifier', name },
+                    init: { type: 'Literal', value },
+                  })),
+                },
+              },
+            ],
+          },
+        },
       } as any;
     }
   });
-  return ast;
 }
 
 /**

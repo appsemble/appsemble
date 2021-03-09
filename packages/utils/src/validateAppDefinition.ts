@@ -1,6 +1,6 @@
 import { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
-import Ajv from 'ajv';
 import { parseExpression } from 'cron-parser';
+import { Validator } from 'jsonschema';
 import languageTags from 'language-tags';
 import { Promisable } from 'type-fest';
 
@@ -44,29 +44,24 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
     const actionParameters = new Set<string>();
     const version = versions.get(block.version);
     if (version.parameters) {
-      const ajv = new Ajv();
-      ajv.addFormat('fontawesome', () => true);
-      ajv.addFormat('remapper', () => true);
-      ajv.addFormat('action', (property) => {
+      const validator = new Validator();
+
+      validator.customFormats.fontawesome = () => true;
+      validator.customFormats.remapper = () => true;
+      validator.customFormats.action = (property) => {
         actionParameters.add(property);
         return block.actions && Object.hasOwnProperty.call(block.actions, property);
-      });
-      ajv.addFormat(
-        'event-listener',
-        (property) =>
-          block.events?.listen && Object.hasOwnProperty.call(block.events.listen, property),
-      );
-      ajv.addFormat(
-        'event-emitter',
-        (property) => block.events?.emit && Object.hasOwnProperty.call(block.events.emit, property),
-      );
-      const validate = ajv.compile(version.parameters);
-      const valid = validate(block.parameters || {});
-      if (!valid) {
-        return validate.errors.reduce(
+      };
+      validator.customFormats['event-listener'] = (property) =>
+        block.events?.listen && Object.hasOwnProperty.call(block.events.listen, property);
+      validator.customFormats['event-emitter'] = (property) =>
+        block.events?.emit && Object.hasOwnProperty.call(block.events.emit, property);
+      const result = validator.validate(block.parameters || {}, version.parameters);
+      if (!result.valid) {
+        return result.errors.reduce(
           (accumulator, error) => ({
             ...accumulator,
-            [`${loc}.parameters${error.dataPath}`]: error.message,
+            [`${loc}.parameters.${error.property.replace(/^instance\./, '')}`]: error.message,
           }),
           acc,
         );
