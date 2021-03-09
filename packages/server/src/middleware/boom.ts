@@ -20,7 +20,7 @@ export function boomMiddleware(): KoaMiddleware {
       ctx.status = output.statusCode;
       ctx.body = output.payload;
       if (err.data) {
-        ctx.body.data = err.data;
+        (ctx.body as any).data = err.data;
       }
       ctx.set(output.headers as Record<string, string>);
     }

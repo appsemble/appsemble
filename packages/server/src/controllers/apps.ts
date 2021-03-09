@@ -536,7 +536,10 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!raw) {
-    return serveIcon(ctx, app, { maskable, size: Number.parseInt(size) });
+    return serveIcon(ctx, app, {
+      maskable: Boolean(maskable),
+      size: Number.parseInt(size as string),
+    });
   }
 
   if (!app) {
