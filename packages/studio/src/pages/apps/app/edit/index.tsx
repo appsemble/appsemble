@@ -69,10 +69,10 @@ export default function EditPage(): ReactElement {
 
   const { app, setApp } = useApp();
 
-  const [recipe, setRecipe] = useState<string>(null);
+  const [appDefinition, setAppDefinition] = useState<string>(null);
   const [coreStyle, setCoreStyle] = useState('');
   const [sharedStyle, setSharedStyle] = useState('');
-  const [initialRecipe, setInitialRecipe] = useState('');
+  const [initialDefinition, setInitialDefinition] = useState('');
   const [path, setPath] = useState('');
   const [valid, setValid] = useState(false);
   const [dirty, setDirty] = useState(true);
@@ -121,15 +121,15 @@ export default function EditPage(): ReactElement {
 
     // Destructuring path, and organizationId also hides these technical details for the user
     const { definition, path: p } = app;
-    let { yaml: yamlRecipe } = app;
+    let { yaml: yamlDefinition } = app;
 
-    if (!yamlRecipe) {
-      yamlRecipe = safeDump(definition);
+    if (!yamlDefinition) {
+      yamlDefinition = safeDump(definition);
       push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
     }
 
-    setRecipe(yamlRecipe);
-    setInitialRecipe(yamlRecipe);
+    setAppDefinition(yamlDefinition);
+    setInitialDefinition(yamlDefinition);
     setPath(p);
   }, [app, history, formatMessage, location.hash, params, push]);
 
@@ -137,7 +137,7 @@ export default function EditPage(): ReactElement {
     let definition: AppDefinition;
     // Attempt to parse the YAML into a JSON object
     try {
-      definition = safeLoad(recipe) as AppDefinition;
+      definition = safeLoad(appDefinition) as AppDefinition;
     } catch {
       push(formatMessage(messages.invalidYaml));
       setValid(false);
@@ -199,15 +199,15 @@ export default function EditPage(): ReactElement {
       setValid(false);
     }
     setDirty(false);
-  }, [app, formatMessage, openApiDocument, push, recipe, sharedStyle, coreStyle]);
+  }, [app, formatMessage, openApiDocument, push, appDefinition, sharedStyle, coreStyle]);
 
   useEffect(() => {
     if (editorStep !== GuiEditorStep.YAML && openApiDocument) {
       onSave();
     }
-  }, [recipe, editorStep, onSave, openApiDocument]);
+  }, [appDefinition, editorStep, onSave, openApiDocument]);
 
-  useBeforeUnload(recipe !== initialRecipe);
+  useBeforeUnload(appDefinition !== initialDefinition);
 
   const uploadApp = useCallback(async () => {
     if (!valid) {
@@ -215,14 +215,14 @@ export default function EditPage(): ReactElement {
     }
 
     const { id } = params;
-    const definition = safeLoad(recipe) as AppDefinition;
+    const definition = safeLoad(appDefinition) as AppDefinition;
 
     try {
       const formData = new FormData();
       formData.append('definition', JSON.stringify(definition));
       // The MIME type for YAML is not officially registered in IANA.
       // For the time being, x-yaml is used. See also: http://www.iana.org/assignments/media-types/media-types.xhtml
-      formData.append('yaml', new Blob([recipe], { type: 'text/x-yaml' }));
+      formData.append('yaml', new Blob([appDefinition], { type: 'text/x-yaml' }));
       formData.append('coreStyle', new Blob([coreStyle], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
 
@@ -243,8 +243,8 @@ export default function EditPage(): ReactElement {
     }
 
     setDirty(true);
-    setInitialRecipe(recipe);
-  }, [formatMessage, params, push, recipe, sharedStyle, coreStyle, setApp, valid]);
+    setInitialDefinition(appDefinition);
+  }, [formatMessage, params, push, appDefinition, sharedStyle, coreStyle, setApp, valid]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -257,8 +257,8 @@ export default function EditPage(): ReactElement {
 
   const onUpload = useCallback(async () => {
     if (valid) {
-      const newApp = safeLoad(recipe) as AppDefinition;
-      const originalApp = safeLoad(initialRecipe) as AppDefinition;
+      const newApp = safeLoad(appDefinition) as AppDefinition;
+      const originalApp = safeLoad(initialDefinition) as AppDefinition;
 
       if (!isEqual(newApp.resources, originalApp.resources)) {
         promptUpdateApp();
@@ -267,13 +267,13 @@ export default function EditPage(): ReactElement {
 
       await uploadApp();
     }
-  }, [initialRecipe, promptUpdateApp, recipe, uploadApp, valid]);
+  }, [initialDefinition, promptUpdateApp, appDefinition, uploadApp, valid]);
 
   const onMonacoChange = useCallback(
     (_event: editor.IModelContentChangedEvent, value: string) => {
       switch (location.hash) {
         case '#editor':
-          setRecipe(value);
+          setAppDefinition(value);
           if (editorStep !== GuiEditorStep.YAML) {
             const definition = safeLoad(value) as AppDefinition;
             setApp({ ...app, yaml: value, definition });
@@ -294,7 +294,7 @@ export default function EditPage(): ReactElement {
     [location.hash, app, editorStep, setApp],
   );
 
-  if (recipe == null) {
+  if (appDefinition == null) {
     return <Loader />;
   }
 
@@ -314,7 +314,7 @@ export default function EditPage(): ReactElement {
       break;
     case '#editor':
     default:
-      value = recipe;
+      value = appDefinition;
       language = 'yaml';
   }
 

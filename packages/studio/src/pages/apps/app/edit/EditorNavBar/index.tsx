@@ -83,7 +83,7 @@ export function EditorNavBar({
         <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
           <Tab href="#editor" value="editor">
             <Icon icon="file-code" />
-            <FormattedMessage {...messages.recipe} />
+            <FormattedMessage {...messages.app} />
           </Tab>
           <Tab href="#style-core" value="style-core">
             <Icon icon="brush" />

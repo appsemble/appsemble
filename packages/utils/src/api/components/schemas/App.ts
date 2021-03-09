@@ -4,7 +4,7 @@ import { defaultLocale, normalized } from '../../../constants';
 
 export const App: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
-  description: 'An app recipe defines what an app will look like.',
+  description: 'An app definition defines what an app will look like.',
   properties: {
     id: {
       type: 'number',
