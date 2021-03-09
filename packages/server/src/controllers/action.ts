@@ -86,7 +86,7 @@ async function handleRequestProxy(
     data = body;
   } else {
     try {
-      data = JSON.parse(query.data);
+      data = JSON.parse(query.data as string);
     } catch {
       throw badRequest('data should be a JSON object');
     }

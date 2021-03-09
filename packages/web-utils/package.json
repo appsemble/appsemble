@@ -25,6 +25,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@sentry/browser": "^6.0.2"
+    "@sentry/browser": "^6.2.1"
   }
 }

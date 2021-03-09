@@ -18,7 +18,7 @@ const postCss = postcss([autoprefixer]);
  * @param theme - The theme object to turn into a SASS file.
  * @returns SASS string containing the base Appsemble style augmented by user parameters.
  */
-function processStyle(theme: Theme): string {
+function processStyle(theme: Partial<Theme>): string {
   return `
     @charset "utf-8";
     @import url(https://fonts.googleapis.com/css?display=swap&family=Libre+Franklin|Open+Sans);
