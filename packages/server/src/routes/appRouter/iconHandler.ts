@@ -16,5 +16,5 @@ export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
     include: [{ model: Organization, attributes: ['icon'] }],
   });
 
-  await serveIcon(ctx, app, { size: Number(params.width), maskable: query.maskable });
+  await serveIcon(ctx, app, { size: Number(params.width), maskable: Boolean(query.maskable) });
 }

@@ -12,6 +12,7 @@ import { AppRating } from './AppRating';
 import { AppSamlAuthorization } from './AppSamlAuthorization';
 import { AppSamlSecret } from './AppSamlSecret';
 import { AppScreenshot } from './AppScreenshot';
+import { AppSnapshot } from './AppSnapshot';
 import { AppSubscription } from './AppSubscription';
 import { Asset } from './Asset';
 import { BlockAsset } from './BlockAsset';
@@ -56,6 +57,7 @@ export {
   AppSamlAuthorization,
   AppSamlSecret,
   AppScreenshot,
+  AppSnapshot,
   AppSubscription,
   AppMessages,
   Asset,
@@ -106,6 +108,7 @@ export function initDB({
       AppSamlAuthorization,
       AppSamlSecret,
       AppScreenshot,
+      AppSnapshot,
       AppSubscription,
       AppMessages,
       Asset,

@@ -1,4 +1,4 @@
-import { Compiler, Configuration, ICompiler } from 'webpack';
+import { Configuration } from 'webpack';
 
 import { KoaMiddleware } from '../types';
 
@@ -13,7 +13,7 @@ export async function frontend(webpackConfigs: Configuration[]): Promise<KoaMidd
   const { createAppConfig, createStudioConfig } = await import('@appsemble/webpack-core');
   const configApp = createAppConfig({ mode: 'development' });
   const configStudio = createStudioConfig({ mode: 'development' });
-  const compiler = (webpack([configApp, configStudio, ...webpackConfigs]) as ICompiler) as Compiler;
+  const compiler = webpack([configApp, configStudio, ...webpackConfigs]);
   return koaWebpack({
     compiler,
     config: null,
