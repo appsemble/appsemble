@@ -1,33 +1,29 @@
-import { Button, useData, useMeta } from '@appsemble/react-components';
-import { Permission } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
-import { CardHeaderControl } from 'studio/src/components/CardHeaderControl';
+import { MetaSwitch, useData } from '@appsemble/react-components';
+import { ReactElement } from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../components/AsyncDataView';
-import { useUser } from '../../../components/UserProvider';
 import { Organization } from '../../../types';
-import { checkRole } from '../../../utils/checkRole';
+import { IndexPage } from './IndexPage';
 import { messages } from './messages';
+import { OrganizationMembersPage } from './OrganizationMembersPage';
+import { OrganizationSettingsPage } from './OrganizationSettingsPage';
 
-export function OrganizationPage(): ReactElement {
+/**
+ * Render routes related to apps.
+ */
+export function OrganizationRoutes(): ReactElement {
+  const { path } = useRouteMatch();
   const {
-    params: { id },
-    url,
-  } = useRouteMatch<{ id: string }>();
-  const { formatMessage } = useIntl();
-  const { organizations } = useUser();
+    params: { organizationId },
+  } = useRouteMatch<{ organizationId: string }>();
 
   const result = useData<Organization>(
-    `/api/organizations/${id.startsWith('@') ? id.slice(1) : id}`,
+    `/api/organizations/${
+      organizationId.startsWith('@') ? organizationId.slice(1) : organizationId
+    }`,
   );
-
-  const title = result.loading || result.error ? `@${id}` : result.data?.name;
-  useMeta(title);
-  const userOrganization = organizations?.find((org) => org.id === result.data?.id);
-  const mayEditOrganization =
-    userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
 
   return (
     <AsyncDataView
@@ -36,32 +32,23 @@ export function OrganizationPage(): ReactElement {
       result={result}
     >
       {(organization) => (
-        <div>
-          <CardHeaderControl
-            controls={
-              mayEditOrganization && (
-                <Button
-                  className="mb-3 ml-4"
-                  color="primary"
-                  component={Link}
-                  to={`${url}/settings`}
-                >
-                  <FormattedMessage {...messages.logo} />
-                </Button>
-              )
-            }
-            description="The organization’s description"
-            icon={
-              <img
-                alt={formatMessage(messages.logo)}
-                className="px-4 py-4 card"
-                src={organization.iconUrl}
-              />
-            }
-            subtitle={id.startsWith('@') ? id : `@${id}`}
-            title={title}
-          />
-        </div>
+        <MetaSwitch
+          title={organization.id.startsWith('@') ? organization.id : `@${organization.id}`}
+        >
+          <Route exact path={path}>
+            <IndexPage organization={organization} />
+          </Route>
+          <Route exact path={`${path}/settings`}>
+            <OrganizationSettingsPage
+              organization={organization}
+              setOrganization={result.setData}
+            />
+          </Route>
+          <Route exact path={`${path}/members`}>
+            <OrganizationMembersPage />
+          </Route>
+          <Redirect to={path} />
+        </MetaSwitch>
       )}
     </AsyncDataView>
   );

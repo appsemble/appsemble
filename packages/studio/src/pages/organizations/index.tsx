@@ -4,7 +4,7 @@ import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { IndexPage } from './IndexPage';
 import { messages } from './messages';
-import { OrganizationPage } from './organization';
+import { OrganizationRoutes } from './organization';
 
 /**
  * Render routes related to apps.
@@ -17,8 +17,8 @@ export function OrganizationsRoutes(): ReactElement {
       <Route exact path={path}>
         <IndexPage />
       </Route>
-      <Route exact path={`${path}/:id(@?\\w+)`}>
-        <OrganizationPage />
+      <Route path={`${path}/:organizationId(@?\\w+)`}>
+        <OrganizationRoutes />
       </Route>
       <Redirect to={path} />
     </MetaSwitch>

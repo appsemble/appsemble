@@ -10,8 +10,8 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '../../../../../components/UserProvider';
-import { Member } from '../../../../../types';
+import { useUser } from '../../../../components/UserProvider';
+import { Member } from '../../../../types';
 import { messages } from './messages';
 
 interface MemberRowProps {

@@ -5,10 +5,10 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { HeaderControl } from '../../../../../components/HeaderControl';
-import { useUser } from '../../../../../components/UserProvider';
-import { Member } from '../../../../../types';
-import { checkRole } from '../../../../../utils/checkRole';
+import { HeaderControl } from '../../../../components/HeaderControl';
+import { useUser } from '../../../../components/UserProvider';
+import { Member } from '../../../../types';
+import { checkRole } from '../../../../utils/checkRole';
 import { AddMembersModal } from '../AddMembersModal';
 import { InviteRow } from '../InviteRow';
 import { MemberRow } from '../MemberRow';
