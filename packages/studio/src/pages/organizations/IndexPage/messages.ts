@@ -6,4 +6,7 @@ export const messages = defineMessages({
   empty: 'There are no organizations available.',
   loading: 'Loading organizations…',
   logo: 'Logo',
+  myOrganizations: 'My organizations',
+  allOrganizations: 'All organizations',
+  noOrganizations: 'There are currently no organizations available.',
 });
