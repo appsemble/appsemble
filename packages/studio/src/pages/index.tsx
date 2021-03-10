@@ -13,6 +13,7 @@ import { EditPasswordPage } from './edit-password';
 import { FeedbackPage } from './feedback';
 import { LoginPage } from './login';
 import { OrganizationInvitePage } from './organization-invite';
+import { OrganizationsRoutes } from './organizations';
 import { PrivacyPolicyPage } from './privacy';
 import { RegisterPage } from './register';
 import { ResetPasswordPage } from './reset-password';
@@ -33,6 +34,9 @@ export function Routes(): ReactElement {
       </Route>
       <Route path={`${path}/blocks`}>
         <BlockRoutes />
+      </Route>
+      <Route path={`${path}/organizations`}>
+        <OrganizationsRoutes />
       </Route>
       <ProtectedRoute path={`${path}/settings`}>
         <SettingsRoutes />
