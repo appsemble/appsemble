@@ -122,10 +122,31 @@ export function TranslationsPage(): ReactElement {
   const messageIds = useMemo(() => {
     const actions: string[] = [];
     const pages: string[] = [];
+    const pageBlockMessageIds: string[] = [];
+    const blockMessages = appMessages
+      ? Object.entries(appMessages.messages.blocks).flatMap(([name, versions]) =>
+          Object.entries(versions).flatMap(([version, versionMessages]) =>
+            Object.keys(versionMessages).map(
+              (versionMessage) => `${name}/${version}/${versionMessage}`,
+            ),
+          ),
+        )
+      : [];
+
     iterApp(app.definition, {
-      onBlock(block) {
+      onBlock(block, prefix) {
         findMessageIds(block.header, (messageId) => actions.push(messageId));
         findMessageIds(block.parameters, (messageId) => actions.push(messageId));
+
+        const blockName = block.type.startsWith('@')
+          ? `${block.type}/${block.version}`
+          : `@appsemble/${block.type}/${block.version}`;
+        const pageBlockMessages = blockMessages.filter((name) => name.startsWith(blockName));
+        if (pageBlockMessages.length) {
+          pageBlockMessageIds.push(
+            ...pageBlockMessages.map((name) => `${prefix.join('.')}.${name.split('/').pop()}`),
+          );
+        }
       },
       onAction(action) {
         findMessageIds(action.remap, (messageId) => actions.push(messageId));
@@ -141,20 +162,11 @@ export function TranslationsPage(): ReactElement {
       },
     });
 
-    const blockMessages = appMessages
-      ? Object.entries(appMessages.messages.blocks).flatMap(([name, versions]) =>
-          Object.entries(versions).flatMap(([version, versionMessages]) =>
-            Object.keys(versionMessages).map(
-              (versionMessage) => `${name}/${version}/${versionMessage}`,
-            ),
-          ),
-        )
-      : [];
-
     return [
       ...[...new Set(pages)].sort(),
       ...[...new Set(actions)].sort(),
       ...blockMessages.sort(),
+      ...pageBlockMessageIds.sort(),
     ];
   }, [app.definition, appMessages]);
 
@@ -222,7 +234,7 @@ export function TranslationsPage(): ReactElement {
               />
             ))}
             <FormButtons>
-              <SimpleSubmit disabled={submitting || app.locked}>
+              <SimpleSubmit className="mb-4" disabled={submitting || app.locked}>
                 <FormattedMessage {...messages.submit} />
               </SimpleSubmit>
             </FormButtons>
