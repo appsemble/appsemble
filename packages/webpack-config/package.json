@@ -23,7 +23,7 @@
   "main": "dist",
   "files": [
     "dist",
-    "types.ts"
+    "types.d.ts"
   ],
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",
