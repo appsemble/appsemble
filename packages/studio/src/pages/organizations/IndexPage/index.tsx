@@ -29,37 +29,42 @@ export function IndexPage(): ReactElement {
       >
         {(organizations) => ( */}
 
-      <CollapsibleList
-        noData={<FormattedMessage {...messages.noOrganizations} />}
-        title={<FormattedMessage {...messages.myOrganizations} />}
-      >
-        {organizations.map((organization) => (
-          <ListButton
-            alt={formatMessage(messages.logo)}
-            description={organization.role}
-            image={organization.iconUrl}
-            key={organization.id}
-            subtitle={`@${organization.id}`}
-            title={organization.name || organization.id}
-            to={`${url}/${organization.id}`}
-          />
-        ))}
-      </CollapsibleList>
-      <CollapsibleList
-        noData={<FormattedMessage {...messages.noOrganizations} />}
-        title={<FormattedMessage {...messages.allOrganizations} />}
-      >
-        {allOrganizations.map((organization) => (
-          <ListButton
-            alt={formatMessage(messages.logo)}
-            image={organization.iconUrl}
-            key={organization.id}
-            subtitle={`@${organization.id}`}
-            title={organization.name || organization.id}
-            to={`${url}/${organization.id}`}
-          />
-        ))}
-      </CollapsibleList>
+      {organizations?.length ? (
+        <CollapsibleList title={<FormattedMessage {...messages.myOrganizations} />}>
+          <ul>
+            {organizations.map((organization) => (
+              <ListButton
+                alt={formatMessage(messages.logo)}
+                description={organization.role}
+                image={organization.iconUrl}
+                key={organization.id}
+                subtitle={`@${organization.id}`}
+                title={organization.name || organization.id}
+                to={`${url}/${organization.id}`}
+              />
+            ))}
+          </ul>
+        </CollapsibleList>
+      ) : null}
+
+      {allOrganizations?.length ? (
+        <CollapsibleList title={<FormattedMessage {...messages.allOrganizations} />}>
+          <ul>
+            {allOrganizations.map((organization) => (
+              <ListButton
+                alt={formatMessage(messages.logo)}
+                image={organization.iconUrl}
+                key={organization.id}
+                subtitle={`@${organization.id}`}
+                title={organization.name || organization.id}
+                to={`${url}/${organization.id}`}
+              />
+            ))}
+          </ul>
+        </CollapsibleList>
+      ) : (
+        <FormattedMessage {...messages.noOrganizations} />
+      )}
 
       {/* )}
       </AsyncDataView> */}

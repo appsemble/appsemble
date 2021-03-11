@@ -1,24 +1,16 @@
 import { Button, Title, useToggle } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { Children, ElementType, ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 
 import styles from './index.module.css';
 
 interface CollapsibleListProps {
   title: ReactElement | string;
   children: ReactNode;
-  noData: ReactNode;
-  wrapper?: ElementType;
 }
 
-export function CollapsibleList({
-  children,
-  noData,
-  title,
-  wrapper = 'ul',
-}: CollapsibleListProps): ReactElement {
+export function CollapsibleList({ children, title }: CollapsibleListProps): ReactElement {
   const collapsed = useToggle();
-  const Wrapper: ElementType = wrapper;
 
   return (
     <>
@@ -34,13 +26,9 @@ export function CollapsibleList({
           </Title>
         </Button>
       </div>
-      {Children.count(children) ? (
-        <div className={classNames([styles.list, { 'is-hidden': collapsed.enabled }])}>
-          <Wrapper>{children}</Wrapper>
-        </div>
-      ) : (
-        { noData }
-      )}
+      <div className={classNames([styles.list, { 'is-hidden': collapsed.enabled }])}>
+        {children}
+      </div>
     </>
   );
 }

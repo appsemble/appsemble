@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { CollapsibleList } from '../../../../components/CollapsibleList';
 import { AppCard } from '../AppCard';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface CollapsibleAppListProps {
@@ -42,15 +43,17 @@ export function CollapsibleAppList({
           : apps
         ).sort((a, b) => (reverse ? sortFunction(b, a) : sortFunction(a, b)));
 
+        if (!filteredApps.length) {
+          return <FormattedMessage {...messages.noApps} />;
+        }
+
         return (
-          <CollapsibleList
-            noData={<FormattedMessage {...messages.noApps} />}
-            title={title}
-            wrapper="div"
-          >
-            {filteredApps.map((app) => (
-              <AppCard app={app} key={app.id} />
-            ))}
+          <CollapsibleList title={title}>
+            <div className={styles.list}>
+              {filteredApps.map((app) => (
+                <AppCard app={app} key={app.id} />
+              ))}
+            </div>
           </CollapsibleList>
         );
       }}
