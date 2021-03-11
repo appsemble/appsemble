@@ -16,9 +16,9 @@ import { Organization } from '@appsemble/types';
 import { defaultLocale, Permission } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import { ReactElement, useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { useApp } from '..';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
@@ -163,7 +163,11 @@ export function IndexPage(): ReactElement {
             src={`/api/apps/${app.id}/icon?maskable=true`}
           />
         }
-        subtitle={loading || error ? `@${app.OrganizationId}` : organization.name}
+        subtitle={
+          <Link to={`/organizations/@${app.OrganizationId}`}>
+            {loading || error ? `@${app.OrganizationId}` : organization.name}
+          </Link>
+        }
         title={app.definition.name}
       >
         <AppScreenshots />

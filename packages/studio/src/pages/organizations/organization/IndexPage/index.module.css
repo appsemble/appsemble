@@ -1,3 +1,7 @@
+.root {
+  max-width: 960px;
+}
+
 .appList {
   display: grid;
   grid-auto-rows: 1fr;

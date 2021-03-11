@@ -3,7 +3,7 @@ import { App } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { StarRating } from '../StarRating';
 import styles from './index.module.css';
@@ -15,11 +15,10 @@ interface AppCardProps {
 
 export function AppCard({ app }: AppCardProps): ReactElement {
   const { formatMessage } = useIntl();
-  const { url } = useRouteMatch();
   const lang = app.definition.defaultLanguage || defaultLocale;
 
   return (
-    <Link className="card" title={app.definition.description} to={`${url}/${app.id}`}>
+    <Link className="card" title={app.definition.description} to={`/apps/${app.id}`}>
       <div className="card-content">
         <div className="media">
           <figure className={`image is-128x128 ${styles.figure}`}>

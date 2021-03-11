@@ -1,7 +1,10 @@
 import { MetaSwitch, useData } from '@appsemble/react-components';
+import { Permission } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
+import { ProtectedRoute } from 'studio/src/components/ProtectedRoute';
+import { useUser } from 'studio/src/components/UserProvider';
 
 import { AsyncDataView } from '../../../components/AsyncDataView';
 import { Organization } from '../../../types';
@@ -15,15 +18,15 @@ import { OrganizationSettingsPage } from './OrganizationSettingsPage';
  */
 export function OrganizationRoutes(): ReactElement {
   const { path } = useRouteMatch();
+  const { organizations } = useUser();
   const {
     params: { organizationId },
   } = useRouteMatch<{ organizationId: string }>();
+  const id = organizationId.startsWith('@') ? organizationId.slice(1) : organizationId;
 
-  const result = useData<Organization>(
-    `/api/organizations/${
-      organizationId.startsWith('@') ? organizationId.slice(1) : organizationId
-    }`,
-  );
+  const result = useData<Organization>(`/api/organizations/${id}`);
+
+  const userOrganization = organizations.find((org) => org.id === id);
 
   return (
     <AsyncDataView
@@ -36,17 +39,22 @@ export function OrganizationRoutes(): ReactElement {
           title={organization.id.startsWith('@') ? organization.id : `@${organization.id}`}
         >
           <Route exact path={path}>
-            <IndexPage organization={organization} />
+            <IndexPage organization={userOrganization ?? organization} />
           </Route>
-          <Route exact path={`${path}/settings`}>
+          <ProtectedRoute
+            exact
+            organization={userOrganization}
+            path={`${path}/settings`}
+            permission={Permission.EditOrganization}
+          >
             <OrganizationSettingsPage
-              organization={organization}
+              organization={userOrganization ?? organization}
               setOrganization={result.setData}
             />
-          </Route>
-          <Route exact path={`${path}/members`}>
+          </ProtectedRoute>
+          <ProtectedRoute exact organization={userOrganization} path={`${path}/members`}>
             <OrganizationMembersPage />
-          </Route>
+          </ProtectedRoute>
           <Redirect to={path} />
         </MetaSwitch>
       )}

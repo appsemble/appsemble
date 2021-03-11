@@ -1,4 +1,4 @@
-import { Button, useData } from '@appsemble/react-components';
+import { Button, Content, useData } from '@appsemble/react-components';
 import { App, BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import React, { ReactElement } from 'react';
@@ -34,7 +34,7 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
   const id = organization.id.startsWith('@') ? organization.id : `@${organization.id}`;
 
   return (
-    <div className="pb-2">
+    <Content className={`pb-2 ${styles.root}`}>
       <CardHeaderControl
         controls={
           <>
@@ -89,7 +89,7 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
               {(blocks) => (
                 <div className={styles.blockList}>
                   {blocks.map((block) => (
-                    <BlockCard baseUrl="/blocks" block={block} key={block.name} />
+                    <BlockCard block={block} key={block.name} />
                   ))}
                 </div>
               )}
@@ -97,6 +97,6 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
           </CollapsibleList>
         </div>
       </CardHeaderControl>
-    </div>
+    </Content>
   );
 }

@@ -2,7 +2,7 @@ import { Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -12,18 +12,12 @@ interface BlockCardProps {
    * The block to display.
    */
   block: BlockManifest;
-
-  /**
-   * The base URL to use for the link to the block details page.
-   */
-  baseUrl?: string;
 }
 
 /**
  * Display a card that contains basic information of a block and a link to further documentation.
  */
-export function BlockCard({ baseUrl, block }: BlockCardProps): ReactElement {
-  const { url } = useRouteMatch();
+export function BlockCard({ block }: BlockCardProps): ReactElement {
   const [org, ...name] = block.name.split('/');
 
   return (
@@ -44,7 +38,7 @@ export function BlockCard({ baseUrl, block }: BlockCardProps): ReactElement {
                 {name}
               </Title>
               <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
-                {org}
+                <Link to={`/organizations/${org}`}>{org}</Link>
               </Subtitle>
             </div>
             <div className={`media-right ${styles.nogrow}`}>
@@ -60,7 +54,7 @@ export function BlockCard({ baseUrl, block }: BlockCardProps): ReactElement {
         {block.description ?? <span className="has-text-grey-light">{messages.noDescription}</span>}
       </div>
       <footer className="card-footer">
-        <Link className="card-footer-item" to={`${baseUrl || url}/${block.name}`}>
+        <Link className="card-footer-item" to={`/blocks/${block.name}`}>
           {messages.buttonDetails}
         </Link>
       </footer>
