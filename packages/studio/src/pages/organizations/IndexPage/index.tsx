@@ -1,6 +1,6 @@
 import { Title, useData } from '@appsemble/react-components';
 import { Organization } from '@appsemble/types';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 import { AsyncDataView } from 'studio/src/components/AsyncDataView';

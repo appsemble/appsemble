@@ -1,6 +1,6 @@
 import { MenuSection, MetaSwitch, useData, useSideMenu } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 

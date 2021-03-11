@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import React, { Fragment, ReactElement, useCallback } from 'react';
+import { Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 

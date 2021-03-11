@@ -8,7 +8,7 @@ import {
   useObjectURL,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useUser } from '../../../../components/UserProvider';

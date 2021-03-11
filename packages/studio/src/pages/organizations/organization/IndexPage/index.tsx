@@ -1,7 +1,7 @@
 import { Button, Content, useData } from '@appsemble/react-components';
 import { App, BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
