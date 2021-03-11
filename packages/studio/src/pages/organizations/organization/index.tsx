@@ -1,13 +1,15 @@
-import { MetaSwitch, useData } from '@appsemble/react-components';
+import { MenuSection, MetaSwitch, useData, useSideMenu } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
-import { ProtectedRoute } from 'studio/src/components/ProtectedRoute';
-import { useUser } from 'studio/src/components/UserProvider';
 
 import { AsyncDataView } from '../../../components/AsyncDataView';
+import { MenuItem } from '../../../components/MenuItem';
+import { ProtectedRoute } from '../../../components/ProtectedRoute';
+import { useUser } from '../../../components/UserProvider';
 import { Organization } from '../../../types';
+import { checkRole } from '../../../utils/checkRole';
 import { IndexPage } from './IndexPage';
 import { messages } from './messages';
 import { OrganizationMembersPage } from './OrganizationMembersPage';
@@ -17,16 +19,35 @@ import { OrganizationSettingsPage } from './OrganizationSettingsPage';
  * Render routes related to apps.
  */
 export function OrganizationRoutes(): ReactElement {
-  const { path } = useRouteMatch();
+  const { path, url } = useRouteMatch();
   const { organizations } = useUser();
   const {
     params: { organizationId },
   } = useRouteMatch<{ organizationId: string }>();
   const id = organizationId.startsWith('@') ? organizationId.slice(1) : organizationId;
-
   const result = useData<Organization>(`/api/organizations/${id}`);
-
   const userOrganization = organizations.find((org) => org.id === id);
+  const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
+
+  useSideMenu(
+    result.data && (
+      <MenuSection label={<span className="ml-2">{result.data.name}</span>}>
+        <MenuItem exact icon="briefcase" to={url}>
+          <FormattedMessage {...messages.organization} />
+        </MenuItem>
+        {userOrganization && (
+          <MenuItem exact icon="users" to={`${url}/members`}>
+            <FormattedMessage {...messages.members} />
+          </MenuItem>
+        )}
+        {mayEdit && (
+          <MenuItem exact icon="cog" to={`${url}/settings`}>
+            <FormattedMessage {...messages.settings} />
+          </MenuItem>
+        )}
+      </MenuSection>
+    ),
+  );
 
   return (
     <AsyncDataView
