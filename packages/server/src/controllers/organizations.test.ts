@@ -1,7 +1,6 @@
 import { randomBytes } from 'crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
-import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -23,7 +22,6 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 let organization: Organization;
 let server: Koa;
 let user: User;
-let clock: FakeTimers.InstalledClock;
 
 beforeAll(createTestSchema('organizations'));
 
@@ -34,7 +32,6 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = FakeTimers.install();
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -46,10 +43,6 @@ beforeEach(async () => {
 });
 
 afterEach(truncate);
-
-afterEach(() => {
-  clock.uninstall();
-});
 
 afterAll(closeTestSchema);
 
@@ -120,8 +113,6 @@ describe('getOrganizationApps', () => {
       status: 200,
       data: [
         {
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
           OrganizationId: 'testorganization',
           definition: app.definition,
           iconUrl: `/api/apps/${app.id}/icon`,
@@ -157,8 +148,6 @@ describe('getOrganizationApps', () => {
       status: 200,
       data: [
         {
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
           OrganizationId: 'testorganization',
           definition: appA.definition,
           iconUrl: `/api/apps/${appA.id}/icon`,
@@ -168,8 +157,6 @@ describe('getOrganizationApps', () => {
           private: true,
         },
         {
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
           OrganizationId: 'testorganization',
           definition: appB.definition,
           iconUrl: `/api/apps/${appB.id}/icon`,
