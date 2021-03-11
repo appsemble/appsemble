@@ -11,5 +11,10 @@ export const AppMessages: OpenAPIV3.NonArraySchemaObject = {
       description: 'A mapping of the messages for this language',
       additionalProperties: { type: 'string' },
     },
+    force: {
+      type: 'boolean',
+      writeOnly: true,
+      description: 'If this is true, the app lock is ignored.',
+    },
   },
 };
