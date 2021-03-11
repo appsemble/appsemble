@@ -265,13 +265,14 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
     },
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
     order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
     where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
   });
+
   ctx.body = apps.map((app) => getAppFromRecord(app, ['yaml']));
 }
 

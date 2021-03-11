@@ -3,9 +3,9 @@ import { App } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { AppCard } from '../../../../components/AppCard';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { CollapsibleList } from '../../../../components/CollapsibleList';
-import { AppCard } from '../AppCard';
 import styles from './index.module.css';
 import { messages } from './messages';
 

@@ -18,5 +18,9 @@ export const Organization: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The display name for the organization.',
     },
+    iconUrl: {
+      type: 'string',
+      description: 'The URL used to fetch the organization’s icon.',
+    },
   },
 };

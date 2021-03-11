@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import { StarRating } from '../../../../components/StarRating';
+import { StarRating } from '../StarRating';
 import styles from './index.module.css';
 import { messages } from './messages';
 

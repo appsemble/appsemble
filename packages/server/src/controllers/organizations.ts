@@ -2,13 +2,23 @@ import { randomBytes } from 'crypto';
 
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
-import { Op, UniqueConstraintError } from 'sequelize';
+import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 
-import { EmailAuthorization, Organization, OrganizationInvite, User } from '../models';
+import {
+  App,
+  AppRating,
+  BlockVersion,
+  EmailAuthorization,
+  getDB,
+  Organization,
+  OrganizationInvite,
+  User,
+} from '../models';
 import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
+import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
 
 interface Params {
@@ -17,6 +27,16 @@ interface Params {
   memberId: string;
   organizationId: string;
   token: string;
+}
+
+export async function getOrganizations(ctx: KoaContext): Promise<void> {
+  const organizations = await Organization.findAll({ order: [['id', 'ASC']] });
+
+  ctx.body = organizations.map((organization) => ({
+    id: organization.id,
+    name: organization.name,
+    iconUrl: `/api/organizations/${organization.id}/icon`,
+  }));
 }
 
 export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
@@ -34,6 +54,86 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
     name: organization.name,
     iconUrl: `/api/organizations/${organization.id}/icon`,
   };
+}
+
+export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { organizationId },
+    user,
+  } = ctx;
+
+  const memberInclude = user
+    ? { include: [{ model: User, where: { id: user.id }, required: false }] }
+    : {};
+  const organization = await Organization.findByPk(organizationId, memberInclude);
+  if (!organization) {
+    throw notFound('Organization not found.');
+  }
+
+  const apps = await App.findAll({
+    attributes: {
+      include: [
+        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
+        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+      ],
+      exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
+    },
+    include: [{ model: AppRating, attributes: [] }],
+    group: ['App.id'],
+    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
+    where: { OrganizationId: organizationId },
+  });
+
+  const filteredApps =
+    user && organization.Users.length ? apps : apps.filter((app) => !app.private);
+
+  ctx.body = filteredApps.map((app) => getAppFromRecord(app, ['yaml']));
+}
+
+export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { organizationId },
+  } = ctx;
+
+  const organization = await Organization.count({ where: { id: organizationId } });
+  if (!organization) {
+    throw notFound('Organization not found.');
+  }
+
+  // Sequelize does not support subqueries
+  // The alternative is to query everything and filter manually
+  // See: https://github.com/sequelize/sequelize/issues/9509
+  const [blockVersions] = (await getDB().query({
+    query:
+      'SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE "OrganizationId" = ? AND created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+    values: [organizationId],
+  })) as [BlockVersion[], number];
+
+  ctx.body = blockVersions.map(
+    ({
+      OrganizationId,
+      actions,
+      description,
+      events,
+      layout,
+      longDescription,
+      name,
+      parameters,
+      resources,
+      version,
+    }) => ({
+      name: `@${OrganizationId}/${name}`,
+      description,
+      longDescription,
+      version,
+      actions,
+      events,
+      iconUrl: `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`,
+      layout,
+      parameters,
+      resources,
+    }),
+  );
 }
 
 export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void> {

@@ -12,12 +12,17 @@ interface BlockCardProps {
    * The block to display.
    */
   block: BlockManifest;
+
+  /**
+   * The base URL to use for the link to the block details page.
+   */
+  baseUrl?: string;
 }
 
 /**
  * Display a card that contains basic information of a block and a link to further documentation.
  */
-export function BlockCard({ block }: BlockCardProps): ReactElement {
+export function BlockCard({ baseUrl, block }: BlockCardProps): ReactElement {
   const { url } = useRouteMatch();
   const [org, ...name] = block.name.split('/');
 
@@ -55,7 +60,7 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
         {block.description ?? <span className="has-text-grey-light">{messages.noDescription}</span>}
       </div>
       <footer className="card-footer">
-        <Link className="card-footer-item" to={`${url}/${block.name}`}>
+        <Link className="card-footer-item" to={`${baseUrl || url}/${block.name}`}>
           {messages.buttonDetails}
         </Link>
       </footer>
