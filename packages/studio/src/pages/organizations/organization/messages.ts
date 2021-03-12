@@ -6,8 +6,6 @@ export const messages = defineMessages({
   error: 'Something went wrong trying to fetch this organization.',
   loading: 'Loading organization…',
   logo: 'Logo',
-  editOrganization: 'Edit organization',
-  viewMembers: 'View members',
   settings: 'Settings',
   members: 'Members',
 });

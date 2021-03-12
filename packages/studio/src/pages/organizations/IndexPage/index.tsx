@@ -40,14 +40,13 @@ export function IndexPage(): ReactElement {
       ) : null}
 
       <AsyncDataView
-        emptyMessage={<FormattedMessage {...messages.empty} />}
         errorMessage={<FormattedMessage {...messages.error} />}
         loadingMessage={<FormattedMessage {...messages.loading} />}
         result={result}
       >
-        {(allOrganizations) =>
-          allOrganizations?.length ? (
-            <CollapsibleList title={<FormattedMessage {...messages.allOrganizations} />}>
+        {(allOrganizations) => (
+          <CollapsibleList title={<FormattedMessage {...messages.allOrganizations} />}>
+            {allOrganizations?.length ? (
               <ul>
                 {allOrganizations.map((organization) => (
                   <ListButton
@@ -60,11 +59,11 @@ export function IndexPage(): ReactElement {
                   />
                 ))}
               </ul>
-            </CollapsibleList>
-          ) : (
-            <FormattedMessage {...messages.noOrganizations} />
-          )
-        }
+            ) : (
+              <FormattedMessage {...messages.noOrganizations} />
+            )}
+          </CollapsibleList>
+        )}
       </AsyncDataView>
     </>
   );

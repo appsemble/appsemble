@@ -7,7 +7,6 @@ export const messages = defineMessages({
   logoDescription: 'The logo that represents this organization',
   noFile: 'No logo selected…',
   title: 'Settings {name}',
-  cancel: 'Cancel',
   submit: 'Submit',
   settings: 'Settings',
 });
