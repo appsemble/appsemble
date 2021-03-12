@@ -95,11 +95,11 @@ test node 12:
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn --frozen-lockfile
-    - yarn jest --coverage --reporters default --reporters jest-junit
+    - yarn jest --coverage --coverageReporters=cobertura --reporters default
     - yarn codecov
   artifacts:
     reports:
-      junit: junit.xml
+      cobertura: coverage/cobertura-coverage.xml
 
 # Run unittests using NodeJS 14.
 test node 14:
