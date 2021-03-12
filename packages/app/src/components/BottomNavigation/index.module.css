@@ -1,0 +1,6 @@
+.list {
+  height: 100%;
+  justify-content: center !important;
+  overflow-x: auto;
+  width: 100%;
+}

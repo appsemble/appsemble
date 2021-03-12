@@ -3,6 +3,7 @@ import { URLSearchParams } from 'url';
 import { basicAuth } from '@appsemble/node-utils';
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import { hash } from 'bcrypt';
 import { decode } from 'jsonwebtoken';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
@@ -281,7 +282,7 @@ describe('client_credentials', () => {
       id: 'testClientId',
       expires: new Date('2000-01-02T00:00:00Z'),
       scopes: 'apps:write blocks:write',
-      secret: 'testClientSecret',
+      secret: await hash('testClientSecret', 10),
       UserId: user.id,
     });
   });

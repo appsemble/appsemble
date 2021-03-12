@@ -4,7 +4,7 @@ import { stripBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface GUIEditorBlockItemProps {
   value: BlockManifest;

@@ -11,7 +11,7 @@ stages:
 workflow:
   rules:
     # By default, run jobs for every merge request.
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID
     # By default, run jobs for every commit on master.
     - if: $CI_COMMIT_BRANCH == 'master'
     # By default, run jobs for every schedule
@@ -35,7 +35,7 @@ workflow:
 
 # A preconfigured environment for using Helm.
 .helm:
-  image: dtzar/helm-kubectl:3.2.1
+  image: dtzar/helm-kubectl:3.5.0
   dependencies: []
 
 # A preconfigured environment for using Yarn.
@@ -130,16 +130,6 @@ validate:
   script:
     - yarn scripts validate
 
-# Workaround for upstream bug in GitLab
-weblate:
-  image: busybox
-  rules:
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == 'i18n'
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - echo 'This is a workaround for https://gitlab.com/gitlab-org/gitlab/-/issues/300792'
-
 ###################################################################################################
 #  Build Stage                                                                                    #
 ###################################################################################################
@@ -163,6 +153,8 @@ pack:
     - yarn workspace @appsemble/sdk pack
     - yarn workspace @appsemble/preact pack
     - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/utils pack
+    - yarn workspace @appsemble/webpack-config pack
     - yarn workspace @appsemble/cli pack
     - yarn workspace appsemble pack
     - mkdir build/
@@ -245,9 +237,7 @@ review:
   needs:
     - build docker image
   rules:
-    - if: $CI_MERGE_REQUEST_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
-      when: manual
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   environment:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
@@ -271,7 +261,6 @@ review:
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=next"
       --set "global.postgresql.existingSecret=postgresql-secret"
-      --set "provision.account.id=43376671-1c98-4657-809e-d45292a3f39e"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
@@ -285,7 +274,7 @@ stop review:
   extends: .helm
   stage: deploy
   rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
       when: manual
   allow_failure: true
   environment:
@@ -329,7 +318,6 @@ staging:
       --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
-      --set "provision.account.id=43376671-1c98-4657-809e-d45292a3f39e"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "proxy=true"
@@ -361,6 +349,7 @@ production:
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
       --set "ingress.tls.secretName=$INGRESS_TLS_SECRET_NAME"
+      --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
@@ -390,7 +379,7 @@ provision review:
   extends: .yarn
   stage: provision
   rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   needs:
     - review
   environment:
@@ -445,6 +434,11 @@ lighthouse:
   interruptible: true
   stage: end 2 end
   dependencies: []
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_COMMIT_TAG
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies

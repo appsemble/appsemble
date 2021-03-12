@@ -1,7 +1,8 @@
 import { relative } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { BlockManifest } from '@appsemble/types';
+import { BlockConfig, BlockManifest } from '@appsemble/types';
+import { Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
 import {
   createProgram,
@@ -25,9 +26,7 @@ import {
   TypeChecker,
   TypeElement,
 } from 'typescript';
-import { buildGenerator, Definition } from 'typescript-json-schema';
-
-import { BlockConfig } from '../types';
+import { buildGenerator } from 'typescript-json-schema';
 
 /**
  * Get the tsdoc comment for a TypeScript node.
@@ -157,7 +156,7 @@ function processEvents(
  * @param sourceFile - The source file from which to extract parameters.
  * @returns The JSON schema for the block parameters.
  */
-function processParameters(program: Program, sourceFile: SourceFile): Definition {
+function processParameters(program: Program, sourceFile: SourceFile): Schema {
   if (!sourceFile) {
     return;
   }
@@ -176,7 +175,21 @@ function processParameters(program: Program, sourceFile: SourceFile): Definition
   const schema = generator.getSchemaForSymbol('Parameters');
   // This is the tsdoc that has been added to the SDK to aid the block developer.
   delete schema.description;
-  return schema;
+  return schema as Schema;
+}
+
+/**
+ * Get a messages object based on a TypeScript interface node.
+ *
+ * @param iface - The node to base the messages on.
+ * @param checker - The TypeScript type checker.
+ * @returns The action manifest to upload.
+ */
+function processMessages(
+  iface: InterfaceDeclaration,
+  checker: TypeChecker,
+): BlockManifest['messages'] {
+  return processInterface(iface, checker, (name, description) => [name, { description }]);
 }
 
 /**
@@ -240,7 +253,7 @@ function getProgram(blockPath: string): Program {
  */
 export function getBlockConfigFromTypeScript(
   blockConfig: BlockConfig,
-): Pick<BlockManifest, 'actions' | 'events' | 'parameters'> {
+): Pick<BlockManifest, 'actions' | 'events' | 'messages' | 'parameters'> {
   if ('actions' in blockConfig && 'events' in blockConfig && 'parameters' in blockConfig) {
     return blockConfig;
   }
@@ -251,6 +264,7 @@ export function getBlockConfigFromTypeScript(
   let actionInterface: InterfaceDeclaration;
   let eventEmitterInterface: InterfaceDeclaration;
   let eventListenerInterface: InterfaceDeclaration;
+  let messagesInterface: InterfaceDeclaration;
   let parametersSourceFile: SourceFile;
 
   program.getSourceFiles().forEach((sourceFile) => {
@@ -308,6 +322,10 @@ export function getBlockConfigFromTypeScript(
             }
             parametersSourceFile = sourceFile;
             break;
+          case 'Messages':
+            logger.info(`Found augmented interface 'Messages' in '${loc}'`);
+            messagesInterface = iface;
+            break;
           default:
             logger.warn(`Detected unused augmented type ${iface.name.text} in ${loc}`);
         }
@@ -326,5 +344,9 @@ export function getBlockConfigFromTypeScript(
       'parameters' in blockConfig
         ? blockConfig.parameters
         : processParameters(program, parametersSourceFile),
+    messages:
+      'messages' in blockConfig
+        ? blockConfig.messages
+        : processMessages(messagesInterface, checker),
   };
 }

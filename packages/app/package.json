@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.17.6",
+  "version": "0.18.1",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -24,30 +24,30 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.17.6",
-    "@appsemble/sdk": "0.17.6",
-    "@appsemble/types": "0.17.6",
-    "@appsemble/utils": "0.17.6",
-    "@appsemble/web-utils": "0.17.6",
+    "@appsemble/react-components": "0.18.1",
+    "@appsemble/sdk": "0.18.1",
+    "@appsemble/types": "0.18.1",
+    "@appsemble/utils": "0.18.1",
+    "@appsemble/web-utils": "0.18.1",
     "@browser-logos/chrome": "^1.0.18",
     "@browser-logos/edge": "^2.0.5",
     "@browser-logos/firefox": "^3.0.9",
     "@browser-logos/safari": "^2.0.0",
     "@fortawesome/fontawesome-common-types": "^0.2.34",
-    "@sentry/browser": "^6.0.2",
+    "@sentry/browser": "^6.2.1",
     "axios": "^0.21.1",
     "classnames": "^2.2.6",
-    "events": "^3.2.0",
+    "events": "^3.3.0",
     "intl-format-cache": "^4.3.1",
-    "intl-messageformat": "^9.4.6",
+    "intl-messageformat": "^9.5.2",
     "jwt-decode": "^3.1.2",
     "openapi-types": "^7.2.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-intl": "^5.10.19",
+    "react-intl": "^5.13.2",
     "react-router-dom": "^5.2.0",
     "roboto-fontface": "^0.10.0",
     "serviceworker-webpack-plugin": "^1.0.1",
-    "type-fest": "^0.20.2"
+    "type-fest": "^0.21.2"
   }
 }

@@ -14,7 +14,7 @@ import {
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 type SideMenuContext = [
@@ -32,6 +32,11 @@ interface SideMenuProviderProps {
   base: ReactNode;
 
   /**
+   * Content to render at the bottom of the side menu.
+   */
+  bottom: ReactNode;
+
+  /**
    * The main content to wrap.
    */
   children: ReactNode;
@@ -40,7 +45,7 @@ interface SideMenuProviderProps {
 /**
  * A wrapper that renders a responsive side menu.
  */
-export function SideMenuProvider({ base, children }: SideMenuProviderProps): ReactElement {
+export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactElement {
   const [isOpen, setOpen] = useState(false);
   const [menu, setMenu] = useState<ReactElement>(null);
   const history = useHistory();
@@ -53,6 +58,7 @@ export function SideMenuProvider({ base, children }: SideMenuProviderProps): Rea
         <aside className={classNames(`menu ${styles.sideMenu}`, { [styles.open]: isOpen })}>
           {base}
           {menu}
+          {bottom}
         </aside>
         {children}
       </div>

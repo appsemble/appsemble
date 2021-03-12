@@ -1,5 +1,6 @@
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
+import { extension } from 'mime-types';
 
 import { App, Asset } from '../models';
 import { KoaContext } from '../types';
@@ -50,7 +51,18 @@ export async function getAssetById(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Asset not found');
   }
 
-  ctx.set('Content-Type', asset.mime || 'application/octet-stream');
+  let { filename, mime } = asset;
+  if (!filename) {
+    filename = asset.id;
+    if (mime) {
+      const ext = extension(mime);
+      if (ext) {
+        filename += `.${ext}`;
+      }
+    }
+  }
+  ctx.set('content-type', mime || 'application/octet-stream');
+  ctx.set('content-disposition', `attachment; filename=${JSON.stringify(filename)}`);
   ctx.body = asset.data;
 }
 

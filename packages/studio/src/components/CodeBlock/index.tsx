@@ -1,4 +1,3 @@
-import { editor } from 'monaco-editor';
 import { ReactElement, useEffect, useRef } from 'react';
 
 interface CodeBlockProps {
@@ -26,7 +25,9 @@ export function CodeBlock({ className, code, language }: CodeBlockProps): ReactE
 
   useEffect(() => {
     if (language) {
-      editor.colorizeElement(ref.current, { mimeType: language, theme: 'vs' });
+      import('monaco-editor').then(({ editor }) => {
+        editor.colorizeElement(ref.current, { mimeType: language, theme: 'vs' });
+      });
     }
   }, [language]);
 

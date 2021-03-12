@@ -3,7 +3,7 @@ import { ComponentChildren, ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { ElementType, useAnimation } from '..';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface ModalProps<T extends ElementType> {
   /**

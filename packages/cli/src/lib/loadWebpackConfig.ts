@@ -1,9 +1,6 @@
-import { resolve } from 'path';
-
 import { logger } from '@appsemble/node-utils';
+import { BlockConfig } from '@appsemble/types';
 import { Configuration } from 'webpack';
-
-import { BlockConfig } from '../types';
 
 /**
  * Load a webpack configuration file.
@@ -23,7 +20,27 @@ export async function loadWebpackConfig(
   mode?: 'development' | 'production',
   outputPath?: string,
 ): Promise<Configuration> {
-  const configPath = require.resolve(resolve(block.dir, block.webpack));
+  let configPath: string;
+  const requireOptions = { paths: [block.dir] };
+  if (typeof block.webpack === 'string') {
+    configPath = require.resolve(block.webpack, requireOptions);
+  } else {
+    try {
+      // This is resolved relative to the block root, not to this file.
+      // eslint-disable-next-line node/no-unpublished-require
+      configPath = require.resolve('./webpack.config', requireOptions);
+    } catch (error: unknown) {
+      if (
+        !(
+          (error as any).code === 'MODULE_NOT_FOUND' &&
+          (error as any).requireStack[0] === __filename
+        )
+      ) {
+        throw error;
+      }
+      configPath = require.resolve('@appsemble/webpack-config', requireOptions);
+    }
+  }
   logger.info(`Using webpack config from ${configPath}`);
   const publicPath = `/api/blocks/${block.name}/versions/${block.version}`;
   let config = await import(configPath);

@@ -7,10 +7,12 @@ import {
   Theme,
 } from '@appsemble/sdk/src/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
+import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
-import { Definition } from 'typescript-json-schema';
 
+export * from './author';
+export * from './snapshot';
 export { Theme };
 
 /**
@@ -695,6 +697,8 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
   | BaseActionDefinition<'flow.next'>
+  | BaseActionDefinition<'link.back'>
+  | BaseActionDefinition<'link.next'>
   | BaseActionDefinition<'noop'>
   | BaseActionDefinition<'team.join'>
   | BaseActionDefinition<'team.list'>
@@ -781,6 +785,11 @@ export interface BlockManifest {
   actions?: Record<string, ActionType>;
 
   /**
+   * The messages that are supported by a block.
+   */
+  messages?: Record<string, Record<string, any> | never>;
+
+  /**
    * The events that are supported by a block.
    */
   events?: {
@@ -791,7 +800,7 @@ export interface BlockManifest {
   /**
    * A JSON schema to validate block parameters.
    */
-  parameters?: Definition;
+  parameters?: Schema;
 
   /**
    * @deprecated
@@ -1060,12 +1069,17 @@ export interface App {
   screenshotUrls?: string[];
 
   /**
-   * True if the app supports an maskable icon.
+   * True if the app has its own icon.
+   */
+  hasIcon: boolean;
+
+  /**
+   * True if the app supports a maskable icon.
    */
   hasMaskableIcon: boolean;
 
   /**
-   * True if the app supports an maskable icon.
+   * The background color used for maskable icons.
    */
   iconBackground: string;
 
@@ -1187,9 +1201,9 @@ export interface AppMember {
 }
 
 /**
- * Translated messages for an app.
+ * Translated messages for an app or block.
  */
-export interface AppMessages {
+export interface Messages {
   /**
    * The language represented by these messages.
    */
@@ -1199,6 +1213,48 @@ export interface AppMessages {
    * A mapping of message id to message content.
    */
   messages: Record<string, string>;
+}
+
+export interface AppMessages {
+  /**
+   * The language represented by these messages.
+   */
+  language: string;
+
+  /**
+   * The messages available to the app
+   */
+  messages: {
+    /**
+     * Messages related to the Appsemble core.
+     *
+     * This may be an empty object if the language is the default locale.
+     */
+    core: Record<string, string>;
+
+    /**
+     * A list of messages specific to the app.
+     */
+    app: Record<string, string>;
+
+    /**
+     * A list of messages specific to each block used in the app.
+     *
+     * At root the keys represent a block type.
+     * One layer deep the keys represent a block version.
+     * Two layers deep the keys represent the key/message pairs.
+     *
+     * @example
+     * {
+     *   "<at>example/test": {
+     *     "0.0.0": {
+     *       "exampleKey": "Example Message"
+     *     }
+     *   }
+     * }
+     */
+    blocks: Record<string, Record<string, Record<string, string>>>;
+  };
 }
 
 /**
@@ -1328,3 +1384,38 @@ export type SAMLStatus =
   | 'invalidsubjectconfirmation'
   | 'missingnameid'
   | 'missingsubject';
+
+/**
+ * The block configuration that’s used by the CLI when building a block.
+ *
+ * This configuration is also passed to the Webpack configuration function as the `env` variable.
+ */
+export interface BlockConfig
+  extends Pick<
+    BlockManifest,
+    | 'actions'
+    | 'description'
+    | 'events'
+    | 'layout'
+    | 'longDescription'
+    | 'messages'
+    | 'name'
+    | 'parameters'
+    | 'resources'
+    | 'version'
+  > {
+  /**
+   * The path to the webpack configuration file relative to the block project directory.
+   */
+  webpack: string;
+
+  /**
+   * The build output directory relative to the block project directory.
+   */
+  output: string;
+
+  /**
+   * The absolute directory of the block project.
+   */
+  dir: string;
+}

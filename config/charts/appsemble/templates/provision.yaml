@@ -1,5 +1,6 @@
 {{ if .Values.provision }}
 {{ $clientCredentials := split ":" .Values.provision.account.clientCredentials }}
+{{ $userId := uuidv4 }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -22,33 +23,30 @@ spec:
           args:
             - "--command"
             - |
-              DO $$$$
-              DECLARE
-                UserId uuid;
-              BEGIN
+              BEGIN;
                 INSERT INTO "User" (id, name, "primaryEmail", created, updated) VALUES (
-                  {{ .Values.provision.account.id | squote }},
+                  {{ $userId | squote }},
                   {{ .Values.provision.account.name | squote }},
                   {{ .Values.provision.account.email | squote }},
                   NOW(),
                   NOW()
-                ) RETURNING id INTO UserId;
+                );
                 INSERT INTO "EmailAuthorization" (email, verified, created, updated, "UserId") VALUES (
                   {{ .Values.provision.account.email | squote }},
                   true,
                   NOW(),
                   NOW(),
-                  UserId
+                  {{ $userId | squote }}
                 );
                 INSERT INTO "OAuth2ClientCredentials" (id, secret, description, scopes, created, "UserId") VALUES (
                   {{ $clientCredentials._0 | squote }},
-                  {{ $clientCredentials._1 | squote }},
+                  {{ ($clientCredentials._1 | htpasswd "" | split ":")._1 | squote }},
                   'Used for provisioning the review environment',
                   'apps:write blocks:write organizations:write',
                   NOW(),
-                  UserId
+                  {{ $userId | squote }}
                 );
-              END $$$$
+              COMMIT;
           env:
             - name: PGHOST
               value: {{ .Values.postgresql.fullnameOverride }}

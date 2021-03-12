@@ -19,10 +19,7 @@ export function StringInput({
   onChange,
   value,
 }: StringInputProps): VNode {
-  const {
-    parameters: { optionalLabel },
-    utils,
-  } = useBlock();
+  const { utils } = useBlock();
   const { format, icon, label, multiline, placeholder, readOnly, tag } = field;
 
   const remappedLabel = utils.remap(label, value) ?? name;
@@ -36,7 +33,7 @@ export function StringInput({
     minLength: getMinLength(field),
     name,
     onChange,
-    optionalLabel: utils.remap(optionalLabel, value),
+    optionalLabel: utils.formatMessage('optionalLabel'),
     placeholder: utils.remap(placeholder, value) ?? remappedLabel,
     readOnly,
     required: isRequired(field),

@@ -9,11 +9,12 @@ import { MDXProvider } from '@mdx-js/react';
 import { ReactElement } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
+import { Routes } from '../../pages';
 import { Breadcrumbs } from '../Breadcrumbs';
 import { ErrorFallback } from '../ErrorFallback';
-import { MDXAnchor, MDXCode, MDXPre } from '../MDX';
-import { Routes } from '../Routes';
+import { MDXAnchor, MDXPre, MDXWrapper } from '../MDX';
 import { SideMenuBase } from '../SideMenuBase';
+import { SideMenuBottom } from '../SideMenuBottom';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
 import { Toolbar } from '../Toolbar';
 import { UserProvider } from '../UserProvider';
@@ -28,7 +29,7 @@ export function App(): ReactElement {
             components={{
               a: MDXAnchor,
               pre: MDXPre,
-              code: MDXCode,
+              wrapper: MDXWrapper,
             }}
           >
             <UserProvider>
@@ -36,7 +37,7 @@ export function App(): ReactElement {
                 <Confirmation>
                   <MessagesProvider>
                     <MetaProvider description={messages.description} title="Appsemble">
-                      <SideMenuProvider base={<SideMenuBase />}>
+                      <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
                         <Toolbar />
                         <Breadcrumbs />
                         <Routes />

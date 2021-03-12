@@ -1,7 +1,16 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import { safeDump } from 'js-yaml';
 
-import { App, AppBlockStyle, AppMessages, Member, Organization, Resource } from '../models';
+import {
+  App,
+  AppBlockStyle,
+  AppMessages,
+  AppSnapshot,
+  Member,
+  Organization,
+  Resource,
+} from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
@@ -64,6 +73,9 @@ beforeEach(async () => {
       block: '@appsemble/test',
       style: 'a { color: red; }',
     }),
+  ];
+  t1.AppSnapshots = [
+    await AppSnapshot.create({ AppId: t1.id, UserId: user.id, yaml: safeDump(t1.definition) }),
   ];
 
   templates = [t1, t2];
@@ -181,11 +193,11 @@ describe('createTemplateApp', () => {
     });
 
     const { id } = response.data;
-    const { data: messages } = await request.get<AppMessages>(`/api/apps/${id}/messages/nl-nl`);
+    const { data: messages } = await request.get(`/api/apps/${id}/messages/nl-nl`);
 
-    expect(messages).toStrictEqual({
-      language: 'nl-nl',
-      messages: { test: 'Dit is een testbericht' },
+    expect(messages.language).toStrictEqual('nl-nl');
+    expect(messages.messages.app).toStrictEqual({
+      test: 'Dit is een testbericht',
     });
   });
 

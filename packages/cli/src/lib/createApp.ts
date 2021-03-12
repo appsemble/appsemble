@@ -104,8 +104,8 @@ export async function createApp({
 
   if (file.isDirectory()) {
     // After uploading the app, upload block styles and messages if they are available
-    await traverseBlockThemes(path, data.id);
-    await uploadMessages(path, data.id);
+    await traverseBlockThemes(path, data.id, remote, false);
+    await uploadMessages(path, data.id, remote, false);
   }
 
   const { host, protocol } = new URL(remote);

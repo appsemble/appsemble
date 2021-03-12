@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { ComponentType, VNode } from 'preact';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 export interface LoaderProps {
   className?: string;

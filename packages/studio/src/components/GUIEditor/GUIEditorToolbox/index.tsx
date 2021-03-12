@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { GUIEditorToolboxBlock } from '../GUIEditorToolboxBlock';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface GUIEditorToolboxProps {

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { ElementType, ReactElement } from 'react';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface LoaderProps {
   className?: string;

@@ -7,22 +7,23 @@ body {
   height: 100%;
 }
 
-:global(.navbar.is-fixed-top) {
+.navbar.is-fixed-top {
   z-index: 2000;
 }
 
-:global(#app) {
+/* stylelint-disable-next-line selector-max-id */
+#app {
   height: 100%;
+}
 
-  & :global(.browsers) {
-    margin: auto;
-    text-align: center;
+.browsers {
+  margin: auto;
+  text-align: center;
+}
 
-    & :global(.browser-logo) {
-      display: inline-block;
-      margin: 8px 48px;
-      max-width: 240px;
-      width: 50%;
-    }
-  }
+.browser-logo {
+  display: inline-block;
+  margin: 8px 48px;
+  max-width: 240px;
+  width: 50%;
 }

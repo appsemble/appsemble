@@ -1,4 +1,4 @@
-import { Content, Loader, Message, useQuery } from '@appsemble/react-components';
+import { Button, Content, Loader, Message, useQuery } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import { clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
@@ -10,7 +10,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { Main } from '../Main';
 import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 /**
@@ -66,12 +66,12 @@ export function OpenIDCallback(): ReactElement {
               <FormattedMessage {...messages.error} />
             )}
           </Message>
-          <Link
-            className="button"
+          <Button
+            component={Link}
             to={{ pathname: '/Login', search: String(new URLSearchParams({ redirect })) }}
           >
             <FormattedMessage {...messages.retry} />
-          </Link>
+          </Button>
         </Content>
       </Main>
     );

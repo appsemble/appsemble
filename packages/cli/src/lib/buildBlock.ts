@@ -1,9 +1,10 @@
 import { join } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { BlockConfig } from '@appsemble/types';
+import { pathExists, remove } from 'fs-extra';
 import webpack, { Stats } from 'webpack';
 
-import { BlockConfig } from '../types';
 import { loadWebpackConfig } from './loadWebpackConfig';
 
 /**
@@ -16,6 +17,10 @@ import { loadWebpackConfig } from './loadWebpackConfig';
 export async function buildBlock(config: BlockConfig): Promise<Stats> {
   const conf = await loadWebpackConfig(config, 'production', join(config.dir, config.output));
 
+  if (await pathExists(conf.output.path)) {
+    logger.warn(`Removing ${conf.output.path}`);
+    await remove(conf.output.path);
+  }
   logger.info(`Building ${config.name}@${config.version} 🔨`);
 
   const compiler = webpack(conf);

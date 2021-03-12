@@ -8,4 +8,4 @@ repeated row within the table. This is `0` by default.
 
 ### Images
 
-![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.17.6/docs/images/table.png)
+![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.18.1/docs/images/table.png)

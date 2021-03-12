@@ -153,7 +153,53 @@ describe('getAssetById', () => {
 
     expect(response).toMatchObject({
       status: 200,
-      headers: expect.objectContaining({ 'content-type': 'application/octet-stream' }),
+      headers: expect.objectContaining({
+        'content-type': 'application/octet-stream',
+        'content-disposition': 'attachment; filename="test.bin"',
+      }),
+      data,
+    });
+  });
+
+  it('should fallback to the asset id as the filename', async () => {
+    const data = Buffer.from('buffer');
+    const asset = await Asset.create({
+      AppId: app.id,
+      data,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'application/octet-stream',
+        'content-disposition': `attachment; filename="${asset.id}"`,
+      }),
+      data,
+    });
+  });
+
+  it('should determine the file extension based on the mime type', async () => {
+    const data = Buffer.from('buffer');
+    const asset = await Asset.create({
+      AppId: app.id,
+      mime: 'text/plain',
+      data,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'text/plain',
+        'content-disposition': `attachment; filename="${asset.id}.txt"`,
+      }),
       data,
     });
   });

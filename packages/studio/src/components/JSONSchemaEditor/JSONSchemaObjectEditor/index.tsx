@@ -1,11 +1,10 @@
 import { Title } from '@appsemble/react-components';
-import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement, useCallback } from 'react';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
-import styles from './index.css';
+import styles from './index.module.css';
 
 export function JSONSchemaObjectEditor({
   disabled,
@@ -36,8 +35,11 @@ export function JSONSchemaObjectEditor({
           name={name ? `${name}.${propName}` : propName}
           onChange={onPropertyChange}
           prefix={prefix}
-          required={schema.required?.includes(propName)}
-          schema={subSchema as OpenAPIV3.SchemaObject}
+          required={
+            (Array.isArray(schema.required) && schema.required.includes(propName)) ||
+            subSchema.required === true
+          }
+          schema={subSchema}
           value={value?.[propName]}
         />
       ))}

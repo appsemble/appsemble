@@ -15,7 +15,7 @@ module.exports = (rootDir) => {
   const transform = {};
 
   // Mock CSS modules if they are enabled in the project types.
-  if (types.includes('css-modules')) {
+  if (types.includes('css-modules') || types.includes('@appsemble/webpack-config/types')) {
     moduleNameMapper[/\.css$/.source] = 'identity-obj-proxy';
   }
 

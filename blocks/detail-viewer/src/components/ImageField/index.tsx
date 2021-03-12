@@ -3,7 +3,7 @@ import { useObjectURL } from '@appsemble/preact-components';
 import { Remapper } from '@appsemble/sdk';
 import { VNode } from 'preact';
 
-import styles from './ImageField.css';
+import styles from './index.module.css';
 
 interface ImageFieldProps {
   label?: Remapper;

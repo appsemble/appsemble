@@ -90,6 +90,7 @@ export async function updateApp({
     logger.verbose(`App remote: ${remote}`);
     logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
     logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
+    logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
     if (!id) {
       throw new AppsembleError(
         'The app id must be passed as a command line flag or in the context',
@@ -104,8 +105,8 @@ export async function updateApp({
 
     if (file.isDirectory()) {
       // After uploading the app, upload block styles and messages if they are available
-      await traverseBlockThemes(path, data.id);
-      await uploadMessages(path, data.id);
+      await traverseBlockThemes(path, data.id, remote, force);
+      await uploadMessages(path, data.id, remote, force);
     }
 
     const { host, protocol } = new URL(remote);

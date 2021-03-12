@@ -12,7 +12,7 @@ import {
   validateAppDefinition,
   validateStyle,
 } from '@appsemble/utils';
-import { badRequest, conflict, forbidden, notFound } from '@hapi/boom';
+import { badRequest, conflict, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { File } from 'koas-body-parser';
@@ -26,13 +26,16 @@ import {
   AppBlockStyle,
   AppRating,
   AppScreenshot,
+  AppSnapshot,
   BlockVersion,
   Member,
   Organization,
   Resource,
   transactional,
+  User,
 } from '../models';
 import { KoaContext } from '../types';
+import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
@@ -43,11 +46,13 @@ interface Params {
   blockId: string;
   organizationId: string;
   screenshotId: number;
+  snapshotId: number;
 }
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
   const blockVersions = await BlockVersion.findAll({
     raw: true,
+    attributes: { exclude: ['id'] },
     where: {
       [Op.or]: uniqWith(
         Object.values(blocks).map(({ type, version }) => {
@@ -132,7 +137,6 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       domain: domain || null,
       private: Boolean(isPrivate),
       template: Boolean(template),
-      yaml: yaml || jsYaml.safeDump(definition),
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
     };
@@ -170,6 +174,10 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     let record: App;
     await transactional(async (transaction) => {
       record = await App.create(result, { transaction });
+      const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.safeDump(definition);
+      record.AppSnapshots = [
+        await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
+      ];
       logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
       record.AppScreenshots = screenshots?.length
         ? await AppScreenshot.bulkCreate(
@@ -201,12 +209,15 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
         [fn('COUNT', col('Resources.id')), 'ResourceCount'],
+        [literal('icon IS NOT NULL'), 'hasIcon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
       ],
-      exclude: ['icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
     },
     include: [
       { model: AppRating, attributes: [] },
       { model: Resource, attributes: [], where: { clonable: true }, required: false },
+      { model: AppSnapshot, order: [['created', 'DESC']], limit: 1 },
     ],
     group: ['App.id'],
   });
@@ -230,7 +241,7 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['yaml', 'icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     where: { private: false },
     include: [{ model: AppRating, attributes: [] }],
@@ -254,7 +265,7 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
-      exclude: ['yaml', 'icon', 'coreStyle', 'sharedStyle'],
+      exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
@@ -272,7 +283,6 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         coreStyle,
         definition,
         domain,
-        force,
         icon,
         iconBackground,
         longDescription,
@@ -285,6 +295,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         yaml,
       },
     },
+    user,
   } = ctx;
 
   let result: Partial<App>;
@@ -298,9 +309,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
-  if (dbApp.locked && !force) {
-    throw forbidden('App is currently locked.');
-  }
+  checkAppLock(ctx, dbApp);
 
   try {
     result = {};
@@ -363,10 +372,6 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       if (!isEqual(appFromYaml, definition)) {
         throw badRequest('Provided YAML was not equal to definition when converted.');
       }
-
-      result.yaml = yaml.contents?.toString('utf8') || yaml;
-    } else if (definition) {
-      result.yaml = jsYaml.safeDump(definition);
     }
 
     const checkPermissions: Permission[] = [];
@@ -375,7 +380,10 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       domain !== undefined ||
       path !== undefined ||
       isPrivate !== undefined ||
-      template !== undefined
+      template !== undefined ||
+      icon !== undefined ||
+      maskableIcon !== undefined ||
+      iconBackground !== undefined
     ) {
       checkPermissions.push(Permission.EditAppSettings);
     }
@@ -388,6 +396,16 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
+      if (definition) {
+        const newYaml = yaml
+          ? yaml.contents?.toString('utf8') || yaml
+          : jsYaml.safeDump(definition);
+        const snapshot = await AppSnapshot.create(
+          { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
+          { transaction },
+        );
+        dbApp.AppSnapshots = [snapshot];
+      }
       if (screenshots?.length) {
         await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
         logger.verbose(`Saving ${screenshots.length} screenshots`);
@@ -446,6 +464,67 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
   await app.destroy();
 }
 
+export async function getAppSnapshots(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: {
+      model: AppSnapshot,
+      attributes: { exclude: ['yaml'] },
+      include: [{ model: User, required: false }],
+    },
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  ctx.body = app.AppSnapshots.sort((a, b) => b.id - a.id).map((snapshot) => ({
+    id: snapshot.id,
+    $created: snapshot.created,
+    $author: {
+      id: snapshot?.User?.id,
+      name: snapshot?.User?.name,
+    },
+  }));
+}
+
+export async function getAppSnapshot(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId, snapshotId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: {
+      model: AppSnapshot,
+      required: false,
+      include: [{ model: User, required: false }],
+      where: { id: snapshotId },
+    },
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppSnapshots.length) {
+    throw notFound('Snapshot not found');
+  }
+
+  const [snapshot] = app.AppSnapshots;
+  ctx.body = {
+    id: snapshot.id,
+    $created: snapshot.created,
+    $author: {
+      id: snapshot?.User?.id,
+      name: snapshot?.User?.name,
+    },
+    yaml: snapshot.yaml,
+  };
+}
+
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
@@ -457,7 +536,10 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!raw) {
-    return serveIcon(ctx, app, { maskable, size: Number.parseInt(size) });
+    return serveIcon(ctx, app, {
+      maskable: Boolean(maskable),
+      size: size && Number.parseInt(size as string),
+    });
   }
 
   if (!app) {
@@ -473,6 +555,46 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const { format } = await sharp(icon).metadata();
   ctx.body = icon;
   ctx.type = format;
+}
+
+export async function deleteAppIcon(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'icon', 'OrganizationId'],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.icon) {
+    throw notFound('App has no icon');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+  await app.update({ icon: null });
+}
+
+export async function deleteAppMaskableIcon(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { appId },
+  } = ctx;
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'maskableIcon', 'OrganizationId'],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.maskableIcon) {
+    throw notFound('App has no maskable icon');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+  await app.update({ maskableIcon: null });
 }
 
 export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
@@ -521,6 +643,7 @@ export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
   await transactional(async (transaction) => {
@@ -551,6 +674,7 @@ export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void
     throw notFound('App not found');
   }
 
+  checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
   if (!app.AppScreenshots.length) {
@@ -619,16 +743,13 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
   const css = String(style.contents).trim();
 
   try {
-    validateStyle(css);
-
     const app = await App.findByPk(appId);
     if (!app) {
       throw notFound('App not found.');
     }
 
-    if (app.locked) {
-      throw forbidden('App is currently locked.');
-    }
+    checkAppLock(ctx, app);
+    validateStyle(css);
 
     const block = await BlockVersion.findOne({
       where: { name: blockId, OrganizationId: organizationId },

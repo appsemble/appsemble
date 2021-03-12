@@ -3,7 +3,7 @@ import { attach } from '@appsemble/sdk';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { h } from 'mini-jsx';
 
-import styles from './index.css';
+import styles from './index.module.css';
 
 attach(({ events, parameters: { fields }, utils: { remap } }) => {
   const wrapper = (

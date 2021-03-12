@@ -3,7 +3,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
 
-import { Member, Organization } from '../models';
+import { BlockMessages, BlockVersion, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization';
@@ -116,6 +116,123 @@ describe('publishBlock', () => {
     });
 
     expect(status).toBe(201);
+  });
+
+  it('should accept messages when publishing blocks', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filename: encodeURIComponent('build/standing.png'),
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: encodeURIComponent('build/testblock.js'),
+    });
+    formData.append(
+      'messages',
+      JSON.stringify({
+        en: { test: 'foo' },
+        nl: { test: 'bar' },
+      }),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    const { status } = await request.post('/api/blocks', formData);
+    const blockVersionMessages = await BlockVersion.findOne({
+      where: { version: '1.32.9', OrganizationId: 'xkcd', name: 'standing' },
+      include: [BlockMessages],
+    });
+
+    expect(status).toBe(201);
+    expect(blockVersionMessages.BlockMessages).toMatchObject([
+      {
+        language: 'en',
+        messages: { test: 'foo' },
+      },
+      {
+        language: 'nl',
+        messages: { test: 'bar' },
+      },
+    ]);
+  });
+
+  it('should not accept messages when publishing blocks if english is excluded', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filename: encodeURIComponent('build/standing.png'),
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: encodeURIComponent('build/testblock.js'),
+    });
+    formData.append(
+      'messages',
+      JSON.stringify({
+        nl: { test: 'bar' },
+      }),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    const response = await request.post('/api/blocks', formData);
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'JSON schema validation failed' },
+    });
+  });
+
+  it('should not accept messages when publishing blocks if english has empty values', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filename: encodeURIComponent('build/standing.png'),
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: encodeURIComponent('build/testblock.js'),
+    });
+    formData.append(
+      'messages',
+      JSON.stringify({
+        en: { test: '' },
+      }),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    const response = await request.post('/api/blocks', formData);
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'JSON schema validation failed' },
+    });
+  });
+
+  it('should check for mismatching keys in messages when publishing blocks', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filename: encodeURIComponent('build/standing.png'),
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: encodeURIComponent('build/testblock.js'),
+    });
+    formData.append(
+      'messages',
+      JSON.stringify({
+        en: { test: 'foo', baz: '123' },
+        nl: { test: 'bar' },
+      }),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    const response = await request.post('/api/blocks', formData);
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'Language ‘nl’ contains mismatched keys compared to ‘en’.' },
+    });
   });
 
   it('should not accept invalid action names', async () => {

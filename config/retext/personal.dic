@@ -2,7 +2,9 @@ Appsemble
 
 # Unrecognized words
 accessor/processor
+anonymize/synthesize
 changelog/kitten
+decrypt/encrypt
 dialog/kitten
 enum/kitten
 maskable/editable
@@ -28,10 +30,14 @@ workspace/mare
 # Technical slang and libraries
 API/URL
 Airbnb
+Automattic
+base64
+BCC
 Bulma
 CLI/URL
 Cloudflare
 CNAME
+CORS
 CSS
 CSV
 cronjob/job
@@ -43,6 +49,7 @@ dropdown
 ESLint
 falsy
 GitLab
+Gravatar
 IDP
 JSON
 JSX
@@ -51,6 +58,7 @@ Koa
 Kubernetes
 localhost
 MacOS
+MD5
 NodeJS
 npmjs
 OAuth
@@ -61,6 +69,7 @@ OpenID
 OpenStreetMap
 PEM
 Preact
+prerelease/release
 remapper/mapper
 Redux
 SDK
@@ -68,8 +77,11 @@ SMTP
 SSL
 SSO
 Stylelint
+SVG
 SwaggerUI
 TSDoc
+TLS
+TTL
 util/kitten
 UUID
 Vue

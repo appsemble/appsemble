@@ -4,7 +4,7 @@ import { ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { DropdownOption as DropdownOptionType } from '../../../block';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface DropdownItemProps extends ComponentProps<'td'> {
   /**

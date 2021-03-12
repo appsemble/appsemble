@@ -33,6 +33,12 @@ interface IntlMessagesProviderProps {
 
 interface AppMessageContext {
   getMessage: MessageGetter;
+  getBlockMessage: (
+    blockVersion: string,
+    blockName: string,
+    message: IntlMessage,
+    prefix?: string,
+  ) => IntlMessageFormat;
   messageIds: string[];
 }
 
@@ -50,16 +56,13 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const history = useHistory();
   const redirect = useLocationString();
 
-  const [messages, setMessages] = useState<AppMessages['messages']>({});
-  const [appsembleMessages, setAppsembleMessages] = useState<AppMessages['messages']>();
   const messageCache = useMemo(
     () => objectCache((message) => new IntlMessageFormat(message, lang, undefined, { formatters })),
     [lang],
   );
+  const [messages, setMessages] = useState<AppMessages['messages']>();
   const [messagesError, setMessagesError] = useState(false);
-  const [appMessagesError, setAppMessagesError] = useState(false);
-  const [appMessagesLoading, setAppMessagesLoading] = useState(true);
-  const [appsembleMessagesLoading, setAppsembleMessagesLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(true);
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
@@ -90,32 +93,26 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
       .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
       .then(({ data }) => setMessages(data.messages))
       .catch(() => setMessagesError(true))
-      .finally(() => setAppMessagesLoading(false));
-  }, [definition, lang]);
-
-  useEffect(() => {
-    const defaultLanguage = definition.defaultLanguage || defaultLocale;
-    if (lang !== defaultLanguage && !languages.includes(lang)) {
-      return;
-    }
-
-    axios
-      .get<AppMessages>(`${apiUrl}/api/messages/${lang}?context=app`)
-      .then(({ data }) => setAppsembleMessages(data.messages))
-      .catch((error) => {
-        if (error?.response?.status === 404) {
-          // Set messages to an empty object to fall back to the default messages
-          setAppsembleMessages({});
-        } else {
-          setAppMessagesError(true);
-        }
-      })
-      .finally(() => setAppsembleMessagesLoading(false));
+      .finally(() => setMessagesLoading(false));
   }, [definition, lang]);
 
   const getMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
-      const message = Object.hasOwnProperty.call(messages, id) ? messages[id] : defaultMessage;
+      const message = Object.hasOwnProperty.call(messages.app, id)
+        ? messages.app[id]
+        : defaultMessage;
+      return messageCache(message);
+    },
+    [messageCache, messages],
+  );
+
+  const getBlockMessage = useCallback(
+    (blockName: string, blockVersion: string, { id }: IntlMessage, prefix: string) => {
+      const message =
+        (prefix && messages.app?.[`${prefix}.${id}`]) ||
+        messages.app?.[`${blockName}/${blockVersion}/${id}`] ||
+        messages.blocks?.[blockName]?.[blockVersion]?.[id] ||
+        '';
       return messageCache(message);
     },
     [messageCache, messages],
@@ -124,16 +121,17 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const value = useMemo(
     () => ({
       getMessage,
-      messageIds: Object.keys(messages),
+      getBlockMessage,
+      messageIds: messages?.app ? Object.keys(messages.app) : [],
     }),
-    [getMessage, messages],
+    [getMessage, getBlockMessage, messages],
   );
 
-  if (appMessagesLoading || appsembleMessagesLoading) {
+  if (messagesLoading) {
     return <Loader />;
   }
 
-  if (appMessagesError || messagesError) {
+  if (messagesError) {
     return (
       <Content>
         <Message color="danger">There was a problem loading the app.</Message>
@@ -143,7 +141,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   return (
     <Context.Provider value={value}>
-      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={appsembleMessages}>
+      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={messages.core}>
         {children}
       </IntlProvider>
     </Context.Provider>

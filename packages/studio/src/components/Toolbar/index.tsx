@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import { ProfileDropdown } from '../ProfileDropdown';
-import styles from './index.css';
+import styles from './index.module.css';
 import { LanguageDropdown } from './LanguageDropdown';
 import { messages } from './messages';
 

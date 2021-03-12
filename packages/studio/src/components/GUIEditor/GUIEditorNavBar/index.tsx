@@ -8,7 +8,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { GUIEditorDelete } from '../GUIEditorDelete';
 import { EditLocation, GuiEditorStep } from '../types';
-import styles from './index.css';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface GUIEditorNavBarProps {
@@ -34,7 +34,7 @@ export function GUIEditorNavBar({
         <li className={classNames({ 'is-active': location.hash === '#editor' })} value="editor">
           <Link to="#editor">
             <Icon icon="file-code" />
-            <FormattedMessage {...messages.recipe} />
+            <FormattedMessage {...messages.app} />
           </Link>
         </li>
         <li className="ml-1" value="addblock">

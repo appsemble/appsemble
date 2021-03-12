@@ -9,8 +9,15 @@ import { uploadAppBlockTheme } from './uploadAppBlockTheme';
  *
  * @param path - The path of the app.
  * @param appId - The ID of the app.
+ * @param remote - The HTTP origin to upload the themes to.
+ * @param force - Force update the theme if the app is locked.
  */
-export async function traverseBlockThemes(path: string, appId: number): Promise<void> {
+export async function traverseBlockThemes(
+  path: string,
+  appId: number,
+  remote: string,
+  force: boolean,
+): Promise<void> {
   logger.verbose(`Searching themes in ${path}`);
   await opendirSafe(
     join(path, 'theme'),
@@ -37,6 +44,8 @@ export async function traverseBlockThemes(path: string, appId: number): Promise<
           organizationId,
           appId,
           blockThemeStats.name.toLowerCase(),
+          remote,
+          force,
         );
       });
     },

@@ -1,4 +1,4 @@
-import { useBlock } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { InputField } from '@appsemble/preact-components';
 import { VNode } from 'preact';
 
@@ -19,10 +19,7 @@ export function NumberInput({
   onChange,
   value,
 }: NumberInputProps): VNode {
-  const {
-    parameters: { optionalLabel },
-    utils,
-  } = useBlock();
+  const { utils } = useBlock();
   const { icon, label, placeholder, readOnly, tag } = field;
 
   return (
@@ -36,7 +33,7 @@ export function NumberInput({
       min={getMin(field)}
       name={name}
       onChange={onChange}
-      optionalLabel={utils.remap(optionalLabel, value)}
+      optionalLabel={<FormattedMessage id="optionalLabel" />}
       placeholder={utils.remap(placeholder, value) || utils.remap(label, value) || field.name}
       readOnly={readOnly}
       required={isRequired(field)}

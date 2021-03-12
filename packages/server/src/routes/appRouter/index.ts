@@ -1,5 +1,4 @@
 import { partialNormalized, partialSemver } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 
 import { tinyRouter } from '../../middleware/tinyRouter';
 import { blockAssetHandler } from './blockAssetHandler';
@@ -45,12 +44,14 @@ export const appRouter = tinyRouter([
   },
   {
     route: /(^|\/)\.well-known(\/|$)/,
-    any() {
-      throw notFound();
-    },
+    any() {},
   },
   {
-    route: new RegExp(/^[^.]+$/),
+    route: /\.\w+$/,
+    any() {},
+  },
+  {
+    route: /.*/,
     get: indexHandler,
   },
 ]);

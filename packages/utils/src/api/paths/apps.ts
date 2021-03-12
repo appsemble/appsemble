@@ -278,14 +278,14 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'Lock status successfully changed',
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/apps/{appId}/icon': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
-      description: 'Get the current app Icon.',
+      description: 'Get the current app icon.',
       operationId: 'getAppIcon',
       responses: {
         200: {
@@ -298,6 +298,31 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+    },
+    delete: {
+      tags: ['app'],
+      description: 'Delete the current app icon.',
+      operationId: 'deleteAppIcon',
+      responses: {
+        204: {
+          description: 'The icon has been successfully removed',
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/maskableIcon': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    delete: {
+      tags: ['app'],
+      description: 'Delete the current app’s maskable icon.',
+      operationId: 'deleteAppMaskableIcon',
+      responses: {
+        204: {
+          description: 'The icon has been successfully removed',
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/apps/{appId}/subscriptions': {
@@ -571,6 +596,91 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
+  '/api/apps/{appId}/snapshots': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app'],
+      description: 'Get a list of snapshots made of the app.',
+      operationId: 'getAppSnapshots',
+      responses: {
+        200: {
+          description: 'The available snapshots',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'number', description: 'The ID of the snapshot.' },
+                    $created: {
+                      type: 'string',
+                      format: 'date-time',
+                      description: 'The creation date of the snapshot.',
+                    },
+                    $author: {
+                      type: 'object',
+                      properties: {
+                        id: { $ref: '#/components/schemas/User/properties/id' },
+                        name: { $ref: '#/components/schemas/User/properties/name' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/snapshots/{snapshotId}': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      {
+        name: 'snapshotId',
+        in: 'path',
+        description: 'The ID of the snapshot',
+        required: true,
+        schema: { type: 'number', description: 'The ID of the snapshot.' },
+      },
+    ],
+    get: {
+      tags: ['app'],
+      description: 'Get a single snapshot made of the app.',
+      operationId: 'getAppSnapshot',
+      responses: {
+        200: {
+          description: 'The snapshot',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  id: { type: 'integer', description: 'The ID of the snapshot.' },
+                  yaml: { type: 'string', description: 'The app definition.' },
+                  $created: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'The creation date of the snapshot.',
+                  },
+                  $author: {
+                    type: 'object',
+                    properties: {
+                      id: { $ref: '#/components/schemas/User/properties/id' },
+                      name: { $ref: '#/components/schemas/User/properties/name' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
+    },
+  },
   '/api/apps/{appId}/screenshots': {
     post: {
       tags: ['app'],
@@ -713,6 +823,11 @@ export const paths: OpenAPIV3.PathsObject = {
                 style: {
                   type: 'string',
                   format: 'binary',
+                },
+                force: {
+                  type: 'boolean',
+                  writeOnly: true,
+                  description: 'If this is true, the app lock is ignored.',
                 },
               },
             },

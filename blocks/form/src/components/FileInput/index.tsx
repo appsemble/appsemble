@@ -1,4 +1,4 @@
-import { useBlock } from '@appsemble/preact';
+import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { FormComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { JSX, VNode } from 'preact';
@@ -7,7 +7,7 @@ import { useCallback } from 'preact/hooks';
 import { FileField, InputProps } from '../../../block';
 import { isRequired } from '../../utils/requirements';
 import { FileEntry } from '../FileEntry';
-import styles from './index.css';
+import styles from './index.module.css';
 
 type FileInputProps = InputProps<(Blob | string)[] | Blob | string, FileField>;
 
@@ -20,10 +20,7 @@ export function FileInput({
   onChange,
   value,
 }: FileInputProps): VNode {
-  const {
-    parameters: { optionalLabel },
-    utils,
-  } = useBlock();
+  const { utils } = useBlock();
   const { icon, label, repeated, tag } = field;
   const required = isRequired(field);
   const remappedLabel = utils.remap(label, value);
@@ -47,7 +44,7 @@ export function FileInput({
       className="appsemble-file"
       icon={icon}
       label={remappedLabel}
-      optionalLabel={utils.remap(optionalLabel, {})}
+      optionalLabel={<FormattedMessage id="optionalLabel" />}
       required={required}
       tag={utils.remap(tag, {})}
     >

@@ -1,6 +1,6 @@
 {
   "name": "appsemble",
-  "version": "0.17.6",
+  "version": "0.18.1",
   "description": "A simple wrapper for @appsemble/cli",
   "keywords": [
     "app",
@@ -20,6 +20,7 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "main": "dist",
   "bin": "dist/index.js",
   "files": [
     "dist"
@@ -29,6 +30,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/cli": "0.17.6"
+    "@appsemble/cli": "0.18.1"
   }
 }

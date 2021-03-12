@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.1](https://gitlab.com/appsemble/appsemble/-/releases/0.18.1)] - 2021-03-08
+
+### Added
+
+- Server: Add support for automatically backing up previous app definitions.
+- Studio: Add support for viewing and restoring app snapshots.
+- Studio: Add support for viewing app definitions.
+
+## \[[0.18.0](https://gitlab.com/appsemble/appsemble/-/releases/0.18.0)] - 2021-03-01
+
+### Added
+
+- Block(`data-loader`): Add support for translating block messages.
+- Block(`data-notifier`): Add support for translating block messages.
+- Block(`feed`): Add support for translating block messages.
+- Block(`filter`): Add support for translating block messages.
+- Block(`form`): Add support for translating block messages.
+- Block(`list`): Add support for translating block messages.
+- Block(`map`): Add support for translating block messages.
+- Block(`table`): Add support for translating block messages.
+- App: Add `link.back` and `link.next` actions. These can be used to navigate between previously
+  visited pages.
+- Cli: Clear the block output directory before building.
+- Server: Add the `Content-Disposition` header for app assets.
+- Server: Implement Sentry for all commands, not just `start`.
+- Studio: Add indicator for locked apps.
+- Studio: Add option to delete app icons.
+- Webpack-config: Add package `@appsemble/webpack-config`.
+
+### Changed
+
+- App: Hide menu by default if only one page is visible.
+
+### Removed
+
+- Block(`data-loader`): Remove label `loadErrorMessage`. This has been replaced by the message
+  translation support.
+- Block(`data-notifier`): Remove labels `buttonLabel`, `newMessage`, `updatedMessage`. These have
+  been replaced by the message translation support.
+- Block(`feed`): Remove labels `anonymousLabel`, `emptyLabel`, `replyErrorMessage`, `replyLabel`.
+  These have been replaced by the message translation support.
+- Block(`filter`): Remove labels `clearLabel`, `titleLabel`, `submitLabel`. These have been replaced
+  by the message translation support.
+- Block(`form`): Remove labels `fieldErrorLabel`, `formRequirementError`, `invalidLabel`,
+  `optionalLabel`, `previousLabel`, `submitError`, `submitLabel`. These have been replaced by the
+  message translation support.
+- Block(`list`): Remove labels `error`, `noData`. These have been replaced by the message
+  translation support.
+- Block(`map`): Remove label `locationError`. It has been replaced by the message translation
+  support.
+- Block(`table`): Remove labels `emptyMessage`, `error`. These have been replaced by the message
+  translation support.
+
 ## \[[0.17.6](https://gitlab.com/appsemble/appsemble/-/releases/0.17.6)] - 2021-02-10
 
 ### Added

@@ -1,10 +1,12 @@
 import { ActionType, EventType } from '@appsemble/types';
+import { Schema } from 'jsonschema';
 import {
   AllowNull,
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   HasMany,
   Model,
@@ -12,26 +14,26 @@ import {
   Table,
   Unique,
 } from 'sequelize-typescript';
-import { Definition } from 'typescript-json-schema';
 
-import { BlockAsset, Organization } from '.';
+import { BlockAsset, BlockMessages, Organization } from '.';
 
 @Table({ tableName: 'BlockVersion', updatedAt: false })
 export class BlockVersion extends Model {
   @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
+  id: string;
+
+  @Unique('blockVersionComposite')
   @ForeignKey(() => Organization)
   @AllowNull(false)
   @Column
   OrganizationId: string;
 
-  @PrimaryKey
-  @ForeignKey(() => BlockAsset)
   @Unique('blockVersionComposite')
   @Column
   name: string;
 
-  @PrimaryKey
-  @ForeignKey(() => BlockAsset)
   @Unique('blockVersionComposite')
   @Column
   version: string;
@@ -49,7 +51,7 @@ export class BlockVersion extends Model {
   longDescription: string;
 
   @Column(DataType.JSON)
-  parameters: Definition;
+  parameters: Schema;
 
   @Column(DataType.JSON)
   resources: any;
@@ -66,8 +68,11 @@ export class BlockVersion extends Model {
   @BelongsTo(() => Organization)
   Organization: Organization;
 
-  @HasMany(() => BlockAsset, { foreignKey: 'name', sourceKey: 'name' })
+  @HasMany(() => BlockAsset)
   BlockAssets?: BlockAsset[];
+
+  @HasMany(() => BlockMessages)
+  BlockMessages: BlockMessages[];
 
   @CreatedAt
   created: Date;

@@ -35,6 +35,11 @@ declare module '@appsemble/sdk' {
   interface Parameters {
     [K: string]: JsonValue;
   }
+
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  interface Messages {
+    [K: string]: Record<string, string>;
+  }
 }
 
 export interface User extends UserInfo {

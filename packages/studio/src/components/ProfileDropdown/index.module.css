@@ -1,0 +1,15 @@
+.gravatar {
+  max-height: unset !important;
+}
+
+.gravatarFallback {
+  border-radius: 50%;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.logoutButton {
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}

@@ -58,7 +58,7 @@ export async function handler({
   remote,
   template,
 }: UpdateAppArguments): Promise<void> {
-  if (id != null && paths.length) {
+  if (id != null && paths.length > 1) {
     throw new AppsembleError('Only one path may be specified when specifying an app id');
   }
 

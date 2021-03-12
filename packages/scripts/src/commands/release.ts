@@ -105,7 +105,7 @@ async function processChangesDir(dir: string, prefix: string): Promise<ListItem[
     .map((line) => `${prefix}: ${line}`)
     .map((line) => line.trim())
     .map((line) => (line.endsWith('.') ? line : `${line}.`))
-    .map((line) => createListItem(remark().parse(line).children as BlockContent[]));
+    .map((line) => createListItem(remark.parse(line).children as BlockContent[]));
 }
 
 async function processChanges(dir: string): Promise<Changes> {
@@ -128,7 +128,7 @@ async function updateChangelog(workspaces: string[], version: string): Promise<v
   const changesByPackage = await Promise.all(
     workspaces.map((workspace) => processChanges(workspace)),
   );
-  const changelog = remark().parse(await fs.readFile('CHANGELOG.md', 'utf-8')) as Root;
+  const changelog = remark.parse(await fs.readFile('CHANGELOG.md', 'utf-8')) as Root;
   const changesByCategory = changesByPackage.reduce<Changes>(
     (acc, change) => {
       acc.added.push(...change.added);

@@ -4,7 +4,7 @@ import { ComponentPropsWithoutRef, ReactElement } from 'react';
 
 import { ShowDialogParams } from '../../types';
 import { BlockList } from '../BlockList';
-import styles from './index.css';
+import styles from './index.module.css';
 
 interface PageDialogProps
   extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix'> {

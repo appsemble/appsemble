@@ -6,7 +6,14 @@ import { File } from 'koas-body-parser';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import { BlockAsset, BlockVersion, getDB, Organization, transactional } from '../models';
+import {
+  BlockAsset,
+  BlockMessages,
+  BlockVersion,
+  getDB,
+  Organization,
+  transactional,
+} from '../models';
 import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
@@ -110,7 +117,7 @@ interface PublishBlockBody extends Omit<BlockManifest, 'files'> {
 }
 
 export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
-  const { files, icon, ...data }: PublishBlockBody = ctx.request.body;
+  const { files, icon, messages, ...data }: PublishBlockBody = ctx.request.body;
   const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
 
@@ -123,6 +130,18 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         throw badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
       }
     });
+  }
+
+  if (messages) {
+    const messageKeys = Object.keys(messages.en);
+    Object.entries(messages as Record<string, Record<string, string>>).forEach(
+      ([language, record]) => {
+        const keys = Object.keys(record);
+        if (keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key))) {
+          throw badRequest(`Language ‘${language}’ contains mismatched keys compared to ‘en’.`);
+        }
+      },
+    );
   }
 
   await checkRole(ctx, OrganizationId, Permission.PublishBlocks);
@@ -146,6 +165,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         actions = null,
         description = null,
         events,
+        id,
         layout = null,
         longDescription = null,
         parameters,
@@ -163,14 +183,24 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
       await BlockAsset.bulkCreate(
         files.map((file) => ({
           name: blockId,
-          OrganizationId,
-          version,
+          BlockVersionId: id,
           filename: decodeURIComponent(file.filename),
           mime: file.mime,
           content: file.contents,
         })),
         { logging: false, transaction },
       );
+
+      if (messages) {
+        await BlockMessages.bulkCreate(
+          Object.entries(messages).map(([language, content]) => ({
+            language,
+            messages: content,
+            BlockVersionId: id,
+          })),
+          { transaction },
+        );
+      }
 
       ctx.body = {
         actions,
@@ -202,6 +232,7 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
 
   const version = await BlockVersion.findOne({
     attributes: [
+      'id',
       'actions',
       'events',
       'layout',
@@ -210,26 +241,26 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
       'description',
       'longDescription',
     ],
-    raw: true,
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
+    include: [{ model: BlockAsset, attributes: ['filename'] }],
   });
 
   if (!version) {
     throw notFound('Block version not found');
   }
 
-  const files = await BlockAsset.findAll({
-    attributes: ['filename'],
-    raw: true,
-    where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
-  });
-
   ctx.body = {
-    files: files.map((f) => f.filename),
+    files: version.BlockAssets.map((f) => f.filename),
     iconUrl: `/api/blocks/${name}/versions/${blockVersion}/icon`,
     name,
     version: blockVersion,
-    ...version,
+    actions: version.actions,
+    events: version.events,
+    layout: version.layout,
+    resources: version.resources,
+    parameters: version.parameters,
+    description: version.description,
+    longDescription: version.longDescription,
   };
 }
 

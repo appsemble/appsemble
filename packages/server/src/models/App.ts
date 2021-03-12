@@ -27,6 +27,7 @@ import {
   AppRating,
   AppSamlSecret,
   AppScreenshot,
+  AppSnapshot,
   AppSubscription,
   Asset,
   OAuth2Consent,
@@ -86,9 +87,6 @@ export class App extends Model {
 
   @Column(DataType.TEXT)
   sharedStyle: string;
-
-  @Column(DataType.TEXT)
-  yaml: string;
 
   @AllowNull(false)
   @Column
@@ -156,9 +154,15 @@ export class App extends Model {
   @HasMany(() => Team)
   Teams: Team[];
 
+  @HasMany(() => AppSnapshot, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  AppSnapshots: AppSnapshot[];
+
   ResourceCount: number;
 
   RatingAverage?: number;
 
   RatingCount?: number;
+
+  hasIcon?: boolean;
+  hasMaskableIcon?: boolean;
 }
