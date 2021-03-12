@@ -35,6 +35,9 @@ export async function getOrganizations(ctx: KoaContext): Promise<void> {
   ctx.body = organizations.map((organization) => ({
     id: organization.id,
     name: organization.name,
+    description: organization.description,
+    website: organization.website,
+    email: organization.email,
     iconUrl: `/api/organizations/${organization.id}/icon`,
   }));
 }
@@ -52,6 +55,9 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = {
     id: organization.id,
     name: organization.name,
+    description: organization.description,
+    website: organization.website,
+    email: organization.email,
     iconUrl: `/api/organizations/${organization.id}/icon`,
   };
 }
@@ -161,7 +167,7 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
   const {
     params: { organizationId },
     request: {
-      body: { icon, name },
+      body: { description, email, icon, name, website },
     },
   } = ctx;
 
@@ -171,19 +177,34 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
   const organization = member.Organization;
 
   const result: Partial<Organization> = {};
-  if (name) {
-    result.name = name;
+  if (name !== undefined) {
+    result.name = name || null;
   }
 
-  if (icon) {
-    result.icon = icon.contents;
+  if (icon !== undefined) {
+    result.icon = icon ? icon.contents : null;
+  }
+
+  if (description !== undefined) {
+    result.description = description || null;
+  }
+
+  if (email !== undefined) {
+    result.email = email || null;
+  }
+
+  if (website !== undefined) {
+    result.website = website || null;
   }
 
   await organization.update(result);
 
   ctx.body = {
     id: organization.id,
-    name: name || organization.name,
+    name,
+    description,
+    website,
+    email,
     iconUrl: `/api/organizations/${organization.id}/icon`,
   };
 }
@@ -191,7 +212,7 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
 export async function createOrganization(ctx: KoaContext): Promise<void> {
   const {
     request: {
-      body: { id, name },
+      body: { description, email, id, name, website },
     },
     user: { id: userId },
   } = ctx;
@@ -216,7 +237,10 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
   }
 
   try {
-    const organization = await Organization.create({ id, name }, { include: [User] });
+    const organization = await Organization.create(
+      { id, name, email, description, website },
+      { include: [User] },
+    );
 
     // @ts-expect-error XXX Convert to a type safe expression.
     await organization.addUser(userId, { through: { role: 'Owner' } });
@@ -226,6 +250,9 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
       id: organization.id,
       name: organization.name,
       iconUrl: `/api/organizations/${organization.id}/icon`,
+      description: organization.description,
+      website: organization.website,
+      email: organization.email,
       members: organization.Users.map((u) => ({
         id: u.id,
         name: u.name,

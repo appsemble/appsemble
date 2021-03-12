@@ -1,4 +1,4 @@
-import { Button, Content, useData } from '@appsemble/react-components';
+import { Button, Content, Icon, useData } from '@appsemble/react-components';
 import { App, BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { ReactElement } from 'react';
@@ -50,7 +50,32 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
             )}
           </>
         }
-        description="The organization’s description"
+        description={organization.description}
+        details={
+          <>
+            {organization.website && (
+              <div className={styles.icon}>
+                <Icon icon="globe" />
+                <a
+                  href={organization.website}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  title={organization.website}
+                >
+                  {organization.website.replace(/^(https?:|)\/\//, '')}
+                </a>
+              </div>
+            )}
+            {organization.email && (
+              <div className={styles.icon}>
+                <Icon icon="envelope" />
+                <a href={`mailto:${organization.email}`} title={organization.email}>
+                  {organization.email}
+                </a>
+              </div>
+            )}
+          </>
+        }
         icon={
           <img
             alt={formatMessage(messages.logo)}

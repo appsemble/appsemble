@@ -72,6 +72,15 @@ export const paths: OpenAPIV3.PathsObject = {
                 name: {
                   $ref: '#/components/schemas/Organization/properties/name',
                 },
+                description: {
+                  $ref: '#/components/schemas/Organization/properties/description',
+                },
+                email: {
+                  $ref: '#/components/schemas/Organization/properties/email',
+                },
+                website: {
+                  $ref: '#/components/schemas/Organization/properties/website',
+                },
                 icon: {
                   type: 'string',
                   format: 'binary',

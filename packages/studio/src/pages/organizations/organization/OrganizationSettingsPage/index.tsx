@@ -37,9 +37,12 @@ export function OrganizationSettingsPage({
   }, []);
 
   const onEditOrganization = useCallback(
-    async ({ name }) => {
+    async ({ description, email, name, website }) => {
       const formData = new FormData();
       formData.set('name', name);
+      formData.set('description', description);
+      formData.set('email', email);
+      formData.set('website', website);
 
       if (icon) {
         formData.set('icon', icon);
@@ -47,9 +50,11 @@ export function OrganizationSettingsPage({
 
       await axios.patch(`/api/organizations/${organization.id}`, formData);
       setOrganizations(
-        organizations.map((org) => (org.id === organization.id ? { ...org, name } : org)),
+        organizations.map((org) =>
+          org.id === organization.id ? { ...org, name, description, website, email } : org,
+        ),
       );
-      setOrganization({ ...organization, name });
+      setOrganization({ ...organization, name, description, website, email });
     },
     [icon, organization, organizations, setOrganization, setOrganizations],
   );
@@ -65,6 +70,9 @@ export function OrganizationSettingsPage({
       <SimpleForm
         defaultValues={{
           name: organization.name,
+          email: organization.email,
+          website: organization.website,
+          description: organization.description,
         }}
         onSubmit={onEditOrganization}
       >
@@ -74,6 +82,24 @@ export function OrganizationSettingsPage({
           maxLength={30}
           minLength={1}
           name="name"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.emailDescription} />}
+          label={<FormattedMessage {...messages.email} />}
+          name="email"
+          type="email"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.websiteDescription} />}
+          label={<FormattedMessage {...messages.website} />}
+          name="website"
+          type="url"
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.descriptionDescription} />}
+          label={<FormattedMessage {...messages.description} />}
+          maxLength={160}
+          name="description"
         />
         <FileUpload
           accept="image/jpeg, image/png, image/tiff, image/webp"

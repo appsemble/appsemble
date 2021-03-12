@@ -22,3 +22,9 @@
   justify-content: space-around;
   margin: 0 auto;
 }
+
+.icon {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

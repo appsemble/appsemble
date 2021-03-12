@@ -25,12 +25,10 @@ export const Organization: OpenAPIV3.NonArraySchemaObject = {
     },
     email: {
       type: 'string',
-      format: 'email',
       description: 'The email address of the organization.',
     },
     website: {
       type: 'string',
-      format: 'hostname',
       description: 'The website of the organization.',
     },
     iconUrl: {

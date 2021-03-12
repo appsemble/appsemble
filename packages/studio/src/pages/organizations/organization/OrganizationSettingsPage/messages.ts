@@ -9,4 +9,10 @@ export const messages = defineMessages({
   title: 'Settings {name}',
   submit: 'Submit',
   settings: 'Settings',
+  email: 'Email',
+  emailDescription: 'The email address users can use to contact this organization.',
+  description: 'Description',
+  descriptionDescription: 'A short description about the organization',
+  website: 'Website',
+  websiteDescription: 'The website of your organization.',
 });
