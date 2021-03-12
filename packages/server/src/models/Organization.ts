@@ -24,6 +24,15 @@ export class Organization extends Model {
   name: string;
 
   @Column
+  description: string;
+
+  @Column
+  website: string;
+
+  @Column
+  email: string;
+
+  @Column
   icon: Buffer;
 
   @BelongsToMany(() => User, () => Member)

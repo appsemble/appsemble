@@ -18,6 +18,21 @@ export const Organization: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The display name for the organization.',
     },
+    description: {
+      type: 'string',
+      description: 'The description of the organization.',
+      maxLength: 160,
+    },
+    email: {
+      type: 'string',
+      format: 'email',
+      description: 'The email address of the organization.',
+    },
+    website: {
+      type: 'string',
+      format: 'hostname',
+      description: 'The website of the organization.',
+    },
     iconUrl: {
       type: 'string',
       description: 'The URL used to fetch the organization’s icon.',
