@@ -7,8 +7,18 @@ describe('generateDataFromSchema', () => {
   });
 
   it('should return the default value', () => {
-    const result = generateDataFromSchema({ type: 'string', default: 'foo' });
-    expect(result).toBe('foo');
+    const result = generateDataFromSchema({ type: 'string', default: 'pear' });
+    expect(result).toBe('pear');
+  });
+
+  it('should return the first example if examples exist', () => {
+    const result = generateDataFromSchema({ type: 'string', examples: ['banana'] });
+    expect(result).toBe('banana');
+  });
+
+  it('should return the first enum item for enum schemas', () => {
+    const result = generateDataFromSchema({ enum: ['apple'] });
+    expect(result).toBe('apple');
   });
 
   describe('array', () => {
@@ -50,6 +60,33 @@ describe('generateDataFromSchema', () => {
     it('should return false', () => {
       const result = generateDataFromSchema({ type: 'boolean' });
       expect(result).toBe(false);
+    });
+  });
+
+  describe('integer / number', () => {
+    it('should return 0', () => {
+      const result = generateDataFromSchema({ type: 'number' });
+      expect(result).toBe(0);
+    });
+
+    it('should respect the minimum value', () => {
+      const result = generateDataFromSchema({ type: 'number', minimum: 5 });
+      expect(result).toBe(5);
+    });
+
+    it('should respect the maximum value', () => {
+      const result = generateDataFromSchema({ type: 'number', maximum: -5 });
+      expect(result).toBe(-5);
+    });
+
+    it('should respect the combination of multipleOf and minimum', () => {
+      const result = generateDataFromSchema({ type: 'number', minimum: 5, multipleOf: 3 });
+      expect(result).toBe(6);
+    });
+
+    it('should respect the combination of multipleOf and maximum', () => {
+      const result = generateDataFromSchema({ type: 'number', maximum: -5, multipleOf: 3 });
+      expect(result).toBe(-6);
     });
   });
 

@@ -1,21 +1,44 @@
 import { Schema } from 'jsonschema';
-import { JsonValue } from 'type-fest';
+import { JsonArray, JsonValue } from 'type-fest';
 
 import { mapValues } from './mapValues';
 
 declare module 'jsonschema' {
+  /**
+   * See https://github.com/tdegrunt/jsonschema/pull/335
+   */
   interface Schema {
     default?: JsonValue;
+    examples?: JsonArray;
   }
 }
 
+/**
+ * Generate data based on a JSON schema.
+ *
+ * The generated data doesn’t necessarily conform to the JSON schema. This is useful to prefill
+ * forms that are based on a JSON schema, but where user input is still needed to verify the data.
+ *
+ * @param schema - The JSON schema to generate data from.
+ * @returns A JSON value estimated from the schema.
+ */
 export function generateDataFromSchema(schema?: Schema): JsonValue {
   if (!schema) {
     return;
   }
+  // Let’s assume the default conforms to the schema, although this might not be true.
   if ('default' in schema) {
     return schema.default;
   }
+  // Fall back to an example if no default is provided.
+  if (schema.examples?.length) {
+    return schema.examples[0];
+  }
+  // Use the first enum value as default for enum schemas.
+  if (schema.enum) {
+    return schema.enum[0];
+  }
+  // If no predefined value exists, generate something based on its type.
   switch (schema.type) {
     case 'array':
       return Array.from({ length: schema.minItems }, (empty, index) =>
@@ -30,14 +53,18 @@ export function generateDataFromSchema(schema?: Schema): JsonValue {
       return false;
     case 'integer':
     case 'number': {
-      const { exclusiveMaximum, exclusiveMinimum, maximum, minimum, multipleOf } = schema;
-      let value = 0;
+      const {
+        maximum = 0,
+        minimum = 0,
+        multipleOf = schema.type === 'integer' ? 1 : undefined,
+      } = schema;
       if (minimum > 0) {
-        value = minimum;
-      } else if (maximum < 0) {
-        value = maximum;
+        return multipleOf ? minimum + multipleOf - (minimum % multipleOf) : minimum;
       }
-      return value;
+      if (maximum < 0) {
+        return multipleOf ? maximum - multipleOf + (-maximum % multipleOf) : maximum;
+      }
+      return 0;
     }
     case 'null':
       return null;

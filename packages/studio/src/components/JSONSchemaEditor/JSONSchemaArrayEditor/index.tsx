@@ -2,21 +2,12 @@ import { Button, Title } from '@appsemble/react-components';
 import { NamedEvent } from '@appsemble/web-utils';
 import { OpenAPIV3 } from 'openapi-types';
 import { MouseEvent, ReactElement, useCallback } from 'react';
+import { generateDataFromSchema } from 'utils/src/jsonschema';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
 import styles from './index.module.css';
-
-const defaults = {
-  array: [] as const,
-  boolean: false,
-  integer: 0,
-  object: {},
-  null: null as null,
-  number: 0,
-  string: '',
-};
 
 export function JSONSchemaArrayEditor({
   disabled,
@@ -56,7 +47,7 @@ export function JSONSchemaArrayEditor({
       const index = addedName ? Number(addedName.slice(addedName.length + 1)) + 1 : 0;
       onChange({ currentTarget: { name } }, [
         ...value.slice(0, index),
-        items.default ?? defaults[items.type],
+        generateDataFromSchema(items),
         ...value.slice(index, value.length),
       ]);
     },
