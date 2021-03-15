@@ -1,5 +1,4 @@
 import { attach } from '@appsemble/sdk';
-import { h } from 'mini-jsx';
 
 import styles from './index.module.css';
 

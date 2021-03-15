@@ -1,8 +1,5 @@
 import { attach, Messages } from '@appsemble/sdk';
 import equal from 'fast-deep-equal';
-// XXX Update mini-jsx to use jsxImportSource
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { h } from 'mini-jsx';
 
 import styles from './index.module.css';
 
