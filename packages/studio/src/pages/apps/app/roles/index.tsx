@@ -66,7 +66,7 @@ export function RolesPage(): ReactElement {
           {...messages.inviteOrganization}
           values={{
             link: (text: string) => (
-              <Link to={`/${lang}/settings/organizations/${app.OrganizationId}`}>{text}</Link>
+              <Link to={`/${lang}/organizations/@${app.OrganizationId}`}>{text}</Link>
             ),
           }}
         />

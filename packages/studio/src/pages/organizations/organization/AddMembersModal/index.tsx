@@ -4,15 +4,25 @@ import {
   FormComponent,
   Input,
   Modal,
+  Select,
   Toggle,
   useMessages,
 } from '@appsemble/react-components';
 import { OrganizationInvite } from '@appsemble/types';
+import { Role, roles } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ClipboardEvent, ReactElement, useCallback, useState } from 'react';
+import React, {
+  ChangeEvent,
+  ClipboardEvent,
+  Fragment as div,
+  ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
+import { useUser } from '../../../../components/UserProvider';
 import { messages } from './messages';
 
 interface AddMembersModalProps {
@@ -31,17 +41,22 @@ interface AddMembersModalProps {
 
 const defaultInvite = {
   email: '',
+  role: 'Member',
 };
+
+const roleKeys = Object.keys(roles);
 
 /**
  * A modal form for inviting one or more people to the organization.
  */
 export function AddMembersModal({ onInvited, state }: AddMembersModalProps): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();
+  const { organizations } = useUser();
   const push = useMessages();
   const { formatMessage } = useIntl();
   const [invites, setInvites] = useState<OrganizationInvite[]>([defaultInvite]);
   const [submitting, setSubmitting] = useState(false);
+  const organization = organizations.find((org) => org.id === organizationId.replace('@', ''));
 
   const reset = useCallback(() => {
     setInvites([defaultInvite]);
@@ -53,7 +68,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
     try {
       const { data } = await axios.post<OrganizationInvite[]>(
         `/api/organizations/${organizationId}/invites`,
-        invites.filter((invite) => invite.email.toLowerCase()),
+        invites.filter(({ email }) => email),
       );
       onInvited(data);
     } catch {
@@ -67,7 +82,10 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   }, [formatMessage, invites, onInvited, organizationId, push, state]);
 
   const onChange = useCallback(
-    ({ currentTarget: { id } }: ChangeEvent<HTMLInputElement>, value: string) => {
+    (
+      { currentTarget: { id } }: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+      value: string,
+    ) => {
       const [field, i] = id.split('-');
       const index = Number(i);
 
@@ -125,7 +143,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
         ...invites.slice(0, index),
         ...lines.map((line) => {
           const [email, name] = line.split('\t');
-          return { email, name };
+          return { email, name, role: 'Member' };
         }),
         ...invites.slice(index),
       ]);
@@ -158,19 +176,39 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
         required
       >
         {invites.map((member, index) => (
-          <Input
-            disabled={submitting}
-            id={`email-${index}`}
+          <div
+            className="mb-2 is-flex"
             // eslint-disable-next-line react/no-array-index-key
             key={index}
-            name="email"
-            onBlur={onBlur}
-            onChange={onChange}
-            onPaste={onPaste}
-            required
-            type="email"
-            value={member.email}
-          />
+          >
+            <Input
+              className="mr-2"
+              disabled={submitting}
+              id={`email-${index}`}
+              name="email"
+              onBlur={onBlur}
+              onChange={onChange}
+              onPaste={onPaste}
+              required
+              type="email"
+              value={member.email}
+            />
+            <Select
+              disabled={submitting}
+              id={`role-${index}`}
+              name="role"
+              onChange={onChange}
+              value={member.role}
+            >
+              {roleKeys
+                .filter((r) => roleKeys.indexOf(r) <= roleKeys.indexOf(organization?.role))
+                .map((r: Role) => (
+                  <option key={r} value={r}>
+                    {formatMessage(messages[r])}
+                  </option>
+                ))}
+            </Select>
+          </div>
         ))}
       </FormComponent>
     </Modal>

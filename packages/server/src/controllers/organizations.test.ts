@@ -371,7 +371,7 @@ describe('inviteMembers', () => {
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'a@example.com' },
+      { email: 'a@example.com', role: 'Member' },
     ]);
     expect(response).toMatchObject({
       status: 403,
@@ -395,8 +395,8 @@ describe('inviteMembers', () => {
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'a@example.com' },
-      { email: 'b@example.com' },
+      { email: 'a@example.com', role: 'Member' },
+      { email: 'b@example.com', role: 'Member' },
     ]);
     expect(response).toMatchObject({
       status: 400,
@@ -422,8 +422,8 @@ describe('inviteMembers', () => {
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'a@example.com' },
-      { email: 'b@example.com' },
+      { email: 'a@example.com', role: 'Member' },
+      { email: 'b@example.com', role: 'Member' },
     ]);
     expect(response).toMatchObject({
       status: 400,
@@ -443,19 +443,20 @@ describe('inviteMembers', () => {
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'aa@example.com' },
+      { email: 'aa@example.com', role: 'Member' },
     ]);
+    const invite = await OrganizationInvite.findOne();
+
     expect(response).toMatchObject({
       status: 201,
-      data: [{ email: 'a@example.com' }],
+      data: [{ email: 'a@example.com', role: 'Member' }],
     });
-
-    const invite = await OrganizationInvite.findOne();
     expect(invite).toMatchObject({
       email: 'a@example.com',
       key: expect.stringMatching(/^\w{40}$/),
       OrganizationId: 'testorganization',
       UserId: userA.id,
+      role: 'Member',
     });
     expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
       { email: 'a@example.com' },
@@ -470,19 +471,20 @@ describe('inviteMembers', () => {
   it('should invite unknown email addresses', async () => {
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites', [
-      { email: 'a@example.com' },
+      { email: 'a@example.com', role: 'Member' },
     ]);
+    const invite = await OrganizationInvite.findOne();
+
     expect(response).toMatchObject({
       status: 201,
-      data: [{ email: 'a@example.com' }],
+      data: [{ email: 'a@example.com', role: 'Member' }],
     });
-
-    const invite = await OrganizationInvite.findOne();
     expect(invite).toMatchObject({
       email: 'a@example.com',
       key: expect.stringMatching(/^\w{40}$/),
       OrganizationId: 'testorganization',
       UserId: null,
+      role: 'Member',
     });
     expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
       { email: 'a@example.com' },
@@ -500,6 +502,7 @@ describe('resendInvitation', () => {
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'invitekey',
+      role: 'Member',
       OrganizationId: 'testorganization',
     });
 
@@ -587,6 +590,7 @@ describe('removeInvite', () => {
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'invitekey',
+      role: 'Member',
       OrganizationId: 'testorganization',
     });
 
@@ -602,6 +606,7 @@ describe('removeInvite', () => {
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'invitekey',
+      role: 'Member',
       OrganizationId: 'testorganization',
     });
 
@@ -638,6 +643,7 @@ describe('removeInvite', () => {
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'abcde',
+      role: 'Member',
       OrganizationId: 'org',
     });
     authorizeStudio();
