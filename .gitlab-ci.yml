@@ -95,8 +95,7 @@ test node 12:
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn --frozen-lockfile
-    - yarn jest --coverage --reporters default --reporters jest-junit
-    - yarn codecov
+    - yarn jest
   artifacts:
     reports:
       junit: junit.xml
@@ -113,10 +112,12 @@ test node 14:
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn --frozen-lockfile
-    - yarn jest --reporters default --reporters jest-junit
+    - yarn jest --coverage
+    - yarn codecov
   artifacts:
     reports:
       junit: junit.xml
+      cobertura: coverage/cobertura-coverage.xml
 
 # Check type validity for our TypeScript files.
 tsc:
