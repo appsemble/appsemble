@@ -4,7 +4,7 @@ import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { File } from 'koas-body-parser';
 import semver from 'semver';
-import { DatabaseError, UniqueConstraintError } from 'sequelize';
+import { DatabaseError, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import {
   BlockAsset,
@@ -80,8 +80,9 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
   // Sequelize does not support subqueries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
-  const [blockVersions] = await getDB().query(
+  const blockVersions = await getDB().query<BlockVersion>(
     'SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+    { type: QueryTypes.SELECT },
   );
 
   ctx.body = blockVersions.map(
