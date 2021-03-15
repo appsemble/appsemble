@@ -8,7 +8,7 @@ import {
 import { AppDefinition, Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import { safeLoad } from 'js-yaml';
-import { ReactElement, useCallback } from 'react';
+import { lazy, ReactElement, Suspense, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
@@ -17,6 +17,10 @@ import { AsyncDataView } from '../../../../../components/AsyncDataView';
 import { CodeBlock } from '../../../../../components/CodeBlock';
 import { HeaderControl } from '../../../../../components/HeaderControl';
 import { messages } from './messages';
+
+const CodeDiffBlock = lazy(() =>
+  import('../../../../../components/CodeDiffBlock').then((m) => ({ default: m.CodeDiffBlock })),
+);
 
 export function SnapshotPage(): ReactElement {
   const { app, setApp } = useApp();
@@ -67,6 +71,7 @@ export function SnapshotPage(): ReactElement {
   return (
     <>
       <HeaderControl
+        className="mb-4"
         control={
           <Button
             disabled={result.loading || Boolean(result.error) || result.data.yaml === app.yaml}
@@ -84,7 +89,11 @@ export function SnapshotPage(): ReactElement {
         loadingMessage={<FormattedMessage {...messages.loading} />}
         result={result}
       >
-        {(snapshot) => <CodeBlock className="mt-4" code={snapshot.yaml} language="yaml" />}
+        {(snapshot) => (
+          <Suspense fallback={<CodeBlock code={app.yaml} language="yaml" />}>
+            <CodeDiffBlock language="yaml" modified={snapshot.yaml} original={app.yaml} />
+          </Suspense>
+        )}
       </AsyncDataView>
     </>
   );
