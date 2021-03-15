@@ -11,7 +11,7 @@ setting basic colors and custom styling for advanced or more specific styling.
 
 The Bulma CSS framework uses a set of colors for different parts of its elements. Appsemble supports
 customizing a subset of these variables by including a `theme` object at different points within an
-app recipe.
+app definition.
 
 The supported variables are:
 
@@ -119,7 +119,7 @@ such as input fields. It can also be used to apply [CSS variables][css-variables
 Open the Appsemble studio located at the base URL of Appsemble. Login, and create your first app.
 Within the editor, tabs for `shared` and `core` are available. These tabs contain the current
 styling for these modules. Tabs containing styling for specific blocks are automatically added and
-removed depending on which blocks are used within the app recipe.
+removed depending on which blocks are used within the app definition.
 
 To preview a style change, simply enter CSS in the corresponding tabs and press the `Save` button.
 If the styling is satisfactory, it can be uploaded to the application by pressing the `Upload`

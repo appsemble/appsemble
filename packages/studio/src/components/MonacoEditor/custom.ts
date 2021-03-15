@@ -3,8 +3,7 @@ import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
 import 'monaco-yaml';
 
 declare module 'monaco-editor' {
-  // eslint-disable-next-line max-len
-  // eslint-disable-next-line @typescript-eslint/no-namespace, @typescript-eslint/no-shadow, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-namespace, @typescript-eslint/no-shadow
   namespace languages.yaml {
     type DiagnosticsOptions = monaco.languages.yaml.DiagnosticsOptions;
     type LanguageServiceDefaults = monaco.languages.yaml.LanguageServiceDefaults;
