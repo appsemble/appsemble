@@ -197,14 +197,14 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
     result.website = website || null;
   }
 
-  await organization.update(result);
+  const updated = await organization.update(result);
 
   ctx.body = {
     id: organization.id,
-    name,
-    description,
-    website,
-    email,
+    name: updated.name,
+    description: updated.description,
+    website: updated.website,
+    email: updated.name,
     iconUrl: `/api/organizations/${organization.id}/icon`,
   };
 }
