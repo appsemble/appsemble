@@ -1,5 +1,5 @@
 import { MenuSection, MetaSwitch, useData, useSideMenu } from '@appsemble/react-components';
-import { Permission } from '@appsemble/utils';
+import { normalize, normalized, Permission } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
@@ -24,7 +24,7 @@ export function OrganizationRoutes(): ReactElement {
   const {
     params: { organizationId },
   } = useRouteMatch<{ organizationId: string }>();
-  const id = organizationId.startsWith('@') ? organizationId.slice(1) : organizationId;
+  const id = organizationId.replace('@', '');
   const result = useData<Organization>(`/api/organizations/${id}`);
   const userOrganization = organizations.find((org) => org.id === id);
   const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
@@ -49,6 +49,10 @@ export function OrganizationRoutes(): ReactElement {
     ),
   );
 
+  if (!normalized.test(organizationId.replace('@', ''))) {
+    return <Redirect to={String(url.replace(organizationId, `@${normalize(organizationId)}`))} />;
+  }
+
   return (
     <AsyncDataView
       errorMessage={<FormattedMessage {...messages.error} />}
@@ -56,9 +60,7 @@ export function OrganizationRoutes(): ReactElement {
       result={result}
     >
       {(organization) => (
-        <MetaSwitch
-          title={organization.id.startsWith('@') ? organization.id : `@${organization.id}`}
-        >
+        <MetaSwitch title={organizationId}>
           <Route exact path={path}>
             <IndexPage organization={userOrganization ?? organization} />
           </Route>

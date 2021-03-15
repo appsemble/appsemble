@@ -17,7 +17,7 @@ export function OrganizationsRoutes(): ReactElement {
       <Route exact path={path}>
         <IndexPage />
       </Route>
-      <Route path={`${path}/:organizationId(@?\\w+)`}>
+      <Route path={`${path}/:organizationId`}>
         <OrganizationRoutes />
       </Route>
       <Redirect to={path} />
