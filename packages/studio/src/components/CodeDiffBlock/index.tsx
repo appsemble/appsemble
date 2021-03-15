@@ -34,28 +34,21 @@ export function CodeDiffBlock({
   modified,
   original,
 }: CodeBlockProps): ReactElement {
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>();
 
   useEffect(() => {
-    let dispose: () => void;
-    if (language) {
-      const ed = editor.createDiffEditor(ref.current, {
-        enableSplitViewResizing: false,
-        renderSideBySide: false,
-        minimap: { enabled: false },
-        readOnly: true,
-      });
-      ed.setModel({
-        original: editor.createModel(original, language),
-        modified: editor.createModel(modified, language),
-      });
-    }
+    const ed = editor.createDiffEditor(ref.current, {
+      enableSplitViewResizing: false,
+      renderSideBySide: false,
+      minimap: { enabled: false },
+      readOnly: true,
+    });
+    ed.setModel({
+      original: editor.createModel(original, language),
+      modified: editor.createModel(modified, language),
+    });
 
-    return () => {
-      if (dispose) {
-        dispose();
-      }
-    };
+    return () => ed.dispose();
   }, [original, language, modified]);
 
   return <div className={`${className} ${styles.diff}`} ref={ref} />;

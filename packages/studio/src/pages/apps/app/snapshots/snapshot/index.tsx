@@ -70,20 +70,19 @@ export function SnapshotPage(): ReactElement {
 
   return (
     <>
-      <div className="mb-4">
-        <HeaderControl
-          control={
-            <Button
-              disabled={result.loading || Boolean(result.error) || result.data.yaml === app.yaml}
-              onClick={onRestoreClick}
-            >
-              <FormattedMessage {...messages.restoreButton} />
-            </Button>
-          }
-        >
-          <FormattedMessage {...messages.title} values={{ name: title }} />
-        </HeaderControl>
-      </div>
+      <HeaderControl
+        className="mb-4"
+        control={
+          <Button
+            disabled={result.loading || Boolean(result.error) || result.data.yaml === app.yaml}
+            onClick={onRestoreClick}
+          >
+            <FormattedMessage {...messages.restoreButton} />
+          </Button>
+        }
+      >
+        <FormattedMessage {...messages.title} values={{ name: title }} />
+      </HeaderControl>
       <AsyncDataView
         emptyMessage={<FormattedMessage {...messages.noSnapshot} />}
         errorMessage={<FormattedMessage {...messages.error} />}
