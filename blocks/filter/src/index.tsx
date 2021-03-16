@@ -1,5 +1,5 @@
 import { bootstrap } from '@appsemble/preact';
-import { Button, CardFooterButton, Form, Modal, useToggle } from '@appsemble/preact-components';
+import { Button, CardFooterButton, Form, ModalCard, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { Fragment, JSX } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
@@ -123,7 +123,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
             loading={loading}
             onClick={modal.enable}
           />
-          <Modal
+          <ModalCard
             footer={
               <Fragment>
                 <CardFooterButton onClick={resetFilter}>
@@ -154,7 +154,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
                   </div>
                 ),
             )}
-          </Modal>
+          </ModalCard>
         </Fragment>
       )}
     </Form>
