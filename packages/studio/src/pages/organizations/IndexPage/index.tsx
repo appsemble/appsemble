@@ -101,33 +101,29 @@ export function IndexPage(): ReactElement {
           </ul>
         </CollapsibleList>
       ) : null}
-
-      <AsyncDataView
-        errorMessage={<FormattedMessage {...messages.error} />}
-        loadingMessage={<FormattedMessage {...messages.loading} />}
-        result={result}
-      >
-        {(allOrganizations) => (
-          <CollapsibleList title={<FormattedMessage {...messages.allOrganizations} />}>
-            {allOrganizations?.length ? (
-              <ul>
-                {allOrganizations.map((organization) => (
-                  <ListButton
-                    alt={formatMessage(messages.logo)}
-                    image={organization.iconUrl}
-                    key={organization.id}
-                    subtitle={`@${organization.id}`}
-                    title={organization.name || organization.id}
-                    to={`${url}/@${organization.id}`}
-                  />
-                ))}
-              </ul>
-            ) : (
-              <FormattedMessage {...messages.noOrganizations} />
-            )}
-          </CollapsibleList>
-        )}
-      </AsyncDataView>
+      <CollapsibleList title={<FormattedMessage {...messages.allOrganizations} />}>
+        <AsyncDataView
+          emptyMessage={<FormattedMessage {...messages.noOrganizations} />}
+          errorMessage={<FormattedMessage {...messages.error} />}
+          loadingMessage={<FormattedMessage {...messages.loading} />}
+          result={result}
+        >
+          {(allOrganizations) => (
+            <ul>
+              {allOrganizations.map((organization) => (
+                <ListButton
+                  alt={formatMessage(messages.logo)}
+                  image={organization.iconUrl}
+                  key={organization.id}
+                  subtitle={`@${organization.id}`}
+                  title={organization.name || organization.id}
+                  to={`${url}/@${organization.id}`}
+                />
+              ))}
+            </ul>
+          )}
+        </AsyncDataView>
+      </CollapsibleList>
       {userInfo.email_verified && (
         <Modal
           component={SimpleForm}

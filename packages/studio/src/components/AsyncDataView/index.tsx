@@ -70,7 +70,7 @@ export function AsyncDataView<T>({
     );
   }
 
-  if (Array.isArray(data) && !data.length && emptyMessage) {
+  if (Array.isArray(data) && !data.length) {
     return emptyMessage as ReactElement;
   }
 
