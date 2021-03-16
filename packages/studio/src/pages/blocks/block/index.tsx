@@ -37,6 +37,11 @@ interface BlockDetailsRoutesMatch {
    * The version of the block.
    */
   version: string;
+
+  /**
+   * The currently selected language.
+   */
+  lang: string;
 }
 
 /**
@@ -45,7 +50,7 @@ interface BlockDetailsRoutesMatch {
 export function BlockPage(): ReactElement {
   const { formatMessage } = useIntl();
   const {
-    params: { blockName, organization, version: urlVersion },
+    params: { blockName, lang, organization, version: urlVersion },
     url,
   } = useRouteMatch<BlockDetailsRoutesMatch>();
   const history = useHistory();
@@ -95,7 +100,7 @@ export function BlockPage(): ReactElement {
             {blockName}
           </Title>
           <Subtitle lang={defaultLocale} level={4}>
-            <Link to={`/organizations/${organization}`}>@{organization}</Link>
+            <Link to={`/${lang}/organizations/${organization}`}>@{organization}</Link>
           </Subtitle>
         </header>
       </div>

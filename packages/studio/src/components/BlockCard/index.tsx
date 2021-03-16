@@ -2,7 +2,7 @@ import { Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -19,6 +19,9 @@ interface BlockCardProps {
  */
 export function BlockCard({ block }: BlockCardProps): ReactElement {
   const [org, ...name] = block.name.split('/');
+  const {
+    params: { lang },
+  } = useRouteMatch<{ lang: string }>();
 
   return (
     <div className={`card is-flex ${styles.root}`} key={block.name} title={block.name}>
@@ -38,7 +41,7 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
                 {name}
               </Title>
               <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
-                <Link to={`/organizations/${org}`}>{org}</Link>
+                <Link to={`/${lang}/organizations/${org}`}>{org}</Link>
               </Subtitle>
             </div>
             <div className={`media-right ${styles.nogrow}`}>
@@ -54,7 +57,7 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
         {block.description ?? <span className="has-text-grey-light">{messages.noDescription}</span>}
       </div>
       <footer className="card-footer">
-        <Link className="card-footer-item" to={`/blocks/${block.name}`}>
+        <Link className="card-footer-item" to={`/${lang}/blocks/${block.name}`}>
           {messages.buttonDetails}
         </Link>
       </footer>

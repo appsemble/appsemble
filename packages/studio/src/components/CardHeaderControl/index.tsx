@@ -40,6 +40,10 @@ interface CardHeaderControlProps {
   children?: ReactNode;
 }
 
+/**
+ * Display the header of a card with support for controls on the right.
+ * The children of this component are included in the main card body.
+ */
 export function CardHeaderControl({
   children,
   controls,

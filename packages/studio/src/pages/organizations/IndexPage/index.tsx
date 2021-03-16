@@ -21,6 +21,31 @@ import { ListButton } from '../../../components/ListButton';
 import { useUser } from '../../../components/UserProvider';
 import { messages } from './messages';
 
+function calculateOrganizationId(
+  name: string,
+  newValues: Organization,
+  oldValues: Organization,
+): Organization {
+  if (name !== 'name') {
+    return newValues;
+  }
+  if (normalize(oldValues.name) === oldValues.id) {
+    return {
+      ...newValues,
+      id: normalize(newValues.name).slice(0, 30).replace(/-+$/, ''),
+    };
+  }
+  return newValues;
+}
+
+const newOrganization = {
+  id: '',
+  name: '',
+  description: '',
+  website: '',
+  email: '',
+};
+
 export function IndexPage(): ReactElement {
   const result = useData<Organization[]>('/api/organizations');
   const { organizations, setOrganizations, userInfo } = useUser();
@@ -28,31 +53,6 @@ export function IndexPage(): ReactElement {
   const history = useHistory();
   const modal = useToggle();
   const { formatMessage } = useIntl();
-
-  function calculateOrganizationId(
-    name: string,
-    newValues: Organization,
-    oldValues: Organization,
-  ): Organization {
-    if (name !== 'name') {
-      return newValues;
-    }
-    if (normalize(oldValues.name) === oldValues.id) {
-      return {
-        ...newValues,
-        id: normalize(newValues.name).slice(0, 30).replace(/-+$/, ''),
-      };
-    }
-    return newValues;
-  }
-
-  const newOrganization = {
-    id: '',
-    name: '',
-    description: '',
-    website: '',
-    email: '',
-  };
 
   const submitOrganization = useCallback(
     async ({ description, email, id, name, website }: Organization) => {

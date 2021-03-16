@@ -18,7 +18,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
 import { useApp } from '..';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
@@ -39,6 +39,9 @@ export function IndexPage(): ReactElement {
   const cloneDialog = useToggle();
   const descriptionToggle = useToggle();
   const history = useHistory();
+  const {
+    params: { lang },
+  } = useRouteMatch<{ lang: string }>();
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
 
@@ -61,7 +64,7 @@ export function IndexPage(): ReactElement {
   const createOrganizations =
     organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) ?? [];
 
-  const lang = app.definition.defaultLanguage || defaultLocale;
+  const appLang = app.definition.defaultLanguage || defaultLocale;
 
   return (
     <Content className={styles.root}>
@@ -164,7 +167,7 @@ export function IndexPage(): ReactElement {
           />
         }
         subtitle={
-          <Link to={`/organizations/@${app.OrganizationId}`}>
+          <Link to={`/${lang}/organizations/@${app.OrganizationId}`}>
             {loading || error ? `@${app.OrganizationId}` : organization.name}
           </Link>
         }
@@ -188,7 +191,7 @@ export function IndexPage(): ReactElement {
               <FormattedMessage {...messages.readMore} />
             )}
           </Button>
-          <MarkdownContent content={app.longDescription} lang={lang} />
+          <MarkdownContent content={app.longDescription} lang={appLang} />
         </div>
       )}
       <AppRatings />

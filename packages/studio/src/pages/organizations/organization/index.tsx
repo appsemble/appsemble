@@ -11,9 +11,9 @@ import { useUser } from '../../../components/UserProvider';
 import { Organization } from '../../../types';
 import { checkRole } from '../../../utils/checkRole';
 import { IndexPage } from './IndexPage';
+import { MembersPage } from './MembersPage';
 import { messages } from './messages';
-import { OrganizationMembersPage } from './OrganizationMembersPage';
-import { OrganizationSettingsPage } from './OrganizationSettingsPage';
+import { SettingsPage } from './SettingsPage';
 
 /**
  * Render routes related to apps.
@@ -70,13 +70,13 @@ export function OrganizationRoutes(): ReactElement {
             path={`${path}/settings`}
             permission={Permission.EditOrganization}
           >
-            <OrganizationSettingsPage
+            <SettingsPage
+              onChangeOrganization={result.setData}
               organization={userOrganization ?? organization}
-              setOrganization={result.setData}
             />
           </ProtectedRoute>
           <ProtectedRoute exact organization={userOrganization} path={`${path}/members`}>
-            <OrganizationMembersPage />
+            <MembersPage />
           </ProtectedRoute>
           <Redirect to={path} />
         </MetaSwitch>

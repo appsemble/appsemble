@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 
 import { MemberTable } from '../MemberTable';
 
-export function OrganizationMembersPage(): ReactElement {
+export function MembersPage(): ReactElement {
   useMeta('Members');
   return <MemberTable />;
 }

@@ -16,18 +16,18 @@ import { Organization } from '../../../../types';
 import styles from './index.module.css';
 import { messages } from './messages';
 
-interface OrganizationSettingsPageProps {
+interface SettingsPageProps {
   organization: Organization;
-  setOrganization: (organization: Organization) => void;
+  onChangeOrganization: (organization: Organization) => void;
 }
 
 /**
  * The page for configuring various settings of an organization.
  */
-export function OrganizationSettingsPage({
+export function SettingsPage({
+  onChangeOrganization,
   organization,
-  setOrganization,
-}: OrganizationSettingsPageProps): ReactElement {
+}: SettingsPageProps): ReactElement {
   const { organizations, setOrganizations } = useUser();
   const { formatMessage } = useIntl();
   const [icon, setIcon] = useState<File>();
@@ -54,9 +54,9 @@ export function OrganizationSettingsPage({
           org.id === organization.id ? { ...org, name, description, website, email } : org,
         ),
       );
-      setOrganization({ ...organization, name, description, website, email });
+      onChangeOrganization({ ...organization, name, description, website, email });
     },
-    [icon, organization, organizations, setOrganization, setOrganizations],
+    [icon, organization, organizations, setOrganizations, onChangeOrganization],
   );
 
   const iconUrl = useObjectURL(icon || organization.iconUrl);
