@@ -31,6 +31,9 @@ import { AppScreenshots } from './AppScreenshots';
 import styles from './index.module.css';
 import { messages } from './messages';
 
+/**
+ * Display a more detailed overview of an individual app.
+ */
 export function IndexPage(): ReactElement {
   const { app } = useApp();
   const { data: organization, error, loading } = useData<Organization>(

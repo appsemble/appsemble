@@ -17,7 +17,14 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 interface SettingsPageProps {
+  /**
+   * The organization the settings belong to.
+   */
   organization: Organization;
+
+  /**
+   * Change handler used to update the organization for the parent component.
+   */
   onChangeOrganization: (organization: Organization) => void;
 }
 

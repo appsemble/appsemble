@@ -10,13 +10,35 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 interface CollapsibleAppListProps {
+  /**
+   * The URL to fetch the data from.
+   */
   target: string;
+
+  /**
+   * The clickable title used to toggle displaying or hiding the apps.
+   */
   title: ReactElement | string;
+
+  /**
+   * The filter for the app’s name and organization ID.
+   */
   filter?: string;
+
+  /**
+   * The function used to sort the app list.
+   */
   sortFunction: (a: App, b: App) => number;
+
+  /**
+   * Whether the sort function should be reversed.
+   */
   reverse: boolean;
 }
 
+/**
+ * Fetch and display a collapsible list of apps.
+ */
 export function CollapsibleAppList({
   filter,
   reverse,

@@ -13,6 +13,9 @@ interface AppCardProps {
   app: App;
 }
 
+/**
+ * Display the basic information of an app and a link for more details.
+ */
 export function AppCard({ app }: AppCardProps): ReactElement {
   const { formatMessage } = useIntl();
   const {

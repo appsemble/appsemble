@@ -5,10 +5,20 @@ import { ReactElement, ReactNode } from 'react';
 import styles from './index.module.css';
 
 interface CollapsibleListProps {
+  /**
+   * The clickable title that is used to toggle showing or hiding the content.
+   */
   title: ReactElement | string;
+
+  /**
+   * The content to display.
+   */
   children: ReactNode;
 }
 
+/**
+ * Display any content with a clickable header to toggle displaying or hiding it.
+ */
 export function CollapsibleList({ children, title }: CollapsibleListProps): ReactElement {
   const collapsed = useToggle();
 
