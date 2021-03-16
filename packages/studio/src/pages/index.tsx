@@ -76,7 +76,7 @@ export function Routes(): ReactElement {
       <Route path={`${path}/docs`}>
         <DocsRoutes />
       </Route>
-      <Route extact path={`${path}/privacy`}>
+      <Route exact path={`${path}/privacy`}>
         <PrivacyPolicyPage />
       </Route>
       <Redirect to={`${path}/apps`} />

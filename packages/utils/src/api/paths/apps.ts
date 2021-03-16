@@ -824,6 +824,11 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'string',
                   format: 'binary',
                 },
+                force: {
+                  type: 'boolean',
+                  writeOnly: true,
+                  description: 'If this is true, the app lock is ignored.',
+                },
               },
             },
           },

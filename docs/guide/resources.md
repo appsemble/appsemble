@@ -6,7 +6,7 @@ app is called a ´resource´.
 
 ## Defining resources
 
-Resources can be defined within an [app recipe](../reference/app.md) within the `resources`
+Resources can be defined within an [app definition](../reference/app.md) within the `resources`
 property. Each object within `resources` is considered to be a Resource, named after the name it is
 given within `resources`.
 

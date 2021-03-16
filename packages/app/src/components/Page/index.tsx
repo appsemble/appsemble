@@ -83,7 +83,12 @@ export function Page(): ReactElement {
   }, [definition, page]);
 
   // Remove the listeners from any previous pages
-  useEffect(() => () => ee.current.removeAllListeners(), [page]);
+  useEffect(
+    () => () => {
+      ee.current.removeAllListeners();
+    },
+    [page],
+  );
 
   const checkPagePermissions = (p: PageDefinition): boolean => {
     const roles = p.roles || definition.roles || [];
