@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -24,19 +24,19 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.18.0",
-    "@appsemble/utils": "0.18.0",
+    "@appsemble/node-utils": "0.18.1",
+    "@appsemble/utils": "0.18.1",
     "axios": "^0.21.1",
-    "date-fns": "^2.16.1",
+    "date-fns": "^2.19.0",
     "extract-react-intl-messages": "^4.1.1",
     "fs-extra": "^9.1.0",
     "globby": "^11.0.2",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "normalize-path": "^3.0.0",
     "prettier": "^2.2.1",
     "remark": "^13.0.0",
     "semver": "^7.3.4",
-    "type-fest": "^0.20.2",
+    "type-fest": "^0.21.2",
     "webpack": "^4.44.2",
     "yargs": "^16.2.0"
   },

@@ -11,7 +11,7 @@ stages:
 workflow:
   rules:
     # By default, run jobs for every merge request.
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID
     # By default, run jobs for every commit on master.
     - if: $CI_COMMIT_BRANCH == 'master'
     # By default, run jobs for every schedule
@@ -95,8 +95,7 @@ test node 12:
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn --frozen-lockfile
-    - yarn jest --coverage --reporters default --reporters jest-junit
-    - yarn codecov
+    - yarn jest
   artifacts:
     reports:
       junit: junit.xml
@@ -113,10 +112,12 @@ test node 14:
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn --frozen-lockfile
-    - yarn jest --reporters default --reporters jest-junit
+    - yarn jest --coverage
+    - yarn codecov
   artifacts:
     reports:
       junit: junit.xml
+      cobertura: coverage/cobertura-coverage.xml
 
 # Check type validity for our TypeScript files.
 tsc:
@@ -129,16 +130,6 @@ validate:
   extends: .yarn
   script:
     - yarn scripts validate
-
-# Workaround for upstream bug in GitLab
-weblate:
-  image: busybox
-  rules:
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == 'i18n'
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - echo 'This is a workaround for https://gitlab.com/gitlab-org/gitlab/-/issues/300792'
 
 ###################################################################################################
 #  Build Stage                                                                                    #
@@ -247,9 +238,7 @@ review:
   needs:
     - build docker image
   rules:
-    - if: $CI_MERGE_REQUEST_PROJECT_PATH == 'appsemble/appsemble'
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
-      when: manual
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   environment:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
@@ -286,7 +275,7 @@ stop review:
   extends: .helm
   stage: deploy
   rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
       when: manual
   allow_failure: true
   environment:
@@ -391,7 +380,7 @@ provision review:
   extends: .yarn
   stage: provision
   rules:
-    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != 'i18n'
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   needs:
     - review
   environment:
@@ -446,6 +435,11 @@ lighthouse:
   interruptible: true
   stage: end 2 end
   dependencies: []
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_COMMIT_TAG
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies

@@ -73,7 +73,7 @@ function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOpt
     const order =
       $orderby &&
       odataOrderbyToSequelize(
-        $orderby
+        ($orderby as string)
           .replace(/(^|\B)\$created(\b|$)/g, '__created__')
           .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
         renameOData,
@@ -81,7 +81,7 @@ function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOpt
     const query =
       $filter &&
       odataFilterToSequelize(
-        $filter
+        ($filter as string)
           .replace(/(^|\B)\$created(\b|$)/g, '__created__')
           .replace(/(^|\B)\$updated(\b|$)/g, '__updated__')
           .replace(/(^|\B)\$author\/id(\b|$)/g, '__author__'),
@@ -272,7 +272,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
 
   const resources = await Resource.findAll({
     include: [{ model: User, attributes: ['id', 'name'], required: false }],
-    limit: $top,
+    limit: $top && Number.parseInt($top as string),
     order,
     where: {
       [Op.and]: [
@@ -300,7 +300,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   }));
 
   if ($select) {
-    const select = $select.split(',').map((s: string) => s.trim());
+    const select = ($select as string).split(',').map((s) => s.trim());
     response = response.map((resource) => pick(resource, select));
   }
 

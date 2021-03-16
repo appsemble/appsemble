@@ -23,6 +23,7 @@ module.exports = {
     'remark-lint-no-unneeded-full-reference-image',
     'remark-lint-no-unneeded-full-reference-link',
     'remark-lint-no-unused-definitions',
+    'remark-prettier',
     ['remark-validate-links', { repository: 'https://gitlab.com/appsemble/appsemble.git' }],
     [
       'remark-retext',

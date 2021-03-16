@@ -152,7 +152,7 @@ export function Block({
         return `${apiUrl}/api/apps/${appId}/assets/${id}`;
       },
       formatMessage(message, args = {}) {
-        return getBlockMessage(blockName, block.version, { id: String(message) }).format(
+        return getBlockMessage(blockName, block.version, { id: String(message) }, prefix).format(
           args,
         ) as string;
       },

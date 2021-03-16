@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.1](https://gitlab.com/appsemble/appsemble/-/releases/0.18.1)] - 2021-03-08
+
+### Added
+
+- Server: Add support for automatically backing up previous app definitions.
+- Studio: Add support for viewing and restoring app snapshots.
+- Studio: Add support for viewing app definitions.
+
 ## \[[0.18.0](https://gitlab.com/appsemble/appsemble/-/releases/0.18.0)] - 2021-03-01
 
 ### Added
