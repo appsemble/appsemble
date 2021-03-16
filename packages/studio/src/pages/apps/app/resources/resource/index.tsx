@@ -11,11 +11,11 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
+import { generateDataFromSchema } from '@appsemble/utils';
 import axios from 'axios';
 import { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { generateDataFromSchema } from 'utils/src/jsonschema';
 
 import { useApp } from '../..';
 import { JSONSchemaEditor } from '../../../../../components/JSONSchemaEditor';

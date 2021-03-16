@@ -1,8 +1,8 @@
 import { Button, Title } from '@appsemble/react-components';
+import { generateDataFromSchema } from '@appsemble/utils';
 import { NamedEvent } from '@appsemble/web-utils';
 import { OpenAPIV3 } from 'openapi-types';
 import { MouseEvent, ReactElement, useCallback } from 'react';
-import { generateDataFromSchema } from 'utils/src/jsonschema';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
