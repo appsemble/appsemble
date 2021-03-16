@@ -11,16 +11,6 @@ describe('generateDataFromSchema', () => {
     expect(result).toBe('pear');
   });
 
-  it('should return the first example if examples exist', () => {
-    const result = generateDataFromSchema({ type: 'string', examples: ['banana'] });
-    expect(result).toBe('banana');
-  });
-
-  it('should return the first enum item for enum schemas', () => {
-    const result = generateDataFromSchema({ enum: ['apple'] });
-    expect(result).toBe('apple');
-  });
-
   describe('array', () => {
     it('should return an empty array', () => {
       const result = generateDataFromSchema({ type: 'array' });

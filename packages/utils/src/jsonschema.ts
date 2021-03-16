@@ -30,14 +30,6 @@ export function generateDataFromSchema(schema?: Schema): JsonValue {
   if ('default' in schema) {
     return schema.default;
   }
-  // Fall back to an example if no default is provided.
-  if (schema.examples?.length) {
-    return schema.examples[0];
-  }
-  // Use the first enum value as default for enum schemas.
-  if (schema.enum) {
-    return schema.enum[0];
-  }
   // If no predefined value exists, generate something based on its type.
   switch (schema.type) {
     case 'array':
