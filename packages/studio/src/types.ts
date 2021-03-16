@@ -58,17 +58,6 @@ export interface ExtendedOAuth2State extends OAuth2State {
   userinfo?: UserInfo;
 }
 
-declare module 'jsonschema' {
-  interface Schema {
-    /**
-     * An optional default value that’s used.
-     *
-     * https://github.com/tdegrunt/jsonschema/pull/335
-     */
-    default?: any;
-  }
-}
-
 declare global {
   interface Window {
     /**

@@ -9,6 +9,7 @@ export * from './checkAppRole';
 export * from './formatRequestAction';
 export * from './getAppBlocks';
 export * from './iterApp';
+export * from './jsonschema';
 export * from './mapValues';
 export * from './objectCache';
 export * from './pem';
