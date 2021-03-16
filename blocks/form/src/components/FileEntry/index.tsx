@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
-import { useObjectURL } from '@appsemble/preact-components';
-import { Fragment, JSX, VNode } from 'preact';
+import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
+import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { FileField, InputProps } from '../../../block';
@@ -13,6 +13,7 @@ type FileEntryProps = InputProps<Blob | string, FileField>;
 export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNode {
   const url = useObjectURL(value);
   const { utils } = useBlock();
+  const modal = useToggle();
 
   const onSelect = useCallback(
     async (event: JSX.TargetedEvent<HTMLInputElement>): Promise<void> => {
@@ -40,23 +41,38 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
 
   return (
     <div className={`appsemble-file file mr-3 ${styles.root}`}>
+      {value && url && (
+        <Modal isActive={modal.enabled} onClose={modal.disable}>
+          <p className="image">
+            <img
+              alt={utils.remap(field.label, value) ?? field.name}
+              className={styles.image}
+              src={url}
+            />
+          </p>
+        </Modal>
+      )}
       <label className="file-label">
-        <input
-          accept={getAccept(field)}
-          className={`file-input ${styles.input}`}
-          name={name}
-          onChange={onSelect}
-          type="file"
-        />
+        {(!value || !url) && (
+          <input
+            accept={getAccept(field)}
+            className={`file-input ${styles.input}`}
+            name={name}
+            onChange={onSelect}
+            type="file"
+          />
+        )}
         {url ? (
-          <Fragment>
-            <figure className="image is-relative">
-              <img
-                alt={utils.remap(field.label, value) ?? field.name}
-                className={styles.image}
-                src={url}
-              />
-            </figure>
+          <>
+            <button className={styles.button} onClick={modal.enable} type="button">
+              <figure className="image is-relative">
+                <img
+                  alt={utils.remap(field.label, value) ?? field.name}
+                  className={`${styles.image} ${styles.rounded}`}
+                  src={url}
+                />
+              </figure>
+            </button>
             <button
               className={`button is-small ${styles.removeButton}`}
               onClick={onRemove}
@@ -66,9 +82,11 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
                 <i className="fas fa-times" />
               </span>
             </button>
-          </Fragment>
+          </>
         ) : (
-          <span className={`image is-128x128 px-2 py-2 has-text-centered ${styles.empty}`}>
+          <span
+            className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.empty}`}
+          >
             <span className="file-label">{utils.remap(field.emptyFileLabel ?? ' ', field)}</span>
           </span>
         )}
