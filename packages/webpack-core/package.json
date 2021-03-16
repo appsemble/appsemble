@@ -43,7 +43,7 @@
     "remark-gfm": "^1.0.0",
     "remark-mdx-frontmatter": "^1.0.0",
     "remark-mdx-images": "1.0.0",
-    "remark-mermaidjs": "^1.1.0",
+    "remark-mermaidjs": "^2.0.0",
     "serviceworker-webpack-plugin": "^1.0.1",
     "svgo-loader": "^3.0.0",
     "terser-webpack-plugin": "4.1.0",
