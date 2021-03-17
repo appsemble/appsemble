@@ -6,7 +6,7 @@ import {
   FileUpload,
   Loader,
   Message,
-  Modal,
+  ModalCard,
   Table,
   Title,
   useConfirmation,
@@ -198,7 +198,7 @@ export function AssetsPage(): ReactElement {
           ))}
         </tbody>
       </Table>
-      <Modal
+      <ModalCard
         footer={
           <>
             <CardFooterButton onClick={onClose}>
@@ -225,14 +225,14 @@ export function AssetsPage(): ReactElement {
             required
           />
         </Content>
-      </Modal>
-      <Modal
+      </ModalCard>
+      <ModalCard
         isActive={dialog === 'preview'}
         onClose={onClose}
         title={<FormattedMessage {...messages.preview} />}
       >
         <AssetPreview asset={previewedAsset} />
-      </Modal>
+      </ModalCard>
     </>
   );
 }

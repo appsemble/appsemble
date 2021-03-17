@@ -6,7 +6,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';
-import { CollapsibleList } from './CollapsibleList';
+import { CollapsibleAppList } from './CollapsibleAppList';
 import { CreateAppButton } from './CreateAppButton';
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -94,7 +94,7 @@ export function IndexPage(): ReactElement {
       </div>
 
       {userInfo && (
-        <CollapsibleList
+        <CollapsibleAppList
           filter={filter}
           reverse={sort?.reverse}
           sortFunction={sortFunctions[sort?.name]}
@@ -102,7 +102,7 @@ export function IndexPage(): ReactElement {
           title={<FormattedMessage {...messages.myApps} />}
         />
       )}
-      <CollapsibleList
+      <CollapsibleAppList
         filter={filter}
         reverse={sort?.reverse}
         sortFunction={sortFunctions[sort?.name]}

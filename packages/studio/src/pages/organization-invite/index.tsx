@@ -141,7 +141,7 @@ export function OrganizationInvitePage(): ReactElement {
                 organization: <strong>{organization.name || organization.id}</strong>,
                 makeApps: (link: string) => <Link to={`/${lang}/apps`}>{link}</Link>,
                 viewOrganization: (link: string) => (
-                  <Link to={`/${lang}/settings/organizations`}>{link}</Link>
+                  <Link to={`/${lang}/organizations/@${organization.id}`}>{link}</Link>
                 ),
               }}
             />

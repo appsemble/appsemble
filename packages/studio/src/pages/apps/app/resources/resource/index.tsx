@@ -11,6 +11,7 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
+import { generateDataFromSchema } from '@appsemble/utils';
 import axios from 'axios';
 import { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -60,6 +61,11 @@ export function ResourcePage(): ReactElement {
     modal.disable();
     setCreatingResource(null);
   }, [modal]);
+
+  const openCreateModal = useCallback(() => {
+    setCreatingResource(generateDataFromSchema(schema) as Resource);
+    modal.enable();
+  }, [modal, schema]);
 
   const onEditResource = useCallback(
     (resource: Resource) => {
@@ -147,10 +153,8 @@ export function ResourcePage(): ReactElement {
         <FormattedMessage {...messages.header} values={{ resourceName }} />
       </Title>
       <div className="buttons">
-        <Button className="is-primary" icon="plus-square" onClick={modal.enable}>
-          <span>
-            <FormattedMessage {...messages.createButton} />
-          </span>
+        <Button className="is-primary" icon="plus-square" onClick={openCreateModal}>
+          <FormattedMessage {...messages.createButton} />
         </Button>
         <Button
           component="a"

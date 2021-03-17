@@ -1,9 +1,11 @@
+import { Role, roles } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
+  Default,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -24,6 +26,11 @@ export class OrganizationInvite extends Model {
   @AllowNull(false)
   @Column
   key: string;
+
+  @Default('Member')
+  @AllowNull(false)
+  @Column(DataType.ENUM(...Object.keys(roles)))
+  role: Role;
 
   @ForeignKey(() => User)
   @Unique('EmailOrganizationIndex')

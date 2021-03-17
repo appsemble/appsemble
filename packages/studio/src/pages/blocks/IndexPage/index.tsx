@@ -3,7 +3,7 @@ import { BlockManifest } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { BlockCard } from './BlockCard';
+import { BlockCard } from '../../../components/BlockCard';
 import styles from './index.module.css';
 import { messages } from './messages';
 
