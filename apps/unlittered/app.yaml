@@ -42,6 +42,20 @@ resources:
               type: number
             longitude:
               type: number
+  litterReply:
+    references:
+      litterId:
+        resource: litter
+    schema:
+      type: object
+      required:
+        - content
+      properties:
+        litterId:
+          type: number
+        content:
+          type: string
+          minLength: 1
 
 pages:
   - name: Report litter
@@ -105,7 +119,6 @@ pages:
           longitude:
             - prop: location
             - prop: longitude
-
         actions:
           onMarkerClick:
             to: Litter details
@@ -155,3 +168,96 @@ pages:
         events:
           listen:
             data: data
+
+  - name: Litter list
+    blocks:
+      - type: timer
+        version: 0.18.1
+        parameters:
+          interval: 5
+        events:
+          emit:
+            interval: refresh
+      - type: filter
+        version: 0.18.1
+        events:
+          emit:
+            filtered: filterResults
+            refreshed: refreshedResults
+          listen:
+            refresh: refresh
+        parameters:
+          highlight: process
+          fields:
+            - name: process
+              type: enum
+              enum:
+                - value: Bicycle Collection
+                - value: Maintenance
+                - value: Biodegradable Waste
+                - value: Collection
+            - name: $created
+              label: Date
+              type: date-range
+              icon: calendar-alt
+        actions:
+          onLoad:
+            type: resource.query
+            resource: litter
+            query:
+              object.from:
+                $filter: { prop: $filter }
+                $orderby: '$created desc'
+                $top: 50
+      - type: data-notifier
+        version: 0.18.1
+        events:
+          listen:
+            data: refreshedResults
+            seed: filterResults
+          emit:
+            data: updateLitter
+      - type: feed
+        version: 0.18.1
+        events:
+          listen:
+            data: updateLitter
+        parameters:
+          buttonLabel: Details
+          title: { prop: type }
+          subtitle: { prop: proces }
+          heading:
+            string.format:
+              template: '{date, date, long} {date, time, short}'
+              values:
+                date: [{ prop: $created }, { date.parse }]
+          picture: [{ prop: photos }, { prop: 0 }]
+          pictures: [{ prop: photos }]
+          reply:
+            content: { prop: content }
+            author: { prop: author }
+            parentId: litterId
+          marker:
+            longitude: [{ prop: location }, { prop: longitude }]
+            latitude: [{ prop: location }, { prop: latitude }]
+        actions:
+          onButtonClick:
+            type: link
+            to: Litter details
+          onLoadReply:
+            type: resource.query
+            resource: litterReply
+            query:
+              object.from:
+                $filter: { prop: $filter }
+          onSubmitReply:
+            type: resource.create
+            resource: litterReply
+      - type: action-button
+        version: 0.18.1
+        parameters:
+          icon: plus
+        actions:
+          onClick:
+            type: link
+            to: Report litter
