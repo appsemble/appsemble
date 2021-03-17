@@ -3,7 +3,7 @@ import {
   Form,
   FormComponent,
   Input,
-  Modal,
+  ModalCard,
   Toggle,
   useMessages,
 } from '@appsemble/react-components';
@@ -134,7 +134,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   );
 
   return (
-    <Modal
+    <ModalCard
       component={Form}
       footer={
         <>
@@ -173,6 +173,6 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
           />
         ))}
       </FormComponent>
-    </Modal>
+    </ModalCard>
   );
 }

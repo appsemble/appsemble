@@ -1,6 +1,6 @@
 import {
   Button,
-  Modal,
+  ModalCard,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -188,7 +188,7 @@ export function TeamPage(): ReactElement {
             )}
           </AsyncDataView>
           {mayEditTeam && (
-            <Modal
+            <ModalCard
               component={SimpleForm}
               defaultValues={defaultValues}
               footer={
@@ -214,7 +214,7 @@ export function TeamPage(): ReactElement {
                 <FormattedMessage {...messages.annotations} />
               </Title>
               <SimpleFormField component={AnnotationsTable} name="annotations" />
-            </Modal>
+            </ModalCard>
           )}
           {mayInvite && (
             <AddTeamMemberModal onAdd={onAdd} teamMembers={memberResult.data} toggle={addModal} />

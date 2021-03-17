@@ -1,4 +1,4 @@
-import { Modal } from '@appsemble/react-components';
+import { ModalCard } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
 
@@ -16,7 +16,7 @@ interface PageDialogProps
  */
 export function PageDialog({ dialog = null, ...props }: PageDialogProps): ReactElement {
   return (
-    <Modal
+    <ModalCard
       cardClassName={classNames({ [styles.fullscreen]: dialog?.fullscreen })}
       closable={Boolean(dialog?.closable)}
       isActive={Boolean(dialog)}
@@ -32,6 +32,6 @@ export function PageDialog({ dialog = null, ...props }: PageDialogProps): ReactE
           {...props}
         />
       )}
-    </Modal>
+    </ModalCard>
   );
 }

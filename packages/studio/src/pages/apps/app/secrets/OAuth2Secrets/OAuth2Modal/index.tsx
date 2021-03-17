@@ -1,7 +1,7 @@
 import {
   FormOutput,
   JSONField,
-  Modal,
+  ModalCard,
   PasswordField,
   SimpleForm,
   SimpleFormField,
@@ -46,7 +46,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
   } = useApp();
 
   return (
-    <Modal
+    <ModalCard
       component={SimpleForm}
       defaultValues={secret}
       footer={
@@ -158,6 +158,6 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
         label={<FormattedMessage {...messages.remapperLabel} />}
         name="remapper"
       />
-    </Modal>
+    </ModalCard>
   );
 }

@@ -1,6 +1,6 @@
 import {
   FileUpload,
-  Modal,
+  ModalCard,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -33,7 +33,7 @@ export function EditOrganizationModal({
   const editingIconUrl = useObjectURL(icon || organization.iconUrl);
 
   return (
-    <Modal
+    <ModalCard
       component={SimpleForm}
       defaultValues={{
         name: organization.name,
@@ -71,6 +71,6 @@ export function EditOrganizationModal({
           </figure>
         }
       />
-    </Modal>
+    </ModalCard>
   );
 }

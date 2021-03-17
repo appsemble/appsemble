@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 
-import { Modal } from '.';
+import { ModalCard } from '.';
 
 jest.mock('react-intl', () => {
   const reactIntl = jest.requireActual('react-intl');
@@ -15,21 +15,21 @@ jest.mock('react-intl', () => {
 });
 
 it('should not render a bulma modal when it is inactive', () => {
-  const { container } = render(<Modal isActive={false}>test</Modal>);
+  const { container } = render(<ModalCard isActive={false}>test</ModalCard>);
   expect(container).toMatchSnapshot();
 });
 
 it('should render a bulma modal when it is active', () => {
-  const { container } = render(<Modal isActive>test</Modal>);
+  const { container } = render(<ModalCard isActive>test</ModalCard>);
   expect(container).toMatchSnapshot();
 });
 
 it('should close the modal when the close button is clicked', () => {
   const onClose = jest.fn();
   const { getByLabelText } = render(
-    <Modal closeButtonLabel="Test close" isActive onClose={() => onClose()}>
+    <ModalCard closeButtonLabel="Test close" isActive onClose={() => onClose()}>
       test
-    </Modal>,
+    </ModalCard>,
   );
   getByLabelText('Test close').click();
   expect(onClose).toHaveBeenCalledWith();
@@ -38,9 +38,9 @@ it('should close the modal when the close button is clicked', () => {
 it('should close the modal when the background is clicked', () => {
   const onClose = jest.fn();
   const { getByRole } = render(
-    <Modal isActive onClose={() => onClose()}>
+    <ModalCard isActive onClose={() => onClose()}>
       test
-    </Modal>,
+    </ModalCard>,
   );
   getByRole('presentation').click();
   expect(onClose).toHaveBeenCalledWith();
@@ -49,9 +49,9 @@ it('should close the modal when the background is clicked', () => {
 it('should close the modal escape is pressed on the background', () => {
   const onClose = jest.fn();
   const { getByRole } = render(
-    <Modal isActive onClose={() => onClose()}>
+    <ModalCard isActive onClose={() => onClose()}>
       test
-    </Modal>,
+    </ModalCard>,
   );
   fireEvent.keyDown(getByRole('presentation'), { key: 'Escape' });
   expect(onClose).toHaveBeenCalledWith();
@@ -60,9 +60,9 @@ it('should close the modal escape is pressed on the background', () => {
 it('should not close the modal another key is pressed on the background', () => {
   const onClose = jest.fn();
   const { getByRole } = render(
-    <Modal isActive onClose={() => onClose()}>
+    <ModalCard isActive onClose={() => onClose()}>
       test
-    </Modal>,
+    </ModalCard>,
   );
   fireEvent.keyDown(getByRole('presentation'));
   expect(onClose).not.toHaveBeenCalled();

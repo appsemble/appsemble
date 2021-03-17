@@ -1,7 +1,7 @@
 import {
   Button,
   Content,
-  Modal,
+  ModalCard,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -90,7 +90,7 @@ export function IndexPage(): ReactElement {
           />
         ))}
       </ul>
-      <Modal
+      <ModalCard
         component={SimpleForm}
         defaultValues={newOrganization}
         footer={
@@ -121,7 +121,7 @@ export function IndexPage(): ReactElement {
           preprocess={(value) => normalize(value, false)}
           required
         />
-      </Modal>
+      </ModalCard>
     </Content>
   );
 }

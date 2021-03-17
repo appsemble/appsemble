@@ -4,7 +4,7 @@ import {
   CheckboxField,
   Content,
   MarkdownContent,
-  Modal,
+  ModalCard,
   SelectField,
   SimpleForm,
   SimpleFormField,
@@ -111,7 +111,7 @@ export function IndexPage(): ReactElement {
                   <Button className="mb-3 ml-4" onClick={cloneDialog.enable}>
                     <FormattedMessage {...messages.clone} />
                   </Button>
-                  <Modal
+                  <ModalCard
                     component={SimpleForm}
                     defaultValues={{
                       name: app.definition.name,
@@ -175,7 +175,7 @@ export function IndexPage(): ReactElement {
                         title={<FormattedMessage {...messages.resourcesDescription} />}
                       />
                     )}
-                  </Modal>
+                  </ModalCard>
                 </>
               )}
             </div>

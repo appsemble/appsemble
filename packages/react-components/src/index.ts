@@ -28,7 +28,7 @@ export * from './MenuSection';
 export * from './Message';
 export * from './MessagesProvider';
 export * from './Meta';
-export * from './Modal';
+export * from './ModalCard';
 export * from './NavbarDropdown';
 export * from './NavbarItem';
 export * from './NavLink';
