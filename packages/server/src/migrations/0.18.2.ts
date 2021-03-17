@@ -6,6 +6,7 @@ export const key = '0.18.2';
 /**
  * Summary:
  * - Add columns description, email, and website to table Organization.
+ * - Add column role to OrganizationInvite
  *
  * @param db - The sequelize database.
  */
@@ -25,6 +26,13 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.addColumn('Organization', 'website', {
     type: DataTypes.STRING,
   });
+
+  logger.info('Adding column role to OrganizationInvite');
+  await queryInterface.addColumn('OrganizationInvite', 'role', {
+    type: DataTypes.ENUM('Member', 'Owner', 'Maintainer', 'AppEditor'),
+    defaultValue: 'Member',
+    allowNull: false,
+  });
 }
 
 /**
@@ -43,4 +51,8 @@ export async function down(db: Sequelize): Promise<void> {
 
   logger.info('Removing column website from Organization');
   await queryInterface.removeColumn('Organization', 'website');
+
+  logger.info('Removing column role from OrganizationInvite');
+  await queryInterface.removeColumn('OrganizationInvite', 'role');
+  await db.query('DROP TYPE IF EXISTS "enum_OrganizationInvite_role"');
 }

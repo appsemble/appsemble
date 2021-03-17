@@ -354,7 +354,7 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
   }
 
   if (response) {
-    await organization.$add('User', userId);
+    await organization.$add('User', userId, { through: { role: invite.role || 'Member' } });
   }
 
   await invite.destroy();
@@ -367,7 +367,10 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
     request: { body },
   } = ctx;
 
-  const allInvites = (body as OrganizationInvite[]).map((invite) => invite.email.toLowerCase());
+  const allInvites = (body as OrganizationInvite[]).map((invite) => ({
+    email: invite.email.toLowerCase(),
+    role: invite.role,
+  }));
 
   const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
     include: [
@@ -391,7 +394,7 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
       EmailAuthorizations.flatMap(({ email }) => email),
     ),
   );
-  const newInvites = allInvites.filter((email) => !memberEmails.has(email));
+  const newInvites = allInvites.filter((invite) => !memberEmails.has(invite.email));
   if (!newInvites.length) {
     throw badRequest('All invited users are already part of this organization');
   }
@@ -399,28 +402,29 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
   const existingInvites = new Set(
     member.Organization.OrganizationInvites.flatMap(({ email }) => email),
   );
-  const pendingInvites = newInvites.filter((email) => !existingInvites.has(email));
+  const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
   if (!pendingInvites.length) {
     throw badRequest('All email addresses are already invited to this organization');
   }
 
   const auths = await EmailAuthorization.findAll({
     include: [{ model: User }],
-    where: { email: { [Op.in]: pendingInvites } },
+    where: { email: { [Op.in]: pendingInvites.map((invite) => invite.email) } },
   });
   const userMap = new Map(auths.map((auth) => [auth.email, auth.User]));
   const result = await OrganizationInvite.bulkCreate(
-    pendingInvites.map((email) => {
-      const user = userMap.get(email);
+    pendingInvites.map((invite) => {
+      const user = userMap.get(invite.email);
       const key = randomBytes(20).toString('hex');
       return user
         ? {
-            email: user?.primaryEmail ?? email,
+            email: user?.primaryEmail ?? invite.email,
             UserId: user.id,
             key,
             OrganizationId: organizationId,
+            role: invite.role,
           }
-        : { email, key, OrganizationId: organizationId };
+        : { email: invite.email, role: invite.role, key, OrganizationId: organizationId };
     }),
   );
 
@@ -432,7 +436,7 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
       }),
     ),
   );
-  ctx.body = result.map(({ email }) => ({ email }));
+  ctx.body = result.map(({ email, role }) => ({ email, role }));
 }
 
 export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {

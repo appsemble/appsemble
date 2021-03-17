@@ -8,4 +8,8 @@ export const messages = defineMessages({
   cancel: 'Cancel',
   submit: 'Add members',
   error: 'There was a problem inviting these new members.',
+  Member: 'Member',
+  AppEditor: 'AppEditor',
+  Maintainer: 'Maintainer',
+  Owner: 'Owner',
 });

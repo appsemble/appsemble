@@ -225,6 +225,10 @@ export const paths: OpenAPIV3.PathsObject = {
                       type: 'string',
                       format: 'email',
                     },
+                    role: {
+                      type: 'string',
+                      enum: Object.keys(roles),
+                    },
                   },
                 },
               },
@@ -246,11 +250,15 @@ export const paths: OpenAPIV3.PathsObject = {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['email'],
+                required: ['email', 'role'],
                 properties: {
                   email: {
                     type: 'string',
                     format: 'email',
+                  },
+                  role: {
+                    type: 'string',
+                    enum: Object.keys(roles),
                   },
                 },
               },

@@ -1203,6 +1203,11 @@ export interface OrganizationInvite {
    * The email address of the user to invite.
    */
   email: string;
+
+  /**
+   * The role the user should get when accepting the invite.
+   */
+  role: string;
 }
 
 /**
