@@ -23,6 +23,7 @@ export const BlockVersion: OpenAPIV3.NonArraySchemaObject = {
     description: {
       type: 'string',
       description: 'The description of the block.',
+      maxLength: 160,
     },
     longDescription: {
       type: 'string',

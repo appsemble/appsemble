@@ -4,6 +4,26 @@ import { roles } from '../../constants';
 
 export const paths: OpenAPIV3.PathsObject = {
   '/api/organizations': {
+    get: {
+      tags: ['organization'],
+      description: 'Fetch the list of organizations.',
+      operationId: 'getOrganizations',
+      responses: {
+        200: {
+          description: 'The list of of organizations',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Organization',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     post: {
       tags: ['organization'],
       description: 'Create a new organization.',
@@ -51,6 +71,15 @@ export const paths: OpenAPIV3.PathsObject = {
               properties: {
                 name: {
                   $ref: '#/components/schemas/Organization/properties/name',
+                },
+                description: {
+                  $ref: '#/components/schemas/Organization/properties/description',
+                },
+                email: {
+                  $ref: '#/components/schemas/Organization/properties/email',
+                },
+                website: {
+                  $ref: '#/components/schemas/Organization/properties/website',
                 },
                 icon: {
                   type: 'string',
@@ -343,6 +372,55 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       security: [{ studio: [] }],
+    },
+  },
+  '/api/organizations/{organizationId}/apps': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description:
+        'Get a list of an organization’s apps. Private apps are excluded unless the user is in the organization.',
+      operationId: 'getOrganizationApps',
+      responses: {
+        200: {
+          description: 'The list of this organization’s apps.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/App',
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }, {}],
+    },
+  },
+  '/api/organizations/{organizationId}/blocks': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get a list of an organization’s blocks.',
+      operationId: 'getOrganizationBlocks',
+      responses: {
+        200: {
+          description: 'The list of this organization’s blocks.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/BlockVersion',
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }, {}],
     },
   },
 };

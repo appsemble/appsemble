@@ -5,7 +5,15 @@ import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
 
-import { EmailAuthorization, Member, Organization, OrganizationInvite, User } from '../models';
+import {
+  App,
+  BlockVersion,
+  EmailAuthorization,
+  Member,
+  Organization,
+  OrganizationInvite,
+  User,
+} from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
@@ -38,6 +46,24 @@ afterEach(truncate);
 
 afterAll(closeTestSchema);
 
+describe('getOrganizations', () => {
+  it('should fetch all organizations', async () => {
+    const response = await request.get('/api/organizations');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        { id: 'appsemble', name: 'Appsemble', iconUrl: '/api/organizations/appsemble/icon' },
+        {
+          id: 'testorganization',
+          name: 'Test Organization',
+          iconUrl: '/api/organizations/testorganization/icon',
+        },
+      ],
+    });
+  });
+});
+
 describe('getOrganization', () => {
   it('should fetch an organization', async () => {
     authorizeStudio();
@@ -48,6 +74,7 @@ describe('getOrganization', () => {
       data: {
         id: 'testorganization',
         name: 'Test Organization',
+        iconUrl: '/api/organizations/testorganization/icon',
       },
     });
   });
@@ -59,6 +86,131 @@ describe('getOrganization', () => {
     expect(response).toMatchObject({
       status: 404,
       data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
+    });
+  });
+});
+
+describe('getOrganizationApps', () => {
+  it('should only return public organization apps', async () => {
+    await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      private: true,
+    });
+    const app = await App.create({
+      path: 'test-app-2',
+      definition: { name: 'Test App 2', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+    });
+
+    const response = await request.get('/api/organizations/testorganization/apps');
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          OrganizationId: 'testorganization',
+          definition: app.definition,
+          iconUrl: `/api/apps/${app.id}/icon`,
+          id: app.id,
+          locked: false,
+          path: 'test-app-2',
+          private: false,
+        },
+      ],
+    });
+  });
+
+  it('should include private organization apps if the user is part of the organization', async () => {
+    authorizeStudio(user);
+    const appA = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      private: true,
+    });
+    const appB = await App.create({
+      path: 'test-app-2',
+      definition: { name: 'Test App 2', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+    });
+
+    const response = await request.get('/api/organizations/testorganization/apps');
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          OrganizationId: 'testorganization',
+          definition: appA.definition,
+          iconUrl: `/api/apps/${appA.id}/icon`,
+          id: appA.id,
+          locked: false,
+          path: 'test-app',
+          private: true,
+        },
+        {
+          OrganizationId: 'testorganization',
+          definition: appB.definition,
+          iconUrl: `/api/apps/${appB.id}/icon`,
+          id: appB.id,
+          locked: false,
+          path: 'test-app-2',
+          private: false,
+        },
+      ],
+    });
+  });
+});
+
+describe('getOrganizationBlocks', () => {
+  it('should return the organization’s blocks', async () => {
+    await BlockVersion.create({
+      name: 'test',
+      version: '0.0.0',
+      OrganizationId: 'testorganization',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+
+    const response = await request.get('/api/organizations/testorganization/blocks');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          actions: null,
+          description: null,
+          events: null,
+          iconUrl: '/api/blocks/@testorganization/test/versions/0.0.0/icon',
+          layout: null,
+          longDescription: null,
+          name: '@testorganization/test',
+          parameters: {
+            properties: {
+              foo: {
+                type: 'number',
+              },
+              type: 'object',
+            },
+          },
+          resources: null,
+          version: '0.0.0',
+        },
+      ],
     });
   });
 });

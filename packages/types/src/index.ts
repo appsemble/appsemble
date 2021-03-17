@@ -1151,6 +1151,21 @@ export interface Organization {
   name: string;
 
   /**
+   * The description of the organization.
+   */
+  description: string;
+
+  /**
+   * The website of the organization.
+   */
+  website: string;
+
+  /**
+   * The email address that can be used to contact the organization.
+   */
+  email: string;
+
+  /**
    * The URL at which the organization’s icon can be found.
    */
   iconUrl: string;

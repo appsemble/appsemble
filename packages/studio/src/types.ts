@@ -46,6 +46,9 @@ export interface Organization {
   id: string;
   name: string;
   role: Role;
+  description: string;
+  website: string;
+  email: string;
   iconUrl: string;
 }
 

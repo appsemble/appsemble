@@ -1,0 +1,33 @@
+.logo {
+  flex: 0 0 auto;
+}
+
+.metaWrapper {
+  flex: 1 1 auto;
+  flex-flow: column;
+  overflow-x: hidden;
+
+  @media (min-width: 1024px) {
+    flex-flow: row;
+  }
+}
+
+.meta {
+  flex: 1 1 auto;
+  overflow-x: hidden;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.buttonContainer {
+  justify-content: flex-end;
+
+  @media (min-width: 1024px) {
+    flex-flow: column;
+    justify-content: flex-start;
+  }
+}

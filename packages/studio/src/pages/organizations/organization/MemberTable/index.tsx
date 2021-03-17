@@ -5,10 +5,10 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { HeaderControl } from '../../../../../components/HeaderControl';
-import { useUser } from '../../../../../components/UserProvider';
-import { Member } from '../../../../../types';
-import { checkRole } from '../../../../../utils/checkRole';
+import { HeaderControl } from '../../../../components/HeaderControl';
+import { useUser } from '../../../../components/UserProvider';
+import { Member } from '../../../../types';
+import { checkRole } from '../../../../utils/checkRole';
 import { AddMembersModal } from '../AddMembersModal';
 import { InviteRow } from '../InviteRow';
 import { MemberRow } from '../MemberRow';
@@ -18,19 +18,20 @@ import { messages } from './messages';
 export function MemberTable(): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();
   const { userInfo } = useUser();
+  const id = organizationId.startsWith('@') ? organizationId.slice(1) : organizationId;
 
   const {
     data: members,
     error: membersError,
     loading: membersLoading,
     setData: setMembers,
-  } = useData<Member[]>(`/api/organizations/${organizationId}/members`);
+  } = useData<Member[]>(`/api/organizations/${id}/members`);
   const {
     data: invites,
     error: invitesError,
     loading: invitesLoading,
     setData: setInvites,
-  } = useData<OrganizationInvite[]>(`/api/organizations/${organizationId}/invites`);
+  } = useData<OrganizationInvite[]>(`/api/organizations/${id}/invites`);
   const addMembersModal = useToggle();
 
   const onInvited = useCallback(

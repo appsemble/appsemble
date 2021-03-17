@@ -16,7 +16,7 @@ interface AsyncDataViewProps<T> {
   /**
    * The message to display if the loaded data was empty.
    */
-  emptyMessage: ReactNode;
+  emptyMessage?: ReactNode;
 
   /**
    * The message to display if there was a problem loading the data.

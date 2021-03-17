@@ -20,6 +20,9 @@ export function SideMenuBase(): ReactElement {
       <MenuItem icon="cubes" to={`/${lang}/blocks`}>
         <FormattedMessage {...messages.blockStore} />
       </MenuItem>
+      <MenuItem icon="briefcase" to={`/${lang}/organizations`}>
+        <FormattedMessage {...messages.organizations} />
+      </MenuItem>
       <MenuItem icon="scroll" to={`/${lang}/docs`}>
         <FormattedMessage {...messages.documentation} />
       </MenuItem>
