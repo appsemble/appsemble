@@ -5,6 +5,7 @@ import { Fragment, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { AvatarWrapper } from '../AvatarWrapper';
+import { CardImage } from '../CardImage';
 import { createIcon } from '../utils/createIcon';
 import styles from './index.module.css';
 
@@ -172,23 +173,20 @@ export function Card({ content, onUpdate }: CardProps): VNode {
       </div>
       <div className="card-image">
         {picture && (
-          <figure className={styles.figure}>
-            <img
-              alt={title || subtitle || heading || description}
-              className={styles.image}
-              src={picture ? utils.asset(picture) : ''}
-            />
-          </figure>
+          <CardImage
+            alt={title || subtitle || heading || description}
+            src={picture ? utils.asset(picture) : ''}
+          />
         )}
         {pictures && Array.isArray(pictures) && pictures.length > 1 && (
           <div className={`${styles.images} px-1 py-1`}>
             {pictures.map((p) => (
-              <figure className={`image is-64x64 mx-1 my-1 ${styles.figure}`} key={p}>
-                <img
-                  alt={title || subtitle || heading || description}
-                  src={p ? utils.asset(p) : ''}
-                />
-              </figure>
+              <CardImage
+                alt={title || subtitle || heading || description}
+                className="image is-64x64 mx-1 my-1"
+                key={p}
+                src={p ? utils.asset(p) : ''}
+              />
             ))}
           </div>
         )}
