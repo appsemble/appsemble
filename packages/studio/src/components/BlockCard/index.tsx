@@ -2,7 +2,7 @@ import { Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -19,9 +19,7 @@ interface BlockCardProps {
  */
 export function BlockCard({ block }: BlockCardProps): ReactElement {
   const [org, ...name] = block.name.split('/');
-  const {
-    params: { lang },
-  } = useRouteMatch<{ lang: string }>();
+  const { lang } = useParams<{ lang: string }>();
 
   return (
     <div className={`card is-flex ${styles.root}`} key={block.name} title={block.name}>

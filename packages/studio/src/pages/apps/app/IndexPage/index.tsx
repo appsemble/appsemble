@@ -18,7 +18,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory, useRouteMatch } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { useApp } from '..';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
@@ -42,9 +42,7 @@ export function IndexPage(): ReactElement {
   const cloneDialog = useToggle();
   const descriptionToggle = useToggle();
   const history = useHistory();
-  const {
-    params: { lang },
-  } = useRouteMatch<{ lang: string }>();
+  const { lang } = useParams<{ lang: string }>();
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
 
