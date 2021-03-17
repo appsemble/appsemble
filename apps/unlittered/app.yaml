@@ -22,9 +22,7 @@ resources:
           type: array
           items:
             type: string
-            appsembleFile:
-              type:
-                - image/jpeg
+            format: binary
           title: Photos
         process:
           enum:
