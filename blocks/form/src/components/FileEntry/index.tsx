@@ -43,13 +43,13 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
     <div className={`appsemble-file file mr-3 ${styles.root}`}>
       {value && url && (
         <Modal isActive={modal.enabled} onClose={modal.disable}>
-          <p className="image">
+          <figure className="image">
             <img
               alt={utils.remap(field.label, value) ?? field.name}
               className={styles.image}
               src={url}
             />
-          </p>
+          </figure>
         </Modal>
       )}
       <label className="file-label">

@@ -27,9 +27,9 @@ export function ImageField({ label, name, src }: ImageFieldProps): VNode {
         </figure>
       </button>
       <Modal isActive={modal.enabled} onClose={modal.disable}>
-        <p className="image">
+        <figure className="image">
           <img alt={alt} src={url} />
-        </p>
+        </figure>
       </Modal>
     </>
   );
