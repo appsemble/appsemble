@@ -208,6 +208,15 @@ export interface DateTimeField extends AbstractField {
    */
   type: 'date-time';
 
+  /**
+   * The day to display as the first day of the week.
+   *
+   * 0 means sunday, 1 means monday, etc.
+   *
+   * @default 1
+   */
+  startOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
   requirements?: DateTimeRequirement[];
 }
 
@@ -219,6 +228,15 @@ export interface DateField extends AbstractField {
    * The type of the field.
    */
   type: 'date';
+
+  /**
+   * The day to display as the first day of the week.
+   *
+   * 0 means sunday, 1 means monday, etc.
+   *
+   * @default 1
+   */
+  startOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
   requirements?: DateTimeRequirement[];
 }
