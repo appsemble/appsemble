@@ -3,7 +3,7 @@ import {
   CardFooterButton,
   Form,
   Loader,
-  Modal,
+  ModalCard,
   Table,
   Title,
   useData,
@@ -188,7 +188,7 @@ export function ResourcePage(): ReactElement {
           ))}
         </tbody>
       </Table>
-      <Modal
+      <ModalCard
         component={Form}
         footer={
           <>
@@ -211,7 +211,7 @@ export function ResourcePage(): ReactElement {
           schema={schema}
           value={creatingResource}
         />
-      </Modal>
+      </ModalCard>
     </>
   );
 }

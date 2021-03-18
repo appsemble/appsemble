@@ -2,7 +2,7 @@ import {
   Button,
   FormButtons,
   Loader,
-  Modal,
+  ModalCard,
   SelectField,
   SimpleBeforeUnload,
   SimpleForm,
@@ -241,7 +241,7 @@ export function TranslationsPage(): ReactElement {
           </SimpleForm>
         </>
       )}
-      <Modal
+      <ModalCard
         component={SimpleForm}
         defaultValues={{ language: undefined }}
         footer={
@@ -270,7 +270,7 @@ export function TranslationsPage(): ReactElement {
             </option>
           ))}
         </SimpleFormField>
-      </Modal>
+      </ModalCard>
     </>
   );
 }

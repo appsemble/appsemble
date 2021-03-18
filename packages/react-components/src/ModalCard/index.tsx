@@ -12,7 +12,7 @@ import {
 import { useAnimation } from '..';
 import styles from './index.module.css';
 
-interface ModalProps<T extends ElementType> {
+interface ModalCardProps<T extends ElementType> {
   /**
    * The child elements to render on the modal.
    */
@@ -67,7 +67,7 @@ interface ModalProps<T extends ElementType> {
 /**
  * Render an aria compliant modal overlay.
  */
-export function Modal<T extends ElementType = 'div'>({
+export function ModalCard<T extends ElementType = 'div'>({
   cardClassName,
   children = null,
   className,
@@ -79,7 +79,7 @@ export function Modal<T extends ElementType = 'div'>({
   onClose = () => {},
   title,
   ...props
-}: ModalProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): ReactElement {
+}: ModalCardProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalCardProps<T>>): ReactElement {
   const openClass = useAnimation(isActive, 300, {
     opening: styles.opening,
     open: styles.open,

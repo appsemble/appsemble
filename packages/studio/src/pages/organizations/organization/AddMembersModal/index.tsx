@@ -3,7 +3,7 @@ import {
   Form,
   FormComponent,
   Input,
-  Modal,
+  ModalCard,
   Select,
   Toggle,
   useMessages,
@@ -11,14 +11,7 @@ import {
 import { OrganizationInvite } from '@appsemble/types';
 import { Role, roles } from '@appsemble/utils';
 import axios from 'axios';
-import React, {
-  ChangeEvent,
-  ClipboardEvent,
-  Fragment as div,
-  ReactElement,
-  useCallback,
-  useState,
-} from 'react';
+import { ChangeEvent, ClipboardEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -152,7 +145,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
   );
 
   return (
-    <Modal
+    <ModalCard
       component={Form}
       footer={
         <>
@@ -211,6 +204,6 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
           </div>
         ))}
       </FormComponent>
-    </Modal>
+    </ModalCard>
   );
 }

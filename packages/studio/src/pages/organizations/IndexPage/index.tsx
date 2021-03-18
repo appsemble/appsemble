@@ -1,6 +1,6 @@
 import {
   Button,
-  Modal,
+  ModalCard,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -125,7 +125,7 @@ export function IndexPage(): ReactElement {
         </AsyncDataView>
       </CollapsibleList>
       {userInfo.email_verified && (
-        <Modal
+        <ModalCard
           component={SimpleForm}
           defaultValues={newOrganization}
           footer={
@@ -171,7 +171,7 @@ export function IndexPage(): ReactElement {
             label={<FormattedMessage {...messages.description} />}
             name="description"
           />
-        </Modal>
+        </ModalCard>
       )}
     </>
   );

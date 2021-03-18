@@ -1,5 +1,5 @@
 import {
-  Modal,
+  ModalCard,
   SelectField,
   SimpleForm,
   SimpleFormField,
@@ -36,7 +36,7 @@ export function AddTeamMemberModal({
   };
 
   return (
-    <Modal
+    <ModalCard
       component={SimpleForm}
       defaultValues={defaultValues}
       footer={
@@ -76,6 +76,6 @@ export function AddTeamMemberModal({
           </SimpleFormField>
         )}
       </AsyncDataView>
-    </Modal>
+    </ModalCard>
   );
 }

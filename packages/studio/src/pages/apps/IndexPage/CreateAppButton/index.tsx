@@ -2,7 +2,7 @@ import {
   Button,
   CheckboxField,
   Message,
-  Modal,
+  ModalCard,
   SelectField,
   SimpleForm,
   SimpleFormError,
@@ -61,7 +61,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
       <Button className={className} onClick={modal.enable}>
         <FormattedMessage {...messages.createApp} />
       </Button>
-      <Modal
+      <ModalCard
         component={SimpleForm}
         defaultValues={{
           name: '',
@@ -145,7 +145,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
             title={<FormattedMessage {...messages.includeResources} />}
           />
         )}
-      </Modal>
+      </ModalCard>
     </>
   );
 }

@@ -2,7 +2,7 @@ import { BulmaColor } from '@appsemble/sdk';
 import { createContext, ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
 import { PromiseValue } from 'type-fest';
 
-import { CardFooterButton, Modal } from '..';
+import { CardFooterButton, ModalCard } from '..';
 
 interface ConfirmationOptions<T, A extends any[]> {
   /**
@@ -69,7 +69,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactElement {
 
   return (
     <Context.Provider value={confirm}>
-      <Modal
+      <ModalCard
         footer={
           <>
             <CardFooterButton onClick={options?.reject}>{options?.cancelLabel}</CardFooterButton>
@@ -83,7 +83,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactElement {
         title={options?.title}
       >
         {options?.body}
-      </Modal>
+      </ModalCard>
       {children}
     </Context.Provider>
   );

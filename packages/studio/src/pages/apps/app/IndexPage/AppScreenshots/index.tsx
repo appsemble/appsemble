@@ -2,7 +2,7 @@ import {
   Button,
   CardFooterButton,
   FileUpload,
-  Modal,
+  ModalCard,
   useObjectURL,
   useToggle,
 } from '@appsemble/react-components';
@@ -103,7 +103,7 @@ export function AppScreenshots(): ReactElement {
           </div>
         )}
       </div>
-      <Modal
+      <ModalCard
         footer={
           <>
             <CardFooterButton onClick={closeModal}>
@@ -142,7 +142,7 @@ export function AppScreenshots(): ReactElement {
           }
           required
         />
-      </Modal>
+      </ModalCard>
     </>
   );
 }

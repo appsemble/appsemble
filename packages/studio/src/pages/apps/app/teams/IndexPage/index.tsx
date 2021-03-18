@@ -1,7 +1,7 @@
 import {
   Button,
   Content,
-  Modal,
+  ModalCard,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -100,7 +100,7 @@ export function IndexPage(): ReactElement {
             </ul>
           )}
         </AsyncDataView>
-        <Modal
+        <ModalCard
           component={SimpleForm}
           defaultValues={newTeam}
           footer={
@@ -122,7 +122,7 @@ export function IndexPage(): ReactElement {
             name="name"
             required
           />
-        </Modal>
+        </ModalCard>
       </Content>
     </>
   );

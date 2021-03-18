@@ -5,6 +5,7 @@ import { Fragment, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { AvatarWrapper } from '../AvatarWrapper';
+import { CardImage } from '../CardImage';
 import { createIcon } from '../utils/createIcon';
 import styles from './index.module.css';
 
@@ -15,7 +16,7 @@ export interface CardProps {
   content: {
     id: number;
     status: string;
-    fotos: string[];
+    photos: string[];
   };
 
   /**
@@ -121,6 +122,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const subtitle = utils.remap(parameters.subtitle, content);
   const heading = utils.remap(parameters.heading, content);
   const picture = utils.remap(parameters.picture, content);
+  const pictures = utils.remap(parameters.pictures, content);
   const description = utils.remap(parameters.description, content);
   const latitude = utils.remap(parameters.marker.latitude, content);
   const longitude = utils.remap(parameters.marker.longitude, content);
@@ -170,24 +172,21 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         </div>
       </div>
       <div className="card-image">
-        {picture && content?.fotos.length === 1 && (
-          <figure className={styles.figure}>
-            <img
-              alt={title || subtitle || heading || description}
-              className={styles.image}
-              src={picture ? utils.asset(picture) : ''}
-            />
-          </figure>
+        {picture && (
+          <CardImage
+            alt={title || subtitle || heading || description}
+            src={picture ? utils.asset(picture) : ''}
+          />
         )}
-        {content?.fotos && content?.fotos.length > 1 && (
+        {pictures && Array.isArray(pictures) && pictures.length > 1 && (
           <div className={`${styles.images} px-1 py-1`}>
-            {content?.fotos.map((p) => (
-              <figure className={`image is-64x64 mx-1 my-1 ${styles.figure}`} key={p}>
-                <img
-                  alt={title || subtitle || heading || description}
-                  src={p ? utils.asset(p) : ''}
-                />
-              </figure>
+            {pictures.map((p) => (
+              <CardImage
+                alt={title || subtitle || heading || description}
+                className="image is-64x64 mx-1 my-1"
+                key={p}
+                src={p ? utils.asset(p) : ''}
+              />
             ))}
           </div>
         )}

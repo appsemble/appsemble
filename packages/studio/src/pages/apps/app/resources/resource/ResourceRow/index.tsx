@@ -2,7 +2,7 @@ import {
   Button,
   CardFooterButton,
   Form,
-  Modal,
+  ModalCard,
   useConfirmation,
   useMessages,
   useToggle,
@@ -131,7 +131,7 @@ export function ResourceRow({
             />
           )}
         </div>
-        <Modal
+        <ModalCard
           component={Form}
           footer={
             <>
@@ -159,7 +159,7 @@ export function ResourceRow({
             schema={schema}
             value={editingResource}
           />
-        </Modal>
+        </ModalCard>
       </td>
       <td className={styles.contentCell}>{resource.id}</td>
       <td className={styles.contentCell}>{resource.$author?.name ?? resource.$author?.id}</td>
