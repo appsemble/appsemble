@@ -1036,6 +1036,14 @@ export interface App {
    */
   locked: boolean;
 
+  /**
+   * Whether the Appsemble login method should be shown.
+   */
+  showAppsembleLogin: boolean;
+
+  /**
+   * The app definition.
+   */
   definition: AppDefinition;
 
   /**

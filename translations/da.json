@@ -317,7 +317,7 @@
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlCopySuccess": "URL til omdirigering kopieret til udklipsholder",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlHelp": "Kopier dette til udbyderens callback-URI-felt",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlLabel": "Url-adresse til omdirigering",
-  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperHelp": "En remapper, der anvendes på brugerinfo-objektet",
+  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperHelp": "En <link>remapper</link>, der anvendes på brugerinfo-objektet",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperLabel": "Remapper til brugerinfo",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.save": "Gem hemmelighed",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.scopeHelp": "Det område, der er nødvendigt for at identificere brugeren.",

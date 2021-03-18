@@ -100,6 +100,10 @@ export class App extends Model {
   @Column
   locked: boolean;
 
+  @Default(true)
+  @Column
+  showAppsembleLogin: boolean;
+
   @UpdatedAt
   updated: Date;
 

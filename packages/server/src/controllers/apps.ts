@@ -137,6 +137,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       domain: domain || null,
       private: Boolean(isPrivate),
       template: Boolean(template),
+      showAppsembleLogin: true,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
     };
@@ -292,6 +293,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         private: isPrivate,
         screenshots,
         sharedStyle,
+        showAppsembleLogin,
         template,
         yaml,
       },
@@ -338,6 +340,10 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
     if (longDescription !== undefined) {
       result.longDescription = longDescription;
+    }
+
+    if (showAppsembleLogin !== undefined) {
+      result.showAppsembleLogin = showAppsembleLogin;
     }
 
     if (coreStyle) {

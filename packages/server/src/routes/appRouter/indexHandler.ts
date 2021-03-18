@@ -101,6 +101,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     ],
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
+    showAppsembleLogin: app.showAppsembleLogin ?? true,
     sentryDsn,
     sentryEnvironment,
   });

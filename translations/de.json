@@ -317,7 +317,7 @@
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlCopySuccess": "Umleitungs-URL in die Zwischenablage kopiert",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlHelp": "Kopieren Sie dies in das Callback-URI-Feld des Providers",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlLabel": "Weiterleitungs-URIs",
-  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperHelp": "Ein Remapper, der auf das User-Info-Objekt angewendet wird",
+  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperHelp": "Ein <link>Remapper</link>, der auf das User-Info-Objekt angewendet wird",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperLabel": "Benutzerinfo remapper",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.save": "Geheimnis speichern",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.scopeHelp": "Der Bereich, der zur Identifizierung des Benutzers benötigt wird.",

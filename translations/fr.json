@@ -317,7 +317,7 @@
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlCopySuccess": "Redirection de l’URL copiée dans le presse-papiers",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlHelp": "Copiez ceci dans le champ URI de rappel du fournisseur",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlLabel": "URL de redirection",
-  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperHelp": "Un remapper qui est appliqué sur l’objet info utilisateur",
+  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperHelp": "Un <link>remapper</link> qui est appliqué sur l’objet info utilisateur",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperLabel": "remappeur d’informations sur les utilisateurs",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.save": "Enregistrer le secret",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.scopeHelp": "La portée nécessaire pour identifier l’utilisateur.",

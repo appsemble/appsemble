@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { oauth2Scope } from '../../utils/constants';
-import { apiUrl, appId, definition, logins } from '../../utils/settings';
+import { apiUrl, appId, definition, logins, showAppsembleLogin } from '../../utils/settings';
 import { Main } from '../Main';
 import { TitleBar } from '../TitleBar';
 import styles from './index.module.css';
@@ -25,20 +25,24 @@ export function OpenIDLogin(): ReactElement {
   return (
     <Main className={styles.root}>
       <TitleBar />
-      <Content className={`is-flex ${styles.wrapper}`} padding>
+      <Content className={`is-flex appsemble-logins ${styles.wrapper}`} padding>
         <figure className="my-4">
           <img alt={definition.name} src="/icon-256.png" />
         </figure>
-        <OAuth2LoginButton
-          authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
-          icon="user"
-          {...buttonProps}
-        >
-          <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
-        </OAuth2LoginButton>
+        {showAppsembleLogin && (
+          <OAuth2LoginButton
+            authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
+            className={`${buttonProps.className} appsemble-login`}
+            icon="user"
+            {...buttonProps}
+          >
+            <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
+          </OAuth2LoginButton>
+        )}
         {logins?.map(({ icon, id, name, type }) => (
           <OAuth2LoginButton
             authorizationUrl={String(new URL(`/connect/authorize/${type}/${id}`, apiUrl))}
+            className={`${buttonProps.className} appsemble-login`}
             icon={icon}
             key={`${type} ${id}`}
             {...buttonProps}

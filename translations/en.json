@@ -317,7 +317,7 @@
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlCopySuccess": "Redirect URL copied to clipboard",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlHelp": "Copy this into the callback URI field of the provider",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.redirectUrlLabel": "Redirect URL",
-  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperHelp": "A remapper that is applied on the user info object",
+  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperHelp": "A <link>remapper</link> that is applied on the user info object",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.remapperLabel": "User info remapper",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.save": "Save secret",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.scopeHelp": "The scope that is needed to identify the user.",

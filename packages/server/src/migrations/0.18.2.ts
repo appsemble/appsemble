@@ -33,6 +33,12 @@ export async function up(db: Sequelize): Promise<void> {
     defaultValue: 'Member',
     allowNull: false,
   });
+
+  logger.info('Adding column showAppsembleLogin to App');
+  await queryInterface.addColumn('App', 'showAppsembleLogin', {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  });
 }
 
 /**
@@ -55,4 +61,7 @@ export async function down(db: Sequelize): Promise<void> {
   logger.info('Removing column role from OrganizationInvite');
   await queryInterface.removeColumn('OrganizationInvite', 'role');
   await db.query('DROP TYPE IF EXISTS "enum_OrganizationInvite_role"');
+
+  logger.info('Removing column showAppsembleLogin from App');
+  await queryInterface.removeColumn('App', 'showAppsembleLogin');
 }

@@ -42,6 +42,7 @@ export function getAppFromRecord(
     yaml:
       record.AppSnapshots?.[0]?.yaml ??
       (!omittedValues.includes('yaml') && yaml.safeDump(record.definition)),
+    showAppsembleLogin: record.showAppsembleLogin ?? true,
     rating: record.get('RatingCount')
       ? {
           average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,

@@ -7,6 +7,7 @@ export const {
   logins,
   sentryDsn,
   sentryEnvironment,
+  showAppsembleLogin,
   vapidPublicKey,
 } = window.settings;
 delete window.settings;
