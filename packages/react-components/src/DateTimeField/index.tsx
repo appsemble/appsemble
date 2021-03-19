@@ -3,10 +3,21 @@ import 'flatpickr/dist/flatpickr.css';
 import classNames from 'classnames';
 import flatpickr from 'flatpickr';
 import { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import { FormComponent, Input, SharedFormComponentProps } from '..';
 import { useCombinedRefs } from '../useCombinedRefs';
 import styles from './index.module.css';
+
+type Weekdays = flatpickr.CustomLocale['weekdays']['shorthand'];
+type Months = flatpickr.CustomLocale['months']['shorthand'];
+
+// The dawn of time was on a thursday
+const weekdays = Array.from({ length: 7 }, (unused, index) => (index + 3) * 24 * 60 * 60 * 1000);
+
+// It doesn’t matter which day in the month. Assuming months have 31 days works for this specific
+// case.
+const months = Array.from({ length: 12 }, (unused, index) => index * 31 * 24 * 60 * 60 * 1000);
 
 type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> &
   Pick<flatpickr.Options.Options, 'enableTime' | 'mode'> &
@@ -55,6 +66,7 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
     },
     ref,
   ) => {
+    const { formatDate } = useIntl();
     const inputRef = useRef<HTMLInputElement>();
     const combinedRef = useCombinedRefs(ref, inputRef);
     const [picker, setPicker] = useState<flatpickr.Instance>(null);
@@ -63,14 +75,36 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
       const p = flatpickr(inputRef.current, {
         static: true,
         enableTime,
+        locale: {
+          firstDayOfWeek: 1,
+          weekdays: {
+            shorthand: weekdays.map((d) => formatDate(d, { weekday: 'short' })) as Weekdays,
+            longhand: weekdays.map((d) => formatDate(d, { weekday: 'long' })) as Weekdays,
+          },
+          months: {
+            shorthand: months.map((d) => formatDate(d, { month: 'short' })) as Months,
+            longhand: months.map((d) => formatDate(d, { month: 'long' })) as Months,
+          },
+        },
         mode,
+        formatDate: (date) =>
+          formatDate(date, {
+            year: 'numeric',
+            month: 'long',
+            day: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            weekday: 'long',
+          }),
         time_24hr: true,
+        enableSeconds: true,
       });
 
       setPicker(p);
 
       return p.destroy;
-    }, [enableTime, mode]);
+    }, [enableTime, mode, formatDate]);
 
     useEffect(() => {
       if (!picker) {
