@@ -32,7 +32,7 @@ export function SecretsPage(): ReactElement {
           <FormattedMessage {...messages.appsembleLogin} />
         </Title>
         <Checkbox
-          disabled={submitting}
+          disabled={app.locked || submitting}
           label={<FormattedMessage {...messages.displayAppsembleLogin} />}
           name="enableAppsembleLogin"
           onChange={onClickCheckbox}

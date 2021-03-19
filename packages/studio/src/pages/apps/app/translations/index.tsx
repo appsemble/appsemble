@@ -167,6 +167,7 @@ export function TranslationsPage(): ReactElement {
       ...[...new Set(actions)].sort(),
       ...blockMessages.sort(),
       ...pageBlockMessageIds.sort(),
+      '$appsemble:loginWith',
     ];
   }, [app.definition, appMessages]);
 

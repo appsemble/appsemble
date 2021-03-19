@@ -141,6 +141,12 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     );
   }
 
+  // Specific overrides
+  if (messages.app['$appsemble:loginWith']) {
+    messages.core['app.src.components.OpenIDLogin.loginWith'] =
+      messages.app['$appsemble:loginWith'];
+  }
+
   return (
     <Context.Provider value={value}>
       <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={messages.core}>

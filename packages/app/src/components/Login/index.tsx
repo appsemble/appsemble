@@ -28,22 +28,24 @@ export function Login(): ReactElement {
   }
 
   if (!logins.length && !showAppsembleLogin) {
-    <Content padding>
-      <Message color="danger">
-        <p>
-          <FormattedMessage
-            {...messages.permissionError}
-            values={{
-              a: (text: string) => (
-                <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
-                  {text}
-                </a>
-              ),
-            }}
-          />
-        </p>
-      </Message>
-    </Content>;
+    return (
+      <Content padding>
+        <Message color="danger">
+          <p>
+            <FormattedMessage
+              {...messages.permissionError}
+              values={{
+                link: (text: string) => (
+                  <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
+                    {text}
+                  </a>
+                ),
+              }}
+            />
+          </p>
+        </Message>
+      </Content>
+    );
   }
 
   return <OpenIDLogin />;
