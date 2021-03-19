@@ -20,7 +20,6 @@
         hsla(218, 100%, 66%, 0.43),
         transparent
       );
-      color: var(--primary-color) !important;
     }
   }
 }

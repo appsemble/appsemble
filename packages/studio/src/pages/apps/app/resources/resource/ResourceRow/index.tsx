@@ -1,7 +1,7 @@
 import {
-  Button,
   CardFooterButton,
   Form,
+  IconButton,
   ModalCard,
   useConfirmation,
   useMessages,
@@ -18,6 +18,7 @@ import { Resource, RouteParams } from '..';
 import { useApp } from '../../..';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
 import { ClonableCheckbox } from '../ClonableCheckbox';
+import { ResourceCell } from '../ResourceCell';
 import styles from './index.module.css';
 import { messages } from './messages';
 
@@ -118,19 +119,17 @@ export function ResourceRow({
   ]);
 
   return (
-    <tr>
-      <td>
-        <div className={styles.actionsCell}>
-          <Button className="has-text-info" icon="pen" onClick={openEditModal} />
-          <Button color="danger" icon="trash" inverted onClick={handleDeleteResource} />
-          {Object.hasOwnProperty.call(app, 'resources') && (
-            <ClonableCheckbox
-              checked={resource.$clonable}
-              id={`clonable${resource.id}`}
-              onChange={onSetClonable}
-            />
-          )}
-        </div>
+    <tr className={styles.root}>
+      <td className="is-flex">
+        <IconButton color="info" icon="pen" onClick={openEditModal} />
+        <IconButton className="mx-2" color="danger" icon="trash" onClick={handleDeleteResource} />
+        {Object.hasOwnProperty.call(app, 'resources') && (
+          <ClonableCheckbox
+            checked={resource.$clonable}
+            id={`clonable${resource.id}`}
+            onChange={onSetClonable}
+          />
+        )}
         <ModalCard
           component={Form}
           footer={
@@ -161,14 +160,17 @@ export function ResourceRow({
           />
         </ModalCard>
       </td>
-      <td className={styles.contentCell}>{resource.id}</td>
-      <td className={styles.contentCell}>{resource.$author?.name ?? resource.$author?.id}</td>
-      {Object.keys(schema?.properties ?? {})
-        .filter((key) => !filteredKeys.has(key))
-        .map((key) => (
-          <td className={styles.contentCell} key={key}>
-            {typeof resource[key] === 'string' ? resource[key] : JSON.stringify(resource[key])}
-          </td>
+      <td className={styles.id}>{resource.id}</td>
+      <td>{resource.$author?.name ?? resource.$author?.id}</td>
+      {Object.entries(schema?.properties ?? {})
+        .filter(([key]) => !filteredKeys.has(key))
+        .map(([key, subSchema]) => (
+          <ResourceCell
+            key={key}
+            required={Boolean(schema.required?.includes(key))}
+            schema={subSchema}
+            value={resource[key]}
+          />
         ))}
     </tr>
   );
