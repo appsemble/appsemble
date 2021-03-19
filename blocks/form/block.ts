@@ -215,7 +215,7 @@ export interface DateTimeField extends AbstractField {
    *
    * @default 1
    */
-  startOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
   requirements?: DateTimeRequirement[];
 }
@@ -236,7 +236,7 @@ export interface DateField extends AbstractField {
    *
    * @default 1
    */
-  startOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
   requirements?: DateTimeRequirement[];
 }
