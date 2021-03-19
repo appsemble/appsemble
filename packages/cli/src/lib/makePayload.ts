@@ -4,6 +4,7 @@ import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
+import { compareStrings } from '@appsemble/utils';
 import FormData from 'form-data';
 import { readJSON } from 'fs-extra';
 
@@ -57,7 +58,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
       );
     }
 
-    const messageKeys = Object.keys(messages).sort();
+    const messageKeys = Object.keys(messages).sort(compareStrings);
     const messagesResult: Record<string, Record<string, string>> = {};
     const messagesPath = join(dir, 'i18n');
 
@@ -78,7 +79,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
       const language = basename(languageFile, '.json');
       const languagePath = join(messagesPath, languageFile);
       const m: Record<string, string> = await readJSON(languagePath);
-      const languageKeys = Object.keys(m).sort();
+      const languageKeys = Object.keys(m).sort(compareStrings);
 
       if (
         languageKeys.length !== messageKeys.length ||

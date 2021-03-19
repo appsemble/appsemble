@@ -1,4 +1,5 @@
 import { AppsembleError } from '@appsemble/node-utils';
+import { compareStrings } from '@appsemble/utils';
 
 /**
  * Converts an object or an array of objects to a valid CSV format.
@@ -33,7 +34,7 @@ export function convertToCsv(body: any): string {
     return null;
   }
 
-  const headers = [...new Set(data.flatMap((value) => Object.keys(value)))].sort();
+  const headers = [...new Set(data.flatMap((value) => Object.keys(value)))].sort(compareStrings);
 
   if (headers.length === 0) {
     throw new AppsembleError('No headers could be found');

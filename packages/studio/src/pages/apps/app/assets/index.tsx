@@ -14,6 +14,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
+import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -91,7 +92,7 @@ export function AssetsPage(): ReactElement {
       push({
         body: formatMessage(messages.deleteSuccess, {
           amount: selectedAssets.length,
-          assets: selectedAssets.sort().join(', '),
+          assets: selectedAssets.sort(compareStrings).join(', '),
         }),
         color: 'info',
       });
