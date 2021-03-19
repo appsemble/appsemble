@@ -560,7 +560,7 @@
   "studio.src.pages.organizations.IndexPage.allOrganizations": "Alle organisaties",
   "studio.src.pages.organizations.IndexPage.cancelLabel": "Annuleren",
   "studio.src.pages.organizations.IndexPage.createButton": "Nieuwe organisatie",
-  "studio.src.pages.organizations.IndexPage.description": "Beschrijven",
+  "studio.src.pages.organizations.IndexPage.description": "Beschrijving",
   "studio.src.pages.organizations.IndexPage.email": "E-mail",
   "studio.src.pages.organizations.IndexPage.empty": "Er zijn momenteel geen organisaties beschikbaar.",
   "studio.src.pages.organizations.IndexPage.error": "Er is iets misgegaan bij het inladen van de organisaties.",
