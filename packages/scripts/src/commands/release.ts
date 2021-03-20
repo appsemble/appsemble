@@ -8,7 +8,6 @@ import globby from 'globby';
 import { capitalize, mapValues } from 'lodash';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BlockContent, ListItem, Root } from 'mdast';
-import fromMarkdown from 'mdast-util-from-markdown';
 import remark from 'remark';
 import * as semver from 'semver';
 import { PackageJson } from 'type-fest';
