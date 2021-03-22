@@ -22,12 +22,12 @@ interface PortalProps {
  */
 export function Portal({ children, element }: PortalProps): ReactElement {
   useEffect(() => {
-    const fragment = document.createDocumentFragment();
-    element.childNodes.forEach((child) => fragment.append(child));
-
-    // Cleanup function
+    const el = document.createElement('div');
+    element.append(el);
+    element.children[0].classList.add('is-hidden');
     return () => {
-      element.append(fragment);
+      element.children[0].classList.remove('is-hidden');
+      el.remove();
     };
   }, [element]);
 
