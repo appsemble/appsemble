@@ -1,6 +1,6 @@
 import { Content, Message, useQuery } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
@@ -31,18 +31,16 @@ export function Login(): ReactElement {
     return (
       <Content padding>
         <Message color="danger">
-          <p>
-            <FormattedMessage
-              {...messages.permissionError}
-              values={{
-                link: (text: string) => (
-                  <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
-                    {text}
-                  </a>
-                ),
-              }}
-            />
-          </p>
+          <FormattedMessage
+            {...messages.permissionError}
+            values={{
+              link: (text: string) => (
+                <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
+                  {text}
+                </a>
+              ),
+            }}
+          />
         </Message>
       </Content>
     );

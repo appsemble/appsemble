@@ -10,7 +10,7 @@ import {
   Toggle,
 } from '@appsemble/react-components';
 import { AppOAuth2Secret } from '@appsemble/types';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 

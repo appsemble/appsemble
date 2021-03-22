@@ -25,14 +25,14 @@ export function OpenIDLogin(): ReactElement {
   return (
     <Main className={styles.root}>
       <TitleBar />
-      <Content className={`is-flex appsemble-logins ${styles.wrapper}`} padding>
+      <Content className={`is-flex appsemble-login ${styles.wrapper}`} padding>
         <figure className="my-4">
           <img alt={definition.name} src="/icon-256.png" />
         </figure>
         {showAppsembleLogin && (
           <OAuth2LoginButton
             authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
-            className={`${buttonProps.className} appsemble-login`}
+            className={buttonProps.className}
             icon="user"
             {...buttonProps}
           >
@@ -42,7 +42,7 @@ export function OpenIDLogin(): ReactElement {
         {logins?.map(({ icon, id, name, type }) => (
           <OAuth2LoginButton
             authorizationUrl={String(new URL(`/connect/authorize/${type}/${id}`, apiUrl))}
-            className={`${buttonProps.className} appsemble-login`}
+            className={buttonProps.className}
             icon={icon}
             key={`${type} ${id}`}
             {...buttonProps}
