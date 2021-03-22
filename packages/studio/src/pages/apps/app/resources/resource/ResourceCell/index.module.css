@@ -1,0 +1,27 @@
+.root {
+  max-width: 50vw;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boolean {
+  text-align: center !important;
+
+  & label {
+    margin: 0 !important;
+    padding-left: 1rem !important;
+  }
+}
+
+.multiline::after {
+  content: '…';
+}
+
+.number {
+  text-align: right !important;
+}
+
+.noSelect {
+  user-select: none;
+}

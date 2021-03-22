@@ -1,10 +1,16 @@
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
+import { BulmaColor } from 'sdk/src/types';
 
 import styles from './index.module.css';
 
 interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
+  /**
+   * The color for the icon.
+   */
+  color?: BulmaColor;
+
   /**
    * The Fontawesome icon to render.
    */
@@ -23,12 +29,17 @@ interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
  */
 export function IconButton({
   className,
+  color,
   icon,
   prefix = 'fas',
   ...props
 }: IconButtonProps): ReactElement {
   return (
-    <button className={classNames('icon', styles.root, className)} type="button" {...props}>
+    <button
+      className={classNames('icon', styles.root, className, { [`has-text-${color}`]: color })}
+      type="button"
+      {...props}
+    >
       <i className={`${prefix} fa-${icon}`} />
     </button>
   );
