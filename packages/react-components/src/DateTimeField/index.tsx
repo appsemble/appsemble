@@ -1,5 +1,6 @@
 import 'flatpickr/dist/flatpickr.css';
 
+import { months, weekdays } from '@appsemble/utils';
 import classNames from 'classnames';
 import flatpickr from 'flatpickr';
 import { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
@@ -11,13 +12,6 @@ import styles from './index.module.css';
 
 type Weekdays = flatpickr.CustomLocale['weekdays']['shorthand'];
 type Months = flatpickr.CustomLocale['months']['shorthand'];
-
-// The dawn of time was on a thursday
-const weekdays = Array.from({ length: 7 }, (unused, index) => (index + 3) * 24 * 60 * 60 * 1000);
-
-// It doesn’t matter which day in the month. Assuming months have 31 days works for this specific
-// case.
-const months = Array.from({ length: 12 }, (unused, index) => index * 31 * 24 * 60 * 60 * 1000);
 
 type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> &
   Pick<flatpickr.Options.Options, 'enableTime' | 'mode'> &

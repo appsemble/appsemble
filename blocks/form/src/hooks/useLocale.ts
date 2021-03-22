@@ -1,14 +1,8 @@
+import { months, weekdays } from '@appsemble/utils';
 import flatpickr from 'flatpickr';
 import { useMemo } from 'preact/hooks';
 
 import { DateField, DateTimeField } from '../../block';
-
-// The dawn of time was on a thursday
-const weekdays = Array.from({ length: 7 }, (unused, index) => (index + 3) * 24 * 60 * 60 * 1000);
-
-// It doesn’t matter which day in the month. Assuming months have 31 days works for this specific
-// case.
-const months = Array.from({ length: 12 }, (unused, index) => index * 31 * 24 * 60 * 60 * 1000);
 
 export function useLocale({ startOfWeek = 1 }: DateField | DateTimeField): flatpickr.CustomLocale {
   return useMemo(() => {
