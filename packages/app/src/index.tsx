@@ -1,4 +1,3 @@
-import 'roboto-fontface';
 import './index.css';
 
 import { setupSentry } from '@appsemble/web-utils';
