@@ -1,5 +1,5 @@
 import { Utils } from '@appsemble/sdk';
-import { compareDates } from '@appsemble/utils';
+import { compareAsc, compareDesc } from 'date-fns';
 
 import { Field } from '../../block';
 
@@ -38,7 +38,7 @@ export function getMinDate(field: FieldWithRequirements, utils: Utils): Date | u
     .map((r) => new Date(utils.remap(r.from, null) as any))
     .filter(isValidDate);
   if (minDates?.length) {
-    return minDates.sort(compareDates)[0];
+    return minDates.sort(compareAsc)[0];
   }
 }
 
@@ -55,7 +55,7 @@ export function getMaxDate(field: FieldWithRequirements, utils: Utils): Date | u
     .map((r) => new Date(utils.remap(r.to, null) as any))
     .filter(isValidDate);
   if (maxDates?.length) {
-    return maxDates.sort(compareDates)[maxDates.length - 1];
+    return maxDates.sort(compareDesc)[0];
   }
 }
 
