@@ -1,1 +1,0 @@
-Add Danish translations.
