@@ -104,13 +104,12 @@ following steps:
 - Make sure you’re on the latest master branch.
 - Create a new branch.
 - Run `yarn scripts release patch` or `yarn scripts release minor` respectively.
-- Update the changelog.
-- Verify and commit the results.
+- Verify and commit the results, using the changelog section as the commit body. This does not
+  include the header of the tag itself.
 - Push.
-- Create a merge request. Use the changes in the changelog as the merge request description. This
-  does not include the header of the tag itself.
-- Once merged, create a git tag. Use the changes in the changelog as the release notes. This does
-  not include the header of the tag itself. The tag message should be left empty.
+- Create a merge request. GitLab should automatically use the commit message as the description.
+- Once merged, [create a git tag](https://gitlab.com/appsemble/appsemble/-/tags/new) without a
+  message or release notes.
 
 CI will take care of the rest.
 
