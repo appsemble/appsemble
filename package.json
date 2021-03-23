@@ -34,7 +34,6 @@
     "@babel/core": "^7.13.10",
     "@babel/plugin-transform-modules-commonjs": "^7.13.8",
     "@lhci/cli": "^0.7.0",
-    "@sentry/cli": "^1.63.1",
     "@testing-library/jest-dom": "^5.11.9",
     "@types/autoprefixer": "^9.7.2",
     "@types/bcrypt": "^3.0.0",
