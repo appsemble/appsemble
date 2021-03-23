@@ -189,7 +189,7 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
             <FormattedMessage
               {...messages.loginInstead}
               values={{
-                a: (text: string) =>
+                link: (text: string) =>
                   isSubmitting ? (
                     text
                   ) : (

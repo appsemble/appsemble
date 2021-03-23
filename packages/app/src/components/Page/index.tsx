@@ -207,7 +207,7 @@ export function Page(): ReactElement {
           <FormattedMessage
             {...messages.permissionError}
             values={{
-              a: (text: string) => (
+              link: (text: string) => (
                 <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
                   {text}
                 </a>

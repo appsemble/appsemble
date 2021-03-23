@@ -167,6 +167,7 @@ export function TranslationsPage(): ReactElement {
       ...[...new Set(actions)].sort(compareStrings),
       ...blockMessages.sort(compareStrings),
       ...pageBlockMessageIds.sort(compareStrings),
+      'app.src.components.OpenIDLogin.loginWith',
     ];
   }, [app.definition, appMessages]);
 

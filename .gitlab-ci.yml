@@ -450,10 +450,3 @@ lighthouse:
     when: always
     paths:
       - .lighthouseci
-
-# Test 10 Second Dance in the staging environment.
-10 second dance:
-  stage: end 2 end
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
-  trigger: appsemble/10-second-dance
