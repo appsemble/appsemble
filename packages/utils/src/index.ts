@@ -1,5 +1,6 @@
 export * from './api';
 export * from './blockUtils';
+export * from './compare';
 export * from './constants';
 export * from './has';
 export * from './normalize';

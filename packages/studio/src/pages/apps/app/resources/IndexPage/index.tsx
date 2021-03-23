@@ -1,3 +1,4 @@
+import { compareStrings } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -17,7 +18,7 @@ export function IndexPage(): ReactElement {
       </p>
       <ul>
         {Object.keys(app.definition.resources)
-          .sort()
+          .sort(compareStrings)
           .map((resource) => (
             <li key={resource}>
               <Link to={`${url}/${resource}`}>{resource}</Link>

@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 
+import { compareStrings } from '@appsemble/utils';
 import { render as renderTemplate } from 'mustache';
 
 import { KoaContext } from '../types';
@@ -34,7 +35,7 @@ export function makeCSP(csp: ContentSecurityPolicy): string {
     .map(([key, values]) => [key, values.filter(Boolean)] as const)
     .filter(([, values]) => values?.length)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, values]) => `${key} ${[...new Set(values)].sort().join(' ')}`)
+    .map(([key, values]) => `${key} ${[...new Set(values)].sort(compareStrings).join(' ')}`)
     .join('; ');
 }
 

@@ -19,7 +19,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { AppMessages } from '@appsemble/types';
-import { getLanguageDisplayName, iterApp, langmap } from '@appsemble/utils';
+import { compareStrings, getLanguageDisplayName, iterApp, langmap } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -163,10 +163,10 @@ export function TranslationsPage(): ReactElement {
     });
 
     return [
-      ...[...new Set(pages)].sort(),
-      ...[...new Set(actions)].sort(),
-      ...blockMessages.sort(),
-      ...pageBlockMessageIds.sort(),
+      ...[...new Set(pages)].sort(compareStrings),
+      ...[...new Set(actions)].sort(compareStrings),
+      ...blockMessages.sort(compareStrings),
+      ...pageBlockMessageIds.sort(compareStrings),
       'app.src.components.OpenIDLogin.loginWith',
     ];
   }, [app.definition, appMessages]);

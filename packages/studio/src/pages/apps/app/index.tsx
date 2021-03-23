@@ -8,7 +8,7 @@ import {
   useSideMenu,
 } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { compareStrings, Permission } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,
@@ -115,7 +115,7 @@ export function AppRoutes(): ReactElement {
         )}
         {mayEditResources && (
           <MenuSection>
-            {resourceNames.sort().map((resource) => (
+            {resourceNames.sort(compareStrings).map((resource) => (
               <MenuItem key={resource} to={`${url}/resources/${resource}`}>
                 {resource}
               </MenuItem>

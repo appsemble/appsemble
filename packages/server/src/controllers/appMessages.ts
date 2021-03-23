@@ -1,5 +1,6 @@
 import { Messages as MessagesInterface } from '@appsemble/types';
 import {
+  compareStrings,
   defaultLocale,
   filterBlocks,
   getAppBlocks,
@@ -203,5 +204,5 @@ export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {
       ...app.AppMessages.map((message) => message.language),
       app.definition.defaultLanguage || defaultLocale,
     ]),
-  ].sort();
+  ].sort(compareStrings);
 }
