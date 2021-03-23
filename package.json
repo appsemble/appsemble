@@ -176,8 +176,8 @@
     "database-password": "password",
     "github-client-id": "e526099c0f82f180b06a",
     "github-client-secret": "52b46994b2cba62163a0719a0969043109d8953e",
-    "gitlab-client-id": "9739ffe4a5007fb7ac0bac53e2d70f7286add09190b73f40eeac33259cb81f15",
-    "gitlab-client-secret": "8f83b39e5731f0c771fe39bff54ae326877f9434d431feeea6d79f00f292cdb0",
+    "gitlab-client-id": "743e32d7c7e38172fe6630123fe82be1f3d8c383e02e33a2a711a5e9ed5a2d88",
+    "gitlab-client-secret": "d2d8ce5f59cea983f51d2ce496d5cdcdf19d1de4104422c565acdc11b3f2358d",
     "host": "http://localhost:9999",
     "migrate-to": "next",
     "secret": "Local Appsemble development secret"
