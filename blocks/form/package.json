@@ -22,6 +22,7 @@
     "@fortawesome/fontawesome-common-types": "^0.2.34",
     "classnames": "^2.2.6",
     "date-fns": "^2.19.0",
+    "flatpickr": "^4.6.9",
     "leaflet": "~1.5.1",
     "preact": "^10.5.12"
   }

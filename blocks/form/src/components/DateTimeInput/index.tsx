@@ -4,6 +4,7 @@ import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
 import { DateTimeField, InputProps } from '../../../block';
+import { useLocale } from '../../hooks/useLocale';
 import { extractDate } from '../../utils/extractDate';
 import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
 
@@ -35,6 +36,8 @@ export function DateTimeInput({
   const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
   const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
 
+  const locale = useLocale(field);
+
   return (
     <DateTimeComponent
       disabled={disabled}
@@ -43,6 +46,7 @@ export function DateTimeInput({
       id={name}
       iso
       label={checkboxLabel}
+      locale={locale}
       maxDate={maxDate}
       minDate={minDate}
       name={name}
