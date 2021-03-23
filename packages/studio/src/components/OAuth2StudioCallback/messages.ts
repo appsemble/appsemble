@@ -9,5 +9,6 @@ export const messages = defineMessages({
   confirmCreate: 'Create new account',
   confirmLinkText: 'Would you like to link this {provider} account to your Appsemble account?',
   confirmLink: 'Link account',
-  loginInstead: 'Already have an account? <a>Login</a> and link to an existing account instead.',
+  loginInstead:
+    'Already have an account? <link>Login</link> and link to an existing account instead.',
 });

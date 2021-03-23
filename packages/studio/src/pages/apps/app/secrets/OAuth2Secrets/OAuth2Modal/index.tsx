@@ -12,6 +12,7 @@ import {
 import { AppOAuth2Secret } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../../..';
 import { messages } from './messages';
@@ -44,6 +45,7 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
   const {
     app: { locked },
   } = useApp();
+  const { lang } = useParams<{ lang: string }>();
 
   return (
     <ModalCard
@@ -154,7 +156,18 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
       <SimpleFormField
         component={JSONField}
         disabled={locked}
-        help={<FormattedMessage {...messages.remapperHelp} />}
+        help={
+          <FormattedMessage
+            {...messages.remapperHelp}
+            values={{
+              link: (link: string) => (
+                <Link target="_blank" to={`/${lang}/docs/guide/remappers`}>
+                  {link}
+                </Link>
+              ),
+            }}
+          />
+        }
         label={<FormattedMessage {...messages.remapperLabel} />}
         name="remapper"
       />
