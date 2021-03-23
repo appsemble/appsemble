@@ -19,6 +19,7 @@ import TerserPlugin from 'terser-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { CliConfigOptions, Configuration, EnvironmentPlugin } from 'webpack';
+import { GenerateSW } from 'workbox-webpack-plugin';
 
 import studioPkg from '../package.json';
 import { remarkHeading } from './remark/heading';
@@ -239,5 +240,14 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
 export function createStudioConfig(argv: CliConfigOptions): Configuration {
   const config = shared('studio', argv);
   config.plugins.push(new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }));
+  if (argv.mode === 'production') {
+    config.plugins.push(
+      new GenerateSW({
+        ignoreURLParametersMatching: [/\.worker\.js$/],
+        // Some of our JavaScript assets are still too big to fit within the default cache limit.
+        maximumFileSizeToCacheInBytes: 3 * 2 ** 20,
+      }),
+    );
+  }
   return config;
 }
