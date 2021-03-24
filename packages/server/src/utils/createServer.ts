@@ -141,10 +141,10 @@ export async function createServer({
           }
           return next();
         },
-        serve(join(distDir, 'studio'), { index: false, maxage: year }),
         studioRouter,
+        serve(join(distDir, 'studio'), { index: false, maxage: year }),
       ]),
-      compose([serve(join(distDir, 'app'), { index: false, maxage: year }), appRouter]),
+      compose([appRouter, serve(join(distDir, 'app'), { index: false, maxage: year })]),
     ),
   );
 
