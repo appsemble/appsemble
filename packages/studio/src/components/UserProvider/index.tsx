@@ -5,8 +5,10 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import {
   createContext,
+  Dispatch,
   ReactElement,
   ReactNode,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -36,7 +38,7 @@ interface UserContext {
   userInfo: UserInfo;
   refreshUserInfo: () => Promise<void>;
   organizations: UserOrganization[];
-  setOrganizations: (organizations: UserOrganization[]) => void;
+  setOrganizations: Dispatch<SetStateAction<UserOrganization[]>>;
 }
 
 const Context = createContext<UserContext>(null);
