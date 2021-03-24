@@ -11,6 +11,25 @@ interface CollapsibleListProps {
   title: ReactElement | string;
 
   /**
+   * The class to apply to the title.
+   */
+  className?: string;
+
+  /**
+   * The header level.
+   *
+   * By default this is determined by the size.
+   */
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+
+  /**
+   * The size of the title.
+   *
+   * @default 4
+   */
+  size?: 3 | 4 | 5 | 6;
+
+  /**
    * The content to display.
    */
   children: ReactNode;
@@ -19,7 +38,13 @@ interface CollapsibleListProps {
 /**
  * Display any content with a clickable header to toggle displaying or hiding it.
  */
-export function CollapsibleList({ children, title }: CollapsibleListProps): ReactElement {
+export function CollapsibleList({
+  children,
+  className,
+  level = 2,
+  size = 4,
+  title,
+}: CollapsibleListProps): ReactElement {
   const collapsed = useToggle();
 
   return (
@@ -31,7 +56,7 @@ export function CollapsibleList({ children, title }: CollapsibleListProps): Reac
           iconPosition="right"
           onClick={collapsed.toggle}
         >
-          <Title className="mb-0" size={4}>
+          <Title className={`mb-0 ${className}`} level={level} size={size}>
             {title}
           </Title>
         </Button>
