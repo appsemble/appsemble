@@ -208,8 +208,7 @@ publish npm:
 sentry release:
   image:
     name: getsentry/sentry-cli:1
-    entrypoint:
-      - /bin/sh
+    entrypoint: [/bin/sh, -c]
   stage: publish
   rules:
     - if: $CI_COMMIT_TAG
