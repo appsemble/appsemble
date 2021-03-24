@@ -35,7 +35,7 @@ export function SettingsPage({
   onChangeOrganization,
   organization,
 }: SettingsPageProps): ReactElement {
-  const { organizations, setOrganizations } = useUser();
+  const { setOrganizations } = useUser();
   const { formatMessage } = useIntl();
   const [icon, setIcon] = useState<File>();
 
@@ -56,14 +56,14 @@ export function SettingsPage({
       }
 
       await axios.patch(`/api/organizations/${organization.id}`, formData);
-      setOrganizations(
+      setOrganizations((organizations) =>
         organizations.map((org) =>
           org.id === organization.id ? { ...org, name, description, website, email } : org,
         ),
       );
       onChangeOrganization({ ...organization, name, description, website, email });
     },
-    [icon, organization, organizations, setOrganizations, onChangeOrganization],
+    [icon, organization, setOrganizations, onChangeOrganization],
   );
 
   const iconUrl = useObjectURL(icon || organization.iconUrl);
