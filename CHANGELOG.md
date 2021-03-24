@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.3](https://gitlab.com/appsemble/appsemble/-/releases/0.18.3)] - 2021-03-24
+
+### Fixed
+
+- Studio: Fix crash issue on organizations page.
+- Studio: Fix handling of null values in organization settings.
+
 ## \[[0.18.2](https://gitlab.com/appsemble/appsemble/-/releases/0.18.2)] - 2021-03-23
 
 ### Added
