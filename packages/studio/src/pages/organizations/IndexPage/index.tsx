@@ -124,7 +124,7 @@ export function IndexPage(): ReactElement {
           )}
         </AsyncDataView>
       </CollapsibleList>
-      {userInfo.email_verified && (
+      {userInfo?.email_verified && (
         <ModalCard
           component={SimpleForm}
           defaultValues={newOrganization}
