@@ -47,6 +47,10 @@ export const appRouter = tinyRouter([
     any() {},
   },
   {
+    route: '/index.html',
+    get: indexHandler,
+  },
+  {
     route: /\.\w+$/,
     any() {},
   },
