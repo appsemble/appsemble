@@ -1,9 +1,10 @@
-import { Button, Title } from '@appsemble/react-components';
+import { Button } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
 import { NamedEvent } from '@appsemble/web-utils';
 import { OpenAPIV3 } from 'openapi-types';
 import { MouseEvent, ReactElement, useCallback } from 'react';
 
+import { CollapsibleList } from '../../CollapsibleList';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
@@ -57,27 +58,31 @@ export function JSONSchemaArrayEditor({
   return (
     <div className={`${styles.root} px-3 py-3 my-2 mx-0`}>
       <Button className="is-pulled-right" color="success" icon="plus" onClick={onItemAdded} />
-      <Title className={styles.title} level={5}>
-        <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />
-      </Title>
-      {value.map((val, index) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <div key={index}>
-          <RecursiveJSONSchemaEditor
-            disabled={disabled}
-            name={`${name}.${index}`}
-            onChange={onPropertyChange}
-            prefix={prefix}
-            schema={items}
-            value={val}
-          />
-          <div className="is-pulled-right">
-            <Button color="danger" icon="minus" name={`${name}.${index}`} onClick={removeItem} />
-            <Button color="success" icon="plus" name={`${name}.${index}`} onClick={onItemAdded} />
+      <CollapsibleList
+        className={styles.title}
+        level={5}
+        size={3}
+        title={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
+      >
+        {value.map((val, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={index}>
+            <RecursiveJSONSchemaEditor
+              disabled={disabled}
+              name={`${name}.${index}`}
+              onChange={onPropertyChange}
+              prefix={prefix}
+              schema={items}
+              value={val}
+            />
+            <div className="is-pulled-right">
+              <Button color="danger" icon="minus" name={`${name}.${index}`} onClick={removeItem} />
+              <Button color="success" icon="plus" name={`${name}.${index}`} onClick={onItemAdded} />
+            </div>
+            <hr />
           </div>
-          <hr />
-        </div>
-      ))}
+        ))}
+      </CollapsibleList>
     </div>
   );
 }

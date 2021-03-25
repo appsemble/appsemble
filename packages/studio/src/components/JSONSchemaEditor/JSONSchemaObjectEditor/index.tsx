@@ -1,6 +1,6 @@
-import { Title } from '@appsemble/react-components';
 import { ReactElement, useCallback } from 'react';
 
+import { CollapsibleList } from '../../CollapsibleList';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
@@ -25,24 +25,27 @@ export function JSONSchemaObjectEditor({
 
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : null}>
-      <Title level={5}>
-        <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />
-      </Title>
-      {Object.entries(schema?.properties ?? {}).map(([propName, subSchema]) => (
-        <RecursiveJSONSchemaEditor
-          disabled={disabled}
-          key={propName}
-          name={name ? `${name}.${propName}` : propName}
-          onChange={onPropertyChange}
-          prefix={prefix}
-          required={
-            (Array.isArray(schema.required) && schema.required.includes(propName)) ||
-            subSchema.required === true
-          }
-          schema={subSchema}
-          value={value?.[propName]}
-        />
-      ))}
+      <CollapsibleList
+        level={5}
+        size={3}
+        title={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
+      >
+        {Object.entries(schema?.properties ?? {}).map(([propName, subSchema]) => (
+          <RecursiveJSONSchemaEditor
+            disabled={disabled}
+            key={propName}
+            name={name ? `${name}.${propName}` : propName}
+            onChange={onPropertyChange}
+            prefix={prefix}
+            required={
+              (Array.isArray(schema.required) && schema.required.includes(propName)) ||
+              subSchema.required === true
+            }
+            schema={subSchema}
+            value={value?.[propName]}
+          />
+        ))}
+      </CollapsibleList>
     </div>
   );
 }
