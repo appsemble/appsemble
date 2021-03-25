@@ -161,7 +161,7 @@ export function ResourceRow({
         </ModalCard>
       </td>
       <td className={styles.id}>{resource.id}</td>
-      <td>{resource.$author?.name ?? resource.$author?.id}</td>
+      <td className={styles.author}>{resource.$author?.name ?? resource.$author?.id}</td>
       {Object.entries(schema?.properties ?? {})
         .filter(([key]) => !filteredKeys.has(key))
         .map(([key, subSchema]) => (
