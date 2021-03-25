@@ -59,7 +59,7 @@ export async function createIcon({
 
   const { icon = 'map-marker-alt' } = marker;
   const html = document.createElement('i');
-  html.className = `fas fa-${icon} has-text-${marker.color || 'primary'}`;
+  html.className = `${utils.fa(icon)} has-text-${marker.color || 'primary'}`;
   html.style.fontSize = `${size}px`;
   return new DivIcon({
     className: styles.fontawesomeMarker,

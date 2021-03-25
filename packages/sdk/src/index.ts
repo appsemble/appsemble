@@ -1,3 +1,4 @@
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import { Promisable } from 'type-fest';
 
 import { Action, Message, Remapper, Theme } from './types';
@@ -135,6 +136,14 @@ export interface Utils {
    * @returns The URL that matches the given asset id.
    */
   asset: (assetId: string) => string;
+
+  /**
+   * Convert a FontAwesome icon name into a valid FontAwesome CSS class.
+   *
+   * @param icon - The FontAwesome icon.
+   * @returns String containing the FontAwesome classes for the icon.
+   */
+  fa: (icon: IconName) => string;
 }
 
 export interface Events {

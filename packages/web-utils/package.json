@@ -25,6 +25,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-common-types": "^0.2.35",
     "@sentry/browser": "^6.2.1"
   }
 }
