@@ -1,5 +1,5 @@
 import { BulmaColor } from '@appsemble/sdk';
-import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentProps, Fragment, VNode } from 'preact';
 
@@ -15,11 +15,6 @@ interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
    * A Font Awesome icon name to render left of the button text.
    */
   icon?: IconName;
-
-  /**
-   * The Font Awesome prefix to apply to the icon.
-   */
-  iconPrefix?: IconPrefix;
 
   /**
    * Set to true to invert the colors.
@@ -42,7 +37,6 @@ export function Button({
   className,
   color,
   icon,
-  iconPrefix,
   inverted,
   loading,
   ...props
@@ -59,7 +53,7 @@ export function Button({
     >
       {icon ? (
         <Fragment>
-          <Icon icon={icon} prefix={iconPrefix} />
+          <Icon icon={icon} />
           {children && <span>{children}</span>}
         </Fragment>
       ) : (
