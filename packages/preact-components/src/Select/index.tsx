@@ -1,9 +1,8 @@
+import { Option, OptionProps } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { ComponentProps, JSX, toChildArray, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
-
-import { Option, OptionProps } from '..';
 
 export interface SelectProps
   extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {
@@ -20,7 +19,7 @@ export interface SelectProps
   /**
    * This is fired when the input value has changed.
    */
-  onChange?: (event: JSX.TargetedEvent<HTMLSelectElement>, value: any) => void;
+  onChange?: (event: JSX.TargetedEvent<HTMLSelectElement>, value?: any) => void;
 
   /**
    * The current value.

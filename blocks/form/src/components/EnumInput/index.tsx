@@ -28,11 +28,7 @@ export function EnumInput({
   const required = isRequired(field);
 
   useEffect(() => {
-    if (
-      value !== undefined &&
-      options.length &&
-      !options.some((option) => option.value === value)
-    ) {
+    if (value !== undefined && !options.some((option) => option.value === value)) {
       // Explicitly set value to undefined if value does not exist in the new set of options.
       onChange(field.name);
     }
@@ -85,7 +81,7 @@ export function EnumInput({
       tag={utils.remap(tag, value)}
       value={value}
     >
-      {(!required || value === undefined) && (
+      {value === undefined && (
         <Option hidden={required} value={null}>
           {utils.remap(placeholder, {}) ?? ''}
         </Option>
