@@ -43,11 +43,14 @@ async function createGitlabRelease(releaseNotes: string): Promise<void> {
       link_type: 'package',
       name: `${name}@${version}`,
       url: `https://www.npmjs.com/package/${name}/v/${version}`,
-    }));
-  const blocks = (await readPackages('blocks')).map(({ name, version }) => ({
-    name: `${name}@${version}`,
-    url: `https://appsemble.app/en/blocks/${name}/${version}`,
-  }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const blocks = (await readPackages('blocks'))
+    .map(({ name, version }) => ({
+      name: `${name}@${version}`,
+      url: `https://appsemble.app/en/blocks/${name}/${version}`,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
   logger.info('Creating GitLab release');
   await axios.post(
     `${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases`,
@@ -59,6 +62,7 @@ async function createGitlabRelease(releaseNotes: string): Promise<void> {
           ...packages,
           ...blocks,
           {
+            type: 'image',
             name: `appsemble/appsemble#${CI_COMMIT_TAG}`,
             url: 'https://hub.docker.com/r/appsemble/appsemble',
           },
