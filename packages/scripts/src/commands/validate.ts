@@ -71,7 +71,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
   const developerLocales = [defaultLocale, 'nl'].sort();
   const translations: Record<string, Record<string, string>> = {};
 
-  await opendirSafe('./translations', async (filepath, stat) => {
+  await opendirSafe('./i18n', async (filepath, stat) => {
     if (stat.name === 'index.ts') {
       return;
     }
@@ -99,7 +99,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
   );
 
   for (const language of allLocales) {
-    const path = `translations/${language}.json`;
+    const path = `i18n/${language}.json`;
     const messages = translations[language];
     if (language === defaultLocale) {
       assert(
