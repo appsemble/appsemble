@@ -3,7 +3,7 @@ import { join, resolve } from 'path';
 
 import { defaultLocale } from '@appsemble/utils';
 
-const translationsDir = resolve(__dirname, '..', '..', '..', '..', 'translations');
+const translationsDir = resolve(__dirname, '..', '..', '..', '..', 'i18n');
 
 export async function getSupportedLanguages(): Promise<Set<string>> {
   const files = await fs.readdir(translationsDir);
