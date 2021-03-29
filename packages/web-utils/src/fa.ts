@@ -465,21 +465,11 @@ const brands = new Set([
 ]);
 
 /**
- * Fetch the appropriate FontAwesome prefix depending on whether or not the icon is a brand.
- *
- * @param icon - The FontAwesome icon to fetch the prefix for.
- * @returns 'fab' for Brand icons or 'fas' for the rest.
- */
-export function getFaPrefix(icon: IconName): 'fab' | 'fas' {
-  return brands.has(icon) ? 'fab' : 'fas';
-}
-
-/**
  * Generate a full CSS class for FontAwesome icons.
  *
  * @param icon - The FontAwesome icon to fetch the CSS classes for.
  * @returns The full CSS class used for the icon.
  */
 export function fa(icon: IconName): string {
-  return `${getFaPrefix(icon)} fa-${icon}`;
+  return `${brands.has(icon) ? 'fab' : 'fas'} fa-${icon}`;
 }
