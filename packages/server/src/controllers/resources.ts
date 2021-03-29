@@ -36,7 +36,11 @@ interface Params {
   resourceId: number;
 }
 
-const specialRoles = new Set(['$author', ...Object.values(TeamRole).map((r) => `$team:${r}`)]);
+const specialRoles = new Set([
+  '$author',
+  '$public',
+  ...Object.values(TeamRole).map((r) => `$team:${r}`),
+]);
 
 function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.SchemaObject {
   if (!app) {
@@ -132,7 +136,10 @@ async function verifyPermission(
     return;
   }
 
-  let roles = app.definition.resources?.[resourceType]?.[action]?.roles ?? [];
+  let roles =
+    app.definition.resources?.[resourceType]?.[action]?.roles ??
+    app.definition.resources?.[resourceType]?.roles ??
+    [];
 
   if ((!roles || !roles.length) && app.definition.roles?.length) {
     ({ roles } = app.definition);
@@ -140,17 +147,22 @@ async function verifyPermission(
 
   const functionalRoles = roles.filter((r) => specialRoles.has(r));
   const appRoles = roles.filter((r) => !specialRoles.has(r));
+  const isPublic = functionalRoles.includes('$public');
 
   if ($team && !functionalRoles.includes(`$team:${$team}`)) {
     functionalRoles.push(`$team:${$team}`);
   }
 
   if (!functionalRoles.length && !appRoles.length) {
+    throw forbidden('This action is private.');
+  }
+
+  if (isPublic && action !== 'count') {
     return;
   }
 
-  if (!user && (appRoles.length || functionalRoles.length)) {
-    throw unauthorized('User is not logged in');
+  if (!isPublic && !user && (appRoles.length || functionalRoles.length)) {
+    throw unauthorized('User is not logged in.');
   }
 
   const result = [];
@@ -159,7 +171,7 @@ async function verifyPermission(
     result.push({ UserId: user.id });
   }
 
-  if (functionalRoles.includes(`$team:${TeamRole.Member}`)) {
+  if (functionalRoles.includes(`$team:${TeamRole.Member}`) && user) {
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
@@ -177,7 +189,7 @@ async function verifyPermission(
     result.push({ UserId: { [Op.in]: userIds } });
   }
 
-  if (functionalRoles.includes(`$team:${TeamRole.Manager}`)) {
+  if (functionalRoles.includes(`$team:${TeamRole.Manager}`) && user) {
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
@@ -198,8 +210,8 @@ async function verifyPermission(
     result.push({ UserId: { [Op.in]: userIds } });
   }
 
-  if (app.definition.security) {
-    const member = app.Users.find((u) => u.id === user.id);
+  if (app.definition.security && !isPublic) {
+    const member = app.Users?.find((u) => u.id === user?.id);
     const { policy, role: defaultRole } = app.definition.security.default;
     let role: string;
 

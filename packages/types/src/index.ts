@@ -421,6 +421,11 @@ interface ResourceReference {
 
 export interface ResourceDefinition {
   /**
+   * The default list of roles used for permission checks for each action.
+   */
+  roles?: string[];
+
+  /**
    * The definition for the `resource.create` action.
    */
   create?: ResourceCall;
