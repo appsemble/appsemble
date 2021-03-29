@@ -3,5 +3,14 @@
 }
 
 .id {
+  overflow-x: hidden;
   text-align: right !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.author {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
