@@ -24,7 +24,7 @@ export async function uploadMessages(
     return;
   }
 
-  const messageDir = await fs.readdir(join(path, 'messages'));
+  const messageDir = await fs.readdir(join(path, 'i18n'));
 
   if (messageDir.length === 0) {
     return;
@@ -34,9 +34,9 @@ export async function uploadMessages(
   const result: AppMessages[] = [];
 
   for (const messageFile of messageDir) {
-    logger.verbose(`Processing ${join(path, 'messages', messageFile)} ⚙️`);
+    logger.verbose(`Processing ${join(path, 'i18n', messageFile)} ⚙️`);
     const language = parse(messageFile).name;
-    const file = await fs.readFile(join(path, 'messages', messageFile), 'utf8');
+    const file = await fs.readFile(join(path, 'i18n', messageFile), 'utf8');
     const messages = yaml.safeLoad(file);
     result.push({ force, language, messages } as AppMessages);
   }
