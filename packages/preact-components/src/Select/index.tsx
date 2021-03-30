@@ -32,7 +32,18 @@ export interface SelectProps
  */
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
-    { children, className, fullWidth, loading, name, onChange, value, id = name, ...props },
+    {
+      children,
+      className,
+      fullWidth,
+      loading,
+      name,
+      onChange,
+      placeholder,
+      value,
+      id = name,
+      ...props
+    },
     ref,
   ) => {
     const childArray = toChildArray(children).filter(
@@ -47,6 +58,20 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       [childArray, onChange],
     );
 
+    let hasValue: boolean;
+    const options = childArray.map((child, index) => {
+      const selected = child.props.value === value;
+      hasValue ||= selected;
+      return <option key={child.key} {...child.props} selected={selected} value={index} />;
+    });
+    if (!hasValue) {
+      options.unshift(
+        <option className="is-hidden" selected>
+          {placeholder}
+        </option>,
+      );
+    }
+
     return (
       <div
         className={classNames('select', className, {
@@ -55,21 +80,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         })}
       >
         <select
-          className={classNames({ 'is-fullwidth': fullWidth })}
+          className={classNames({ 'has-text-grey-light': !hasValue, 'is-fullwidth': fullWidth })}
           id={id}
           name={name}
           onChange={handleChange}
           ref={ref}
           {...props}
         >
-          {childArray.map((child, index) => (
-            <Option
-              key={child.key}
-              {...child.props}
-              selected={child.props.value === value}
-              value={index}
-            />
-          ))}
+          {options}
         </select>
       </div>
     );
