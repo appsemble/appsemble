@@ -60,7 +60,7 @@ export function AddMembersModal({ onInvited, state }: AddMembersModalProps): Rea
     setSubmitting(true);
     try {
       const { data } = await axios.post<OrganizationInvite[]>(
-        `/api/organizations/${organizationId}/invites`,
+        `/api/organizations/${organizationId.replace('@', '')}/invites`,
         invites.filter(({ email }) => email),
       );
       onInvited(data);
