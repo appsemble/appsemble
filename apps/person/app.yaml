@@ -4,6 +4,8 @@ defaultPage: Person Registration Form
 
 resources:
   person:
+    roles:
+      - $public # Allow anyone to access the resource’s actions
     schema:
       type: object
       required:

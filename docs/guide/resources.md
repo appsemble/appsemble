@@ -17,6 +17,7 @@ An example of a resource definition:
 
 ```yaml
 person:
+  roles: [$public] # This makes all person resource actions public by default.
   schema:
     type: object
     required:
@@ -42,6 +43,9 @@ The above resource will be recognized as an object which can be referred to from
 `/api/apps/{appId}/resources/person/{id?}`, supporting basic `CRUD` (create, read, update, and
 delete) actions.
 
+> Note: By default all resource actions are private. In order to access these, refer to
+> [Securing resources](#securing-resources).
+
 ## Resource actions
 
 In order to make the usage of resources more convenient, Appsemble supports the usage of
@@ -64,6 +68,8 @@ The resource actions available are:
   resource. (See [notifications](notifications.md).)
 - **resource.subscription.status**: Fetch the status of a resource subscription. (See
   [notifications](notifications.md).)
+
+> Note: By default all resource calls are private.
 
 ## External resources
 
@@ -121,6 +127,7 @@ Below is an example of what the query object looks like when in use.
 ```yaml
 person:
   query:
+    roles: [$public] # This makes all person resource actions public by default.
     query:
       object.from:
         $filter: lastName eq 'foo' # Resolves to /resources/person?$filter=lastName eq 'foo'
@@ -283,8 +290,9 @@ These functions have only been implemented for strings, not for collections.
 
 ## Securing resources
 
-It is possible to secure resources by specifying the roles that the user needs to have in order to
-access specific resources for specific resource actions. This makes it possible to, for example,
+By default all resources and their corresponding actions are private by default. This means that in
+order to provide access to these actions, the `roles` property or an action’s `roles` property must
+be defined specifying the roles that the user needs to have. This makes it possible to, for example,
 restrict access to other user’s resources by only allowing users to interact with the resources they
 made themselves.
 

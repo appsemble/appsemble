@@ -26,21 +26,11 @@ resources:
         body:
           title: Body
           type: string
+    roles:
+      - $author
     create:
       roles:
         - User
-    query:
-      roles:
-        - $author
-    get:
-      roles:
-        - $author
-    update:
-      roles:
-        - $author
-    delete:
-      roles:
-        - $author
 
 pages:
   - name: Notes
