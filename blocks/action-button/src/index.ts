@@ -2,10 +2,10 @@ import './index.css';
 
 import { attach } from '@appsemble/sdk';
 
-attach(({ actions, data, parameters: { icon } }) => {
+attach(({ actions, data, parameters: { icon }, utils: { fa } }) => {
   let node;
   const iconNode = document.createElement('i');
-  iconNode.classList.add('fas', `fa-${icon}`);
+  iconNode.classList.add(fa(icon));
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');
     node.href = actions.onClick.href(data);

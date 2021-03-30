@@ -2,7 +2,7 @@ import { attach } from '@appsemble/sdk';
 
 import styles from './index.module.css';
 
-attach(({ events, parameters: { fields }, utils: { remap } }) => {
+attach(({ events, parameters: { fields }, utils: { fa, remap } }) => {
   const wrapper = (
     <div className={styles.wrapper}>
       <div className={styles.loader} />
@@ -23,7 +23,7 @@ attach(({ events, parameters: { fields }, utils: { remap } }) => {
 
           return (
             <div className={styles.field}>
-              <i className={`fas fa-${icon} ${styles.icon}`} />
+              <i className={`${fa(icon)} ${styles.icon}`} />
               <div className={`has-text-weight-bold ${styles.value}`}>{remap(value, data)}</div>
               {remappedLabel && <div>{remappedLabel}</div>}
             </div>

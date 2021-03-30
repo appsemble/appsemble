@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, Input, Location } from '@appsemble/preact-components';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import { DivIcon, Icon } from 'leaflet';
 import { Fragment, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -132,7 +133,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   }
 
   let color;
-  let icon;
+  let icon: IconName;
 
   // XXX: Standardize this based on app definition
   switch (content?.status) {
@@ -160,7 +161,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
           <AvatarWrapper action={actions.onAvatarClick} onAvatarClick={onAvatarClick}>
             <figure className={`image is-48x48 ${color} ${styles.avatarIcon}`}>
               <span className="icon">
-                <i className={`fas fa-2x fa-${icon}`} />
+                <i className={`${utils.fa(icon)} fa-2x`} />
               </span>
             </figure>
           </AvatarWrapper>

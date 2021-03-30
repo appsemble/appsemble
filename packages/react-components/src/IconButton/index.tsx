@@ -1,3 +1,4 @@
+import { fa } from '@appsemble/web-utils';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
@@ -27,20 +28,14 @@ interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
  *
  * The button type is set to `button` by default.
  */
-export function IconButton({
-  className,
-  color,
-  icon,
-  prefix = 'fas',
-  ...props
-}: IconButtonProps): ReactElement {
+export function IconButton({ className, color, icon, ...props }: IconButtonProps): ReactElement {
   return (
     <button
       className={classNames('icon', styles.root, className, { [`has-text-${color}`]: color })}
       type="button"
       {...props}
     >
-      <i className={`${prefix} fa-${icon}`} />
+      <i className={fa(icon)} />
     </button>
   );
 }

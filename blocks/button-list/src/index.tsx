@@ -32,7 +32,7 @@ attach(({ actions, data, events, parameters: { buttons }, utils }) => (
         if (icon) {
           node.append(
             <span className="icon">
-              <i className={`fas fa-${icon}`} />
+              <i className={utils.fa(icon)} />
             </span>,
           );
         }

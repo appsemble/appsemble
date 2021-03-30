@@ -4,6 +4,7 @@ import { Title, useMessages } from '@appsemble/react-components';
 import { Utils } from '@appsemble/sdk';
 import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName } from '@appsemble/utils';
+import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -156,6 +157,7 @@ export function Block({
           args,
         ) as string;
       },
+      fa,
     };
 
     (async () => {

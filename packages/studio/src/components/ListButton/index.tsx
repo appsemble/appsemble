@@ -1,4 +1,5 @@
 import { Subtitle, Title } from '@appsemble/react-components';
+import { fa } from '@appsemble/web-utils';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { ElementType, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
@@ -36,7 +37,7 @@ export function ListButton({
           {image ? (
             <img alt={alt} src={image} />
           ) : (
-            <i className={`fas fa-${icon} fa-3x has-color-black`} />
+            <i className={`${fa(icon)} fa-3x has-color-black`} />
           )}
         </figure>
         <div className={`ml-4 ${styles.content}`}>
