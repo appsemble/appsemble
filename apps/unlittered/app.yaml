@@ -9,6 +9,8 @@ theme:
 
 resources:
   litter:
+    roles:
+      - $public # Allow anyone to access the resource’s actions
     schema:
       type: object
       required:
@@ -43,6 +45,8 @@ resources:
             longitude:
               type: number
   litterReply:
+    roles:
+      - $public # Allow anyone to access the resource’s actions
     references:
       litterId:
         resource: litter
