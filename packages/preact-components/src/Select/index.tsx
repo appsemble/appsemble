@@ -80,7 +80,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         })}
       >
         <select
-          className={classNames({ 'has-text-grey-light': !hasValue, 'is-fullwidth': fullWidth })}
+          className={classNames({ 'is-fullwidth': fullWidth })}
           id={id}
           name={name}
           onChange={handleChange}
