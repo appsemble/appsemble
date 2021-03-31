@@ -83,14 +83,14 @@ function createAction({
           level: Severity.Warning,
         });
         if (onError) {
-          return onError.dispatch(error, context);
+          return onError.dispatch(error, context) as any;
         }
 
         throw error;
       }
 
       if (onSuccess) {
-        return onSuccess.dispatch(result, context);
+        return onSuccess.dispatch(result, context) as any;
       }
 
       return result;

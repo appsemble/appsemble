@@ -35,7 +35,7 @@ export interface BaseAction<T extends string> {
   /**
    * A function which can be called to dispatch the action.
    */
-  dispatch: <R = unknown>(data?: any, context?: Record<string, any>) => Promise<R>;
+  dispatch: <R>(data?: any, context?: Record<string, any>) => Promise<R>;
 }
 
 export type RequestLikeActionTypes =
