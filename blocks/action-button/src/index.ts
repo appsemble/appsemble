@@ -5,7 +5,7 @@ import { attach } from '@appsemble/sdk';
 attach(({ actions, data, parameters: { icon }, utils: { fa } }) => {
   let node;
   const iconNode = document.createElement('i');
-  iconNode.classList.add(fa(icon));
+  iconNode.className = fa(icon);
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');
     node.href = actions.onClick.href(data);
