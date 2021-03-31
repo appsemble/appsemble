@@ -12,11 +12,6 @@ export interface OptionProps {
   hidden?: boolean;
 
   /**
-   * This is set by the `<Select />` parent component.
-   */
-  selected?: boolean;
-
-  /**
    * The value that’s represented by this option.
    */
   value: any;
@@ -27,9 +22,9 @@ export interface OptionProps {
  *
  * @see Select
  */
-export function Option({ children, hidden, selected, value }: OptionProps): VNode {
+export function Option({ children, hidden, value }: OptionProps): VNode {
   return (
-    <option className={hidden ? 'is-hidden' : null} selected={selected} value={value}>
+    <option className={hidden ? 'is-hidden' : null} value={value}>
       {children}
     </option>
   );
