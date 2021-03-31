@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.5](https://gitlab.com/appsemble/appsemble/-/releases/0.18.5)] - 2021-03-31
+
+### Added
+
+- Studio: Add support for collapsing objects and arrays in the resource editor.
+
+### Changed
+
+- Server: Add `$public` role for resource roles.
+- Server: Make resources private by default.
+
 ## \[[0.18.4](https://gitlab.com/appsemble/appsemble/-/releases/0.18.4)] - 2021-03-24
 
 ### Fixed

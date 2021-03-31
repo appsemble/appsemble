@@ -5,4 +5,4 @@ lower-right corner, allowing for easy access on mobile devices.
 
 ### Images
 
-![Action button screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.18.4/docs/images/action-button.png)
+![Action button screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.18.5/docs/images/action-button.png)
