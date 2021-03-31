@@ -19,7 +19,7 @@ export function teamJoin({
       });
       const team = { role, id };
       updateTeam(team);
-      return team;
+      return team as any;
     },
   };
 }
@@ -29,6 +29,6 @@ export function teamList({
 }: MakeActionParameters<BaseActionDefinition<'team.list'>>): BaseAction<'team.list'> {
   return {
     type: 'team.list',
-    dispatch: () => Promise.resolve(teams),
+    dispatch: () => Promise.resolve(teams as any),
   };
 }
