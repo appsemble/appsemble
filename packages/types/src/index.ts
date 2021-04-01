@@ -460,7 +460,7 @@ export interface ResourceDefinition {
    *
    * @default `id`
    */
-  id?: number;
+  id?: string;
 
   /**
    * The JSON schema to validate resources against before sending it to the backend.
@@ -632,7 +632,7 @@ export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
   /**
    * The name of the resource.
    */
-  resource: string;
+  resource: `resource.${string}`;
 }
 
 export type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
@@ -648,7 +648,7 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   /**
    * The name of the resource.
    */
-  resource: string;
+  resource: `resource.${string}`;
 
   /**
    * The action to subscribe to. Defaults to `update` if not specified.
@@ -656,9 +656,9 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   action?: 'create' | 'delete' | 'update';
 }
 
-export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
+export type ResourceSubscriptionSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
 
-export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
+export type ResourceSubscriptionUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
 
 export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
 
@@ -697,6 +697,8 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
   };
 
 export type ActionDefinition =
+  | BaseActionDefinition<'dialog.error'>
+  | BaseActionDefinition<'dialog.ok'>
   | BaseActionDefinition<'email'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -714,16 +716,15 @@ export type ActionDefinition =
   | LogActionDefinition
   | MessageActionDefinition
   | RequestActionDefinition
-  // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
-  | RequestLikeActionDefinition
+  | ResourceCountActionDefinition
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
   | ResourceQueryActionDefinition
-  | ResourceSubscribeActionDefinition
   | ResourceSubscriptionStatusActionDefinition
+  | ResourceSubscriptionSubscribeActionDefinition
   | ResourceSubscriptionToggleActionDefinition
-  | ResourceUnsubscribeActionDefinition
+  | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
   | StaticActionDefinition;
 

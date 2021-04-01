@@ -1,12 +1,5 @@
-import { BaseAction } from '@appsemble/sdk';
+import { rethrow } from '@appsemble/utils';
 
-export function throwAction(): BaseAction<'throw'> {
-  return {
-    type: 'throw',
+import { ActionCreator } from '.';
 
-    // eslint-disable-next-line require-await
-    async dispatch(data: unknown) {
-      throw data;
-    },
-  };
-}
+export const throwAction: ActionCreator<'throw'> = () => [rethrow];

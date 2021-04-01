@@ -52,18 +52,14 @@ export function Card({ content, onUpdate }: CardProps): VNode {
       setReplies([]);
     } else {
       // Dispatch loading replies if it’s defined.
-      actions.onLoadReply
-        .dispatch({
-          $filter: `${parentId} eq '${content.id}'`,
-        })
-        .then(setReplies);
+      actions.onLoadReply({ $filter: `${parentId} eq '${content.id}'` }).then(setReplies);
     }
   }, [actions, content, parameters, replies, setReplies]);
 
   const onAvatarClick = useCallback(
     async (event: Event): Promise<void> => {
       event.preventDefault();
-      const data = await actions.onAvatarClick.dispatch(content);
+      const data = await actions.onAvatarClick(content);
 
       if (data) {
         onUpdate(data);
@@ -75,7 +71,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
   const onButtonClick = useCallback(
     async (event: Event): Promise<void> => {
       event.preventDefault();
-      const data = await actions.onButtonClick.dispatch(content);
+      const data = await actions.onButtonClick(content);
 
       if (data) {
         onUpdate(data);
@@ -102,7 +98,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
 
       try {
         const parentId = parameters.reply?.parentId ?? 'parentId';
-        const result = await actions.onSubmitReply.dispatch({
+        const result = await actions.onSubmitReply({
           [parentId]: content.id,
           content: message,
         });

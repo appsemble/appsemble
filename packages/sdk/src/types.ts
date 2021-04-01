@@ -28,14 +28,14 @@ export type HTTPMethods =
 
 export interface BaseAction<T extends string> {
   /**
+   * A function which can be called to dispatch the action.
+   */
+  <R>(data?: any, context?: Record<string, any>): Promise<R>;
+
+  /**
    * The type of the action.
    */
   type: T;
-
-  /**
-   * A function which can be called to dispatch the action.
-   */
-  dispatch: <R>(data?: any, context?: Record<string, any>) => Promise<R>;
 }
 
 export type RequestLikeActionTypes =

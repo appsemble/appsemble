@@ -5,10 +5,12 @@ import {
   BlockDefinition,
   FlowPageDefinition,
 } from '@appsemble/types';
+import { has } from '@appsemble/utils';
 import { addBreadcrumb, Severity } from '@sentry/browser';
+import { SetRequired } from 'type-fest';
 
 import { MakeActionParameters } from '../types';
-import { ActionCreator, ActionCreators, actionCreators } from './actions';
+import { ActionCreators, actionCreators } from './actions';
 
 interface CommonActionParams {
   extraCreators: ActionCreators;
@@ -21,23 +23,39 @@ type MakeActionsParams = CommonActionParams &
     context: BlockDefinition | FlowPageDefinition;
   };
 
-function createAction({
+type CreateActionParams<T extends ActionDefinition['type']> = CommonActionParams &
+  MakeActionParameters<Extract<ActionDefinition, { type: T }>>;
+
+/**
+ * Create a callable action for an action definition and context.
+ *
+ * @param params - The context to create an action for.
+ * @returns An action as it is injected into a block by the SDK.
+ */
+function createAction<T extends ActionDefinition['type']>({
   definition,
   extraCreators,
   pageReady,
   prefix,
   remap,
   ...params
-}: CommonActionParams & MakeActionParameters<ActionDefinition>): Action {
-  const type = definition?.type ?? 'noop';
-  const actionCreator: ActionCreator = actionCreators[type] || extraCreators[type];
+}: CreateActionParams<T>): Action {
+  const type = (definition?.type ?? 'noop') as T;
+  const actionCreator = has(actionCreators, type)
+    ? actionCreators[type]
+    : has(extraCreators, type)
+    ? actionCreators[type]
+    : actionCreators.noop;
 
-  const action = actionCreator({
+  // @ts-expect-error ts(2590) Expression produces a union type that is too complex to represent.
+  const [dispatch, properties] = actionCreator({
     ...params,
     definition,
     remap,
     prefix,
   });
+  // Name the function to enhance stack traces.
+  Object.defineProperty(dispatch, 'name', { value: `${type}[implementation]` });
 
   const onSuccess =
     definition?.onSuccess &&
@@ -60,44 +78,47 @@ function createAction({
       remap,
     });
 
-  const { dispatch } = action;
-  if (definition) {
-    action.dispatch = async (args: any, context: Record<string, any>) => {
-      await pageReady;
-      let result;
+  const action = ((async (args?: any, context?: Record<string, any>) => {
+    await pageReady;
+    let result;
 
-      try {
-        result = await dispatch(
-          Object.hasOwnProperty.call(definition, 'remap')
-            ? remap(definition.remap, args, context)
-            : args,
-        );
-        addBreadcrumb({
-          category: 'appsemble.action',
-          data: { success: action.type },
-        });
-      } catch (error: unknown) {
-        addBreadcrumb({
-          category: 'appsemble.action',
-          data: { failed: action.type },
-          level: Severity.Warning,
-        });
-        if (onError) {
-          return onError.dispatch(error, context) as any;
-        }
-
-        throw error;
+    try {
+      result = await dispatch(
+        Object.hasOwnProperty.call(definition, 'remap')
+          ? remap(definition.remap, args, context)
+          : args,
+        context,
+      );
+      addBreadcrumb({
+        category: 'appsemble.action',
+        data: { success: type },
+      });
+    } catch (error: unknown) {
+      addBreadcrumb({
+        category: 'appsemble.action',
+        data: { failed: type },
+        level: Severity.Warning,
+      });
+      if (onError) {
+        return onError(error, context);
       }
 
-      if (onSuccess) {
-        return onSuccess.dispatch(result, context) as any;
-      }
+      throw error;
+    }
 
-      return result;
-    };
-  }
+    if (onSuccess) {
+      return onSuccess(result, context);
+    }
 
-  return action;
+    return result;
+  }) as Omit<Action, string>) as Action;
+  // Name the function to enhance stack traces.
+  Object.defineProperty(action, 'name', { value: `${type}[wrapper]` });
+  action.type = type;
+  // @ts-expect-error for backwards compatibility with blocks using @appsemble/sdk < 0.18.6
+  action.dispatch = action;
+
+  return Object.assign(action, properties);
 }
 
 export function makeActions({
@@ -147,4 +168,28 @@ export function makeActions({
   }
 
   return { ...anyActions, ...actionMap };
+}
+
+export function createTestAction<T extends ActionDefinition['type']>(
+  params: SetRequired<Partial<CreateActionParams<T>>, 'definition'>,
+): Action {
+  return createAction<T>({
+    app: null,
+    definition: null,
+    ee: null,
+    extraCreators: null,
+    flowActions: null,
+    history: null,
+    pageReady: Promise.resolve(),
+    prefix: null,
+    pushNotifications: null,
+    remap: null,
+    route: null,
+    showDialog: null,
+    showMessage: null,
+    teams: [],
+    updateTeam: null,
+    userInfo: null,
+    ...params,
+  });
 }

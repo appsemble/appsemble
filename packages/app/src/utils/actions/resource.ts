@@ -1,31 +1,11 @@
-import {
-  BaseAction,
-  ResourceCountAction,
-  ResourceCreateAction,
-  ResourceDeleteAction,
-  ResourceGetAction,
-  ResourceQueryAction,
-  ResourceUpdateAction,
-} from '@appsemble/sdk';
-import {
-  ResourceCountActionDefinition,
-  ResourceCreateActionDefinition,
-  ResourceDeleteActionDefinition,
-  ResourceGetActionDefinition,
-  ResourceQueryActionDefinition,
-  ResourceSubscribeActionDefinition,
-  ResourceSubscriptionStatusActionDefinition,
-  ResourceSubscriptionToggleActionDefinition,
-  ResourceUnsubscribeActionDefinition,
-  ResourceUpdateActionDefinition,
-} from '@appsemble/types';
 import axios from 'axios';
 
-import { MakeActionParameters, ServiceWorkerRegistrationContextType } from '../../types';
+import { ActionCreator } from '.';
+import { ServiceWorkerRegistrationContextType } from '../../types';
 import { apiUrl, appId } from '../settings';
-import { requestLikeAction } from './request';
+import { request } from './request';
 
-export function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceGetAction {
+export const get: ActionCreator<'resource.get'> = (args) => {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.get?.method || 'GET';
@@ -35,30 +15,26 @@ export function get(args: MakeActionParameters<ResourceGetActionDefinition>): Re
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
-  return {
-    ...requestLikeAction({
-      ...args,
-      definition: {
-        ...definition,
-        query: definition?.query ?? resource?.get?.query,
-        method,
-        proxy: false,
-        url: {
-          'string.format': {
-            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-            values: { id: { prop: id as string } },
-          },
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      query: definition?.query ?? resource?.get?.query,
+      method,
+      proxy: false,
+      type: 'request',
+      url: {
+        'string.format': {
+          template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+          values: { id: { prop: id as string } },
         },
-        schema: resource.schema,
       },
-    }),
-    type: 'resource.get',
-  };
-}
+      schema: resource.schema,
+    },
+  });
+};
 
-export function query(
-  args: MakeActionParameters<ResourceQueryActionDefinition>,
-): ResourceQueryAction {
+export const query: ActionCreator<'resource.query'> = (args) => {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.query?.method || 'GET';
@@ -67,25 +43,21 @@ export function query(
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
-  return {
-    ...requestLikeAction({
-      ...args,
-      definition: {
-        ...definition,
-        query: definition?.query ?? resource?.query?.query,
-        method,
-        proxy: false,
-        url,
-        schema: resource.schema,
-      },
-    }),
-    type: 'resource.query',
-  };
-}
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      query: definition?.query ?? resource?.query?.query,
+      method,
+      proxy: false,
+      type: 'request',
+      url,
+      schema: resource.schema,
+    },
+  });
+};
 
-export function count(
-  args: MakeActionParameters<ResourceCountActionDefinition>,
-): ResourceCountAction {
+export const count: ActionCreator<'resource.count'> = (args) => {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.count?.method || 'GET';
@@ -94,25 +66,21 @@ export function count(
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}/$count`;
 
-  return {
-    ...requestLikeAction({
-      ...args,
-      definition: {
-        ...definition,
-        query: definition?.query ?? resource?.count?.query,
-        method,
-        proxy: false,
-        url,
-        schema: resource.schema,
-      },
-    }),
-    type: 'resource.count',
-  };
-}
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      query: definition?.query ?? resource?.count?.query,
+      method,
+      proxy: false,
+      type: 'request',
+      url,
+      schema: resource.schema,
+    },
+  });
+};
 
-export function create(
-  args: MakeActionParameters<ResourceCreateActionDefinition>,
-): ResourceCreateAction {
+export const create: ActionCreator<'resource.create'> = (args) => {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.create?.method || 'POST';
@@ -121,25 +89,22 @@ export function create(
     resource.url ||
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
-  return {
-    ...requestLikeAction({
-      ...args,
-      definition: {
-        ...definition,
-        query: definition?.query ?? resource?.create?.query,
-        method,
-        proxy: false,
-        url,
-        schema: resource.schema,
-      },
-    }),
-    type: 'resource.create',
-  };
-}
+  const [dispatch, properties] = request({
+    ...args,
+    definition: {
+      ...definition,
+      query: definition?.query ?? resource?.create?.query,
+      method,
+      proxy: false,
+      type: 'request',
+      url,
+      schema: resource.schema,
+    },
+  });
+  return [dispatch, { ...properties, type: 'resource.create' }];
+};
 
-export function update(
-  args: MakeActionParameters<ResourceUpdateActionDefinition>,
-): ResourceUpdateAction {
+export const update: ActionCreator<'resource.update'> = (args) => {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.update?.method || 'PUT';
@@ -149,30 +114,26 @@ export function update(
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
-  return {
-    ...requestLikeAction({
-      ...args,
-      definition: {
-        ...definition,
-        query: definition?.query ?? resource?.update?.query,
-        method,
-        proxy: false,
-        url: {
-          'string.format': {
-            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-            values: { id: { prop: id as string } },
-          },
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      query: definition?.query ?? resource?.update?.query,
+      method,
+      proxy: false,
+      type: 'request',
+      url: {
+        'string.format': {
+          template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+          values: { id: { prop: id as string } },
         },
-        schema: resource.schema,
       },
-    }),
-    type: 'resource.update',
-  };
-}
+      schema: resource.schema,
+    },
+  });
+};
 
-export function remove(
-  args: MakeActionParameters<ResourceDeleteActionDefinition>,
-): ResourceDeleteAction {
+export const remove: ActionCreator<'resource.delete'> = (args) => {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = resource?.delete?.method || 'DELETE';
@@ -182,29 +143,26 @@ export function remove(
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
-  return {
-    ...requestLikeAction({
-      ...args,
-      definition: {
-        ...definition,
-        query: definition?.query ?? resource?.delete?.query,
-        type: 'resource.delete',
-        method,
-        proxy: false,
-        url: {
-          'string.format': {
-            template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
-            values: { id: { prop: id as string } },
-          },
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      query: definition?.query ?? resource?.delete?.query,
+      method,
+      proxy: false,
+      type: 'request',
+      url: {
+        'string.format': {
+          template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+          values: { id: { prop: id as string } },
         },
-        schema: resource.schema,
       },
-    }),
-    type: 'resource.delete',
-  };
-}
+      schema: resource.schema,
+    },
+  });
+};
 
-export async function getSubscription(
+async function getSubscription(
   pushNotifications: ServiceWorkerRegistrationContextType,
 ): Promise<PushSubscription> {
   const { permission, requestPermission, subscribe: sub } = pushNotifications;
@@ -226,90 +184,87 @@ export async function getSubscription(
   return subscription;
 }
 
-export function subscribe({
+export const subscribe: ActionCreator<'resource.subscription.subscribe'> = ({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscription.subscribe'> {
+}) => {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
-  return {
-    dispatch: async (data) => {
+  return [
+    async (data: any) => {
       const { endpoint } = await getSubscription(pushNotifications);
       await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
         value: true,
-        ...(data?.[id] && { resourceId: data[id] }),
+        resourceId: data?.[id],
       });
 
       return data;
     },
-    type: 'resource.subscription.subscribe',
-  };
-}
+  ];
+};
 
-export function unsubscribe({
+export const unsubscribe: ActionCreator<'resource.subscription.unsubscribe'> = ({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<'resource.subscription.unsubscribe'> {
+}) => {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
-  return {
-    dispatch: async (data) => {
+  return [
+    async (data: any) => {
       const { endpoint } = await getSubscription(pushNotifications);
       await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
         value: false,
-        ...(data?.[id] && { resourceId: data[id] }),
+        resourceId: data?.[id],
       });
 
       return data;
     },
-    type: 'resource.subscription.unsubscribe',
-  };
-}
+  ];
+};
 
-export function toggleSubscribe({
+export const toggle: ActionCreator<'resource.subscription.toggle'> = ({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<'resource.subscription.toggle'> {
+}) => {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
-  return {
-    dispatch: async (data) => {
+  return [
+    async (data: any) => {
       const { endpoint } = await getSubscription(pushNotifications);
       await axios.patch(`${apiUrl}/api/apps/${appId}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
-        ...(data?.[id] && { resourceId: data[id] }),
+        resourceId: data?.[id],
       });
 
       return data;
     },
-    type: 'resource.subscription.toggle',
-  };
-}
+  ];
+};
 
-export function subscriptionStatus({
+export const status: ActionCreator<'resource.subscription.status'> = ({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<'resource.subscription.status'> {
+}) => {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
-  return {
-    dispatch: async (d) => {
+  return [
+    async (d: any) => {
       const { endpoint } = await getSubscription(pushNotifications);
       const { data } = await axios.get(
         d?.[id]
@@ -322,6 +277,5 @@ export function subscriptionStatus({
 
       return data;
     },
-    type: 'resource.subscription.status',
-  };
-}
+  ];
+};

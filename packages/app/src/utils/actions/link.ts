@@ -1,17 +1,15 @@
-import { BaseAction, LinkAction } from '@appsemble/sdk';
-import { BaseActionDefinition, LinkActionDefinition } from '@appsemble/types';
 import { normalize, partialNormalized } from '@appsemble/utils';
 
-import { MakeActionParameters } from '../../types';
+import { ActionCreator } from '.';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
-export function link({
+export const link: ActionCreator<'link'> = ({
   app: { pages },
   definition: { to },
   history,
   route,
-}: MakeActionParameters<LinkActionDefinition>): LinkAction {
+}) => {
   let href: (data: any) => string;
 
   if (urlRegex.test(to)) {
@@ -41,10 +39,8 @@ export function link({
     };
   }
 
-  return {
-    type: 'link',
-    // eslint-disable-next-line require-await
-    async dispatch(data = {}) {
+  return [
+    (data = {}) => {
       const target = href(data);
 
       if (urlRegex.test(target)) {
@@ -52,35 +48,21 @@ export function link({
       } else {
         history.push(`/${route.params.lang}${target}`, data);
       }
+    },
+    { href },
+  ];
+};
 
-      return data;
-    },
-    href(args: any = {}) {
-      return href(args);
-    },
-  };
-}
+export const back: ActionCreator<'link.back'> = ({ history }) => [
+  (data) => {
+    history.goBack();
+    return data;
+  },
+];
 
-export function back({
-  history,
-}: MakeActionParameters<BaseActionDefinition<'link.back'>>): BaseAction<'link.back'> {
-  return {
-    type: 'link.back',
-    dispatch(data) {
-      history.goBack();
-      return data;
-    },
-  };
-}
-
-export function next({
-  history,
-}: MakeActionParameters<BaseActionDefinition<'link.next'>>): BaseAction<'link.next'> {
-  return {
-    type: 'link.next',
-    dispatch(data) {
-      history.goForward();
-      return data;
-    },
-  };
-}
+export const next: ActionCreator<'link.next'> = ({ history }) => [
+  (data) => {
+    history.goForward();
+    return data;
+  },
+];

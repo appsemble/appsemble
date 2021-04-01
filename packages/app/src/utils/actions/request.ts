@@ -1,23 +1,16 @@
-import { RequestAction, RequestLikeAction, RequestLikeActionTypes } from '@appsemble/sdk';
-import { RequestLikeActionDefinition } from '@appsemble/types';
 import { formatRequestAction } from '@appsemble/utils';
 import axios, { Method } from 'axios';
 
-import { MakeActionParameters } from '../../types';
+import { ActionCreator } from '.';
 import { serializeResource } from '../serializers';
 import { apiUrl, appId } from '../settings';
 import { xmlToJson } from '../xmlToJson';
 
-export function requestLikeAction<T extends RequestLikeActionTypes>({
-  definition,
-  prefix,
-  remap,
-}: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
+export const request: ActionCreator<'request'> = ({ definition, prefix, remap }) => {
   const { body, method = 'GET', proxy = true, schema, url } = definition;
 
-  return {
-    type: 'request',
-    async dispatch(data) {
+  return [
+    async (data) => {
       const methodUpper = method.toUpperCase() as Method;
       const req = proxy
         ? {
@@ -40,13 +33,9 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
 
       return responseBody;
     },
-    method,
-    url,
-  };
-}
-
-export function request(
-  args: MakeActionParameters<RequestLikeActionDefinition<'request'>>,
-): RequestAction {
-  return requestLikeAction(args);
-}
+    {
+      method,
+      url,
+    },
+  ];
+};

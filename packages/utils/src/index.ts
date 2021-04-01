@@ -3,6 +3,7 @@ export * from './blockUtils';
 export * from './compare';
 export * from './constants';
 export * from './has';
+export * from './miscellaneous';
 export * from './normalize';
 export * from './validateStyle';
 export * from './prefix';
