@@ -75,9 +75,15 @@ export function JSONSchemaArrayEditor({
               schema={items}
               value={val}
             />
-            <div className="is-pulled-right">
+            <div className="is-pulled-right mt-1">
               <Button color="danger" icon="minus" name={`${name}.${index}`} onClick={removeItem} />
-              <Button color="success" icon="plus" name={`${name}.${index}`} onClick={onItemAdded} />
+              <Button
+                className="ml-1"
+                color="success"
+                icon="plus"
+                name={`${name}.${index}`}
+                onClick={onItemAdded}
+              />
             </div>
             <hr />
           </div>
