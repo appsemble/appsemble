@@ -14,3 +14,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.modal {
+  width: 960px;
+}

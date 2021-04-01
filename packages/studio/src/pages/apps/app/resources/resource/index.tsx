@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 
 import { useApp } from '../..';
 import { JSONSchemaEditor } from '../../../../../components/JSONSchemaEditor';
+import styles from './index.module.css';
 import { messages } from './messages';
 import { ResourceRow } from './ResourceRow';
 
@@ -189,6 +190,7 @@ export function ResourcePage(): ReactElement {
         </tbody>
       </Table>
       <ModalCard
+        cardClassName={styles.modal}
         component={Form}
         footer={
           <>
