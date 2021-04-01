@@ -59,10 +59,8 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-shadow': ['error', { hoist: 'functions' }],
 
-        'import/no-deprecated': 'off',
-        'import/no-unresolved': 'off',
-
-        'node/no-unsupported-features/es-syntax': 'off',
+        // https://github.com/JedWatson/classnames/pull/232
+        'import/no-named-as-default': 'off',
       },
     },
     {
