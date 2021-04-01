@@ -131,6 +131,7 @@ export function ResourceRow({
           />
         )}
         <ModalCard
+          cardClassName={styles.modal}
           component={Form}
           footer={
             <>
