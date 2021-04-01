@@ -88,6 +88,7 @@ export = function createWebpackConfig(
     },
     plugins: [
       new CaseSensitivePathsPlugin(),
+      // @ts-expect-error This uses Webpack 5 types, but it’s compatible with both Webpack 4 and 5.
       new MiniCssExtractPlugin({ filename: `${blockName}.css` }),
     ],
     optimization: {
