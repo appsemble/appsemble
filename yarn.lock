@@ -4320,11 +4320,6 @@ classnames@2.2.0:
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.0.tgz#8f61df81f356c45d18a31d83fde4dfb194ea8722"
   integrity sha1-j2HfgfNWxF0Yox2D/eTfsZTqhyI=
 
-classnames@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.0.tgz#19524334bad47ccd99793936b67f9be0860fe835"
-  integrity sha512-UUf/S3eeczXBjHPpSnrZ1ZyxH3KmLW8nVYFUWIZA/dixYMIQr7l94yYKxaAkmPk7HO9dlT6gFqAPZC02tTdfQw==
-
 clean-css@^4.1.6, clean-css@^4.2.1, clean-css@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.2.3.tgz#507b5de7d97b48ee53d84adb0160ff6216380f78"
