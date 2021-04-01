@@ -55,6 +55,23 @@ export function JSONSchemaArrayEditor({
     [items, onChange, name, value],
   );
 
+  const onItemMoved = useCallback(
+    ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
+      const copy = [...value];
+      const [i, direction] = currentTarget.name.replace(`${name}.`, '').split('.');
+      const index = Number(i);
+
+      if (direction === 'up') {
+        [copy[index], copy[index - 1]] = [copy[index - 1], copy[index]];
+      } else {
+        [copy[index], copy[index + 1]] = [copy[index + 1], copy[index]];
+      }
+
+      onChange({ currentTarget: { name } }, copy);
+    },
+    [name, onChange, value],
+  );
+
   return (
     <div className={`${styles.root} px-3 py-3 my-2 mx-0`}>
       <Button className="is-pulled-right" color="success" icon="plus" onClick={onItemAdded} />
@@ -76,6 +93,22 @@ export function JSONSchemaArrayEditor({
               value={val}
             />
             <div className="is-pulled-right mt-1">
+              {value.length && index ? (
+                <Button
+                  className="mr-1"
+                  icon="arrow-up"
+                  name={`${name}.${index}.up`}
+                  onClick={onItemMoved}
+                />
+              ) : null}
+              {value.length && index !== value.length - 1 ? (
+                <Button
+                  className="mr-1"
+                  icon="arrow-down"
+                  name={`${name}.${index}.down`}
+                  onClick={onItemMoved}
+                />
+              ) : null}
               <Button color="danger" icon="minus" name={`${name}.${index}`} onClick={removeItem} />
               <Button
                 className="ml-1"
