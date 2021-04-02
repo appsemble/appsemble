@@ -192,6 +192,9 @@ export async function createApp(ctx: KoaContext): Promise<void> {
         : [];
     });
 
+    record.Organization = await Organization.findByPk(record.OrganizationId, {
+      attributes: ['name'],
+    });
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
   } catch (error: unknown) {
@@ -227,6 +230,7 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
+  app.Organization = await Organization.findByPk(app.OrganizationId, { attributes: ['name'] });
   app.AppScreenshots = await AppScreenshot.findAll({
     attributes: ['id'],
     where: { AppId: app.id },
@@ -249,7 +253,18 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
     group: ['App.id'],
     order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
   });
-  ctx.body = apps.map((app) => getAppFromRecord(app, ['yaml']));
+
+  const organizations = await Organization.findAll({
+    where: { id: apps.map((app) => app.OrganizationId) },
+    attributes: ['id', 'name'],
+  });
+
+  ctx.body = apps.map((app) => {
+    Object.assign(app, {
+      Organization: organizations.find((org) => org.id === app.OrganizationId),
+    });
+    return getAppFromRecord(app, ['yaml']);
+  });
 }
 
 export async function queryMyApps(ctx: KoaContext): Promise<void> {
@@ -274,7 +289,17 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
     where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
   });
 
-  ctx.body = apps.map((app) => getAppFromRecord(app, ['yaml']));
+  const organizations = await Organization.findAll({
+    where: { id: apps.map((app) => app.OrganizationId) },
+    attributes: ['id', 'name'],
+  });
+
+  ctx.body = apps.map((app) => {
+    Object.assign(app, {
+      Organization: organizations.find((org) => org.id === app.OrganizationId),
+    });
+    return getAppFromRecord(app, ['yaml']);
+  });
 }
 
 export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
@@ -305,7 +330,10 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
 
   const dbApp = await App.findOne({
     where: { id: appId },
-    include: [{ model: AppScreenshot, attributes: ['id'] }],
+    include: [
+      { model: Organization, attributes: ['name'] },
+      { model: AppScreenshot, attributes: ['id'] },
+    ],
   });
 
   if (!dbApp) {

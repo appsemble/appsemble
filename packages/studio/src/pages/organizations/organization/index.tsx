@@ -24,9 +24,8 @@ export function OrganizationRoutes(): ReactElement {
   const {
     params: { organizationId },
   } = useRouteMatch<{ organizationId: string }>();
-  const id = organizationId.replace('@', '');
-  const result = useData<Organization>(`/api/organizations/${id}`);
-  const userOrganization = organizations.find((org) => org.id === id);
+  const result = useData<Organization>(`/api/organizations/${organizationId}`);
+  const userOrganization = organizations.find((org) => org.id === organizationId);
   const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
 
   useSideMenu(
@@ -49,8 +48,8 @@ export function OrganizationRoutes(): ReactElement {
     ),
   );
 
-  if (!normalized.test(organizationId.replace('@', ''))) {
-    return <Redirect to={String(url.replace(organizationId, `@${normalize(organizationId)}`))} />;
+  if (!normalized.test(organizationId)) {
+    return <Redirect to={String(url.replace(organizationId, normalize(organizationId)))} />;
   }
 
   return (
@@ -60,7 +59,7 @@ export function OrganizationRoutes(): ReactElement {
       result={result}
     >
       {(organization) => (
-        <MetaSwitch title={organizationId}>
+        <MetaSwitch title={organization.name || organizationId}>
           <Route exact path={path}>
             <IndexPage organization={userOrganization ?? organization} />
           </Route>

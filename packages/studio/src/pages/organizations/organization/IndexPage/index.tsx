@@ -31,7 +31,6 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
   const userOrganization = organizations?.find((org) => org.id === organization.id);
   const mayEditOrganization =
     userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
-  const id = organization.id.startsWith('@') ? organization.id : `@${organization.id}`;
 
   return (
     <Content className={`pb-2 ${styles.root}`}>
@@ -83,8 +82,8 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
             src={organization.iconUrl}
           />
         }
-        subtitle={id}
-        title={organization.name || id}
+        subtitle={organization.id}
+        title={organization.name || organization.id}
       >
         <div className="px-5 pt-2 pb-4 has-background-white-bis">
           <CollapsibleList title={<FormattedMessage {...messages.apps} />}>
