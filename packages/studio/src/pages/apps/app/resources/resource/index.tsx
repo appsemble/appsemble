@@ -13,6 +13,7 @@ import {
 } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
 import axios from 'axios';
+import { OpenAPIV3 } from 'openapi-types';
 import { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -54,9 +55,7 @@ export function ResourcePage(): ReactElement {
   );
 
   const { schema } = app.definition.resources[resourceName];
-  const keys = useMemo(() => ['id', '$author', ...Object.keys(schema?.properties || {})], [
-    schema?.properties,
-  ]);
+  const keys = useMemo(() => [...Object.keys(schema?.properties || {})], [schema?.properties]);
 
   const closeCreateModal = useCallback(() => {
     modal.disable();
@@ -172,8 +171,16 @@ export function ResourcePage(): ReactElement {
             <th>
               <FormattedMessage {...messages.actions} />
             </th>
+            <th>
+              <FormattedMessage {...messages.id} />
+            </th>
+            <th>
+              <FormattedMessage {...messages.author} />
+            </th>
             {keys.map((property) => (
-              <th key={property}>{property}</th>
+              <th key={property}>
+                {(schema?.properties[property] as OpenAPIV3.SchemaObject)?.title || property}
+              </th>
             ))}
           </tr>
         </thead>
