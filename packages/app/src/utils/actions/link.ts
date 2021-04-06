@@ -12,7 +12,7 @@ export const link: ActionCreator<'link'> = ({
 }) => {
   let href: (data: any) => string;
 
-  if (urlRegex.test(to)) {
+  if (typeof to === 'string' && urlRegex.test(to)) {
     href = () => to;
   } else {
     const [toBase, toSub] = [].concat(to);
@@ -26,12 +26,13 @@ export const link: ActionCreator<'link'> = ({
     }
 
     href = (data = {}) => {
-      if (urlRegex.test(data)) {
+      if (typeof data === 'string' && urlRegex.test(data)) {
         return data;
       }
 
       return [
         '',
+        route.params.lang,
         normalize(toPage.name),
         ...(toPage.parameters || []).map((name) => data[name] ?? ''),
         ...(subPage ? [normalize(subPage.name)] : []),
@@ -46,7 +47,7 @@ export const link: ActionCreator<'link'> = ({
       if (urlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
       } else {
-        history.push(`/${route.params.lang}${target}`, data);
+        history.push(target, data);
       }
     },
     { href },

@@ -14,7 +14,7 @@ import { request } from './request';
 import * as resource from './resource';
 import { staticAction } from './static';
 import { teamJoin, teamList } from './team';
-import { throwAction } from './throwAction';
+import { throwAction } from './throw';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
   Extract<Action, { type: T }>,

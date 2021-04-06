@@ -17,10 +17,7 @@ describe('event', () => {
   it('should return the input data', async () => {
     const action = createTestAction({
       ee,
-      definition: {
-        type: 'event',
-        event: 'foo',
-      },
+      definition: { type: 'event', event: 'foo' },
     });
     const result = await action({ test: 'data' });
     expect(result).toStrictEqual({ test: 'data' });
@@ -30,11 +27,7 @@ describe('event', () => {
   it('should wait for a response event if waitFor is defined', async () => {
     const action = createTestAction({
       ee,
-      definition: {
-        type: 'event',
-        event: 'foo',
-        waitFor: 'bar',
-      },
+      definition: { type: 'event', event: 'foo', waitFor: 'bar' },
     });
     const result = action();
     // Wait 1 tick before emitting.
@@ -47,11 +40,7 @@ describe('event', () => {
   it('should reject of a response event emits an error', async () => {
     const action = createTestAction({
       ee,
-      definition: {
-        type: 'event',
-        event: 'foo',
-        waitFor: 'bar',
-      },
+      definition: { type: 'event', event: 'foo', waitFor: 'bar' },
     });
     const result = action();
     // Wait 1 tick before emitting.

@@ -1,6 +1,10 @@
 import { ActionCreator } from '.';
 
-export const dialog: ActionCreator<'dialog'> = ({ definition, prefix, showDialog }) => [
+export const dialog: ActionCreator<'dialog'> = ({
+  definition: { blocks, closable = true, fullscreen = false, title },
+  prefix,
+  showDialog,
+}) => [
   (data) =>
     new Promise((resolve, reject) => {
       const close = showDialog({
@@ -20,16 +24,15 @@ export const dialog: ActionCreator<'dialog'> = ({ definition, prefix, showDialog
             },
           ],
         },
-        blocks: definition.blocks,
-        closable: definition.closable ?? true,
+        blocks,
+        closable,
         data,
         close() {
           reject(new Error('closed'));
-          close();
         },
-        fullscreen: definition.fullscreen,
+        fullscreen,
         prefix,
-        title: definition.title,
+        title,
       });
     }),
 ];

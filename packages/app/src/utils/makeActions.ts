@@ -39,7 +39,7 @@ function createAction<T extends ActionDefinition['type']>({
   prefix,
   remap,
   ...params
-}: CreateActionParams<T>): Action {
+}: CreateActionParams<T>): Extract<Action, { type: T }> {
   const type = (definition?.type ?? 'noop') as T;
   const actionCreator = has(actionCreators, type)
     ? actionCreators[type]
@@ -111,7 +111,7 @@ function createAction<T extends ActionDefinition['type']>({
     }
 
     return result;
-  }) as Omit<Action, string>) as Action;
+  }) as Omit<Action, string>) as Extract<Action, { type: T }>;
   // Name the function to enhance stack traces.
   Object.defineProperty(action, 'name', { value: `${type}[wrapper]` });
   action.type = type;
@@ -172,7 +172,7 @@ export function makeActions({
 
 export function createTestAction<T extends ActionDefinition['type']>(
   params: SetRequired<Partial<CreateActionParams<T>>, 'definition'>,
-): Action {
+): Extract<Action, { type: T }> {
   return createAction<T>({
     app: null,
     definition: null,

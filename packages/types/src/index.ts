@@ -577,7 +577,7 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
    *
    * This should be a page name.
    */
-  to: string;
+  to: string[] | string;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
