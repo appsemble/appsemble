@@ -23,15 +23,37 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 interface ResourceRowProps {
+  /**
+   * The resource to display the data of.
+   */
   resource: Resource;
+
+  /**
+   * The callback for when an existing resource is deleted.
+   */
   onDelete: (id: number) => void;
+
+  /**
+   * The callback for when an existing resource is edited.
+   */
   onEdit: (resource: Resource) => void;
+
+  /**
+   * The JSON schema of the resource.
+   */
   schema: OpenAPIV3.SchemaObject;
+
+  /**
+   * The list of properties to hide.
+   */
   filter: Set<string>;
 }
 
 const filteredKeys = new Set(['id', '$author']);
 
+/**
+ * Display a resource in a table row.
+ */
 export function ResourceRow({
   filter,
   onDelete,

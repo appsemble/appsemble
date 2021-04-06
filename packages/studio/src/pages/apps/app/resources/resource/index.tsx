@@ -67,7 +67,7 @@ export function ResourcePage(): ReactElement {
   const [[sortedProperty, sortedPropertyDirection], setSortedProperty] = useState<
     [string, 'ASC' | 'DESC']
   >(['id', 'DESC']);
-  const [filteredColumns, setFilteredColumns] = useState<Set<string>>(new Set());
+  const [hiddenProperties, setHiddenProperties] = useState<Set<string>>(new Set());
   const [creatingResource, setCreatingResource] = useState<Resource>();
   const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
@@ -78,7 +78,7 @@ export function ResourcePage(): ReactElement {
 
   useEffect(() => {
     try {
-      setFilteredColumns(
+      setHiddenProperties(
         new Set(JSON.parse(localStorage.getItem(`${resourceName}.hiddenProperties`))),
       );
     } catch {
@@ -132,7 +132,7 @@ export function ResourcePage(): ReactElement {
       const result = Object.entries(values)
         .filter(([, value]) => value)
         .map(([key]) => key);
-      setFilteredColumns(new Set(result));
+      setHiddenProperties(new Set(result));
       localStorage.setItem(`${resourceName}.hiddenProperties`, JSON.stringify(result));
       hideModal.disable();
     },
@@ -213,7 +213,7 @@ export function ResourcePage(): ReactElement {
         <Button icon="eye-slash" onClick={hideModal.enable}>
           <FormattedMessage
             {...messages.hideButton}
-            values={{ count: filteredColumns.size, total: keys.length + 2 }}
+            values={{ count: hiddenProperties.size, total: keys.length + 2 }}
           />
         </Button>
         <Button
@@ -226,7 +226,7 @@ export function ResourcePage(): ReactElement {
             '$author',
             ...keys,
           ]
-            .filter((key) => !filteredColumns.has(key))
+            .filter((key) => !hiddenProperties.has(key))
             .join(',')}`}
           icon="download"
         >
@@ -239,7 +239,7 @@ export function ResourcePage(): ReactElement {
             <th>
               <FormattedMessage {...messages.actions} />
             </th>
-            {!filteredColumns.has('id') && (
+            {!hiddenProperties.has('id') && (
               <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
                 <FormattedMessage {...messages.id} />
                 {sortedProperty === 'id' && (
@@ -247,13 +247,13 @@ export function ResourcePage(): ReactElement {
                 )}
               </th>
             )}
-            {!filteredColumns.has('$author') && (
+            {!hiddenProperties.has('$author') && (
               <th>
                 <FormattedMessage {...messages.author} />
               </th>
             )}
             {keys
-              .filter((key) => !filteredColumns.has(key))
+              .filter((key) => !hiddenProperties.has(key))
               .map((property) => {
                 const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
                 const sortable = propSchema?.type !== 'object' && propSchema?.type !== 'array';
@@ -276,7 +276,7 @@ export function ResourcePage(): ReactElement {
         <tbody>
           {resources.map((resource) => (
             <ResourceRow
-              filter={filteredColumns}
+              filter={hiddenProperties}
               key={resource.id}
               onDelete={onDeleteResource}
               onEdit={onEditResource}
@@ -313,7 +313,7 @@ export function ResourcePage(): ReactElement {
       </ModalCard>
       <ModalCard
         component={SimpleForm}
-        defaultValues={Object.fromEntries([...filteredColumns].map((key) => [key, true]))}
+        defaultValues={Object.fromEntries([...hiddenProperties].map((key) => [key, true]))}
         footer={
           <SimpleModalFooter
             cancelLabel={<FormattedMessage {...messages.cancelButton} />}
