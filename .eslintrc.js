@@ -61,6 +61,8 @@ module.exports = {
 
         // https://github.com/JedWatson/classnames/pull/232
         'import/no-named-as-default': 'off',
+
+        'unicorn/prefer-array-flat': 'off',
       },
     },
     {

@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../..';
@@ -45,7 +45,7 @@ export function AppScreenshots(): ReactElement {
     scrollScreenshots(true);
   }, [scrollScreenshots]);
 
-  const onScreenshotChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const onScreenshotChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setUploadingScreenshot(event.currentTarget.files[0]);
   }, []);
 
