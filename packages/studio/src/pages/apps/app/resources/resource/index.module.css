@@ -1,3 +1,7 @@
 .modal {
   width: 960px;
 }
+
+.clickable {
+  cursor: pointer;
+}

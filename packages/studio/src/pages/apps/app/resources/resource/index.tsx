@@ -2,6 +2,7 @@ import {
   Button,
   CardFooterButton,
   Form,
+  Icon,
   Loader,
   ModalCard,
   Table,
@@ -14,7 +15,7 @@ import {
 import { generateDataFromSchema } from '@appsemble/utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
-import { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
+import { FormEvent, ReactElement, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -49,9 +50,12 @@ export function ResourcePage(): ReactElement {
   const push = useMessages();
 
   const modal = useToggle();
+  const [[sortedProperty, sortedPropertyDirection], setSortedProperty] = useState<
+    [string, 'ASC' | 'DESC']
+  >(['id', 'DESC']);
   const [creatingResource, setCreatingResource] = useState<Resource>();
   const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
-    `/api/apps/${appId}/resources/${resourceName}`,
+    `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
   );
 
   const { schema } = app.definition.resources[resourceName];
@@ -84,6 +88,19 @@ export function ResourcePage(): ReactElement {
   const onChange = useCallback((event, value: Resource) => {
     setCreatingResource(value);
   }, []);
+
+  const onSortProperty = useCallback(
+    (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
+      const { property } = event.currentTarget.dataset;
+
+      if (property === sortedProperty) {
+        setSortedProperty([property, sortedPropertyDirection === 'ASC' ? 'DESC' : 'ASC']);
+      } else {
+        setSortedProperty([property, 'ASC']);
+      }
+    },
+    [sortedProperty, sortedPropertyDirection],
+  );
 
   const submitCreate = useCallback(
     async (event: FormEvent) => {
@@ -171,17 +188,32 @@ export function ResourcePage(): ReactElement {
             <th>
               <FormattedMessage {...messages.actions} />
             </th>
-            <th>
+            <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
               <FormattedMessage {...messages.id} />
+              {sortedProperty === 'id' && (
+                <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
+              )}
             </th>
             <th>
               <FormattedMessage {...messages.author} />
             </th>
-            {keys.map((property) => (
-              <th key={property}>
-                {(schema?.properties[property] as OpenAPIV3.SchemaObject)?.title || property}
-              </th>
-            ))}
+            {keys.map((property) => {
+              const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
+              const sortable = propSchema?.type !== 'object' && propSchema?.type !== 'array';
+              return (
+                <th
+                  className={sortable ? styles.clickable : ''}
+                  data-property={property}
+                  key={property}
+                  onClick={sortable && onSortProperty}
+                >
+                  {propSchema?.title || property}
+                  {sortedProperty === property && (
+                    <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
+                  )}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
