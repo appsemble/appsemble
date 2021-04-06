@@ -1,10 +1,14 @@
 import {
   Button,
   CardFooterButton,
+  CheckboxField,
   Form,
   Icon,
   Loader,
   ModalCard,
+  SimpleForm,
+  SimpleFormField,
+  SimpleModalFooter,
   Table,
   Title,
   useData,
@@ -15,7 +19,15 @@ import {
 import { generateDataFromSchema } from '@appsemble/utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
-import { FormEvent, ReactElement, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import React, {
+  FormEvent,
+  ReactElement,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -49,10 +61,13 @@ export function ResourcePage(): ReactElement {
   useMeta(resourceName);
   const push = useMessages();
 
-  const modal = useToggle();
+  const createModal = useToggle();
+  const hideModal = useToggle();
+
   const [[sortedProperty, sortedPropertyDirection], setSortedProperty] = useState<
     [string, 'ASC' | 'DESC']
   >(['id', 'DESC']);
+  const [filteredColumns, setFilteredColumns] = useState<Set<string>>(new Set());
   const [creatingResource, setCreatingResource] = useState<Resource>();
   const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
@@ -61,15 +76,25 @@ export function ResourcePage(): ReactElement {
   const { schema } = app.definition.resources[resourceName];
   const keys = useMemo(() => [...Object.keys(schema?.properties || {})], [schema?.properties]);
 
+  useEffect(() => {
+    try {
+      setFilteredColumns(
+        new Set(JSON.parse(localStorage.getItem(`${resourceName}.hiddenProperties`))),
+      );
+    } catch {
+      localStorage.removeItem(`${resourceName}.hiddenProperties`);
+    }
+  }, [resourceName]);
+
   const closeCreateModal = useCallback(() => {
-    modal.disable();
+    createModal.disable();
     setCreatingResource(null);
-  }, [modal]);
+  }, [createModal]);
 
   const openCreateModal = useCallback(() => {
     setCreatingResource(generateDataFromSchema(schema) as Resource);
-    modal.enable();
-  }, [modal, schema]);
+    createModal.enable();
+  }, [createModal, schema]);
 
   const onEditResource = useCallback(
     (resource: Resource) => {
@@ -100,6 +125,18 @@ export function ResourcePage(): ReactElement {
       }
     },
     [sortedProperty, sortedPropertyDirection],
+  );
+
+  const onHideProperties = useCallback(
+    (values: Record<string, boolean>) => {
+      const result = Object.entries(values)
+        .filter(([, value]) => value)
+        .map(([key]) => key);
+      setFilteredColumns(new Set(result));
+      localStorage.setItem(`${resourceName}.hiddenProperties`, JSON.stringify(result));
+      hideModal.disable();
+    },
+    [hideModal, resourceName],
   );
 
   const submitCreate = useCallback(
@@ -173,10 +210,24 @@ export function ResourcePage(): ReactElement {
         <Button className="is-primary" icon="plus-square" onClick={openCreateModal}>
           <FormattedMessage {...messages.createButton} />
         </Button>
+        <Button icon="eye-slash" onClick={hideModal.enable}>
+          <FormattedMessage
+            {...messages.hideButton}
+            values={{ count: filteredColumns.size, total: keys.length + 2 }}
+          />
+        </Button>
         <Button
           component="a"
           download={`${resourceName}.csv`}
-          href={`/api/apps/${app.id}/resources/${resourceName}`}
+          href={`/api/apps/${app.id}/resources/${resourceName}?$select=${[
+            'id',
+            '$created',
+            '$updated',
+            '$author',
+            ...keys,
+          ]
+            .filter((key) => !filteredColumns.has(key))
+            .join(',')}`}
           icon="download"
         >
           <FormattedMessage {...messages.export} />
@@ -188,37 +239,44 @@ export function ResourcePage(): ReactElement {
             <th>
               <FormattedMessage {...messages.actions} />
             </th>
-            <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
-              <FormattedMessage {...messages.id} />
-              {sortedProperty === 'id' && (
-                <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
-              )}
-            </th>
-            <th>
-              <FormattedMessage {...messages.author} />
-            </th>
-            {keys.map((property) => {
-              const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
-              const sortable = propSchema?.type !== 'object' && propSchema?.type !== 'array';
-              return (
-                <th
-                  className={sortable ? styles.clickable : ''}
-                  data-property={property}
-                  key={property}
-                  onClick={sortable && onSortProperty}
-                >
-                  {propSchema?.title || property}
-                  {sortedProperty === property && (
-                    <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
-                  )}
-                </th>
-              );
-            })}
+            {!filteredColumns.has('id') && (
+              <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
+                <FormattedMessage {...messages.id} />
+                {sortedProperty === 'id' && (
+                  <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
+                )}
+              </th>
+            )}
+            {!filteredColumns.has('$author') && (
+              <th>
+                <FormattedMessage {...messages.author} />
+              </th>
+            )}
+            {keys
+              .filter((key) => !filteredColumns.has(key))
+              .map((property) => {
+                const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
+                const sortable = propSchema?.type !== 'object' && propSchema?.type !== 'array';
+                return (
+                  <th
+                    className={sortable ? styles.clickable : ''}
+                    data-property={property}
+                    key={property}
+                    onClick={sortable && onSortProperty}
+                  >
+                    {propSchema?.title || property}
+                    {sortedProperty === property && (
+                      <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
+                    )}
+                  </th>
+                );
+              })}
           </tr>
         </thead>
         <tbody>
           {resources.map((resource) => (
             <ResourceRow
+              filter={filteredColumns}
               key={resource.id}
               onDelete={onDeleteResource}
               onEdit={onEditResource}
@@ -241,7 +299,7 @@ export function ResourcePage(): ReactElement {
             </CardFooterButton>
           </>
         }
-        isActive={modal.enabled}
+        isActive={createModal.enabled}
         onClose={closeCreateModal}
         onSubmit={submitCreate}
         title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}
@@ -252,6 +310,46 @@ export function ResourcePage(): ReactElement {
           schema={schema}
           value={creatingResource}
         />
+      </ModalCard>
+      <ModalCard
+        component={SimpleForm}
+        defaultValues={Object.fromEntries([...filteredColumns].map((key) => [key, true]))}
+        footer={
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancelButton} />}
+            onClose={hideModal.disable}
+            submitLabel={<FormattedMessage {...messages.apply} />}
+          />
+        }
+        isActive={hideModal.enabled}
+        onClose={hideModal.disable}
+        onSubmit={onHideProperties}
+        title={<FormattedMessage {...messages.hideProperties} />}
+      >
+        <p>
+          <FormattedMessage {...messages.hideExplanation} />
+        </p>
+        <SimpleFormField
+          component={CheckboxField}
+          label={<FormattedMessage {...messages.id} />}
+          name="id"
+          title={<FormattedMessage {...messages.hideProperty} />}
+        />
+        <SimpleFormField
+          component={CheckboxField}
+          label={<FormattedMessage {...messages.author} />}
+          name="$author"
+          title={<FormattedMessage {...messages.hideProperty} />}
+        />
+        {keys.map((key) => (
+          <SimpleFormField
+            component={CheckboxField}
+            key={key}
+            label={(schema?.properties[key] as OpenAPIV3.SchemaObject).title ?? key}
+            name={key}
+            title={<FormattedMessage {...messages.hideProperty} />}
+          />
+        ))}
       </ModalCard>
     </>
   );
