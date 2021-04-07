@@ -291,7 +291,6 @@
   "studio.src.pages.apps.app.resources.resource.hideButton": "Verberg velden ({count/{total})",
   "studio.src.pages.apps.app.resources.resource.hideExplanation": "Verberg velden van de tabel. Verborgen velden zijn ook verborgen bij het downloaden van de gegevens als CSV.",
   "studio.src.pages.apps.app.resources.resource.hideProperties": "Verberg velden",
-  "studio.src.pages.apps.app.resources.resource.hideProperty": "Verberg veld",
   "studio.src.pages.apps.app.resources.resource.id": "ID",
   "studio.src.pages.apps.app.resources.resource.loadError": "Er is iets misgegaan bij het inladen van deze resource.",
   "studio.src.pages.apps.app.resources.resource.newTitle": "Nieuwe {resource} aanmaken",

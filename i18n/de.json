@@ -291,7 +291,6 @@
   "studio.src.pages.apps.app.resources.resource.hideButton": "",
   "studio.src.pages.apps.app.resources.resource.hideExplanation": "",
   "studio.src.pages.apps.app.resources.resource.hideProperties": "",
-  "studio.src.pages.apps.app.resources.resource.hideProperty": "",
   "studio.src.pages.apps.app.resources.resource.id": "",
   "studio.src.pages.apps.app.resources.resource.loadError": "Beim Laden dieser Ressource ist etwas schief gelaufen.",
   "studio.src.pages.apps.app.resources.resource.newTitle": "Neue {resource} anlegen",

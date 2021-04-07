@@ -291,7 +291,6 @@
   "studio.src.pages.apps.app.resources.resource.hideButton": "Hide columns ({count}/{total})",
   "studio.src.pages.apps.app.resources.resource.hideExplanation": "Hide properties from the table. Hidden properties will also be hidden when exporting the properties as CSV.",
   "studio.src.pages.apps.app.resources.resource.hideProperties": "Hide properties",
-  "studio.src.pages.apps.app.resources.resource.hideProperty": "Hide property",
   "studio.src.pages.apps.app.resources.resource.id": "ID",
   "studio.src.pages.apps.app.resources.resource.loadError": "Something went wrong when loading this resource.",
   "studio.src.pages.apps.app.resources.resource.newTitle": "Creating new {resource}",

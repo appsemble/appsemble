@@ -291,7 +291,6 @@
   "studio.src.pages.apps.app.resources.resource.hideButton": "",
   "studio.src.pages.apps.app.resources.resource.hideExplanation": "",
   "studio.src.pages.apps.app.resources.resource.hideProperties": "",
-  "studio.src.pages.apps.app.resources.resource.hideProperty": "",
   "studio.src.pages.apps.app.resources.resource.id": "",
   "studio.src.pages.apps.app.resources.resource.loadError": "Noget gik galt, da denne ressource blev indlæst.",
   "studio.src.pages.apps.app.resources.resource.newTitle": "Opretter ny {resource}",

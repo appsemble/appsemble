@@ -19,7 +19,7 @@ import {
 import { generateDataFromSchema } from '@appsemble/utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
-import React, {
+import {
   FormEvent,
   ReactElement,
   SyntheticEvent,
@@ -241,7 +241,9 @@ export function ResourcePage(): ReactElement {
             </th>
             {!hiddenProperties.has('id') && (
               <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
-                <FormattedMessage {...messages.id} />
+                <span>
+                  <FormattedMessage {...messages.id} />
+                </span>
                 {sortedProperty === 'id' && (
                   <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
                 )}
@@ -264,7 +266,7 @@ export function ResourcePage(): ReactElement {
                     key={property}
                     onClick={sortable && onSortProperty}
                   >
-                    {propSchema?.title || property}
+                    <span>{propSchema?.title || property}</span>
                     {sortedProperty === property && (
                       <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
                     )}
@@ -329,25 +331,23 @@ export function ResourcePage(): ReactElement {
         <p>
           <FormattedMessage {...messages.hideExplanation} />
         </p>
+        <br />
         <SimpleFormField
           component={CheckboxField}
-          label={<FormattedMessage {...messages.id} />}
           name="id"
-          title={<FormattedMessage {...messages.hideProperty} />}
+          title={<FormattedMessage {...messages.id} />}
         />
         <SimpleFormField
           component={CheckboxField}
-          label={<FormattedMessage {...messages.author} />}
           name="$author"
-          title={<FormattedMessage {...messages.hideProperty} />}
+          title={<FormattedMessage {...messages.author} />}
         />
         {keys.map((key) => (
           <SimpleFormField
             component={CheckboxField}
             key={key}
-            label={(schema?.properties[key] as OpenAPIV3.SchemaObject).title ?? key}
             name={key}
-            title={<FormattedMessage {...messages.hideProperty} />}
+            title={(schema?.properties[key] as OpenAPIV3.SchemaObject).title ?? key}
           />
         ))}
       </ModalCard>

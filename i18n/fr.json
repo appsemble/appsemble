@@ -291,7 +291,6 @@
   "studio.src.pages.apps.app.resources.resource.hideButton": "",
   "studio.src.pages.apps.app.resources.resource.hideExplanation": "",
   "studio.src.pages.apps.app.resources.resource.hideProperties": "",
-  "studio.src.pages.apps.app.resources.resource.hideProperty": "",
   "studio.src.pages.apps.app.resources.resource.id": "",
   "studio.src.pages.apps.app.resources.resource.loadError": "Une erreur s’est produite lors de la mise à jour de cette ressource.",
   "studio.src.pages.apps.app.resources.resource.newTitle": "Création de nouvelles {resources}",
