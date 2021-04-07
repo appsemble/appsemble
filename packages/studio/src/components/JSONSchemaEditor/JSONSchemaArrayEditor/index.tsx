@@ -45,7 +45,7 @@ export function JSONSchemaArrayEditor({
   const onItemAdded = useCallback(
     ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
       const addedName = currentTarget.name;
-      const index = addedName ? Number(addedName.slice(addedName.length + 1)) + 1 : 0;
+      const index = addedName ? Number(addedName.split('.').pop()) + 1 : 0;
       onChange({ currentTarget: { name } }, [
         ...value.slice(0, index),
         generateDataFromSchema(items),
