@@ -1,3 +1,4 @@
+import { Title } from '@appsemble/react-components';
 import { ReactElement, useCallback } from 'react';
 
 import { CollapsibleList } from '../../CollapsibleList';
@@ -23,29 +24,41 @@ export function JSONSchemaObjectEditor({
     [name, onChange, value],
   );
 
+  const content = Object.entries(schema?.properties ?? {}).map(([propName, subSchema]) => (
+    <RecursiveJSONSchemaEditor
+      disabled={disabled}
+      key={propName}
+      name={name ? `${name}.${propName}` : propName}
+      nested
+      onChange={onPropertyChange}
+      prefix={prefix}
+      required={
+        (Array.isArray(schema.required) && schema.required.includes(propName)) ||
+        subSchema.required === true
+      }
+      schema={subSchema}
+      value={value?.[propName]}
+    />
+  ));
+
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : null}>
-      <CollapsibleList
-        level={5}
-        size={3}
-        title={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
-      >
-        {Object.entries(schema?.properties ?? {}).map(([propName, subSchema]) => (
-          <RecursiveJSONSchemaEditor
-            disabled={disabled}
-            key={propName}
-            name={name ? `${name}.${propName}` : propName}
-            onChange={onPropertyChange}
-            prefix={prefix}
-            required={
-              (Array.isArray(schema.required) && schema.required.includes(propName)) ||
-              subSchema.required === true
-            }
-            schema={subSchema}
-            value={value?.[propName]}
-          />
-        ))}
-      </CollapsibleList>
+      {nested ? (
+        <CollapsibleList
+          level={5}
+          size={3}
+          title={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
+        >
+          {content}
+        </CollapsibleList>
+      ) : (
+        <>
+          <Title level={5} size={3}>
+            <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />
+          </Title>
+          {content}
+        </>
+      )}
     </div>
   );
 }
