@@ -22,7 +22,7 @@ module.exports = {
     'jsdoc/require-jsdoc': 'off',
     'jsdoc/check-tag-names': [
       'error',
-      { definedTags: ['format', 'maximum', 'minimum', 'TJS-pattern', 'TJS-type'] },
+      { definedTags: ['format', 'maximum', 'minimum', 'TJS-pattern', 'TJS-type'], jsxTags: true },
     ],
 
     'unicorn/consistent-destructuring': 'off',

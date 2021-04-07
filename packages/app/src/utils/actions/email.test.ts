@@ -16,6 +16,10 @@ describe('email', () => {
     });
   });
 
+  afterEach(() => {
+    mock.restore();
+  });
+
   it('should call the action endpoint', async () => {
     const action = createTestAction({
       definition: { type: 'email' },

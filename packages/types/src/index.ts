@@ -632,7 +632,7 @@ export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
   /**
    * The name of the resource.
    */
-  resource: `resource.${string}`;
+  resource: string;
 }
 
 export type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
@@ -648,7 +648,7 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   /**
    * The name of the resource.
    */
-  resource: `resource.${string}`;
+  resource: string;
 
   /**
    * The action to subscribe to. Defaults to `update` if not specified.
