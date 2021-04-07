@@ -79,12 +79,12 @@ export function ResourcePage(): ReactElement {
   useEffect(() => {
     try {
       setHiddenProperties(
-        new Set(JSON.parse(localStorage.getItem(`${resourceName}.hiddenProperties`))),
+        new Set(JSON.parse(localStorage.getItem(`${app.id}.${resourceName}.hiddenProperties`))),
       );
     } catch {
-      localStorage.removeItem(`${resourceName}.hiddenProperties`);
+      localStorage.removeItem(`${app.id}.${resourceName}.hiddenProperties`);
     }
-  }, [resourceName]);
+  }, [app, resourceName]);
 
   const closeCreateModal = useCallback(() => {
     createModal.disable();
@@ -133,10 +133,10 @@ export function ResourcePage(): ReactElement {
         .filter(([, value]) => value)
         .map(([key]) => key);
       setHiddenProperties(new Set(result));
-      localStorage.setItem(`${resourceName}.hiddenProperties`, JSON.stringify(result));
+      localStorage.setItem(`${app.id}.${resourceName}.hiddenProperties`, JSON.stringify(result));
       hideModal.disable();
     },
-    [hideModal, resourceName],
+    [app, hideModal, resourceName],
   );
 
   const submitCreate = useCallback(
