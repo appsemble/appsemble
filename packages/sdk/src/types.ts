@@ -38,15 +38,6 @@ export interface BaseAction<T extends string> {
   type: T;
 }
 
-export type RequestLikeActionTypes =
-  | 'request'
-  | 'resource.count'
-  | 'resource.create'
-  | 'resource.delete'
-  | 'resource.get'
-  | 'resource.query'
-  | 'resource.update';
-
 export interface LinkAction extends BaseAction<'link'> {
   /**
    * Get the link that the action would link to if the given data was passed.
@@ -61,7 +52,7 @@ export interface LogAction extends BaseAction<'log'> {
   level: 'error' | 'info' | 'warn';
 }
 
-export interface RequestLikeAction<T extends RequestLikeActionTypes> extends BaseAction<T> {
+interface RequestLikeAction<T extends Action['type']> extends BaseAction<T> {
   /**
    * The HTTP method used to make the request.
    */

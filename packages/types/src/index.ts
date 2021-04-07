@@ -1,11 +1,4 @@
-import {
-  Action,
-  BaseMessage,
-  HTTPMethods,
-  LogAction,
-  RequestLikeActionTypes,
-  Theme,
-} from '@appsemble/sdk/src/types';
+import { Action, BaseMessage, HTTPMethods, LogAction, Theme } from '@appsemble/sdk/src/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
@@ -589,9 +582,8 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
   level?: LogAction['level'];
 }
 
-export interface RequestLikeActionDefinition<
-  T extends RequestLikeActionTypes = RequestLikeActionTypes
-> extends BaseActionDefinition<T> {
+export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
+  extends BaseActionDefinition<T> {
   /**
    * The HTTP method to use for making a request.
    */
@@ -627,7 +619,7 @@ export interface RequestLikeActionDefinition<
   body?: Remapper;
 }
 
-export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
+interface ResourceActionDefinition<T extends Action['type']>
   extends RequestLikeActionDefinition<T> {
   /**
    * The name of the resource.

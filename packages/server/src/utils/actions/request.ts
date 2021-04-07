@@ -5,15 +5,10 @@ import axios from 'axios';
 import { ServerActionParameters } from '.';
 import { getRemapperContext } from '../app';
 
-export async function request({
-  action,
-  app,
-  data,
-  user,
-}: ServerActionParameters<RequestLikeActionDefinition>): Promise<any> {
+export async function request({ action, app, data, user }: ServerActionParameters): Promise<any> {
   let method: 'DELETE' | 'GET' | 'POST' | 'PUT';
 
-  if (!action.method) {
+  if (!(action as RequestLikeActionDefinition).method) {
     switch (action.type) {
       case 'resource.update':
         method = 'PUT';
