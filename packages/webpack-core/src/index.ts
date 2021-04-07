@@ -86,6 +86,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       new EnvironmentPlugin({
         APPSEMBLE_VERSION: studioPkg.version,
       }),
+      // @ts-expect-error This uses Webpack 5 types, but it’s compatible with both Webpack 4 and 5.
       new MiniCssExtractPlugin({
         filename: production ? '[contentHash].css' : `${env}.css`,
       }),
