@@ -35,7 +35,7 @@
     "@appsemble/node-utils": "0.18.5",
     "fs-extra": "^9.1.0",
     "inquirer": "^8.0.0",
-    "type-fest": "^0.21.2",
+    "type-fest": "^1.0.1",
     "yargs": "^16.2.0"
   },
   "engines": {

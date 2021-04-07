@@ -90,10 +90,20 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
     where: { OrganizationId: organizationId },
   });
 
+  const organizations = await Organization.findAll({
+    where: { id: apps.map((app) => app.OrganizationId) },
+    attributes: ['id', 'name'],
+  });
+
   const filteredApps =
     user && organization.Users.length ? apps : apps.filter((app) => !app.private);
 
-  ctx.body = filteredApps.map((app) => getAppFromRecord(app, ['yaml']));
+  ctx.body = filteredApps.map((app) => {
+    Object.assign(app, {
+      Organization: organizations.find((org) => org.id === app.OrganizationId),
+    });
+    return getAppFromRecord(app, ['yaml']);
+  });
 }
 
 export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<void> {

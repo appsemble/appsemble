@@ -37,7 +37,7 @@ export function AppCard({ app }: AppCardProps): ReactElement {
           {app.definition.name}
         </Title>
         <Subtitle className={`mb-0 ${styles.ellipsis}`} lang={appLang} size={6}>
-          @{app.OrganizationId}
+          {app.OrganizationName || app.OrganizationId}
         </Subtitle>
         <StarRating className={`pt-4 ${styles.rating}`} value={app.rating?.average || 0} />
       </div>

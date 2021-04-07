@@ -93,9 +93,9 @@ export function IndexPage(): ReactElement {
                 description={organization.role}
                 image={organization.iconUrl}
                 key={organization.id}
-                subtitle={`@${organization.id}`}
+                subtitle={organization.id}
                 title={organization.name || organization.id}
-                to={`${url}/@${organization.id}`}
+                to={`${url}/${organization.id}`}
               />
             ))}
           </ul>
@@ -115,9 +115,9 @@ export function IndexPage(): ReactElement {
                   alt={formatMessage(messages.logo)}
                   image={organization.iconUrl}
                   key={organization.id}
-                  subtitle={`@${organization.id}`}
+                  subtitle={organization.id}
                   title={organization.name || organization.id}
-                  to={`${url}/@${organization.id}`}
+                  to={`${url}/${organization.id}`}
                 />
               ))}
             </ul>

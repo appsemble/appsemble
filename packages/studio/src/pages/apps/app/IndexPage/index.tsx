@@ -9,10 +9,8 @@ import {
   SimpleForm,
   SimpleFormField,
   Title,
-  useData,
   useToggle,
 } from '@appsemble/react-components';
-import { Organization } from '@appsemble/types';
 import { defaultLocale, Permission } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -36,9 +34,6 @@ import { messages } from './messages';
  */
 export function IndexPage(): ReactElement {
   const { app } = useApp();
-  const { data: organization, error, loading } = useData<Organization>(
-    `/api/organizations/${app.OrganizationId}`,
-  );
   const cloneDialog = useToggle();
   const descriptionToggle = useToggle();
   const history = useHistory();
@@ -169,7 +164,7 @@ export function IndexPage(): ReactElement {
         }
         subtitle={
           <Link to={`/${lang}/organizations/@${app.OrganizationId}`}>
-            {loading || error ? `@${app.OrganizationId}` : organization.name}
+            {app.OrganizationName || app.OrganizationId}
           </Link>
         }
         title={app.definition.name}

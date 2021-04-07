@@ -1017,9 +1017,14 @@ export interface App {
   domain?: string;
 
   /**
-   * The id of the organization to which this app belongs.
+   * The id of the organization this app belongs to.
    */
   OrganizationId?: string;
+
+  /**
+   * The name of the organization this app belongs to.
+   */
+  OrganizationName?: string;
 
   /**
    * The long description of the app.

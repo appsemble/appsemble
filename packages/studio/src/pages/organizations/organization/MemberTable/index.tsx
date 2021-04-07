@@ -18,20 +18,19 @@ import { messages } from './messages';
 export function MemberTable(): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();
   const { userInfo } = useUser();
-  const id = organizationId.startsWith('@') ? organizationId.slice(1) : organizationId;
 
   const {
     data: members,
     error: membersError,
     loading: membersLoading,
     setData: setMembers,
-  } = useData<Member[]>(`/api/organizations/${id}/members`);
+  } = useData<Member[]>(`/api/organizations/${organizationId}/members`);
   const {
     data: invites,
     error: invitesError,
     loading: invitesLoading,
     setData: setInvites,
-  } = useData<OrganizationInvite[]>(`/api/organizations/${id}/invites`);
+  } = useData<OrganizationInvite[]>(`/api/organizations/${organizationId}/invites`);
   const addMembersModal = useToggle();
 
   const onInvited = useCallback(
