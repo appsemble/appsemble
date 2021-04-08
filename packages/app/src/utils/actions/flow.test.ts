@@ -13,7 +13,7 @@ beforeEach(() => {
 });
 
 describe('flow.back', () => {
-  it('should call the next flow action', async () => {
+  it('should call the back flow action', async () => {
     const action = createTestAction({
       definition: { type: 'flow.back' },
       flowActions,
@@ -24,7 +24,7 @@ describe('flow.back', () => {
 });
 
 describe('flow.cancel', () => {
-  it('should call the next flow action', async () => {
+  it('should call the cancel flow action', async () => {
     const action = createTestAction({
       definition: { type: 'flow.cancel' },
       flowActions,
@@ -35,7 +35,7 @@ describe('flow.cancel', () => {
 });
 
 describe('flow.finish', () => {
-  it('should call the next flow action', async () => {
+  it('should call the finish flow action', async () => {
     const action = createTestAction({
       definition: { type: 'flow.finish' },
       flowActions,
