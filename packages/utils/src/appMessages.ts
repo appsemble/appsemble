@@ -1,7 +1,7 @@
 /**
  * Recursively find `string.format` remapper message IDs.
  *
- * @param obj - THe object to search.
+ * @param obj - The object to search.
  * @returns All message IDs found
  */
 export function findMessageIds(obj: unknown): string[] {
