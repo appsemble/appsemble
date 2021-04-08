@@ -50,7 +50,7 @@ export function EnumInput({
     };
 
     if ('action' in field) {
-      actions[field.action].dispatch().then(handleOptions, handleError);
+      actions[field.action]().then(handleOptions, handleError);
     }
 
     if ('event' in field) {

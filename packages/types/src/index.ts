@@ -1,11 +1,4 @@
-import {
-  Action,
-  BaseMessage,
-  HTTPMethods,
-  LogAction,
-  RequestLikeActionTypes,
-  Theme,
-} from '@appsemble/sdk/src/types';
+import { Action, BaseMessage, HTTPMethods, LogAction, Theme } from '@appsemble/sdk/src/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
@@ -460,7 +453,7 @@ export interface ResourceDefinition {
    *
    * @default `id`
    */
-  id?: number;
+  id?: string;
 
   /**
    * The JSON schema to validate resources against before sending it to the backend.
@@ -577,7 +570,7 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
    *
    * This should be a page name.
    */
-  to: string;
+  to: string[] | string;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
@@ -589,9 +582,8 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
   level?: LogAction['level'];
 }
 
-export interface RequestLikeActionDefinition<
-  T extends RequestLikeActionTypes = RequestLikeActionTypes
-> extends BaseActionDefinition<T> {
+export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
+  extends BaseActionDefinition<T> {
   /**
    * The HTTP method to use for making a request.
    */
@@ -627,7 +619,7 @@ export interface RequestLikeActionDefinition<
   body?: Remapper;
 }
 
-export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
+interface ResourceActionDefinition<T extends Action['type']>
   extends RequestLikeActionDefinition<T> {
   /**
    * The name of the resource.
@@ -656,9 +648,9 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   action?: 'create' | 'delete' | 'update';
 }
 
-export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
+export type ResourceSubscriptionSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
 
-export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
+export type ResourceSubscriptionUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
 
 export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
 
@@ -697,6 +689,8 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
   };
 
 export type ActionDefinition =
+  | BaseActionDefinition<'dialog.error'>
+  | BaseActionDefinition<'dialog.ok'>
   | BaseActionDefinition<'email'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -714,16 +708,15 @@ export type ActionDefinition =
   | LogActionDefinition
   | MessageActionDefinition
   | RequestActionDefinition
-  // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
-  | RequestLikeActionDefinition
+  | ResourceCountActionDefinition
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
   | ResourceQueryActionDefinition
-  | ResourceSubscribeActionDefinition
   | ResourceSubscriptionStatusActionDefinition
+  | ResourceSubscriptionSubscribeActionDefinition
   | ResourceSubscriptionToggleActionDefinition
-  | ResourceUnsubscribeActionDefinition
+  | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
   | StaticActionDefinition;
 

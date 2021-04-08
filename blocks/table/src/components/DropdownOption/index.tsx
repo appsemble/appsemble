@@ -49,7 +49,7 @@ export function DropdownOption({
   } = useBlock();
 
   const onClick = useCallback(() => {
-    actions[option.onClick].dispatch(record, { index, repeatedIndex });
+    actions[option.onClick](record, { index, repeatedIndex });
   }, [actions, index, option.onClick, record, repeatedIndex]);
 
   const label = remap(option.label, item, { index, repeatedIndex });

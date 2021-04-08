@@ -61,7 +61,7 @@ export function ItemCell({
       return;
     }
 
-    onClickAction.dispatch(record, { index, repeatedIndex });
+    onClickAction(record, { index, repeatedIndex });
   }, [onClickAction, record, index, repeatedIndex]);
 
   return (

@@ -1,20 +1,18 @@
-import { BaseAction, LinkAction } from '@appsemble/sdk';
-import { BaseActionDefinition, LinkActionDefinition } from '@appsemble/types';
 import { normalize, partialNormalized } from '@appsemble/utils';
 
-import { MakeActionParameters } from '../../types';
+import { ActionCreator } from '.';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 
-export function link({
+export const link: ActionCreator<'link'> = ({
   app: { pages },
   definition: { to },
   history,
   route,
-}: MakeActionParameters<LinkActionDefinition>): LinkAction {
+}) => {
   let href: (data: any) => string;
 
-  if (urlRegex.test(to)) {
+  if (typeof to === 'string' && urlRegex.test(to)) {
     href = () => to;
   } else {
     const [toBase, toSub] = [].concat(to);
@@ -28,12 +26,13 @@ export function link({
     }
 
     href = (data = {}) => {
-      if (urlRegex.test(data)) {
+      if (typeof data === 'string' && urlRegex.test(data)) {
         return data;
       }
 
       return [
         '',
+        route.params.lang,
         normalize(toPage.name),
         ...(toPage.parameters || []).map((name) => data[name] ?? ''),
         ...(subPage ? [normalize(subPage.name)] : []),
@@ -41,46 +40,30 @@ export function link({
     };
   }
 
-  return {
-    type: 'link',
-    // eslint-disable-next-line require-await
-    async dispatch(data = {}) {
+  return [
+    (data = {}) => {
       const target = href(data);
 
       if (urlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
       } else {
-        history.push(`/${route.params.lang}${target}`, data);
+        history.push(target, data);
       }
+    },
+    { href },
+  ];
+};
 
-      return data;
-    },
-    href(args: any = {}) {
-      return href(args);
-    },
-  };
-}
+export const back: ActionCreator<'link.back'> = ({ history }) => [
+  (data) => {
+    history.goBack();
+    return data;
+  },
+];
 
-export function back({
-  history,
-}: MakeActionParameters<BaseActionDefinition<'link.back'>>): BaseAction<'link.back'> {
-  return {
-    type: 'link.back',
-    dispatch(data) {
-      history.goBack();
-      return data;
-    },
-  };
-}
-
-export function next({
-  history,
-}: MakeActionParameters<BaseActionDefinition<'link.next'>>): BaseAction<'link.next'> {
-  return {
-    type: 'link.next',
-    dispatch(data) {
-      history.goForward();
-      return data;
-    },
-  };
-}
+export const next: ActionCreator<'link.next'> = ({ history }) => [
+  (data) => {
+    history.goForward();
+    return data;
+  },
+];

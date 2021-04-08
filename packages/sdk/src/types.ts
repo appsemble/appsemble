@@ -28,24 +28,15 @@ export type HTTPMethods =
 
 export interface BaseAction<T extends string> {
   /**
+   * A function which can be called to dispatch the action.
+   */
+  <R>(data?: any, context?: Record<string, any>): Promise<R>;
+
+  /**
    * The type of the action.
    */
   type: T;
-
-  /**
-   * A function which can be called to dispatch the action.
-   */
-  dispatch: <R>(data?: any, context?: Record<string, any>) => Promise<R>;
 }
-
-export type RequestLikeActionTypes =
-  | 'request'
-  | 'resource.count'
-  | 'resource.create'
-  | 'resource.delete'
-  | 'resource.get'
-  | 'resource.query'
-  | 'resource.update';
 
 export interface LinkAction extends BaseAction<'link'> {
   /**
@@ -61,7 +52,7 @@ export interface LogAction extends BaseAction<'log'> {
   level: 'error' | 'info' | 'warn';
 }
 
-export interface RequestLikeAction<T extends RequestLikeActionTypes> extends BaseAction<T> {
+interface RequestLikeAction<T extends Action['type']> extends BaseAction<T> {
   /**
    * The HTTP method used to make the request.
    */
