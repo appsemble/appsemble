@@ -12,6 +12,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
+import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -119,6 +120,14 @@ export function ResourcePage(): ReactElement {
     ],
   );
 
+  const downloadCsv = useCallback(async () => {
+    await download(
+      `/api/apps/${app.id}/resources/${resourceName}`,
+      `${resourceName}.csv`,
+      'text/csv',
+    );
+  }, [app, resourceName]);
+
   if (!app || loading) {
     return <Loader />;
   }
@@ -157,12 +166,7 @@ export function ResourcePage(): ReactElement {
         <Button className="is-primary" icon="plus-square" onClick={openCreateModal}>
           <FormattedMessage {...messages.createButton} />
         </Button>
-        <Button
-          component="a"
-          download={`${resourceName}.csv`}
-          href={`/api/apps/${app.id}/resources/${resourceName}`}
-          icon="download"
-        >
+        <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
         </Button>
       </div>
