@@ -31,6 +31,14 @@ export function iterAction(
     return true;
   }
 
+  if (action.onSuccess && iterAction(action.onSuccess, callbacks, [...prefix, 'onSuccess'])) {
+    return true;
+  }
+
+  if (action.onError && iterAction(action.onError, callbacks, [...prefix, 'onError'])) {
+    return true;
+  }
+
   if ('blocks' in action) {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return iterBlockList(action.blocks, callbacks, [...prefix, 'blocks']);
