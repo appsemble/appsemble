@@ -17,6 +17,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
+import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
 import {
@@ -67,7 +68,9 @@ export function ResourcePage(): ReactElement {
   const [[sortedProperty, sortedPropertyDirection], setSortedProperty] = useState<
     [string, 'ASC' | 'DESC']
   >(['id', 'DESC']);
-  const [hiddenProperties, setHiddenProperties] = useState<Set<string>>(new Set());
+  const [hiddenProperties, setHiddenProperties] = useState<Set<string>>(
+    new Set(['$created', '$updated']),
+  );
   const [creatingResource, setCreatingResource] = useState<Resource>();
   const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
@@ -78,9 +81,10 @@ export function ResourcePage(): ReactElement {
 
   useEffect(() => {
     try {
-      setHiddenProperties(
-        new Set(JSON.parse(localStorage.getItem(`${app.id}.${resourceName}.hiddenProperties`))),
-      );
+      const saved = localStorage.getItem(`${app.id}.${resourceName}.hiddenProperties`);
+      if (saved) {
+        setHiddenProperties(new Set(JSON.parse(saved)));
+      }
     } catch {
       localStorage.removeItem(`${app.id}.${resourceName}.hiddenProperties`);
     }
@@ -172,6 +176,22 @@ export function ResourcePage(): ReactElement {
     ],
   );
 
+  const downloadCsv = useCallback(async () => {
+    await download(
+      `/api/apps/${app.id}/resources/${resourceName}?$select=${[
+        'id',
+        '$created',
+        '$updated',
+        '$author',
+        ...keys,
+      ]
+        .filter((key) => !hiddenProperties.has(key))
+        .join(',')}`,
+      `${resourceName}.csv`,
+      'text/csv',
+    );
+  }, [app, hiddenProperties, keys, resourceName]);
+
   if (!app || loading) {
     return <Loader />;
   }
@@ -213,23 +233,10 @@ export function ResourcePage(): ReactElement {
         <Button icon="eye-slash" onClick={hideModal.enable}>
           <FormattedMessage
             {...messages.hideButton}
-            values={{ count: hiddenProperties.size, total: keys.length + 2 }}
+            values={{ count: hiddenProperties.size, total: keys.length + 4 }}
           />
         </Button>
-        <Button
-          component="a"
-          download={`${resourceName}.csv`}
-          href={`/api/apps/${app.id}/resources/${resourceName}?$select=${[
-            'id',
-            '$created',
-            '$updated',
-            '$author',
-            ...keys,
-          ]
-            .filter((key) => !hiddenProperties.has(key))
-            .join(',')}`}
-          icon="download"
-        >
+        <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
         </Button>
       </div>
@@ -252,6 +259,16 @@ export function ResourcePage(): ReactElement {
             {!hiddenProperties.has('$author') && (
               <th>
                 <FormattedMessage {...messages.author} />
+              </th>
+            )}
+            {!hiddenProperties.has('$created') && (
+              <th>
+                <FormattedMessage {...messages.created} />
+              </th>
+            )}
+            {!hiddenProperties.has('$updated') && (
+              <th>
+                <FormattedMessage {...messages.updated} />
               </th>
             )}
             {keys
@@ -342,6 +359,16 @@ export function ResourcePage(): ReactElement {
             component={Checkbox}
             label={<FormattedMessage {...messages.author} />}
             name="$author"
+          />
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.created} />}
+            name="$created"
+          />
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.updated} />}
+            name="$updated"
           />
           {keys.map((key) => (
             <SimpleFormField
