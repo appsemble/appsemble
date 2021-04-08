@@ -1,7 +1,7 @@
 import {
   Button,
   CardFooterButton,
-  CheckboxField,
+  Checkbox,
   Form,
   Icon,
   Loader,
@@ -332,24 +332,26 @@ export function ResourcePage(): ReactElement {
           <FormattedMessage {...messages.hideExplanation} />
         </p>
         <br />
-        <SimpleFormField
-          component={CheckboxField}
-          name="id"
-          title={<FormattedMessage {...messages.id} />}
-        />
-        <SimpleFormField
-          component={CheckboxField}
-          name="$author"
-          title={<FormattedMessage {...messages.author} />}
-        />
-        {keys.map((key) => (
+        <div className={styles.hideCheckboxes}>
           <SimpleFormField
-            component={CheckboxField}
-            key={key}
-            name={key}
-            title={(schema?.properties[key] as OpenAPIV3.SchemaObject).title ?? key}
+            component={Checkbox}
+            label={<FormattedMessage {...messages.id} />}
+            name="id"
           />
-        ))}
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.author} />}
+            name="$author"
+          />
+          {keys.map((key) => (
+            <SimpleFormField
+              component={Checkbox}
+              key={key}
+              label={(schema?.properties[key] as OpenAPIV3.SchemaObject).title ?? key}
+              name={key}
+            />
+          ))}
+        </div>
       </ModalCard>
     </>
   );

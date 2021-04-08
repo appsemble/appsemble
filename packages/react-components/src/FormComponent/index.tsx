@@ -82,7 +82,7 @@ export function FormComponent({
   label,
   required,
 }: FormComponentProps): ReactElement {
-  const helpContent = (error || help) && (
+  const helpContent = (
     <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>
       {isValidElement(error) ? error : help}
     </span>
