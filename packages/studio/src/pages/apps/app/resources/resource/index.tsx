@@ -1,9 +1,14 @@
 import {
   Button,
   CardFooterButton,
+  Checkbox,
   Form,
+  Icon,
   Loader,
   ModalCard,
+  SimpleForm,
+  SimpleFormField,
+  SimpleModalFooter,
   Table,
   Title,
   useData,
@@ -14,7 +19,16 @@ import {
 import { generateDataFromSchema } from '@appsemble/utils';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
-import { FormEvent, ReactElement, useCallback, useMemo, useState } from 'react';
+import { OpenAPIV3 } from 'openapi-types';
+import {
+  FormEvent,
+  ReactElement,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -48,26 +62,43 @@ export function ResourcePage(): ReactElement {
   useMeta(resourceName);
   const push = useMessages();
 
-  const modal = useToggle();
+  const createModal = useToggle();
+  const hideModal = useToggle();
+
+  const [[sortedProperty, sortedPropertyDirection], setSortedProperty] = useState<
+    [string, 'ASC' | 'DESC']
+  >(['id', 'DESC']);
+  const [hiddenProperties, setHiddenProperties] = useState<Set<string>>(
+    new Set(['$created', '$updated']),
+  );
   const [creatingResource, setCreatingResource] = useState<Resource>();
   const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
-    `/api/apps/${appId}/resources/${resourceName}`,
+    `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
   );
 
   const { schema } = app.definition.resources[resourceName];
-  const keys = useMemo(() => ['id', '$author', ...Object.keys(schema?.properties || {})], [
-    schema?.properties,
-  ]);
+  const keys = useMemo(() => [...Object.keys(schema?.properties || {})], [schema?.properties]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(`${app.id}.${resourceName}.hiddenProperties`);
+      if (saved) {
+        setHiddenProperties(new Set(JSON.parse(saved)));
+      }
+    } catch {
+      localStorage.removeItem(`${app.id}.${resourceName}.hiddenProperties`);
+    }
+  }, [app, resourceName]);
 
   const closeCreateModal = useCallback(() => {
-    modal.disable();
+    createModal.disable();
     setCreatingResource(null);
-  }, [modal]);
+  }, [createModal]);
 
   const openCreateModal = useCallback(() => {
     setCreatingResource(generateDataFromSchema(schema) as Resource);
-    modal.enable();
-  }, [modal, schema]);
+    createModal.enable();
+  }, [createModal, schema]);
 
   const onEditResource = useCallback(
     (resource: Resource) => {
@@ -86,6 +117,31 @@ export function ResourcePage(): ReactElement {
   const onChange = useCallback((event, value: Resource) => {
     setCreatingResource(value);
   }, []);
+
+  const onSortProperty = useCallback(
+    (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
+      const { property } = event.currentTarget.dataset;
+
+      if (property === sortedProperty) {
+        setSortedProperty([property, sortedPropertyDirection === 'ASC' ? 'DESC' : 'ASC']);
+      } else {
+        setSortedProperty([property, 'ASC']);
+      }
+    },
+    [sortedProperty, sortedPropertyDirection],
+  );
+
+  const onHideProperties = useCallback(
+    (values: Record<string, boolean>) => {
+      const result = Object.entries(values)
+        .filter(([, value]) => value)
+        .map(([key]) => key);
+      setHiddenProperties(new Set(result));
+      localStorage.setItem(`${app.id}.${resourceName}.hiddenProperties`, JSON.stringify(result));
+      hideModal.disable();
+    },
+    [app, hideModal, resourceName],
+  );
 
   const submitCreate = useCallback(
     async (event: FormEvent) => {
@@ -122,11 +178,19 @@ export function ResourcePage(): ReactElement {
 
   const downloadCsv = useCallback(async () => {
     await download(
-      `/api/apps/${app.id}/resources/${resourceName}`,
+      `/api/apps/${app.id}/resources/${resourceName}?$select=${[
+        'id',
+        '$created',
+        '$updated',
+        '$author',
+        ...keys,
+      ]
+        .filter((key) => !hiddenProperties.has(key))
+        .join(',')}`,
       `${resourceName}.csv`,
       'text/csv',
     );
-  }, [app, resourceName]);
+  }, [app, hiddenProperties, keys, resourceName]);
 
   if (!app || loading) {
     return <Loader />;
@@ -166,6 +230,12 @@ export function ResourcePage(): ReactElement {
         <Button className="is-primary" icon="plus-square" onClick={openCreateModal}>
           <FormattedMessage {...messages.createButton} />
         </Button>
+        <Button icon="eye-slash" onClick={hideModal.enable}>
+          <FormattedMessage
+            {...messages.hideButton}
+            values={{ count: hiddenProperties.size, total: keys.length + 4 }}
+          />
+        </Button>
         <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
         </Button>
@@ -176,14 +246,56 @@ export function ResourcePage(): ReactElement {
             <th>
               <FormattedMessage {...messages.actions} />
             </th>
-            {keys.map((property) => (
-              <th key={property}>{property}</th>
-            ))}
+            {!hiddenProperties.has('id') && (
+              <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
+                <span>
+                  <FormattedMessage {...messages.id} />
+                </span>
+                {sortedProperty === 'id' && (
+                  <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
+                )}
+              </th>
+            )}
+            {!hiddenProperties.has('$author') && (
+              <th>
+                <FormattedMessage {...messages.author} />
+              </th>
+            )}
+            {!hiddenProperties.has('$created') && (
+              <th>
+                <FormattedMessage {...messages.created} />
+              </th>
+            )}
+            {!hiddenProperties.has('$updated') && (
+              <th>
+                <FormattedMessage {...messages.updated} />
+              </th>
+            )}
+            {keys
+              .filter((key) => !hiddenProperties.has(key))
+              .map((property) => {
+                const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
+                const sortable = propSchema?.type !== 'object' && propSchema?.type !== 'array';
+                return (
+                  <th
+                    className={sortable ? styles.clickable : ''}
+                    data-property={property}
+                    key={property}
+                    onClick={sortable && onSortProperty}
+                  >
+                    <span>{propSchema?.title || property}</span>
+                    {sortedProperty === property && (
+                      <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
+                    )}
+                  </th>
+                );
+              })}
           </tr>
         </thead>
         <tbody>
           {resources.map((resource) => (
             <ResourceRow
+              filter={hiddenProperties}
               key={resource.id}
               onDelete={onDeleteResource}
               onEdit={onEditResource}
@@ -206,7 +318,7 @@ export function ResourcePage(): ReactElement {
             </CardFooterButton>
           </>
         }
-        isActive={modal.enabled}
+        isActive={createModal.enabled}
         onClose={closeCreateModal}
         onSubmit={submitCreate}
         title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}
@@ -217,6 +329,56 @@ export function ResourcePage(): ReactElement {
           schema={schema}
           value={creatingResource}
         />
+      </ModalCard>
+      <ModalCard
+        component={SimpleForm}
+        defaultValues={Object.fromEntries([...hiddenProperties].map((key) => [key, true]))}
+        footer={
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancelButton} />}
+            onClose={hideModal.disable}
+            submitLabel={<FormattedMessage {...messages.apply} />}
+          />
+        }
+        isActive={hideModal.enabled}
+        onClose={hideModal.disable}
+        onSubmit={onHideProperties}
+        title={<FormattedMessage {...messages.hideProperties} />}
+      >
+        <p>
+          <FormattedMessage {...messages.hideExplanation} />
+        </p>
+        <br />
+        <div className={styles.hideCheckboxes}>
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.id} />}
+            name="id"
+          />
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.author} />}
+            name="$author"
+          />
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.created} />}
+            name="$created"
+          />
+          <SimpleFormField
+            component={Checkbox}
+            label={<FormattedMessage {...messages.updated} />}
+            name="$updated"
+          />
+          {keys.map((key) => (
+            <SimpleFormField
+              component={Checkbox}
+              key={key}
+              label={(schema?.properties[key] as OpenAPIV3.SchemaObject).title ?? key}
+              name={key}
+            />
+          ))}
+        </div>
       </ModalCard>
     </>
   );

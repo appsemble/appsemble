@@ -11,7 +11,7 @@ import { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement, useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { Resource, RouteParams } from '..';
@@ -23,15 +23,39 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 interface ResourceRowProps {
+  /**
+   * The resource to display the data of.
+   */
   resource: Resource;
+
+  /**
+   * The callback for when an existing resource is deleted.
+   */
   onDelete: (id: number) => void;
+
+  /**
+   * The callback for when an existing resource is edited.
+   */
   onEdit: (resource: Resource) => void;
+
+  /**
+   * The JSON schema of the resource.
+   */
   schema: OpenAPIV3.SchemaObject;
+
+  /**
+   * The list of properties to hide.
+   */
+  filter: Set<string>;
 }
 
 const filteredKeys = new Set(['id', '$author']);
 
+/**
+ * Display a resource in a table row.
+ */
 export function ResourceRow({
+  filter,
   onDelete,
   onEdit,
   resource,
@@ -120,51 +144,78 @@ export function ResourceRow({
 
   return (
     <tr className={styles.root}>
-      <td className="is-flex">
-        <IconButton color="info" icon="pen" onClick={openEditModal} />
-        <IconButton className="mx-2" color="danger" icon="trash" onClick={handleDeleteResource} />
-        {Object.hasOwnProperty.call(app, 'resources') && (
-          <ClonableCheckbox
-            checked={resource.$clonable}
-            id={`clonable${resource.id}`}
-            onChange={onSetClonable}
-          />
-        )}
-        <ModalCard
-          cardClassName={styles.modal}
-          component={Form}
-          footer={
-            <>
-              <CardFooterButton onClick={closeEditModal}>
-                <FormattedMessage {...messages.cancelButton} />
-              </CardFooterButton>
-              <CardFooterButton color="primary" type="submit">
-                <FormattedMessage {...messages.editButton} />
-              </CardFooterButton>
-            </>
-          }
-          isActive={modal.enabled}
-          onClose={closeEditModal}
-          onSubmit={onEditSubmit}
-          title={
-            <FormattedMessage
-              {...messages.editTitle}
-              values={{ resource: resourceName, id: resource.id }}
+      {!filter.has('$actions') && (
+        <td>
+          <div className="is-flex">
+            <IconButton color="info" icon="pen" onClick={openEditModal} />
+            <IconButton
+              className="mx-2"
+              color="danger"
+              icon="trash"
+              onClick={handleDeleteResource}
             />
-          }
-        >
-          <JSONSchemaEditor
-            name="resource"
-            onChange={onEditChange}
-            schema={schema}
-            value={editingResource}
-          />
-        </ModalCard>
-      </td>
-      <td className={styles.id}>{resource.id}</td>
-      <td className={styles.author}>{resource.$author?.name ?? resource.$author?.id}</td>
+            {Object.hasOwnProperty.call(app, 'resources') && (
+              <ClonableCheckbox
+                checked={resource.$clonable}
+                id={`clonable${resource.id}`}
+                onChange={onSetClonable}
+              />
+            )}
+            <ModalCard
+              cardClassName={styles.modal}
+              component={Form}
+              footer={
+                <>
+                  <CardFooterButton onClick={closeEditModal}>
+                    <FormattedMessage {...messages.cancelButton} />
+                  </CardFooterButton>
+                  <CardFooterButton color="primary" type="submit">
+                    <FormattedMessage {...messages.editButton} />
+                  </CardFooterButton>
+                </>
+              }
+              isActive={modal.enabled}
+              onClose={closeEditModal}
+              onSubmit={onEditSubmit}
+              title={
+                <FormattedMessage
+                  {...messages.editTitle}
+                  values={{ resource: resourceName, id: resource.id }}
+                />
+              }
+            >
+              <JSONSchemaEditor
+                name="resource"
+                onChange={onEditChange}
+                schema={schema}
+                value={editingResource}
+              />
+            </ModalCard>
+          </div>
+        </td>
+      )}
+      {!filter.has('id') && <td className={styles.id}>{resource.id}</td>}
+      {!filter.has('$author') && (
+        <td className={styles.author}>{resource.$author?.name ?? resource.$author?.id}</td>
+      )}
+      {!filter.has('$created') && (
+        <td>
+          <time dateTime={resource.$created}>
+            <FormattedDate day="numeric" month="short" value={resource.$created} year="numeric" />
+          </time>
+        </td>
+      )}
+
+      {!filter.has('$updated') && (
+        <td>
+          <time dateTime={resource.$updated}>
+            <FormattedDate day="numeric" month="short" value={resource.$updated} year="numeric" />
+          </time>
+        </td>
+      )}
+
       {Object.entries(schema?.properties ?? {})
-        .filter(([key]) => !filteredKeys.has(key))
+        .filter(([key]) => !filteredKeys.has(key) && !filter.has(key))
         .map(([key, subSchema]) => (
           <ResourceCell
             key={key}
