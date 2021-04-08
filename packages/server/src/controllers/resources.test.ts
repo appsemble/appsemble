@@ -1,6 +1,6 @@
 import { createFormData } from '@appsemble/node-utils';
 import { TeamRole } from '@appsemble/utils';
-import FakeTimers from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
 
@@ -27,7 +27,7 @@ import {
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 let organization: Organization;
-let clock: FakeTimers.InstalledClock;
+let clock: Clock;
 let member: Member;
 let user: User;
 let originalSendNotification: typeof webpush.sendNotification;
@@ -208,7 +208,7 @@ beforeEach(async () => {
     OrganizationId: organization.id,
     role: 'Maintainer',
   });
-  clock = FakeTimers.install();
+  clock = install();
 });
 
 afterEach(truncate);

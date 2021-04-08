@@ -1,5 +1,5 @@
 import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
-import FakeTimers from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 import { remap } from './remap';
@@ -99,10 +99,10 @@ describe('context', () => {
 });
 
 describe('date.now', () => {
-  let clock: FakeTimers.InstalledClock;
+  let clock: Clock;
 
   beforeEach(() => {
-    clock = FakeTimers.install();
+    clock = install();
   });
 
   afterEach(() => {
@@ -119,10 +119,10 @@ describe('date.now', () => {
 });
 
 describe('date.add', () => {
-  let clock: FakeTimers.InstalledClock;
+  let clock: Clock;
 
   beforeEach(() => {
-    clock = FakeTimers.install();
+    clock = install();
   });
 
   afterEach(() => {
