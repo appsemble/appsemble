@@ -113,7 +113,9 @@ export function JSONSchemaArrayEditor({
                 icon="minus"
                 name={`${name}.${index}`}
                 onClick={removeItem}
-                title={formatMessage(messages.removeAbove, { name: `${name}.${index}` })}
+                title={formatMessage(messages.removeAbove, {
+                  name: `${name.replace(`${prefix}.`, '')}.${index}`,
+                })}
               />
               <Button
                 className="ml-1"
