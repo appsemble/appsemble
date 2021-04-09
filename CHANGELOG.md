@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.6](https://gitlab.com/appsemble/appsemble/-/releases/0.18.6)] - 2021-04-09
+
+### Added
+
+- Studio: Add option to reorder array items in the resource editor.
+- Studio: Add option to sort primitive types in the resource editor.
+- Studio: Add options to hide properties from the resource table.
+
+### Changed
+
+- Sdk: Actions should be called directly instead of calling `dispatch()`.
+- Studio: Display name of organizations instead of the ID whenever possible.
+
+### Fixed
+
+- Sdk: Return the correct URL when calling `href()` on link actions.
+- Studio: Fix issue where array items were not inserted properly in the resource editor.
+
 ## \[[0.18.5](https://gitlab.com/appsemble/appsemble/-/releases/0.18.5)] - 2021-03-31
 
 ### Added
