@@ -1,14 +1,16 @@
-import { Button } from '@appsemble/react-components';
+import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
 import { NamedEvent } from '@appsemble/web-utils';
 import { OpenAPIV3 } from 'openapi-types';
-import { MouseEvent, ReactElement, useCallback } from 'react';
+import { MouseEvent, ReactElement, useCallback, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import { CollapsibleList } from '../../CollapsibleList';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
 import styles from './index.module.css';
+import { messages } from './messages';
 
 export function JSONSchemaArrayEditor({
   disabled,
@@ -19,6 +21,7 @@ export function JSONSchemaArrayEditor({
   value = [],
 }: CommonJSONSchemaEditorProps<any[]>): ReactElement {
   const items = (schema as OpenAPIV3.ArraySchemaObject).items as OpenAPIV3.SchemaObject;
+  const [removingItem, setRemovingItem] = useState<number>();
 
   const onPropertyChange = useCallback(
     ({ currentTarget }: NamedEvent, val) => {
@@ -31,16 +34,25 @@ export function JSONSchemaArrayEditor({
     [onChange, name, value],
   );
 
-  const removeItem = useCallback(
+  const removeItem = useCallback(() => {
+    onChange(
+      { currentTarget: { name } },
+      value.filter((_val, i) => i !== removingItem),
+    );
+    setRemovingItem(null);
+  }, [name, onChange, removingItem, value]);
+
+  const onClickRemoveItem = useCallback(
     ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
       const index = Number(currentTarget.name.slice(name.length + 1));
-      onChange(
-        { currentTarget: { name } },
-        value.filter((_val, i) => i !== index),
-      );
+      setRemovingItem(index);
     },
-    [onChange, name, value],
+    [name.length],
   );
+
+  const onCancelRemoveItem = useCallback(() => {
+    setRemovingItem(null);
+  }, []);
 
   const onItemAdded = useCallback(
     ({ currentTarget }: MouseEvent<HTMLButtonElement>) => {
@@ -110,7 +122,12 @@ export function JSONSchemaArrayEditor({
                   onClick={onItemMoved}
                 />
               ) : null}
-              <Button color="danger" icon="minus" name={`${name}.${index}`} onClick={removeItem} />
+              <Button
+                color="danger"
+                icon="minus"
+                name={`${name}.${index}`}
+                onClick={onClickRemoveItem}
+              />
               <Button
                 className="ml-1"
                 color="success"
@@ -123,6 +140,23 @@ export function JSONSchemaArrayEditor({
           </div>
         ))}
       </CollapsibleList>
+      <ModalCard
+        footer={
+          <>
+            <CardFooterButton onClick={onCancelRemoveItem}>
+              <FormattedMessage {...messages.cancel} />
+            </CardFooterButton>
+            <CardFooterButton color="danger" onClick={removeItem}>
+              <FormattedMessage {...messages.confirm} />
+            </CardFooterButton>
+          </>
+        }
+        isActive={removingItem != null}
+        onClose={onCancelRemoveItem}
+        title={<FormattedMessage {...messages.title} />}
+      >
+        <FormattedMessage {...messages.body} />
+      </ModalCard>
     </div>
   );
 }
