@@ -87,6 +87,7 @@ export function JSONSchemaArrayEditor({
             <RecursiveJSONSchemaEditor
               disabled={disabled}
               name={`${name}.${index}`}
+              nested
               onChange={onPropertyChange}
               prefix={prefix}
               schema={items}
