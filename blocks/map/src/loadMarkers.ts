@@ -38,7 +38,7 @@ export function loadMarkers(
       return;
     }
     new Marker([lat, lng], { icon: await createIcon(params, data && data.id === marker.id) })
-      .on('click', params.actions.onMarkerClick.dispatch.bind(null, marker))
+      .on('click', () => params.actions.onMarkerClick(marker))
       .addTo(target);
   });
 }

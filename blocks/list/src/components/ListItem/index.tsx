@@ -22,7 +22,7 @@ export function ListItem({ item }: ListItemProps): VNode {
   const onItemClick = useCallback(
     (event: Event) => {
       event.preventDefault();
-      actions.onClick.dispatch(item);
+      actions.onClick(item);
     },
     [actions, item],
   );

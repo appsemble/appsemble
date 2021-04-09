@@ -1,19 +1,10 @@
-import { LogAction } from '@appsemble/sdk';
-import { LogActionDefinition } from '@appsemble/types';
+import { ActionCreator } from '.';
 
-import { MakeActionParameters } from '../../types';
-
-export function log({ definition }: MakeActionParameters<LogActionDefinition>): LogAction {
-  const { level = 'info' } = definition;
-
-  return {
-    type: 'log',
-    // eslint-disable-next-line require-await
-    async dispatch(data) {
-      // eslint-disable-next-line no-console
-      console[level](data);
-      return data;
-    },
-    level,
-  };
-}
+export const log: ActionCreator<'log'> = ({ definition: { level = 'info' } }) => [
+  (data) => {
+    // eslint-disable-next-line no-console
+    console[level](data);
+    return data;
+  },
+  { level },
+];

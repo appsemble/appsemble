@@ -1,7 +1,7 @@
 import { URLSearchParams } from 'url';
 
 import { basicAuth } from '@appsemble/node-utils';
-import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { decode } from 'jsonwebtoken';
@@ -13,7 +13,7 @@ import { createServer } from '../../utils/createServer';
 import { createTestUser } from '../../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
-let clock: InstalledClock;
+let clock: Clock;
 let user: User;
 
 beforeAll(createTestSchema('tokenhandler'));
@@ -25,7 +25,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = FakeTimers.install();
+  clock = install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
   await truncate();
   user = await createTestUser();

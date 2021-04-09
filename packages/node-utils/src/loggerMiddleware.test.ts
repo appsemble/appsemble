@@ -1,4 +1,4 @@
-import FakeTimers from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { bold, cyan, green, red, white, yellow } from 'chalk';
 import Koa from 'koa';
@@ -14,12 +14,12 @@ class TestError extends Error {
 }
 
 let app: Koa;
-let clock: FakeTimers.InstalledClock;
+let clock: Clock;
 
 beforeEach(async () => {
   jest.spyOn(logger, 'info').mockImplementation(() => logger);
   jest.spyOn(logger, 'log').mockImplementation(() => logger);
-  clock = FakeTimers.install();
+  clock = install();
   app = new Koa();
   app.use(async (ctx, next) => {
     Object.defineProperty(ctx.request, 'origin', {

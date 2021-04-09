@@ -34,7 +34,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
     async (submitValues: FilterValues) => {
       setLoading(true);
       try {
-        const data = await actions.onLoad.dispatch({ $filter: toOData(fields, submitValues) });
+        const data = await actions.onLoad({ $filter: toOData(fields, submitValues) });
         events.emit.filtered(data);
       } catch (error: unknown) {
         events.emit.filtered(null, error as any);
@@ -75,7 +75,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
   useEffect(() => {
     const refresh = async (): Promise<void> => {
       try {
-        const data = await actions.onLoad.dispatch({ $filter: toOData(fields, values) });
+        const data = await actions.onLoad({ $filter: toOData(fields, values) });
         events.emit.refreshed(data);
       } catch (error: unknown) {
         events.emit.refreshed(null, error as any);

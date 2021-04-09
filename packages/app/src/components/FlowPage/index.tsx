@@ -44,7 +44,7 @@ export function FlowPage({
 
   const finish = useCallback(
     async (d: any): Promise<any> => {
-      await actions.onFlowFinish.dispatch(d);
+      await actions.onFlowFinish(d);
       setData(d);
       return d;
     },
@@ -86,7 +86,7 @@ export function FlowPage({
 
   const cancel = useCallback(
     async (d: any): Promise<void> => {
-      await actions.onFlowCancel.dispatch(d);
+      await actions.onFlowCancel(d);
       setData(d);
     },
     [actions],

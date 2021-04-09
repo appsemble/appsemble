@@ -18,7 +18,7 @@ attach(({ actions, data, parameters: { icon }, utils: { fa } }) => {
     'click',
     (event) => {
       event.preventDefault();
-      actions.onClick.dispatch(data);
+      actions.onClick(data);
     },
     true,
   );

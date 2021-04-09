@@ -35,6 +35,82 @@ describe('iterAction', () => {
     expect(result).toBe(true);
   });
 
+  it('should call onAction for onSuccess', () => {
+    const onAction = jest.fn();
+    const onBlockList = jest.fn();
+
+    const action: ActionDefinition = {
+      type: 'noop',
+      onSuccess: {
+        type: 'noop',
+      },
+    };
+
+    const result = iterAction(action, { onAction, onBlockList });
+
+    expect(onAction).toHaveBeenCalledTimes(2);
+    expect(onAction).toHaveBeenCalledWith(action, []);
+    expect(onAction).toHaveBeenCalledWith(action.onSuccess, ['onSuccess']);
+    expect(result).toBe(false);
+  });
+
+  it('should return true if onAction returns true for onSuccess', () => {
+    const onAction = jest.fn().mockImplementation((a, [prefix]) => prefix === 'onSuccess');
+    const onBlockList = jest.fn();
+
+    const action: ActionDefinition = {
+      type: 'noop',
+      onSuccess: {
+        type: 'noop',
+      },
+    };
+
+    const result = iterAction(action, { onAction, onBlockList });
+
+    expect(onAction).toHaveBeenCalledTimes(2);
+    expect(onAction).toHaveBeenCalledWith(action, []);
+    expect(onAction).toHaveBeenCalledWith(action.onSuccess, ['onSuccess']);
+    expect(result).toBe(true);
+  });
+
+  it('should call onAction for onError', () => {
+    const onAction = jest.fn();
+    const onBlockList = jest.fn();
+
+    const action: ActionDefinition = {
+      type: 'noop',
+      onError: {
+        type: 'noop',
+      },
+    };
+
+    const result = iterAction(action, { onAction, onBlockList });
+
+    expect(onAction).toHaveBeenCalledTimes(2);
+    expect(onAction).toHaveBeenCalledWith(action, []);
+    expect(onAction).toHaveBeenCalledWith(action.onError, ['onError']);
+    expect(result).toBe(false);
+  });
+
+  it('should return true if onAction returns true for onError', () => {
+    const onAction = jest.fn().mockImplementation((a, [prefix]) => prefix === 'onError');
+    const onBlockList = jest.fn();
+
+    const action: ActionDefinition = {
+      type: 'noop',
+      onError: {
+        type: 'noop',
+      },
+    };
+
+    const result = iterAction(action, { onAction, onBlockList });
+
+    expect(onAction).toHaveBeenCalledTimes(2);
+    expect(onAction).toHaveBeenCalledWith(action, []);
+    expect(onAction).toHaveBeenCalledWith(action.onError, ['onError']);
+    expect(result).toBe(true);
+  });
+
   it('should return the return value of iterBlockList', () => {
     const onAction = jest.fn();
     const onBlockList = jest.fn().mockReturnValue(true);

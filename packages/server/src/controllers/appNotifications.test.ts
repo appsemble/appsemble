@@ -1,4 +1,4 @@
-import FakeTimers from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import {
@@ -15,7 +15,7 @@ import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
-let clock: FakeTimers.InstalledClock;
+let clock: Clock;
 let organization: Organization;
 let user: User;
 
@@ -73,7 +73,7 @@ beforeAll(async () => {
 afterEach(truncate);
 
 beforeEach(async () => {
-  clock = FakeTimers.install();
+  clock = install();
 
   user = await createTestUser();
   organization = await Organization.create({

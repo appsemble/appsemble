@@ -19,13 +19,18 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { AppMessages } from '@appsemble/types';
-import { compareStrings, getLanguageDisplayName, iterApp, langmap } from '@appsemble/utils';
+import {
+  compareStrings,
+  findMessageIds,
+  getLanguageDisplayName,
+  iterApp,
+  langmap,
+} from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '..';
-import { findMessageIds } from '../../../../utils/findMessageIds';
 import { messages } from './messages';
 
 export function TranslationsPage(): ReactElement {
@@ -135,8 +140,7 @@ export function TranslationsPage(): ReactElement {
 
     iterApp(app.definition, {
       onBlock(block, prefix) {
-        findMessageIds(block.header, (messageId) => actions.push(messageId));
-        findMessageIds(block.parameters, (messageId) => actions.push(messageId));
+        actions.push(...findMessageIds(block.header), ...findMessageIds(block.parameters));
 
         const blockName = block.type.startsWith('@')
           ? `${block.type}/${block.version}`
@@ -149,7 +153,7 @@ export function TranslationsPage(): ReactElement {
         }
       },
       onAction(action) {
-        findMessageIds(action.remap, (messageId) => actions.push(messageId));
+        actions.push(...findMessageIds(action.remap));
       },
       onPage(_page, prefix) {
         pages.push(prefix.join('.'));
