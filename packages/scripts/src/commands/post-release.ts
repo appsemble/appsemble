@@ -62,7 +62,7 @@ async function createGitlabRelease(releaseNotes: string): Promise<void> {
           ...packages,
           ...blocks,
           {
-            type: 'image',
+            link_type: 'image',
             name: `appsemble/appsemble#${CI_COMMIT_TAG}`,
             url: 'https://hub.docker.com/r/appsemble/appsemble',
           },
