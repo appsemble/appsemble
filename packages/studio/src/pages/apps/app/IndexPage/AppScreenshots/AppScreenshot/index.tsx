@@ -1,4 +1,4 @@
-import { Button, useConfirmation } from '@appsemble/react-components';
+import { Button, Modal, useConfirmation, useToggle } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -14,6 +14,7 @@ interface AppScreenshotProps {
 export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps): ReactElement {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
+  const modal = useToggle();
 
   const onDeleteScreenshotClick = useConfirmation({
     title: <FormattedMessage {...messages.deleteScreenshotTitle} />,
@@ -39,13 +40,24 @@ export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps)
           onClick={onDeleteScreenshotClick}
         />
       )}
-      <figure className={styles.screenshot}>
-        <img
-          alt={formatMessage(messages.screenshot, { app: app.definition.name })}
-          className={styles.screenshot}
-          src={url}
-        />
-      </figure>
+      <button
+        className={`${styles.button} ${styles.screenshot}`}
+        onClick={modal.enable}
+        type="button"
+      >
+        <figure className={styles.screenshot}>
+          <img
+            alt={formatMessage(messages.screenshot, { app: app.definition.name })}
+            className={styles.screenshot}
+            src={url}
+          />
+        </figure>
+      </button>
+      <Modal isActive={modal.enabled} onClose={modal.disable}>
+        <figure className="image">
+          <img alt={formatMessage(messages.screenshot, { app: app.definition.name })} src={url} />
+        </figure>
+      </Modal>
     </div>
   );
 }
