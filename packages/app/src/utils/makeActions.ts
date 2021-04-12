@@ -1,10 +1,5 @@
 import { Action } from '@appsemble/sdk';
-import {
-  ActionDefinition,
-  ActionType,
-  BlockDefinition,
-  FlowPageDefinition,
-} from '@appsemble/types';
+import { ActionDefinition, ActionType } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import { addBreadcrumb, Severity } from '@sentry/browser';
 import { SetRequired } from 'type-fest';
@@ -17,10 +12,15 @@ interface CommonActionParams {
   pageReady: Promise<void>;
 }
 
-type MakeActionsParams = CommonActionParams &
+/**
+ * Paraeters to pass to `makeActions`.
+ *
+ * @see makeActions
+ */
+export type MakeActionsParams = CommonActionParams &
   Omit<MakeActionParameters<ActionDefinition>, 'definition'> & {
     actions: Record<string, ActionType>;
-    context: BlockDefinition | FlowPageDefinition;
+    context: { actions: Record<string, ActionDefinition> };
   };
 
 type CreateActionParams<T extends ActionDefinition['type']> = CommonActionParams &
@@ -121,53 +121,37 @@ function createAction<T extends ActionDefinition['type']>({
   return Object.assign(action, properties);
 }
 
+/**
+ * Create action implementations from a mapping of action definitions.
+ *
+ * Typically the return value is passed to a block built using `@appsemble/sdk`.
+ *
+ * @param params - Parameters which define how to implement the actions.
+ * @returns A mapping of action definitions.
+ */
 export function makeActions({
   actions,
   context,
   prefix,
   ...params
 }: MakeActionsParams): Record<string, Action> {
-  const actionMap = Object.entries(actions || {})
-    .filter(([key]) => key !== '$any')
-    .reduce<Record<string, Action>>((acc, [on, { required }]) => {
-      let definition: ActionDefinition;
-      if (!context.actions || !Object.hasOwnProperty.call(context.actions, on)) {
-        if (required) {
-          throw new Error(`Missing required action ${on}`);
-        }
-      } else {
-        definition = context.actions[on as keyof typeof context.actions];
-      }
-
-      const action = createAction({
-        ...params,
-        definition,
-        prefix: `${prefix}.actions.${on}`,
-      });
-
-      acc[on] = action;
-      return acc;
-    }, {});
-
-  let anyActions: Record<string, Action>;
-  if (actions?.$any) {
-    anyActions = Object.keys(context.actions || {})
-      .filter((key) => !actionMap[key])
-      .reduce<Record<string, Action>>((acc, on: keyof typeof context.actions) => {
-        const definition = context.actions[on];
-
-        const action = createAction({
-          ...params,
-          definition,
-          prefix: `${prefix}.actions.${on}`,
-        });
-
-        acc[on] = action;
-        return acc;
-      }, {});
+  const actionMap: Record<string, Action> = {};
+  const keys = actions ? Object.keys(actions) : [];
+  if (keys.includes('$any') && context?.actions) {
+    keys.push(...Object.keys(context.actions));
   }
 
-  return { ...anyActions, ...actionMap };
+  for (const key of new Set(keys)) {
+    if (key !== '$any') {
+      actionMap[key] = createAction({
+        ...params,
+        definition: context?.actions?.[key],
+        prefix: `${prefix}.actions.${key}`,
+      });
+    }
+  }
+
+  return actionMap;
 }
 
 export function createTestAction<T extends ActionDefinition['type']>(
