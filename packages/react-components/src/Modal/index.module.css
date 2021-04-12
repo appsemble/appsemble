@@ -1,0 +1,17 @@
+.root {
+  /* The transition times must be matched by the timeout value in the React code. */
+  transition: opacity 300ms;
+  z-index: 3000;
+}
+
+.opening {
+  opacity: 0;
+}
+
+.open {
+  opacity: 1;
+}
+
+.closing {
+  opacity: 0;
+}
