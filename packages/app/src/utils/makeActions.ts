@@ -13,7 +13,7 @@ interface CommonActionParams {
 }
 
 /**
- * Paraeters to pass to `makeActions`.
+ * Parameters to pass to `makeActions`.
  *
  * @see makeActions
  */
