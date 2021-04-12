@@ -17,6 +17,5 @@ export const messages = defineMessages({
     'Are you sure you wish to delete the translations for this language? These can not be restored.',
   delete: 'Delete',
   language: 'Language',
-  uploadSuccess: 'Uploaded messages successfully',
   deleteSuccess: 'Successfully deleted messages',
 });
