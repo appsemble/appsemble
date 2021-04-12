@@ -44,8 +44,8 @@ export function useToggle(initialState = false): Toggle {
   }, []);
 
   const toggle = useCallback(() => {
-    setEnabled(!enabled);
-  }, [enabled]);
+    setEnabled((oldState) => !oldState);
+  }, []);
 
   return useMemo(
     () => ({
