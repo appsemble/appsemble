@@ -20,7 +20,7 @@ interface CommonActionParams {
 export type MakeActionsParams = CommonActionParams &
   Omit<MakeActionParameters<ActionDefinition>, 'definition'> & {
     actions: Record<string, ActionType>;
-    context: { actions: Record<string, ActionDefinition> };
+    context: { actions?: Record<string, ActionDefinition> };
   };
 
 type CreateActionParams<T extends ActionDefinition['type']> = CommonActionParams &
