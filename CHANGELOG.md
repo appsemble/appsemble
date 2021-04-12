@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.7](https://gitlab.com/appsemble/appsemble/-/releases/0.18.7)] - 2021-04-12
+
+### Added
+
+- Studio: Add option to view larger images of App screenshots in Studio.
+
+### Fixed
+
+- App: Fix crash when using dialog actions.
+
 ## \[[0.18.6](https://gitlab.com/appsemble/appsemble/-/releases/0.18.6)] - 2021-04-09
 
 ### Added
