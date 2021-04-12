@@ -45,12 +45,15 @@ describe('makeActions', () => {
   });
 
   it('should set proper metadata on the created actions', () => {
+    const dialogOk = jest.fn().mockImplementation(identity);
     const actions = makeActions({
       ...testDefaults,
       actions: { onClick: {} },
-      context: { actions: { onClick: { type: 'noop' } } },
+      context: { actions: { onClick: { type: 'dialog.ok' } } },
+      extraCreators: { 'dialog.ok': () => [dialogOk] },
     });
-    expect(actions.onClick.name).toBe('noop[wrapper]');
+    expect(actions.onClick.name).toBe('dialog.ok[wrapper]');
+    expect(dialogOk.name).toBe('dialog.ok[implementation]');
   });
 
   it('should define dispatch for backwards compatibility with @appsemble/sdk < 0.18.6', () => {
