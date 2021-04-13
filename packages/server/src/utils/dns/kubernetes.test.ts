@@ -27,10 +27,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  mock.reset();
-});
-
-afterEach(() => {
   App.removeHook('afterSave', 'dns');
   Organization.removeHook('afterCreate', 'dns');
 });
