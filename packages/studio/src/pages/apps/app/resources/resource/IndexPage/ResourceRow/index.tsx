@@ -15,8 +15,8 @@ import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { Resource, RouteParams } from '..';
-import { useApp } from '../../..';
-import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
+import { useApp } from '../../../..';
+import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor';
 import { ClonableCheckbox } from '../ClonableCheckbox';
 import { ResourceCell } from '../ResourceCell';
 import styles from './index.module.css';
