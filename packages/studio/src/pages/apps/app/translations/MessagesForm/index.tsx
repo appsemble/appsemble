@@ -9,7 +9,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { AppMessages } from '@appsemble/types';
-import { compareStrings, findMessageIds, iterApp, normalizeBlockName } from '@appsemble/utils';
+import { compareStrings, extractAppMessages, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -38,9 +38,6 @@ export function MessagesForm({ appMessages, languageId }: MessagesFormProps): Re
   const { formatMessage } = useIntl();
 
   const messageIds = useMemo(() => {
-    const actions: string[] = [];
-    const pages: string[] = [];
-    const pageBlockMessageIds: string[] = [];
     const blockMessages = appMessages
       ? Object.entries(appMessages.messages.blocks).flatMap(([name, versions]) =>
           Object.entries(versions).flatMap(([version, versionMessages]) =>
@@ -51,40 +48,20 @@ export function MessagesForm({ appMessages, languageId }: MessagesFormProps): Re
         )
       : [];
 
-    iterApp(app.definition, {
-      onBlock(block, prefix) {
-        actions.push(...findMessageIds(block.header), ...findMessageIds(block.parameters));
-
-        const blockName = block.type.startsWith('@')
-          ? `${block.type}/${block.version}`
-          : `${normalizeBlockName(block.type)}/${block.version}`;
-        const pageBlockMessages = blockMessages.filter((name) => name.startsWith(blockName));
-        pageBlockMessageIds.push(
-          ...pageBlockMessages.map((name) => `${prefix.join('.')}.${name.split('/').pop()}`),
-        );
-      },
-      onAction(action) {
-        actions.push(...findMessageIds(action.remap));
-      },
-      onPage(page, prefix) {
-        pages.push(prefix.join('.'));
-
-        if (page.type === 'tabs') {
-          pages.push(
-            ...page.subPages.map((subPage, index) => `${prefix.join('.')}.subPages.${index}`),
-          );
-        }
-      },
+    const ids = extractAppMessages(app.definition, (block, prefix) => {
+      const blockName = `${normalizeBlockName(block.type)}/${block.version}`;
+      const pageBlockMessages = blockMessages.filter((name) => name.startsWith(blockName));
+      return pageBlockMessages.map((name) => `${prefix.join('.')}.${name.split('/').pop()}`);
     });
 
     return [
-      ...[...new Set(pages)].sort(compareStrings),
-      ...[...new Set(actions)].sort(compareStrings),
-      ...blockMessages.sort(compareStrings),
-      ...pageBlockMessageIds.sort(compareStrings),
-      // XXX Extract all core app messages
-      'app.src.components.OpenIDLogin.loginWith',
-    ];
+      ...new Set([
+        ...ids,
+        ...blockMessages,
+        // XXX Extract all core app messages
+        'app.src.components.OpenIDLogin.loginWith',
+      ]),
+    ].sort(compareStrings);
   }, [app, appMessages]);
 
   const onSubmit = useCallback(

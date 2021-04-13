@@ -1,4 +1,4 @@
-import { findMessageIds } from './appMessages';
+import { extractAppMessages, findMessageIds } from './appMessages';
 
 describe('findMessageIds', () => {
   it('should ignore null', () => {
@@ -40,5 +40,116 @@ describe('findMessageIds', () => {
       bar: { 'string.format': { messageId: 'baz' } },
     });
     expect(result).toStrictEqual(['fooz', 'baz']);
+  });
+});
+
+describe('extractAppMessages', () => {
+  it('should extract page prefixes', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        { name: '', blocks: [] },
+        { name: '', blocks: [] },
+      ],
+    });
+    expect(result).toStrictEqual(['pages.0', 'pages.1']);
+  });
+
+  it('should extract block header remappers', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: '',
+          blocks: [
+            { type: 'test', version: '1.2.3', header: { 'string.format': { messageId: 'foo' } } },
+          ],
+        },
+      ],
+    });
+    expect(result).toStrictEqual(['foo', 'pages.0']);
+  });
+
+  it('should extract remappers from block parameters', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: '',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              parameters: { foo: { 'string.format': { messageId: 'foo' } } },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toStrictEqual(['foo', 'pages.0']);
+  });
+
+  it('should extract remappers from actions', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: '',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              actions: {
+                onClick: {
+                  type: 'noop',
+                  remap: { 'string.format': { messageId: 'onClickMessageId' } },
+                  onError: {
+                    type: 'noop',
+                    remap: { 'string.format': { messageId: 'onErrorMessageId' } },
+                  },
+                  onSuccess: {
+                    type: 'noop',
+                    remap: { 'string.format': { messageId: 'onSuccessMessageId' } },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toStrictEqual([
+      'onClickMessageId',
+      'onErrorMessageId',
+      'onSuccessMessageId',
+      'pages.0',
+    ]);
+  });
+
+  it('should extract names from tabs pages', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: '',
+          type: 'tabs',
+          subPages: [{ name: '', blocks: [] }],
+        },
+      ],
+    });
+    expect(result).toStrictEqual(['pages.0', 'pages.0.subPages.0']);
+  });
+
+  it('should append any messages returned by onBlock', () => {
+    const onBlock = jest.fn().mockReturnValue(['foo']);
+    const result = extractAppMessages(
+      {
+        defaultPage: '',
+        pages: [{ name: '', blocks: [{ type: '', version: '' }] }],
+      },
+      onBlock,
+    );
+    expect(onBlock).toHaveBeenCalledWith({ type: '', version: '' }, ['pages', 0, 'blocks', 0]);
+    expect(result).toStrictEqual(['foo', 'pages.0']);
   });
 });
