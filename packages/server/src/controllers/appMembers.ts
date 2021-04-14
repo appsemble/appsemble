@@ -68,7 +68,7 @@ export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App does not have a security definition.');
   }
 
-  const { policy, role: defaultRole } = app.definition.security.default;
+  const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
 
   const user = await User.findByPk(memberId);
 

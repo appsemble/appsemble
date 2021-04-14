@@ -212,7 +212,7 @@ async function verifyPermission(
 
   if (app.definition.security && !isPublic) {
     const member = app.Users?.find((u) => u.id === user?.id);
-    const { policy, role: defaultRole } = app.definition.security.default;
+    const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
     let role: string;
 
     if (member) {

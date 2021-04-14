@@ -143,7 +143,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
           axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
             ({ data }) => data.role,
             (error) => {
-              const { policy, role: defaultRole } = definition.security.default;
+              const { policy = 'everyone', role: defaultRole } = definition.security.default;
               if (
                 policy === 'everyone' ||
                 (policy === 'organization' &&
