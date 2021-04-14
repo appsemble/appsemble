@@ -35,7 +35,7 @@ workflow:
 
 # A preconfigured environment for using Helm.
 .helm:
-  image: dtzar/helm-kubectl:3.5.0
+  image: dtzar/helm-kubectl:3
   dependencies: []
 
 # A preconfigured environment for using Yarn.
