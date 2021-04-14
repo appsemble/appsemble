@@ -33,7 +33,6 @@ export function BooleanInput({
       className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
       error={dirty && error}
-      help={utils.remap(labelText, value) ?? checkboxLabel ?? null}
       label={checkboxLabel}
       name={name}
       onChange={onChange}
@@ -41,6 +40,7 @@ export function BooleanInput({
       readOnly={readOnly}
       required={required}
       tag={utils.remap(tag, value)}
+      title={utils.remap(labelText, value) ?? checkboxLabel ?? null}
     />
   );
 }
