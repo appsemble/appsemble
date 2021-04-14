@@ -20,8 +20,7 @@ export const Security: OpenAPIV3.NonArraySchemaObject = {
     default: {
       type: 'object',
       required: ['role'],
-      description:
-        'The default role to apply to members. The implication of this depends on the `who` property.',
+      description: 'The default role to apply to members.',
       properties: {
         policy: {
           type: 'string',
@@ -37,8 +36,7 @@ export const Security: OpenAPIV3.NonArraySchemaObject = {
 
         role: {
           type: 'string',
-          description:
-            'The default role to apply to members. The implication of this depends on the `who` property.',
+          description: 'The default role to apply to members.',
         },
       },
     },

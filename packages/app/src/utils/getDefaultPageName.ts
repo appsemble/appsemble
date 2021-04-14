@@ -11,11 +11,15 @@ export function getDefaultPageName(
 
   let defaultPage = definition.security.roles[role]?.defaultPage;
 
-  if (!defaultPage) {
-    const inheritedRole = definition.security.roles[role].inherits?.find(
-      (r) => definition.security.roles[r].defaultPage,
-    );
+  if (defaultPage) {
+    return defaultPage;
+  }
 
+  const inheritedRole = definition.security.roles[role]?.inherits?.find(
+    (r) => definition.security.roles[r].defaultPage,
+  );
+
+  if (inheritedRole) {
     defaultPage = definition.security.roles[inheritedRole]?.defaultPage;
   }
 
