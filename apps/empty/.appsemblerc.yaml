@@ -5,7 +5,7 @@ context:
     private: false
     id: 9
   staging:
-    remote: https://staging.appsemble.app
+    remote: https://staging.appsemble.review
     organization: appsemble
     template: true
     private: false
