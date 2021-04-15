@@ -52,7 +52,7 @@ export const appRouter = tinyRouter([
     get: indexHandler,
   },
   {
-    route: /\.\w+$/,
+    route: /\.[a-z]\w*$/i,
     any: staticHandler('app'),
   },
   {
