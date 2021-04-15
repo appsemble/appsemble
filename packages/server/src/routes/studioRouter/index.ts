@@ -27,7 +27,7 @@ export const studioRouter = tinyRouter([
     get: indexHandler,
   },
   {
-    route: /\.\w+$/,
+    route: /\.[a-z]\w*$/i,
     any: staticHandler('studio'),
   },
   {
