@@ -334,20 +334,19 @@ export interface SubscriptionResponseResource {
 
 export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
+export interface RoleDefinition {
+  description?: string;
+  inherits?: string[];
+  defaultPage?: string;
+}
+
 export interface Security {
   login?: 'password';
   default: {
     role: string;
     policy?: 'everyone' | 'invite' | 'organization';
   };
-  roles: Record<
-    string,
-    {
-      description?: string;
-      inherits?: string[];
-      defaultPage?: string;
-    }
-  >;
+  roles: Record<string, RoleDefinition>;
 }
 
 export type Navigation = 'bottom' | 'hidden' | 'left-menu';
