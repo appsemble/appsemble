@@ -2,9 +2,8 @@ import { createReadStream, promises as fs } from 'fs';
 import { join } from 'path';
 import { inspect } from 'util';
 
-import { AppsembleError, logger, opendirSafe } from '@appsemble/node-utils';
+import { AppsembleError, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
 import FormData from 'form-data';
-import yaml from 'js-yaml';
 
 import { AppsembleContext, AppsembleRC } from '../types';
 import { processCss } from './processCss';
@@ -30,8 +29,7 @@ export async function traverseAppDirectory(
     switch (stat.name.toLowerCase()) {
       case '.appsemblerc.yaml': {
         logger.info(`Reading app settings from ${filepath}`);
-        const text = await fs.readFile(filepath, 'utf8');
-        const rc = yaml.safeLoad(text) as AppsembleRC;
+        const [rc] = await readYaml<AppsembleRC>(filepath);
         if ('iconBackground' in rc) {
           formData.append('iconBackground', rc.iconBackground);
         }
@@ -49,8 +47,7 @@ export async function traverseAppDirectory(
         }
         appFound = filepath;
 
-        const data = await fs.readFile(filepath, 'utf8');
-        const app = yaml.safeLoad(data);
+        const [app, data] = await readYaml(filepath);
         formData.append('yaml', data);
         formData.append('definition', JSON.stringify(app));
         return;

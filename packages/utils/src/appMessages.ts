@@ -1,3 +1,7 @@
+import { AppDefinition, BlockDefinition } from '@appsemble/types';
+
+import { compareStrings, iterApp, Prefix } from '.';
+
 /**
  * Recursively find `string.format` remapper message IDs.
  *
@@ -20,4 +24,43 @@ export function findMessageIds(obj: unknown): string[] {
     }
   }
   return entries.flatMap(([, value]) => findMessageIds(value));
+}
+
+/**
+ * Extract translatable message IDs from an app definition.
+ *
+ * @param app - The app definition to extract nessage IDs from
+ * @param onBlock - A function to extract block messages. This is needed, because block messages may
+ * be extracted based on different contexts.
+ * @returns A list of message IDs
+ */
+export function extractAppMessages(
+  app: AppDefinition,
+  onBlock?: (block: BlockDefinition, prefix: Prefix) => string[],
+): string[] {
+  const messageIds: string[] = [];
+
+  iterApp(app, {
+    onBlock(block, prefix) {
+      messageIds.push(...findMessageIds(block.header), ...findMessageIds(block.parameters));
+
+      if (onBlock) {
+        messageIds.push(...onBlock(block, prefix));
+      }
+    },
+    onAction(action) {
+      messageIds.push(...findMessageIds(action.remap));
+    },
+    onPage(page, prefix) {
+      messageIds.push(prefix.join('.'));
+
+      if (page.type === 'tabs') {
+        messageIds.push(
+          ...page.subPages.map((subPage, index) => `${prefix.join('.')}.subPages.${index}`),
+        );
+      }
+    },
+  });
+
+  return [...new Set(messageIds)].sort(compareStrings);
 }

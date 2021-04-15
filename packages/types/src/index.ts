@@ -48,7 +48,7 @@ export interface BlockDefinition {
   /**
    * An optional header to render above the block.
    */
-  header?: string;
+  header?: Remapper;
 
   /**
    * An override of the block’s default layout.
@@ -301,7 +301,7 @@ export interface Remappers {
     /**
      * A set of remappers to convert the input to usable values.
      */
-    values: Record<string, Remapper>;
+    values?: Record<string, Remapper>;
   };
 
   /**
