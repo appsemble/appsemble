@@ -1,5 +1,7 @@
 import { promises as fs } from 'fs';
 
+import { isErrno } from '.';
+
 /**
  * If the string represents an existing path, read the file. Otherwise, return the string itself.
  *
@@ -9,10 +11,10 @@ import { promises as fs } from 'fs';
 export async function readFileOrString(string: Buffer | string): Promise<Buffer | string> {
   try {
     return await fs.readFile(string);
-  } catch (err: unknown) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+  } catch (error: unknown) {
+    if (isErrno(error, 'ENOENT')) {
       return string;
     }
-    throw err;
+    throw error;
   }
 }

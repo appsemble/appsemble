@@ -1,10 +1,9 @@
 import { existsSync, promises as fs } from 'fs';
 import { join, parse } from 'path';
 
-import { logger } from '@appsemble/node-utils';
+import { logger, readYaml } from '@appsemble/node-utils';
 import { AppMessages } from '@appsemble/types';
 import axios from 'axios';
-import yaml from 'js-yaml';
 
 /**
  * Upload messages for an app.
@@ -36,8 +35,8 @@ export async function uploadMessages(
   for (const messageFile of messageDir) {
     logger.verbose(`Processing ${join(path, 'i18n', messageFile)} ⚙️`);
     const language = parse(messageFile).name;
-    const file = await fs.readFile(join(path, 'i18n', messageFile), 'utf8');
-    const messages = yaml.safeLoad(file);
+    const [messages] = await readYaml(join(path, 'i18n', messageFile));
+    // XXX This type is incorrect
     result.push({ force, language, messages } as AppMessages);
   }
 
