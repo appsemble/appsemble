@@ -1,5 +1,6 @@
 export * from './api';
 export * from './appMessages';
+export * from './appSecurity';
 export * from './blockUtils';
 export * from './compare';
 export * from './constants';

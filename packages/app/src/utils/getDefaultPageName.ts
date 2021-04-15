@@ -1,32 +1,5 @@
-import { AppDefinition, RoleDefinition } from '@appsemble/types';
-
-export function resolveRoleInheritance(
-  app: AppDefinition,
-  role: string,
-): [roleName: string, roleDefinition: RoleDefinition][] {
-  const rolesDefinition = app?.security?.roles;
-  const roleNames: string[] = [];
-  const roles: RoleDefinition[] = [];
-
-  const resolveRoles = (r: string): void => {
-    const roleDefinition = rolesDefinition[r];
-    if (!r || !roleDefinition) {
-      return;
-    }
-    if (roles.includes(roleDefinition)) {
-      return;
-    }
-    roleNames.push(r);
-    roles.push(roleDefinition);
-    roleDefinition.inherits?.forEach(resolveRoles);
-  };
-
-  if (rolesDefinition) {
-    resolveRoles(role);
-  }
-
-  return roles.map((r, index) => [roleNames[index], r]);
-}
+import { AppDefinition } from '@appsemble/types';
+import { resolveRoleInheritance } from '@appsemble/utils';
 
 export function getDefaultPageName(
   isLoggedIn: boolean,
