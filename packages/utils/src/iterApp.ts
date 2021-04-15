@@ -1,6 +1,6 @@
 import { ActionDefinition, AppDefinition, BlockDefinition, PageDefinition } from '@appsemble/types';
 
-type Prefix = (number | string)[];
+export type Prefix = (number | string)[];
 
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 type IterCallback<T> = (item: T, path: Prefix) => boolean | void;
