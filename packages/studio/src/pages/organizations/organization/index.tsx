@@ -1,11 +1,16 @@
-import { MenuSection, MetaSwitch, useData, useSideMenu } from '@appsemble/react-components';
+import {
+  MenuItem,
+  MenuSection,
+  MetaSwitch,
+  useData,
+  useSideMenu,
+} from '@appsemble/react-components';
 import { normalize, normalized, Permission } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../components/AsyncDataView';
-import { MenuItem } from '../../../components/MenuItem';
 import { ProtectedRoute } from '../../../components/ProtectedRoute';
 import { useUser } from '../../../components/UserProvider';
 import { Organization } from '../../../types';

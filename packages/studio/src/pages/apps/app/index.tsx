@@ -1,6 +1,7 @@
 import {
   Icon,
   Loader,
+  MenuItem,
   MenuSection,
   Message,
   MetaSwitch,
@@ -23,7 +24,6 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { MenuItem } from '../../../components/MenuItem';
 import { ProtectedRoute } from '../../../components/ProtectedRoute';
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';

@@ -1,9 +1,14 @@
-import { Content, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
+import {
+  Content,
+  MenuItem,
+  MenuSection,
+  MetaSwitch,
+  useSideMenu,
+} from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { MenuItem } from '../../components/MenuItem';
 import { ClientCredentialsPage } from './client-credentials';
 import { messages } from './messages';
 import { SocialPage } from './social';
