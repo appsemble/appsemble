@@ -24,6 +24,7 @@ export * from './Join';
 export * from './JSONField';
 export * from './Loader';
 export * from './MarkdownContent';
+export * from './MenuItem';
 export * from './MenuSection';
 export * from './Message';
 export * from './MessagesProvider';
