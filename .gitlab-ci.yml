@@ -64,6 +64,12 @@ helm lint:
   script:
     - helm lint config/charts/*
 
+# Verify app messages are in sync with the app definition.
+i18n:
+  extends: .yarn
+  script:
+    - yarn appsemble app extract-messages --languages nl --verify apps/*
+
 # Check formatting using prettier.
 prettier:
   extends: .yarn

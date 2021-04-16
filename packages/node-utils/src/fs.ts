@@ -1,7 +1,7 @@
 import { Dirent, promises as fs, Stats } from 'fs';
 import { join } from 'path';
 
-import yaml from 'js-yaml';
+import yaml, { DumpOptions } from 'js-yaml';
 import { Promisable } from 'type-fest';
 
 import { AppsembleError } from '.';
@@ -45,6 +45,21 @@ export async function readYaml<R>(path: string): Promise<[R, string]> {
     }
     throw error;
   }
+}
+
+/**
+ * Write data to a file serialized as YAML.
+ *
+ * @param path - The path to write to.
+ * @param data - The data to serialize.
+ * @param dumpOptions - YAML dump options.
+ */
+export async function writeYaml(
+  path: string,
+  data: unknown,
+  dumpOptions: DumpOptions,
+): Promise<void> {
+  await fs.writeFile(path, yaml.safeDump(data, dumpOptions));
 }
 
 interface OpenDirSafeOptions {
