@@ -23,30 +23,22 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
 
   return (
     <div className={`card is-flex ${styles.root}`} key={block.name} title={block.name}>
-      <header className="card-header">
-        <div className="card-header-title">
-          <div className={`media is-flex ${styles.header}`}>
-            <div className={`media-left ${styles.nogrow}`}>
-              <figure className="image is-64x64">
-                <img
-                  alt={`@${org}${name} ${messages.blockLogo}`}
-                  src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
-                />
-              </figure>
-            </div>
-            <div className={`media-content ${styles.headerContent}`}>
-              <Title className={styles.ellipsis} lang={defaultLocale} level={5} size={4}>
-                {name}
-              </Title>
-              <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
-                <Link to={`/${lang}/organizations/${org}`}>{org}</Link>
-              </Subtitle>
-            </div>
-            <div className={`media-right ${styles.nogrow}`}>
-              <span className="subtitle is-6 has-text-grey">{block.version}</span>
-            </div>
-          </div>
+      <header className="px-2 py-2 is-flex">
+        <figure className={`image is-64x64 ${styles.nogrow}`}>
+          <img
+            alt={`@${org}${name} ${messages.blockLogo}`}
+            src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
+          />
+        </figure>
+        <div className={`pl-3 pr-1 ${styles.header} ${styles.ellipsis}`}>
+          <Title className={styles.ellipsis} lang={defaultLocale} level={5} size={4}>
+            {name}
+          </Title>
+          <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
+            <Link to={`/${lang}/organizations/${org}`}>{org}</Link>
+          </Subtitle>
         </div>
+        <span className={`subtitle is-6 has-text-grey ${styles.nogrow}`}>{block.version}</span>
       </header>
       <div
         className={`card-content ${styles.description}`}
