@@ -40,7 +40,6 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
         </div>
         <span className={`subtitle is-6 has-text-grey ${styles.nogrow}`}>{block.version}</span>
       </header>
-      <hr className="is-marginless" />
       <div
         className={`card-content ${styles.description}`}
         lang={block.description ? defaultLocale : null}
