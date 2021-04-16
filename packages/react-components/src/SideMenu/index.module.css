@@ -30,7 +30,7 @@
   top: 3.25rem;
   transition: left 0.15s;
   width: menu-width;
-  z-index: 3000;
+  z-index: 5000;
 
   @media screen and (min-width: 1024px) {
     left: 0;
@@ -52,7 +52,7 @@
   /* This matches the size of the navbar */
   top: 3.25rem;
   transition: opacity 0.15s;
-  z-index: 2000;
+  z-index: 4000;
 
   @media screen and (min-width: 1024px) {
     display: none;

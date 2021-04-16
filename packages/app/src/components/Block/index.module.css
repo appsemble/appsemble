@@ -54,6 +54,22 @@
 
     /* Trim the X translation */
     transform: translateY(-50%);
+
+    &.hasSideMenu {
+      @media screen and (min-width: 1024px) {
+        /* The side menu has a width of 18rem */
+        left: 18.75rem;
+      }
+    }
+  }
+
+  &.hasSideMenu {
+    &:not(.right):not(.left) {
+      @media screen and (min-width: 1024px) {
+        /* The side menu has a width of 18rem */
+        left: calc(50% + 9rem);
+      }
+    }
   }
 
   &.right {
