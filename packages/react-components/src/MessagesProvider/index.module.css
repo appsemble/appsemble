@@ -3,7 +3,7 @@
   box-sizing: border-box;
   position: fixed;
   width: calc(100vw - 20px);
-  z-index: 3000;
+  z-index: 5000;
 }
 
 .messageEnter {
