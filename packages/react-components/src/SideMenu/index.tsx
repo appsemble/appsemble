@@ -5,6 +5,7 @@ import {
   ReactElement,
   ReactNode,
   SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -14,6 +15,7 @@ import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { useToggle } from '..';
+import { useEventListener } from '../useEventListener';
 import styles from './index.module.css';
 import { messages } from './messages';
 
@@ -51,6 +53,19 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
   const history = useHistory();
 
   useEffect(() => history.listen(disable), [disable, history]);
+
+  useEventListener(
+    globalThis,
+    'keydown',
+    useCallback(
+      (event) => {
+        if (event.key === 'Escape') {
+          disable();
+        }
+      },
+      [disable],
+    ),
+  );
 
   return (
     <Context.Provider value={useMemo(() => [enabled, toggle, setMenu], [enabled, toggle])}>
