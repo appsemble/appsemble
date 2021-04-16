@@ -154,13 +154,6 @@ export function ResourceRow({
               icon="trash"
               onClick={handleDeleteResource}
             />
-            {Object.hasOwnProperty.call(app, 'resources') && (
-              <ClonableCheckbox
-                checked={resource.$clonable}
-                id={`clonable${resource.id}`}
-                onChange={onSetClonable}
-              />
-            )}
             <ModalCard
               cardClassName={styles.modal}
               component={Form}
@@ -211,6 +204,16 @@ export function ResourceRow({
           <time dateTime={resource.$updated}>
             <FormattedDate day="numeric" month="short" value={resource.$updated} year="numeric" />
           </time>
+        </td>
+      )}
+
+      {Object.hasOwnProperty.call(app, 'resources') && !filter.has('$clonable') && (
+        <td>
+          <ClonableCheckbox
+            checked={resource.$clonable}
+            id={`clonable${resource.id}`}
+            onChange={onSetClonable}
+          />
         </td>
       )}
 

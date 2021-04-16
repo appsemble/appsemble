@@ -269,6 +269,11 @@ export function IndexPage(): ReactElement {
                 <FormattedMessage {...messages.updated} />
               </th>
             )}
+            {Object.hasOwnProperty.call(app, 'resources') && !hiddenProperties.has('$clonable') && (
+              <th>
+                <FormattedMessage {...messages.clonable} />
+              </th>
+            )}
             {keys
               .filter((key) => !hiddenProperties.has(key))
               .map((property) => {
@@ -368,6 +373,13 @@ export function IndexPage(): ReactElement {
             label={<FormattedMessage {...messages.updated} />}
             name="$updated"
           />
+          {Object.hasOwnProperty.call(app, 'resources') && (
+            <SimpleFormField
+              component={Checkbox}
+              label={<FormattedMessage {...messages.clonable} />}
+              name="$clonable"
+            />
+          )}
           {keys.map((key) => (
             <SimpleFormField
               component={Checkbox}

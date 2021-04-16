@@ -23,4 +23,5 @@ export const messages = defineMessages({
     'Hide properties from the table. Hidden properties will also be hidden when exporting the properties as CSV.',
   created: 'Created',
   updated: 'Updated',
+  clonable: 'Clonable',
 });
