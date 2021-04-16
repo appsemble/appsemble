@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.8](https://gitlab.com/appsemble/appsemble/-/releases/0.18.8)] - 2021-04-16
+
+### Added
+
+- CLI: Add command `extract-messages` for extracting and validating app messages.
+
+### Removed
+
+- App: The runtime check for required actions has been removed.
+
+### Fixed
+
+- Block(`form`): Fix displaying of previous form state in checkbox fields when using `flow.back`.
+
 ## \[[0.18.7](https://gitlab.com/appsemble/appsemble/-/releases/0.18.7)] - 2021-04-12
 
 ### Added
