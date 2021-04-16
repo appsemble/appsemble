@@ -5,7 +5,6 @@ import {
   ReactElement,
   ReactNode,
   SetStateAction,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -14,12 +13,13 @@ import {
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
+import { useToggle } from '..';
 import styles from './index.module.css';
 import { messages } from './messages';
 
 type SideMenuContext = [
   isOpen: boolean,
-  setOpen: Dispatch<SetStateAction<boolean>>,
+  toggle: () => void,
   setMenu: Dispatch<SetStateAction<ReactElement>>,
 ];
 
@@ -46,16 +46,21 @@ interface SideMenuProviderProps {
  * A wrapper that renders a responsive side menu.
  */
 export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactElement {
-  const [isOpen, setOpen] = useState(false);
+  const { disable, enabled, toggle } = useToggle();
   const [menu, setMenu] = useState<ReactElement>(null);
   const history = useHistory();
 
-  useEffect(() => history.listen(() => setOpen(false)), [history]);
+  useEffect(() => history.listen(disable), [disable, history]);
 
   return (
-    <Context.Provider value={useMemo(() => [isOpen, setOpen, setMenu], [isOpen])}>
+    <Context.Provider value={useMemo(() => [enabled, toggle, setMenu], [enabled, toggle])}>
       <div className={`px-3 py-3 ${styles.sideMenuWrapper}`}>
-        <aside className={classNames(`menu ${styles.sideMenu}`, { [styles.open]: isOpen })}>
+        <div
+          className={classNames(styles.backdrop, { [styles.closed]: !enabled })}
+          onClick={disable}
+          role="presentation"
+        />
+        <aside className={classNames(`menu ${styles.sideMenu}`, { [styles.open]: enabled })}>
           {base}
           {menu}
           {bottom}
@@ -70,12 +75,8 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
  * A Bulma styled menu toggle.
  */
 export function SideMenuButton(): ReactElement {
-  const [isOpen, setOpen] = useContext(Context);
+  const [isOpen, toggle] = useContext(Context);
   const { formatMessage } = useIntl();
-
-  const toggle = useCallback(() => {
-    setOpen((value) => !value);
-  }, [setOpen]);
 
   return (
     <button
