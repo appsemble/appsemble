@@ -1,4 +1,5 @@
 import { AppDefinition } from '@appsemble/types';
+import { resolveRoleInheritance } from '@appsemble/utils';
 
 export function getDefaultPageName(
   isLoggedIn: boolean,
@@ -9,19 +10,11 @@ export function getDefaultPageName(
     return definition.defaultPage;
   }
 
-  let defaultPage = definition.security.roles[role]?.defaultPage;
-
-  if (defaultPage) {
-    return defaultPage;
+  for (const [, roleDefinition] of resolveRoleInheritance(definition, role)) {
+    if (roleDefinition.defaultPage) {
+      return roleDefinition.defaultPage;
+    }
   }
 
-  const inheritedRole = definition.security.roles[role]?.inherits?.find(
-    (r) => definition.security.roles[r].defaultPage,
-  );
-
-  if (inheritedRole) {
-    defaultPage = definition.security.roles[inheritedRole]?.defaultPage;
-  }
-
-  return defaultPage || definition.defaultPage;
+  return definition.defaultPage;
 }
