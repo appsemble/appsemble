@@ -7,7 +7,7 @@ import { has } from './has';
  *
  * @param app - The app to resolve role priority for.
  * @param role - The role to resolve
- * @returns A list uf tuples of role name and role definition. The roles are sorted by priority.
+ * @returns A list of tuples of role name and role definition. The roles are sorted by priority.
  */
 export function resolveRoleInheritance(
   app: Pick<AppDefinition, 'security'>,
