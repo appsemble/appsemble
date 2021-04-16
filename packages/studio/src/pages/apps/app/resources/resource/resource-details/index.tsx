@@ -1,14 +1,5 @@
-import {
-  Button,
-  Tab,
-  Tabs,
-  Title,
-  useData,
-  useMessages,
-  useMeta,
-  useToggle,
-} from '@appsemble/react-components';
-import { NamedEvent } from '@appsemble/web-utils';
+import { Button, Tab, Tabs, useData, useMessages, useMeta } from '@appsemble/react-components';
+import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -16,8 +7,9 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { useApp } from '../../..';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView';
-import { CodeBlock } from '../../../../../../components/CodeBlock';
+import { HeaderControl } from '../../../../../../components/HeaderControl';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
+import { MonacoEditor } from '../../../../../../components/MonacoEditor';
 import { Resource } from '../IndexPage';
 import { messages } from './messages';
 
@@ -34,24 +26,26 @@ export function ResourceDetailsPage(): ReactElement {
   const { hash } = useLocation();
   const history = useHistory();
   const result = useData<Resource>(`/api/apps/${id}/resources/${resourceName}/${resourceId}`);
-  const isEditingResource = useToggle();
+  const [submitting, setSubmitting] = useState(false);
   const [editingResource, setEditingResource] = useState<Resource>();
+  const [editingResourceJson, setEditingResourceJson] = useState<string>();
 
   useMeta(resourceId);
 
   useEffect(() => {
     if (!tabOptions.has(hash)) {
-      history.push({ hash: 'properties' });
+      history.replace({ hash: 'properties' });
     }
   }, [hash, history]);
 
   useEffect(() => {
     if (!editingResource && !result.loading && result.data) {
       setEditingResource(result.data);
+      setEditingResourceJson(JSON.stringify(result.data, null, 2));
     }
   }, [editingResource, result]);
 
-  const onClickTab = useCallback((event, tab: string) => history.push({ hash: tab }), [history]);
+  const onClickTab = useCallback((unused, tab: string) => history.push({ hash: tab }), [history]);
   const onCopyResource = useCallback(() => {
     try {
       navigator.clipboard.writeText(JSON.stringify(result.data, null, 2));
@@ -61,30 +55,44 @@ export function ResourceDetailsPage(): ReactElement {
     }
   }, [formatMessage, push, result]);
 
-  const onEditChange = useCallback((event: NamedEvent, value: Resource) => {
+  const onDownloadResource = useCallback(async () => {
+    await download(
+      `/api/apps/${app.id}/resources/${resourceName}/${resourceId}`,
+      `${resourceName} ${resourceId}.json`,
+      'application/json',
+    );
+  }, [app, resourceName, resourceId]);
+
+  const onEditChange = useCallback((unused, value: Resource) => {
     setEditingResource(value);
+  }, []);
+
+  const onEditJsonChange = useCallback((unused, value: string) => {
+    setEditingResourceJson(value);
   }, []);
 
   const onEditSubmit = useCallback(async () => {
     try {
+      setSubmitting(true);
       const { data } = await axios.put<Resource>(
         `/api/apps/${id}/resources/${resourceName}/${resourceId}`,
-        editingResource,
+        hash === '#json' ? editingResource : JSON.parse(editingResourceJson),
       );
       push({
         body: formatMessage(messages.updateSuccess, { id: resourceId }),
         color: 'primary',
       });
       result.setData(data);
-      isEditingResource.disable();
+      setSubmitting(false);
     } catch {
       push(formatMessage(messages.updateError));
     }
   }, [
     editingResource,
+    editingResourceJson,
     formatMessage,
+    hash,
     id,
-    isEditingResource,
     push,
     resourceId,
     resourceName,
@@ -95,15 +103,42 @@ export function ResourceDetailsPage(): ReactElement {
 
   return (
     <>
-      <Title>
+      <HeaderControl
+        control={
+          <div className="is-flex is-justify-content-flex-end">
+            <Button
+              className="mb-4 mr-2"
+              color="primary"
+              disabled={submitting}
+              icon="save"
+              loading={submitting}
+              onClick={onEditSubmit}
+            >
+              <FormattedMessage {...messages.save} />
+            </Button>
+            <Button
+              className="mb-4 mr-2"
+              icon="download"
+              onClick={onDownloadResource}
+              title={formatMessage(messages.download)}
+            />
+            <Button
+              className="mb-4"
+              icon="copy"
+              onClick={onCopyResource}
+              title={formatMessage(messages.copy)}
+            />
+          </div>
+        }
+      >
         {resourceName} {resourceId}
-      </Title>
+      </HeaderControl>
       <AsyncDataView
         errorMessage={<FormattedMessage {...messages.error} />}
         loadingMessage={<FormattedMessage {...messages.loading} />}
         result={result}
       >
-        {(resource) => (
+        {() => (
           <>
             <Tabs onChange={onClickTab} value={hash}>
               <Tab href={`${url}#properties`} value="#properties">
@@ -112,53 +147,45 @@ export function ResourceDetailsPage(): ReactElement {
               <Tab href={`${url}#json`} value="#json">
                 <FormattedMessage {...messages.json} />
               </Tab>
-              <Tab href={`${url}#edit`} value="#edit">
-                <FormattedMessage {...messages.edit} />
-              </Tab>
             </Tabs>
-            {hash === '#properties' && <div />}
-            {hash === '#json' && (
-              <>
-                <div className="is-flex is-justify-content-flex-end">
-                  {isEditingResource.enabled ? (
+            <>
+              {hash === '#properties' && (
+                <>
+                  <JSONSchemaEditor
+                    name="resource"
+                    onChange={onEditChange}
+                    schema={schema}
+                    value={editingResource}
+                  />
+                  <div className="is-flex is-justify-content-flex-end">
                     <Button
-                      className="mb-4 mr-2"
+                      className="my-4"
                       color="primary"
+                      disabled={submitting}
                       icon="save"
+                      loading={submitting}
                       onClick={onEditSubmit}
                     >
                       <FormattedMessage {...messages.save} />
                     </Button>
-                  ) : (
-                    <Button className="mb-4 mr-2" icon="edit" onClick={isEditingResource.enable}>
-                      <FormattedMessage {...messages.edit} />
-                    </Button>
-                  )}
-                  <Button
-                    className="mb-4"
-                    icon="copy"
-                    onClick={onCopyResource}
-                    title={formatMessage(messages.copy)}
-                  />
-                </div>
-                <CodeBlock code={JSON.stringify(resource, null, 2)} language="json" />
-              </>
-            )}
-            {hash === '#edit' && (
-              <>
-                <JSONSchemaEditor
-                  name="resource"
-                  onChange={onEditChange}
-                  schema={schema}
-                  value={editingResource}
+                  </div>
+                </>
+              )}
+              {hash === '#json' && (
+                <MonacoEditor
+                  language="json"
+                  onChange={onEditJsonChange}
+                  onSave={onEditSubmit}
+                  options={{
+                    insertSpaces: true,
+                    tabSize: 2,
+                    minimap: { enabled: false },
+                    readOnly: false,
+                  }}
+                  value={editingResourceJson}
                 />
-                <div className="is-flex is-justify-content-flex-end">
-                  <Button className="my-4" color="primary" onClick={onEditSubmit}>
-                    <FormattedMessage {...messages.save} />
-                  </Button>
-                </div>
-              </>
-            )}
+              )}
+            </>
           </>
         )}
       </AsyncDataView>

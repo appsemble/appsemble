@@ -1,4 +1,5 @@
 import { languages, IEvent as MonacoIEvent } from 'monaco-editor';
+import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker';
 import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
 import 'monaco-yaml';
 
@@ -19,6 +20,9 @@ const { getWorker } = MonacoEnvironment;
 MonacoEnvironment.getWorker = (workerId, label) => {
   if (label === 'yaml') {
     return new YamlWorker();
+  }
+  if (label === 'json') {
+    return new JsonWorker();
   }
   return getWorker(workerId, label);
 };

@@ -13,7 +13,6 @@ import {
   Title,
   useData,
   useMessages,
-  useMeta,
   useToggle,
 } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
@@ -59,7 +58,6 @@ export function IndexPage(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const { id: appId, resourceName } = useParams<RouteParams>();
-  useMeta(resourceName);
   const push = useMessages();
 
   const createModal = useToggle();
