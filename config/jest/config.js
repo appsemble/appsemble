@@ -2,6 +2,13 @@ const { existsSync, readFileSync } = require('fs');
 const { join } = require('path');
 
 /**
+ * These libraries are setup by adding just importing them or adding them to `setupFilesAfterEnv`.
+ *
+ * They will be added if they are defined in `tsconfig.json` types.
+ */
+const setupByImport = ['@testing-library/jest-dom', 'expect-puppeteer'];
+
+/**
  * Generate a proper Jest configuration based on a project context.
  */
 module.exports = (rootDir) => {
@@ -25,9 +32,10 @@ module.exports = (rootDir) => {
     setupFilesAfterEnv.push(setup);
   }
 
-  // If the types define testing library, add it to the setup files
-  if (types.includes('@testing-library/jest-dom')) {
-    setupFilesAfterEnv.push('@testing-library/jest-dom');
+  for (const setupModule of setupByImport) {
+    if (types.includes(setupModule)) {
+      setupFilesAfterEnv.push(setupModule);
+    }
   }
 
   // Handle messages.ts files using Babel if babel-plugin-react-intl-auto is enabled.
