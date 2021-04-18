@@ -38,7 +38,7 @@ export function JSONSchemaArrayEditor({
   const removeItem = useCallback(() => {
     onChange(
       { currentTarget: { name } },
-      value.filter((_val, i) => i !== removingItem),
+      value.filter((val, i) => i !== removingItem),
     );
     setRemovingItem(null);
   }, [name, onChange, removingItem, value]);

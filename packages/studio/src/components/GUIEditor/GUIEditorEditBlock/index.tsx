@@ -29,7 +29,7 @@ export function GUIEditorEditBlock({
   selectedBlock,
 }: GUIEditorEditBlockProps): ReactElement {
   const [tab, setTab] = useState('parameters');
-  const onTabChange = useCallback((_, value: string) => setTab(value), []);
+  const onTabChange = useCallback((event, value: string) => setTab(value), []);
 
   const onChange = useCallback(
     (event: NamedEvent, value: any) => {

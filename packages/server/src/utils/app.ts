@@ -79,7 +79,7 @@ export async function getRemapperContext(
     order: [['language', 'desc']],
     where: {
       AppId: app.id,
-      language: { [Op.or]: languages.map((_, i) => languages.slice(0, i + 1).join('-')) },
+      language: { [Op.or]: languages.map((lang, i) => languages.slice(0, i + 1).join('-')) },
     },
   });
   const cache = objectCache(

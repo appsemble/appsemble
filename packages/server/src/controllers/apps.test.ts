@@ -749,7 +749,7 @@ pages:
 
   it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
     await App.bulkCreate(
-      Array.from({ length: 11 }, (_, index) => ({
+      Array.from({ length: 11 }, (unused, index) => ({
         path: index ? `test-app-${index}` : 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: `a${index}`,

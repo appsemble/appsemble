@@ -52,7 +52,7 @@ function processNode(
     const wrapper = xmlObject?.wrapped ? childNodes.find(matchNode(xmlObject, name)) : parent;
     return [...wrapper.children]
       .filter(matchNode(itemSchema.xml, name))
-      .map((_, i) => processNode(wrapper, itemSchema, name, i));
+      .map((element, i) => processNode(wrapper, itemSchema, name, i));
   }
   if (schema.xml?.attribute) {
     return parseFromString(

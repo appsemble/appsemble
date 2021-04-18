@@ -26,7 +26,7 @@ export function GUIEditorToolboxBlock({
   const intl = useIntl();
 
   const onChangeSearch = useCallback(
-    (_event: NamedEvent, query: string) => {
+    (event: NamedEvent, query: string) => {
       setSearchValue(query);
       const updatedList = blocks.filter(
         (item) => item.name.toLowerCase().search(query.toLowerCase()) !== -1,

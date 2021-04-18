@@ -13,7 +13,7 @@ export const validators: Record<string, Validator> = {
   enum: validateEnum,
   radio: validateRadio,
   file: validateFile,
-  geocoordinates: (_, value: { longitude: number; latitude: number }) =>
+  geocoordinates: (field, value: { longitude: number; latitude: number }) =>
     value?.latitude && value?.longitude ? undefined : {},
   string: validateString,
   number: validateNumber,
