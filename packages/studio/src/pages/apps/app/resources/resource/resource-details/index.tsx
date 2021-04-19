@@ -76,7 +76,7 @@ export function ResourceDetailsPage(): ReactElement {
       setSubmitting(true);
       const { data } = await axios.put<Resource>(
         `/api/apps/${id}/resources/${resourceName}/${resourceId}`,
-        hash === '#json' ? editingResource : JSON.parse(editingResourceJson),
+        hash === '#json' ? JSON.parse(editingResourceJson) : editingResource,
       );
       push({
         body: formatMessage(messages.updateSuccess, { id: resourceId }),
