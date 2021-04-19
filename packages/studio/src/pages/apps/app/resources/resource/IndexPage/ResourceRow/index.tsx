@@ -1,20 +1,19 @@
 import {
   Button,
   CardFooterButton,
+  Checkbox,
   Dropdown,
   Form,
-  IconButton,
   ModalCard,
-  useConfirmation,
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
 import { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
-import { ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 import { Resource, RouteParams } from '..';
 import { useApp } from '../../../..';
@@ -31,11 +30,6 @@ interface ResourceRowProps {
   resource: Resource;
 
   /**
-   * The callback for when an existing resource is deleted.
-   */
-  onDelete: (id: number) => void;
-
-  /**
    * The callback for when an existing resource is edited.
    */
   onEdit: (resource: Resource) => void;
@@ -44,6 +38,16 @@ interface ResourceRowProps {
    * The JSON schema of the resource.
    */
   schema: OpenAPIV3.SchemaObject;
+
+  /**
+   * Whether the checkbox for this resource row is selected.
+   */
+  selected: boolean;
+
+  /**
+   * A callback function that is triggered when the checkbox is changed.
+   */
+  onSelected: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
 
   /**
    * The list of properties to hide.
@@ -58,40 +62,21 @@ const filteredKeys = new Set(['id', '$author']);
  */
 export function ResourceRow({
   filter,
-  onDelete,
   onEdit,
+  onSelected,
   resource,
   schema,
+  selected,
 }: ResourceRowProps): ReactElement {
-  const { id: appId, resourceName } = useParams<RouteParams>();
+  const {
+    params: { id: appId, resourceName },
+    url,
+  } = useRouteMatch<RouteParams>();
   const { app } = useApp();
   const [editingResource, setEditingResource] = useState<Resource>();
   const modal = useToggle();
   const push = useMessages();
   const { formatMessage } = useIntl();
-
-  const onConfirmDelete = useCallback(
-    () =>
-      axios
-        .delete(`/api/apps/${appId}/resources/${resourceName}/${resource.id}`)
-        .then(() => {
-          push({
-            body: formatMessage(messages.deleteSuccess, { id: resource.id }),
-            color: 'primary',
-          });
-          onDelete(resource.id);
-        })
-        .catch(() => push(formatMessage(messages.deleteError))),
-    [appId, formatMessage, onDelete, push, resource, resourceName],
-  );
-
-  const handleDeleteResource = useConfirmation({
-    title: <FormattedMessage {...messages.resourceWarningTitle} />,
-    body: <FormattedMessage {...messages.resourceWarning} />,
-    cancelLabel: <FormattedMessage {...messages.cancelButton} />,
-    confirmLabel: <FormattedMessage {...messages.deleteButton} />,
-    action: onConfirmDelete,
-  });
 
   const onSetClonable = useCallback(async () => {
     const { data } = await axios.put<Resource>(
@@ -147,57 +132,63 @@ export function ResourceRow({
   return (
     <tr className={styles.root}>
       {!filter.has('$actions') && (
-        <td>
-          <div className="is-flex">
-            <Dropdown className={styles.dropdown} icon="ellipsis-v" label="">
-              <Button className={`${styles.noBorder} pl-5 dropdown-item`} icon="edit">
-                Edit
-              </Button>
-              <Button className={`${styles.noBorder} pl-5 dropdown-item`} icon="edit">
-                Edit
-              </Button>
-              <Button className={`${styles.noBorder} pl-5 dropdown-item`} icon="edit">
-                Edit
-              </Button>
-            </Dropdown>
-            <IconButton color="info" icon="pen" onClick={openEditModal} />
-            <IconButton
-              className="mx-2"
-              color="danger"
-              icon="trash"
-              onClick={handleDeleteResource}
-            />
-            <ModalCard
-              cardClassName={styles.modal}
-              component={Form}
-              footer={
-                <>
-                  <CardFooterButton onClick={closeEditModal}>
-                    <FormattedMessage {...messages.cancelButton} />
-                  </CardFooterButton>
-                  <CardFooterButton color="primary" type="submit">
-                    <FormattedMessage {...messages.editButton} />
-                  </CardFooterButton>
-                </>
-              }
-              isActive={modal.enabled}
-              onClose={closeEditModal}
-              onSubmit={onEditSubmit}
-              title={
-                <FormattedMessage
-                  {...messages.editTitle}
-                  values={{ resource: resourceName, id: resource.id }}
-                />
-              }
+        <td className={`is-flex ${styles.actionCell}`}>
+          <Checkbox
+            checked={selected}
+            className="is-inline-block mt-2"
+            name={String(resource.id)}
+            onChange={onSelected}
+          />
+          <Dropdown className={styles.dropdown} dropdownIcon="ellipsis-v" label="">
+            <Button
+              className={`${styles.noBorder} pl-5 dropdown-item`}
+              icon="pen"
+              onClick={openEditModal}
             >
-              <JSONSchemaEditor
-                name="resource"
-                onChange={onEditChange}
-                schema={schema}
-                value={editingResource}
+              <FormattedMessage {...messages.edit} />
+            </Button>
+            <Button
+              className={`${styles.noBorder} pl-5 dropdown-item`}
+              component={Link}
+              icon="book"
+              to={`${url}/${resource.id}`}
+            >
+              <FormattedMessage {...messages.details} />
+            </Button>
+          </Dropdown>
+          {/* <IconButton color="info" icon="pen" onClick={openEditModal} />
+          <IconButton className="mx-2" color="danger" icon="trash" onClick={handleDeleteResource} />
+          */}
+          <ModalCard
+            cardClassName={styles.modal}
+            component={Form}
+            footer={
+              <>
+                <CardFooterButton onClick={closeEditModal}>
+                  <FormattedMessage {...messages.cancelButton} />
+                </CardFooterButton>
+                <CardFooterButton color="primary" type="submit">
+                  <FormattedMessage {...messages.editButton} />
+                </CardFooterButton>
+              </>
+            }
+            isActive={modal.enabled}
+            onClose={closeEditModal}
+            onSubmit={onEditSubmit}
+            title={
+              <FormattedMessage
+                {...messages.editTitle}
+                values={{ resource: resourceName, id: resource.id }}
               />
-            </ModalCard>
-          </div>
+            }
+          >
+            <JSONSchemaEditor
+              name="resource"
+              onChange={onEditChange}
+              schema={schema}
+              value={editingResource}
+            />
+          </ModalCard>
         </td>
       )}
       {!filter.has('id') && <td className={styles.id}>{resource.id}</td>}

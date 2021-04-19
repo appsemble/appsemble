@@ -11,6 +11,7 @@ import {
   SimpleModalFooter,
   Table,
   Title,
+  useConfirmation,
   useData,
   useMessages,
   useToggle,
@@ -20,6 +21,7 @@ import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
 import {
+  ChangeEvent,
   FormEvent,
   ReactElement,
   SyntheticEvent,
@@ -69,6 +71,7 @@ export function IndexPage(): ReactElement {
   const [hiddenProperties, setHiddenProperties] = useState<Set<string>>(
     new Set(['$created', '$updated']),
   );
+  const [selectedResources, setSelectedResources] = useState<number[]>([]);
   const [creatingResource, setCreatingResource] = useState<Resource>();
   const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
@@ -105,11 +108,50 @@ export function IndexPage(): ReactElement {
     [resources, setResources],
   );
 
-  const onDeleteResource = useCallback(
-    (id: number) => {
-      setResources(resources.filter((resource) => resource.id !== id));
+  const onConfirmDelete = useCallback(async () => {
+    try {
+      await Promise.all(
+        selectedResources.map((resource) =>
+          axios.delete(`/api/apps/${appId}/resources/${resourceName}/${resource}`),
+        ),
+      );
+      setResources(
+        resources.filter((resource) => !selectedResources.includes(Number(resource.id))),
+      );
+      setSelectedResources([]);
+      push({
+        body: formatMessage(messages.deleteSuccess),
+        color: 'primary',
+      });
+    } catch {
+      push(formatMessage(messages.deleteError));
+    }
+  }, [appId, formatMessage, push, resourceName, resources, selectedResources, setResources]);
+
+  const onDelete = useConfirmation({
+    title: <FormattedMessage {...messages.resourceWarningTitle} />,
+    body: (
+      <FormattedMessage
+        {...messages.resourceWarning}
+        values={{ amount: selectedResources.length }}
+      />
+    ),
+    cancelLabel: <FormattedMessage {...messages.cancelButton} />,
+    confirmLabel: <FormattedMessage {...messages.deleteButton} />,
+    action: onConfirmDelete,
+  });
+
+  const onCheckboxClick = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      const id = event.currentTarget.name;
+
+      if (checked) {
+        setSelectedResources([...selectedResources, Number(id)]);
+      } else {
+        setSelectedResources(selectedResources.filter((a) => a !== Number(id)));
+      }
     },
-    [resources, setResources],
+    [selectedResources],
   );
 
   const onChange = useCallback((event, value: Resource) => {
@@ -237,8 +279,16 @@ export function IndexPage(): ReactElement {
         <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
         </Button>
+        <Button
+          color="danger"
+          disabled={selectedResources.length === 0}
+          icon="trash-alt"
+          onClick={onDelete}
+        >
+          <FormattedMessage {...messages.delete} values={{ amount: selectedResources.length }} />
+        </Button>
       </div>
-      <Table>
+      <Table className={styles.table}>
         <thead>
           <tr>
             <th>
@@ -300,10 +350,11 @@ export function IndexPage(): ReactElement {
             <ResourceRow
               filter={hiddenProperties}
               key={resource.id}
-              onDelete={onDeleteResource}
               onEdit={onEditResource}
+              onSelected={onCheckboxClick}
               resource={resource}
               schema={schema}
+              selected={selectedResources.includes(resource.id)}
             />
           ))}
         </tbody>

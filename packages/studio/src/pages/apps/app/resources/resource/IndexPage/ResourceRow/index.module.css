@@ -28,7 +28,6 @@
   border: none;
 }
 
-/* stylelint-disable-next-line selector-max-compound-selectors, selector-max-type */
-.dropdown :global(.dropdown-trigger) button span:last-child {
-  display: none;
+.actionCell {
+  margin-bottom: -1px;
 }

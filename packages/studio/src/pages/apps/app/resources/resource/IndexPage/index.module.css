@@ -13,3 +13,7 @@
   grid-template-columns: 1fr 1fr;
   row-gap: 1rem;
 }
+
+.table {
+  height: 100%;
+}

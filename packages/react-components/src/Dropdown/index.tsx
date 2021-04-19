@@ -26,12 +26,25 @@ interface DropdownProps {
    * The icon to display next to the label.
    */
   icon?: IconName;
+
+  /**
+   * The icon used for the dropdown icon next to the label.
+   *
+   * @default "angle-down"
+   */
+  dropdownIcon?: IconName;
 }
 
 /**
  * Render an aria compliant Bulma dropdown menu.
  */
-export function Dropdown({ children, className, icon, label }: DropdownProps): ReactElement {
+export function Dropdown({
+  children,
+  className,
+  dropdownIcon = 'angle-down',
+  icon,
+  label,
+}: DropdownProps): ReactElement {
   const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
@@ -58,7 +71,7 @@ export function Dropdown({ children, className, icon, label }: DropdownProps): R
           onKeyDown={onKeyDown}
         >
           {label}
-          <Icon icon="angle-down" size="small" />
+          <Icon icon={dropdownIcon} size="small" />
         </Button>
       </div>
       <div
