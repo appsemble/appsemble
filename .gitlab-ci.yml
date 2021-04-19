@@ -395,7 +395,7 @@ provision review:
   script:
     - yarn appsemble config set context review
     - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
-    - yarn appsemble organization create appsemble --name Appsemble
+    - yarn appsemble organization create appsemble --name Appsemble --email support@appsemble.com --website https://appsemble.com --description 'The open source low-code app building platform'
     - yarn appsemble -vv block publish blocks/*
     - yarn appsemble -vv app create apps/*
 
@@ -410,7 +410,7 @@ provision staging:
   script:
     - yarn appsemble config set context staging
     - yarn appsemble config set remote https://staging.appsemble.review
-    - yarn appsemble organization create appsemble --name Appsemble
+    - yarn appsemble organization create appsemble --name Appsemble --email support@appsemble.com --website https://appsemble.com --description 'The open source low-code app building platform'
     - yarn appsemble -vv block publish blocks/*
     - yarn appsemble -vv app create apps/*
 
