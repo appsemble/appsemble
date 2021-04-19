@@ -269,9 +269,10 @@ review:
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=next"
       --set "global.postgresql.existingSecret=postgresql-secret"
-      --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
+      --set "provision.account.name=$BOT_ACCOUNT_NAME"
+      --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "proxy=true"
       --set "sentryEnvironment=$CI_ENVIRONMENT_NAME"
@@ -328,6 +329,7 @@ staging:
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
+      --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "proxy=true"
       --set "sentryEnvironment=staging"
       --set "sentrySecret=sentry"
@@ -390,8 +392,6 @@ provision review:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   needs:
     - review
-  environment:
-    name: review/provision/$CI_COMMIT_REF_SLUG
   script:
     - yarn appsemble config set context review
     - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
@@ -407,8 +407,6 @@ provision staging:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   needs:
     - staging
-  environment:
-    name: staging/provision
   script:
     - yarn appsemble config set context staging
     - yarn appsemble config set remote https://staging.appsemble.review
