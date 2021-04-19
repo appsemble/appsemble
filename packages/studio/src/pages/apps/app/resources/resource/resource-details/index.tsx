@@ -83,6 +83,8 @@ export function ResourceDetailsPage(): ReactElement {
         color: 'primary',
       });
       result.setData(data);
+      setEditingResourceJson(JSON.stringify(data, null, 2));
+      setEditingResource(data);
       setSubmitting(false);
     } catch {
       push(formatMessage(messages.updateError));
