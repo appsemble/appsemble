@@ -1,3 +1,4 @@
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
@@ -20,12 +21,17 @@ interface DropdownProps {
    * The label to render on the menu toggle button.
    */
   label: ReactNode;
+
+  /**
+   * The icon to display next to the label.
+   */
+  icon?: IconName;
 }
 
 /**
  * Render an aria compliant Bulma dropdown menu.
  */
-export function Dropdown({ children, className, label }: DropdownProps): ReactElement {
+export function Dropdown({ children, className, icon, label }: DropdownProps): ReactElement {
   const ref = useRef<HTMLDivElement>();
   const { disable, enabled, toggle } = useToggle();
 
@@ -47,6 +53,7 @@ export function Dropdown({ children, className, label }: DropdownProps): ReactEl
           aria-haspopup
           // This is important for Safari.
           className="py-0"
+          icon={icon}
           onClick={toggle}
           onKeyDown={onKeyDown}
         >

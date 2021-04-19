@@ -1,5 +1,7 @@
 import {
+  Button,
   CardFooterButton,
+  Dropdown,
   Form,
   IconButton,
   ModalCard,
@@ -147,6 +149,17 @@ export function ResourceRow({
       {!filter.has('$actions') && (
         <td>
           <div className="is-flex">
+            <Dropdown className={styles.dropdown} icon="ellipsis-v" label="">
+              <Button className={`${styles.noBorder} pl-5 dropdown-item`} icon="edit">
+                Edit
+              </Button>
+              <Button className={`${styles.noBorder} pl-5 dropdown-item`} icon="edit">
+                Edit
+              </Button>
+              <Button className={`${styles.noBorder} pl-5 dropdown-item`} icon="edit">
+                Edit
+              </Button>
+            </Dropdown>
             <IconButton color="info" icon="pen" onClick={openEditModal} />
             <IconButton
               className="mx-2"

@@ -18,3 +18,17 @@
 .modal {
   width: 960px;
 }
+
+.noBorder {
+  border: none;
+}
+
+.dropdown :global(.dropdown-trigger) button {
+  background: transparent;
+  border: none;
+}
+
+/* stylelint-disable-next-line selector-max-compound-selectors, selector-max-type */
+.dropdown :global(.dropdown-trigger) button span:last-child {
+  display: none;
+}
