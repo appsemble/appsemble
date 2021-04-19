@@ -13,12 +13,15 @@ interface LanguageDropdownProps {
 
 export function LanguageDropdown({ className }: LanguageDropdownProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
-  const { pathname } = useLocation();
+  const { hash, pathname, search } = useLocation();
 
   return (
     <NavbarDropdown className={className} color="dark" label={lang.split('-')[0].toUpperCase()}>
       {Object.entries(supportedLanguages).map(([language, name]) => (
-        <NavbarItem key={language} to={pathname.replace(lang, language)}>
+        <NavbarItem
+          key={language}
+          to={{ pathname: pathname.replace(lang, language), hash, search }}
+        >
           {name}
         </NavbarItem>
       ))}
