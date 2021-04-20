@@ -41,7 +41,7 @@ export async function renderEmail(
   let subject = sub;
   const mdast = remark.parse(template);
 
-  function replace(_match: string, key: string): string {
+  function replace(match: string, key: string): string {
     if (Object.hasOwnProperty.call(values, key)) {
       return values[key];
     }

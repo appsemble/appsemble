@@ -22,7 +22,7 @@ export function GUIEditorToolbox({
   const { lang } = useParams<{ lang: string }>();
 
   const onChange = useCallback(
-    (_event: ChangeEvent, block: BlockManifest): void => {
+    (event: ChangeEvent, block: BlockManifest): void => {
       setSelectedBlock(block);
     },
     [setSelectedBlock],

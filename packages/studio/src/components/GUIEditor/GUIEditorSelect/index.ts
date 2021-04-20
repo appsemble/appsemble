@@ -81,7 +81,7 @@ export function GUIEditorSelect({
         }
       }
 
-      lines.forEach((_line, i) => {
+      lines.forEach((line, i) => {
         if (i === 0) {
           return;
         }

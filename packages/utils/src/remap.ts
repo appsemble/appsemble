@@ -95,7 +95,7 @@ const mapperImplementations: MapperImplementations = {
     throw new Error('Unknown app property: id');
   },
 
-  context: (prop, _, context) =>
+  context: (prop, input, context) =>
     String(prop)
       .split('.')
       .reduce((acc, p) => acc?.[p] ?? null, context.context),

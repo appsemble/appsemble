@@ -84,6 +84,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       }),
       new CaseSensitivePathsPlugin(),
       new EnvironmentPlugin({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         APPSEMBLE_VERSION: studioPkg.version,
       }),
       // @ts-expect-error This uses Webpack 5 types, but it’s compatible with both Webpack 4 and 5.

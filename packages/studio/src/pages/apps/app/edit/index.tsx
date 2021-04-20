@@ -270,7 +270,7 @@ export default function EditPage(): ReactElement {
   }, [initialDefinition, promptUpdateApp, appDefinition, uploadApp, valid]);
 
   const onMonacoChange = useCallback(
-    (_event: editor.IModelContentChangedEvent, value: string) => {
+    (event: editor.IModelContentChangedEvent, value: string) => {
       switch (location.hash) {
         case '#editor':
           setAppDefinition(value);
