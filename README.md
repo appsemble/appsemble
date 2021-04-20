@@ -71,15 +71,13 @@ information about block development and hot-reloading can be found
 
 In order for users to create apps from within the Appsemble Studio, existing apps that can be used
 as a starting point must be marked as templates. This can be done using the Appsemble CLI. Note that
-in order to publish blocks, you need to be authenticated in the CLI. After having registered an
-Appsemble account, you can authenticate yourself using `yarn appsemble login`.
+in order to publish blocks, you need to be authenticated in the CLI and have proper permissions in
+the organization. After having registered an Appsemble account, you can authenticate yourself using
+`yarn appsemble login`.
 
 ```sh
 yarn appsemble app create --organization appsemble --template apps/*
 ```
-
-Note that `@appsemble` in the above scripts refer to the ID an organization that the authenticated
-account is a member of.
 
 ### Tests
 

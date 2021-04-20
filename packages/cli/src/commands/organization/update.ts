@@ -10,9 +10,12 @@ import { coerceFile } from '../../lib/coercers';
 import { BaseArguments } from '../../types';
 
 interface UpdateOrganizationArguments extends BaseArguments {
+  description: string;
+  email: string;
   id: string;
-  name: string;
   logo: ReadStream;
+  name: string;
+  website: string;
 }
 
 export const command = 'update <id>';
@@ -27,6 +30,15 @@ export function builder(yargs: Argv): Argv {
     .option('name', {
       describe: 'The name of the organization.',
     })
+    .option('email', {
+      describe: 'The email address users may use to contact the organization',
+    })
+    .option('website', {
+      describe: 'The website of the organization',
+    })
+    .option('description', {
+      describe: 'A short of the organization',
+    })
     .option('logo', {
       describe: 'The file location of the logo representing the organization.',
       coerce: coerceFile,
@@ -35,20 +47,28 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler({
   clientCredentials,
+  description: desc,
+  email,
   id,
   logo,
   name,
   remote,
+  website,
 }: UpdateOrganizationArguments): Promise<void> {
   await authenticate(remote, 'organizations:write', clientCredentials);
-  const organizationId = id.startsWith('@') ? id.slice(1) : id;
 
-  logger.info(`Updating organization @${organizationId}${name ? ` (${name})` : ''}`);
+  logger.info(`Updating organization ${id}${name ? ` (${name})` : ''}`);
 
   const formData = new FormData();
-  if (name) {
-    logger.info(`Setting name to ${name}`);
-    formData.append('name', name);
+
+  if (desc) {
+    logger.info(`Setting desc to ${desc}`);
+    formData.append('desc', desc);
+  }
+
+  if (email) {
+    logger.info(`Setting email to ${email}`);
+    formData.append('email', email);
   }
 
   if (logo) {
@@ -56,6 +76,16 @@ export async function handler({
     formData.append('icon', logo);
   }
 
-  await axios.patch(`/api/organizations/${organizationId}`, formData);
-  logger.info(`Successfully updated organization @${organizationId}${name ? ` (${name})` : ''}`);
+  if (name) {
+    logger.info(`Setting name to ${name}`);
+    formData.append('name', name);
+  }
+
+  if (website) {
+    logger.info(`Setting website to ${website}`);
+    formData.append('website', website);
+  }
+
+  await axios.patch(`/api/organizations/${id}`, formData);
+  logger.info(`Successfully updated organization ${id}${name ? ` (${name})` : ''}`);
 }
