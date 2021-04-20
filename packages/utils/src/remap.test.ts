@@ -16,7 +16,7 @@ interface TestCase {
 function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
-    (_, { context, expected, input, mappers, messages, userInfo }) => {
+    (name, { context, expected, input, mappers, messages, userInfo }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           new IntlMessageFormat(messages?.app?.[id] ?? defaultMessage),

@@ -1,4 +1,4 @@
-import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import { ReactElement, ReactNode } from 'react';
 
 import { Icon } from '..';
@@ -20,11 +20,6 @@ interface ButtonChildrenProps {
    * @default 'left'
    */
   iconPosition?: 'left' | 'right';
-
-  /**
-   * The Font Awesome prefix to apply to the icon.
-   */
-  iconPrefix?: IconPrefix;
 }
 
 /**
@@ -36,13 +31,12 @@ export function ButtonChildren({
   children,
   icon,
   iconPosition,
-  iconPrefix,
 }: ButtonChildrenProps): ReactElement {
   return icon ? (
     <>
-      {iconPosition === 'left' && <Icon icon={icon} prefix={iconPrefix} />}
+      {iconPosition === 'left' && <Icon icon={icon} />}
       {children && <span>{children}</span>}
-      {iconPosition === 'right' && <Icon icon={icon} prefix={iconPrefix} />}
+      {iconPosition === 'right' && <Icon icon={icon} />}
     </>
   ) : (
     (children as ReactElement)

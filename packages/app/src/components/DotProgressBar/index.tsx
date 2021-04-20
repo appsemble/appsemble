@@ -11,7 +11,7 @@ interface DotProgressBarProps {
 export function DotProgressBar({ active, amount }: DotProgressBarProps): ReactElement {
   return (
     <div className={styles.dotContainer}>
-      {Array.from({ length: amount }, (_, index) => (
+      {Array.from({ length: amount }, (unused, index) => (
         <div
           className={classNames('is-inline-block mx-1', styles.dot, {
             [styles.previous]: index < active,

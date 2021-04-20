@@ -1,6 +1,5 @@
+import { Modal, useToggle } from '@appsemble/preact-components';
 import { VNode } from 'preact';
-import { Modal } from 'preact-components/src/Modal';
-import { useToggle } from 'preact-components/src/useToggle';
 
 import styles from './index.module.css';
 

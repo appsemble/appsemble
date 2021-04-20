@@ -20,13 +20,12 @@ export function NavbarItem({
   children,
   icon,
   iconPosition,
-  iconPrefix,
   onClick,
   to,
   ...props
 }: NavbarItemProps): ReactElement {
   const content = (
-    <ButtonChildren icon={icon} iconPosition={iconPosition} iconPrefix={iconPrefix}>
+    <ButtonChildren icon={icon} iconPosition={iconPosition}>
       {children}
     </ButtonChildren>
   );

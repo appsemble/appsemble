@@ -1,8 +1,8 @@
+import { BulmaColor } from '@appsemble/sdk';
 import { fa } from '@appsemble/web-utils';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
-import { BulmaColor } from 'sdk/src/types';
 
 import styles from './index.module.css';
 

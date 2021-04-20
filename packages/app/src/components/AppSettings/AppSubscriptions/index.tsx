@@ -186,7 +186,7 @@ export function AppSubscriptions(): ReactElement {
                 className={styles.subscribeCheckbox}
                 disabled={!subscription || !resource.create}
                 name={`${resourceType}.create`}
-                onChange={(_, value) => onSubscriptionChange(resourceType, 'create', value)}
+                onChange={(event, value) => onSubscriptionChange(resourceType, 'create', value)}
                 switch
                 title={
                   <FormattedMessage
@@ -205,7 +205,7 @@ export function AppSubscriptions(): ReactElement {
                 className={styles.subscribeCheckbox}
                 disabled={!subscription || !resource.update}
                 name={`${resourceType}.update`}
-                onChange={(_, value) => onSubscriptionChange(resourceType, 'update', value)}
+                onChange={(event, value) => onSubscriptionChange(resourceType, 'update', value)}
                 switch
                 title={
                   <FormattedMessage
@@ -224,7 +224,7 @@ export function AppSubscriptions(): ReactElement {
                 className={styles.subscribeCheckbox}
                 disabled={!subscription || !resource.delete}
                 name={`${resourceType}.delete`}
-                onChange={(_, value) => onSubscriptionChange(resourceType, 'delete', value)}
+                onChange={(event, value) => onSubscriptionChange(resourceType, 'delete', value)}
                 switch
                 title={
                   <FormattedMessage

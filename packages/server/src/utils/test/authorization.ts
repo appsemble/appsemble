@@ -47,7 +47,6 @@ export function getTestUser(): User {
  * @param response - The access token response to create a bearer authorization header from.
  * @returns A bearer authorization header.
  */
-// eslint-disable-next-line camelcase
 function bearer(response: { access_token: string }): string {
   return `Bearer ${response.access_token}`;
 }

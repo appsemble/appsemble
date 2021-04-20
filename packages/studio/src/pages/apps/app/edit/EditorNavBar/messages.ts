@@ -7,6 +7,4 @@ export const messages = defineMessages({
   app: 'App',
   coreStyle: 'Core style',
   sharedStyle: 'Shared style',
-  switchManual: 'Manual editor',
-  switchGUI: 'GUI Editor',
 });
