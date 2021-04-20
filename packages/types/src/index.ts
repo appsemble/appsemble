@@ -1,4 +1,4 @@
-import { Action, BaseMessage, HTTPMethods, LogAction, Theme } from '@appsemble/sdk/src/types';
+import { Action, BaseMessage, HTTPMethods, LogAction, Theme } from '@appsemble/sdk';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
