@@ -10,6 +10,8 @@ setupSentry(sentryDsn, sentryEnvironment);
 
 render(<App />, document.getElementById('app'));
 
-navigator.serviceWorker?.register('/service-worker.js');
+if (process.env.NODE_ENV === 'production') {
+  navigator.serviceWorker?.register('/service-worker.js');
+}
 
 window.appsembleHasLoaded = true;
