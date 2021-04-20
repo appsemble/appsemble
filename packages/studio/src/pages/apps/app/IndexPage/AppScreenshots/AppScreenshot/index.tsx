@@ -2,8 +2,8 @@ import { Button, Modal, useConfirmation, useToggle } from '@appsemble/react-comp
 import axios from 'axios';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useApp } from 'studio/src/pages/apps/app';
 
+import { useApp } from '../../..';
 import styles from './index.module.css';
 import { messages } from './messages';
 
