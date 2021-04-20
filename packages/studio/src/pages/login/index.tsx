@@ -105,7 +105,6 @@ export function LoginPage(): ReactElement {
             clientId={provider.clientId}
             disabled={busy.enabled}
             icon={provider.icon}
-            iconPrefix="fab"
             key={provider.authorizationUrl}
             onClick={busy.enable}
             redirect={qs.get('redirect')}
