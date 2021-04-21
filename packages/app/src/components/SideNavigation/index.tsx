@@ -1,88 +1,65 @@
-import { Button, Icon } from '@appsemble/react-components';
-import { PageDefinition } from '@appsemble/types';
+import { Button, MenuItem, MenuSection } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { NavLink, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
-import { SideMenu } from '../SideMenu';
 import { useUser } from '../UserProvider';
-import styles from './index.module.css';
 import { messages } from './messages';
-
-interface SideNavigationProps {
-  pages: PageDefinition[];
-}
 
 /**
  * The app navigation that is displayed in the side menu.
  */
-export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
+export function SideNavigation(): ReactElement {
   const { url } = useRouteMatch();
   const { getMessage } = useAppMessages();
   const {
-    definition: { layout, security: showLogin },
+    definition: { layout, pages, security: showLogin },
   } = useAppDefinition();
   const { isLoggedIn, logout } = useUser();
 
   return (
-    <SideMenu>
-      <nav>
-        <ul className={`menu-list ${styles.menuList}`}>
-          {pages.map((page, index) => {
-            const name = getMessage({
-              id: `pages.${index}`,
-              defaultMessage: page.name,
-            }).format() as string;
+    <div className="is-flex-grow-1 is-flex-shrink-1">
+      <MenuSection>
+        {pages.map((page, index) => {
+          const name = getMessage({
+            id: `pages.${index}`,
+            defaultMessage: page.name,
+          }).format() as string;
 
-            return (
-              <li key={page.name}>
-                <NavLink activeClassName={styles.active} to={`${url}/${normalize(name)}`}>
-                  {page.icon ? <Icon className={styles.icon} icon={page.icon} /> : null}
-                  <span>{name}</span>
-                </NavLink>
-              </li>
-            );
-          })}
-          {layout?.settings === 'navigation' && (
-            <li>
-              <NavLink activeClassName={styles.active} to={`${url}/Settings`}>
-                <Icon className={styles.icon} icon="wrench" />
-                <span>
-                  <FormattedMessage {...messages.settings} />
-                </span>
-              </NavLink>
-            </li>
-          )}
-          {layout?.feedback === 'navigation' && (
-            <li>
-              <NavLink activeClassName={styles.active} to={`${url}/Feedback`}>
-                <Icon className={styles.icon} icon="comment" />
-                <span>
-                  <FormattedMessage {...messages.feedback} />
-                </span>
-              </NavLink>
-            </li>
-          )}
+          return (
+            <MenuItem icon={page.icon} key={page.name} to={`${url}/${normalize(name)}`}>
+              {name}
+            </MenuItem>
+          );
+        })}
+        {layout?.settings === 'navigation' && (
+          <MenuItem icon="wrench" to={`${url}/Settings`}>
+            <FormattedMessage {...messages.settings} />
+          </MenuItem>
+        )}
+        {layout?.feedback === 'navigation' && (
+          <MenuItem icon="comment" to={`${url}/Feedback`}>
+            <FormattedMessage {...messages.feedback} />
+          </MenuItem>
+        )}
 
-          {showLogin && layout?.login === 'navigation' && (
+        {showLogin &&
+          layout?.login === 'navigation' &&
+          (isLoggedIn ? (
             <li>
-              {isLoggedIn ? (
-                <Button className={styles.button} icon="sign-out-alt" onClick={logout}>
-                  <FormattedMessage {...messages.logout} />
-                </Button>
-              ) : (
-                <NavLink to={`${url}/Login`}>
-                  <Icon className={styles.icon} icon="sign-in-alt" />
-                  <FormattedMessage {...messages.login} />
-                </NavLink>
-              )}
+              <Button icon="sign-out-alt" onClick={logout}>
+                <FormattedMessage {...messages.logout} />
+              </Button>
             </li>
-          )}
-        </ul>
-      </nav>
-    </SideMenu>
+          ) : (
+            <MenuItem icon="sign-in-alt" to={`${url}/Login`}>
+              <FormattedMessage {...messages.login} />
+            </MenuItem>
+          ))}
+      </MenuSection>
+    </div>
   );
 }

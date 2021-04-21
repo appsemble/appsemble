@@ -1,5 +1,5 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  label: 'Open menu',
+  storeLink: 'View in app store',
 });
