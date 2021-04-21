@@ -69,7 +69,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
 
   return (
     <Context.Provider value={useMemo(() => [enabled, toggle, setMenu], [enabled, toggle])}>
-      <div className={`px-3 py-3 ${styles.sideMenuWrapper}`}>
+      <div className={styles.sideMenuWrapper}>
         <div
           className={classNames(styles.backdrop, { [styles.closed]: !enabled })}
           onClick={disable}
