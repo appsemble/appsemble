@@ -48,10 +48,7 @@ export function getAppFromRecord(
           average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,
           count: record.get('RatingCount') ? Number(record.get('RatingCount')) : null,
         }
-      : {
-          average: null,
-          count: null,
-        },
+      : undefined,
     resources: record.template && record.get('ResourceCount') ? true : undefined,
     OrganizationId: record.OrganizationId,
     OrganizationName: record?.Organization?.name,
