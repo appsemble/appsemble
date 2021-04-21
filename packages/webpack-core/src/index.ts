@@ -6,7 +6,6 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import autolink from 'rehype-autolink-headings';
 import slug from 'rehype-slug';
@@ -61,11 +60,11 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
     name: `@appsemble/${env}`,
     devtool: 'source-map',
     mode,
-    entry: [entry],
+    entry: { [env]: [entry] },
     output: {
       filename: production ? '[contentHash].js' : `${env}.js`,
-      publicPath,
-      path: production ? join(rootDir, 'dist', env) : publicPath,
+      publicPath: `/${env}/`,
+      path: production ? join(rootDir, 'dist', env) : `/${env}/`,
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
@@ -196,8 +195,11 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           loader: 'svgo-loader',
         },
         {
-          test: /yaml\.worker\.js$/,
+          test: /(json|yaml)\.worker\.js$/,
           loader: 'worker-loader',
+          options: {
+            filename: '[name].worker.js',
+          },
         },
       ],
     },
@@ -217,7 +219,7 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
   const config = shared('app', argv);
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: join((config.entry as string[])[0], 'error.html'),
+      template: join(packagesDir, 'app', 'src', 'error.html'),
       filename: 'error.html',
       minify,
       chunks: [],
@@ -241,7 +243,6 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
  */
 export function createStudioConfig(argv: CliConfigOptions): Configuration {
   const config = shared('studio', argv);
-  config.plugins.push(new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }));
   if (argv.mode === 'production') {
     config.plugins.push(
       new GenerateSW({
