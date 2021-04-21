@@ -39,7 +39,7 @@ export function AppCard({ app }: AppCardProps): ReactElement {
         <Subtitle className={`mb-0 ${styles.ellipsis}`} lang={appLang} size={6}>
           {app.OrganizationName || app.OrganizationId}
         </Subtitle>
-        <StarRating className={`pt-4 ${styles.rating}`} value={app.rating?.average || 0} />
+        <StarRating className={`pt-4 ${styles.rating}`} value={app.rating?.average ?? 0} />
       </div>
     </Link>
   );

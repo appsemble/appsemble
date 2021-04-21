@@ -468,8 +468,10 @@ const brands = new Set([
  * Generate a full CSS class for FontAwesome icons.
  *
  * @param icon - The FontAwesome icon to fetch the CSS classes for.
+ * @param solid - Whether the solid or regular style should be used for non-brand icons.
  * @returns The full CSS class used for the icon.
  */
-export function fa(icon: IconName): string {
-  return `${brands.has(icon) ? 'fab' : 'fas'} fa-${icon}`;
+export function fa(icon: IconName, solid = true): string {
+  const style = solid ? 'fas' : 'far';
+  return `${brands.has(icon) ? 'fab' : style} fa-${icon}`;
 }

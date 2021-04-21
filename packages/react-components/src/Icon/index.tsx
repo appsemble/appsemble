@@ -8,6 +8,7 @@ interface IconProps extends ComponentProps<'span'> {
   icon: IconName;
   iconSize?: '2x' | '3x' | 'lg';
   size?: Exclude<BulmaSize, 'normal'>;
+  solid?: boolean;
 }
 
 const iconSizeMap: { [size in IconProps['size']]: IconProps['iconSize'] } = {
@@ -21,11 +22,12 @@ export function Icon({
   icon,
   size,
   iconSize = iconSizeMap[size as 'large' | 'medium'],
+  solid = true,
   ...props
 }: IconProps): ReactElement {
   return (
     <span className={classNames('icon', size && `is-${size}`, className)} {...props}>
-      <i className={classNames(fa(icon), iconSize && `fa-${iconSize}`)} />
+      <i className={classNames(fa(icon, solid), iconSize && `fa-${iconSize}`)} />
     </span>
   );
 }
