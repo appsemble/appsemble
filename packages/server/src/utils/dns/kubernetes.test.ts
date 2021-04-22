@@ -43,12 +43,12 @@ describe('configureDNS', () => {
       return [201, request.data];
     });
 
-    setArgv({ host: 'https://host.example', serviceName: 'review-service' });
+    setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
     await configureDNS();
     await Organization.create({ id: 'testorg' });
 
     expect(config.url).toBe(
-      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
+      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1/namespaces/test/ingresses',
     );
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
@@ -73,7 +73,14 @@ describe('configureDNS', () => {
         rules: [
           {
             host: '*.testorg.host.example',
-            http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+            http: {
+              paths: [
+                {
+                  backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                  path: '/',
+                },
+              ],
+            },
           },
         ],
         tls: [
@@ -90,7 +97,7 @@ describe('configureDNS', () => {
       return [201, request.data];
     });
 
-    setArgv({ host: 'https://host.example', serviceName: 'review-service' });
+    setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
     await Organization.create({ id: 'org' });
     await configureDNS();
     await App.create({
@@ -102,7 +109,7 @@ describe('configureDNS', () => {
     });
 
     expect(config.url).toBe(
-      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
+      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1/namespaces/test/ingresses',
     );
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
@@ -127,7 +134,14 @@ describe('configureDNS', () => {
         rules: [
           {
             host: 'example.com',
-            http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+            http: {
+              paths: [
+                {
+                  backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                  path: '/',
+                },
+              ],
+            },
           },
         ],
         tls: [{ hosts: ['example.com'], secretName: 'example-com-tls' }],
@@ -142,7 +156,7 @@ describe('configureDNS', () => {
       return [201, request.data];
     });
 
-    setArgv({ host: 'https://host.example', serviceName: 'review-service' });
+    setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
     await Organization.create({ id: 'org' });
     await configureDNS();
     await App.create({
@@ -166,12 +180,13 @@ describe('configureDNS', () => {
       host: 'https://host.example',
       ingressAnnotations: JSON.stringify({ custom: 'annotation' }),
       serviceName: 'review-service',
+      servicePort: 'http',
     });
     await configureDNS();
     await Organization.create({ id: 'foo' });
 
     expect(config.url).toBe(
-      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
+      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1/namespaces/test/ingresses',
     );
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
@@ -197,7 +212,14 @@ describe('configureDNS', () => {
         rules: [
           {
             host: '*.foo.host.example',
-            http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+            http: {
+              paths: [
+                {
+                  backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                  path: '/',
+                },
+              ],
+            },
           },
         ],
         tls: [{ hosts: ['*.foo.host.example'], secretName: 'foo-host-example-tls-wilcard' }],
@@ -217,11 +239,12 @@ describe('cleanupDNS', () => {
     setArgv({
       host: 'https://host.example',
       serviceName: 'review-service',
+      servicePort: 'http',
     });
     await cleanupDNS();
 
     expect(config.url).toBe(
-      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1beta1/namespaces/test/ingresses',
+      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1/namespaces/test/ingresses',
     );
     expect(config.params).toStrictEqual({
       labelSelector: 'app.kubernetes.io/managed-by=review-service',
@@ -254,6 +277,7 @@ describe('restoreDNS', () => {
     setArgv({
       host: 'https://host.example',
       serviceName: 'review-service',
+      servicePort: 'http',
     });
     await restoreDNS();
 
@@ -274,7 +298,14 @@ describe('restoreDNS', () => {
           rules: [
             {
               host: '*.test.host.example',
-              http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+              http: {
+                paths: [
+                  {
+                    backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                    path: '/',
+                  },
+                ],
+              },
             },
           ],
           tls: [{ hosts: ['*.test.host.example'], secretName: 'test-host-example-tls-wilcard' }],
@@ -296,7 +327,14 @@ describe('restoreDNS', () => {
           rules: [
             {
               host: 'app.example',
-              http: { paths: [{ backend: { serviceName: 'review-service' }, path: '/' }] },
+              http: {
+                paths: [
+                  {
+                    backend: { service: { name: 'review-service', port: { name: 'http' } } },
+                    path: '/',
+                  },
+                ],
+              },
             },
           ],
           tls: [{ hosts: ['app.example'], secretName: 'app-example-tls' }],
