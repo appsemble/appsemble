@@ -108,8 +108,8 @@ export function StarRating({
         </button>,
       );
     } else {
-      activeIcons.push(<Icon className={styles.starIcon} icon="star" key={i} prefix="fas" />);
-      inactiveIcons.push(<Icon className={styles.starIcon} icon="star" key={i} prefix="far" />);
+      activeIcons.push(<Icon className={styles.starIcon} icon="star" key={i} />);
+      inactiveIcons.push(<Icon className={styles.starIcon} icon="star" key={i} solid={false} />);
     }
   }
 
