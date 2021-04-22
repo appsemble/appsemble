@@ -218,6 +218,10 @@ export const paths: OpenAPIV3.PathsObject = {
                     format: 'binary',
                   },
                 },
+                showAppsembleLogin: {
+                  type: 'boolean',
+                  description: 'Whether the Appsemble login method should be shown.',
+                },
               },
             },
             encoding: {

@@ -11,3 +11,9 @@
   height: 100% !important;
   object-fit: cover;
 }
+
+.button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}

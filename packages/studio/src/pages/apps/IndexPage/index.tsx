@@ -6,17 +6,21 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';
-import { CollapsibleList } from './CollapsibleList';
+import { CollapsibleAppList } from './CollapsibleAppList';
 import { CreateAppButton } from './CreateAppButton';
 import styles from './index.module.css';
 import { messages } from './messages';
 
 const sortFunctions = {
   organization: (a: App, b: App) => a.OrganizationId.localeCompare(b.OrganizationId),
-  rating: (a: App, b: App) =>
-    a.rating.average === b.rating.average
-      ? a.rating.count - b.rating.count
-      : a.rating.average - b.rating.average,
+  rating: (a: App, b: App) => {
+    const ratingA = a.rating ?? { average: 0, count: 0 };
+    const ratingB = b.rating ?? { average: 0, count: 0 };
+
+    return ratingA.average === ratingB.average
+      ? ratingA.count - ratingB.count
+      : ratingB.average - ratingB.average;
+  },
   $created: (a: App, b: App) => a.$created.localeCompare(b.$created),
   $updated: (a: App, b: App) => a.$updated.localeCompare(b.$updated),
   name: (a: App, b: App) => a.definition.name.localeCompare(b.definition.name),
@@ -94,7 +98,7 @@ export function IndexPage(): ReactElement {
       </div>
 
       {userInfo && (
-        <CollapsibleList
+        <CollapsibleAppList
           filter={filter}
           reverse={sort?.reverse}
           sortFunction={sortFunctions[sort?.name]}
@@ -102,7 +106,7 @@ export function IndexPage(): ReactElement {
           title={<FormattedMessage {...messages.myApps} />}
         />
       )}
-      <CollapsibleList
+      <CollapsibleAppList
         filter={filter}
         reverse={sort?.reverse}
         sortFunction={sortFunctions[sort?.name]}

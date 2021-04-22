@@ -39,7 +39,11 @@ function replaceStyle(id: string, style: string): void {
   }
 }
 
-const Context = createContext<AppDefinitionContext>(null);
+const Context = createContext<AppDefinitionContext>({
+  definition: initialDefinition,
+  blockManifests: initialBlockManifests,
+  revision: 0,
+});
 
 export function AppDefinitionProvider({ children }: AppDefinitionProviderProps): ReactElement {
   const [blockManifests, setBlockManifests] = useState(initialBlockManifests);

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import marked from 'marked';
-import { ReactElement } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface MarkdownContentProps {
@@ -35,12 +35,18 @@ export function MarkdownContent({
   sanitize = true,
 }: MarkdownContentProps): ReactElement {
   const location = useLocation();
+
+  const innerHTML = useMemo(
+    () => ({
+      __html: marked(content, { sanitize, baseUrl: `${location.pathname}${location.search}` }),
+    }),
+    [content, location, sanitize],
+  );
+
   return content ? (
     <span
       className={classNames('content', className)}
-      dangerouslySetInnerHTML={{
-        __html: marked(content, { sanitize, baseUrl: `${location.pathname}${location.search}` }),
-      }}
+      dangerouslySetInnerHTML={innerHTML}
       lang={lang}
     />
   ) : null;

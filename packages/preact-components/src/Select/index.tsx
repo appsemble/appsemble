@@ -1,9 +1,8 @@
+import { Option, OptionProps } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { ComponentProps, JSX, toChildArray, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
-
-import { Option, OptionProps } from '..';
 
 export interface SelectProps
   extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {
@@ -20,7 +19,7 @@ export interface SelectProps
   /**
    * This is fired when the input value has changed.
    */
-  onChange?: (event: JSX.TargetedEvent<HTMLSelectElement>, value: any) => void;
+  onChange?: (event: JSX.TargetedEvent<HTMLSelectElement>, value?: any) => void;
 
   /**
    * The current value.
@@ -33,7 +32,18 @@ export interface SelectProps
  */
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   (
-    { children, className, fullWidth, loading, name, onChange, value, id = name, ...props },
+    {
+      children,
+      className,
+      fullWidth,
+      loading,
+      name,
+      onChange,
+      placeholder,
+      value,
+      id = name,
+      ...props
+    },
     ref,
   ) => {
     const childArray = toChildArray(children).filter(
@@ -47,6 +57,20 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       },
       [childArray, onChange],
     );
+
+    let hasValue: boolean;
+    const options = childArray.map((child, index) => {
+      const selected = child.props.value === value;
+      hasValue ||= selected;
+      return <option key={child.key} {...child.props} selected={selected} value={index} />;
+    });
+    if (!hasValue) {
+      options.unshift(
+        <option className="is-hidden" selected>
+          {placeholder}
+        </option>,
+      );
+    }
 
     return (
       <div
@@ -63,14 +87,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           {...props}
         >
-          {childArray.map((child, index) => (
-            <Option
-              key={child.key}
-              {...child.props}
-              selected={child.props.value === value}
-              value={index}
-            />
-          ))}
+          {options}
         </select>
       </div>
     );

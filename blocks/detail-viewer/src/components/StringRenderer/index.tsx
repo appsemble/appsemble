@@ -13,8 +13,8 @@ export function StringRenderer({ data, field }: RendererProps<StringField>): VNo
   const value = utils.remap(field.value, data);
 
   return (
-    <div className="appsemble-string">
-      {label ? <h6 className="title is-6">{label}</h6> : null}
+    <div className="appsemble-string mb-5">
+      {label ? <h6 className="title is-6 mb-0">{label}</h6> : null}
       {value ? (
         <div className="content">{typeof value === 'string' ? value : JSON.stringify(value)}</div>
       ) : null}

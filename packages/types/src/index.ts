@@ -1,11 +1,4 @@
-import {
-  Action,
-  BaseMessage,
-  HTTPMethods,
-  LogAction,
-  RequestLikeActionTypes,
-  Theme,
-} from '@appsemble/sdk/src/types';
+import { Action, BaseMessage, HTTPMethods, LogAction, Theme } from '@appsemble/sdk/src/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
@@ -55,7 +48,7 @@ export interface BlockDefinition {
   /**
    * An optional header to render above the block.
    */
-  header?: string;
+  header?: Remapper;
 
   /**
    * An override of the block’s default layout.
@@ -136,7 +129,6 @@ export interface UserInfo {
   /**
    * True if the end-user's email address has been verified, else false.
    */
-  // eslint-disable-next-line camelcase
   email_verified: boolean;
 
   /**
@@ -174,13 +166,11 @@ export interface TokenResponse {
   /**
    * The bearer access token to use for authenticating requests.
    */
-  // eslint-disable-next-line camelcase
   access_token: string;
 
   /**
    * How long until the access token expires in seconds from now.
    */
-  // eslint-disable-next-line camelcase
   expires_in?: number;
 
   /**
@@ -188,16 +178,13 @@ export interface TokenResponse {
    *
    * This field is only present on OpenID connect providers.
    */
-  // eslint-disable-next-line camelcase
   id_token?: string;
 
   /**
    * A refresh token for getting a new access token.
    */
-  // eslint-disable-next-line camelcase
   refresh_token?: string;
 
-  // eslint-disable-next-line camelcase
   token_type: 'bearer';
 }
 
@@ -308,7 +295,7 @@ export interface Remappers {
     /**
      * A set of remappers to convert the input to usable values.
      */
-    values: Record<string, Remapper>;
+    values?: Record<string, Remapper>;
   };
 
   /**
@@ -341,20 +328,19 @@ export interface SubscriptionResponseResource {
 
 export type SubscriptionResponse = Record<string, SubscriptionResponseResource>;
 
+export interface RoleDefinition {
+  description?: string;
+  inherits?: string[];
+  defaultPage?: string;
+}
+
 export interface Security {
   login?: 'password';
   default: {
     role: string;
     policy?: 'everyone' | 'invite' | 'organization';
   };
-  roles: Record<
-    string,
-    {
-      description?: string;
-      inherits?: string[];
-      defaultPage?: string;
-    }
-  >;
+  roles: Record<string, RoleDefinition>;
 }
 
 export type Navigation = 'bottom' | 'hidden' | 'left-menu';
@@ -421,6 +407,11 @@ interface ResourceReference {
 
 export interface ResourceDefinition {
   /**
+   * The default list of roles used for permission checks for each action.
+   */
+  roles?: string[];
+
+  /**
    * The definition for the `resource.create` action.
    */
   create?: ResourceCall;
@@ -455,7 +446,7 @@ export interface ResourceDefinition {
    *
    * @default `id`
    */
-  id?: number;
+  id?: string;
 
   /**
    * The JSON schema to validate resources against before sending it to the backend.
@@ -572,7 +563,7 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
    *
    * This should be a page name.
    */
-  to: string;
+  to: string[] | string;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
@@ -584,9 +575,8 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
   level?: LogAction['level'];
 }
 
-export interface RequestLikeActionDefinition<
-  T extends RequestLikeActionTypes = RequestLikeActionTypes
-> extends BaseActionDefinition<T> {
+export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
+  extends BaseActionDefinition<T> {
   /**
    * The HTTP method to use for making a request.
    */
@@ -622,7 +612,7 @@ export interface RequestLikeActionDefinition<
   body?: Remapper;
 }
 
-export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
+interface ResourceActionDefinition<T extends Action['type']>
   extends RequestLikeActionDefinition<T> {
   /**
    * The name of the resource.
@@ -651,9 +641,9 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   action?: 'create' | 'delete' | 'update';
 }
 
-export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
+export type ResourceSubscriptionSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
 
-export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
+export type ResourceSubscriptionUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
 
 export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
 
@@ -692,6 +682,8 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
   };
 
 export type ActionDefinition =
+  | BaseActionDefinition<'dialog.error'>
+  | BaseActionDefinition<'dialog.ok'>
   | BaseActionDefinition<'email'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -709,16 +701,15 @@ export type ActionDefinition =
   | LogActionDefinition
   | MessageActionDefinition
   | RequestActionDefinition
-  // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
-  | RequestLikeActionDefinition
+  | ResourceCountActionDefinition
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
   | ResourceQueryActionDefinition
-  | ResourceSubscribeActionDefinition
   | ResourceSubscriptionStatusActionDefinition
+  | ResourceSubscriptionSubscribeActionDefinition
   | ResourceSubscriptionToggleActionDefinition
-  | ResourceUnsubscribeActionDefinition
+  | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
   | StaticActionDefinition;
 
@@ -1012,9 +1003,14 @@ export interface App {
   domain?: string;
 
   /**
-   * The id of the organization to which this app belongs.
+   * The id of the organization this app belongs to.
    */
   OrganizationId?: string;
+
+  /**
+   * The name of the organization this app belongs to.
+   */
+  OrganizationName?: string;
 
   /**
    * The long description of the app.
@@ -1036,6 +1032,14 @@ export interface App {
    */
   locked: boolean;
 
+  /**
+   * Whether the Appsemble login method should be shown.
+   */
+  showAppsembleLogin: boolean;
+
+  /**
+   * The app definition.
+   */
   definition: AppDefinition;
 
   /**
@@ -1151,6 +1155,21 @@ export interface Organization {
   name: string;
 
   /**
+   * The description of the organization.
+   */
+  description: string;
+
+  /**
+   * The website of the organization.
+   */
+  website: string;
+
+  /**
+   * The email address that can be used to contact the organization.
+   */
+  email: string;
+
+  /**
    * The URL at which the organization’s icon can be found.
    */
   iconUrl: string;
@@ -1188,6 +1207,11 @@ export interface OrganizationInvite {
    * The email address of the user to invite.
    */
   email: string;
+
+  /**
+   * The role the user should get when accepting the invite.
+   */
+  role: string;
 }
 
 /**

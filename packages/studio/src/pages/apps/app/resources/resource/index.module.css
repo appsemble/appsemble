@@ -1,0 +1,16 @@
+.modal {
+  max-width: 100vw;
+  width: 960px;
+}
+
+.clickable {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.hideCheckboxes {
+  display: grid;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  grid-template-columns: 1fr 1fr;
+  row-gap: 1rem;
+}

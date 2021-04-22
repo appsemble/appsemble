@@ -1,10 +1,9 @@
-import { Portal } from '@appsemble/react-components';
+import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { ReactChild, ReactElement } from 'react';
 
 import { shouldShowMenu } from '../../utils/layout';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { ProfileDropdown } from '../ProfileDropdown';
-import { SideMenuButton } from '../SideMenuButton';
 import { useUser } from '../UserProvider';
 import styles from './index.module.css';
 

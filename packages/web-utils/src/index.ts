@@ -1,3 +1,5 @@
+export * from './download';
+export * from './fa';
 export * from './getOneSearchParam';
 export * from './oauth2Login';
 export * from './randomString';

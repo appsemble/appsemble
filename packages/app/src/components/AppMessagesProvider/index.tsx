@@ -86,9 +86,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;
     if (lang !== defaultLanguage && !languages.includes(lang)) {
+      document.documentElement.lang = defaultLocale;
       return;
     }
 
+    document.documentElement.lang = lang;
     axios
       .get<AppMessages>(`${apiUrl}/api/apps/${appId}/messages/${lang}`)
       .then(({ data }) => setMessages(data.messages))
@@ -141,7 +143,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   return (
     <Context.Provider value={value}>
-      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={messages.core}>
+      <IntlProvider
+        defaultLocale={defaultLocale}
+        locale={lang}
+        messages={{ ...messages.core, ...messages.app }}
+      >
         {children}
       </IntlProvider>
     </Context.Provider>

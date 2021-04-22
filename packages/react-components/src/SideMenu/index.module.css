@@ -30,7 +30,7 @@
   top: 3.25rem;
   transition: left 0.15s;
   width: menu-width;
-  z-index: 5;
+  z-index: 5000;
 
   @media screen and (min-width: 1024px) {
     left: 0;
@@ -38,5 +38,28 @@
 
   &.open {
     left: 0;
+  }
+}
+
+.backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  bottom: 0;
+  left: 0;
+  opacity: 1;
+  position: fixed;
+  right: 0;
+
+  /* This matches the size of the navbar */
+  top: 3.25rem;
+  transition: opacity 0.15s;
+  z-index: 4000;
+
+  @media screen and (min-width: 1024px) {
+    display: none;
+  }
+
+  &.closed {
+    opacity: 0;
+    pointer-events: none;
   }
 }

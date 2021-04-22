@@ -12,25 +12,14 @@ exports[`should render a bulma modal when it is active 1`] = `
       role="presentation"
     />
     <div
-      class="modal-card"
+      class="modal-content"
     >
-      <div
-        class="modal-card-head"
-      >
-        <p
-          class="modal-card-title"
-        />
-        <button
-          class="delete is-large"
-          type="button"
-        />
-      </div>
-      <div
-        class="modal-card-body"
-      >
-        test
-      </div>
+      test
     </div>
+    <button
+      class="modal-close is-large"
+      type="button"
+    />
   </div>
 </div>
 `;

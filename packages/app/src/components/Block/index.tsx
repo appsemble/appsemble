@@ -4,6 +4,7 @@ import { Title, useMessages } from '@appsemble/react-components';
 import { Utils } from '@appsemble/sdk';
 import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
 import { baseTheme, normalizeBlockName } from '@appsemble/utils';
+import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -156,6 +157,7 @@ export function Block({
           args,
         ) as string;
       },
+      fa,
     };
 
     (async () => {
@@ -228,6 +230,8 @@ export function Block({
 
   if (layout === 'float') {
     const { position = 'bottom right' } = block;
+    const { navigation = 'left-menu' } = definition.layout || {};
+
     return createPortal(
       <div
         className={classNames(`is-flex ${styles.root} ${styles.float}`, {
@@ -235,7 +239,8 @@ export function Block({
           [styles.bottom]: position.includes('bottom'),
           [styles.left]: position.includes('left'),
           [styles.right]: position.includes('right'),
-          [styles.hasBottomNav]: definition?.layout?.navigation === 'bottom',
+          [styles.hasSideMenu]: navigation === 'left-menu',
+          [styles.hasBottomNav]: navigation === 'bottom',
         })}
         data-block={blockName}
         data-path={prefix}

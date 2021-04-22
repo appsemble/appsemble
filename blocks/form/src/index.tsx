@@ -62,7 +62,7 @@ bootstrap(
       const requirementErrors = new Map<number, string>();
       Promise.all(
         pendingRequirements.map((requirement) =>
-          actions[requirement.action].dispatch(values).then(
+          actions[requirement.action](values).then(
             (result) => {
               requirementErrors.set(requirements.indexOf(requirement), null);
               return result;
@@ -101,8 +101,8 @@ bootstrap(
           return;
         }
 
-        actions.onSubmit
-          .dispatch(values)
+        actions
+          .onSubmit(values)
           .catch((submitActionError: unknown) => {
             // Log the error to the console for troubleshooting.
             // eslint-disable-next-line no-console
@@ -118,7 +118,7 @@ bootstrap(
     }, [actions, errors, fields, formErrors, submitting, utils, values]);
 
     const onPrevious = useCallback(() => {
-      actions.onPrevious.dispatch(values);
+      actions.onPrevious(values);
     }, [actions, values]);
 
     const receiveData = useCallback(
@@ -130,7 +130,7 @@ bootstrap(
         const requirementErrors = new Map<number, string>();
         Promise.all(
           requirements?.map((requirement) =>
-            actions[requirement.action].dispatch(newValues).then(
+            actions[requirement.action](newValues).then(
               () => requirementErrors.set(requirements.indexOf(requirement), null),
               (errorResponse) => {
                 requirementErrors.set(

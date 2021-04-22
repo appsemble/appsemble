@@ -1,16 +1,11 @@
 import {
   Button,
-  FormButtons,
-  Loader,
-  Modal,
+  ModalCard,
   SelectField,
-  SimpleBeforeUnload,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
   SimpleModalFooter,
-  SimpleSubmit,
-  TextAreaField,
   Title,
   useConfirmation,
   useData,
@@ -18,16 +13,19 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { AppMessages } from '@appsemble/types';
-import { getLanguageDisplayName, iterApp, langmap } from '@appsemble/utils';
+import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '..';
-import { findMessageIds } from '../../../../utils/findMessageIds';
+import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { messages } from './messages';
+import { MessagesLoader } from './MessagesLoader';
 
+/**
+ * The page for translating app messages.
+ */
 export function TranslationsPage(): ReactElement {
   useMeta(messages.title);
 
@@ -35,51 +33,16 @@ export function TranslationsPage(): ReactElement {
   const push = useMessages();
   const { formatMessage } = useIntl();
 
-  const { data: languages, loading: loadingLanguages, setData: setLanguages } = useData<string[]>(
-    `/api/apps/${app.id}/messages`,
-  );
-  const [loadingMessages, setLoadingMessages] = useState(true);
-  const [appMessages, setAppMessages] = useState<AppMessages>();
+  const languageIds = useData<string[]>(`/api/apps/${app.id}/messages`);
 
   const [selectedLanguage, setSelectedLanguage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
   const modal = useToggle();
 
-  const languageId = selectedLanguage || languages?.[0];
+  const languageId =
+    selectedLanguage || languageIds.data?.[0] || app.definition.defaultLanguage || 'en';
 
-  useEffect(() => {
-    if (languageId) {
-      setLoadingMessages(true);
-      axios
-        .get<AppMessages>(`/api/apps/${app.id}/messages/${languageId}`)
-        .then((d) => {
-          setAppMessages(d.data);
-        })
-        .catch(() => setAppMessages(null))
-        .finally(() => setLoadingMessages(false));
-    } else {
-      setLoadingMessages(false);
-    }
-  }, [app, languageId]);
-
-  const onSubmit = useCallback(
-    async (values: AppMessages['messages']['app']) => {
-      if (app.locked) {
-        return;
-      }
-
-      setSubmitting(true);
-      await axios.post(`/api/apps/${app.id}/messages`, {
-        language: languageId,
-        messages: values,
-      });
-      setSubmitting(false);
-      push({ color: 'success', body: formatMessage(messages.uploadSuccess) });
-    },
-    [app, formatMessage, push, languageId],
-  );
-
-  const onSelectedLanguageChange = useCallback((_, lang: string) => {
+  const onSelectedLanguageChange = useCallback((event, lang: string) => {
     setSelectedLanguage(lang);
   }, []);
 
@@ -99,9 +62,9 @@ export function TranslationsPage(): ReactElement {
       setSubmitting(true);
       await axios.delete(`/api/apps/${app.id}/messages/${languageId}`);
       setSubmitting(false);
-      const newLanguages = languages.filter((lang) => lang !== languageId);
+      const newLanguages = languageIds.data.filter((lang) => lang !== languageId);
       setSelectedLanguage(newLanguages[0]);
-      setLanguages(newLanguages);
+      languageIds.setData(newLanguages);
       push({ color: 'info', body: formatMessage(messages.deleteSuccess) });
     },
   });
@@ -112,67 +75,12 @@ export function TranslationsPage(): ReactElement {
       // as well as keeping it in the list of supported languages.
       await axios.post(`/api/apps/${app.id}/messages`, { language: lang, messages: {} });
 
-      setLanguages([...languages, lang]);
+      languageIds.setData((oldLanguages) => [...oldLanguages, lang].sort(compareStrings));
       setSelectedLanguage(lang);
       modal.disable();
     },
-    [app, languages, modal, setLanguages],
+    [app, modal, languageIds],
   );
-
-  const messageIds = useMemo(() => {
-    const actions: string[] = [];
-    const pages: string[] = [];
-    const pageBlockMessageIds: string[] = [];
-    const blockMessages = appMessages
-      ? Object.entries(appMessages.messages.blocks).flatMap(([name, versions]) =>
-          Object.entries(versions).flatMap(([version, versionMessages]) =>
-            Object.keys(versionMessages).map(
-              (versionMessage) => `${name}/${version}/${versionMessage}`,
-            ),
-          ),
-        )
-      : [];
-
-    iterApp(app.definition, {
-      onBlock(block, prefix) {
-        findMessageIds(block.header, (messageId) => actions.push(messageId));
-        findMessageIds(block.parameters, (messageId) => actions.push(messageId));
-
-        const blockName = block.type.startsWith('@')
-          ? `${block.type}/${block.version}`
-          : `@appsemble/${block.type}/${block.version}`;
-        const pageBlockMessages = blockMessages.filter((name) => name.startsWith(blockName));
-        if (pageBlockMessages.length) {
-          pageBlockMessageIds.push(
-            ...pageBlockMessages.map((name) => `${prefix.join('.')}.${name.split('/').pop()}`),
-          );
-        }
-      },
-      onAction(action) {
-        findMessageIds(action.remap, (messageId) => actions.push(messageId));
-      },
-      onPage(_page, prefix) {
-        pages.push(prefix.join('.'));
-
-        if (_page.type === 'tabs') {
-          _page.subPages.forEach((_, index) => {
-            pages.push(`${prefix.join('.')}.subPages.${index}`);
-          });
-        }
-      },
-    });
-
-    return [
-      ...[...new Set(pages)].sort(),
-      ...[...new Set(actions)].sort(),
-      ...blockMessages.sort(),
-      ...pageBlockMessageIds.sort(),
-    ];
-  }, [app.definition, appMessages]);
-
-  if (loadingLanguages || loadingMessages) {
-    return <Loader />;
-  }
 
   return (
     <>
@@ -186,7 +94,7 @@ export function TranslationsPage(): ReactElement {
         onChange={onSelectedLanguageChange}
         value={languageId}
       >
-        {languages.map((lang) => (
+        {languageIds.data?.map((lang) => (
           <option key={lang} value={lang}>
             {getLanguageDisplayName(lang)}
           </option>
@@ -208,40 +116,13 @@ export function TranslationsPage(): ReactElement {
         />
       </div>
 
-      {languages.length > 0 && (
-        <>
-          <Title className="my-4" size={4}>
-            <FormattedMessage {...messages.messages} />
-          </Title>
-          <SimpleForm
-            defaultValues={Object.fromEntries(
-              messageIds.map((id) => [id, appMessages?.messages.app[id]]),
-            )}
-            onSubmit={onSubmit}
-          >
-            <SimpleFormError>
-              {() => <FormattedMessage {...messages.uploadError} />}
-            </SimpleFormError>
-            <SimpleBeforeUnload />
-            {messageIds.map((id) => (
-              <SimpleFormField
-                component={TextAreaField}
-                disabled={submitting || app.locked}
-                key={id}
-                label={id}
-                name={id}
-                rows={2}
-              />
-            ))}
-            <FormButtons>
-              <SimpleSubmit className="mb-4" disabled={submitting || app.locked}>
-                <FormattedMessage {...messages.submit} />
-              </SimpleSubmit>
-            </FormButtons>
-          </SimpleForm>
-        </>
-      )}
-      <Modal
+      <Title className="my-4" size={4}>
+        <FormattedMessage {...messages.messages} />
+      </Title>
+      <AsyncDataView errorMessage={null} loadingMessage={null} result={languageIds}>
+        {() => <MessagesLoader languageId={languageId} />}
+      </AsyncDataView>
+      <ModalCard
         component={SimpleForm}
         defaultValues={{ language: undefined }}
         footer={
@@ -270,7 +151,7 @@ export function TranslationsPage(): ReactElement {
             </option>
           ))}
         </SimpleFormField>
-      </Modal>
+      </ModalCard>
     </>
   );
 }

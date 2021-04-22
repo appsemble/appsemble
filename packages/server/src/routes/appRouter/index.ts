@@ -1,6 +1,7 @@
 import { partialNormalized, partialSemver } from '@appsemble/utils';
 
 import { tinyRouter } from '../../middleware/tinyRouter';
+import { staticHandler } from '../static';
 import { blockAssetHandler } from './blockAssetHandler';
 import { blockCSSHandler } from './blockCSSHandler';
 import { cssHandler } from './cssHandler';
@@ -47,8 +48,12 @@ export const appRouter = tinyRouter([
     any() {},
   },
   {
-    route: /\.\w+$/,
-    any() {},
+    route: '/index.html',
+    get: indexHandler,
+  },
+  {
+    route: /\.[a-z]\w*$/i,
+    any: staticHandler('app'),
   },
   {
     route: /.*/,

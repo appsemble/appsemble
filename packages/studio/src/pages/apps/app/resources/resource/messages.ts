@@ -14,4 +14,13 @@ export const messages = defineMessages({
     'This resource could not be found in the app definition. Please confirm if this resource exists.',
   notManaged: 'This resource is not managed by Appsemble. You can find this resource at {link}',
   export: 'Export as CSV',
+  id: 'ID',
+  author: 'Author',
+  hideButton: 'Hide columns ({count}/{total})',
+  apply: 'Apply',
+  hideProperties: 'Hide properties',
+  hideExplanation:
+    'Hide properties from the table. Hidden properties will also be hidden when exporting the properties as CSV.',
+  created: 'Created',
+  updated: 'Updated',
 });

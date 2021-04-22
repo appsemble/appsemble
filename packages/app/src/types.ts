@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 
 import { ShowMessage } from '@appsemble/react-components';
-import { Action } from '@appsemble/sdk';
 import {
   ActionDefinition,
   AppDefinition,
@@ -14,6 +13,8 @@ import {
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { match as Match, RouteComponentProps } from 'react-router-dom';
 import { JsonValue } from 'type-fest';
+
+import { ActionCreators } from './utils/actions';
 
 declare module '@appsemble/sdk' {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
@@ -71,12 +72,13 @@ declare global {
       }[];
       sentryDsn: string;
       sentryEnvironment: string;
+      showAppsembleLogin: boolean;
     };
   }
 }
 
 export interface ShowDialogParams {
-  actionCreators: Record<string, () => Action>;
+  actionCreators: ActionCreators;
   blocks: BlockDefinition[];
   closable?: boolean;
   data: any;

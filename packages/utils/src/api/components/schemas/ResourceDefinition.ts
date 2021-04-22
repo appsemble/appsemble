@@ -2,7 +2,8 @@ import { OpenAPIV3 } from 'openapi-types';
 
 const roles: OpenAPIV3.ArraySchemaObject = {
   type: 'array',
-  description: 'The list of roles that are allowed to use this call.',
+  description:
+    'The list of roles that are allowed to use this action. This will override the default roles that are assigned.',
   items: {
     type: 'string',
   },
@@ -63,6 +64,11 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
             delete: referenceAction,
           },
         },
+      },
+      roles: {
+        type: 'array',
+        description: 'The default roles that are allowed to perform all actions.',
+        items: { type: 'string' },
       },
       url: {
         type: 'string',

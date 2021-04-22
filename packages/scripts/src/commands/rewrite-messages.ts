@@ -2,6 +2,7 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { compareStrings } from '@appsemble/utils';
 
 /**
  * This script aims to help keep existing translations if a messages file has been moved.
@@ -57,7 +58,7 @@ export async function handler(): Promise<void> {
       );
       await fs.writeFile(
         path,
-        `${JSON.stringify(newMessages, Object.keys(newMessages).sort(), 2)}\n`,
+        `${JSON.stringify(newMessages, Object.keys(newMessages).sort(compareStrings), 2)}\n`,
       );
     }),
   );

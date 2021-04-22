@@ -5,7 +5,7 @@ import {
   useLocationString,
   useQuery,
 } from '@appsemble/react-components';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 

@@ -2,10 +2,9 @@ import { promises as fs } from 'fs';
 import { URL } from 'url';
 import { inspect } from 'util';
 
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, logger, readYaml } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import yaml from 'js-yaml';
 
 import { AppsembleContext } from '../types';
 import { authenticate } from './authentication';
@@ -65,21 +64,13 @@ export async function createApp({
   const formData = new FormData();
   let appsembleContext: AppsembleContext;
 
-  try {
-    if (file.isFile()) {
-      // Assuming file is App YAML
-      const data = await fs.readFile(path, 'utf8');
-      const app = yaml.safeLoad(data);
-      formData.append('yaml', data);
-      formData.append('definition', JSON.stringify(app));
-    } else {
-      appsembleContext = await traverseAppDirectory(path, context, formData);
-    }
-  } catch (error: unknown) {
-    if (error instanceof yaml.YAMLException) {
-      throw new AppsembleError(`The YAML in ${path} is invalid.\nMessage: ${error.message}`);
-    }
-    throw error;
+  if (file.isFile()) {
+    // Assuming file is App YAML
+    const [app, data] = await readYaml(path);
+    formData.append('yaml', data);
+    formData.append('definition', JSON.stringify(app));
+  } else {
+    appsembleContext = await traverseAppDirectory(path, context, formData);
   }
 
   const remote = appsembleContext?.remote ?? options.remote;

@@ -37,40 +37,22 @@ interface ModalProps<T extends ElementType> {
   onClose?: (event: Event) => void;
 
   /**
-   * The title that is displayed at the top of the modal.
-   */
-  title?: VNode;
-
-  /**
-   * The CSS class applied to the card.
-   */
-  cardClassName?: string;
-
-  /**
    * The CSS class applied to the body.
    */
   className?: string;
-
-  /**
-   * The footer to render on the modal.
-   */
-  footer?: VNode;
 }
 
 /**
  * Render an aria compliant modal overlay.
  */
 export function Modal<T extends ElementType = 'div'>({
-  cardClassName,
   children = null,
   className,
   closable = true,
   closeButtonLabel,
   component: Component = 'div' as T,
-  footer = null,
   isActive,
   onClose = () => {},
-  title,
   ...props
 }: ModalProps<T> & Omit<ComponentProps<T>, keyof ModalProps<T>>): VNode {
   const openClass = useAnimation(isActive, 300, {
@@ -101,21 +83,17 @@ export function Modal<T extends ElementType = 'div'>({
         role="presentation"
       />
       {/* @ts-expect-error This construct should work */}
-      <Component className={classNames('modal-card', cardClassName)} {...props}>
-        <div className="modal-card-head">
-          <p className="modal-card-title">{title}</p>
-          {closable && (
-            <button
-              aria-label={closeButtonLabel}
-              className="delete is-large"
-              onClick={onClose}
-              type="button"
-            />
-          )}
-        </div>
-        <div className={classNames('modal-card-body', className)}>{children}</div>
-        {footer && <footer className="card-footer">{footer}</footer>}
+      <Component className={classNames('modal-content', className)} {...props}>
+        {children}
       </Component>
+      {closable && (
+        <button
+          aria-label={closeButtonLabel}
+          className="modal-close is-large"
+          onClick={onClose}
+          type="button"
+        />
+      )}
     </div>
   );
 }

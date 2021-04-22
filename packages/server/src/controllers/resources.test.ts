@@ -1,6 +1,6 @@
 import { createFormData } from '@appsemble/node-utils';
 import { TeamRole } from '@appsemble/utils';
-import FakeTimers from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
 
@@ -27,7 +27,7 @@ import {
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 let organization: Organization;
-let clock: FakeTimers.InstalledClock;
+let clock: Clock;
 let member: Member;
 let user: User;
 let originalSendNotification: typeof webpush.sendNotification;
@@ -49,6 +49,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
               baz: { type: 'string' },
             },
           },
+          roles: ['$public'],
           create: {
             hooks: {
               notification: {
@@ -81,6 +82,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             required: ['bar'],
             properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
           },
+          roles: ['$public'],
           references: {
             testResourceId: {
               resource: 'testResource',
@@ -143,6 +145,18 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             required: ['foo'],
             properties: { foo: { type: 'string' } },
           },
+          roles: ['$public'],
+        },
+        testPrivateResource: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+          roles: [],
+          count: {
+            roles: ['$public'],
+          },
         },
         testAssets: {
           schema: {
@@ -152,6 +166,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
               string: { type: 'string' },
             },
           },
+          roles: ['$public'],
         },
       },
       security: {
@@ -193,7 +208,7 @@ beforeEach(async () => {
     OrganizationId: organization.id,
     role: 'Maintainer',
   });
-  clock = FakeTimers.install();
+  clock = install();
 });
 
 afterEach(truncate);
@@ -1121,6 +1136,24 @@ describe('queryResources', () => {
       },
     });
   });
+
+  it('should make actions private by default', async () => {
+    const app = await exampleApp(organization.id);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testPrivateResource',
+      data: { foo: 'bar' },
+    });
+    const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource`);
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'This action is private.',
+        statusCode: 403,
+      },
+    });
+  });
 });
 
 describe('countResources', () => {
@@ -1425,6 +1458,20 @@ describe('countResources', () => {
     expect(response).toMatchObject({
       status: 200,
       data: 2,
+    });
+  });
+
+  it('should override general action roles', async () => {
+    const app = await exampleApp(organization.id);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testPrivateResource',
+      data: { foo: 'bar' },
+    });
+    const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource/$count`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: 1,
     });
   });
 
@@ -2579,7 +2626,7 @@ describe('verifyAppRole', () => {
       status: 401,
       data: {
         error: 'Unauthorized',
-        message: 'User is not logged in',
+        message: 'User is not logged in.',
         statusCode: 401,
       },
     });

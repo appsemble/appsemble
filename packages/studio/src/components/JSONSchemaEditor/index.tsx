@@ -17,7 +17,7 @@ export function JSONSchemaEditor({
   'disabled' | 'name' | 'onChange' | 'schema' | 'value'
 >): ReactElement {
   const handleChange = useCallback(
-    (_event, val) => {
+    (event, val) => {
       onChange({ currentTarget: { name } }, val);
     },
     [name, onChange],

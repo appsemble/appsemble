@@ -51,7 +51,7 @@ export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
     include: [
       {
         model: Organization,
-        attributes: ['id', 'name'],
+        attributes: ['id', 'name', 'description', 'website', 'email'],
       },
     ],
   });
@@ -60,6 +60,9 @@ export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
     id: org.id,
     name: org.name,
     role: org.Member.role,
+    description: org.description,
+    website: org.website,
+    email: org.email,
     iconUrl: `/api/organizations/${org.id}/icon`,
   }));
 }

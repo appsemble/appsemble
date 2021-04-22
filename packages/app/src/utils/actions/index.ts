@@ -14,16 +14,34 @@ import { request } from './request';
 import * as resource from './resource';
 import { staticAction } from './static';
 import { teamJoin, teamList } from './team';
-import { throwAction } from './throwAction';
+import { throwAction } from './throw';
 
-// XXX fix type, this requires a generic mapping key to type.
-export type ActionCreator = (args: MakeActionParameters<ActionDefinition>) => Action;
+type ActionProperties<T extends ActionDefinition['type']> = Omit<
+  Extract<Action, { type: T }>,
+  'dispatch' | 'type'
+>;
 
+/**
+ * A type which takes some parameters and returns an action of the specified type.
+ *
+ * @param params - The input params passed in by `makeActions`.
+ * @returns An tuple containing the action implementation and additional properties, if relevant.
+ */
+export type ActionCreator<T extends ActionDefinition['type']> = (
+  params: MakeActionParameters<ActionDefinition & { type: T }>,
+) => [
+  (data: unknown, context: Record<string, any>) => unknown,
+  ...(keyof ActionProperties<T> extends never ? [] : [ActionProperties<T>])
+];
+
+/**
+ * A mapping of basic action creators.
+ */
 export type ActionCreators = {
-  [K in Action['type']]?: ActionCreator;
+  [K in Action['type']]?: ActionCreator<K>;
 };
 
-export const actionCreators = {
+export const actionCreators: ActionCreators = {
   link,
   'link.back': back,
   'link.next': next,
@@ -47,9 +65,9 @@ export const actionCreators = {
   'resource.delete': resource.remove,
   'resource.subscription.subscribe': resource.subscribe,
   'resource.subscription.unsubscribe': resource.unsubscribe,
-  'resource.subscription.toggle': resource.toggleSubscribe,
-  'resource.subscription.status': resource.subscriptionStatus,
+  'resource.subscription.toggle': resource.toggle,
+  'resource.subscription.status': resource.status,
   static: staticAction,
   'team.join': teamJoin,
   'team.list': teamList,
-} as ActionCreators;
+};

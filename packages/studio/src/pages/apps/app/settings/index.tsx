@@ -87,13 +87,13 @@ export function SettingsPage(): ReactElement {
     cancelLabel: <FormattedMessage {...messages.cancel} />,
     confirmLabel: <FormattedMessage {...messages.delete} />,
     async action() {
-      const { OrganizationId, id, path } = app;
+      const { id } = app;
 
       try {
         await axios.delete(`/api/apps/${id}`);
         push({
           body: formatMessage(messages.deleteSuccess, {
-            name: `@${OrganizationId}/${path}`,
+            name: app.definition.name,
           }),
           color: 'info',
         });

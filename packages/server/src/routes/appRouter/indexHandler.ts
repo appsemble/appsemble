@@ -29,7 +29,14 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
   const { host, sentryDsn, sentryEnvironment } = argv;
 
   const app = await getApp(ctx, {
-    attributes: ['definition', 'id', 'sharedStyle', 'coreStyle', 'vapidPublicKey'],
+    attributes: [
+      'definition',
+      'id',
+      'sharedStyle',
+      'coreStyle',
+      'vapidPublicKey',
+      'showAppsembleLogin',
+    ],
     include: [
       {
         attributes: ['icon', 'id', 'name'],
@@ -101,6 +108,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     ],
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
+    showAppsembleLogin: app.showAppsembleLogin ?? true,
     sentryDsn,
     sentryEnvironment,
   });

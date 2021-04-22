@@ -82,11 +82,12 @@ variables Bulma uses. The list of extensions is as follows:
 In addition to Bulma classes, Appsemble has defined the following classes in the core part of
 Appsemble. These may also be used for styling.
 
-| CSS Class               | Context               | Description                |
-| ----------------------- | --------------------- | -------------------------- |
-| `.bottom-nav`           | Bottom app navigation | The container element.     |
-| `.bottom-nav-item`      | Bottom app navigation | A navigation list item.    |
-| `.bottom-nav-item-link` | Bottom app navigation | A link inside a list item. |
+| CSS Class               | Context               | Description                             |
+| ----------------------- | --------------------- | --------------------------------------- |
+| `.bottom-nav`           | Bottom app navigation | The container element.                  |
+| `.bottom-nav-item`      | Bottom app navigation | A navigation list item.                 |
+| `.bottom-nav-item-link` | Bottom app navigation | A link inside a list item.              |
+| `.appsemble-login`      | The login page        | A container element for the login page. |
 
 ## Custom Styling
 

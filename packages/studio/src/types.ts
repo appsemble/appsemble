@@ -46,6 +46,9 @@ export interface Organization {
   id: string;
   name: string;
   role: Role;
+  description: string;
+  website: string;
+  email: string;
   iconUrl: string;
 }
 
@@ -56,17 +59,6 @@ export interface ExtendedOAuth2State extends OAuth2State {
   id: string;
   appRequest?: string;
   userinfo?: UserInfo;
-}
-
-declare module 'jsonschema' {
-  interface Schema {
-    /**
-     * An optional default value that’s used.
-     *
-     * https://github.com/tdegrunt/jsonschema/pull/335
-     */
-    default?: any;
-  }
 }
 
 declare global {

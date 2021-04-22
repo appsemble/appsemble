@@ -1,12 +1,5 @@
-import { BaseAction } from '@appsemble/sdk';
+import { identity } from '@appsemble/utils';
 
-export function noop(): BaseAction<'noop'> {
-  return {
-    type: 'noop',
+import { ActionCreator } from '.';
 
-    // eslint-disable-next-line require-await
-    async dispatch(data: any) {
-      return data;
-    },
-  };
-}
+export const noop: ActionCreator<'noop'> = () => [identity];

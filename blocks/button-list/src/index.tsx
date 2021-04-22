@@ -32,7 +32,7 @@ attach(({ actions, data, events, parameters: { buttons }, utils }) => (
         if (icon) {
           node.append(
             <span className="icon">
-              <i className={`fas fa-${icon}`} />
+              <i className={utils.fa(icon)} />
             </span>,
           );
         }
@@ -60,7 +60,7 @@ attach(({ actions, data, events, parameters: { buttons }, utils }) => (
         node.addEventListener('click', (event) => {
           // Delegate anchor behaviour to the link action.
           event.preventDefault();
-          action.dispatch(currentData);
+          action(currentData);
         });
         return node;
       },

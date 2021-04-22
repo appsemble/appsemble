@@ -39,7 +39,6 @@ interface PasswordLoginParams {
 
 interface AuthorizationCodeLoginParams {
   code: string;
-  // eslint-disable-next-line camelcase
   redirect_uri: string;
 }
 
@@ -68,13 +67,11 @@ interface TokenResponse {
   /**
    * A bearer access token.
    */
-  // eslint-disable-next-line camelcase
   access_token: string;
 
   /**
    * The refresh token.
    */
-  // eslint-disable-next-line camelcase
   refresh_token: string;
 }
 
@@ -143,7 +140,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
           axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
             ({ data }) => data.role,
             (error) => {
-              const { policy, role: defaultRole } = definition.security.default;
+              const { policy = 'everyone', role: defaultRole } = definition.security.default;
               if (
                 policy === 'everyone' ||
                 (policy === 'organization' &&

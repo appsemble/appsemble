@@ -8,7 +8,7 @@ import styles from './index.module.css';
 interface Item {
   id: number;
   status: string;
-  fotos: string[];
+  photos: string[];
 }
 
 bootstrap(({ events, ready }) => {

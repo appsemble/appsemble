@@ -40,7 +40,6 @@ export function Button<C extends ElementType = 'button'>({
   component: Component = 'button',
   icon,
   iconPosition = 'left',
-  iconPrefix,
   inverted,
   loading,
   ...props
@@ -60,7 +59,7 @@ export function Button<C extends ElementType = 'button'>({
       })}
       {...props}
     >
-      <ButtonChildren icon={icon} iconPosition={iconPosition} iconPrefix={iconPrefix}>
+      <ButtonChildren icon={icon} iconPosition={iconPosition}>
         {children}
       </ButtonChildren>
     </Component>

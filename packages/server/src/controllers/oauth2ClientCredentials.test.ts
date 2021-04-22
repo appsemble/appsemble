@@ -1,4 +1,4 @@
-import FakeTimers from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
@@ -8,7 +8,7 @@ import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
-let clock: FakeTimers.InstalledClock;
+let clock: Clock;
 let user: User;
 
 beforeAll(createTestSchema('oauth2clientcredentials'));
@@ -20,7 +20,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = FakeTimers.install();
+  clock = install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
   user = await createTestUser();
 });

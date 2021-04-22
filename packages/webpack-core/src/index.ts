@@ -6,7 +6,6 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import autolink from 'rehype-autolink-headings';
 import slug from 'rehype-slug';
@@ -20,6 +19,7 @@ import TerserPlugin from 'terser-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { CliConfigOptions, Configuration, EnvironmentPlugin } from 'webpack';
+import { GenerateSW } from 'workbox-webpack-plugin';
 
 import studioPkg from '../package.json';
 import { remarkHeading } from './remark/heading';
@@ -55,17 +55,18 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
   const projectDir = join(packagesDir, env);
   const configFile = join(projectDir, 'tsconfig.json');
   const entry = join(projectDir, 'src');
-  const publicPath = production ? undefined : `/${env}`;
+  const publicPath = production ? '/' : `/${env}/`;
 
   return {
     name: `@appsemble/${env}`,
     devtool: 'source-map',
     mode,
-    entry: [entry],
+    entry: { [env]: [entry] },
     output: {
       filename: production ? '[contentHash].js' : `${env}.js`,
       publicPath,
-      path: production ? join(rootDir, 'dist', env) : publicPath,
+      path: production ? join(rootDir, 'dist', env) : `/${env}/`,
+      chunkFilename: production ? '[contentHash].js' : '[id].js',
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
@@ -84,8 +85,10 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       }),
       new CaseSensitivePathsPlugin(),
       new EnvironmentPlugin({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         APPSEMBLE_VERSION: studioPkg.version,
       }),
+      // @ts-expect-error This uses Webpack 5 types, but it’s compatible with both Webpack 4 and 5.
       new MiniCssExtractPlugin({
         filename: production ? '[contentHash].css' : `${env}.css`,
       }),
@@ -195,8 +198,11 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           loader: 'svgo-loader',
         },
         {
-          test: /yaml\.worker\.js$/,
+          test: /(css|json|yaml)\.worker\.js$/,
           loader: 'worker-loader',
+          options: {
+            filename: production ? '[contentHash].js' : '[name].js',
+          },
         },
       ],
     },
@@ -216,7 +222,7 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
   const config = shared('app', argv);
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: join((config.entry as string[])[0], 'error.html'),
+      template: join(packagesDir, 'app', 'src', 'error.html'),
       filename: 'error.html',
       minify,
       chunks: [],
@@ -240,6 +246,14 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
  */
 export function createStudioConfig(argv: CliConfigOptions): Configuration {
   const config = shared('studio', argv);
-  config.plugins.push(new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }));
+  if (argv.mode === 'production') {
+    config.plugins.push(
+      new GenerateSW({
+        ignoreURLParametersMatching: [/\.worker\.js$/],
+        // Some of our JavaScript assets are still too big to fit within the default cache limit.
+        maximumFileSizeToCacheInBytes: 3 * 2 ** 20,
+      }),
+    );
+  }
   return config;
 }

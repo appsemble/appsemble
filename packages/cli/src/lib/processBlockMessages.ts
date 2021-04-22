@@ -2,6 +2,7 @@ import { basename, join } from 'path';
 
 import { logger } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
+import { compareStrings } from '@appsemble/utils';
 import { ensureDir, readdir, readJSON, writeJSON } from 'fs-extra';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
@@ -20,7 +21,7 @@ export async function processBlockMessages(
     return;
   }
 
-  const keys = Object.keys(messages).sort();
+  const keys = Object.keys(messages).sort(compareStrings);
   const base = Object.fromEntries(keys.map((key) => [key, '']));
 
   const existingLanguages = dir

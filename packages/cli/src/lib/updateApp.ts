@@ -2,10 +2,9 @@ import { promises as fs } from 'fs';
 import { URL } from 'url';
 import { inspect } from 'util';
 
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, logger, readYaml } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import yaml from 'js-yaml';
 
 import { AppsembleContext } from '../types';
 import { authenticate } from './authentication';
@@ -67,57 +66,45 @@ export async function updateApp({
   path,
   ...options
 }: UpdateAppParams): Promise<void> {
-  try {
-    const file = await fs.stat(path);
-    const formData = new FormData();
-    let appsembleContext: AppsembleContext;
+  const file = await fs.stat(path);
+  const formData = new FormData();
+  let appsembleContext: AppsembleContext;
 
-    if (file.isFile()) {
-      // Assuming file is App YAML
-      const data = await fs.readFile(path, 'utf8');
-      const app = yaml.safeLoad(data);
-      formData.append('yaml', data);
-      formData.append('definition', JSON.stringify(app));
-    } else {
-      appsembleContext = await traverseAppDirectory(path, context, formData);
-    }
-
-    const remote = appsembleContext?.remote ?? options.remote;
-    const id = appsembleContext?.id ?? options.id;
-    const template = appsembleContext?.template ?? options.template ?? false;
-    const isPrivate = appsembleContext?.private ?? options.private;
-    logger.info(`App id: ${id}`);
-    logger.verbose(`App remote: ${remote}`);
-    logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
-    logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
-    logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
-    if (!id) {
-      throw new AppsembleError(
-        'The app id must be passed as a command line flag or in the context',
-      );
-    }
-    formData.append('force', String(force));
-    formData.append('template', String(template));
-    formData.append('private', String(isPrivate));
-
-    await authenticate(remote, 'apps:write', clientCredentials);
-    const { data } = await axios.patch(`/api/apps/${id}`, formData, { baseURL: remote });
-
-    if (file.isDirectory()) {
-      // After uploading the app, upload block styles and messages if they are available
-      await traverseBlockThemes(path, data.id, remote, force);
-      await uploadMessages(path, data.id, remote, force);
-    }
-
-    const { host, protocol } = new URL(remote);
-    logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
-    logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
-    logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
-  } catch (error: unknown) {
-    if (error instanceof yaml.YAMLException) {
-      logger.error(`The YAML in ${path} is invalid.`);
-    }
-
-    throw error;
+  if (file.isFile()) {
+    const [app, data] = await readYaml(path);
+    formData.append('yaml', data);
+    formData.append('definition', JSON.stringify(app));
+  } else {
+    appsembleContext = await traverseAppDirectory(path, context, formData);
   }
+
+  const remote = appsembleContext?.remote ?? options.remote;
+  const id = appsembleContext?.id ?? options.id;
+  const template = appsembleContext?.template ?? options.template ?? false;
+  const isPrivate = appsembleContext?.private ?? options.private;
+  logger.info(`App id: ${id}`);
+  logger.verbose(`App remote: ${remote}`);
+  logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
+  logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
+  logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
+  if (!id) {
+    throw new AppsembleError('The app id must be passed as a command line flag or in the context');
+  }
+  formData.append('force', String(force));
+  formData.append('template', String(template));
+  formData.append('private', String(isPrivate));
+
+  await authenticate(remote, 'apps:write', clientCredentials);
+  const { data } = await axios.patch(`/api/apps/${id}`, formData, { baseURL: remote });
+
+  if (file.isDirectory()) {
+    // After uploading the app, upload block styles and messages if they are available
+    await traverseBlockThemes(path, data.id, remote, force);
+    await uploadMessages(path, data.id, remote, force);
+  }
+
+  const { host, protocol } = new URL(remote);
+  logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
+  logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
+  logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 }

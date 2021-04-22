@@ -1,6 +1,6 @@
 import { NavbarDropdown, NavbarItem } from '@appsemble/react-components';
 import { ReactElement } from 'react';
-import { useLocation, useRouteMatch } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { supportedLanguages } from '../../../utils/constants';
 
@@ -12,9 +12,7 @@ interface LanguageDropdownProps {
 }
 
 export function LanguageDropdown({ className }: LanguageDropdownProps): ReactElement {
-  const {
-    params: { lang },
-  } = useRouteMatch<{ lang: string }>();
+  const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
 
   return (

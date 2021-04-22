@@ -16,7 +16,7 @@ export function LanguagePreference(): ReactElement {
   );
 
   const onLanguageChange = useCallback(
-    (_, language: string) => {
+    (event, language: string) => {
       history.replace(url.replace(preferredLanguage, language));
       setPreferredLanguage(language);
       localStorage.setItem('preferredLanguage', language);

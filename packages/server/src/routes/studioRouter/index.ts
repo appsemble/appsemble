@@ -1,4 +1,5 @@
 import { tinyRouter } from '../../middleware/tinyRouter';
+import { staticHandler } from '../static';
 import { faviconHandler } from './faviconHandler';
 import { iconHandler } from './iconHandler';
 import { indexHandler } from './indexHandler';
@@ -22,8 +23,12 @@ export const studioRouter = tinyRouter([
     any() {},
   },
   {
-    route: /\.\w+$/,
-    any() {},
+    route: '/index.html',
+    get: indexHandler,
+  },
+  {
+    route: /\.[a-z]\w*$/i,
+    any: staticHandler('studio'),
   },
   {
     route: /.*/,

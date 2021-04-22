@@ -8,7 +8,7 @@ import {
   Join,
   Loader,
   Message,
-  Modal,
+  ModalCard,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -101,7 +101,7 @@ export function ClientCredentialsPage(): ReactElement {
       <Button color="primary" onClick={modal.enable}>
         <FormattedMessage {...messages.register} />
       </Button>
-      <Modal
+      <ModalCard
         component={SimpleForm}
         defaultValues={{
           description: '',
@@ -189,7 +189,7 @@ export function ClientCredentialsPage(): ReactElement {
             />
           </>
         )}
-      </Modal>
+      </ModalCard>
       {clients.length ? (
         <Table className={styles.table}>
           <thead>

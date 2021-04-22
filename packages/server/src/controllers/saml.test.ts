@@ -3,7 +3,7 @@ import { promisify } from 'util';
 import { inflateRaw } from 'zlib';
 
 import { readFixture } from '@appsemble/node-utils';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import toXml from 'xast-util-to-xml';
 import x from 'xastscript';
@@ -15,7 +15,7 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 let app: App;
-let clock: InstalledClock;
+let clock: Clock;
 let secret: AppSamlSecret;
 let user: User;
 

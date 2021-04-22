@@ -1,32 +1,26 @@
-import { RequestAction, RequestLikeAction, RequestLikeActionTypes } from '@appsemble/sdk';
-import { RequestLikeActionDefinition } from '@appsemble/types';
+import { HTTPMethods } from '@appsemble/sdk';
 import { formatRequestAction } from '@appsemble/utils';
-import axios, { Method } from 'axios';
+import axios from 'axios';
 
-import { MakeActionParameters } from '../../types';
+import { ActionCreator } from '.';
 import { serializeResource } from '../serializers';
 import { apiUrl, appId } from '../settings';
 import { xmlToJson } from '../xmlToJson';
 
-export function requestLikeAction<T extends RequestLikeActionTypes>({
-  definition,
-  prefix,
-  remap,
-}: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
-  const { body, method = 'GET', proxy = true, schema, url } = definition;
+export const request: ActionCreator<'request'> = ({ definition, prefix, remap }) => {
+  const { body, method: uncasedMethod = 'GET', proxy = true, schema, url } = definition;
+  const method = uncasedMethod.toUpperCase() as HTTPMethods;
 
-  return {
-    type: 'request',
-    async dispatch(data) {
-      const methodUpper = method.toUpperCase() as Method;
+  return [
+    async (data) => {
       const req = proxy
         ? {
-            method: methodUpper,
+            method,
             url: `${apiUrl}/api/apps/${appId}/action/${prefix}`,
           }
         : formatRequestAction(definition, data, remap);
 
-      if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
+      if (method === 'PUT' || method === 'POST' || method === 'PATCH') {
         req.data = serializeResource(body ? remap(body, data) : data);
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
@@ -34,19 +28,15 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
 
       const response = await axios(req);
       let responseBody = response.data;
-      if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
+      if (/^(application|text)\/(.+\+)?xml/.test(response.headers['content-type'])) {
         responseBody = xmlToJson(responseBody, schema);
       }
 
       return responseBody;
     },
-    method,
-    url,
-  };
-}
-
-export function request(
-  args: MakeActionParameters<RequestLikeActionDefinition<'request'>>,
-): RequestAction {
-  return requestLikeAction(args);
-}
+    {
+      method,
+      url,
+    },
+  ];
+};

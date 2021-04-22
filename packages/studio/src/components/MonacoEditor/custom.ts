@@ -1,8 +1,27 @@
-import { languages, IEvent as MonacoIEvent } from 'monaco-editor';
+import {
+  Environment,
+  languages,
+  IEvent as MonacoIEvent,
+} from 'monaco-editor/esm/vs/editor/editor.api';
+import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker';
+import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker';
 import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
+// Webpack loader syntax is required here, because  json.worker and yaml.worker also import this
+// file.
+// eslint-disable-next-line max-len
+// eslint-disable-next-line import/no-unresolved, import/no-webpack-loader-syntax, node/no-extraneous-import
+import MonacoWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
+
+// Cherry-picking these features makes the editor more light weight, resulting in a smaller bundle
+// size and a snappier user experience.
+import 'monaco-editor/esm/vs/editor/contrib/contextmenu/contextmenu';
+import 'monaco-editor/esm/vs/editor/contrib/folding/folding';
+import 'monaco-editor/esm/vs/editor/contrib/format/formatActions';
+import 'monaco-editor/esm/vs/editor/contrib/hover/hover';
+import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-yaml';
 
-declare module 'monaco-editor' {
+declare module 'monaco-editor/esm/vs/editor/editor.api' {
   // eslint-disable-next-line @typescript-eslint/no-namespace, @typescript-eslint/no-shadow
   namespace languages.yaml {
     type DiagnosticsOptions = monaco.languages.yaml.DiagnosticsOptions;
@@ -13,19 +32,32 @@ declare module 'monaco-editor' {
 
 declare global {
   type IEvent<T> = MonacoIEvent<T>;
+
+  interface Window {
+    MonacoEnvironment: Environment;
+  }
 }
 
-const { getWorker } = MonacoEnvironment;
-MonacoEnvironment.getWorker = (workerId, label) => {
-  if (label === 'yaml') {
-    return new YamlWorker();
-  }
-  return getWorker(workerId, label);
+window.MonacoEnvironment = {
+  getWorker(workerId, label) {
+    switch (label) {
+      case 'css':
+        return new CssWorker();
+      case 'editorWorkerService':
+        return new MonacoWorker();
+      case 'json':
+        return new JsonWorker();
+      case 'yaml':
+        return new YamlWorker();
+      default:
+        throw new Error(`Unknown label ${label}`);
+    }
+  },
 };
 
 languages.yaml.yamlDefaults.setDiagnosticsOptions({
   validate: true,
-  // Format:
+  format: true,
   enableSchemaRequest: true,
   schemas: [
     {

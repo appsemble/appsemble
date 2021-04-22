@@ -2,6 +2,119 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.8](https://gitlab.com/appsemble/appsemble/-/releases/0.18.8)] - 2021-04-16
+
+### Added
+
+- CLI: Add command `extract-messages` for extracting and validating app messages.
+
+### Removed
+
+- App: The runtime check for required actions has been removed.
+
+### Fixed
+
+- Block(`form`): Fix displaying of previous form state in checkbox fields when using `flow.back`.
+
+## \[[0.18.7](https://gitlab.com/appsemble/appsemble/-/releases/0.18.7)] - 2021-04-12
+
+### Added
+
+- Studio: Add option to view larger images of App screenshots in Studio.
+
+### Fixed
+
+- App: Fix crash when using dialog actions.
+
+## \[[0.18.6](https://gitlab.com/appsemble/appsemble/-/releases/0.18.6)] - 2021-04-09
+
+### Added
+
+- Studio: Add option to reorder array items in the resource editor.
+- Studio: Add option to sort primitive types in the resource editor.
+- Studio: Add options to hide properties from the resource table.
+
+### Changed
+
+- Sdk: Actions should be called directly instead of calling `dispatch()`.
+- Studio: Display name of organizations instead of the ID whenever possible.
+
+### Fixed
+
+- Sdk: Return the correct URL when calling `href()` on link actions.
+- Studio: Fix issue where array items were not inserted properly in the resource editor.
+
+## \[[0.18.5](https://gitlab.com/appsemble/appsemble/-/releases/0.18.5)] - 2021-03-31
+
+### Added
+
+- Studio: Add support for collapsing objects and arrays in the resource editor.
+
+### Changed
+
+- Server: Add `$public` role for resource roles.
+- Server: Make resources private by default.
+
+## \[[0.18.4](https://gitlab.com/appsemble/appsemble/-/releases/0.18.4)] - 2021-03-24
+
+### Fixed
+
+- Server: Fix serving apps
+- Server: Fix serving Appsemble Studio
+
+## \[[0.18.3](https://gitlab.com/appsemble/appsemble/-/releases/0.18.3)] - 2021-03-24
+
+### Fixed
+
+- Studio: Fix crash issue on organizations page.
+- Studio: Fix handling of null values in organization settings.
+
+## \[[0.18.2](https://gitlab.com/appsemble/appsemble/-/releases/0.18.2)] - 2021-03-23
+
+### Added
+
+- Block(`data-loader`): Add Danish translations.
+- Block(`data-loader`): Add French translations.
+- Block(`data-loader`): Add German translations.
+- Block(`data-notifier`): Add Danish translations.
+- Block(`data-notifier`): Add French translations.
+- Block(`data-notifier`): Add German translations.
+- Block(`detail-viewer`): Add support for viewing large versions of images.
+- Block(`feed`): Add Danish translations.
+- Block(`feed`): Add French translations.
+- Block(`feed`): Add German translations.
+- Block(`feed`): Add support for viewing large versions of images.
+- Block(`filter`): Add Danish translations.
+- Block(`filter`): Add French translations.
+- Block(`filter`): Add German translations.
+- Block(`form`): Add Danish translations.
+- Block(`form`): Add French translations.
+- Block(`form`): Add German translations.
+- Block(`form`): Add support for viewing large versions of images.
+- Block(`form`): Localize calendar of `date` and `date-picker` fields.
+- Block(`list`): Add Danish translations.
+- Block(`list`): Add French translations.
+- Block(`list`): Add German translations.
+- Block(`map`): Add Danish translations.
+- Block(`map`): Add French translations.
+- Block(`map`): Add German translations.
+- Block(`table`): Add Danish translations.
+- Block(`table`): Add French translations.
+- Block(`table`): Add German translations.
+- App: Add class `appsemble-login` to make applying custom styling to the login page easier.
+- Studio: Add option to override the Appsemble core messages. For example:
+  `app.src.components.OpenIDLogin.loginWith` to override the messages for the login buttons.
+- Studio: Add option to specify role when inviting members to an organization.
+- Studio: Add organization details pages. Theses page can be used to view all different
+  organizations that are using Appsemble.
+- Studio: Add support for `email`, `description`, and `website` to organizations.
+- Studio: Add support for hiding the default Appsemble login method.
+- Studio: Add support for specific translations per block on each page.
+
+### Changed
+
+- Studio: Move organization settings to the organization details pages.
+
 ## \[[0.18.1](https://gitlab.com/appsemble/appsemble/-/releases/0.18.1)] - 2021-03-08
 
 ### Added

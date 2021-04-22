@@ -15,11 +15,17 @@
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: 60px !important;
-  border-radius: 11px !important;
   color: hsl(0, 0%, 100%) !important;
   display: flex !important;
   height: 6.75em !important;
   width: 6.75em !important;
+}
+
+.button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
 .removeButton {
@@ -32,6 +38,10 @@
   position: absolute;
   right: 5px;
   top: 5px;
+}
+
+.rounded {
+  border-radius: 11px !important;
 }
 
 .image {

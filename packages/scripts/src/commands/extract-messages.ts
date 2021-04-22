@@ -9,7 +9,7 @@ export const command = 'extract-messages';
 export const description = 'Extract new messages for currently supported locales';
 
 export async function handler(): Promise<void> {
-  const translationsDir = 'translations';
+  const translationsDir = 'i18n';
 
   const filenames = await fs.readdir(translationsDir);
   const locales = filenames.map((filename) => parse(filename).name);

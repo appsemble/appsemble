@@ -1,6 +1,6 @@
 import { ActionDefinition, AppDefinition, BlockDefinition, PageDefinition } from '@appsemble/types';
 
-type Prefix = (number | string)[];
+export type Prefix = (number | string)[];
 
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 type IterCallback<T> = (item: T, path: Prefix) => boolean | void;
@@ -28,6 +28,14 @@ export function iterAction(
   prefix: Prefix = [],
 ): boolean {
   if (callbacks.onAction?.(action, prefix)) {
+    return true;
+  }
+
+  if (action.onSuccess && iterAction(action.onSuccess, callbacks, [...prefix, 'onSuccess'])) {
+    return true;
+  }
+
+  if (action.onError && iterAction(action.onError, callbacks, [...prefix, 'onError'])) {
     return true;
   }
 

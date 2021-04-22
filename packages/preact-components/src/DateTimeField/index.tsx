@@ -7,7 +7,10 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { FormComponent, Input, SharedFormComponentProps } from '..';
 
 type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
-  Pick<flatpickr.Options.Options, 'enableTime' | 'maxDate' | 'minDate' | 'mode' | 'noCalendar'> &
+  Pick<
+    flatpickr.Options.Options,
+    'enableTime' | 'locale' | 'maxDate' | 'minDate' | 'mode' | 'noCalendar'
+  > &
   SharedFormComponentProps & {
     /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
@@ -40,6 +43,7 @@ export function DateTimeField({
   icon,
   iso,
   label,
+  locale,
   mode = 'single',
   name,
   onChange,
@@ -73,9 +77,11 @@ export function DateTimeField({
     const p = flatpickr(wrapper.current, {
       appendTo: wrapper.current,
       enableTime,
+      locale,
       noCalendar,
       mode,
       positionElement: positionElement.current,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       time_24hr: true,
       wrap: true,
       minDate,
@@ -88,7 +94,7 @@ export function DateTimeField({
       p.destroy();
       setPicker(null);
     };
-  }, [disabled, enableTime, maxDate, minDate, mode, noCalendar]);
+  }, [disabled, enableTime, locale, maxDate, minDate, mode, noCalendar]);
 
   useEffect(() => {
     picker?.setDate(value);

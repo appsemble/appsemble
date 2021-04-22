@@ -1,6 +1,6 @@
 import {
   Button,
-  Modal,
+  ModalCard,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -39,7 +39,7 @@ export function RateApp({ app, onRate }: RateAppProps): ReactElement {
       <Button icon="pencil-alt" onClick={modal.enable}>
         <FormattedMessage {...messages.rateApp} />
       </Button>
-      <Modal
+      <ModalCard
         component={SimpleForm}
         defaultValues={{ rating: 0, description: '' }}
         footer={
@@ -69,7 +69,7 @@ export function RateApp({ app, onRate }: RateAppProps): ReactElement {
           name="description"
           placeholder={formatMessage(messages.descriptionPlaceholder)}
         />
-      </Modal>
+      </ModalCard>
     </>
   );
 }

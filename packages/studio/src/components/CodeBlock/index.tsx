@@ -1,3 +1,4 @@
+import { has } from '@appsemble/utils';
 import { ReactElement, useEffect, useRef } from 'react';
 
 interface CodeBlockProps {
@@ -17,6 +18,14 @@ interface CodeBlockProps {
   language: string;
 }
 
+const languageMap: Record<string, string> = {
+  diff: null,
+  http: null,
+  js: 'javascript',
+  json: 'javascript',
+  sh: 'shell',
+};
+
 /**
  * Render a code block using syntax highlighting based on Monaco editor.
  */
@@ -24,9 +33,13 @@ export function CodeBlock({ className, code, language }: CodeBlockProps): ReactE
   const ref = useRef<HTMLPreElement>();
 
   useEffect(() => {
-    if (language) {
-      import('monaco-editor').then(({ editor }) => {
-        editor.colorizeElement(ref.current, { mimeType: language, theme: 'vs' });
+    const aliased = has(languageMap, language) ? languageMap[language] : language;
+    if (aliased) {
+      Promise.all([
+        import('monaco-editor/esm/vs/editor/editor.api'),
+        import(`monaco-editor/esm/vs/basic-languages/${aliased}/${aliased}.contribution`),
+      ]).then(([{ editor }]) => {
+        editor.colorizeElement(ref.current, { mimeType: aliased, theme: 'vs' });
       });
     }
   }, [language]);

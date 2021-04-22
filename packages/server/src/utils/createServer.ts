@@ -1,4 +1,4 @@
-import { dirname, join, resolve } from 'path';
+import { dirname } from 'path';
 import { parse } from 'querystring';
 
 import { loggerMiddleware } from '@appsemble/node-utils';
@@ -54,9 +54,6 @@ async function xWwwFormUrlencodedParser(
   const data = parse(String(buffer));
   return data;
 }
-
-const distDir = resolve(__dirname, '..', '..', '..', '..', 'dist');
-const year = 365 * 24 * 60 * 60 * 1000;
 
 interface CreateServerOptions {
   /**
@@ -141,10 +138,9 @@ export async function createServer({
           }
           return next();
         },
-        serve(join(distDir, 'studio'), { index: false, maxage: year }),
         studioRouter,
       ]),
-      compose([serve(join(distDir, 'app'), { index: false, maxage: year }), appRouter]),
+      appRouter,
     ),
   );
 

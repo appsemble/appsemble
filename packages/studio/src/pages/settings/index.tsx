@@ -1,12 +1,16 @@
-import { Content, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
+import {
+  Content,
+  MenuItem,
+  MenuSection,
+  MetaSwitch,
+  useSideMenu,
+} from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { MenuItem } from '../../components/MenuItem';
 import { ClientCredentialsPage } from './client-credentials';
 import { messages } from './messages';
-import { OrganizationsRoutes } from './organizations';
 import { SocialPage } from './social';
 import { UserPage } from './user';
 
@@ -23,9 +27,6 @@ export function SettingsRoutes(): ReactElement {
           <FormattedMessage {...messages.socialLogin} />
         </MenuItem>
       </MenuSection>
-      <MenuItem icon="briefcase" to={`${url}/organizations`}>
-        <FormattedMessage {...messages.organizations} />
-      </MenuItem>
       <MenuItem icon="key" to={`${url}/client-credentials`}>
         <FormattedMessage {...messages.clientCredentials} />
       </MenuItem>
@@ -40,9 +41,6 @@ export function SettingsRoutes(): ReactElement {
         </Route>
         <Route exact path={`${path}/social`}>
           <SocialPage />
-        </Route>
-        <Route path={`${path}/organizations`}>
-          <OrganizationsRoutes />
         </Route>
         <Route exact path={`${path}/client-credentials`}>
           <ClientCredentialsPage />

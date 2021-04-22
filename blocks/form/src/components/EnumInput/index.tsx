@@ -20,7 +20,7 @@ export function EnumInput({
   value,
 }: EnumInputProps): VNode {
   const { actions, events, utils } = useBlock();
-  const [loading, setLoading] = useState('action' in field);
+  const [loading, setLoading] = useState('action' in field || 'event' in field);
   const [options, setOptions] = useState('action' in field || 'event' in field ? [] : field.enum);
   const [error, setError] = useState<string>(null);
 
@@ -28,15 +28,11 @@ export function EnumInput({
   const required = isRequired(field);
 
   useEffect(() => {
-    if (
-      value !== undefined &&
-      options.length &&
-      !options.some((option) => option.value === value)
-    ) {
+    if (!loading && value !== undefined && !options.some((option) => option.value === value)) {
       // Explicitly set value to undefined if value does not exist in the new set of options.
       onChange(field.name);
     }
-  }, [field, onChange, options, value]);
+  }, [field, loading, onChange, options, value]);
 
   useEffect(() => {
     if ('enum' in field) {
@@ -54,7 +50,7 @@ export function EnumInput({
     };
 
     if ('action' in field) {
-      actions[field.action].dispatch().then(handleOptions, handleError);
+      actions[field.action]().then(handleOptions, handleError);
     }
 
     if ('event' in field) {
@@ -73,7 +69,7 @@ export function EnumInput({
   return (
     <SelectField
       className="appsemble-enum"
-      disabled={disabled || loading}
+      disabled={disabled || loading || options.length === 0}
       error={dirty && error}
       icon={icon}
       label={utils.remap(label, value)}
@@ -81,15 +77,11 @@ export function EnumInput({
       name={name}
       onChange={onChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
+      placeholder={utils.remap(placeholder, {})}
       required={required}
       tag={utils.remap(tag, value)}
       value={value}
     >
-      {(!required || value === undefined) && (
-        <Option hidden={required} value={null}>
-          {utils.remap(placeholder, {}) ?? ''}
-        </Option>
-      )}
       {loading ||
         options.map((choice) => (
           <Option key={choice.value} value={choice.value}>

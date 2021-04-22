@@ -1,5 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import FakeTimers from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
@@ -20,7 +20,7 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 let organization: Organization;
-let clock: FakeTimers.InstalledClock;
+let clock: Clock;
 let user: User;
 
 beforeAll(createTestSchema('apps'));
@@ -32,7 +32,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = FakeTimers.install();
+  clock = install();
 
   user = await createTestUser();
   organization = await Organization.create({
@@ -113,6 +113,7 @@ describe('queryApps', () => {
           iconUrl: `/api/apps/${appA.id}/icon`,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
+          OrganizationName: 'Test Organization',
         },
         {
           id: appB.id,
@@ -124,6 +125,7 @@ describe('queryApps', () => {
           iconUrl: `/api/apps/${appB.id}/icon`,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
+          OrganizationName: 'Test Organization',
         },
       ],
     });
@@ -166,6 +168,7 @@ describe('queryApps', () => {
           iconUrl: `/api/apps/${appA.id}/icon`,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
+          OrganizationName: 'Test Organization',
         },
       ],
     });
@@ -265,6 +268,7 @@ describe('getAppById', () => {
         iconUrl: `/api/apps/${appA.id}/icon`,
         definition: appA.definition,
         OrganizationId: organization.id,
+        OrganizationName: 'Test Organization',
         yaml: `name: Test App
 defaultPage: Test Page
 `,
@@ -286,7 +290,10 @@ describe('queryMyApps', () => {
       { raw: true },
     );
 
-    const organizationB = await Organization.create({ id: 'testorganizationb' });
+    const organizationB = await Organization.create({
+      id: 'testorganizationb',
+      name: 'Test Organization B',
+    });
     const appB = await App.create(
       {
         path: 'test-app-b',
@@ -318,6 +325,7 @@ describe('queryMyApps', () => {
           iconUrl: `/api/apps/${appA.id}/icon`,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
+          OrganizationName: 'Test Organization',
         },
       ],
     });
@@ -334,6 +342,7 @@ describe('queryMyApps', () => {
           iconUrl: `/api/apps/${appA.id}/icon`,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
+          OrganizationName: 'Test Organization',
         },
         {
           id: appB.id,
@@ -345,6 +354,7 @@ describe('queryMyApps', () => {
           iconUrl: `/api/apps/${appB.id}/icon`,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
+          OrganizationName: 'Test Organization B',
         },
       ],
     });
@@ -402,6 +412,7 @@ describe('createApp', () => {
           ],
         },
         OrganizationId: organization.id,
+        OrganizationName: 'Test Organization',
         yaml: `name: Test App
 defaultPage: Test Page
 pages:
@@ -464,6 +475,7 @@ pages:
           ],
         },
         OrganizationId: organization.id,
+        OrganizationName: 'Test Organization',
         yaml: `name: Test App
 defaultPage: Test Page
 pages:
@@ -737,7 +749,7 @@ pages:
 
   it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
     await App.bulkCreate(
-      Array.from({ length: 11 }, (_, index) => ({
+      Array.from({ length: 11 }, (unused, index) => ({
         path: index ? `test-app-${index}` : 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: `a${index}`,
@@ -899,6 +911,7 @@ describe('patchApp', () => {
         path: 'test-app',
         iconUrl: `/api/apps/${app.id}/icon`,
         OrganizationId: organization.id,
+        OrganizationName: 'Test Organization',
         definition: {
           name: 'Foobar',
           defaultPage: app.definition.defaultPage,
@@ -982,6 +995,7 @@ pages:
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
+      OrganizationName: 'Test Organization',
       locked: true,
     });
 
@@ -1136,6 +1150,7 @@ pages:
         path: 'test-app',
         iconUrl: `/api/apps/${app.id}/icon`,
         OrganizationId: organization.id,
+        OrganizationName: 'Test Organization',
         definition: {
           name: 'Foobar',
           defaultPage: app.definition.defaultPage,

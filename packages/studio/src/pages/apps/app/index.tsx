@@ -1,6 +1,7 @@
 import {
   Icon,
   Loader,
+  MenuItem,
   MenuSection,
   Message,
   MetaSwitch,
@@ -8,7 +9,7 @@ import {
   useSideMenu,
 } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { compareStrings, Permission } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,
@@ -23,7 +24,6 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { MenuItem } from '../../../components/MenuItem';
 import { ProtectedRoute } from '../../../components/ProtectedRoute';
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';
@@ -115,7 +115,7 @@ export function AppRoutes(): ReactElement {
         )}
         {mayEditResources && (
           <MenuSection>
-            {resourceNames.sort().map((resource) => (
+            {resourceNames.sort(compareStrings).map((resource) => (
               <MenuItem key={resource} to={`${url}/resources/${resource}`}>
                 {resource}
               </MenuItem>

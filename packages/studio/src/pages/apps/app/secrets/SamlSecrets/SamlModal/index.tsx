@@ -1,6 +1,6 @@
 import {
   FormOutput,
-  Modal,
+  ModalCard,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -52,7 +52,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
   const urlPrefix = `${window.location.origin}/api/apps/${app.id}/saml/${secret.id}`;
 
   return (
-    <Modal
+    <ModalCard
       component={SimpleForm}
       defaultValues={secret}
       footer={
@@ -171,6 +171,6 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         // @ts-expect-error This can’t be properly typed.
         rows={certificateRows + 4}
       />
-    </Modal>
+    </ModalCard>
   );
 }

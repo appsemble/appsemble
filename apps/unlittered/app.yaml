@@ -9,6 +9,8 @@ theme:
 
 resources:
   litter:
+    roles:
+      - $public # Allow anyone to access the resource’s actions
     schema:
       type: object
       required:
@@ -22,9 +24,7 @@ resources:
           type: array
           items:
             type: string
-            appsembleFile:
-              type:
-                - image/jpeg
+            format: binary
           title: Photos
         process:
           enum:
@@ -44,12 +44,28 @@ resources:
               type: number
             longitude:
               type: number
+  litterReply:
+    roles:
+      - $public # Allow anyone to access the resource’s actions
+    references:
+      litterId:
+        resource: litter
+    schema:
+      type: object
+      required:
+        - content
+      properties:
+        litterId:
+          type: number
+        content:
+          type: string
+          minLength: 1
 
 pages:
   - name: Report litter
     blocks:
       - type: form
-        version: 0.18.1
+        version: 0.18.8
         parameters:
           fields:
             - name: location
@@ -86,7 +102,7 @@ pages:
   - name: Litter Overview
     blocks:
       - type: data-loader
-        version: 0.18.1
+        version: 0.18.8
         actions:
           onLoad:
             type: resource.query
@@ -99,7 +115,7 @@ pages:
           emit:
             data: data
       - type: map
-        version: 0.18.1
+        version: 0.18.8
         parameters:
           latitude:
             - prop: location
@@ -107,7 +123,6 @@ pages:
           longitude:
             - prop: location
             - prop: longitude
-
         actions:
           onMarkerClick:
             to: Litter details
@@ -116,7 +131,7 @@ pages:
           listen:
             data: data
       - type: action-button
-        version: 0.18.1
+        version: 0.18.8
         parameters:
           icon: plus
         actions:
@@ -129,7 +144,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.18.1
+        version: 0.18.8
         actions:
           onLoad:
             type: resource.get
@@ -138,7 +153,7 @@ pages:
           emit:
             data: data
       - type: detail-viewer
-        version: 0.18.1
+        version: 0.18.8
         parameters:
           fields:
             - value: { prop: location }
@@ -157,3 +172,96 @@ pages:
         events:
           listen:
             data: data
+
+  - name: Litter list
+    blocks:
+      - type: timer
+        version: 0.18.8
+        parameters:
+          interval: 5
+        events:
+          emit:
+            interval: refresh
+      - type: filter
+        version: 0.18.8
+        events:
+          emit:
+            filtered: filterResults
+            refreshed: refreshedResults
+          listen:
+            refresh: refresh
+        parameters:
+          highlight: process
+          fields:
+            - name: process
+              type: enum
+              enum:
+                - value: Bicycle Collection
+                - value: Maintenance
+                - value: Biodegradable Waste
+                - value: Collection
+            - name: $created
+              label: Date
+              type: date-range
+              icon: calendar-alt
+        actions:
+          onLoad:
+            type: resource.query
+            resource: litter
+            query:
+              object.from:
+                $filter: { prop: $filter }
+                $orderby: '$created desc'
+                $top: 50
+      - type: data-notifier
+        version: 0.18.8
+        events:
+          listen:
+            data: refreshedResults
+            seed: filterResults
+          emit:
+            data: updateLitter
+      - type: feed
+        version: 0.18.8
+        events:
+          listen:
+            data: updateLitter
+        parameters:
+          buttonLabel: Details
+          title: { prop: type }
+          subtitle: { prop: proces }
+          heading:
+            string.format:
+              template: '{date, date, long} {date, time, short}'
+              values:
+                date: [{ prop: $created }, { date.parse }]
+          picture: [{ prop: photos }, { prop: 0 }]
+          pictures: [{ prop: photos }]
+          reply:
+            content: { prop: content }
+            author: { prop: author }
+            parentId: litterId
+          marker:
+            longitude: [{ prop: location }, { prop: longitude }]
+            latitude: [{ prop: location }, { prop: latitude }]
+        actions:
+          onButtonClick:
+            type: link
+            to: Litter details
+          onLoadReply:
+            type: resource.query
+            resource: litterReply
+            query:
+              object.from:
+                $filter: { prop: $filter }
+          onSubmitReply:
+            type: resource.create
+            resource: litterReply
+      - type: action-button
+        version: 0.18.8
+        parameters:
+          icon: plus
+        actions:
+          onClick:
+            type: link
+            to: Report litter

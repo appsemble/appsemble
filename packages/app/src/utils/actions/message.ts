@@ -1,21 +1,12 @@
-import { BaseAction } from '@appsemble/sdk';
-import { MessageActionDefinition } from '@appsemble/types';
+import { ActionCreator } from '.';
 
-import { MakeActionParameters } from '../../types';
-
-export function message({
-  definition,
+export const message: ActionCreator<'message'> = ({
+  definition: { body, color = 'info', dismissable, timeout },
   remap,
   showMessage,
-}: MakeActionParameters<MessageActionDefinition>): BaseAction<'message'> {
-  const { body, color = 'info', dismissable, timeout } = definition;
-
-  return {
-    type: 'message',
-    // eslint-disable-next-line require-await
-    async dispatch(data: any) {
-      showMessage({ body: remap(body, data), color, dismissable, timeout });
-      return data;
-    },
-  };
-}
+}) => [
+  (data) => {
+    showMessage({ body: remap(body, data), color, dismissable, timeout });
+    return data;
+  },
+];

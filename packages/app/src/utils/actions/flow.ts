@@ -1,53 +1,18 @@
-import { BaseAction } from '@appsemble/sdk';
-import { BaseActionDefinition } from '@appsemble/types';
-
-import { MakeActionParameters } from '../../types';
+import { ActionCreator } from '.';
 
 // See Page.jsx
-export function next({
-  flowActions,
-}: MakeActionParameters<BaseActionDefinition<'flow.next'>>): BaseAction<'flow.next'> {
-  return {
-    type: 'flow.next',
-    // eslint-disable-next-line require-await
-    async dispatch(data) {
-      return flowActions.next(data);
-    },
-  };
-}
+export const next: ActionCreator<'flow.next'> = ({ flowActions }) => [
+  (data) => flowActions.next(data),
+];
 
-export function finish({
-  flowActions,
-}: MakeActionParameters<BaseActionDefinition<'flow.finish'>>): BaseAction<'flow.finish'> {
-  return {
-    type: 'flow.finish',
-    // eslint-disable-next-line require-await
-    async dispatch(data) {
-      return flowActions.finish(data);
-    },
-  };
-}
+export const finish: ActionCreator<'flow.finish'> = ({ flowActions }) => [
+  (data) => flowActions.finish(data),
+];
 
-export function back({
-  flowActions,
-}: MakeActionParameters<BaseActionDefinition<'flow.back'>>): BaseAction<'flow.back'> {
-  return {
-    type: 'flow.back',
-    // eslint-disable-next-line require-await
-    async dispatch(data) {
-      return flowActions.back(data);
-    },
-  };
-}
+export const back: ActionCreator<'flow.back'> = ({ flowActions }) => [
+  (data) => flowActions.back(data),
+];
 
-export function cancel({
-  flowActions,
-}: MakeActionParameters<BaseActionDefinition<'flow.cancel'>>): BaseAction<'flow.cancel'> {
-  return {
-    type: 'flow.cancel',
-    // eslint-disable-next-line require-await
-    async dispatch(data) {
-      return flowActions.cancel(data);
-    },
-  };
-}
+export const cancel: ActionCreator<'flow.cancel'> = ({ flowActions }) => [
+  (data) => flowActions.cancel(data),
+];

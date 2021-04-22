@@ -1,8 +1,6 @@
 import { Checkbox, useToggle } from '@appsemble/react-components';
 import { ReactElement, useCallback } from 'react';
 
-import styles from './index.module.css';
-
 interface ClonableCheckboxProps {
   checked: boolean;
   id: string;
@@ -17,9 +15,5 @@ export function ClonableCheckbox({ checked, id, onChange }: ClonableCheckboxProp
     disable();
   }, [onChange, enable, disable]);
 
-  return (
-    <div className={`field ${styles.field}`}>
-      <Checkbox disabled={enabled} name={id} onChange={handleChange} value={checked} />
-    </div>
-  );
+  return <Checkbox disabled={enabled} name={id} onChange={handleChange} value={checked} />;
 }

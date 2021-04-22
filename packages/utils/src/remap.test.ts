@@ -1,5 +1,5 @@
 import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
-import FakeTimers from '@sinonjs/fake-timers';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 import { remap } from './remap';
@@ -16,7 +16,7 @@ interface TestCase {
 function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
-    (_, { context, expected, input, mappers, messages, userInfo }) => {
+    (name, { context, expected, input, mappers, messages, userInfo }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           new IntlMessageFormat(messages?.app?.[id] ?? defaultMessage),
@@ -99,10 +99,10 @@ describe('context', () => {
 });
 
 describe('date.now', () => {
-  let clock: FakeTimers.InstalledClock;
+  let clock: Clock;
 
   beforeEach(() => {
-    clock = FakeTimers.install();
+    clock = install();
   });
 
   afterEach(() => {
@@ -119,10 +119,10 @@ describe('date.now', () => {
 });
 
 describe('date.add', () => {
-  let clock: FakeTimers.InstalledClock;
+  let clock: Clock;
 
   beforeEach(() => {
-    clock = FakeTimers.install();
+    clock = install();
   });
 
   afterEach(() => {

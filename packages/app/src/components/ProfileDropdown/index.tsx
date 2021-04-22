@@ -1,7 +1,7 @@
 import { Icon, NavbarDropdown, NavbarItem } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
@@ -12,17 +12,25 @@ export function ProfileDropdown(): ReactElement {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
+  const {
+    params: { lang },
+    path,
+  } = useRouteMatch<{ lang: string }>();
 
   const showLogin = definition.security;
   const { layout } = definition;
 
-  if (!showLogin || (layout?.login != null && layout?.login !== 'navbar')) {
+  if (
+    !showLogin ||
+    path.includes(':lang/Login') ||
+    (layout?.login != null && layout?.login !== 'navbar')
+  ) {
     return null;
   }
 
   if (!isLoggedIn) {
     return (
-      <Link className={`navbar-item ${styles.login}`} to="/Login">
+      <Link className={`navbar-item ${styles.login}`} to={`/${lang}/Login`}>
         <FormattedMessage {...messages.login} />
       </Link>
     );
@@ -49,12 +57,12 @@ export function ProfileDropdown(): ReactElement {
       }
     >
       {(layout?.settings ?? 'navbar') === 'navbar' && (
-        <NavbarItem icon="wrench" to="/Settings">
+        <NavbarItem icon="wrench" to={`/${lang}/Settings`}>
           <FormattedMessage {...messages.settings} />
         </NavbarItem>
       )}
       {(layout?.feedback ?? 'navbar') === 'navbar' && (
-        <NavbarItem icon="comment" to="/Feedback">
+        <NavbarItem icon="comment" to={`/${lang}/Feedback`}>
           <FormattedMessage {...messages.feedback} />
         </NavbarItem>
       )}
