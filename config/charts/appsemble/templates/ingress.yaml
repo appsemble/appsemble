@@ -21,7 +21,10 @@ spec:
       http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: {{ include "appsemble.fullname" . }}
-              servicePort: http
+              service:
+                name: {{ include "appsemble.fullname" . }}
+                port:
+                  name: http
 {{- end }}
