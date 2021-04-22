@@ -77,6 +77,7 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
                   paths: [
                     {
                       path: '/',
+                      pathType: 'Prefix',
                       backend: { service: { name: serviceName, port: { name: servicePort } } },
                     },
                   ],
