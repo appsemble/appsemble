@@ -55,7 +55,7 @@ export interface Argv {
   /**
    * The exposed port of the Kubernetes server that’s serving Appsemble.
    */
-  servicePort: number | string;
+  servicePort: string;
 
   /**
    * The hostname on which the Kubernetes API is available.
