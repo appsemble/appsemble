@@ -78,6 +78,7 @@ describe('configureDNS', () => {
                 {
                   backend: { service: { name: 'review-service', port: { name: 'http' } } },
                   path: '/',
+                  pathType: 'Prefix',
                 },
               ],
             },
@@ -139,6 +140,7 @@ describe('configureDNS', () => {
                 {
                   backend: { service: { name: 'review-service', port: { name: 'http' } } },
                   path: '/',
+                  pathType: 'Prefix',
                 },
               ],
             },
@@ -217,6 +219,7 @@ describe('configureDNS', () => {
                 {
                   backend: { service: { name: 'review-service', port: { name: 'http' } } },
                   path: '/',
+                  pathType: 'Prefix',
                 },
               ],
             },
@@ -303,6 +306,7 @@ describe('restoreDNS', () => {
                   {
                     backend: { service: { name: 'review-service', port: { name: 'http' } } },
                     path: '/',
+                    pathType: 'Prefix',
                   },
                 ],
               },
@@ -332,6 +336,7 @@ describe('restoreDNS', () => {
                   {
                     backend: { service: { name: 'review-service', port: { name: 'http' } } },
                     path: '/',
+                    pathType: 'Prefix',
                   },
                 ],
               },
