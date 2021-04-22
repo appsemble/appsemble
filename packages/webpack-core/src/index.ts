@@ -21,6 +21,7 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { CliConfigOptions, Configuration, EnvironmentPlugin } from 'webpack';
 import { GenerateSW } from 'workbox-webpack-plugin';
 
+import './types';
 import studioPkg from '../package.json';
 import { remarkHeading } from './remark/heading';
 import { remarkRewriteLinks } from './remark/rewriteLinks';
