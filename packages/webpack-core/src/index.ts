@@ -3,7 +3,6 @@ import { dirname, join } from 'path';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import bulmaPkg from 'bulma/package.json';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
@@ -72,7 +71,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       plugins: [new TsconfigPathsPlugin({ configFile })],
     },
     plugins: [
-      new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: join(entry, 'index.html'),
         templateParameters: {
