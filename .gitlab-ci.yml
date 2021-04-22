@@ -269,9 +269,10 @@ review:
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=next"
       --set "global.postgresql.existingSecret=postgresql-secret"
-      --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
+      --set "provision.account.name=$BOT_ACCOUNT_NAME"
+      --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "proxy=true"
       --set "sentryEnvironment=$CI_ENVIRONMENT_NAME"
@@ -328,6 +329,7 @@ staging:
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
+      --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "proxy=true"
       --set "sentryEnvironment=staging"
       --set "sentrySecret=sentry"
@@ -341,7 +343,7 @@ production:
     - if: $CI_COMMIT_TAG
   dependencies: []
   environment:
-    name: production/appsemble
+    name: production
     url: https://appsemble.app
   script:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -390,12 +392,10 @@ provision review:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   needs:
     - review
-  environment:
-    name: review/provision/$CI_COMMIT_REF_SLUG
   script:
     - yarn appsemble config set context review
     - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
-    - yarn appsemble organization create appsemble --name Appsemble
+    - yarn appsemble organization create appsemble --name Appsemble --email support@appsemble.com --website https://appsemble.com --description 'The open source low-code app building platform'
     - yarn appsemble -vv block publish blocks/*
     - yarn appsemble -vv app create apps/*
 
@@ -407,12 +407,10 @@ provision staging:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   needs:
     - staging
-  environment:
-    name: staging/provision
   script:
     - yarn appsemble config set context staging
     - yarn appsemble config set remote https://staging.appsemble.review
-    - yarn appsemble organization create appsemble --name Appsemble
+    - yarn appsemble organization create appsemble --name Appsemble --email support@appsemble.com --website https://appsemble.com --description 'The open source low-code app building platform'
     - yarn appsemble -vv block publish blocks/*
     - yarn appsemble -vv app create apps/*
 

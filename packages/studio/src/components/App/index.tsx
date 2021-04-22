@@ -39,8 +39,10 @@ export function App(): ReactElement {
                     <MetaProvider description={messages.description} title="Appsemble">
                       <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
                         <Toolbar />
-                        <Breadcrumbs />
-                        <Routes />
+                        <div className="px-3 py-3">
+                          <Breadcrumbs />
+                          <Routes />
+                        </div>
                       </SideMenuProvider>
                     </MetaProvider>
                   </MessagesProvider>

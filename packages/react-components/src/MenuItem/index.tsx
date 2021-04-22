@@ -33,9 +33,9 @@ interface SideNavLinkProps {
  */
 export function MenuItem({ children, exact, icon, to }: SideNavLinkProps): ReactElement {
   return (
-    <NavLink className={styles.root} exact={exact} to={to}>
+    <NavLink className={`is-flex is-align-items-center ${styles.root}`} exact={exact} to={to}>
       {icon && <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" />}
-      <span className={styles.middle}>{children}</span>
+      <span className={styles.text}>{children}</span>
     </NavLink>
   );
 }

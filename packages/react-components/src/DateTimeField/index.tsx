@@ -91,6 +91,7 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
             second: 'numeric',
             weekday: 'long',
           }),
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         time_24hr: true,
         enableSeconds: true,
       });

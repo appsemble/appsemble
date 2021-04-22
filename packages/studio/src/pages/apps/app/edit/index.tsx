@@ -20,8 +20,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { useApp } from '..';
-import { GUIEditor } from '../../../../components/GUIEditor';
-import { GuiEditorStep } from '../../../../components/GUIEditor/types';
 import { MonacoEditor } from '../../../../components/MonacoEditor';
 import { getAppUrl } from '../../../../utils/getAppUrl';
 import { EditorNavBar } from './EditorNavBar';
@@ -39,11 +37,6 @@ const monacoDefaultOptions: Options = {
   tabSize: 2,
   minimap: { enabled: false },
   readOnly: false,
-};
-
-const monacoGuiOptions: Options = {
-  ...monacoDefaultOptions,
-  readOnly: true,
 };
 
 /**
@@ -78,8 +71,6 @@ export default function EditPage(): ReactElement {
   const [dirty, setDirty] = useState(true);
   const [openApiDocument, setOpenApiDocument] = useState<OpenAPIV3.Document>();
 
-  const [editorStep, setEditorStep] = useState<GuiEditorStep>(GuiEditorStep.YAML);
-  const [monacoEditor, setMonacoEditor] = useState<editor.IStandaloneCodeEditor>();
   const [decorationList, setDecorationList] = useState<string[]>([]);
 
   const frame = useRef<HTMLIFrameElement>();
@@ -201,12 +192,6 @@ export default function EditPage(): ReactElement {
     setDirty(false);
   }, [app, formatMessage, openApiDocument, push, appDefinition, sharedStyle, coreStyle]);
 
-  useEffect(() => {
-    if (editorStep !== GuiEditorStep.YAML && openApiDocument) {
-      onSave();
-    }
-  }, [appDefinition, editorStep, onSave, openApiDocument]);
-
   useBeforeUnload(appDefinition !== initialDefinition);
 
   const uploadApp = useCallback(async () => {
@@ -270,15 +255,14 @@ export default function EditPage(): ReactElement {
   }, [initialDefinition, promptUpdateApp, appDefinition, uploadApp, valid]);
 
   const onMonacoChange = useCallback(
-    (_event: editor.IModelContentChangedEvent, value: string) => {
+    (event: editor.IModelContentChangedEvent, value: string) => {
       switch (location.hash) {
-        case '#editor':
+        case '#editor': {
           setAppDefinition(value);
-          if (editorStep !== GuiEditorStep.YAML) {
-            const definition = safeLoad(value) as AppDefinition;
-            setApp({ ...app, yaml: value, definition });
-          }
+          const definition = safeLoad(value) as AppDefinition;
+          setApp({ ...app, yaml: value, definition });
           break;
+        }
         case '#style-core':
           setCoreStyle(value);
           break;
@@ -291,7 +275,7 @@ export default function EditPage(): ReactElement {
 
       setDirty(true);
     },
-    [location.hash, app, editorStep, setApp],
+    [location.hash, app, setApp],
   );
 
   if (appDefinition == null) {
@@ -322,39 +306,16 @@ export default function EditPage(): ReactElement {
     <div className={`${styles.root} is-flex`}>
       <div className={styles.leftPanel}>
         <Form onSubmit={onSave}>
-          <EditorNavBar
-            dirty={dirty}
-            editorStep={editorStep}
-            onUpload={onUpload}
-            setEditorStep={setEditorStep}
-            valid={valid}
-          />
+          <EditorNavBar dirty={dirty} onUpload={onUpload} valid={valid} />
         </Form>
-        {editorStep !== GuiEditorStep.YAML && (
-          <GUIEditor
-            app={app}
-            decorationList={decorationList}
-            editorStep={editorStep}
-            monacoEditor={monacoEditor}
-            onChangeDecorationList={setDecorationList}
-            onChangeEditorStep={setEditorStep}
-          />
-        )}
-        <div
-          className={
-            editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
-              ? styles.editorForm
-              : 'is-hidden'
-          }
-        >
+        <div className={styles.editorForm}>
           <MonacoEditor
             decorationList={decorationList}
             language={language}
             onChange={onValueChange}
             onChangeDecorationList={setDecorationList}
             onSave={onSave}
-            options={editorStep === GuiEditorStep.YAML ? monacoDefaultOptions : monacoGuiOptions}
-            ref={setMonacoEditor}
+            options={monacoDefaultOptions}
             value={value}
           />
         </div>

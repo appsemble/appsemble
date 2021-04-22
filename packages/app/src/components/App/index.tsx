@@ -7,7 +7,6 @@ import { AppMessagesProvider } from '../AppMessagesProvider';
 import { AppRoutes } from '../AppRoutes';
 import { ErrorFallback } from '../ErrorFallback';
 import { MenuProvider } from '../MenuProvider';
-import { Navigation } from '../Navigation';
 import { PermissionRequest } from '../PermissionRequest';
 import { ServiceWorkerRegistrationProvider } from '../ServiceWorkerRegistrationProvider';
 import { UserProvider } from '../UserProvider';
@@ -36,7 +35,6 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElemen
                     <MenuProvider>
                       <PermissionRequest />
                       <AppRoutes />
-                      <Navigation />
                     </MenuProvider>
                   </UserProvider>
                 </ServiceWorkerRegistrationProvider>

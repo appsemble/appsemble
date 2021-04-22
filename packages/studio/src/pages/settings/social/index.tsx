@@ -79,7 +79,6 @@ export function SocialPage(): ReactElement {
             className={`${styles.button} mb-4`}
             disabled={connecting.enabled}
             icon={provider.icon}
-            iconPrefix="fab"
             key={provider.authorizationUrl}
             onClick={() => disconnect(provider)}
           >

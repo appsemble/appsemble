@@ -1,4 +1,4 @@
-import { editor } from 'monaco-editor';
+import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { ReactElement, useEffect, useRef } from 'react';
 
 import styles from './index.module.css';

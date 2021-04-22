@@ -29,7 +29,7 @@ export function AppRatings(): ReactElement {
           ? ratings.map((r) => (r.UserId === rating.UserId ? rating : r))
           : [rating, ...ratings];
       });
-      setApp((a) => (a.rating.count ? a : { ...a, rating: { count: 1, average: rating.rating } }));
+      setApp((a) => (a.rating?.count ? a : { ...a, rating: { count: 1, average: rating.rating } }));
       push({ color: 'success', body: formatMessage(messages.ratingSuccessful) });
     },
     [formatMessage, push, result, setApp],
@@ -45,19 +45,19 @@ export function AppRatings(): ReactElement {
         >
           <FormattedMessage {...messages.ratings} />
         </HeaderControl>
-        {app.rating.count ? (
+        {app.rating?.count ? (
           <div>
             <FormattedMessage
               {...messages.average}
               values={{
                 average: (
                   <span className="is-size-5 has-text-weight-semibold">
-                    <FormattedNumber maximumFractionDigits={1} value={app.rating.average} />
+                    <FormattedNumber maximumFractionDigits={1} value={app.rating?.average ?? 0} />
                   </span>
                 ),
               }}
             />
-            <StarRating value={app.rating.average} />
+            <StarRating value={app.rating?.average ?? 0} />
           </div>
         ) : null}
       </div>

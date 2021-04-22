@@ -153,7 +153,11 @@ export function IndexPage(): ReactElement {
         }
         description={app.definition.description}
         details={
-          <StarRating className="is-inline" count={app.rating.count} value={app.rating.average} />
+          <StarRating
+            className="is-inline"
+            count={app.rating?.count ?? 0}
+            value={app.rating?.average ?? 0}
+          />
         }
         icon={
           <img

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.18.7",
+  "version": "0.18.8",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -32,9 +32,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.18.7",
-    "@appsemble/types": "0.18.7",
-    "@appsemble/utils": "0.18.7",
+    "@appsemble/node-utils": "0.18.8",
+    "@appsemble/types": "0.18.8",
+    "@appsemble/utils": "0.18.8",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "axios": "^0.21.1",
     "chalk": "^4.1.0",
@@ -56,7 +56,7 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@appsemble/types": "0.18.7",
+    "@appsemble/types": "0.18.8",
     "concat-stream": "^2.0.0"
   },
   "peerDependencies": {

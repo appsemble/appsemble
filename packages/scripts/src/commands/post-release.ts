@@ -40,6 +40,7 @@ async function createGitlabRelease(releaseNotes: string): Promise<void> {
   const packages = (await readPackages('packages'))
     .filter((pkg) => !pkg.private)
     .map(({ name, version }) => ({
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       link_type: 'package',
       name: `${name}@${version}`,
       url: `https://www.npmjs.com/package/${name}/v/${version}`,
@@ -55,6 +56,7 @@ async function createGitlabRelease(releaseNotes: string): Promise<void> {
   await axios.post(
     `${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases`,
     {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       tag_name: CI_COMMIT_TAG,
       description: releaseNotes,
       assets: {
@@ -62,6 +64,7 @@ async function createGitlabRelease(releaseNotes: string): Promise<void> {
           ...packages,
           ...blocks,
           {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             link_type: 'image',
             name: `appsemble/appsemble#${CI_COMMIT_TAG}`,
             url: 'https://hub.docker.com/r/appsemble/appsemble',
@@ -126,6 +129,7 @@ async function updateDockerHub(): Promise<void> {
   logger.info(`Successfully logged in to ${DOCKER_HUB_URL}`);
 
   logger.info(`Updating full description on ${DOCKER_HUB_URL}`);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   await docker.patch('repositories/appsemble/appsemble', { full_description: readme });
   logger.info(`Successfully updated full description on ${DOCKER_HUB_URL}`);
 }

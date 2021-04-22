@@ -129,7 +129,6 @@ export interface UserInfo {
   /**
    * True if the end-user's email address has been verified, else false.
    */
-  // eslint-disable-next-line camelcase
   email_verified: boolean;
 
   /**
@@ -167,13 +166,11 @@ export interface TokenResponse {
   /**
    * The bearer access token to use for authenticating requests.
    */
-  // eslint-disable-next-line camelcase
   access_token: string;
 
   /**
    * How long until the access token expires in seconds from now.
    */
-  // eslint-disable-next-line camelcase
   expires_in?: number;
 
   /**
@@ -181,16 +178,13 @@ export interface TokenResponse {
    *
    * This field is only present on OpenID connect providers.
    */
-  // eslint-disable-next-line camelcase
   id_token?: string;
 
   /**
    * A refresh token for getting a new access token.
    */
-  // eslint-disable-next-line camelcase
   refresh_token?: string;
 
-  // eslint-disable-next-line camelcase
   token_type: 'bearer';
 }
 
