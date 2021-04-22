@@ -195,7 +195,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           loader: 'svgo-loader',
         },
         {
-          test: /(json|yaml)\.worker\.js$/,
+          test: /(css|json|yaml)\.worker\.js$/,
           loader: 'worker-loader',
           options: {
             filename: '[name].worker.js',
