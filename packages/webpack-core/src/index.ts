@@ -54,7 +54,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
   const projectDir = join(packagesDir, env);
   const configFile = join(projectDir, 'tsconfig.json');
   const entry = join(projectDir, 'src');
-  const publicPath = production ? undefined : `/${env}`;
+  const publicPath = production ? '/' : `/${env}/`;
 
   return {
     name: `@appsemble/${env}`,
@@ -63,8 +63,9 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
     entry: { [env]: [entry] },
     output: {
       filename: production ? '[contentHash].js' : `${env}.js`,
-      publicPath: `/${env}/`,
+      publicPath,
       path: production ? join(rootDir, 'dist', env) : `/${env}/`,
+      chunkFilename: production ? '[contentHash].js' : '[id].js',
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
@@ -198,7 +199,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           test: /(css|json|yaml)\.worker\.js$/,
           loader: 'worker-loader',
           options: {
-            filename: '[name].worker.js',
+            filename: production ? '[contentHash].js' : '[name].js',
           },
         },
       ],
