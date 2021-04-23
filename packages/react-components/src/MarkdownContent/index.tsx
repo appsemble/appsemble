@@ -30,7 +30,7 @@ interface MarkdownContentProps {
  */
 export function MarkdownContent({
   className,
-  content,
+  content = '',
   lang,
   sanitize = true,
 }: MarkdownContentProps): ReactElement {
