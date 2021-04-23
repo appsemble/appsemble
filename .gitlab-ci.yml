@@ -263,13 +263,14 @@ review:
     on_stop: stop review
   script:
     # This is the only way to make sure the review environment can be overwritten
-    - helm delete "$CI_ENVIRONMENT_SLUG" || true
+    - helm delete "review-$CI_MERGE_REQUEST_IID" || true
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dependency build config/charts/appsemble
-    - helm install "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+    - helm install "review-$CI_MERGE_REQUEST_IID" config/charts/appsemble
       --atomic
-      --set "app=$CI_ENVIRONMENT_SLUG"
-      --set "fullnameOverride=$CI_ENVIRONMENT_SLUG"
+      --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
+      --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
+      --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
@@ -277,14 +278,14 @@ review:
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
-      --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
+      --set "ingress.tls.secretName=review-$CI_MERGE_REQUEST_IID-tls"
       --set "migrateTo=next"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
-      --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
+      --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
       --set "sentryEnvironment=$CI_ENVIRONMENT_NAME"
       --set "sentrySecret=sentry"
@@ -303,7 +304,7 @@ stop review:
   variables:
     GIT_STRATEGY: none
   script:
-    - helm delete "$CI_ENVIRONMENT_SLUG"
+    - helm delete "review-$CI_MERGE_REQUEST_IID"
 
 # Deploy the Docker image for master to the staging environment.
 staging:
@@ -324,7 +325,8 @@ staging:
     # First, install from the last stable tag.
     - helm install staging config/charts/appsemble
       --atomic
-      --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
+      --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
@@ -360,7 +362,8 @@ production:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dependency build config/charts/appsemble
     - helm upgrade appsemble config/charts/appsemble
-      --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
+      --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
       --set "global.postgresql.postgresqlDatabase=$POSTGRESQL_DATABASE"
       --set "global.postgresql.postgresqlUsername=$POSTGRESQL_USERNAME"

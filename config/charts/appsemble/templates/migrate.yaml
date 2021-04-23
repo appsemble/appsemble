@@ -9,6 +9,8 @@ metadata:
     helm.sh/hook-weight: '0'
 spec:
   template:
+    annotations:
+      {{ include "appsemble.gitlab" . | indent 6 }}
     spec:
       restartPolicy: Never
       containers:

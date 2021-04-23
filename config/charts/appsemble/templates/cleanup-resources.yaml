@@ -12,6 +12,8 @@ spec:
   jobTemplate:
     spec:
       template:
+        annotations:
+          {{ include "appsemble.gitlab" . | indent 10 }}
         spec:
           restartPolicy: Never
           containers:
