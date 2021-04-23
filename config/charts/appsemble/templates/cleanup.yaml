@@ -10,7 +10,7 @@ metadata:
 spec:
   template:
     annotations:
-      {{ include "appsemble.gitlab" . | indent 10 }}
+      {{ include "appsemble.gitlab" . | indent 6 }}
     spec:
       restartPolicy: Never
       containers:

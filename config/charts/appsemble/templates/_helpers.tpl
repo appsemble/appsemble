@@ -45,12 +45,12 @@ Create the default labels for a template indented with 4 spaces.
 Create annotations for GitLab monitoring.
 */}}
 {{- define "appsemble.gitlab" -}}
-{{- with .Values.gitlab.app -}}
+{{ with .Values.gitlab.app }}
 app.gitlab.com/app: {{ . | quote }}
-{{- end -}}
-{{- with .Values.gitlab.env -}}
+{{ end }}
+{{ with .Values.gitlab.env }}
 app.gitlab.com/env: {{ . | quote }}
-{{- end -}}
+{{ end }}
 {{- end -}}
 
 {{/*
