@@ -228,7 +228,7 @@ sentry release:
 ###################################################################################################
 
 # Delete all succesful jobs for review environments nightly
-cleanup:
+cleanup k8s jobs:
   extends: .helm
   stage: deploy
   rules:
@@ -237,6 +237,17 @@ cleanup:
     name: review/cleanup
   script:
     - kubectl delete job $(kubectl get job -o=jsonpath='{.items[?(@.status.succeeded==1)].metadata.name}')
+
+# Delete all stopped GitLab review environments
+cleanup gitlab environments:
+  extends: .yarn
+  stage: deploy
+  # XXX Remove once this has run once succesfully.
+  allow_failure: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+  script:
+    - yarn scripts cleanup-environments
 
 # Deploy the Docker image for a branch to a review environment.
 review:

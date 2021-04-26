@@ -12,6 +12,7 @@ import frontmatter from 'remark-frontmatter';
 import gfm from 'remark-gfm';
 import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
 import { remarkMdxImages } from 'remark-mdx-images';
+import { remarkMermaid } from 'remark-mermaidjs';
 import ServiceWorkerWebpackPlugin from 'serviceworker-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
@@ -19,6 +20,7 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { CliConfigOptions, Configuration, EnvironmentPlugin } from 'webpack';
 import { GenerateSW } from 'workbox-webpack-plugin';
 
+import './types';
 import studioPkg from '../package.json';
 import { remarkHeading } from './remark/heading';
 import { remarkRewriteLinks } from './remark/rewriteLinks';
@@ -140,11 +142,12 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 remarkPlugins: [
                   frontmatter,
                   gfm,
+                  production && remarkMermaid,
                   remarkMdxFrontmatter,
                   remarkMdxImages,
                   remarkHeading,
                   remarkRewriteLinks,
-                ],
+                ].filter(Boolean),
                 rehypePlugins: [
                   slug,
                   [
