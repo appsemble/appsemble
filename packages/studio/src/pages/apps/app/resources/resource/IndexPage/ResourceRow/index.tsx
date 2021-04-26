@@ -10,6 +10,7 @@ import {
 } from '@appsemble/react-components';
 import { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
+import classNames from 'classnames';
 import { OpenAPIV3 } from 'openapi-types';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
@@ -24,6 +25,11 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 interface ResourceRowProps {
+  /**
+   * Whether or not the dropdown for actions should be up.
+   */
+  dropdownUp: boolean;
+
   /**
    * The resource to display the data of.
    */
@@ -61,6 +67,7 @@ const filteredKeys = new Set(['id', '$author']);
  * Display a resource in a table row.
  */
 export function ResourceRow({
+  dropdownUp,
   filter,
   onEdit,
   onSelected,
@@ -139,7 +146,11 @@ export function ResourceRow({
             name={String(resource.id)}
             onChange={onSelected}
           />
-          <Dropdown className={styles.dropdown} dropdownIcon="ellipsis-v" label="">
+          <Dropdown
+            className={classNames(styles.dropdown, { 'is-up': dropdownUp })}
+            dropdownIcon="ellipsis-v"
+            label=""
+          >
             <Button
               className={`${styles.noBorder} pl-5 dropdown-item`}
               icon="pen"
@@ -156,9 +167,6 @@ export function ResourceRow({
               <FormattedMessage {...messages.details} />
             </Button>
           </Dropdown>
-          {/* <IconButton color="info" icon="pen" onClick={openEditModal} />
-          <IconButton className="mx-2" color="danger" icon="trash" onClick={handleDeleteResource} />
-          */}
           <ModalCard
             cardClassName={styles.modal}
             component={Form}
