@@ -9,8 +9,9 @@ metadata:
     helm.sh/hook: pre-delete
 spec:
   template:
-    annotations:
-      {{ include "appsemble.gitlab" . | indent 6 }}
+    metadata:
+      annotations:
+        {{ include "appsemble.gitlab" . | indent 8 }}
     spec:
       restartPolicy: Never
       containers:
