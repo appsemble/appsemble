@@ -30,16 +30,17 @@ interface MarkdownContentProps {
  */
 export function MarkdownContent({
   className,
-  content = '',
+  content,
   lang,
   sanitize = true,
 }: MarkdownContentProps): ReactElement {
   const location = useLocation();
 
   const innerHTML = useMemo(
-    () => ({
-      __html: marked(content, { sanitize, baseUrl: `${location.pathname}${location.search}` }),
-    }),
+    () =>
+      content && {
+        __html: marked(content, { sanitize, baseUrl: `${location.pathname}${location.search}` }),
+      },
     [content, location, sanitize],
   );
 
