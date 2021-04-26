@@ -1,6 +1,5 @@
 import RefParser from '@apidevtools/json-schema-ref-parser';
 import {
-  Form,
   Loader,
   useBeforeUnload,
   useConfirmation,
@@ -304,12 +303,11 @@ export default function EditPage(): ReactElement {
 
   return (
     <div className={`${styles.root} is-flex`}>
-      <div className={styles.leftPanel}>
-        <Form onSubmit={onSave}>
-          <EditorNavBar dirty={dirty} onUpload={onUpload} valid={valid} />
-        </Form>
+      <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
+        <EditorNavBar dirty={dirty} onPreview={onSave} onUpload={onUpload} valid={valid} />
         <div className={styles.editorForm}>
           <MonacoEditor
+            className={styles.editor}
             decorationList={decorationList}
             language={language}
             onChange={onValueChange}

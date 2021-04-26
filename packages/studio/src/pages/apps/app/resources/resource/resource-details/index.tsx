@@ -11,6 +11,7 @@ import { HeaderControl } from '../../../../../../components/HeaderControl';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
 import { MonacoEditor } from '../../../../../../components/MonacoEditor';
 import { Resource } from '../IndexPage';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 const tabOptions = new Set(['#edit', '#json', '#properties']);
@@ -41,7 +42,7 @@ export function ResourceDetailsPage(): ReactElement {
   useEffect(() => {
     if (!editingResource && !result.loading && result.data) {
       setEditingResource(result.data);
-      setEditingResourceJson(JSON.stringify(result.data, null, 2));
+      setEditingResourceJson(`${JSON.stringify(result.data, null, 2)}\n`);
     }
   }, [editingResource, result]);
 
@@ -141,7 +142,7 @@ export function ResourceDetailsPage(): ReactElement {
         result={result}
       >
         {() => (
-          <>
+          <div className={`is-flex is-flex-direction-column ${styles.flexContent}`}>
             <Tabs onChange={onClickTab} value={hash}>
               <Tab href={`${url}#properties`} value="#properties">
                 <FormattedMessage {...messages.properties} />
@@ -150,45 +151,44 @@ export function ResourceDetailsPage(): ReactElement {
                 <FormattedMessage {...messages.json} />
               </Tab>
             </Tabs>
-            <>
-              {hash === '#properties' && (
-                <>
-                  <JSONSchemaEditor
-                    name="resource"
-                    onChange={onEditChange}
-                    schema={schema}
-                    value={editingResource}
-                  />
-                  <div className="is-flex is-justify-content-flex-end">
-                    <Button
-                      className="my-4"
-                      color="primary"
-                      disabled={submitting}
-                      icon="save"
-                      loading={submitting}
-                      onClick={onEditSubmit}
-                    >
-                      <FormattedMessage {...messages.save} />
-                    </Button>
-                  </div>
-                </>
-              )}
-              {hash === '#json' && (
-                <MonacoEditor
-                  language="json"
-                  onChange={onEditJsonChange}
-                  onSave={onEditSubmit}
-                  options={{
-                    insertSpaces: true,
-                    tabSize: 2,
-                    minimap: { enabled: false },
-                    readOnly: false,
-                  }}
-                  value={editingResourceJson}
+            {hash === '#properties' && (
+              <>
+                <JSONSchemaEditor
+                  name="resource"
+                  onChange={onEditChange}
+                  schema={schema}
+                  value={editingResource}
                 />
-              )}
-            </>
-          </>
+                <div className="is-flex is-justify-content-flex-end">
+                  <Button
+                    className="my-4"
+                    color="primary"
+                    disabled={submitting}
+                    icon="save"
+                    loading={submitting}
+                    onClick={onEditSubmit}
+                  >
+                    <FormattedMessage {...messages.save} />
+                  </Button>
+                </div>
+              </>
+            )}
+            {hash === '#json' && (
+              <MonacoEditor
+                className={styles.flexContent}
+                language="json"
+                onChange={onEditJsonChange}
+                onSave={onEditSubmit}
+                options={{
+                  insertSpaces: true,
+                  tabSize: 2,
+                  minimap: { enabled: false },
+                  readOnly: false,
+                }}
+                value={editingResourceJson}
+              />
+            )}
+          </div>
         )}
       </AsyncDataView>
     </>

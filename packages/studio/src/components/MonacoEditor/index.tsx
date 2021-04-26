@@ -3,7 +3,6 @@ import { editor, KeyCode, KeyMod, Range } from 'monaco-editor/esm/vs/editor/edit
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useApp } from '../../pages/apps/app';
-import styles from './index.module.css';
 import './custom';
 
 editor.setTheme('vs');
@@ -11,6 +10,11 @@ editor.setTheme('vs');
 type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
 
 interface MonacoEditorProps {
+  /**
+   * A class name to apply to the monaco editor element.
+   */
+  className?: string;
+
   /**
    * The current value of the editor.
    */
@@ -64,6 +68,7 @@ const emptyDecoration: editor.IModelDeltaDecoration[] = [
 export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
   (
     {
+      className,
       language,
       onChange,
       decorationList,
@@ -143,6 +148,6 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
       return () => subscription.dispose();
     }, [monaco, onChange]);
 
-    return <div className={styles.editor} ref={nodeRef} />;
+    return <div className={className} ref={nodeRef} />;
   },
 );
