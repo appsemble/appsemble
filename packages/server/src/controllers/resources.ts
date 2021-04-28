@@ -682,6 +682,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = {
     ...resource.data,
     id: resourceId,
+    $clonable: clonable,
     $created: resource.created,
     $updated: resource.updated,
     $expires: resource.expires ?? undefined,
