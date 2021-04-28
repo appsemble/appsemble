@@ -15,9 +15,22 @@ spec:
     - hosts:
       - {{ .Values.ingress.host }}
       secretName: {{ .Values.ingress.tls.secretName }}
+    - hosts:
+      - '*.{{ .Values.ingress.host }}'
+      secretName: {{ .Values.ingress.tls.wildcardSecretName }}
 {{- end }}
   rules:
     - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "appsemble.fullname" . }}
+                port:
+                  name: http
+    - host: '*.{{ .Values.ingress.host }}'
       http:
         paths:
           - path: /

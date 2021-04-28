@@ -19,6 +19,7 @@ ingress:
   tls:
     {}
     # secretName: chart-example-tls
+    # wildcardSecretName: chart-example-tls-wildcard
 
 resources:
   {}
