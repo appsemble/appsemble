@@ -108,6 +108,13 @@ export function IndexPage(): ReactElement {
     [resources, setResources],
   );
 
+  const onDeleteResource = useCallback(
+    (resourceId: number) => {
+      setResources((r) => r.filter((res) => res.id !== resourceId));
+    },
+    [setResources],
+  );
+
   const onConfirmDelete = useCallback(async () => {
     try {
       await Promise.all(
@@ -351,6 +358,7 @@ export function IndexPage(): ReactElement {
               dropdownUp={resources.length > 2 && index >= resources.length - 2}
               filter={hiddenProperties}
               key={resource.id}
+              onDelete={onDeleteResource}
               onEdit={onEditResource}
               onSelected={onCheckboxClick}
               resource={resource}

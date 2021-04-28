@@ -5,6 +5,7 @@ import {
   Dropdown,
   Form,
   ModalCard,
+  useConfirmation,
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
@@ -41,6 +42,11 @@ interface ResourceRowProps {
   onEdit: (resource: Resource) => void;
 
   /**
+   * The callback for when an existing resource is deleted.
+   */
+  onDelete: (id: number) => void;
+
+  /**
    * The JSON schema of the resource.
    */
   schema: OpenAPIV3.SchemaObject;
@@ -69,6 +75,7 @@ const filteredKeys = new Set(['id', '$author']);
 export function ResourceRow({
   dropdownUp,
   filter,
+  onDelete,
   onEdit,
   onSelected,
   resource,
@@ -136,6 +143,29 @@ export function ResourceRow({
     resourceName,
   ]);
 
+  const onConfirmDelete = useCallback(
+    () =>
+      axios
+        .delete(`/api/apps/${appId}/resources/${resourceName}/${resource.id}`)
+        .then(() => {
+          push({
+            body: formatMessage(messages.deleteSuccess, { id: resource.id }),
+            color: 'primary',
+          });
+          onDelete(resource.id);
+        })
+        .catch(() => push(formatMessage(messages.deleteError))),
+    [appId, formatMessage, onDelete, push, resource, resourceName],
+  );
+
+  const handleDeleteResource = useConfirmation({
+    title: <FormattedMessage {...messages.resourceWarningTitle} />,
+    body: <FormattedMessage {...messages.resourceWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancelButton} />,
+    confirmLabel: <FormattedMessage {...messages.deleteButton} />,
+    action: onConfirmDelete,
+  });
+
   return (
     <tr className={styles.root}>
       {!filter.has('$actions') && (
@@ -158,6 +188,7 @@ export function ResourceRow({
             >
               <FormattedMessage {...messages.edit} />
             </Button>
+            <hr className="dropdown-divider" />
             <Button
               className={`${styles.noBorder} pl-5 dropdown-item`}
               component={Link}
@@ -165,6 +196,16 @@ export function ResourceRow({
               to={`${url}/${resource.id}`}
             >
               <FormattedMessage {...messages.details} />
+            </Button>
+            <hr className="dropdown-divider" />
+            <Button
+              className={`${styles.noBorder} pl-5 dropdown-item`}
+              color="danger"
+              icon="trash-alt"
+              inverted
+              onClick={handleDeleteResource}
+            >
+              <FormattedMessage {...messages.deleteButton} />
             </Button>
           </Dropdown>
           <ModalCard
