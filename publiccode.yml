@@ -69,6 +69,6 @@ dependsOn:
     - name: Docker
     - name: Docker Compose
     - name: NodeJS
-      version: 14
+      versionMin: 12
     - name: Yarn
     - name: appsemble/appsemble
