@@ -4,6 +4,8 @@ metadata:
   name: {{ include "appsemble.fullname" . }}
   labels:
     {{ include "appsemble.labels" . }}
+  annotations:
+    {{ include "appsemble.gitlab" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -15,6 +17,8 @@ spec:
       labels:
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
         app.kubernetes.io/name: {{ include "appsemble.name" . }}
+      annotations:
+        {{ include "appsemble.gitlab" . | indent 10 }}
     spec:
       enableServiceLinks: false
       containers:

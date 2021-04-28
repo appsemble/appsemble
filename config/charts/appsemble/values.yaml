@@ -5,7 +5,6 @@ image:
   tag: null
   pullPolicy: IfNotPresent
 
-app: appsemble
 nameOverride: ''
 fullnameOverride: ''
 
@@ -48,6 +47,10 @@ secretSecret: appsemble
 
 cronjob:
   jobsHistoryLimit: 3
+
+gitlab:
+  app: null
+  env: null
 
 migrateTo: {}
 

@@ -1,8 +1,8 @@
 import { Theme } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
-import sass from 'node-sass';
 import postcss from 'postcss';
+import sass from 'sass';
 
 import { KoaContext } from '../../types';
 

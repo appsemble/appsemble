@@ -1,7 +1,6 @@
 import { Children, ReactElement } from 'react';
 
 import { CodeBlock } from '../../CodeBlock';
-import { Mermaid } from '../../Mermaid';
 
 interface MDXCodeProps {
   /**
@@ -33,10 +32,6 @@ export function MDXPre({ children }: MDXPreProps): ReactElement {
   } = Children.only(children);
 
   const language = className?.replace(/^language-/, '');
-
-  if (language === 'mermaid') {
-    return <Mermaid graph={code} />;
-  }
 
   return <CodeBlock className="mb-4" code={code?.trimEnd()} language={language} />;
 }

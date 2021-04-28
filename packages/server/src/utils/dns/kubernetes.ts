@@ -30,7 +30,7 @@ async function getAxiosConfig(): Promise<AxiosRequestConfig> {
   return {
     headers: { authorization: `Bearer ${token}` },
     httpsAgent: new Agent({ ca }),
-    url: `${K8S_HOST}/apis/networking.k8s.io/v1beta1/namespaces/${namespace}/ingresses`,
+    url: `${K8S_HOST}/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`,
   };
 }
 
@@ -73,7 +73,15 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
             rules: [
               {
                 host: domain,
-                http: { paths: [{ path: '/', backend: { serviceName, servicePort } }] },
+                http: {
+                  paths: [
+                    {
+                      path: '/',
+                      pathType: 'Prefix',
+                      backend: { service: { name: serviceName, port: { name: servicePort } } },
+                    },
+                  ],
+                },
               },
             ],
             tls: [

@@ -1,5 +1,5 @@
 import { applyRefs } from '@appsemble/react-components';
-import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
+import { editor, KeyCode, KeyMod, Range } from 'monaco-editor/esm/vs/editor/editor.api';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useApp } from '../../pages/apps/app';

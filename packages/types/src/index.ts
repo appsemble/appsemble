@@ -335,7 +335,6 @@ export interface RoleDefinition {
 }
 
 export interface Security {
-  login?: 'password';
   default: {
     role: string;
     policy?: 'everyone' | 'invite' | 'organization';

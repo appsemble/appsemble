@@ -1,6 +1,8 @@
+import { resolve } from 'path';
+
 import { logger } from '@appsemble/node-utils';
 import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
-import { writeJson } from 'fs-extra';
+import { rm, writeJson } from 'fs-extra';
 import webpack, { compilation, Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
@@ -40,6 +42,9 @@ export async function handler({ app, appStats, studio, studioStats }: Args): Pro
   const configurations: Configuration[] = [];
   let appConfig: Configuration;
   let studioConfig: Configuration;
+  const outputDir = resolve(__dirname, '..', '..', '..', '..', 'dist');
+  logger.warn(`Removing directory: ${outputDir}`);
+  await rm(outputDir, { force: true, recursive: true });
   if (app) {
     appConfig = createAppConfig({ mode: 'production' });
     configurations.push(appConfig);
@@ -49,7 +54,7 @@ export async function handler({ app, appStats, studio, studioStats }: Args): Pro
     configurations.push(studioConfig);
   }
   const compiler = webpack(configurations);
-  const result = await new Promise<compilation.MultiStats>((resolve, reject) => {
+  const result = await new Promise<compilation.MultiStats>((resolvePromise, reject) => {
     compiler.run((error, stats) => {
       if (error) {
         reject(error);
@@ -57,7 +62,7 @@ export async function handler({ app, appStats, studio, studioStats }: Args): Pro
         reject(stats.toString({ colors: true }));
       } else {
         logger.info(stats.toString({ colors: true, reasons: true }));
-        resolve(stats);
+        resolvePromise(stats);
       }
     });
   });

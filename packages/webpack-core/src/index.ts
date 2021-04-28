@@ -3,10 +3,8 @@ import { dirname, join } from 'path';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import bulmaPkg from 'bulma/package.json';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import autolink from 'rehype-autolink-headings';
 import slug from 'rehype-slug';
@@ -14,6 +12,7 @@ import frontmatter from 'remark-frontmatter';
 import gfm from 'remark-gfm';
 import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
 import { remarkMdxImages } from 'remark-mdx-images';
+import { remarkMermaid } from 'remark-mermaidjs';
 import ServiceWorkerWebpackPlugin from 'serviceworker-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
@@ -21,6 +20,7 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { CliConfigOptions, Configuration, EnvironmentPlugin } from 'webpack';
 import { GenerateSW } from 'workbox-webpack-plugin';
 
+import './types';
 import studioPkg from '../package.json';
 import { remarkHeading } from './remark/heading';
 import { remarkRewriteLinks } from './remark/rewriteLinks';
@@ -55,24 +55,24 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
   const projectDir = join(packagesDir, env);
   const configFile = join(projectDir, 'tsconfig.json');
   const entry = join(projectDir, 'src');
-  const publicPath = production ? undefined : `/${env}`;
+  const publicPath = production ? '/' : `/${env}/`;
 
   return {
     name: `@appsemble/${env}`,
     devtool: 'source-map',
     mode,
-    entry: [entry],
+    entry: { [env]: [entry] },
     output: {
       filename: production ? '[contentHash].js' : `${env}.js`,
       publicPath,
-      path: production ? join(rootDir, 'dist', env) : publicPath,
+      path: production ? join(rootDir, 'dist', env) : `/${env}/`,
+      chunkFilename: production ? '[contentHash].js' : '[id].js',
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
       plugins: [new TsconfigPathsPlugin({ configFile })],
     },
     plugins: [
-      new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: join(entry, 'index.html'),
         templateParameters: {
@@ -142,11 +142,12 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 remarkPlugins: [
                   frontmatter,
                   gfm,
+                  production && remarkMermaid,
                   remarkMdxFrontmatter,
                   remarkMdxImages,
                   remarkHeading,
                   remarkRewriteLinks,
-                ],
+                ].filter(Boolean),
                 rehypePlugins: [
                   slug,
                   [
@@ -196,8 +197,11 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           loader: 'svgo-loader',
         },
         {
-          test: /yaml\.worker\.js$/,
+          test: /(css|json|yaml)\.worker\.js$/,
           loader: 'worker-loader',
+          options: {
+            filename: production ? '[contentHash].js' : '[name].js',
+          },
         },
       ],
     },
@@ -217,7 +221,7 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
   const config = shared('app', argv);
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: join((config.entry as string[])[0], 'error.html'),
+      template: join(packagesDir, 'app', 'src', 'error.html'),
       filename: 'error.html',
       minify,
       chunks: [],
@@ -241,7 +245,6 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
  */
 export function createStudioConfig(argv: CliConfigOptions): Configuration {
   const config = shared('studio', argv);
-  config.plugins.push(new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }));
   if (argv.mode === 'production') {
     config.plugins.push(
       new GenerateSW({

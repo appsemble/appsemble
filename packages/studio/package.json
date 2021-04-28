@@ -44,7 +44,6 @@
     "jsonschema": "^1.4.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
-    "mermaid": "^8.9.2",
     "monaco-editor": "^0.21.3",
     "monaco-yaml": "^2.5.1",
     "openapi-types": "^7.2.3",
