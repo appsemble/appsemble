@@ -5,18 +5,6 @@ export const Security: OpenAPIV3.NonArraySchemaObject = {
   description: 'This describes how the app is secured.',
   required: ['default', 'roles'],
   properties: {
-    login: {
-      type: 'string',
-      enum: ['password'],
-      description: `
-        If specified, use the legacy email / password login method to login.
-
-        This is less secure than the default login method, because this means the user will have to
-        enter their credentials in the app. If the app uses third party blocks, these may access the
-        user credentials.
-      `,
-      deprecated: true,
-    },
     default: {
       type: 'object',
       required: ['role'],

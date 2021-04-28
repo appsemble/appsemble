@@ -16,6 +16,7 @@ export function OpenIDLogin(): ReactElement {
   const buttonProps = {
     className: `is-fullwidth my-2 ${styles.button}`,
     clientId: `app:${appId}`,
+    disabled: busy.enabled,
     onClick: busy.enable,
     redirectUrl: '/Callback',
     scope: oauth2Scope,
