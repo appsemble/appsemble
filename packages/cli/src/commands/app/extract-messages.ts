@@ -36,7 +36,6 @@ export async function handler({
 }: BuildBlockArguments): Promise<void> {
   const normalizedPaths = paths.map((path) => normalizePath(path));
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
-  // Const langs = [...new Set(['en', ...languages.map((language) => language.toLowerCase())])];
   logger.info(`Extracting messages from ${directories.length} apps`);
   for (const dir of directories) {
     await writeAppMessages(
