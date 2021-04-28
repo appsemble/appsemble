@@ -288,7 +288,7 @@ export function IndexPage(): ReactElement {
           <FormattedMessage {...messages.delete} values={{ amount: selectedResources.length }} />
         </Button>
       </div>
-      <Table>
+      <Table className="is-flex-grow-1 is-flex-shrink-1">
         <thead>
           <tr>
             <th>
@@ -348,7 +348,7 @@ export function IndexPage(): ReactElement {
         <tbody>
           {resources.map((resource, index) => (
             <ResourceRow
-              dropdownUp={index >= resources.length - 2}
+              dropdownUp={resources.length > 2 && index >= resources.length - 2}
               filter={hiddenProperties}
               key={resource.id}
               onEdit={onEditResource}

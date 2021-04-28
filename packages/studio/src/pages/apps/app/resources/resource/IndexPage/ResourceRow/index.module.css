@@ -32,3 +32,12 @@
 .actionCell {
   margin-bottom: -1px;
 }
+
+.boolean {
+  text-align: center !important;
+
+  & label {
+    margin: 0 !important;
+    padding-left: 1rem !important;
+  }
+}
