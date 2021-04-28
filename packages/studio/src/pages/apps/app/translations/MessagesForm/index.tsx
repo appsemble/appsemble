@@ -9,7 +9,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import { AppMessages } from '@appsemble/types';
-import { compareStrings, extractAppMessages, normalizeBlockName } from '@appsemble/utils';
+import { extractAppMessages, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -37,31 +37,36 @@ export function MessagesForm({ appMessages, languageId }: MessagesFormProps): Re
   const push = useMessages();
   const { formatMessage } = useIntl();
 
-  const messageIds = useMemo(() => {
-    const blockMessages = appMessages
-      ? Object.entries(appMessages.messages.blocks).flatMap(([name, versions]) =>
-          Object.entries(versions).flatMap(([version, versionMessages]) =>
-            Object.keys(versionMessages).map(
-              (versionMessage) => `${name}/${version}/${versionMessage}`,
-            ),
-          ),
-        )
-      : [];
+  const messageDefaults = useMemo(() => {
+    const allMessages: Record<string, string> = {
+      // XXX Extract all core app messages
+      'app.src.components.OpenIDLogin.loginWith': '',
+    };
+    const blockMessages: Record<string, Record<string, string>> = {};
 
-    const ids = extractAppMessages(app.definition, (block, prefix) => {
-      const blockName = `${normalizeBlockName(block.type)}/${block.version}`;
-      const pageBlockMessages = blockMessages.filter((name) => name.startsWith(blockName));
-      return pageBlockMessages.map((name) => `${prefix.join('.')}.${name.split('/').pop()}`);
-    });
+    for (const [name, versions] of Object.entries(appMessages.messages.blocks)) {
+      for (const [version, versionMessages] of Object.entries(versions)) {
+        const msgs: Record<string, string> = {};
+        blockMessages[`${name}/${version}`] = msgs;
+        for (const [messageId, messageString] of Object.entries(versionMessages)) {
+          allMessages[`${name}/${version}/${messageId}`] = messageString;
+          msgs[messageId] = messageString;
+        }
+      }
+    }
 
-    return [
-      ...new Set([
-        ...ids,
-        ...blockMessages,
-        // XXX Extract all core app messages
-        'app.src.components.OpenIDLogin.loginWith',
-      ]),
-    ].sort(compareStrings);
+    return Object.entries(
+      Object.assign(
+        allMessages,
+        extractAppMessages(app.definition, (block, prefix) => {
+          const blockName = `${normalizeBlockName(block.type)}/${block.version}`;
+          const msgs = blockMessages[blockName];
+          for (const [name, msg] of Object.entries(msgs)) {
+            allMessages[`${prefix.join('.')}.${name}`] = msg;
+          }
+        }),
+      ),
+    ).sort(([a], [b]) => a.localeCompare(b));
   }, [app, appMessages]);
 
   const onSubmit = useCallback(
@@ -76,21 +81,22 @@ export function MessagesForm({ appMessages, languageId }: MessagesFormProps): Re
   );
 
   const defaultValues = useMemo(
-    () => Object.fromEntries(messageIds.map((id) => [id, appMessages?.messages.app[id]])),
-    [appMessages?.messages.app, messageIds],
+    () => Object.fromEntries(messageDefaults.map(([id]) => [id, appMessages?.messages.app[id]])),
+    [appMessages?.messages.app, messageDefaults],
   );
 
   return (
     <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
       <SimpleFormError>{() => <FormattedMessage {...messages.uploadError} />}</SimpleFormError>
       <SimpleBeforeUnload />
-      {messageIds.map((id) => (
+      {messageDefaults.map(([id, defaultMessage]) => (
         <SimpleFormField
           component={TextAreaField}
           disabled={app.locked}
           key={id}
           label={id}
           name={id}
+          placeholder={defaultMessage}
           rows={2}
         />
       ))}

@@ -1,5 +1,5 @@
 import { existsSync, promises as fs } from 'fs';
-import { join } from 'path';
+import { join, parse } from 'path';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readYaml, writeYaml } from '@appsemble/node-utils';
@@ -10,17 +10,17 @@ import { extractAppMessages, has } from '@appsemble/utils';
  * @param path - The path to the app directory.
  * @param languages - A list of languages for which translations should be added in addition to the
  * existing ones.
- * @param verify - If true, an error will be thrown if translations are missing.
+ * @param verify - A list of languages to verify.
  */
 export async function writeAppMessages(
   path: string,
   languages: string[],
-  verify: boolean,
+  verify: string[],
 ): Promise<void> {
   logger.info(`Extracting messages from ${path}`);
   let app: AppDefinition;
   let i18nDir = join(path, 'i18n');
-  const messageFiles: string[] = [];
+  const messageFiles = new Set<string>();
 
   await opendirSafe(path, async (filepath, stat) => {
     switch (stat.name.toLowerCase()) {
@@ -32,7 +32,9 @@ export async function writeAppMessages(
         // For case insensitivity
         i18nDir = filepath;
         const i18nFiles = await fs.readdir(filepath);
-        messageFiles.push(...i18nFiles.map((f) => join(filepath, f)));
+        for (const f of i18nFiles) {
+          messageFiles.add(join(filepath, f));
+        }
         break;
       }
       default:
@@ -45,9 +47,13 @@ export async function writeAppMessages(
   // Ensure the i18n directory exists.
   await fs.mkdir(i18nDir, { recursive: true });
 
-  messageFiles.push(...languages.map((lang) => join(i18nDir, `${lang}.yaml`)));
-  const messageIds = extractAppMessages(app);
-  logger.verbose(`Found message IDs: ${inspect(messageIds)}`);
+  for (const lang of [...languages, ...verify]) {
+    messageFiles.add(join(i18nDir, `${lang}.yaml`));
+  }
+  const defaultLangFile = join(i18nDir, `${app.defaultLanguage || 'en'}.yaml`);
+  messageFiles.add(defaultLangFile);
+  const extractedMessages = extractAppMessages(app);
+  logger.verbose(`Found message IDs: ${inspect(extractedMessages)}`);
   for (const filepath of messageFiles) {
     logger.info(`Processing ${filepath}`);
     let oldMessages: Record<string, string>;
@@ -59,14 +65,17 @@ export async function writeAppMessages(
       oldMessages = {};
     }
     const newMessages = Object.fromEntries(
-      messageIds.map((key) => {
+      Object.entries(extractedMessages).map(([key, value]) => {
         if (has(oldMessages, key) && oldMessages[key]) {
           if (typeof oldMessages[key] !== 'string') {
             throw new AppsembleError(`Invalid translation key: ${key}`);
           }
           return [key, oldMessages[key]];
         }
-        if (verify) {
+        if (filepath === defaultLangFile) {
+          return [key, value];
+        }
+        if (verify.includes(parse(filepath).name)) {
           throw new AppsembleError(`Missing translation key: ${key}`);
         }
         return [key, ''];
