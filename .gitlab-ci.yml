@@ -68,7 +68,7 @@ helm lint:
 i18n:
   extends: .yarn
   script:
-    - yarn appsemble app extract-messages --languages nl --verify apps/*
+    - yarn appsemble app extract-messages --verify nl apps/*
 
 # Check formatting using prettier.
 prettier:

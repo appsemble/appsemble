@@ -9,7 +9,7 @@ import { BaseArguments } from '../../types';
 interface BuildBlockArguments extends BaseArguments {
   paths: string[];
   languages: string[];
-  verify: true;
+  verify: string[];
 }
 
 export const command = 'extract-messages <paths...>';
@@ -26,8 +26,10 @@ export function builder(yargs: Argv): Argv {
       default: [],
     })
     .option('verify', {
-      type: 'boolean',
-      describe: 'If specified, the CLI will fail if a missing translation is found',
+      type: 'array',
+      describe:
+        'A list of languages to verify. The CLI will fail if a message is missing for one of the given languages',
+      default: [],
     });
 }
 
