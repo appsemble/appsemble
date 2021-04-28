@@ -304,7 +304,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     id: resource.id,
     $created: resource.created,
     $updated: resource.updated,
-    $clonable: resource.clonable,
+    ...(app.template && { $clonable: resource.clonable }),
     ...(resource.expires != null && {
       $expires: resource.expires,
     }),
@@ -682,7 +682,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = {
     ...resource.data,
     id: resourceId,
-    $clonable: clonable,
+    ...(app.template && { $clonable: clonable }),
     $created: resource.created,
     $updated: resource.updated,
     $expires: resource.expires ?? undefined,
