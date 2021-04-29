@@ -52,7 +52,7 @@ pages:
         parameters:
           fields:
             - value: { prop: title }
-              label: Title
+              label: { string.format: { messageId: title } }
         events:
           listen:
             data: notes
@@ -81,12 +81,12 @@ pages:
                   fields:
                     - type: string
                       name: title
-                      label: Title
+                      label: { string.format: { messageId: title } }
                       requirements:
                         - required: true
                     - type: string
                       name: body
-                      label: Body
+                      label: { string.format: { messageId: body } }
                       multiline: true
                 actions:
                   onSubmit:

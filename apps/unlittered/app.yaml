@@ -70,7 +70,7 @@ pages:
           fields:
             - name: location
               type: geocoordinates
-              label: Location
+              label: { string.format: { messageId: location } }
             - type: enum
               enum:
                 - value: Bicycle Collection
@@ -78,15 +78,15 @@ pages:
                 - value: Biodegradable Waste
                 - value: Collection
               name: process
-              label: Process
+              label: { string.format: { messageId: process } }
             - name: notes
               type: string
-              label: Notes
+              label: { string.format: { messageId: notes } }
               multiline: true
-              placeholder: 'Example: There is a bicycle in the bushes'
+              placeholder: { string.format: { messageId: notesExample } }
             - name: photos
               type: file
-              label: Photos
+              label: { string.format: { messageId: photos } }
               requirements:
                 - accept:
                     - image/jpeg
@@ -158,16 +158,16 @@ pages:
           fields:
             - value: { prop: location }
               type: geocoordinates
-              label: Location
+              label: { string.format: { messageId: location } }
               latitude: { prop: latitude }
               longitude: { prop: longitude }
             - value: { prop: process }
-              label: Process
+              label: { string.format: { messageId: process } }
             - value: { prop: notes }
-              label: Notes
+              label: { string.format: { messageId: notes } }
             - value: { prop: photos }
               type: file
-              label: Photos
+              label: { string.format: { messageId: photos } }
               repeated: true
         events:
           listen:
@@ -201,7 +201,7 @@ pages:
                 - value: Biodegradable Waste
                 - value: Collection
             - name: $created
-              label: Date
+              label: { string.format: { messageId: date } }
               type: date-range
               icon: calendar-alt
         actions:

@@ -23,11 +23,11 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: Date
+                  label: { string.format: { messageId: date } }
                 - value: { prop: name }
-                  label: Name (EN)
+                  label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
-                  label: Name (NL)
+                  label: { string.format: { messageId: name, values: { locale: NL } } }
             events:
               listen:
                 data: holidays
@@ -47,11 +47,11 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: Date
+                  label: { string.format: { messageId: date } }
                 - value: { prop: name }
-                  label: Name (EN)
+                  label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
-                  label: Name (DE)
+                  label: { string.format: { messageId: name, values: { locale: DE } } }
             events:
               listen:
                 data: holidays
@@ -71,11 +71,11 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: Date
+                  label: { string.format: { messageId: date } }
                 - value: { prop: name }
-                  label: Name (EN)
+                  label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
-                  label: Name (ES)
+                  label: { string.format: { messageId: name, values: { locale: ES } } }
             events:
               listen:
                 data: holidays
@@ -100,9 +100,9 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: Date
+                  label: { string.format: { messageId: date } }
                 - value: { prop: name }
-                  label: Name
+                  label: { string.format: { messageId: name, values: { locale: EN } } }
             events:
               listen:
                 data: holidays
@@ -122,9 +122,9 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: Date
+                  label: { string.format: { messageId: date } }
                 - value: { prop: name }
-                  label: Name
+                  label: { string.format: { messageId: name, values: { locale: EN } } }
             events:
               listen:
                 data: holidays
@@ -144,11 +144,11 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: Date
+                  label: { string.format: { messageId: date } }
                 - value: { prop: name }
-                  label: Name (EN)
+                  label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
-                  label: Name (ES)
+                  label: { string.format: { messageId: name, values: { locale: ES } } }
             events:
               listen:
                 data: holidays
