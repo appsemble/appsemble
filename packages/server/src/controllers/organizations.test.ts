@@ -339,6 +339,20 @@ describe('getMembers', () => {
       ],
     });
   });
+
+  it('should should not fetch organization members if the user is not a member', async () => {
+    authorizeStudio();
+    await Organization.create({ id: 'org' });
+    const response = await request.get('/api/organizations/org/members');
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User is not part of this organization.',
+      },
+    });
+  });
 });
 
 describe('getInvites', () => {

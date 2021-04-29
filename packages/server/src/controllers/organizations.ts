@@ -294,6 +294,7 @@ export async function getMembers(ctx: KoaContext<Params>): Promise<void> {
   if (!organization) {
     throw notFound('Organization not found.');
   }
+  await checkRole(ctx, organization.id, Permission.ViewApps);
 
   ctx.body = organization.Users.map((user) => ({
     id: user.id,
