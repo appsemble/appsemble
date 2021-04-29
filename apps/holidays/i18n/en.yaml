@@ -1,3 +1,5 @@
+date: Date
+name: 'Name ({locale})'
 pages.0: Holidays in Europe
 pages.0.subPages.0: Netherlands
 pages.0.subPages.1: Germany
