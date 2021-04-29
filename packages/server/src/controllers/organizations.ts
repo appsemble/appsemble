@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 
-import { Permission } from '@appsemble/utils';
+import { Permission, roles } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
 import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
@@ -313,6 +313,13 @@ export async function getInvites(ctx: KoaContext<Params>): Promise<void> {
   });
   if (!organization) {
     throw notFound('Organization not found.');
+  }
+  const member = await checkRole(ctx, organization.id, Permission.ViewApps);
+  if (!roles[member.role].includes(Permission.InviteMember)) {
+    // Return an empty list of invites if the user is part of the organization
+    // but does not have invite permissions.
+    ctx.body = [];
+    return;
   }
 
   ctx.body = organization.OrganizationInvites.map((invite) => ({
