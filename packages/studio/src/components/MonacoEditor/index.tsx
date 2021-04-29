@@ -39,18 +39,18 @@ interface MonacoEditorProps {
   onSave?: () => void;
 
   /**
-   * Editor options to set.
-   */
-  options?: Options;
-
-  /**
    * Save decorations even when editor is disposed
    */
   decorationList?: string[];
   onChangeDecorationList?: (value: string[]) => void;
 }
 
-const defaultOptions: Options = {};
+const defaultOptions: Options = {
+  insertSpaces: true,
+  tabSize: 2,
+  minimap: { enabled: false },
+  readOnly: false,
+};
 
 const emptyDecoration: editor.IModelDeltaDecoration[] = [
   {
@@ -67,16 +67,7 @@ const emptyDecoration: editor.IModelDeltaDecoration[] = [
  */
 export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
   (
-    {
-      className,
-      language,
-      onChange,
-      decorationList,
-      onChangeDecorationList,
-      onSave,
-      options = defaultOptions,
-      value = '',
-    },
+    { className, decorationList, language, onChange, onChangeDecorationList, onSave, value = '' },
     ref,
   ) => {
     const [monaco, setMonaco] = useState<editor.IStandaloneCodeEditor>();
@@ -95,7 +86,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
       }
 
       const model = editor.createModel('', 'yaml');
-      const ed = editor.create(node, { ...options, readOnly: locked || options.readOnly, model });
+      const ed = editor.create(node, { ...defaultOptions, readOnly: locked, model });
       ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
 
       const observer = new ResizeObserver(() => ed.layout());
@@ -115,7 +106,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
 
     useEffect(() => {
       if (monaco) {
-        monaco.updateOptions({ ...options, readOnly: locked || options.readOnly });
+        monaco.updateOptions({ ...defaultOptions, readOnly: locked });
 
         if (decorationList && onChangeDecorationList) {
           onChangeDecorationList(
@@ -124,7 +115,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [monaco, options]);
+    }, [monaco]);
 
     useEffect(() => {
       if (monaco) {

@@ -179,12 +179,6 @@ export function ResourceDetailsPage(): ReactElement {
                 language="json"
                 onChange={onEditJsonChange}
                 onSave={onEditSubmit}
-                options={{
-                  insertSpaces: true,
-                  tabSize: 2,
-                  minimap: { enabled: false },
-                  readOnly: false,
-                }}
                 value={editingResourceJson}
               />
             )}

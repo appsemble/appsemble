@@ -27,16 +27,7 @@ import { messages } from './messages';
 
 const validator = new Validator();
 
-type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
-
 const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
-
-const monacoDefaultOptions: Options = {
-  insertSpaces: true,
-  tabSize: 2,
-  minimap: { enabled: false },
-  readOnly: false,
-};
 
 /**
  * These properties are passed to the allow attribute of the app preview. For a full list, see
@@ -313,7 +304,6 @@ export default function EditPage(): ReactElement {
             onChange={onValueChange}
             onChangeDecorationList={setDecorationList}
             onSave={onSave}
-            options={monacoDefaultOptions}
             value={value}
           />
         </div>
