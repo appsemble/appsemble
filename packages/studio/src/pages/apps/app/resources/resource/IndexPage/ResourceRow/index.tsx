@@ -9,6 +9,7 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
+import { Resource } from '@appsemble/types';
 import { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -17,7 +18,7 @@ import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import { Resource, RouteParams } from '..';
+import { RouteParams } from '..';
 import { useApp } from '../../../..';
 import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor';
 import { ClonableCheckbox } from '../ClonableCheckbox';

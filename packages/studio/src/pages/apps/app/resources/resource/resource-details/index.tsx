@@ -1,4 +1,5 @@
 import { Button, Tab, Tabs, useData, useMessages, useMeta } from '@appsemble/react-components';
+import { Resource } from '@appsemble/types';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -10,7 +11,6 @@ import { AsyncDataView } from '../../../../../../components/AsyncDataView';
 import { HeaderControl } from '../../../../../../components/HeaderControl';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
 import { MonacoEditor } from '../../../../../../components/MonacoEditor';
-import { Resource } from '../IndexPage';
 import styles from './index.module.css';
 import { messages } from './messages';
 

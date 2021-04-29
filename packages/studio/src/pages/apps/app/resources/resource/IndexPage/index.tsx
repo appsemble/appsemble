@@ -16,6 +16,7 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
+import { Resource } from '@appsemble/types';
 import { generateDataFromSchema } from '@appsemble/utils';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
@@ -38,18 +39,6 @@ import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor'
 import styles from './index.module.css';
 import { messages } from './messages';
 import { ResourceRow } from './ResourceRow';
-
-export interface Resource {
-  id: number;
-  $clonable: boolean;
-  $created: string;
-  $updated: string;
-  $author?: {
-    id: string;
-    name: string;
-  };
-  [key: string]: unknown;
-}
 
 export interface RouteParams {
   id: string;

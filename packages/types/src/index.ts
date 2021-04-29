@@ -6,6 +6,8 @@ import { JsonObject, RequireExactlyOne } from 'type-fest';
 
 export * from './author';
 export * from './snapshot';
+export * from './resource';
+
 export { Theme };
 
 /**
