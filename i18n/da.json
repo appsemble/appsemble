@@ -609,6 +609,7 @@
   "studio.src.pages.organizations.organization.MemberTable.members": "Medlemmer",
   "studio.src.pages.organizations.organization.MemberTable.membersError": "Der opstod et problem med at indlæse medlemmerne af denne organisation.",
   "studio.src.pages.organizations.organization.MemberTable.name": "Navn",
+  "studio.src.pages.organizations.organization.MemberTable.notAllowed": "",
   "studio.src.pages.organizations.organization.SettingsPage.description": "",
   "studio.src.pages.organizations.organization.SettingsPage.descriptionDescription": "",
   "studio.src.pages.organizations.organization.SettingsPage.email": "",

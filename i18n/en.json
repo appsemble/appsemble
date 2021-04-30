@@ -609,6 +609,7 @@
   "studio.src.pages.organizations.organization.MemberTable.members": "Organization Members",
   "studio.src.pages.organizations.organization.MemberTable.membersError": "There was a problem loading the members of this organization.",
   "studio.src.pages.organizations.organization.MemberTable.name": "Name",
+  "studio.src.pages.organizations.organization.MemberTable.notAllowed": "You don’t have sufficient permissions to invite members.",
   "studio.src.pages.organizations.organization.SettingsPage.description": "Description",
   "studio.src.pages.organizations.organization.SettingsPage.descriptionDescription": "A short description about the organization",
   "studio.src.pages.organizations.organization.SettingsPage.email": "Email",

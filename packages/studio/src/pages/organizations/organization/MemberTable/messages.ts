@@ -6,4 +6,5 @@ export const messages = defineMessages({
   addMembers: 'Add members',
   name: 'Name',
   actions: 'Actions',
+  notAllowed: 'You don’t have sufficient permissions to invite members.',
 });
