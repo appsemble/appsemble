@@ -309,16 +309,22 @@ export async function getInvites(ctx: KoaContext<Params>): Promise<void> {
     params: { organizationId },
   } = ctx;
 
-  const organization = await Organization.findByPk(organizationId, {
-    include: [OrganizationInvite],
+  const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
+    include: [
+      {
+        model: Organization,
+        required: false,
+        include: [OrganizationInvite],
+      },
+    ],
   });
-  if (!organization) {
+
+  if (!member.Organization) {
     throw notFound('Organization not found.');
   }
-  await checkRole(ctx, organization.id, Permission.InviteMember);
 
-  ctx.body = organization.OrganizationInvites.map((invite) => ({
-    email: invite.email,
+  ctx.body = member.Organization.OrganizationInvites.map(({ email }) => ({
+    email,
   }));
 }
 
