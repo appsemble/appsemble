@@ -378,7 +378,7 @@ describe('getInvites', () => {
     });
   });
 
-  it('should return an empty array if the user is a member but does not have invite permissions', async () => {
+  it('should return forbidden if the user is a member but does not have invite permissions', async () => {
     await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
@@ -392,8 +392,11 @@ describe('getInvites', () => {
     const response = await request.get('/api/organizations/testorganization/invites');
 
     expect(response).toMatchObject({
-      status: 200,
-      data: [],
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+      },
     });
   });
 });

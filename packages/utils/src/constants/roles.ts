@@ -1,6 +1,6 @@
 import { Permission } from './Permission';
 
-const member = [Permission.ViewApps];
+const member = [Permission.ViewApps, Permission.ViewMembers];
 const AppEditor = [
   ...member,
   Permission.EditApps,
