@@ -1,0 +1,119 @@
+name: Questionaire
+description: An app which asks the user to fill out some questions.
+defaultPage: Questionaire
+
+layout:
+  navigation: hidden
+
+resources:
+  answer:
+    create:
+      roles: [$public]
+    schema:
+      type: object
+      required:
+        - reached
+        - knowsAppsemble
+        - usedLowCode
+        - lowCodePlatforms
+        - usedYaml
+      properties:
+        reached:
+          type: string
+        knowsAppsemble:
+          type: boolean
+        usedLowCode:
+          type: boolean
+        lowCodePlatforms:
+          type: string
+        usedYaml:
+          type: boolean
+
+pages:
+  - name: Questionaire
+    type: flow
+    actions:
+      onFlowFinish:
+        type: resource.create
+        resource: answer
+        onSuccess:
+          type: link
+          to: Finished
+
+    subPages:
+      - name: Introduction
+        blocks:
+          - type: markdown
+            version: 0.18.14
+            layout: static
+            parameters:
+              content: { string.format: { messageId: introText } }
+          - type: button-list
+            version: 0.18.14
+            parameters:
+              buttons:
+                - label: { string.format: { messageId: start } }
+                  onClick: onStart
+                  color: primary
+            actions:
+              onStart:
+                type: flow.next
+
+      - name: Familiarity
+        blocks:
+          - type: form
+            version: 0.18.14
+            actions:
+              onSubmit:
+                type: flow.next
+              onPrevious:
+                type: flow.back
+            parameters:
+              fields:
+                - type: string
+                  name: reached
+                  multiline: true
+                  label: { string.format: { messageId: reached } }
+                - type: boolean
+                  name: knowsAppsemble
+                  label: { string.format: { messageId: knowsAppsemble } }
+
+      - name: Expertise
+        blocks:
+          - type: form
+            version: 0.18.14
+            actions:
+              onSubmit:
+                type: flow.next
+              onPrevious:
+                type: flow.back
+            parameters:
+              fields:
+                - type: boolean
+                  name: usedLowCode
+                  label: { string.format: { messageId: usedLowCode } }
+                - type: string
+                  name: lowCodePlatforms
+                  multiline: true
+                  label: { string.format: { messageId: lowCodePlatforms } }
+                - type: boolean
+                  name: usedYaml
+                  label: { string.format: { messageId: usedYaml } }
+
+  - name: Finished
+    blocks:
+      - type: markdown
+        version: 0.18.14
+        parameters:
+          content: { string.format: { messageId: finished } }
+      - type: button-list
+        version: 0.18.14
+        parameters:
+          buttons:
+            - label: { string.format: { messageId: backToHome } }
+              onClick: home
+              color: primary
+        actions:
+          home:
+            type: link
+            to: Questionaire

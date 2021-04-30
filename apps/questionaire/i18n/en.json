@@ -1,0 +1,19 @@
+{
+  "app": {
+    "name": "Questionaire",
+    "description": "An app which asks the user to fill out some questions.",
+    "pages.0": "Questionaire",
+    "pages.1": "Finished"
+  },
+  "messageIds": {
+    "introText": "# Appsemble questionaire\nThis app is a template app used to demo how a questionaire app could be created using [Appsemble](https://appsemble.app).",
+    "start": "Start",
+    "reached": "How did you reach this survey?",
+    "knowsAppsemble": "I already know what Appsemble is",
+    "usedLowCode": "Have you already used low code before?",
+    "lowCodePlatforms": "Which platforms low-code app platforms have you used before?",
+    "usedYaml": "Have you already used YAML before?",
+    "finished": "Thank you for taking our questionaire. You can try [Appsemble](https://appsemble.app) yourself to create your own app. This app can be cloned from [our store page](https://appsemble.app/apps/130).",
+    "backToHome": "Back to home"
+  }
+}
