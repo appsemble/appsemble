@@ -1,6 +1,5 @@
 import RefParser from '@apidevtools/json-schema-ref-parser';
 import {
-  Form,
   Loader,
   useBeforeUnload,
   useConfirmation,
@@ -28,16 +27,7 @@ import { messages } from './messages';
 
 const validator = new Validator();
 
-type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
-
 const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
-
-const monacoDefaultOptions: Options = {
-  insertSpaces: true,
-  tabSize: 2,
-  minimap: { enabled: false },
-  readOnly: false,
-};
 
 /**
  * These properties are passed to the allow attribute of the app preview. For a full list, see
@@ -304,18 +294,16 @@ export default function EditPage(): ReactElement {
 
   return (
     <div className={`${styles.root} is-flex`}>
-      <div className={styles.leftPanel}>
-        <Form onSubmit={onSave}>
-          <EditorNavBar dirty={dirty} onUpload={onUpload} valid={valid} />
-        </Form>
+      <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
+        <EditorNavBar dirty={dirty} onPreview={onSave} onUpload={onUpload} valid={valid} />
         <div className={styles.editorForm}>
           <MonacoEditor
+            className={styles.editor}
             decorationList={decorationList}
             language={language}
             onChange={onValueChange}
             onChangeDecorationList={setDecorationList}
             onSave={onSave}
-            options={monacoDefaultOptions}
             value={value}
           />
         </div>

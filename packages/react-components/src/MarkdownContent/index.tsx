@@ -37,9 +37,10 @@ export function MarkdownContent({
   const location = useLocation();
 
   const innerHTML = useMemo(
-    () => ({
-      __html: marked(content, { sanitize, baseUrl: `${location.pathname}${location.search}` }),
-    }),
+    () =>
+      content && {
+        __html: marked(content, { sanitize, baseUrl: `${location.pathname}${location.search}` }),
+      },
     [content, location, sanitize],
   );
 

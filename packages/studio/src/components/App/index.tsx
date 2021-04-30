@@ -18,6 +18,7 @@ import { SideMenuBottom } from '../SideMenuBottom';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
 import { Toolbar } from '../Toolbar';
 import { UserProvider } from '../UserProvider';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function App(): ReactElement {
@@ -39,7 +40,9 @@ export function App(): ReactElement {
                     <MetaProvider description={messages.description} title="Appsemble">
                       <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
                         <Toolbar />
-                        <div className="px-3 py-3">
+                        <div
+                          className={`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`}
+                        >
                           <Breadcrumbs />
                           <Routes />
                         </div>

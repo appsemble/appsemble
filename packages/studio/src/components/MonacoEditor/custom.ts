@@ -19,6 +19,7 @@ import 'monaco-editor/esm/vs/editor/contrib/folding/folding';
 import 'monaco-editor/esm/vs/editor/contrib/format/formatActions';
 import 'monaco-editor/esm/vs/editor/contrib/hover/hover';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
+import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 import 'monaco-yaml';
 
 declare module 'monaco-editor/esm/vs/editor/editor.api' {

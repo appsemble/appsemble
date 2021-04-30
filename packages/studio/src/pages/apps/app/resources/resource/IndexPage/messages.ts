@@ -6,6 +6,8 @@ export const messages = defineMessages({
   actions: 'Actions',
   cancelButton: 'Cancel',
   createButton: 'Create',
+  deleteButton: 'Delete',
+  delete: 'Delete {amount} {amount, plural, one {resource} other {resources}}',
   newTitle: 'Creating new {resource}',
   createError: 'Something went wrong when creating a new resource.',
   loadError: 'Something went wrong when loading this resource.',
@@ -23,4 +25,10 @@ export const messages = defineMessages({
     'Hide properties from the table. Hidden properties will also be hidden when exporting the properties as CSV.',
   created: 'Created',
   updated: 'Updated',
+  clonable: 'Clonable',
+  resourceWarningTitle: 'Deletion Warning',
+  resourceWarning:
+    'Are you sure you want to delete {amount, plural, one {this resource} other {these resources}}? Deleted resources can not be recovered.',
+  deleteSuccess: 'Successfully deleted the selected resources.',
+  deleteError: 'Something went wrong when deleting the selected resources.',
 });
