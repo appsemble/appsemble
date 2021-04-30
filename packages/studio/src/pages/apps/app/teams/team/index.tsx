@@ -37,7 +37,7 @@ export function TeamPage(): ReactElement {
   const { formatMessage } = useIntl();
 
   const teamResult = useData<Team>(`/api/apps/${app.id}/teams/${teamId}`);
-  useMeta(teamResult.data?.name ?? teamId);
+  useMeta(teamResult.data?.name || teamId);
   const memberResult = useData<TeamMember[]>(`/api/apps/${app.id}/teams/${teamId}/members`);
   const editModal = useToggle();
   const addModal = useToggle();
