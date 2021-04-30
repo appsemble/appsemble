@@ -47,7 +47,7 @@ spec:
             - name: SERVICE_NAME
               value: {{ include "appsemble.fullname" . }}
             - name: SERVICE_PORT
-              value: {{ .Values.service.port | quote }}
+              value: http
             - name: HOST
               {{ if .Values.ingress.enabled -}}
               value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
