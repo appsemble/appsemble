@@ -25,12 +25,9 @@ export function MemberTable(): ReactElement {
     loading: membersLoading,
     setData: setMembers,
   } = useData<Member[]>(`/api/organizations/${organizationId}/members`);
-  const {
-    data: invites,
-    error: invitesError,
-    loading: invitesLoading,
-    setData: setInvites,
-  } = useData<OrganizationInvite[]>(`/api/organizations/${organizationId}/invites`);
+  const { data: invites, loading: invitesLoading, setData: setInvites } = useData<
+    OrganizationInvite[]
+  >(`/api/organizations/${organizationId}/invites`);
   const addMembersModal = useToggle();
 
   const onInvited = useCallback(
@@ -62,7 +59,7 @@ export function MemberTable(): ReactElement {
     <>
       <HeaderControl
         control={
-          <Button onClick={addMembersModal.enable}>
+          <Button disabled={!mayInvite} onClick={addMembersModal.enable}>
             <FormattedMessage {...messages.addMembers} />
           </Button>
         }
@@ -72,7 +69,7 @@ export function MemberTable(): ReactElement {
       </HeaderControl>
       {membersLoading || invitesLoading ? (
         <Loader />
-      ) : membersError || invitesError ? (
+      ) : membersError ? (
         <Message color="danger">
           <FormattedMessage {...messages.membersError} />
         </Message>
@@ -99,7 +96,7 @@ export function MemberTable(): ReactElement {
                 ownerCount={ownerCount}
               />
             ))}
-            {invites.map((invite) => (
+            {invites?.map((invite) => (
               <InviteRow
                 invite={invite}
                 key={invite.email}
