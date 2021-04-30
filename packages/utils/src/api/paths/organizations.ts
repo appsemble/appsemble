@@ -136,6 +136,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+      security: [{ studio: [] }],
     },
   },
   '/api/organizations/{organizationId}/invites/resend': {
@@ -236,6 +237,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+      security: [{ studio: [] }],
     },
     post: {
       tags: ['organization'],

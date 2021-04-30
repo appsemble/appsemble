@@ -441,6 +441,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+      security: [{ studio: [] }, { app: ['openid'] }],
     },
   },
   '/api/apps/{appId}/members/{memberId}': {

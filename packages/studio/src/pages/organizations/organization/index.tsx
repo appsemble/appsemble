@@ -79,9 +79,11 @@ export function OrganizationRoutes(): ReactElement {
               organization={userOrganization ?? organization}
             />
           </ProtectedRoute>
-          <ProtectedRoute exact organization={userOrganization} path={`${path}/members`}>
-            <MembersPage />
-          </ProtectedRoute>
+          {userOrganization && (
+            <ProtectedRoute exact organization={userOrganization} path={`${path}/members`}>
+              <MembersPage />
+            </ProtectedRoute>
+          )}
           <Redirect to={path} />
         </MetaSwitch>
       )}

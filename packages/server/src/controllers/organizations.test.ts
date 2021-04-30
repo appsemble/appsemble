@@ -339,6 +339,20 @@ describe('getMembers', () => {
       ],
     });
   });
+
+  it('should should not fetch organization members if the user is not a member', async () => {
+    authorizeStudio();
+    await Organization.create({ id: 'org' });
+    const response = await request.get('/api/organizations/org/members');
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User is not part of this organization.',
+      },
+    });
+  });
 });
 
 describe('getInvites', () => {
@@ -361,6 +375,28 @@ describe('getInvites', () => {
           email: 'test2@example.com',
         },
       ],
+    });
+  });
+
+  it('should return forbidden if the user is a member but does not have invite permissions', async () => {
+    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await OrganizationInvite.create({
+      email: 'test2@example.com',
+      key: 'abcde',
+      OrganizationId: 'testorganization',
+    });
+
+    authorizeStudio();
+    const response = await request.get('/api/organizations/testorganization/invites');
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+      },
     });
   });
 });

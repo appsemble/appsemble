@@ -630,6 +630,7 @@
   "studio.src.pages.organizations.organization.MemberTable.members": "Membres de l’organisation",
   "studio.src.pages.organizations.organization.MemberTable.membersError": "Un problème est survenu lors du chargement des membres de cette organisation.",
   "studio.src.pages.organizations.organization.MemberTable.name": "Nom",
+  "studio.src.pages.organizations.organization.MemberTable.notAllowed": "",
   "studio.src.pages.organizations.organization.SettingsPage.description": "",
   "studio.src.pages.organizations.organization.SettingsPage.descriptionDescription": "",
   "studio.src.pages.organizations.organization.SettingsPage.email": "",
