@@ -61,8 +61,10 @@ export function MessagesForm({ appMessages, languageId }: MessagesFormProps): Re
         extractAppMessages(app.definition, (block, prefix) => {
           const blockName = `${normalizeBlockName(block.type)}/${block.version}`;
           const msgs = blockMessages[blockName];
-          for (const [name, msg] of Object.entries(msgs)) {
-            allMessages[`${prefix.join('.')}.${name}`] = msg;
+          if (msgs) {
+            for (const [name, msg] of Object.entries(msgs)) {
+              allMessages[`${prefix.join('.')}.${name}`] = msg;
+            }
           }
         }),
       ),
