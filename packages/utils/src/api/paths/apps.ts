@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { TeamRole } from '../../constants';
+import { hexColor, TeamRole } from '../../constants';
 
 export const paths: OpenAPIV3.PathsObject = {
   '/api/apps': {
@@ -51,7 +51,11 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                iconBackground: { $ref: '#/components/schemas/Color' },
+                iconBackground: {
+                  type: 'string',
+                  pattern: hexColor.source,
+                  description: 'The background color to use for the maskable icon.',
+                },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',
@@ -223,7 +227,10 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                iconBackground: { $ref: '#/components/schemas/Color' },
+                iconBackground: {
+                  type: 'string',
+                  pattern: hexColor.source,
+                },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',

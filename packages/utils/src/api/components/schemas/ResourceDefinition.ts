@@ -2,8 +2,10 @@ import { OpenAPIV3 } from 'openapi-types';
 
 const roles: OpenAPIV3.ArraySchemaObject = {
   type: 'array',
-  description:
-    'The list of roles that are allowed to use this action. This will override the default roles that are assigned.',
+  description: `The list of roles that are allowed to use this action.
+
+This will override the default roles that are assigned.
+`,
   items: {
     type: 'string',
   },
@@ -34,8 +36,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
     properties: {
       expires: {
         type: 'string',
-        description: `
-        A time string representing when a resource should expire.
+        description: `A time string representing when a resource should expire.
 
         Example: 1d 8h 30m
         `,
@@ -152,7 +153,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
             description: 'URL to use for this type of request.',
           },
           hooks: {
-            $ref: '#/components/schemas/Hooks',
+            $ref: '#/components/schemas/ResourceHooksDefinition',
           },
         },
       },
@@ -173,7 +174,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
             description: 'URL to use for this type of request.',
           },
           hooks: {
-            $ref: '#/components/schemas/Hooks',
+            $ref: '#/components/schemas/ResourceHooksDefinition',
           },
         },
       },
@@ -194,7 +195,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
             description: 'URL to use for this type of request.',
           },
           hooks: {
-            $ref: '#/components/schemas/Hooks',
+            $ref: '#/components/schemas/ResourceHooksDefinition',
           },
         },
       },
