@@ -6,6 +6,7 @@ export * from './compare';
 export * from './constants';
 export * from './has';
 export * from './miscellaneous';
+export * from './noop';
 export * from './normalize';
 export * from './validateStyle';
 export * from './prefix';
