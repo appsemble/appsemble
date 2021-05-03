@@ -23,5 +23,5 @@ export const messages = defineMessages({
   cloneVerifyMessage:
     'In order to create a new organization you must first verify your email address. Refresh the page once you have verified your email.',
   cloneOrganizationInstructions:
-    'In order to create an app you must be in an organization and have the permission to create new apps. You can create one below or have someone invite you to an existing organization.',
+    'In order to clone an app you must be in an organization and have the permission to create new apps. You can create one below or have someone invite you to an existing organization.',
 });

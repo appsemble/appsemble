@@ -60,9 +60,7 @@ export function CreateOrganizationForm({
         website,
       });
       setOrganizations([...organizations, { ...data, role: 'Owner' }]);
-      if (onSubmit) {
-        onSubmit(data);
-      }
+      onSubmit?.(data);
     },
     [setOrganizations, organizations, onSubmit],
   );

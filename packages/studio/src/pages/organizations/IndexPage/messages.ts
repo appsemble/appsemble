@@ -10,10 +10,4 @@ export const messages = defineMessages({
   allOrganizations: 'All organizations',
   noOrganizations: 'There are currently no organizations available.',
   createButton: 'Create new organization',
-  cancelLabel: 'Cancel',
-  organizationId: 'Organization ID',
-  organizationName: 'Organization name',
-  description: 'Description',
-  email: 'Email',
-  website: 'Website',
 });

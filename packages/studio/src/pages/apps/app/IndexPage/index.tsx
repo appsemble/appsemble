@@ -133,29 +133,32 @@ export function IndexPage(): ReactElement {
                 onClose={closeCloneDialog}
                 title={<FormattedMessage {...messages.clone} />}
               >
-                <span>
-                  <FormattedMessage {...messages.cloneOrganizationInstructions} />
-                </span>
-                {userInfo.email_verified ? (
-                  <CreateOrganizationForm
-                    footer={
-                      <div className={`${styles.footer} card-footer`}>
-                        <SimpleModalFooter
-                          cancelLabel={<FormattedMessage {...messages.cancel} />}
-                          onClose={closeCloneDialog}
-                          submitLabel={<FormattedMessage {...messages.createOrganization} />}
-                        />
-                      </div>
-                    }
-                  />
-                ) : (
-                  <div className="is-flex is-flex-direction-column is-align-items-center">
-                    <span className="my-2">
-                      <FormattedMessage {...messages.cloneVerifyMessage} />
-                    </span>
-                    <ResendEmailButton className="is-outlined" email={userInfo.email} />
-                  </div>
-                )}
+                <div className="mb-4">
+                  <span>
+                    <FormattedMessage {...messages.cloneOrganizationInstructions} />
+                  </span>
+                  {userInfo.email_verified ? null : (
+                    <div className="is-flex is-flex-direction-column is-align-items-center">
+                      <span className="my-2">
+                        <FormattedMessage {...messages.cloneVerifyMessage} />
+                      </span>
+                      <ResendEmailButton className="is-outlined" email={userInfo.email} />
+                    </div>
+                  )}
+                </div>
+                <CreateOrganizationForm
+                  disabled={!userInfo.email_verified}
+                  footer={
+                    <div className={`${styles.footer} card-footer`}>
+                      <SimpleModalFooter
+                        cancelLabel={<FormattedMessage {...messages.cancel} />}
+                        disabled={!userInfo.email_verified}
+                        onClose={closeCloneDialog}
+                        submitLabel={<FormattedMessage {...messages.createOrganization} />}
+                      />
+                    </div>
+                  }
+                />
               </ModalCard>
             ) : null}
             {userInfo && createOrganizations.length ? (

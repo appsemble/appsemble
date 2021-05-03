@@ -32,6 +32,11 @@ interface SimpleModalFooterProps {
    * @default true
    */
   allowPristine?: boolean;
+
+  /**
+   * Whether the submit button should be disabled.
+   */
+  disabled?: boolean;
 }
 
 /**
@@ -41,6 +46,7 @@ export function SimpleModalFooter({
   allowPristine = true,
   cancelLabel,
   color = 'primary',
+  disabled,
   onClose,
   submitLabel,
 }: SimpleModalFooterProps): ReactElement {
@@ -54,6 +60,7 @@ export function SimpleModalFooter({
       <CardFooterButton
         color={color}
         disabled={
+          disabled ||
           (allowPristine && Object.values(pristine).every(Boolean)) ||
           submitting ||
           Object.values(formErrors).some(Boolean)
