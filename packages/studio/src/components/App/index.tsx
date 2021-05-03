@@ -34,10 +34,10 @@ export function App(): ReactElement {
             }}
           >
             <UserProvider>
-              <ErrorHandler fallback={ErrorFallback}>
-                <Confirmation>
-                  <MessagesProvider>
-                    <MetaProvider description={messages.description} title="Appsemble">
+              <MetaProvider description={messages.description} title="Appsemble">
+                <ErrorHandler fallback={ErrorFallback}>
+                  <Confirmation>
+                    <MessagesProvider>
                       <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
                         <Toolbar />
                         <div
@@ -47,10 +47,10 @@ export function App(): ReactElement {
                           <Routes />
                         </div>
                       </SideMenuProvider>
-                    </MetaProvider>
-                  </MessagesProvider>
-                </Confirmation>
-              </ErrorHandler>
+                    </MessagesProvider>
+                  </Confirmation>
+                </ErrorHandler>
+              </MetaProvider>
             </UserProvider>
           </MDXProvider>
         </StudioMessagesProvider>

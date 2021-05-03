@@ -1,3 +1,4 @@
+import { noop } from '@appsemble/utils';
 import {
   createContext,
   ReactElement,
@@ -34,7 +35,7 @@ interface Breadcrumb {
 type SetMeta = (depth: number, breadcrumb?: Breadcrumb) => void;
 type ContextType = [number, SetMeta];
 
-const MetaContext = createContext<ContextType>(null);
+const MetaContext = createContext<ContextType>([0, noop]);
 const BreadcrumbContext = createContext<Breadcrumb[]>([]);
 
 interface MetaProviderProps {
