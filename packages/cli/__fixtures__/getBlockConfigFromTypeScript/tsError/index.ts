@@ -1,4 +1,4 @@
 import '@appsemble/sdk';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export function unused(): void {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const unused = undefined;
