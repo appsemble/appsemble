@@ -1,3 +1,4 @@
+import { noop } from '@appsemble/utils';
 import { Boom } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
@@ -23,7 +24,7 @@ it('should assign the match group to params', async () => {
     tinyRouter([
       {
         route: /^\/(?<foo>.+)\/(?<bar>.+)/,
-        get() {},
+        get: noop,
       },
     ]),
   );
@@ -40,7 +41,7 @@ it('should throw method not allowed if a URL is matched, but not for the given m
     tinyRouter([
       {
         route: '/',
-        get() {},
+        get: noop,
       },
     ]),
   );
@@ -86,7 +87,7 @@ it('should not call next if there are matching routes', async () => {
     tinyRouter([
       {
         route: '/',
-        get() {},
+        get: noop,
       },
     ]),
   );
