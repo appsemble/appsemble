@@ -17,4 +17,10 @@ export const messages = defineMessages({
   resourcesDescription: 'Copy any resources that are allowed to be cloned.',
   readMore: 'Read more',
   readLess: 'Read less',
+  cloneLoginMessage:
+    'In order to clone apps you must be logged in. Click <loginLink>here</loginLink> to log in using an existing account or <registerLink>here</registerLink> to register a new account.',
+  cloneVerifyMessage:
+    'In order to create a new organization you must first verify your email address. Refresh the page once you have verified your email.',
+  cloneOrganizationInstructions:
+    'In order to create an app you must be in an organization and have the permission to create new apps. You can create one below or have someone invite you to an existing organization.',
 });

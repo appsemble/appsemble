@@ -3,6 +3,7 @@ export * from './AsyncButton';
 export * from './AsyncSelect';
 export * from './Button';
 export * from './ButtonChildren';
+export * from './Box';
 export * from './CardFooterButton';
 export * from './Checkbox';
 export * from './CheckboxField';
