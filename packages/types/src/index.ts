@@ -1230,6 +1230,11 @@ export interface AppMember {
  */
 export interface Messages {
   /**
+   * If true, force update app messages.
+   */
+  force?: boolean;
+
+  /**
    * The language represented by these messages.
    */
   language: string;

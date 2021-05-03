@@ -1,8 +1,7 @@
-import { existsSync, promises as fs } from 'fs';
 import { join, parse } from 'path';
 
-import { logger, readYaml } from '@appsemble/node-utils';
-import { AppMessages } from '@appsemble/types';
+import { logger, opendirSafe, readYaml } from '@appsemble/node-utils';
+import { Messages } from '@appsemble/types';
 import axios from 'axios';
 
 /**
@@ -19,25 +18,21 @@ export async function uploadMessages(
   remote: string,
   force: boolean,
 ): Promise<void> {
-  if (!existsSync(join(path, 'messages'))) {
-    return;
-  }
+  const result: Messages[] = [];
 
-  const messageDir = await fs.readdir(join(path, 'i18n'));
-
-  if (messageDir.length === 0) {
-    return;
-  }
-
-  logger.info(`Traversing app messages for ${messageDir.length} languages 🕵`);
-  const result: AppMessages[] = [];
-
-  for (const messageFile of messageDir) {
-    logger.verbose(`Processing ${join(path, 'i18n', messageFile)} ⚙️`);
-    const language = parse(messageFile).name;
-    const [messages] = await readYaml(join(path, 'i18n', messageFile));
-    // XXX This type is incorrect
-    result.push({ force, language, messages } as AppMessages);
+  logger.info('Searching for translations 🕵');
+  await opendirSafe(
+    join(path, 'i18n'),
+    async (messageFile) => {
+      logger.verbose(`Processing ${messageFile} ⚙️`);
+      const language = parse(messageFile).name;
+      const [messages] = await readYaml<Record<string, string>>(messageFile);
+      result.push({ force, language, messages });
+    },
+    { allowMissing: true },
+  );
+  if (!result.length) {
+    logger.info('No translations found 🤷');
   }
 
   for (const language of result) {
