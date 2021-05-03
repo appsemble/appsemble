@@ -17,6 +17,7 @@ export const messages = defineMessages({
   resourcesDescription: 'Copy any resources that are allowed to be cloned.',
   readMore: 'Read more',
   readLess: 'Read less',
+  createOrganization: 'Create organization',
   cloneLoginMessage:
     'In order to clone apps you must be logged in. Click <loginLink>here</loginLink> to log in using an existing account or <registerLink>here</registerLink> to register a new account.',
   cloneVerifyMessage:

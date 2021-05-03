@@ -10,6 +10,7 @@ import {
   SelectField,
   SimpleForm,
   SimpleFormField,
+  SimpleModalFooter,
   Title,
   useToggle,
 } from '@appsemble/react-components';
@@ -19,6 +20,7 @@ import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { CreateOrganizationForm } from 'studio/src/components/CreateOrganizationForm';
 
 import { useApp } from '..';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
@@ -134,7 +136,19 @@ export function IndexPage(): ReactElement {
                 <span>
                   <FormattedMessage {...messages.cloneOrganizationInstructions} />
                 </span>
-                {userInfo.email_verified ? null : (
+                {userInfo.email_verified ? (
+                  <CreateOrganizationForm
+                    footer={
+                      <div className={`${styles.footer} card-footer`}>
+                        <SimpleModalFooter
+                          cancelLabel={<FormattedMessage {...messages.cancel} />}
+                          onClose={closeCloneDialog}
+                          submitLabel={<FormattedMessage {...messages.createOrganization} />}
+                        />
+                      </div>
+                    }
+                  />
+                ) : (
                   <div className="is-flex is-flex-direction-column is-align-items-center">
                     <span className="my-2">
                       <FormattedMessage {...messages.cloneVerifyMessage} />
