@@ -347,7 +347,7 @@ describe('iterPage', () => {
       name: 'Page',
       type: 'flow',
       actions: {
-        'flow.finish': {
+        onFlowFinish: {
           type: 'log',
         },
       },
@@ -356,7 +356,7 @@ describe('iterPage', () => {
 
     const result = iterPage(page, { onAction, onPage });
 
-    expect(onAction).toHaveBeenCalledWith(page.actions['flow.finish'], ['actions', 'flow.finish']);
+    expect(onAction).toHaveBeenCalledWith(page.actions.onFlowFinish, ['actions', 'onFlowFinish']);
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(result).toBe(false);
   });
@@ -370,7 +370,7 @@ describe('iterPage', () => {
       name: 'Page',
       type: 'flow',
       actions: {
-        'flow.finish': {
+        onFlowFinish: {
           type: 'log',
         },
       },
@@ -394,7 +394,7 @@ describe('iterPage', () => {
 
     const result = iterPage(page, { onAction, onPage, onBlockList });
 
-    expect(onAction).toHaveBeenCalledWith(page.actions['flow.finish'], ['actions', 'flow.finish']);
+    expect(onAction).toHaveBeenCalledWith(page.actions.onFlowFinish, ['actions', 'onFlowFinish']);
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(onBlockList).toHaveBeenCalledWith(page.subPages[0].blocks, ['subPages', 0, 'blocks']);
     expect(result).toBe(false);
