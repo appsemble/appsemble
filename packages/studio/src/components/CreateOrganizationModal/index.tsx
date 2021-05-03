@@ -9,9 +9,24 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 interface CreateOrganizationModalProps {
+  /**
+   * Whether the modal should be visible or not.
+   */
   isActive: Toggle['enabled'];
+
+  /**
+   * The function used to close the modal.
+   */
   onClose: Toggle['disable'];
+
+  /**
+   * The callback that is called when a new organization is created.
+   */
   onCreateOrganization: (organization: Organization) => void;
+
+  /**
+   * The default values for the new organization.
+   */
   defaultValues?: Omit<Organization, 'iconUrl'>;
 }
 
@@ -32,6 +47,9 @@ function calculateOrganizationId(
   return newValues;
 }
 
+/**
+ * Render the CreateOrganizationForm component in a modal card.
+ */
 export function CreateOrganizationModal({
   isActive,
   onClose,

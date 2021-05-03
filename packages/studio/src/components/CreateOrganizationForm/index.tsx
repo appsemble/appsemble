@@ -13,12 +13,35 @@ interface CreateOrganizationModalProps
     ComponentPropsWithoutRef<typeof SimpleForm>,
     'children' | 'defaultValues' | 'onSubmit'
   > {
+  /**
+   * The callback that is called when a new organization is created.
+   */
   onSubmit?: (organization: Organization) => void;
+
+  /**
+   * The default values for the new organization.
+   */
   defaultValues?: Omit<Organization, 'iconUrl'>;
+
+  /**
+   * The footer to use for the form.
+   */
   footer?: ReactElement;
+
+  /**
+   * Whether the form should be disabled.
+   */
   disabled?: boolean;
 }
 
+/**
+ * Calculate an organization id based on a given organization name.
+ *
+ * @param name - The name to base the ID on.
+ * @param newValues - The new values to apply the ID on.
+ * @param oldValues - The old values to compare the ID to.
+ * @returns An updated organization object containing the new ID.
+ */
 function calculateOrganizationId(
   name: string,
   newValues: Organization,
@@ -36,6 +59,9 @@ function calculateOrganizationId(
   return newValues;
 }
 
+/**
+ * Render a form that can register a new organization.
+ */
 export function CreateOrganizationForm({
   onSubmit,
   defaultValues = {

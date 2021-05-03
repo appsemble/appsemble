@@ -6,9 +6,15 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { messages } from './messages';
 
 interface ResendEmailButtonProps extends ComponentProps<typeof Button> {
+  /**
+   * The email address to send the email verification to.
+   */
   email: string;
 }
 
+/**
+ * Render a button that can be used to resend verification emails.
+ */
 export function ResendEmailButton({ email, ...props }: ResendEmailButtonProps): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
