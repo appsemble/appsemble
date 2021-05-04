@@ -3,10 +3,10 @@ import { Organization } from '@appsemble/types';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { CreateOrganizationModal } from 'studio/src/components/CreateOrganizationModal';
 
 import { AsyncDataView } from '../../../components/AsyncDataView';
 import { CollapsibleList } from '../../../components/CollapsibleList';
+import { CreateOrganizationModal } from '../../../components/CreateOrganizationModal';
 import { HeaderControl } from '../../../components/HeaderControl';
 import { ListButton } from '../../../components/ListButton';
 import { useUser } from '../../../components/UserProvider';

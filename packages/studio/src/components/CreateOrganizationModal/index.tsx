@@ -1,9 +1,9 @@
 import { ModalCard, SimpleModalFooter, Toggle } from '@appsemble/react-components';
 import { Organization } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { preprocessOrganization } from '../../utils/preprocess';
 import { CreateOrganizationForm } from '../CreateOrganizationForm';
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -28,23 +28,6 @@ interface CreateOrganizationModalProps {
    * The default values for the new organization.
    */
   defaultValues?: Omit<Organization, 'iconUrl'>;
-}
-
-function calculateOrganizationId(
-  name: string,
-  newValues: Organization,
-  oldValues: Organization,
-): Organization {
-  if (name !== 'name') {
-    return newValues;
-  }
-  if (normalize(oldValues.name) === oldValues.id) {
-    return {
-      ...newValues,
-      id: normalize(newValues.name).slice(0, 30).replace(/-+$/, ''),
-    };
-  }
-  return newValues;
 }
 
 /**
@@ -80,7 +63,7 @@ export function CreateOrganizationModal({
           </div>
         }
         onSubmit={onCreateOrganization}
-        preprocess={calculateOrganizationId}
+        preprocess={preprocessOrganization}
         resetOnSuccess
       />
     </ModalCard>

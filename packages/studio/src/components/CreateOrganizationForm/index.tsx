@@ -5,6 +5,7 @@ import axios from 'axios';
 import { ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { preprocessOrganization } from '../../utils/preprocess';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
 
@@ -32,31 +33,6 @@ interface CreateOrganizationModalProps
    * Whether the form should be disabled.
    */
   disabled?: boolean;
-}
-
-/**
- * Calculate an organization id based on a given organization name.
- *
- * @param name - The name to base the ID on.
- * @param newValues - The new values to apply the ID on.
- * @param oldValues - The old values to compare the ID to.
- * @returns An updated organization object containing the new ID.
- */
-function calculateOrganizationId(
-  name: string,
-  newValues: Organization,
-  oldValues: Organization,
-): Organization {
-  if (name !== 'name') {
-    return newValues;
-  }
-  if (normalize(oldValues.name) === oldValues.id) {
-    return {
-      ...newValues,
-      id: normalize(newValues.name).slice(0, 30).replace(/-+$/, ''),
-    };
-  }
-  return newValues;
 }
 
 /**
@@ -95,7 +71,7 @@ export function CreateOrganizationForm({
     <SimpleForm
       defaultValues={defaultValues}
       onSubmit={submitOrganization}
-      preprocess={calculateOrganizationId}
+      preprocess={preprocessOrganization}
       resetOnSuccess
     >
       <SimpleFormField

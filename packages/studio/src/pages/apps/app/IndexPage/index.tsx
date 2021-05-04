@@ -20,10 +20,10 @@ import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
-import { CreateOrganizationForm } from 'studio/src/components/CreateOrganizationForm';
 
 import { useApp } from '..';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
+import { CreateOrganizationForm } from '../../../../components/CreateOrganizationForm';
 import { ResendEmailButton } from '../../../../components/ResendEmailButton';
 import { StarRating } from '../../../../components/StarRating';
 import { useUser } from '../../../../components/UserProvider';
