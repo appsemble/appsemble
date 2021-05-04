@@ -21,13 +21,9 @@ export interface Release {
   assets: { links: AssetLink[] };
 }
 
-const {
-  CI_JOB_TOKEN,
-  CI_PROJECT_ID,
-  CI_API_V4_URL = `https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}`,
-} = process.env;
+const { CI_API_V4_URL = 'https://gitlab.com/api/v4', CI_JOB_TOKEN, CI_PROJECT_ID } = process.env;
 
 export const gitlab = axios.create({
-  baseURL: CI_API_V4_URL,
+  baseURL: `${CI_API_V4_URL}/projects/${CI_PROJECT_ID}`,
   headers: { authorization: `Bearer ${CI_JOB_TOKEN}` },
 });
