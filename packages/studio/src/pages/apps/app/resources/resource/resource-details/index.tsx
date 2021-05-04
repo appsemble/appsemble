@@ -2,7 +2,7 @@ import { Button, Tab, Tabs, useData, useMessages, useMeta } from '@appsemble/rea
 import { Resource } from '@appsemble/types';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { lazy, ReactElement, Suspense, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
@@ -10,11 +10,14 @@ import { useApp } from '../../..';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView';
 import { HeaderControl } from '../../../../../../components/HeaderControl';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
-import { MonacoEditor } from '../../../../../../components/MonacoEditor';
 import styles from './index.module.css';
 import { messages } from './messages';
 
 const tabOptions = new Set(['#edit', '#json', '#properties']);
+
+const MonacoEditor = lazy(() =>
+  import('../../../../../../components/MonacoEditor').then((m) => ({ default: m.MonacoEditor })),
+);
 
 export function ResourceDetailsPage(): ReactElement {
   const {
@@ -174,13 +177,15 @@ export function ResourceDetailsPage(): ReactElement {
               </>
             )}
             {hash === '#json' && (
-              <MonacoEditor
-                className={styles.flexContent}
-                language="json"
-                onChange={onEditJsonChange}
-                onSave={onEditSubmit}
-                value={editingResourceJson}
-              />
+              <Suspense fallback={<FormattedMessage {...messages.loadingEditor} />}>
+                <MonacoEditor
+                  className={styles.flexContent}
+                  language="json"
+                  onChange={onEditJsonChange}
+                  onSave={onEditSubmit}
+                  value={editingResourceJson}
+                />
+              </Suspense>
             )}
           </div>
         )}

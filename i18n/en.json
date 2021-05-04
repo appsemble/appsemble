@@ -285,6 +285,7 @@
   "studio.src.pages.apps.app.resources.resource.resource-details.error": "Something went wrong loading this resource",
   "studio.src.pages.apps.app.resources.resource.resource-details.json": "Resource as JSON",
   "studio.src.pages.apps.app.resources.resource.resource-details.loading": "Loading resource…",
+  "studio.src.pages.apps.app.resources.resource.resource-details.loadingEditor": "Loading editor…",
   "studio.src.pages.apps.app.resources.resource.resource-details.properties": "Properties",
   "studio.src.pages.apps.app.resources.resource.resource-details.save": "Save",
   "studio.src.pages.apps.app.resources.resource.resource-details.updateError": "Something went wrong when updating this resource.",
