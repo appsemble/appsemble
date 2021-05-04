@@ -285,6 +285,7 @@
   "studio.src.pages.apps.app.resources.resource.resource-details.error": "Er is iets misgegaan bij het inladen van deze resource",
   "studio.src.pages.apps.app.resources.resource.resource-details.json": "Resource als JSON",
   "studio.src.pages.apps.app.resources.resource.resource-details.loading": "Resource laden…",
+  "studio.src.pages.apps.app.resources.resource.resource-details.loadingEditor": "De tekstbewerker wordt geladen…",
   "studio.src.pages.apps.app.resources.resource.resource-details.properties": "Eigenschappen",
   "studio.src.pages.apps.app.resources.resource.resource-details.save": "Opslaan",
   "studio.src.pages.apps.app.resources.resource.resource-details.updateError": "Er is iets migegaan bij het aanpassen van deze resource.",
