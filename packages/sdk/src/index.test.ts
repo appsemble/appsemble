@@ -1,3 +1,5 @@
+import { noop } from '@appsemble/utils';
+
 import { attach, bootstrap } from '.';
 
 let event: CustomEvent;
@@ -25,11 +27,10 @@ afterEach(() => {
 
 describe('bootstrap', () => {
   it('should dispatch the AppsembleBoostrap event', () => {
-    function fn(): void {}
-    bootstrap(fn);
+    bootstrap(noop);
     expect(document.currentScript.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));
     expect(event.type).toBe('AppsembleBootstrap');
-    expect(event.detail).toStrictEqual({ fn, document });
+    expect(event.detail).toStrictEqual({ fn: noop, document });
   });
 });
 

@@ -857,10 +857,8 @@ export interface FlowPageDefinition extends BasePageDefinition {
    * A mapping of actions that can be fired by the page to action handlers.
    */
   actions?: {
-    'flow.back'?: ActionDefinition;
-    'flow.cancel'?: ActionDefinition;
-    'flow.finish'?: ActionDefinition;
-    'flow.next'?: ActionDefinition;
+    onFlowCancel?: ActionDefinition;
+    onFlowFinish?: ActionDefinition;
   };
 }
 
@@ -1229,6 +1227,11 @@ export interface AppMember {
  * Translated messages for an app or block.
  */
 export interface Messages {
+  /**
+   * If true, force update app messages.
+   */
+  force?: boolean;
+
   /**
    * The language represented by these messages.
    */

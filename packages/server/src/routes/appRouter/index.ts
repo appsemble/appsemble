@@ -1,4 +1,4 @@
-import { partialNormalized, partialSemver } from '@appsemble/utils';
+import { noop, partialNormalized, partialSemver } from '@appsemble/utils';
 
 import { tinyRouter } from '../../middleware/tinyRouter';
 import { staticHandler } from '../static';
@@ -45,7 +45,7 @@ export const appRouter = tinyRouter([
   },
   {
     route: /(^|\/)\.well-known(\/|$)/,
-    any() {},
+    any: noop,
   },
   {
     route: '/index.html',

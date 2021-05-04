@@ -14,7 +14,9 @@ import MonacoWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worke
 
 // Cherry-picking these features makes the editor more light weight, resulting in a smaller bundle
 // size and a snappier user experience.
+import 'monaco-editor/esm/vs/editor/contrib/comment/comment';
 import 'monaco-editor/esm/vs/editor/contrib/contextmenu/contextmenu';
+import 'monaco-editor/esm/vs/editor/contrib/find/findController';
 import 'monaco-editor/esm/vs/editor/contrib/folding/folding';
 import 'monaco-editor/esm/vs/editor/contrib/format/formatActions';
 import 'monaco-editor/esm/vs/editor/contrib/hover/hover';

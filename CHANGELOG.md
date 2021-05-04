@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.9](https://gitlab.com/appsemble/appsemble/-/releases/0.18.9)] - 2021-04-30
+
+### Added
+
+- Cli: Add support for organization email, website, and description.
+- Studio: Add raw JSON editor for resources.
+
+### Changed
+
+- App: The same side menu is used now as in Appsemble Studio.
+- App: The default theme has been updated.
+- Cli: The `--verify` flag for `appsemble app extract-messages` now takes a list of languages to
+  verify.
+- Cli: `appsemble app extract-messages` now extracts messages for the default language.
+- Studio: The default theme has been updated.
+
+### Removed
+
+- App: Remove support for OAuth2 password login.
+- Cli: Remove support for the `@` prefix for organization IDs.
+- Server: Remove support for OAuth2 password login.
+- Studio: Remove the GUI app editor.
+
+### Fixed
+
+- Studio: Fix displaying of App ratings.
+
+### Security
+
+- Server: Organization members can only be viewed by organization members.
+- Studio: Organization members can only be viewed by organization members.
+
 ## \[[0.18.8](https://gitlab.com/appsemble/appsemble/-/releases/0.18.8)] - 2021-04-16
 
 ### Added

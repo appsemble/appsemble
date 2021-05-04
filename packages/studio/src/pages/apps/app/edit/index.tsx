@@ -9,9 +9,9 @@ import {
 import { AppDefinition, BlockManifest } from '@appsemble/types';
 import { api, filterBlocks, getAppBlocks, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
+import equal from 'fast-deep-equal';
 import { safeDump, safeLoad } from 'js-yaml';
 import { Schema, Validator } from 'jsonschema';
-import { isEqual } from 'lodash';
 import { editor } from 'monaco-editor';
 import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -235,7 +235,7 @@ export default function EditPage(): ReactElement {
       const newApp = safeLoad(appDefinition) as AppDefinition;
       const originalApp = safeLoad(initialDefinition) as AppDefinition;
 
-      if (!isEqual(newApp.resources, originalApp.resources)) {
+      if (!equal(newApp.resources, originalApp.resources)) {
         promptUpdateApp();
         return;
       }
