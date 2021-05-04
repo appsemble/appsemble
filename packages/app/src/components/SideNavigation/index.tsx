@@ -1,4 +1,5 @@
 import { Button, MenuItem, MenuSection } from '@appsemble/react-components';
+import { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -9,14 +10,18 @@ import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
 
+interface SideNavigationProps {
+  pages: PageDefinition[];
+}
+
 /**
  * The app navigation that is displayed in the side menu.
  */
-export function SideNavigation(): ReactElement {
+export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { getMessage } = useAppMessages();
   const {
-    definition: { layout, pages, security: showLogin },
+    definition: { layout, security: showLogin },
   } = useAppDefinition();
   const { isLoggedIn, logout } = useUser();
 
