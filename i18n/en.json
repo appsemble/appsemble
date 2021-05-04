@@ -104,6 +104,7 @@
   "studio.src.components.RateApp.review": "Review",
   "studio.src.components.RateApp.submit": "Submit",
   "studio.src.components.ResendEmailButton.resendVerification": "Resend verification email",
+  "studio.src.components.ResendEmailButton.resendVerificationError": "Something went wrong when sending the verification mail.",
   "studio.src.components.ResendEmailButton.resendVerificationSent": "Resent verification mail",
   "studio.src.components.SideMenuBase.appStore": "App store",
   "studio.src.components.SideMenuBase.blockStore": "Block store",

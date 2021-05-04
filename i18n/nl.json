@@ -104,6 +104,7 @@
   "studio.src.components.RateApp.review": "Recensie",
   "studio.src.components.RateApp.submit": "Versturen",
   "studio.src.components.ResendEmailButton.resendVerification": "Opnieuw e-mail ter verificatie versturen",
+  "studio.src.components.ResendEmailButton.resendVerificationError": "Er is iets misgegaan bij het versturen van de verificatie-email.",
   "studio.src.components.ResendEmailButton.resendVerificationSent": "E-mail ter verificatie is opnieuw verstuurd.",
   "studio.src.components.SideMenuBase.appStore": "App store",
   "studio.src.components.SideMenuBase.blockStore": "Block store",

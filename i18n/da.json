@@ -104,6 +104,7 @@
   "studio.src.components.RateApp.review": "Anmeldelse",
   "studio.src.components.RateApp.submit": "Indsend",
   "studio.src.components.ResendEmailButton.resendVerification": "Send bekræftelsesmail igen",
+  "studio.src.components.ResendEmailButton.resendVerificationError": "",
   "studio.src.components.ResendEmailButton.resendVerificationSent": "Sendt bekræftelsesmail",
   "studio.src.components.SideMenuBase.appStore": "App store",
   "studio.src.components.SideMenuBase.blockStore": "Bloker butik",

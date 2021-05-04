@@ -104,6 +104,7 @@
   "studio.src.components.RateApp.review": "Réviser",
   "studio.src.components.RateApp.submit": "Envoyer",
   "studio.src.components.ResendEmailButton.resendVerification": "Renvoyer le courriel de vérification",
+  "studio.src.components.ResendEmailButton.resendVerificationError": "",
   "studio.src.components.ResendEmailButton.resendVerificationSent": "Courriel de vérification renvoyé",
   "studio.src.components.SideMenuBase.appStore": "App store",
   "studio.src.components.SideMenuBase.blockStore": "Magasin de blocs",

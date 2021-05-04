@@ -20,11 +20,15 @@ export function ResendEmailButton({ email, ...props }: ResendEmailButtonProps): 
   const push = useMessages();
 
   const resendVerification = useCallback(async () => {
-    await axios.post('/api/email/resend', { email });
-    push({
-      body: formatMessage(messages.resendVerificationSent),
-      color: 'info',
-    });
+    try {
+      await axios.post('/api/email/resend', { email });
+      push({
+        body: formatMessage(messages.resendVerificationSent),
+        color: 'info',
+      });
+    } catch {
+      push({ body: formatMessage(messages.resendVerificationError), color: 'danger' });
+    }
   }, [email, formatMessage, push]);
 
   return (

@@ -104,6 +104,7 @@
   "studio.src.components.RateApp.review": "Übersetzungen überarbeiten",
   "studio.src.components.RateApp.submit": "Abschicken",
   "studio.src.components.ResendEmailButton.resendVerification": "Bestätigungsmail erneut senden",
+  "studio.src.components.ResendEmailButton.resendVerificationError": "",
   "studio.src.components.ResendEmailButton.resendVerificationSent": "Bestätigungsmail erneut senden",
   "studio.src.components.SideMenuBase.appStore": "App Store",
   "studio.src.components.SideMenuBase.blockStore": "Blockspeicher",
