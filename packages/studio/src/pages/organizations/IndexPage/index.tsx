@@ -86,6 +86,7 @@ export function IndexPage(): ReactElement {
           isActive={modal.enabled}
           onClose={modal.disable}
           onCreateOrganization={onSubmitOrganization}
+          title={<FormattedMessage {...messages.createTitle} />}
         />
       )}
     </>
