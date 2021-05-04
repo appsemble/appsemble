@@ -18,6 +18,8 @@ import 'monaco-editor/esm/vs/editor/contrib/contextmenu/contextmenu';
 import 'monaco-editor/esm/vs/editor/contrib/folding/folding';
 import 'monaco-editor/esm/vs/editor/contrib/format/formatActions';
 import 'monaco-editor/esm/vs/editor/contrib/hover/hover';
+import 'monaco-editor/esm/vs/editor/contrib/find/findController';
+import 'monaco-editor/esm/vs/editor/contrib/comment/comment';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 import 'monaco-yaml';
