@@ -1,8 +1,6 @@
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { ReactElement, useEffect, useRef } from 'react';
 
-import styles from './index.module.css';
-
 interface CodeBlockProps {
   /**
    * A class name to add to the `div` element.
@@ -38,6 +36,7 @@ export function CodeDiffBlock({
 
   useEffect(() => {
     const ed = editor.createDiffEditor(ref.current, {
+      automaticLayout: true,
       enableSplitViewResizing: false,
       renderSideBySide: false,
       minimap: { enabled: false },
@@ -51,5 +50,5 @@ export function CodeDiffBlock({
     return () => ed.dispose();
   }, [original, language, modified]);
 
-  return <div className={`${className} ${styles.diff}`} ref={ref} />;
+  return <div className={className} ref={ref} />;
 }
