@@ -23,6 +23,7 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
+import { ResendEmailButton } from '../../../components/ResendEmailButton';
 import { useUser } from '../../../components/UserProvider';
 import { UserEmail } from '../../../types';
 import { supportedLanguages } from '../../../utils/constants';
@@ -78,17 +79,6 @@ export function UserPage(): ReactElement {
       });
     },
     [formatMessage, push, refreshUserInfo],
-  );
-
-  const resendVerification = useCallback(
-    async (email: string) => {
-      await axios.post('/api/email/resend', { email });
-      push({
-        body: formatMessage(messages.resendVerificationSent),
-        color: 'info',
-      });
-    },
-    [formatMessage, push],
   );
 
   const deleteEmail = useConfirmation({
@@ -232,11 +222,7 @@ export function UserPage(): ReactElement {
                     <FormattedMessage {...messages.setPrimaryEmail} />
                   </Button>
                 )}
-                {!verified && (
-                  <Button className="control is-outlined" onClick={() => resendVerification(email)}>
-                    <FormattedMessage {...messages.resendVerification} />
-                  </Button>
-                )}
+                {!verified && <ResendEmailButton className="control is-outlined" email={email} />}
                 {email !== userInfo.email && (
                   <AsyncButton
                     className="control"
