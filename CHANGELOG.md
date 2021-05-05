@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.10](https://gitlab.com/appsemble/appsemble/-/releases/0.18.10)] - 2021-05-05
+
+### Changed
+
+- App: Change font to “Open Sans”.
+- Studio: Change font to “Open Sans”.
+
+### Fixed
+
+- App: Fix hidden menu items being displayed.
+
 ## \[[0.18.9](https://gitlab.com/appsemble/appsemble/-/releases/0.18.9)] - 2021-04-30
 
 ### Added
