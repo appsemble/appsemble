@@ -11,6 +11,7 @@ import {
   SimpleForm,
   SimpleFormField,
   Title,
+  useLocationString,
   useToggle,
 } from '@appsemble/react-components';
 import { defaultLocale, Permission } from '@appsemble/utils';
@@ -18,7 +19,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { useApp } from '..';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
@@ -41,12 +42,10 @@ export function IndexPage(): ReactElement {
   const descriptionToggle = useToggle();
   const history = useHistory();
   const { hash } = useLocation();
-  const {
-    params: { lang },
-    url,
-  } = useRouteMatch<{ lang: string }>();
+  const { lang } = useParams<{ lang: string }>();
   const { formatMessage } = useIntl();
   const { organizations, userInfo } = useUser();
+  const redirect = useLocationString();
 
   const cloneApp = useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
@@ -95,29 +94,112 @@ export function IndexPage(): ReactElement {
             <Button className="mb-3 ml-4" onClick={openCloneDialog}>
               <FormattedMessage {...messages.clone} />
             </Button>
-            {userInfo ? null : (
+            {userInfo ? (
+              createOrganizations.length ? (
+                <ModalCard
+                  component={SimpleForm}
+                  defaultValues={{
+                    name: app.definition.name,
+                    description: app.definition.description,
+                    private: true,
+                    selectedOrganization: 0,
+                    resources: false,
+                  }}
+                  footer={
+                    userInfo &&
+                    createOrganizations.length && (
+                      <>
+                        <CardFooterButton onClick={closeCloneDialog}>
+                          <FormattedMessage {...messages.cancel} />
+                        </CardFooterButton>
+                        <CardFooterButton color="primary" type="submit">
+                          <FormattedMessage {...messages.submit} />
+                        </CardFooterButton>
+                      </>
+                    )
+                  }
+                  isActive={hash === '#clone'}
+                  onClose={closeCloneDialog}
+                  onSubmit={cloneApp}
+                  title={<FormattedMessage {...messages.clone} />}
+                >
+                  <SimpleFormField
+                    help={<FormattedMessage {...messages.nameDescription} />}
+                    label={<FormattedMessage {...messages.name} />}
+                    maxLength={30}
+                    name="name"
+                    required
+                  />
+                  <SimpleFormField
+                    component={SelectField}
+                    disabled={organizations.length <= 1}
+                    label={<FormattedMessage {...messages.organization} />}
+                    name="selectedOrganization"
+                    required
+                  >
+                    {createOrganizations.map((org, index) => (
+                      <option key={org.id} value={index}>
+                        {org.name || org.id}
+                      </option>
+                    ))}
+                  </SimpleFormField>
+                  <SimpleFormField
+                    help={<FormattedMessage {...messages.descriptionDescription} />}
+                    label={<FormattedMessage {...messages.description} />}
+                    maxLength={80}
+                    name="description"
+                  />
+                  <SimpleFormField
+                    component={CheckboxField}
+                    label={<FormattedMessage {...messages.private} />}
+                    name="private"
+                    title={<FormattedMessage {...messages.privateDescription} />}
+                  />
+                  {app.resources && (
+                    <SimpleFormField
+                      component={CheckboxField}
+                      label={<FormattedMessage {...messages.resources} />}
+                      name="resources"
+                      title={<FormattedMessage {...messages.resourcesDescription} />}
+                    />
+                  )}
+                </ModalCard>
+              ) : (
+                <CreateOrganizationModal
+                  disabled={!userInfo.email_verified}
+                  help={
+                    <div className="mb-4">
+                      <span>
+                        <FormattedMessage {...messages.cloneOrganizationInstructions} />
+                      </span>
+                      {userInfo.email_verified ? null : (
+                        <div className="is-flex is-flex-direction-column is-align-items-center">
+                          <span className="my-2">
+                            <FormattedMessage {...messages.cloneVerifyMessage} />
+                          </span>
+                          <ResendEmailButton className="is-outlined" email={userInfo.email} />
+                        </div>
+                      )}
+                    </div>
+                  }
+                  isActive={hash === '#clone'}
+                  onClose={closeCloneDialog}
+                  title={<FormattedMessage {...messages.clone} />}
+                />
+              )
+            ) : (
               <Modal isActive={hash === '#clone'} onClose={closeCloneDialog}>
                 <Box>
                   <FormattedMessage
                     {...messages.cloneLoginMessage}
                     values={{
                       loginLink: (content: string) => (
-                        <Link
-                          to={{
-                            pathname: `/${lang}/login`,
-                            search: `?${new URLSearchParams({ redirect: `${url}${hash}` })}`,
-                          }}
-                        >
+                        <Link to={`/${lang}/login?${new URLSearchParams({ redirect })}`}>
                           {content}
                         </Link>
                       ),
                       registerLink: (content: string) => (
-                        <Link
-                          to={{
-                            pathname: `/${lang}/register`,
-                            search: `?${new URLSearchParams({ redirect: `${url}${hash}` })}`,
-                          }}
-                        >
+                        <Link to={`/${lang}/register?${new URLSearchParams({ redirect })}`}>
                           {content}
                         </Link>
                       ),
@@ -126,99 +208,6 @@ export function IndexPage(): ReactElement {
                 </Box>
               </Modal>
             )}
-            {userInfo && !createOrganizations.length ? (
-              <CreateOrganizationModal
-                disabled={!userInfo.email_verified}
-                help={
-                  <div className="mb-4">
-                    <span>
-                      <FormattedMessage {...messages.cloneOrganizationInstructions} />
-                    </span>
-                    {userInfo.email_verified ? null : (
-                      <div className="is-flex is-flex-direction-column is-align-items-center">
-                        <span className="my-2">
-                          <FormattedMessage {...messages.cloneVerifyMessage} />
-                        </span>
-                        <ResendEmailButton className="is-outlined" email={userInfo.email} />
-                      </div>
-                    )}
-                  </div>
-                }
-                isActive={hash === '#clone'}
-                onClose={closeCloneDialog}
-                title={<FormattedMessage {...messages.clone} />}
-              />
-            ) : null}
-            {userInfo && createOrganizations.length ? (
-              <ModalCard
-                component={SimpleForm}
-                defaultValues={{
-                  name: app.definition.name,
-                  description: app.definition.description,
-                  private: true,
-                  selectedOrganization: 0,
-                  resources: false,
-                }}
-                footer={
-                  userInfo &&
-                  createOrganizations.length && (
-                    <>
-                      <CardFooterButton onClick={closeCloneDialog}>
-                        <FormattedMessage {...messages.cancel} />
-                      </CardFooterButton>
-                      <CardFooterButton color="primary" type="submit">
-                        <FormattedMessage {...messages.submit} />
-                      </CardFooterButton>
-                    </>
-                  )
-                }
-                isActive={hash === '#clone'}
-                onClose={closeCloneDialog}
-                onSubmit={cloneApp}
-                title={<FormattedMessage {...messages.clone} />}
-              >
-                <SimpleFormField
-                  help={<FormattedMessage {...messages.nameDescription} />}
-                  label={<FormattedMessage {...messages.name} />}
-                  maxLength={30}
-                  name="name"
-                  required
-                />
-                <SimpleFormField
-                  component={SelectField}
-                  disabled={organizations.length <= 1}
-                  label={<FormattedMessage {...messages.organization} />}
-                  name="selectedOrganization"
-                  required
-                >
-                  {createOrganizations.map((org, index) => (
-                    <option key={org.id} value={index}>
-                      {org.name || org.id}
-                    </option>
-                  ))}
-                </SimpleFormField>
-                <SimpleFormField
-                  help={<FormattedMessage {...messages.descriptionDescription} />}
-                  label={<FormattedMessage {...messages.description} />}
-                  maxLength={80}
-                  name="description"
-                />
-                <SimpleFormField
-                  component={CheckboxField}
-                  label={<FormattedMessage {...messages.private} />}
-                  name="private"
-                  title={<FormattedMessage {...messages.privateDescription} />}
-                />
-                {app.resources && (
-                  <SimpleFormField
-                    component={CheckboxField}
-                    label={<FormattedMessage {...messages.resources} />}
-                    name="resources"
-                    title={<FormattedMessage {...messages.resourcesDescription} />}
-                  />
-                )}
-              </ModalCard>
-            ) : null}
           </>
         }
         description={app.definition.description}
