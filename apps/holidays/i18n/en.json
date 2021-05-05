@@ -1,0 +1,12 @@
+{
+  "date": "Date",
+  "name": "Name ({locale})",
+  "pages.0": "Holidays in Europe",
+  "pages.0.subPages.0": "Netherlands",
+  "pages.0.subPages.1": "Germany",
+  "pages.0.subPages.2": "Spain",
+  "pages.1": "Holidays in America",
+  "pages.1.subPages.0": "USA",
+  "pages.1.subPages.1": "Canada",
+  "pages.1.subPages.2": "Mexico"
+}

@@ -1,0 +1,13 @@
+{
+  "date": "Datum",
+  "details": "Details",
+  "location": "Locatie",
+  "notes": "Notities",
+  "notesExample": "Bijvoorbeeld: Er ligt een fiets in de bosjes",
+  "pages.0": "Afval rapporteren",
+  "pages.1": "Afvaloverzicht",
+  "pages.2": "Afvaldetails",
+  "pages.3": "Afvallijst",
+  "photos": "Foto’s",
+  "process": "Proces"
+}

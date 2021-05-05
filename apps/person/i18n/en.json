@@ -1,0 +1,9 @@
+{
+  "description": "Description",
+  "email": "Email",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "pages.0": "Person List",
+  "pages.1": "Person Registration Form",
+  "pages.2": "Person Details"
+}
