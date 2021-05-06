@@ -180,6 +180,7 @@ export function SettingsPage(): ReactElement {
               />
             }
             label={<FormattedMessage {...messages.domain} />}
+            maxLength={253}
             name="domain"
             pattern={domainPattern}
             preprocess={preprocessDomain}

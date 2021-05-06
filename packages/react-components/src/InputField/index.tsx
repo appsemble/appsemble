@@ -8,6 +8,16 @@ type InputFieldProps = Omit<
 > &
   SharedFormComponentProps;
 
+function getHelpExtra(maxLength: number, value?: number | string | readonly string[]): string {
+  if (!maxLength) {
+    return;
+  }
+  const length = value == null ? 0 : String(value).length;
+  if (length > maxLength * 0.8) {
+    return `${length} / ${maxLength}`;
+  }
+}
+
 /**
  * A Bulma styled form input element.
  */
@@ -36,7 +46,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       control={control}
       error={error}
       help={help}
-      helpExtra={maxLength ? `${value == null ? 0 : String(value).length} / ${maxLength}` : null}
+      helpExtra={getHelpExtra(maxLength, value)}
       icon={icon}
       id={id}
       label={label}
