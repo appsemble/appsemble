@@ -6,7 +6,6 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface Element {}
 
-  // eslint-disable-next-line max-len
   // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars
   interface NodeListOf<TNode> {}
 }
