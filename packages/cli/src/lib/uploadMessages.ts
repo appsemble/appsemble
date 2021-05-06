@@ -1,8 +1,9 @@
 import { join, parse } from 'path';
 
-import { logger, opendirSafe, readYaml } from '@appsemble/node-utils';
+import { AppsembleError, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
 import { Messages } from '@appsemble/types';
 import axios from 'axios';
+import { readJson } from 'fs-extra';
 
 /**
  * Upload messages for an app.
@@ -25,12 +26,25 @@ export async function uploadMessages(
     join(path, 'i18n'),
     async (messageFile) => {
       logger.verbose(`Processing ${messageFile} ⚙️`);
-      const language = parse(messageFile).name;
-      const [messages] = await readYaml<Record<string, string>>(messageFile);
+      const { ext, name: language } = parse(messageFile);
+      let messages: Record<string, string> = {};
+
+      if (result.some((entry) => entry.language === language)) {
+        throw new AppsembleError(
+          `Found duplicate language “${language}”. Make sure each language only exists once in the directory.`,
+        );
+      }
+
+      if (ext === 'json') {
+        messages = await readJson(messageFile);
+      } else {
+        [messages] = await readYaml<Record<string, string>>(messageFile);
+      }
       result.push({ force, language, messages });
     },
     { allowMissing: true },
   );
+
   if (!result.length) {
     logger.info('No translations found 🤷');
   }
