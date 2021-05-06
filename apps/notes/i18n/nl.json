@@ -1,5 +1,9 @@
 {
-  "body": "Inhoud",
-  "pages.0": "Notities",
-  "title": "Titel"
+  "app": {
+    "pages.0": "Notities"
+  },
+  "messageIds": {
+    "body": "Inhoud",
+    "title": "Titel"
+  }
 }

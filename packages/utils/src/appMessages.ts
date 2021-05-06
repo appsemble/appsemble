@@ -1,4 +1,4 @@
-import { AppDefinition, BlockDefinition } from '@appsemble/types';
+import { AppDefinition, AppsembleMessages, BlockDefinition } from '@appsemble/types';
 
 import { iterApp, Prefix } from '.';
 
@@ -36,28 +36,43 @@ export function findMessageIds(obj: unknown): Record<string, string> {
  */
 export function extractAppMessages(
   app: AppDefinition,
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  onBlock?: (block: BlockDefinition, prefix: Prefix) => Record<string, string> | void,
-): Record<string, string> {
-  const messages: Record<string, string> = {};
+  onBlock?: (block: BlockDefinition, prefix: Prefix) => void,
+): Pick<AppsembleMessages, 'app' | 'messageIds'> {
+  const messages: Pick<AppsembleMessages, 'app' | 'messageIds'> = {
+    app: {
+      name: app.name,
+      description: app.description,
+      ...Object.fromEntries(
+        Object.entries(app.security?.roles ?? {}).flatMap(([role, roleDefinition]) => [
+          [`app.roles.${role}`, role],
+          [`app.roles.${role}.description`, roleDefinition.description],
+        ]),
+      ),
+    },
+    messageIds: {},
+  };
 
   iterApp(app, {
     onBlock(block, prefix) {
-      Object.assign(messages, findMessageIds(block.header), findMessageIds(block.parameters));
+      Object.assign(
+        messages.messageIds,
+        findMessageIds(block.header),
+        findMessageIds(block.parameters),
+      );
 
       if (onBlock) {
-        Object.assign(messages, onBlock(block, prefix));
+        onBlock(block, prefix);
       }
     },
     onAction(action) {
-      Object.assign(messages, findMessageIds(action.remap));
+      Object.assign(messages.messageIds, findMessageIds(action.remap));
     },
     onPage(page, prefix) {
-      messages[prefix.join('.')] = page.name;
+      messages.app[prefix.join('.')] = page.name;
 
       if (page.type === 'tabs') {
         page.subPages.forEach((subPage, index) => {
-          messages[`${prefix.join('.')}.subPages.${index}`] = subPage.name ?? '';
+          messages.app[`${prefix.join('.')}.subPages.${index}`] = subPage.name ?? '';
         });
       }
     },

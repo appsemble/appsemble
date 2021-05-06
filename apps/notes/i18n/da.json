@@ -1,3 +1,9 @@
 {
-  "pages.0": ""
+  "app": {
+    "pages.0": ""
+  },
+  "messageIds": {
+    "body": "",
+    "title": ""
+  }
 }
