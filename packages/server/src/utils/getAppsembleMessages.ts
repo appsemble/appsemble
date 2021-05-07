@@ -1,6 +1,8 @@
 import { promises as fs } from 'fs';
 import { join, resolve } from 'path';
 
+import { defaultLocale } from '@appsemble/utils';
+
 const translationsDir = resolve(__dirname, '..', '..', '..', '..', 'i18n');
 
 export async function getSupportedLanguages(): Promise<Set<string>> {
@@ -40,6 +42,14 @@ export async function getAppsembleMessages(
           JSON.parse(await fs.readFile(join(translationsDir, `${lang}.json`), 'utf-8')),
         ).filter(([, value]) => Boolean(value)),
       ),
+    );
+  }
+
+  // Fall back to reading the default locale’s messages if no core messages were found.
+  if (!languages.has(lang) && (!baseLang || !languages.has(baseLang))) {
+    Object.assign(
+      messages,
+      JSON.parse(await fs.readFile(join(translationsDir, `${defaultLocale}.json`), 'utf-8')),
     );
   }
 

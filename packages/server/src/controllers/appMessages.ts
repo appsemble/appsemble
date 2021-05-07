@@ -43,21 +43,18 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
-    include:
-      override === 'true'
-        ? [
-            {
-              model: AppMessages,
-              where:
-                merge && baseLang
-                  ? {
-                      language: { [Op.or]: [baseLang, lang] },
-                    }
-                  : { language: lang },
-              required: false,
-            },
-          ]
-        : [],
+    include: [
+      {
+        model: AppMessages,
+        where:
+          merge && baseLang
+            ? {
+                language: { [Op.or]: [baseLang, lang] },
+              }
+            : { language: lang },
+        required: false,
+      },
+    ],
   });
 
   if (!app) {
@@ -95,14 +92,15 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (
-    (!app.AppMessages?.length || (merge && !app.AppMessages.some((m) => m.language === lang))) &&
+    (!app.AppMessages.length || (merge && !app.AppMessages.some((m) => m.language === lang))) &&
     lang !== (app.definition.defaultLanguage || defaultLocale)
   ) {
     throw notFound(`Language “${language}” could not be found`);
   }
 
-  const baseLanguageMessages = app.AppMessages?.find((m) => m.language === baseLang);
-  const languageMessages = app.AppMessages?.find((m) => m.language === lang);
+  const baseLanguageMessages =
+    override === 'true' && app.AppMessages.find((m) => m.language === baseLang);
+  const languageMessages = override === 'true' && app.AppMessages.find((m) => m.language === lang);
 
   blockMessages.forEach((version) => {
     const name = `@${version.OrganizationId}/${version.name}`;
