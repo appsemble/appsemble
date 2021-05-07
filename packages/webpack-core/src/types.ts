@@ -1,11 +1,13 @@
 // https://github.com/puppeteer/puppeteer/pull/6998
 declare global {
-  type Document = unknown;
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface Document {}
 
-  type Element = unknown;
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface Element {}
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  type NodeListOf<TNode> = unknown;
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars
+  interface NodeListOf<TNode> {}
 }
 
 export {};
