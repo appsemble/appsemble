@@ -61,8 +61,6 @@ export default function EditPage(): ReactElement {
   const [dirty, setDirty] = useState(true);
   const [openApiDocument, setOpenApiDocument] = useState<OpenAPIV3.Document>();
 
-  const [decorationList, setDecorationList] = useState<string[]>([]);
-
   const frame = useRef<HTMLIFrameElement>();
   const history = useHistory();
   const { formatMessage } = useIntl();
@@ -299,11 +297,10 @@ export default function EditPage(): ReactElement {
         <div className={styles.editorForm}>
           <MonacoEditor
             className={styles.editor}
-            decorationList={decorationList}
             language={language}
             onChange={onValueChange}
-            onChangeDecorationList={setDecorationList}
             onSave={onSave}
+            readOnly={app.locked}
             value={value}
           />
         </div>
