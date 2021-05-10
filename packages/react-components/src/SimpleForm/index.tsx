@@ -25,7 +25,7 @@ type FormErrors = Record<string, ReactNode>;
 
 type FormValues = Record<string, any>;
 
-interface SimpleFormContext {
+interface SimpleFormContextProps {
   formErrors: FormErrors;
   pristine: Record<string, boolean>;
   setFormError: (name: string, errorMessage: ReactNode) => void;
@@ -36,7 +36,7 @@ interface SimpleFormContext {
   values: FormValues;
 }
 
-const Context = createContext<SimpleFormContext>(null);
+export const SimpleFormContext = createContext<SimpleFormContextProps>(null);
 
 export function SimpleForm<T extends {}>({
   children,
@@ -118,11 +118,11 @@ export function SimpleForm<T extends {}>({
 
   return (
     <Form {...props} onSubmit={doSubmit}>
-      <Context.Provider value={value}>{children}</Context.Provider>
+      <SimpleFormContext.Provider value={value}>{children}</SimpleFormContext.Provider>
     </Form>
   );
 }
 
-export function useSimpleForm(): SimpleFormContext {
-  return useContext(Context);
+export function useSimpleForm(): SimpleFormContextProps {
+  return useContext(SimpleFormContext);
 }

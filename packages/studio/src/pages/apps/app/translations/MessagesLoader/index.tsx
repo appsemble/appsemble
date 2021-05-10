@@ -22,6 +22,9 @@ export function MessagesLoader({ languageId }: MessagesLoaderProps): ReactElemen
   const { app } = useApp();
 
   const result = useData<AppMessages>(`/api/apps/${app.id}/messages/${languageId}`);
+  const defaultMessagesResult = useData<AppMessages>(
+    `/api/apps/${app.id}/messages/${languageId}?override=false`,
+  );
 
   return (
     <AsyncDataView
@@ -29,7 +32,21 @@ export function MessagesLoader({ languageId }: MessagesLoaderProps): ReactElemen
       loadingMessage={<FormattedMessage {...messages.loadingMessage} />}
       result={result}
     >
-      {(appMessages) => <MessagesForm appMessages={appMessages} languageId={languageId} />}
+      {(appMessages) => (
+        <AsyncDataView
+          errorMessage={<FormattedMessage {...messages.errorMessage} />}
+          loadingMessage={<FormattedMessage {...messages.loadingMessage} />}
+          result={defaultMessagesResult}
+        >
+          {(defaultAppMessages) => (
+            <MessagesForm
+              appMessages={appMessages}
+              defaultAppMessages={defaultAppMessages}
+              languageId={languageId}
+            />
+          )}
+        </AsyncDataView>
+      )}
     </AsyncDataView>
   );
 }
