@@ -58,7 +58,7 @@ export function FieldGroup({
     [name, onChange, value],
   );
 
-  return (fields.map((f) => (
+  return fields.map((f) => (
     <FormInput
       disabled={disabled}
       error={errors[f.name]}
@@ -68,5 +68,5 @@ export function FieldGroup({
       onChange={handleChange}
       value={value[f.name]}
     />
-  )) as ComponentChildren) as VNode;
+  )) as ComponentChildren as VNode;
 }

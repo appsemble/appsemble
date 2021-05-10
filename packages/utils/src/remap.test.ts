@@ -333,7 +333,7 @@ describe('prop', () => {
     },
     'handle numbers': {
       input: { names: ['foo', 'bar'] },
-      mappers: [{ prop: 'names' }, { prop: (0 as unknown) as string }],
+      mappers: [{ prop: 'names' }, { prop: 0 as unknown as string }],
       expected: 'foo',
     },
     'handle null': {

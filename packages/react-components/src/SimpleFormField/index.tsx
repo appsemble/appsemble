@@ -41,7 +41,7 @@ type SimpleFormFieldProps<C extends ComponentType> = Omit<
 };
 
 export function SimpleFormField<C extends ComponentType = typeof InputField>({
-  component: Component = (InputField as ComponentType) as C,
+  component: Component = InputField as ComponentType as C,
   disabled,
   name,
   onChange,

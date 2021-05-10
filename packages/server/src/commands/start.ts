@@ -93,18 +93,15 @@ export function builder(yargs: Argv): Argv {
       implies: ['service-name', 'service-port'],
     })
     .option('service-name', {
-      desc:
-        'The name of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
+      desc: 'The name of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
       implies: ['service-port'],
     })
     .option('service-port', {
-      desc:
-        'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
+      desc: 'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
       implies: ['service-name'],
     })
     .option('host', {
-      desc:
-        'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
+      desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
       required: true,
     })
     .option('proxy', {

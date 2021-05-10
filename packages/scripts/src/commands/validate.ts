@@ -293,7 +293,7 @@ export async function handler(): Promise<void> {
       filename,
       message,
       pass,
-      workspace: { dir: workspace, pkg: ('' as unknown) as PackageJson },
+      workspace: { dir: workspace, pkg: '' as unknown as PackageJson },
     }),
   );
 

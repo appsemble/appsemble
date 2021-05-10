@@ -50,16 +50,8 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Block definition not found');
   }
 
-  const {
-    actions,
-    description,
-    events,
-    layout,
-    longDescription,
-    parameters,
-    resources,
-    version,
-  } = blockVersion;
+  const { actions, description, events, layout, longDescription, parameters, resources, version } =
+    blockVersion;
   const name = `@${organizationId}/${blockId}`;
 
   ctx.body = {

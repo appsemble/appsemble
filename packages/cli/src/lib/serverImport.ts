@@ -16,7 +16,7 @@ ${PROMPT} ${COMMAND} @appsemble/server
  * @returns The exported member.
  */
 export async function serverImport<
-  T extends 'cleanupResources' | 'migrate' | 'runCronJobs' | 'setArgv' | 'start'
+  T extends 'cleanupResources' | 'migrate' | 'runCronJobs' | 'setArgv' | 'start',
 >(...members: T[]): Promise<Record<T, any>> {
   try {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error

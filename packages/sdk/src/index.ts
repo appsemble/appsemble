@@ -261,14 +261,12 @@ export function bootstrap(fn: BootstrapFunction): void {
  */
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 export function attach(fn: (params: BootstrapParams) => Promisable<HTMLElement | void>): void {
-  bootstrap(
-    async (params): Promise<void> => {
-      const { shadowRoot } = params;
+  bootstrap(async (params): Promise<void> => {
+    const { shadowRoot } = params;
 
-      const node = await fn(params);
-      if (node instanceof HTMLElement) {
-        shadowRoot.append(node);
-      }
-    },
-  );
+    const node = await fn(params);
+    if (node instanceof HTMLElement) {
+      shadowRoot.append(node);
+    }
+  });
 }

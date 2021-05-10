@@ -160,9 +160,11 @@ export async function processHooks(
     );
 
     const title = (data?.title ? remap(data.title, r, remapperContext) : resource.type) as string;
-    const content = (data?.content
-      ? remap(data.content, r, remapperContext)
-      : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`) as string;
+    const content = (
+      data?.content
+        ? remap(data.content, r, remapperContext)
+        : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`
+    ) as string;
 
     await sendSubscriptionNotifications(
       app,

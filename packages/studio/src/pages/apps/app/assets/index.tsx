@@ -37,9 +37,12 @@ export function AssetsPage(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
 
-  const { data: assets, error, loading, setData: setAssets } = useData<Asset[]>(
-    `/api/apps/${app.id}/assets`,
-  );
+  const {
+    data: assets,
+    error,
+    loading,
+    setData: setAssets,
+  } = useData<Asset[]>(`/api/apps/${app.id}/assets`);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const [dialog, setDialog] = useState<'preview' | 'upload'>(null);
   const [previewedAsset, setPreviewedAsset] = useState<Asset>(null);

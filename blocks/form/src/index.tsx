@@ -12,10 +12,10 @@ import { isFormValid } from './utils/validity';
 
 bootstrap(
   ({ actions, data, events, parameters: { fields, previous, requirements }, ready, utils }) => {
-    const defaultValues = useMemo<Values>(() => ({ ...generateDefaultValues(fields), ...data }), [
-      data,
-      fields,
-    ]);
+    const defaultValues = useMemo<Values>(
+      () => ({ ...generateDefaultValues(fields), ...data }),
+      [data, fields],
+    );
 
     const [formErrors, setFormErrors] = useState(
       Array.from<string>({ length: requirements?.length ?? 0 }).fill(null),

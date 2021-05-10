@@ -55,9 +55,11 @@ export function BlockPage(): ReactElement {
   } = useRouteMatch<BlockDetailsRoutesMatch>();
   const history = useHistory();
 
-  const { data: blockVersions, error, loading } = useData<BlockManifest[]>(
-    `/api/blocks/@${organization}/${blockName}/versions`,
-  );
+  const {
+    data: blockVersions,
+    error,
+    loading,
+  } = useData<BlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`);
 
   const onSelectedVersionChange = useCallback(
     (event, value: string) => {

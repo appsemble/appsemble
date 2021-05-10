@@ -25,11 +25,10 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
   const { definition } = useAppDefinition();
   const { role } = useUser();
 
-  const showMenu = useMemo(() => shouldShowMenu(definition, role, teams), [
-    definition,
-    role,
-    teams,
-  ]);
+  const showMenu = useMemo(
+    () => shouldShowMenu(definition, role, teams),
+    [definition, role, teams],
+  );
 
   return (
     showMenu && (

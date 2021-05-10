@@ -19,14 +19,8 @@ export function JSONSchemaStringEditor({
   schema,
   value = '',
 }: CommonJSONSchemaEditorProps<string>): ReactElement {
-  const {
-    description,
-    example,
-    format,
-    maxLength,
-    minLength,
-    multipleOf,
-  } = schema as OpenAPIV3.SchemaObject;
+  const { description, example, format, maxLength, minLength, multipleOf } =
+    schema as OpenAPIV3.SchemaObject;
 
   const commonProps = {
     disabled,

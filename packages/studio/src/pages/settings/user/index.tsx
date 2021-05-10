@@ -37,9 +37,12 @@ export function UserPage(): ReactElement {
   const match = useRouteMatch<{ lang: string }>();
   const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
-  const { data: emails, error, loading, setData: setEmails } = useData<UserEmail[]>(
-    '/api/user/email',
-  );
+  const {
+    data: emails,
+    error,
+    loading,
+    setData: setEmails,
+  } = useData<UserEmail[]>('/api/user/email');
 
   const onSaveProfile = useCallback(
     async (values: { name: string; locale: string }) => {

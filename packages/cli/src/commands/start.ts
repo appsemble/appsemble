@@ -16,8 +16,7 @@ export function builder(yargs: Argv): Argv {
       default: 9999,
     })
     .option('database-host', {
-      desc:
-        'The host of the database to connect to. This defaults to the connected database container.',
+      desc: 'The host of the database to connect to. This defaults to the connected database container.',
     })
     .option('database-port', {
       desc: 'The port of the database to connect to.',
@@ -41,8 +40,7 @@ export function builder(yargs: Argv): Argv {
       implies: ['database-name', 'database-user'],
     })
     .option('database-url', {
-      desc:
-        'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
+      desc: 'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: ['database-host', 'database-name', 'database-user', 'database-password'],
     })
     .option('migrate-to', {
@@ -106,13 +104,11 @@ export function builder(yargs: Argv): Argv {
       default: false,
     })
     .option('host', {
-      desc:
-        'The external host on which the server is available. This should include the protocol, hostname, and optionally the port.',
+      desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally the port.',
       required: true,
     })
     .option('ssl', {
-      desc:
-        'Enable SSL. This is a development flag. It is not the recommended way to use SSL in production.',
+      desc: 'Enable SSL. This is a development flag. It is not the recommended way to use SSL in production.',
       implies: ['ssl-key', 'ssl-cert'],
     })
     .option('ssl-key', {
