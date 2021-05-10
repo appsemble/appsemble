@@ -32,9 +32,13 @@ export function ClientCredentialsPage(): ReactElement {
   useMeta(messages.title);
 
   const { formatMessage } = useIntl();
-  const { data: clients, error, loading, refresh, setData: setClients } = useData<
-    OAuth2ClientCredentials[]
-  >('/api/oauth2/client-credentials');
+  const {
+    data: clients,
+    error,
+    loading,
+    refresh,
+    setData: setClients,
+  } = useData<OAuth2ClientCredentials[]>('/api/oauth2/client-credentials');
   const [newClientCredentials, setNewClientCredentials] = useState<string>(null);
   const modal = useToggle();
 

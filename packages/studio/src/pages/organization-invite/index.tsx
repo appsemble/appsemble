@@ -30,9 +30,11 @@ export function OrganizationInvitePage(): ReactElement {
   const { lang } = useParams<{ lang: string }>();
 
   const [success, setSuccess] = useState(false);
-  const { data: organization, error, loading } = useData<Organization>(
-    `/api/invites/${qs.get('token')}`,
-  );
+  const {
+    data: organization,
+    error,
+    loading,
+  } = useData<Organization>(`/api/invites/${qs.get('token')}`);
   const [submitting, setSubmitting] = useState(false);
   const [joined, setJoined] = useState(false);
 

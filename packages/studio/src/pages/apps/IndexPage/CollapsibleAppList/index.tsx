@@ -56,13 +56,14 @@ export function CollapsibleAppList({
       result={result}
     >
       {(apps) => {
-        const filteredApps = (filter
-          ? apps.filter(
-              (app) =>
-                app.definition.name.toLowerCase().includes(filter.toLowerCase()) ||
-                app.OrganizationId.toLowerCase().includes(filter.toLowerCase().replace(/@/g, '')),
-            )
-          : apps
+        const filteredApps = (
+          filter
+            ? apps.filter(
+                (app) =>
+                  app.definition.name.toLowerCase().includes(filter.toLowerCase()) ||
+                  app.OrganizationId.toLowerCase().includes(filter.toLowerCase().replace(/@/g, '')),
+              )
+            : apps
         ).sort((a, b) => (reverse ? sortFunction(b, a) : sortFunction(a, b)));
 
         if (!filteredApps.length) {

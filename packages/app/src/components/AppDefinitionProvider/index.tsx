@@ -50,11 +50,10 @@ export function AppDefinitionProvider({ children }: AppDefinitionProviderProps):
   const [definition, setDefinition] = useState(initialDefinition);
   const [revision, setRevision] = useState(0);
 
-  const value = useMemo(() => ({ blockManifests, definition, revision }), [
-    blockManifests,
-    definition,
-    revision,
-  ]);
+  const value = useMemo(
+    () => ({ blockManifests, definition, revision }),
+    [blockManifests, definition, revision],
+  );
 
   const onMessage = useCallback(
     ({ data, origin }: MessageEvent) => {

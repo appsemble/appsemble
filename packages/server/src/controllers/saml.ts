@@ -230,7 +230,7 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
 
   const attributes = new Map(
     Array.from(
-      (x('AttributeStatement', NS.saml)?.childNodes as unknown) as Iterable<Element>,
+      x('AttributeStatement', NS.saml)?.childNodes as unknown as Iterable<Element>,
       (el) => [el.getAttribute('Name')?.trim(), el.firstChild?.textContent?.trim()],
     ),
   );

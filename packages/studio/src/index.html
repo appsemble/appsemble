@@ -11,9 +11,8 @@
     <script nonce="{{{ nonce }}}">
       window.addEventListener('load', function () {
         if (!window.appsembleHasLoaded) {
-          document.getElementById('app').innerHTML = document.getElementById(
-            'legacy-browser-support',
-          ).innerHTML;
+          document.getElementById('app').innerHTML =
+            document.getElementById('legacy-browser-support').innerHTML;
         }
       });
     </script>

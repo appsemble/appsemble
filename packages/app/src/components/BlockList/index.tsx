@@ -55,12 +55,10 @@ export function BlockList({
   const { isLoggedIn, role, teams } = useUser();
   const redirect = useLocationString();
 
-  const blockList = useMemo(() => filterBlocks(definition.security, blocks, role, teams), [
-    blocks,
-    definition,
-    role,
-    teams,
-  ]);
+  const blockList = useMemo(
+    () => filterBlocks(definition.security, blocks, role, teams),
+    [blocks, definition, role, teams],
+  );
 
   const blockStatus = useRef(blockList.map(() => false));
   const [pageReady, setPageReady] = useState<Promise<void>>();

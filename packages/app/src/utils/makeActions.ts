@@ -78,7 +78,7 @@ function createAction<T extends ActionDefinition['type']>({
       remap,
     });
 
-  const action = ((async (args?: any, context?: Record<string, any>) => {
+  const action = (async (args?: any, context?: Record<string, any>) => {
     await pageReady;
     let result;
 
@@ -111,7 +111,7 @@ function createAction<T extends ActionDefinition['type']>({
     }
 
     return result;
-  }) as Omit<Action, string>) as Extract<Action, { type: T }>;
+  }) as Omit<Action, string> as Extract<Action, { type: T }>;
   // Name the function to enhance stack traces.
   Object.defineProperty(action, 'name', { value: `${type}[wrapper]` });
   action.type = type;

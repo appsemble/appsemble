@@ -61,11 +61,10 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
     [fetchData, highlight, values],
   );
 
-  const onSubmit = useCallback(() => fetchData(values).then(modal.disable), [
-    fetchData,
-    modal,
-    values,
-  ]);
+  const onSubmit = useCallback(
+    () => fetchData(values).then(modal.disable),
+    [fetchData, modal, values],
+  );
 
   const resetFilter = useCallback(() => {
     setValues(defaultValues);

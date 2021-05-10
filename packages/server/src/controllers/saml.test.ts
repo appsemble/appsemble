@@ -348,8 +348,7 @@ describe('assertConsumerService', () => {
 
     expect(response).toMatchObject({
       status: 302,
-      data:
-        'Redirecting to <a href="/saml/response/invalidrelaystate">/saml/response/invalidrelaystate</a>.',
+      data: 'Redirecting to <a href="/saml/response/invalidrelaystate">/saml/response/invalidrelaystate</a>.',
     });
   });
 
@@ -364,8 +363,7 @@ describe('assertConsumerService', () => {
 
     expect(response).toMatchObject({
       status: 302,
-      data:
-        'Redirecting to <a href="/saml/response/invalidsecret">/saml/response/invalidsecret</a>.',
+      data: 'Redirecting to <a href="/saml/response/invalidsecret">/saml/response/invalidsecret</a>.',
     });
   });
 
@@ -380,8 +378,7 @@ describe('assertConsumerService', () => {
 
     expect(response).toMatchObject({
       status: 302,
-      data:
-        'Redirecting to <a href="/saml/response/invalidstatuscode">/saml/response/invalidstatuscode</a>.',
+      data: 'Redirecting to <a href="/saml/response/invalidstatuscode">/saml/response/invalidstatuscode</a>.',
     });
   });
 });

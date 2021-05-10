@@ -26,9 +26,11 @@ export function MemberTable(): ReactElement {
     loading: membersLoading,
     setData: setMembers,
   } = useData<Member[]>(`/api/organizations/${organizationId}/members`);
-  const { data: invites, loading: invitesLoading, setData: setInvites } = useData<
-    OrganizationInvite[]
-  >(`/api/organizations/${organizationId}/invites`);
+  const {
+    data: invites,
+    loading: invitesLoading,
+    setData: setInvites,
+  } = useData<OrganizationInvite[]>(`/api/organizations/${organizationId}/invites`);
   const addMembersModal = useToggle();
 
   const onInvited = useCallback(
