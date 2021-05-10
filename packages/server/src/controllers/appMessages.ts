@@ -5,6 +5,7 @@ import {
   extractAppMessages,
   normalizeBlockName,
   Permission,
+  Prefix,
   validateLanguage,
 } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
@@ -61,6 +62,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('App not found');
   }
 
+  const blockPrefixes: [string, Prefix][] = [];
   const blockQuery: Pick<BlockVersion, 'name' | 'OrganizationId' | 'version'>[] = [];
   const coreMessages = await getAppsembleMessages(lang, baseLang);
   const appMessages: AppsembleMessages = {
@@ -70,9 +72,11 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
       ),
     ),
     blocks: {},
-    ...extractAppMessages(app.definition, (block) => {
-      const [org, name] = normalizeBlockName(block.type).split('/');
+    ...extractAppMessages(app.definition, (block, prefix) => {
+      const blockName = normalizeBlockName(block.type);
+      const [org, name] = blockName.split('/');
       blockQuery.push({ version: block.version, OrganizationId: org.slice(1), name });
+      blockPrefixes.push([blockName, prefix]);
     }),
   };
 
@@ -118,12 +122,20 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
         Object.entries(blockLanguageMessages?.messages ?? {}).filter(([, value]) => value),
       ),
     };
+
     if (appMessages.blocks[name]) {
       appMessages.blocks[name][version.version] = blockVersionMessages;
     } else {
       appMessages.blocks[name] = {
         [version.version]: blockVersionMessages,
       };
+    }
+
+    const prefixed = blockPrefixes.filter(([b]) => b === name);
+    for (const [messageId, value] of Object.entries(blockVersionMessages)) {
+      for (const [, prefix] of prefixed) {
+        appMessages.app[`${prefix.join('.')}.${messageId}`] = value;
+      }
     }
   });
 
