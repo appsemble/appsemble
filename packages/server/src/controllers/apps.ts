@@ -6,17 +6,20 @@ import {
   AppsembleValidationError,
   BlockMap,
   blockNamePattern,
+  extractAppMessages,
   normalize,
   Permission,
   StyleValidationError,
   validateAppDefinition,
+  validateLanguage,
   validateStyle,
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { File } from 'koas-body-parser';
-import { isEqual, uniqWith } from 'lodash';
+import tags from 'language-tags';
+import { isEqual, mergeWith, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
@@ -24,6 +27,7 @@ import { generateVAPIDKeys } from 'web-push';
 import {
   App,
   AppBlockStyle,
+  AppMessages,
   AppRating,
   AppScreenshot,
   AppSnapshot,
@@ -101,6 +105,14 @@ function handleAppValidationError(error: Error, app: Partial<App>): never {
   }
 
   throw error;
+}
+
+function sortApps(a: App, b: App): number {
+  if (a.RatingAverage != null && b.RatingAverage != null) {
+    return a.RatingAverage - b.RatingAverage;
+  }
+
+  return -1;
 }
 
 export async function createApp(ctx: KoaContext): Promise<void> {
@@ -240,66 +252,178 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function queryApps(ctx: KoaContext): Promise<void> {
+  const {
+    query: { language },
+  } = ctx;
+
+  if (language) {
+    try {
+      validateLanguage(language as string);
+    } catch {
+      throw badRequest(`Language “${language}” is invalid`);
+    }
+  }
+
+  const lang = language && (language as string)?.toLowerCase();
+  const baseLanguage =
+    language &&
+    String(
+      tags(language as string)
+        .subtags()
+        .find((sub) => sub.type() === 'language'),
+    ).toLowerCase();
+
   const apps = await App.findAll({
     attributes: {
-      include: [
-        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
-        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
-      ],
       exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     where: { private: false },
-    include: [{ model: AppRating, attributes: [] }],
-    group: ['App.id'],
-    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
+    include: [
+      { model: Organization, attributes: ['id', 'name'] },
+      ...(language
+        ? [
+            {
+              model: AppMessages,
+              where: {
+                language: baseLanguage ? { [Op.or]: [baseLanguage, lang] } : lang,
+              },
+              required: false,
+            },
+          ]
+        : []),
+    ],
   });
 
-  const organizations = await Organization.findAll({
-    where: { id: apps.map((app) => app.OrganizationId) },
-    attributes: ['id', 'name'],
+  const ratings = await AppRating.findAll({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
+    where: { AppId: apps.map((app) => app.id) },
+    group: ['AppId'],
   });
 
-  ctx.body = apps.map((app) => {
-    Object.assign(app, {
-      Organization: organizations.find((org) => org.id === app.OrganizationId),
-    });
-    return getAppFromRecord(app, ['yaml']);
-  });
+  ctx.body = apps
+    .map((app) => {
+      const rating = ratings.find((r) => r.AppId === app.id);
+
+      if (rating) {
+        Object.assign(app, {
+          RatingAverage: Number(rating.get('RatingAverage')),
+          RatingCount: Number(rating.get('RatingCount')),
+        });
+      }
+
+      if (app.AppMessages?.length) {
+        const baseMessages =
+          baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
+        const languageMessages = app.AppMessages.find((messages) => messages.language === lang);
+
+        Object.assign(app, {
+          messages: mergeWith(
+            extractAppMessages(app.definition),
+            baseMessages?.messages ?? {},
+            languageMessages?.messages ?? {},
+          ),
+        });
+      }
+
+      return app;
+    })
+    .sort(sortApps)
+    .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
 export async function queryMyApps(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
+  const {
+    query: { language },
+    user,
+  } = ctx;
+
+  if (language) {
+    try {
+      validateLanguage(language as string);
+    } catch {
+      throw badRequest(`Language “${language}” is invalid`);
+    }
+  }
+
+  const lang = language && (language as string)?.toLowerCase();
+  const baseLanguage =
+    language &&
+    String(
+      tags(language as string)
+        .subtags()
+        .find((sub) => sub.type() === 'language'),
+    ).toLowerCase();
 
   const memberships = await Member.findAll({
     attributes: ['OrganizationId'],
     raw: true,
     where: { UserId: user.id },
   });
+
   const apps = await App.findAll({
     attributes: {
-      include: [
-        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
-        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
-      ],
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
     },
-    include: [{ model: AppRating, attributes: [] }],
-    group: ['App.id'],
-    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
+    include: [
+      { model: Organization, attributes: ['id', 'name'] },
+      ...(language
+        ? [
+            {
+              model: AppMessages,
+              where: {
+                language: baseLanguage ? { [Op.or]: [baseLanguage, lang] } : lang,
+              },
+              required: false,
+            },
+          ]
+        : []),
+    ],
     where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
   });
 
-  const organizations = await Organization.findAll({
-    where: { id: apps.map((app) => app.OrganizationId) },
-    attributes: ['id', 'name'],
+  const ratings = await AppRating.findAll({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
+    where: { AppId: apps.map((app) => app.id) },
+    group: ['AppId'],
   });
 
-  ctx.body = apps.map((app) => {
-    Object.assign(app, {
-      Organization: organizations.find((org) => org.id === app.OrganizationId),
-    });
-    return getAppFromRecord(app, ['yaml']);
-  });
+  ctx.body = apps
+    .map((app) => {
+      const rating = ratings.find((r) => r.AppId === app.id);
+
+      if (rating) {
+        Object.assign(app, {
+          RatingAverage: Number(rating.get('RatingAverage')),
+          RatingCount: Number(rating.get('RatingCount')),
+        });
+      }
+
+      if (app.AppMessages?.length) {
+        const baseMessages =
+          baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
+        const languageMessages = app.AppMessages.find((messages) => messages.language === lang);
+
+        Object.assign(app, {
+          messages: mergeWith(
+            extractAppMessages(app.definition),
+            baseMessages?.messages ?? {},
+            languageMessages?.messages ?? {},
+          ),
+        });
+      }
+
+      return app;
+    })
+    .sort(sortApps)
+    .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
 export async function patchApp(ctx: KoaContext<Params>): Promise<void> {

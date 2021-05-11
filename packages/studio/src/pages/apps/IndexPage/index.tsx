@@ -3,6 +3,7 @@ import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
 import { useUser } from '../../../components/UserProvider';
 import { checkRole } from '../../../utils/checkRole';
@@ -34,6 +35,7 @@ export function IndexPage(): ReactElement {
   });
   const { formatMessage } = useIntl();
   const { organizations, userInfo } = useUser();
+  const { lang } = useParams<{ lang: string }>();
 
   const onFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setFilter(event.currentTarget.value);
@@ -102,7 +104,7 @@ export function IndexPage(): ReactElement {
           filter={filter}
           reverse={sort?.reverse}
           sortFunction={sortFunctions[sort?.name]}
-          target="/api/apps/me"
+          target={`/api/apps/me?language=${lang}`}
           title={<FormattedMessage {...messages.myApps} />}
         />
       )}

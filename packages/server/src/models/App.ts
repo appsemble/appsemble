@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { AppDefinition } from '@appsemble/types';
+import type { AppDefinition, AppsembleMessages } from '@appsemble/types';
 import {
   AllowNull,
   AutoIncrement,
@@ -169,4 +169,5 @@ export class App extends Model {
 
   hasIcon?: boolean;
   hasMaskableIcon?: boolean;
+  messages?: AppsembleMessages;
 }

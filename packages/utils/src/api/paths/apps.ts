@@ -95,6 +95,14 @@ export const paths: OpenAPIV3.PathsObject = {
     },
     get: {
       tags: ['app'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description: 'Get all existing apps.',
       operationId: 'queryApps',
       responses: {

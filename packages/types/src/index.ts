@@ -1100,6 +1100,11 @@ export interface App {
    * The date when the app was last updated.
    */
   $updated?: string;
+
+  /**
+   * Any pre-included translations of the app.
+   */
+  messages?: AppsembleMessages;
 }
 
 /**

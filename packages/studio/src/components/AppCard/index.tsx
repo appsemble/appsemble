@@ -34,7 +34,7 @@ export function AppCard({ app }: AppCardProps): ReactElement {
           </figure>
         </div>
         <Title className={styles.ellipsis} lang={appLang} size={5}>
-          {app.definition.name}
+          {app.messages?.app?.name || app.definition.name}
         </Title>
         <Subtitle className={`mb-0 ${styles.ellipsis}`} lang={appLang} size={6}>
           {app.OrganizationName || app.OrganizationId}
