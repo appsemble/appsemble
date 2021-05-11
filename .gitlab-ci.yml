@@ -175,6 +175,7 @@ pack:
 # Package the Helm chart
 helm package:
   extends: .helm
+  stage: build
   needs: []
   script:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
