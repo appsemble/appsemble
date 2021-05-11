@@ -1,5 +1,7 @@
 {
   "app": {
+    "name": "",
+    "description": "",
     "pages.0": "Personenlijst",
     "pages.1": "Persoonregistratieformulier",
     "pages.2": "Persoongegevens"

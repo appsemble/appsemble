@@ -1,6 +1,10 @@
 {
-  "pages.0": "",
-  "pages.1": "",
-  "pages.2": "",
-  "pages.3": ""
+  "app": {
+    "name": "",
+    "description": "",
+    "pages.0": "",
+    "pages.1": "",
+    "pages.2": "",
+    "pages.3": ""
+  }
 }
