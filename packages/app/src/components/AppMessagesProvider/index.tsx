@@ -103,7 +103,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
       const message = Object.hasOwnProperty.call(messages.messageIds, id)
         ? messages.messageIds[id]
         : defaultMessage;
-      return messageCache(message);
+      return messageCache(message || id);
     },
     [messageCache, messages],
   );
