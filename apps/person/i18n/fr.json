@@ -1,5 +1,7 @@
 {
-  "pages.0": "",
-  "pages.1": "",
-  "pages.2": ""
+  "app": {
+    "pages.0": "",
+    "pages.1": "",
+    "pages.2": ""
+  }
 }

@@ -1,9 +1,13 @@
 {
-  "description": "Omschrijving",
-  "email": "E-mail",
-  "firstName": "Voornaam",
-  "lastName": "Achternaam",
-  "pages.0": "Personenlijst",
-  "pages.1": "Persoonregistratieformulier",
-  "pages.2": "Persoongegevens"
+  "app": {
+    "pages.0": "Personenlijst",
+    "pages.1": "Persoonregistratieformulier",
+    "pages.2": "Persoongegevens"
+  },
+  "messageIds": {
+    "description": "Omschrijving",
+    "email": "E-mail",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam"
+  }
 }
