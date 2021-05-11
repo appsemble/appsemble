@@ -325,6 +325,11 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
             extractAppMessages(app.definition),
             baseMessages?.messages ?? {},
             languageMessages?.messages ?? {},
+            (objectValue, newValue) => {
+              if (typeof newValue === 'string') {
+                return newValue || objectValue;
+              }
+            },
           ),
         });
       }
@@ -416,6 +421,11 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
             extractAppMessages(app.definition),
             baseMessages?.messages ?? {},
             languageMessages?.messages ?? {},
+            (objectValue, newValue) => {
+              if (typeof newValue === 'string') {
+                return newValue || objectValue;
+              }
+            },
           ),
         });
       }
