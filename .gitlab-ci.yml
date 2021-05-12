@@ -167,10 +167,26 @@ pack:
     - mkdir build/
     - find packages -name '*.tgz' -exec mv {} ./build/ \;
   artifacts:
-    name: '$CI_COMMIT_REF_NAME'
+    name: npm packages
     expose_as: packages
     paths:
-      - 'build/'
+      - build/
+
+# Package the Helm chart
+helm package:
+  extends: .helm
+  stage: build
+  needs: []
+  script:
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - cp LICENSE.md config/charts/appsemble/
+    - helm dependency build config/charts/appsemble
+    - helm package -d public config/charts/appsemble/
+  artifacts:
+    name: Helm chart
+    expose_as: Helm chart
+    paths:
+      - public/
 
 ###################################################################################################
 #  Publish Stage                                                                                  #
