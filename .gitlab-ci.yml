@@ -212,6 +212,20 @@ publish docker:
     - docker push "appsemble/appsemble:latest"
     - docker push "appsemble/appsemble:$CI_COMMIT_TAG"
 
+# Publish the Helm chart to https://charts.appsemble.com
+publish helm:
+  needs:
+    - helm package
+  stage: publish
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  rules:
+    - if: $CI_COMMIT_TAG
+  trigger:
+    project: appsemble/charts
+    strategy: depend
+
+# Publish npm packages to npmjs.org.
 publish npm:
   stage: publish
   dependencies:
