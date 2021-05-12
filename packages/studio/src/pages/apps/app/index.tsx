@@ -66,9 +66,12 @@ export function AppRoutes(): ReactElement {
     url,
   } = useRouteMatch<{ id: string; lang: string }>();
   const { organizations } = useUser();
-  const { data: app, error, loading, setData: setApp } = useData<App>(
-    `/api/apps/${id}?language=${lang}`,
-  );
+  const {
+    data: app,
+    error,
+    loading,
+    setData: setApp,
+  } = useData<App>(`/api/apps/${id}?language=${lang}`);
   const value = useMemo(() => ({ app, setApp }), [app, setApp]);
   const { formatMessage } = useIntl();
 

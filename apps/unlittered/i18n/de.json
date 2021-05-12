@@ -8,12 +8,11 @@
     "pages.3": ""
   },
   "messageIds": {
-    "date": "",
-    "details": "",
     "location": "",
+    "process": "",
     "notes": "",
     "notesExample": "",
     "photos": "",
-    "process": ""
+    "date": ""
   }
 }

@@ -1,5 +1,7 @@
 {
   "app": {
+    "name": "Holidays",
+    "description": "",
     "pages.0": "Holidays in Europe",
     "pages.0.subPages.0": "Netherlands",
     "pages.0.subPages.1": "Germany",
@@ -9,5 +11,8 @@
     "pages.1.subPages.1": "Canada",
     "pages.1.subPages.2": "Mexico"
   },
-  "messageIds": { "date": "Date", "name": "Name ({locale})" }
+  "messageIds": {
+    "date": "Date",
+    "name": "Name ({locale})"
+  }
 }

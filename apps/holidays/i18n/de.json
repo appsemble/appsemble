@@ -1,5 +1,7 @@
 {
   "app": {
+    "name": "",
+    "description": "",
     "pages.0": "",
     "pages.0.subPages.0": "",
     "pages.0.subPages.1": "",
@@ -9,5 +11,8 @@
     "pages.1.subPages.1": "",
     "pages.1.subPages.2": ""
   },
-  "messageIds": { "date": "", "name": "" }
+  "messageIds": {
+    "date": "",
+    "name": ""
+  }
 }

@@ -8,12 +8,11 @@
     "pages.3": "Litter list"
   },
   "messageIds": {
-    "date": "Date",
-    "details": "Details",
     "location": "Location",
+    "process": "Process",
     "notes": "Notes",
     "notesExample": "Example: There is a bicycle in the bushes",
     "photos": "Photos",
-    "process": "Process"
+    "date": "Date"
   }
 }

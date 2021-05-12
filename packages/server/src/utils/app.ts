@@ -126,9 +126,11 @@ export function sortApps(a: App, b: App): number {
  * @returns An object containing the language, base language, and Sequelize filter
  * to filter AppMessages by these languages.
  */
-export function parseLanguage(
-  ctx: KoaContext,
-): { language: string; baseLanguage: string; query: IncludeOptions[] } {
+export function parseLanguage(ctx: KoaContext): {
+  language: string;
+  baseLanguage: string;
+  query: IncludeOptions[];
+} {
   const {
     query: { language },
   } = ctx;
@@ -149,18 +151,20 @@ export function parseLanguage(
       .subtags()
       .find((sub) => sub.type() === 'language'),
   ).toLowerCase();
-  const query = (language
-    ? [
-        {
-          model: AppMessages,
-          where: {
-            language:
-              baseLanguage && baseLanguage !== lang ? { [Op.or]: [baseLanguage, lang] } : lang,
+  const query = (
+    language
+      ? [
+          {
+            model: AppMessages,
+            where: {
+              language:
+                baseLanguage && baseLanguage !== lang ? { [Op.or]: [baseLanguage, lang] } : lang,
+            },
+            required: false,
           },
-          required: false,
-        },
-      ]
-    : []) as IncludeOptions[];
+        ]
+      : []
+  ) as IncludeOptions[];
 
   return { language: lang, baseLanguage, query };
 }

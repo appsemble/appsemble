@@ -204,7 +204,7 @@ describe('queryApps', () => {
       OrganizationId: organization.id,
     });
 
-    const appC = await await App.create({
+    const appC = await App.create({
       path: 'yet-another-app',
       definition: { name: 'Another App', defaultPage: 'Another Page' },
       vapidPublicKey: 'a',

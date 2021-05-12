@@ -7,9 +7,9 @@
     "pages.2": "Person Details"
   },
   "messageIds": {
-    "description": "Description",
-    "email": "Email",
     "firstName": "First name",
-    "lastName": "Last name"
+    "lastName": "Last name",
+    "email": "Email",
+    "description": "Description"
   }
 }

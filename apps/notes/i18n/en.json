@@ -1,9 +1,13 @@
 {
   "app": {
+    "name": "",
+    "description": "",
+    "app.roles.User": "",
+    "app.roles.User.description": "",
     "pages.0": "Notes"
   },
   "messageIds": {
-    "body": "Body",
-    "title": "Title"
+    "title": "Title",
+    "body": "Body"
   }
 }

@@ -1,15 +1,15 @@
 {
   "app": {
-    "name": "",
-    "description": "",
+    "name": "Personen",
+    "description": "Een eenvoudige app voor het beheren van personen via formulieren en gegevens met behulp van de resource-API",
     "pages.0": "Personenlijst",
     "pages.1": "Persoonregistratieformulier",
     "pages.2": "Persoongegevens"
   },
   "messageIds": {
-    "description": "Omschrijving",
-    "email": "E-mail",
     "firstName": "Voornaam",
-    "lastName": "Achternaam"
+    "lastName": "Achternaam",
+    "email": "E-mail",
+    "description": "Omschrijving"
   }
 }

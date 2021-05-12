@@ -1,5 +1,7 @@
 {
   "app": {
+    "name": "Feestdagen",
+    "description": "Een eenvoudige app die feestdagen voor verschillende landen ophaalt.",
     "pages.0": "Feestdagen in Europa",
     "pages.0.subPages.0": "Nederland",
     "pages.0.subPages.1": "Duitsland",
@@ -9,5 +11,8 @@
     "pages.1.subPages.1": "Canada",
     "pages.1.subPages.2": "Mexico"
   },
-  "messageIds": { "date": "Datum", "name": "Naam ({locale})" }
+  "messageIds": {
+    "date": "Datum",
+    "name": "Naam ({locale})"
+  }
 }
