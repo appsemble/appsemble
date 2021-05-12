@@ -10,6 +10,11 @@ interface CardHeaderControlProps {
   title: ReactNode;
 
   /**
+   * The level to specify on the title.
+   */
+  titleLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+
+  /**
    * The subtitle of the card. Will be wrapped in a Subtitle component.
    */
   subtitle: ReactNode;
@@ -52,6 +57,7 @@ export function CardHeaderControl({
   icon,
   subtitle,
   title,
+  titleLevel,
 }: CardHeaderControlProps): ReactElement {
   return (
     <div className="card my-3">
@@ -60,7 +66,9 @@ export function CardHeaderControl({
         <div className={`is-flex ${styles.metaWrapper}`}>
           <div className={`ml-4 ${styles.meta}`}>
             <header>
-              <Title className={`is-marginless ${styles.ellipsis}`}>{title}</Title>
+              <Title className={`is-marginless ${styles.ellipsis}`} level={titleLevel}>
+                {title}
+              </Title>
               <Subtitle className={`is-marginless ${styles.ellipsis}`} size={4}>
                 {subtitle}
               </Subtitle>

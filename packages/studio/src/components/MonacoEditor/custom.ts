@@ -8,7 +8,6 @@ import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker';
 import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
 // Webpack loader syntax is required here, because  json.worker and yaml.worker also import this
 // file.
-// eslint-disable-next-line max-len
 // eslint-disable-next-line import/no-unresolved, import/no-webpack-loader-syntax, node/no-extraneous-import
 import MonacoWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
 

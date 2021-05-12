@@ -61,10 +61,10 @@ export function SentryForm({
 }: SentryFormProps): ReactElement {
   const [submitted, setSubmitted] = useState(false);
 
-  const defaultValues = useMemo(() => ({ comments: '', email: email || '', name: name || '' }), [
-    email,
-    name,
-  ]);
+  const defaultValues = useMemo(
+    () => ({ comments: '', email: email || '', name: name || '' }),
+    [email, name],
+  );
 
   const submit = useCallback(
     async (values: typeof defaultValues) => {

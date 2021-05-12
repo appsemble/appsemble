@@ -62,7 +62,12 @@ export function IndexPage(): ReactElement {
   );
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
   const [creatingResource, setCreatingResource] = useState<Resource>();
-  const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
+  const {
+    data: resources,
+    error,
+    loading,
+    setData: setResources,
+  } = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
   );
 

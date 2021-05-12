@@ -16,10 +16,9 @@ ${PROMPT} ${COMMAND} @appsemble/server
  * @returns The exported member.
  */
 export async function serverImport<
-  T extends 'cleanupResources' | 'migrate' | 'runCronJobs' | 'setArgv' | 'start'
+  T extends 'cleanupResources' | 'migrate' | 'runCronJobs' | 'setArgv' | 'start',
 >(...members: T[]): Promise<Record<T, any>> {
   try {
-    // eslint-disable-next-line max-len
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
     // @ts-ignore Because the the server isn’t built and published, an error is expected here at
     // build time, but while type checking.

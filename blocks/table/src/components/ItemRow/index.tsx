@@ -28,7 +28,7 @@ export function ItemRow({ index, item }: ItemRowProps): VNode {
   const repeatedField = fields.find((field) => 'repeat' in field) as RepeatedField;
   if (repeatedField) {
     const repeatedItems = utils.remap(repeatedField.value, item) as any[];
-    return (repeatedItems.map((repeatedItem, repeatedIndex) => (
+    return repeatedItems.map((repeatedItem, repeatedIndex) => (
       <tr key={repeatedItem.id || repeatedIndex}>
         {fields.map((field) =>
           field === repeatedField ? (
@@ -54,7 +54,7 @@ export function ItemRow({ index, item }: ItemRowProps): VNode {
           ),
         )}
       </tr>
-    )) as unknown) as VNode;
+    )) as unknown as VNode;
   }
 
   return (

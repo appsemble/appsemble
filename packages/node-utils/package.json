@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "chalk": "^4.1.0",
+    "chalk": "^4.1.1",
     "cli-highlight": "^2.1.11",
     "fast-glob": "^3.2.5",
     "form-data": "^4.0.0",
@@ -39,12 +39,12 @@
     "koa-compose": "^4.1.0",
     "logform": "^2.2.0",
     "normalize-path": "^3.0.0",
-    "type-fest": "^1.0.1",
+    "type-fest": "^1.1.1",
     "winston": "^3.3.3",
-    "yargs": "^16.2.0"
+    "yargs": "^17.0.1"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^7.0.4",
+    "@sinonjs/fake-timers": "^7.0.5",
     "axios-mock-adapter": "^1.19.0",
     "axios-test-instance": "^4.0.0"
   },

@@ -1,8 +1,7 @@
 import { applyRefs } from '@appsemble/react-components';
-import { editor, KeyCode, KeyMod, Range } from 'monaco-editor/esm/vs/editor/editor.api';
+import { editor, KeyCode, KeyMod } from 'monaco-editor/esm/vs/editor/editor.api';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
-import { useApp } from '../../pages/apps/app';
 import './custom';
 
 editor.setTheme('vs');
@@ -39,10 +38,9 @@ interface MonacoEditorProps {
   onSave?: () => void;
 
   /**
-   * Save decorations even when editor is disposed
+   * Whether or not the editor is on read-only mode.
    */
-  decorationList?: string[];
-  onChangeDecorationList?: (value: string[]) => void;
+  readOnly?: boolean;
 }
 
 const defaultOptions: Options = {
@@ -52,13 +50,6 @@ const defaultOptions: Options = {
   readOnly: false,
 };
 
-const emptyDecoration: editor.IModelDeltaDecoration[] = [
-  {
-    range: new Range(0, 0, 0, 0),
-    options: {},
-  },
-];
-
 /**
  * Render a Monaco standalone editor instance.
  *
@@ -66,14 +57,8 @@ const emptyDecoration: editor.IModelDeltaDecoration[] = [
  * object, it is recommended to use a state setter function.
  */
 export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
-  (
-    { className, decorationList, language, onChange, onChangeDecorationList, onSave, value = '' },
-    ref,
-  ) => {
+  ({ className, language, onChange, onSave, readOnly = false, value = '' }, ref) => {
     const [monaco, setMonaco] = useState<editor.IStandaloneCodeEditor>();
-    const {
-      app: { locked },
-    } = useApp();
 
     const saveRef = useRef(onSave);
     saveRef.current = onSave;
@@ -86,7 +71,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
       }
 
       const model = editor.createModel('', 'yaml');
-      const ed = editor.create(node, { ...defaultOptions, readOnly: locked, model });
+      const ed = editor.create(node, { ...defaultOptions, readOnly, model });
       ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
 
       const observer = new ResizeObserver(() => ed.layout());
@@ -106,16 +91,9 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
 
     useEffect(() => {
       if (monaco) {
-        monaco.updateOptions({ ...defaultOptions, readOnly: locked });
-
-        if (decorationList && onChangeDecorationList) {
-          onChangeDecorationList(
-            monaco.getModel().deltaDecorations(decorationList, emptyDecoration),
-          );
-        }
+        monaco.updateOptions({ readOnly });
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [monaco]);
+    }, [monaco, readOnly]);
 
     useEffect(() => {
       if (monaco) {

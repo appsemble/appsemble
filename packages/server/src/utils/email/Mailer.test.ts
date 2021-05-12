@@ -16,25 +16,25 @@ describe('verify', () => {
   });
 
   it('should succeed if the transport verification succeeds', async () => {
-    mailer.transport = ({
+    mailer.transport = {
       verify: () => Promise.resolve(true as const),
-    } as Partial<Transporter>) as Transporter;
+    } as Partial<Transporter> as Transporter;
     expect(await mailer.verify()).toBeUndefined();
   });
 
   it('should fail if the transport verification fails', async () => {
-    mailer.transport = ({
+    mailer.transport = {
       verify: () => Promise.reject(new Error('fail')),
-    } as Partial<Transporter>) as Transporter;
+    } as Partial<Transporter> as Transporter;
     await expect(mailer.verify()).rejects.toThrow(new Error('fail'));
   });
 });
 
 describe('sendEmail', () => {
   it('should send emails with a name', async () => {
-    mailer.transport = ({
+    mailer.transport = {
       sendMail: jest.fn().mockResolvedValue(null),
-    } as Partial<Transporter>) as Transporter;
+    } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com', name: 'Me' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
     });
@@ -48,9 +48,9 @@ describe('sendEmail', () => {
   });
 
   it('should send emails without a name', async () => {
-    mailer.transport = ({
+    mailer.transport = {
       sendMail: jest.fn().mockResolvedValue(null),
-    } as Partial<Transporter>) as Transporter;
+    } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
     });

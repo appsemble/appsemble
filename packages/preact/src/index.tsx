@@ -93,5 +93,5 @@ export function FormattedMessage<M extends keyof Messages>(
   const { utils } = useBlock();
 
   // @ts-expect-error The messages interface isn’t implemented within the Preact SDK.
-  return (utils.formatMessage(props.id, props.values) as ComponentChild) as VNode;
+  return utils.formatMessage(props.id, props.values) as ComponentChild as VNode;
 }

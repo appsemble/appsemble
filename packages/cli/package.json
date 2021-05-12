@@ -37,11 +37,11 @@
     "@appsemble/utils": "0.18.10",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "axios": "^0.21.1",
-    "chalk": "^4.1.0",
+    "chalk": "^4.1.1",
     "cosmiconfig": "^7.0.0",
     "fast-glob": "^3.2.5",
     "form-data": "^4.0.0",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^10.0.0",
     "inquirer": "^8.0.0",
     "jsonschema": "^1.4.0",
     "normalize-path": "^3.0.0",
@@ -50,10 +50,10 @@
     "postcss-load-config": "3.0.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^7.0.1",
-    "type-fest": "^1.0.1",
+    "type-fest": "^1.1.1",
     "typescript": "^4.2.4",
     "typescript-json-schema": "^0.50.0",
-    "yargs": "^16.2.0"
+    "yargs": "^17.0.1"
   },
   "devDependencies": {
     "@appsemble/types": "0.18.10",
@@ -63,7 +63,7 @@
     "webpack": "^4"
   },
   "optionalDependencies": {
-    "keytar": "^7.6.0"
+    "keytar": "^7.7.0"
   },
   "engines": {
     "node": ">=12.0.0"

@@ -16,9 +16,10 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
   const { pathname } = useLocation();
   const history = useHistory();
 
-  const onChange = useCallback((event: ChangeEvent, value: string) => history.push(value), [
-    history,
-  ]);
+  const onChange = useCallback(
+    (event: ChangeEvent, value: string) => history.push(value),
+    [history],
+  );
 
   return (
     <>

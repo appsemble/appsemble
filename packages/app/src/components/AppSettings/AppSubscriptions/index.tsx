@@ -26,12 +26,8 @@ export function AppSubscriptions(): ReactElement {
   const [subscriptions, setSubscriptions] = useState<ResourceState>();
   const [loadingSubscriptions, setLoadingSubscriptions] = useState(true);
   const { definition } = useAppDefinition();
-  const {
-    requestPermission,
-    subscribe,
-    subscription,
-    unsubscribe,
-  } = useServiceWorkerRegistration();
+  const { requestPermission, subscribe, subscription, unsubscribe } =
+    useServiceWorkerRegistration();
 
   useEffect(() => {
     const subs = Object.entries(definition.resources || {}).reduce<ResourceState>(
