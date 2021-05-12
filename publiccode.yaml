@@ -1,0 +1,92 @@
+publiccodeYmlVersion: "0.2"
+
+name: Appsemble
+url: "https://gitlab.com/appsemble/appsemble"
+#landingURL:
+#isBasedOn:
+softwareVersion: "0.18.10"
+releaseDate: "2021-05-06"
+logo: https://appsemble.com/wp-content/uploads/2019/03/Appsemble-logo-50.png
+#monochromeLogo:
+
+# inputTypes:
+#     - text/plain
+
+# outputTypes:
+#     - application/json
+
+platforms:
+  - web
+
+categories:
+  - it-development
+
+usedBy:
+  - Gemeente Amsterdam
+  - Gemeente Amersfoort
+
+roadmap: "https://gitlab.com/groups/appsemble/-/roadmap"
+developmentStatus: development
+softwareType: "standalone/web"
+
+#intendedAudience:
+#  scope:
+#    - science-and-technology
+#  countries:
+#    - it
+#    - de
+#  unsupportedCountries:
+#    - us
+
+description:
+  nl:
+    localisedName: Appsemble
+    genericName: Appsemble
+    shortDescription: Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen.
+    longDescription: Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen. Ook kan er relatief gemakkelijk data aan de applicaties worden gekoppeld en kunnen de ontwikkelde apps in een eigen store worden opgeslagen.
+    documentation: "https://appsemble.app/en/docs"
+    # apiDocumentation:
+    features:
+      - Geen technische kennis benodigd
+      - Geen vaste leveranciers
+      - Tijdbesparend
+    # screenshots:
+    #     - img/sshot1.jpg
+    #     - img/sshot2.jpg
+    #     - img/sshot3.jpg
+    # videos:
+    #     - https://youtube.com/xxxxxxxx
+    # awards:
+    #     - 1st Price Software of the year
+
+legal:
+  license: EUPL-1.2
+  mainCopyrightOwner: Appsemble
+  repoOwner: Appsemble
+  # authorsFile: AUTHORS.md (hebben jullie nog niet zag ik)
+
+maintenance:
+  type: "internal"
+
+  contacts:
+    - name: Kees van de Broek
+      email: kvdb@d-centralize.nl
+
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - nl
+    - en
+
+dependsOn:
+  open:
+    - name: Docker
+    - name: Docker Compose
+    - name: NodeJS
+      version: 14
+    - name: Yarn
+    - name: appsemble/appsemble
+
+installations:
+  - type: helm
+    url: "https://charts.appsemble.com"
