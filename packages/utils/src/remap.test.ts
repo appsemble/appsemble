@@ -438,6 +438,7 @@ describe('string.format', () => {
       },
       expected: 'Krabby Patty',
       messages: {
+        core: {},
         app: {},
         blocks: {},
         messageIds: {

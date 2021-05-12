@@ -1,4 +1,3 @@
-import { Messages as MessagesType } from '@appsemble/types';
 import {
   AllowNull,
   Column,
@@ -14,7 +13,7 @@ import {
 import { BlockVersion } from '.';
 
 @Table({ tableName: 'BlockMessages' })
-export class BlockMessages extends Model implements MessagesType {
+export class BlockMessages extends Model {
   @PrimaryKey
   @AllowNull(false)
   @ForeignKey(() => BlockVersion)
