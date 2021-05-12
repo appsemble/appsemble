@@ -94,10 +94,10 @@ export function MessagesForm({
     <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
       <SimpleFormError>{() => <FormattedMessage {...messages.uploadError} />}</SimpleFormError>
       <SimpleBeforeUnload />
-      <CollapsibleList size={5} title={<FormattedMessage {...messages.messageIds} />}>
-        <SimpleFormObject name="messageIds">
-          {Object.entries(defaultAppMessages.messages.messageIds ?? {}).map(
-            ([id, defaultMessage]) => (
+      {Object.keys(defaultAppMessages.messages.messageIds).length ? (
+        <CollapsibleList size={5} title={<FormattedMessage {...messages.messageIds} />}>
+          <SimpleFormObject name="messageIds">
+            {Object.entries(defaultAppMessages.messages.messageIds).map(([id, defaultMessage]) => (
               <SimpleFormField
                 component={TextAreaField}
                 disabled={app.locked}
@@ -107,10 +107,10 @@ export function MessagesForm({
                 placeholder={defaultMessage}
                 rows={2}
               />
-            ),
-          )}
-        </SimpleFormObject>
-      </CollapsibleList>
+            ))}
+          </SimpleFormObject>
+        </CollapsibleList>
+      ) : null}
       <CollapsibleList size={5} title={<FormattedMessage {...messages.app} />}>
         <SimpleFormObject name="app">
           {Object.entries(defaultAppMessages.messages.app).map(([id, defaultMessage]) => (
