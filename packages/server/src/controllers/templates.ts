@@ -3,7 +3,7 @@ import { randomBytes } from 'crypto';
 import { normalize, Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
 import { safeDump } from 'js-yaml';
-import { col, fn, UniqueConstraintError } from 'sequelize';
+import { UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
 import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
@@ -15,9 +15,9 @@ export async function getAppTemplates(ctx: KoaContext): Promise<void> {
   const templates = await App.findAll({
     where: { template: true },
     attributes: {
-      include: ['id', 'definition', [fn('COUNT', col('Resources.id')), 'ResourceCount']],
+      include: ['id', 'definition'],
     },
-    include: [{ model: Resource, where: { clonable: true }, attributes: [], required: false }],
+    include: [{ model: Resource, where: { clonable: true }, attributes: ['id'], required: false }],
     group: ['App.id'],
   });
 
@@ -25,7 +25,7 @@ export async function getAppTemplates(ctx: KoaContext): Promise<void> {
     id: template.id,
     name: template.definition.name,
     description: template.definition.description,
-    resources: template.get('ResourceCount') > 0,
+    resources: template.Resources.length > 0,
   }));
 }
 

@@ -22,7 +22,11 @@ export function AppCard({ app }: AppCardProps): ReactElement {
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
   return (
-    <Link className="card" title={app.definition.description} to={`/${lang}/apps/${app.id}`}>
+    <Link
+      className="card"
+      title={app.messages?.app?.description || app.definition.description}
+      to={`/${lang}/apps/${app.id}`}
+    >
       <div className="card-content">
         <div className="media">
           <figure className={`image is-128x128 ${styles.figure}`}>

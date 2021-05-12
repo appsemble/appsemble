@@ -61,12 +61,14 @@ const EditPage = lazy(() => import('./edit'));
 
 export function AppRoutes(): ReactElement {
   const {
-    params: { id },
+    params: { id, lang },
     path,
     url,
   } = useRouteMatch<{ id: string; lang: string }>();
   const { organizations } = useUser();
-  const { data: app, error, loading, setData: setApp } = useData<App>(`/api/apps/${id}`);
+  const { data: app, error, loading, setData: setApp } = useData<App>(
+    `/api/apps/${id}?language=${lang}`,
+  );
   const value = useMemo(() => ({ app, setApp }), [app, setApp]);
   const { formatMessage } = useIntl();
 
@@ -179,7 +181,10 @@ export function AppRoutes(): ReactElement {
 
   return (
     <Context.Provider value={value}>
-      <MetaSwitch description={app.definition.description} title={app.definition.name}>
+      <MetaSwitch
+        description={app.messages?.app?.description || app.definition.description}
+        title={app.messages?.app?.name || app.definition.name}
+      >
         <Route exact path={path}>
           <IndexPage />
         </Route>

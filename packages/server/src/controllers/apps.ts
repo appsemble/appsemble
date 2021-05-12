@@ -11,14 +11,12 @@ import {
   Permission,
   StyleValidationError,
   validateAppDefinition,
-  validateLanguage,
   validateStyle,
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { File } from 'koas-body-parser';
-import tags from 'language-tags';
 import { isEqual, mergeWith, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -27,7 +25,6 @@ import { generateVAPIDKeys } from 'web-push';
 import {
   App,
   AppBlockStyle,
-  AppMessages,
   AppRating,
   AppScreenshot,
   AppSnapshot,
@@ -39,6 +36,7 @@ import {
   User,
 } from '../models';
 import { KoaContext } from '../types';
+import { parseLanguage, sortApps } from '../utils/app';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
@@ -105,14 +103,6 @@ function handleAppValidationError(error: Error, app: Partial<App>): never {
   }
 
   throw error;
-}
-
-function sortApps(a: App, b: App): number {
-  if (a.RatingAverage != null && b.RatingAverage != null) {
-    return a.RatingAverage - b.RatingAverage;
-  }
-
-  return -1;
 }
 
 export async function createApp(ctx: KoaContext): Promise<void> {
@@ -218,80 +208,75 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
   } = ctx;
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const app = await App.findByPk(appId, {
     attributes: {
       include: [
-        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
-        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
-        [fn('COUNT', col('Resources.id')), 'ResourceCount'],
-        [literal('icon IS NOT NULL'), 'hasIcon'],
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
         [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
       ],
-      exclude: ['icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
+      exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
     },
     include: [
-      { model: AppRating, attributes: [] },
-      { model: Resource, attributes: [], where: { clonable: true }, required: false },
-      { model: AppSnapshot, order: [['created', 'DESC']], limit: 1 },
+      { model: Resource, attributes: ['id'], where: { clonable: true }, required: false },
+      { model: AppSnapshot, order: [['created', 'DESC']] },
+      { model: Organization, attributes: ['id', 'name'] },
+      { model: AppScreenshot, attributes: ['id'] },
+      ...languageQuery,
     ],
-    group: ['App.id'],
   });
 
   if (!app) {
     throw notFound('App not found');
   }
 
-  app.Organization = await Organization.findByPk(app.OrganizationId, { attributes: ['name'] });
-  app.AppScreenshots = await AppScreenshot.findAll({
-    attributes: ['id'],
+  const rating = await AppRating.findOne({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
     where: { AppId: app.id },
+    group: ['AppId'],
   });
+
+  if (rating) {
+    app.RatingCount = Number(rating.get('RatingCount'));
+    app.RatingAverage = Number(rating.get('RatingAverage'));
+  }
+
+  if (app.AppMessages?.length) {
+    const baseMessages =
+      baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
+    const languageMessages = app.AppMessages.find((messages) => messages.language === language);
+
+    Object.assign(app, {
+      messages: mergeWith(
+        extractAppMessages(app.definition),
+        baseMessages?.messages ?? {},
+        languageMessages?.messages ?? {},
+        (objectValue, newValue) => {
+          if (typeof newValue === 'string') {
+            return newValue || objectValue;
+          }
+        },
+      ),
+    });
+  }
 
   ctx.body = getAppFromRecord(app);
 }
 
 export async function queryApps(ctx: KoaContext): Promise<void> {
-  const {
-    query: { language },
-  } = ctx;
-
-  if (language) {
-    try {
-      validateLanguage(language as string);
-    } catch {
-      throw badRequest(`Language “${language}” is invalid`);
-    }
-  }
-
-  const lang = language && (language as string)?.toLowerCase();
-  const baseLanguage =
-    language &&
-    String(
-      tags(language as string)
-        .subtags()
-        .find((sub) => sub.type() === 'language'),
-    ).toLowerCase();
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const apps = await App.findAll({
     attributes: {
       exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     where: { private: false },
-    include: [
-      { model: Organization, attributes: ['id', 'name'] },
-      ...(language
-        ? [
-            {
-              model: AppMessages,
-              where: {
-                language: baseLanguage ? { [Op.or]: [baseLanguage, lang] } : lang,
-              },
-              required: false,
-            },
-          ]
-        : []),
-    ],
+    include: [{ model: Organization, attributes: ['id', 'name'] }, ...languageQuery],
   });
 
   const ratings = await AppRating.findAll({
@@ -318,7 +303,7 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
       if (app.AppMessages?.length) {
         const baseMessages =
           baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
-        const languageMessages = app.AppMessages.find((messages) => messages.language === lang);
+        const languageMessages = app.AppMessages.find((messages) => messages.language === language);
 
         Object.assign(app, {
           messages: mergeWith(
@@ -341,27 +326,8 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
 }
 
 export async function queryMyApps(ctx: KoaContext): Promise<void> {
-  const {
-    query: { language },
-    user,
-  } = ctx;
-
-  if (language) {
-    try {
-      validateLanguage(language as string);
-    } catch {
-      throw badRequest(`Language “${language}” is invalid`);
-    }
-  }
-
-  const lang = language && (language as string)?.toLowerCase();
-  const baseLanguage =
-    language &&
-    String(
-      tags(language as string)
-        .subtags()
-        .find((sub) => sub.type() === 'language'),
-    ).toLowerCase();
+  const { user } = ctx;
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const memberships = await Member.findAll({
     attributes: ['OrganizationId'],
@@ -373,20 +339,7 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
     attributes: {
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
     },
-    include: [
-      { model: Organization, attributes: ['id', 'name'] },
-      ...(language
-        ? [
-            {
-              model: AppMessages,
-              where: {
-                language: baseLanguage ? { [Op.or]: [baseLanguage, lang] } : lang,
-              },
-              required: false,
-            },
-          ]
-        : []),
-    ],
+    include: [{ model: Organization, attributes: ['id', 'name'] }, ...languageQuery],
     where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
   });
 
@@ -414,7 +367,7 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
       if (app.AppMessages?.length) {
         const baseMessages =
           baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
-        const languageMessages = app.AppMessages.find((messages) => messages.language === lang);
+        const languageMessages = app.AppMessages.find((messages) => messages.language === language);
 
         Object.assign(app, {
           messages: mergeWith(

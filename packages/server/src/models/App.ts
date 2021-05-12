@@ -161,12 +161,8 @@ export class App extends Model {
   @HasMany(() => AppSnapshot, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   AppSnapshots: AppSnapshot[];
 
-  ResourceCount: number;
-
   RatingAverage?: number;
-
   RatingCount?: number;
-
   hasIcon?: boolean;
   hasMaskableIcon?: boolean;
   messages?: AppsembleMessages;

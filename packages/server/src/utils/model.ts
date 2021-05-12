@@ -24,12 +24,6 @@ export function getAppFromRecord(
 ): Partial<types.App> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { anchors, ...definition } = record.definition;
-  let rating: { count: number; average: number };
-  if (record.RatingAverage != null) {
-    rating = { count: record.RatingCount, average: record.RatingAverage };
-  } else if (record.get('RatingAverage')) {
-    rating = { count: record.get('RatingCount'), average: record.get('RatingAverage') };
-  }
 
   const result: types.App = {
     id: record.id,
@@ -49,8 +43,11 @@ export function getAppFromRecord(
       record.AppSnapshots?.[0]?.yaml ??
       (!omittedValues.includes('yaml') && yaml.safeDump(record.definition)),
     showAppsembleLogin: record.showAppsembleLogin ?? true,
-    rating,
-    resources: record.template && record.get('ResourceCount') ? true : undefined,
+    rating:
+      record.RatingAverage == null
+        ? undefined
+        : { count: record.RatingCount, average: record.RatingAverage },
+    resources: record.template && record.Resources?.length ? true : undefined,
     OrganizationId: record.OrganizationId,
     OrganizationName: record?.Organization?.name,
     screenshotUrls: record.AppScreenshots?.map(

@@ -1,11 +1,12 @@
 import { URL } from 'url';
 
 import { UserInfo } from '@appsemble/types';
-import { objectCache, RemapperContext } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
+import { objectCache, RemapperContext, validateLanguage } from '@appsemble/utils';
+import { badRequest, notFound } from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
-import { FindOptions, Op } from 'sequelize';
+import tags from 'language-tags';
+import { FindOptions, IncludeOptions, Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
 import { KoaContext } from '../types';
@@ -88,11 +89,77 @@ export async function getRemapperContext(
   return {
     appId: app.id,
     getMessage({ defaultMessage, id }) {
-      const msg = appMessages.find(({ messages }) => Object.hasOwnProperty.call(messages, id));
-      const message = msg ? msg.messages[id] : defaultMessage;
+      const msg = appMessages.find(({ messages }) =>
+        Object.hasOwnProperty.call(messages.messageIds, id),
+      );
+      const message = msg ? msg.messages.messageIds[id] : defaultMessage;
       return cache(message);
     },
     userInfo,
     context: {},
   };
+}
+
+/**
+ * Sort apps by rating, in descending order.
+ *
+ * @param a - The first app to compare.
+ * @param b - The second app to compare.
+ * @returns Whether the first or second app goes first in terms of sorting.
+ */
+export function sortApps(a: App, b: App): number {
+  if (a.RatingAverage != null && b.RatingAverage != null) {
+    return b.RatingAverage - a.RatingAverage || b.RatingCount - a.RatingCount;
+  }
+
+  if (a.RatingAverage == null && b.RatingAverage == null) {
+    return 0;
+  }
+
+  return a.RatingAverage == null ? 1 : -1;
+}
+
+/**
+ * Extracts and parses the language from the query string of a request.
+ *
+ * @param ctx - Koa context of the request to extract the languages of
+ * @returns An object containing the language, base language, and Sequelize filter
+ * to filter AppMessages by these languages.
+ */
+export function parseLanguage(
+  ctx: KoaContext,
+): { language: string; baseLanguage: string; query: IncludeOptions[] } {
+  const {
+    query: { language },
+  } = ctx;
+
+  if (!language) {
+    return;
+  }
+  try {
+    validateLanguage(language as string);
+  } catch {
+    throw badRequest(`Language “${language}” is invalid`);
+  }
+
+  const lang = (language as string)?.toLowerCase();
+  const baseLanguage = String(
+    tags(language as string)
+      .subtags()
+      .find((sub) => sub.type() === 'language'),
+  ).toLowerCase();
+  const query = (language
+    ? [
+        {
+          model: AppMessages,
+          where: {
+            language:
+              baseLanguage && baseLanguage !== lang ? { [Op.or]: [baseLanguage, lang] } : lang,
+          },
+          required: false,
+        },
+      ]
+    : []) as IncludeOptions[];
+
+  return { language: lang, baseLanguage, query };
 }

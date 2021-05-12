@@ -1,8 +1,9 @@
 import { randomBytes } from 'crypto';
 
-import { Permission } from '@appsemble/utils';
+import { extractAppMessages, Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
-import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
+import { mergeWith } from 'lodash';
+import { col, fn, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import {
   App,
@@ -16,6 +17,7 @@ import {
 } from '../models';
 import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
+import { parseLanguage, sortApps } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
@@ -67,6 +69,7 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
     params: { organizationId },
     user,
   } = ctx;
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const memberInclude = user
     ? { include: [{ model: User, where: { id: user.id }, required: false }] }
@@ -78,32 +81,58 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
 
   const apps = await App.findAll({
     attributes: {
-      include: [
-        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
-        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
-      ],
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
     },
-    include: [{ model: AppRating, attributes: [] }],
-    group: ['App.id'],
-    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
+    include: [{ model: Organization, attributes: ['id', 'name'] }, ...languageQuery],
     where: { OrganizationId: organizationId },
-  });
-
-  const organizations = await Organization.findAll({
-    where: { id: apps.map((app) => app.OrganizationId) },
-    attributes: ['id', 'name'],
   });
 
   const filteredApps =
     user && organization.Users.length ? apps : apps.filter((app) => !app.private);
 
-  ctx.body = filteredApps.map((app) => {
-    Object.assign(app, {
-      Organization: organizations.find((org) => org.id === app.OrganizationId),
-    });
-    return getAppFromRecord(app, ['yaml']);
+  const ratings = await AppRating.findAll({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
+    where: { AppId: filteredApps.map((app) => app.id) },
+    group: ['AppId'],
   });
+
+  ctx.body = filteredApps
+    .map((app) => {
+      const rating = ratings.find((r) => r.AppId === app.id);
+
+      if (rating) {
+        Object.assign(app, {
+          RatingAverage: Number(rating.get('RatingAverage')),
+          RatingCount: Number(rating.get('RatingCount')),
+        });
+      }
+
+      if (app.AppMessages?.length) {
+        const baseMessages =
+          baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
+        const languageMessages = app.AppMessages.find((messages) => messages.language === language);
+
+        Object.assign(app, {
+          messages: mergeWith(
+            extractAppMessages(app.definition),
+            baseMessages?.messages ?? {},
+            languageMessages?.messages ?? {},
+            (objectValue, newValue) => {
+              if (typeof newValue === 'string') {
+                return newValue || objectValue;
+              }
+            },
+          ),
+        });
+      }
+      return app;
+    })
+    .sort(sortApps)
+    .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
 export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<void> {

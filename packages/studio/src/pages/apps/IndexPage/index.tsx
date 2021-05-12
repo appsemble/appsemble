@@ -20,7 +20,7 @@ const sortFunctions = {
 
     return ratingA.average === ratingB.average
       ? ratingA.count - ratingB.count
-      : ratingB.average - ratingB.average;
+      : ratingA.average - ratingB.average;
   },
   $created: (a: App, b: App) => a.$created.localeCompare(b.$created),
   $updated: (a: App, b: App) => a.$updated.localeCompare(b.$updated),
@@ -112,7 +112,7 @@ export function IndexPage(): ReactElement {
         filter={filter}
         reverse={sort?.reverse}
         sortFunction={sortFunctions[sort?.name]}
-        target="/api/apps"
+        target={`/api/apps?language=${lang}`}
         title={<FormattedMessage {...messages.allApps} />}
       />
     </Content>
