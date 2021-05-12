@@ -1,0 +1,60 @@
+publiccodeYmlVersion: "0.2"
+name: Appsemble
+url: "https://gitlab.com/appsemble/appsemble"
+softwareVersion: 0.18.10
+releaseDate: "2021-05-06"
+logo: "https://appsemble.com/wp-content/uploads/2019/03/Appsemble-logo-50.png"
+platforms:
+  - web
+categories:
+  - it-development
+usedBy:
+  - Gemeente Amsterdam
+  - Gemeente Amersfoort
+roadmap: "https://gitlab.com/groups/appsemble/-/roadmap"
+developmentStatus: development
+softwareType: standalone/web
+description:
+  nl:
+    localisedName: Appsemble
+    genericName: Appsemble
+    shortDescription: >-
+      Appsemple is een open source low-code platform. In de beschikbare low-code
+      editor worden er basis bouwblokken aangeboden om snel en gemakkelijk een
+      app te bouwen.
+    longDescription: >-
+      Appsemple is een open source low-code platform. In de beschikbare low-code
+      editor worden er basis bouwblokken aangeboden om snel en gemakkelijk een
+      app te bouwen. Ook kan er relatief gemakkelijk data aan de applicaties
+      worden gekoppeld en kunnen de ontwikkelde apps in een eigen store worden
+      opgeslagen.
+    documentation: "https://appsemble.app/en/docs"
+    features:
+      - Geen technische kennis benodigd
+      - Geen vaste leveranciers
+      - Tijdbesparend
+legal:
+  license: EUPL-1.2
+  mainCopyrightOwner: Appsemble
+  repoOwner: Appsemble
+maintenance:
+  type: internal
+  contacts:
+    - name: Kees van de Broek
+      email: kvdb@d-centralize.nl
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - nl
+    - en
+dependsOn:
+  open:
+    - name: Docker
+    - name: Docker Compose
+    - name: NodeJS
+      version: 14
+    - name: Yarn
+    - name: appsemble/appsemble
+installations:
+  - type: helm
+    url: "https://charts.appsemble.com"
