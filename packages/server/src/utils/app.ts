@@ -134,8 +134,9 @@ export function parseLanguage(
   } = ctx;
 
   if (!language) {
-    return;
+    return { language: undefined, baseLanguage: undefined, query: [] };
   }
+
   try {
     validateLanguage(language as string);
   } catch {
