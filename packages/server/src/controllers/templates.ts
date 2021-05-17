@@ -18,7 +18,7 @@ export async function getAppTemplates(ctx: KoaContext): Promise<void> {
       include: ['id', 'definition'],
     },
     include: [{ model: Resource, where: { clonable: true }, attributes: ['id'], required: false }],
-    group: ['App.id'],
+    order: [['id', 'ASC']],
   });
 
   ctx.body = templates.map((template) => ({

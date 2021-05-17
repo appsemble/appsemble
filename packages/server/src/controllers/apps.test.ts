@@ -225,7 +225,7 @@ describe('queryApps', () => {
       data: [
         expect.objectContaining({ id: appA.id, rating: { count: 2, average: 4.5 } }),
         expect.objectContaining({ id: appC.id, rating: { count: 1, average: 3 } }),
-        expect.objectContaining({ id: appB.id, rating: { count: 0, average: null } }),
+        expect.objectContaining({ id: appB.id }),
       ],
     });
   });
@@ -425,13 +425,7 @@ pages:
       },
     });
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
-    expect(retrieved).toStrictEqual({
-      ...createdResponse.data,
-      rating: {
-        average: null,
-        count: 0,
-      },
-    });
+    expect(retrieved).toStrictEqual(createdResponse.data);
   });
 
   it('should accept screenshots', async () => {
