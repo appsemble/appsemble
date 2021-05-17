@@ -56,7 +56,7 @@ To see additional options, run the following command.
 yarn start --help
 ```
 
-An new account can be registered by going to `http://localhost:9999/register`, or login on
+A new account can be registered by going to `http://localhost:9999/register`, or you can login on
 `http://localhost:9999/login`.
 
 #### CLI Login
