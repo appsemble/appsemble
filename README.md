@@ -7,9 +7,16 @@
 These are instructions for developing the Appsemble core platform. Production setup instructions can
 be found in [here](docs/deployment/helm.md).
 
-A live deployment is made for each branch. Each deployment has their own subdomain of
-_appsemble.app_. The live preview for the master branch can be found on
-https://staging.appsemble.review.
+### Live Environments
+
+Our production environment is available on [appsemble.app](https://appsemble.app).
+
+Our staging environment is available on
+[staging.appsemble.review](https://staging.appsemble.review). This environment hosts the latest
+changes in the `master` branch. This environment is reset every night at 04:00 AM UTC.
+
+For each of our internal merge requests a review environment is started at
+`${CI_MERGE_REQUEST_IID}.appsemble.review`.
 
 ### Requirements
 
