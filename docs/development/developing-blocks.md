@@ -8,7 +8,7 @@ described in the
 instructions in the readme.
 
 Next, publish the existing blocks following the instructions from the
-[Blocks](https://gitlab.com/appsemble/appsemble/blob/master/README.md#blocks) section.
+[Blocks](https://gitlab.com/appsemble/appsemble/blob/master/README.md#publishing-blocks) section.
 
 ## Create Your First Block
 
