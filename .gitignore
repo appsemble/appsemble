@@ -29,3 +29,6 @@ junit.xml
 
 # Lighthouse reports
 /.lighthouseci/
+
+# Helm charts hosted on GitLab pages
+public/
