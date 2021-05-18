@@ -18,4 +18,4 @@ helm install --name appsemble config/charts/appsemble
 
 Once Appsemble is up and running, you probably to upload blocks. For this, clone the Appsemble git
 repository and continue to the
-[Blocks in the readme](https://gitlab.com/appsemble/appsemble/blob/master/README.md#blocks).
+[Blocks in the readme](https://gitlab.com/appsemble/appsemble/blob/master/README.md#publishing-blocks).

@@ -56,15 +56,30 @@ To see additional options, run the following command.
 yarn start --help
 ```
 
-### Blocks
+A new account can be registered by going to `http://localhost:9999/register`, or you can login on
+`http://localhost:9999/login`.
+
+#### CLI Login
+
+To login using the Appsemble CLI, run the following command, then follow the instructions.
+
+```sh
+yarn appsemble login
+```
+
+#### Registering an Organization
+
+To get started developing locally, the `appsemble` organization needs to be created. This
+organization can be created either in Appsemble Studio, or using the following CLI command.
+
+```sh
+yarn appsemble organization create --name Appsemble appsemble
+```
 
 #### Publishing Blocks
 
-The blocks can be published using the Appsemble CLI. Note that in order to publish blocks, you need
-to be authenticated in the CLI. After having registered an Appsemble account, you can authenticate
-yourself using `yarn appsemble login`.
-
-To publish a new block version, the following command can be used.
+After logging in to the CLI, Appsemble blocks can be published locally by running the following
+command.
 
 ```sh
 yarn appsemble block publish blocks/*
@@ -74,16 +89,14 @@ Any block that is found within the workspaces listed in `package.json` will be h
 information about block development and hot-reloading can be found
 [here](https://appsemble.app/docs/development/developing-blocks).
 
-### App templates
+#### Publishing App templates
 
 In order for users to create apps from within the Appsemble Studio, existing apps that can be used
-as a starting point must be marked as templates. This can be done using the Appsemble CLI. Note that
-in order to publish blocks, you need to be authenticated in the CLI and have proper permissions in
-the organization. After having registered an Appsemble account, you can authenticate yourself using
-`yarn appsemble login`.
+as a starting point must be marked as templates. This can be done using the Appsemble CLI, after
+logging in. To publish these apps, run the following command.
 
 ```sh
-yarn appsemble app create --organization appsemble --template apps/*
+yarn appsemble app create --context development apps/*
 ```
 
 ### Tests
