@@ -12,4 +12,7 @@ export const messages = defineMessages({
   AppEditor: 'AppEditor',
   Maintainer: 'Maintainer',
   Owner: 'Owner',
+  APIUser: 'API User',
+  APIReader: 'API Reader',
+  Translator: 'Translator',
 });
