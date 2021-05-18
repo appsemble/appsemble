@@ -199,14 +199,14 @@ export function AppRoutes(): ReactElement {
         <ProtectedRoute
           organization={organization}
           path={`${path}/assets`}
-          permission={Permission.EditApps}
+          permission={Permission.ReadAssets}
         >
           <AssetsPage />
         </ProtectedRoute>
         <ProtectedRoute
           organization={organization}
           path={`${path}/resources`}
-          permission={Permission.EditApps}
+          permission={Permission.ReadResources}
         >
           <ResourcesRoutes />
         </ProtectedRoute>
@@ -222,7 +222,7 @@ export function AppRoutes(): ReactElement {
           exact
           organization={organization}
           path={`${path}/roles`}
-          permission={Permission.EditApps}
+          permission={Permission.ManageRoles}
         >
           <RolesPage />
         </ProtectedRoute>
