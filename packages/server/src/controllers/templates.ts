@@ -57,6 +57,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
   }
 
   if (!template.template && template.private) {
+    // Only allow cloning of private apps if the user is part of the template’s organization.
     await checkRole(ctx, template.OrganizationId, Permission.ViewApps);
   }
 

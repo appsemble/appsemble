@@ -53,6 +53,7 @@ afterAll(closeTestSchema);
 
 describe('getAssets', () => {
   it('should return an empty array if no assets exist', async () => {
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/assets`);
     expect(response).toMatchObject({
       status: 200,
@@ -75,6 +76,7 @@ describe('getAssets', () => {
       data: Buffer.from('bar'),
     });
 
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/assets`);
     expect(response).toMatchObject({
       status: 200,
@@ -126,6 +128,7 @@ describe('getAssets', () => {
       data: Buffer.from('bar'),
     });
 
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/assets`);
     expect(response).toMatchObject({
       status: 200,
