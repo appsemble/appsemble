@@ -31,7 +31,12 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
           />
         </figure>
         <div className={`pl-3 pr-1 ${styles.header} ${styles.ellipsis}`}>
-          <Title className={styles.ellipsis} lang={defaultLocale} level={5} size={4}>
+          <Title
+            className={`${styles.ellipsis} ${styles.title}`}
+            lang={defaultLocale}
+            level={5}
+            size={4}
+          >
             {name}
           </Title>
           <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
