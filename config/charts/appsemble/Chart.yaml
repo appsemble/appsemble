@@ -5,7 +5,7 @@ appVersion: 0.18.10
 kubeVersion: '>=1.20.0'
 type: application
 description: The official Helm chart for Appsemble.
-icon: https://charts.appsemble.com/icon.png
+icon: https://charts.appsemble.com/icon.svg
 home: https://appsemble.com
 keywords:
   - app
