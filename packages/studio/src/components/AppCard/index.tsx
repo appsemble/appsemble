@@ -33,7 +33,7 @@ export function AppCard({ app }: AppCardProps): ReactElement {
             />
           </figure>
         </div>
-        <Title className={styles.ellipsis} lang={appLang} size={5}>
+        <Title className={`${styles.ellipsis} ${styles.title}`} lang={appLang} size={5}>
           {app.definition.name}
         </Title>
         <Subtitle className={`mb-0 ${styles.ellipsis}`} lang={appLang} size={6}>
