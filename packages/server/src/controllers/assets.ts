@@ -17,13 +17,15 @@ export async function getAssets(ctx: KoaContext<Params>): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: [],
+    attributes: ['OrganizationId'],
     include: [{ model: Asset, attributes: ['id', 'mime', 'filename'], required: false }],
   });
 
   if (!app) {
     throw notFound('App not found');
   }
+
+  await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
   ctx.body = app.Assets.map((asset) => ({
     id: asset.id,

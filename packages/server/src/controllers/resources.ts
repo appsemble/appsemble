@@ -132,7 +132,9 @@ async function verifyPermission(
   } = ctx;
 
   if ('studio' in users || 'cli' in users) {
-    await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
+    await (action === 'count' || action === 'get' || action === 'query'
+      ? checkRole(ctx, app.OrganizationId, Permission.ReadResources)
+      : checkRole(ctx, app.OrganizationId, Permission.ManageResources));
     return;
   }
 

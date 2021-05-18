@@ -56,6 +56,7 @@ export function MemberTable(): ReactElement {
   const me = members?.find((member) => member.id === userInfo.sub);
   const ownerCount = me && members.filter((member) => member.role === 'Owner').length;
   const mayEdit = me && checkRole(me.role, Permission.ManageMembers);
+  const mayEditRole = me && checkRole(me.role, Permission.ManageRoles);
   const mayInvite = me && checkRole(me.role, Permission.InviteMember);
 
   return (
@@ -97,6 +98,7 @@ export function MemberTable(): ReactElement {
               <MemberRow
                 key={member.id}
                 mayEdit={mayEdit}
+                mayEditRole={mayEditRole}
                 member={member}
                 onChanged={onMemberChanged}
                 onDeleted={onMemberDeleted}
