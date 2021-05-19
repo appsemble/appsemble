@@ -1,7 +1,7 @@
 import { UserInfo } from '@appsemble/types';
 
 import { App, AppMessages, Organization } from '../models';
-import { getApp, getRemapperContext, sortApps } from './app';
+import { compareApps, getApp, getRemapperContext } from './app';
 import { setArgv } from './argv';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
@@ -213,6 +213,6 @@ describe('sortApps', () => {
     ];
     const [b, a, d, e, c] = apps;
 
-    expect(apps.sort(sortApps)).toMatchObject([a, b, c, d, e]);
+    expect(apps.sort(compareApps)).toMatchObject([a, b, c, d, e]);
   });
 });

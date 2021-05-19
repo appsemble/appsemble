@@ -107,7 +107,7 @@ export async function getRemapperContext(
  * @param b - The second app to compare.
  * @returns Whether the first or second app goes first in terms of sorting.
  */
-export function sortApps(a: App, b: App): number {
+export function compareApps(a: App, b: App): number {
   if (a.RatingAverage != null && b.RatingAverage != null) {
     return b.RatingAverage - a.RatingAverage || b.RatingCount - a.RatingCount;
   }

@@ -1,12 +1,22 @@
 import { ReactChild, ReactElement, ReactNode, useCallback, useMemo } from 'react';
 
-import { SimpleFormContext, useSimpleForm } from '..';
+import { SimpleFormProvider, useSimpleForm } from '..';
 
 interface SimpleFormObjectProps {
+  /**
+   * The children to provide the context for.
+   */
   children: ReactChild | ReactChild[];
+
+  /**
+   * The name of the property that is used to store the values of the object.
+   */
   name: string;
 }
 
+/**
+ * Component that allows for defining objects when used in conjunction with `<SimpleForm />`.
+ */
 export function SimpleFormObject({ children, name }: SimpleFormObjectProps): ReactElement {
   const simpleForm = useSimpleForm();
 
@@ -50,5 +60,5 @@ export function SimpleFormObject({ children, name }: SimpleFormObjectProps): Rea
     [name, formErrors, setFormError, setValue, setValues, simpleForm],
   );
 
-  return <SimpleFormContext.Provider value={value}>{children}</SimpleFormContext.Provider>;
+  return <SimpleFormProvider value={value}>{children}</SimpleFormProvider>;
 }

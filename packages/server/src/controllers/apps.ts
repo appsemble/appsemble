@@ -36,7 +36,7 @@ import {
   User,
 } from '../models';
 import { KoaContext } from '../types';
-import { parseLanguage, sortApps } from '../utils/app';
+import { compareApps, parseLanguage } from '../utils/app';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
@@ -321,7 +321,7 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
 
       return app;
     })
-    .sort(sortApps)
+    .sort(compareApps)
     .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
@@ -385,7 +385,7 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
 
       return app;
     })
-    .sort(sortApps)
+    .sort(compareApps)
     .map((app) => getAppFromRecord(app, ['yaml']));
 }
 

@@ -137,7 +137,7 @@ export async function writeAppMessages(
       }
     });
 
-    for (const [blockName, versions] of Object.entries(blockMessageKeys)) {
+    for (const [blockName] of Object.entries(blockMessageKeys)) {
       if (oldMessages.blocks?.[blockName]) {
         const currentVersionKeys = Object.keys(blockMessageKeys[blockName]);
         blockMessages[blockName] = {};
@@ -145,7 +145,8 @@ export async function writeAppMessages(
         for (const [version, oldValues] of Object.entries(oldMessages.blocks[blockName])) {
           if (!currentVersionKeys.includes(version)) {
             throw new AppsembleError(
-              `Invalid translation key: blocks.${blockName}.${versions}\nThis block version is not used in the app`,
+              `Invalid translation key: blocks.${blockName}.${version}
+This block version is not used in the app`,
             );
           }
 
@@ -154,13 +155,13 @@ export async function writeAppMessages(
           )) {
             if (typeof oldValue !== 'string') {
               throw new AppsembleError(
-                `Invalid translation key: blocks.${blockName}.${versions}.${oldValueKey}`,
+                `Invalid translation key: blocks.${blockName}.${version}.${oldValueKey}`,
               );
             }
 
             if (verify.includes(parse(filepath).name) && !oldValue) {
               throw new AppsembleError(
-                `Missing translation: blocks.${blockName}.${versions}.${oldValueKey}`,
+                `Missing translation: blocks.${blockName}.${version}.${oldValueKey}`,
               );
             }
           }

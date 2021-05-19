@@ -17,7 +17,7 @@ import {
 } from '../models';
 import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
-import { parseLanguage, sortApps } from '../utils/app';
+import { compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
@@ -131,7 +131,7 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
       }
       return app;
     })
-    .sort(sortApps)
+    .sort(compareApps)
     .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
