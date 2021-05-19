@@ -1,9 +1,9 @@
 {
   "app": {
-    "name": "",
-    "description": "",
-    "app.roles.User": "",
-    "app.roles.User.description": "",
+    "name": "Notes",
+    "description": "Keep personal notes",
+    "app.roles.User": "User",
+    "app.roles.User.description": "A user who keeps their own notes.",
     "pages.0": "Notes"
   },
   "messageIds": {

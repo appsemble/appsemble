@@ -113,6 +113,10 @@ export async function writeAppMessages(
           return [key, oldMessages.app[key]];
         }
 
+        if (filepath === defaultLangFile) {
+          return [key, extractedMessages.app[key]];
+        }
+
         if (verify.includes(parse(filepath).name)) {
           throw new AppsembleError(`Missing translation: app.${key}`);
         }

@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "Holidays",
-    "description": "",
+    "description": "A simple app that fetches holiday information for various countries.",
     "pages.0": "Holidays in Europe",
     "pages.0.subPages.0": "Netherlands",
     "pages.0.subPages.1": "Germany",
