@@ -33,11 +33,6 @@ workflow:
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
 
-# A preconfigured environment for using Helm.
-.helm:
-  image: dtzar/helm-kubectl:3
-  dependencies: []
-
 # A preconfigured environment for using Yarn.
 .yarn:
   interruptible: true
@@ -60,7 +55,7 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  extends: .helm
+  image: dtzar/helm-kubectl:3
   script:
     - helm lint config/charts/*
 
@@ -174,14 +169,14 @@ pack:
 
 # Package the Helm chart
 helm package:
-  extends: .helm
+  image: dtzar/helm-kubectl:3
   stage: build
   needs: []
   script:
     - helm repo add bitnami https://charts.bitnami.com/bitnami
     - cp LICENSE.md config/charts/appsemble/
     - helm dependency build config/charts/appsemble
-    - helm package -d public config/charts/appsemble/
+    - config/bin/helm-package.sh -d public config/charts/appsemble/
   artifacts:
     name: Helm chart
     expose_as: Helm chart
@@ -212,6 +207,20 @@ publish docker:
     - docker push "appsemble/appsemble:latest"
     - docker push "appsemble/appsemble:$CI_COMMIT_TAG"
 
+# Publish the Helm chart to https://charts.appsemble.com
+publish helm:
+  needs:
+    - helm package
+  stage: publish
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  rules:
+    - if: $CI_COMMIT_TAG
+  trigger:
+    project: appsemble/charts
+    strategy: depend
+
+# Publish npm packages to npmjs.org.
 publish npm:
   stage: publish
   dependencies:
@@ -244,7 +253,7 @@ sentry release:
 
 # Delete all succesful jobs for review environments nightly
 cleanup k8s jobs:
-  extends: .helm
+  image: dtzar/helm-kubectl:3
   stage: deploy
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
@@ -255,22 +264,24 @@ cleanup k8s jobs:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  extends: .helm
+  image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
     - build docker image
+    - job: helm package
+      artifacts: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
   environment:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
     on_stop: stop review
+  variables:
+    GIT_STRATEGY: none
   script:
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" || true
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - helm dependency build config/charts/appsemble
-    - helm install "review-$CI_MERGE_REQUEST_IID" config/charts/appsemble
+    - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --atomic
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
@@ -297,7 +308,7 @@ review:
 
 # Stop a review environment.
 stop review:
-  extends: .helm
+  image: dtzar/helm-kubectl:3
   stage: deploy
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
@@ -313,22 +324,23 @@ stop review:
 
 # Deploy the Docker image for master to the staging environment.
 staging:
-  extends: .helm
+  image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
     - build docker image
+    - job: helm package
+      artifacts: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   environment:
     name: staging
     url: https://staging.appsemble.review
+  variables:
+    GIT_STRATEGY: none
   script:
     # This is the only way to make sure staging can be overwritten
     - helm delete staging || true
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - helm dependency build config/charts/appsemble
-    # First, install from the last stable tag.
-    - helm install staging config/charts/appsemble
+    - helm install staging ./public/appsemble-*.tgz
       --atomic
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
@@ -354,20 +366,22 @@ staging:
       --set "sentrySecret=sentry"
 
 production:
-  extends: .helm
+  image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
     - publish docker
+    - job: helm package
+      artifacts: true
   rules:
     - if: $CI_COMMIT_TAG
   dependencies: []
   environment:
     name: production
     url: https://appsemble.app
+  variables:
+    GIT_STRATEGY: none
   script:
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
-    - helm dependency build config/charts/appsemble
-    - helm upgrade appsemble config/charts/appsemble
+    - helm upgrade appsemble ./public/appsemble-*.tgz
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
