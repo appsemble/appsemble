@@ -10,7 +10,6 @@ import {
 } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import tags from 'language-tags';
-import { mergeWith } from 'lodash';
 import { Op } from 'sequelize';
 
 import { App, AppMessages, BlockMessages, BlockVersion } from '../models';
@@ -18,6 +17,7 @@ import { KoaContext } from '../types';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { getAppsembleMessages } from '../utils/getAppsembleMessages';
+import { mergeMessages } from '../utils/mergeMessages';
 
 interface Params {
   appId: string;
@@ -141,15 +141,10 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
 
   ctx.body = {
     language: lang,
-    messages: mergeWith(
+    messages: mergeMessages(
       appMessages,
       baseLanguageMessages?.messages ?? {},
       languageMessages?.messages ?? {},
-      (objectValue, newValue) => {
-        if (typeof newValue === 'string') {
-          return newValue || objectValue;
-        }
-      },
     ),
   };
 }

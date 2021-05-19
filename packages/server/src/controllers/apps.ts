@@ -17,7 +17,7 @@ import { badRequest, conflict, notFound } from '@hapi/boom';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { File } from 'koas-body-parser';
-import { isEqual, mergeWith, uniqWith } from 'lodash';
+import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
@@ -40,6 +40,7 @@ import { compareApps, parseLanguage } from '../utils/app';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
+import { mergeMessages } from '../utils/mergeMessages';
 import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
 
@@ -252,15 +253,10 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
     const languageMessages = app.AppMessages.find((messages) => messages.language === language);
 
     Object.assign(app, {
-      messages: mergeWith(
+      messages: mergeMessages(
         extractAppMessages(app.definition),
         baseMessages?.messages ?? {},
         languageMessages?.messages ?? {},
-        (objectValue, newValue) => {
-          if (typeof newValue === 'string') {
-            return newValue || objectValue;
-          }
-        },
       ),
     });
   }
@@ -306,15 +302,10 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
         const languageMessages = app.AppMessages.find((messages) => messages.language === language);
 
         Object.assign(app, {
-          messages: mergeWith(
+          messages: mergeMessages(
             extractAppMessages(app.definition),
             baseMessages?.messages ?? {},
             languageMessages?.messages ?? {},
-            (objectValue, newValue) => {
-              if (typeof newValue === 'string') {
-                return newValue || objectValue;
-              }
-            },
           ),
         });
       }
@@ -370,15 +361,10 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
         const languageMessages = app.AppMessages.find((messages) => messages.language === language);
 
         Object.assign(app, {
-          messages: mergeWith(
+          messages: mergeMessages(
             extractAppMessages(app.definition),
             baseMessages?.messages ?? {},
             languageMessages?.messages ?? {},
-            (objectValue, newValue) => {
-              if (typeof newValue === 'string') {
-                return newValue || objectValue;
-              }
-            },
           ),
         });
       }

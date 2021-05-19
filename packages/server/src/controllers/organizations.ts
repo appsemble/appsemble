@@ -2,7 +2,6 @@ import { randomBytes } from 'crypto';
 
 import { extractAppMessages, Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
-import { mergeWith } from 'lodash';
 import { col, fn, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import {
@@ -20,6 +19,7 @@ import { KoaContext } from '../types';
 import { compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
+import { mergeMessages } from '../utils/mergeMessages';
 import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
 
@@ -117,15 +117,10 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
         const languageMessages = app.AppMessages.find((messages) => messages.language === language);
 
         Object.assign(app, {
-          messages: mergeWith(
+          messages: mergeMessages(
             extractAppMessages(app.definition),
             baseMessages?.messages ?? {},
             languageMessages?.messages ?? {},
-            (objectValue, newValue) => {
-              if (typeof newValue === 'string') {
-                return newValue || objectValue;
-              }
-            },
           ),
         });
       }
