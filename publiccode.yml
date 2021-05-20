@@ -15,18 +15,33 @@ roadmap: 'https://gitlab.com/groups/appsemble/-/roadmap'
 developmentStatus: beta
 softwareType: standalone/web
 description:
+  en:
+    localisedName: Appsemble
+    genericName: Appsemble
+    shortDescription: >-
+      Appsemple is an open source low-code app building platform. The low-code editor allows users
+      to build apps without the need for technical knowledge.
+    longDescription: >-
+      Appsemble is am open source low-code app building platform. Appsemble enables users to build
+      production grade apps in no time using blocks. Appsemble apps can alwo use existing data
+      sources. The apps built using Appsemble are discoverable in an internal app store.
+    documentation: 'https://appsemble.app/docs'
+    features:
+      - Not much technical knowledge required
+      - Provider independant
+      - Time saving
   nl:
     localisedName: Appsemble
     genericName: Appsemble
     shortDescription: >-
-      Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er
-      basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen.
+      Appsemple is een open source low-code app platform. In de beschikbare low-code editor worden
+      er basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen.
     longDescription: >-
       Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er
       basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen. Ook kan er relatief
       gemakkelijk data aan de applicaties worden gekoppeld en kunnen de ontwikkelde apps in een
       eigen store worden opgeslagen.
-    documentation: 'https://appsemble.app/nl/docs'
+    documentation: 'https://appsemble.app/docs'
     features:
       - Weinig technische kennis benodigd
       - Geen leverancier afhankelijkheid
