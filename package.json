@@ -9,12 +9,12 @@
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:studio": "webpack --config config/webpack/studio.js --mode production",
     "create-appsemble": "ts-node -r tsconfig-paths/register -TP packages/create-appsemble/tsconfig.json packages/create-appsemble/src",
+    "prepare": "husky install",
     "prettier": "prettier --check",
     "scripts": "ts-node -r tsconfig-paths/register -TP packages/scripts/tsconfig.json packages/scripts/src",
     "start": "ts-node -r tsconfig-paths/register -TP packages/cli/tsconfig.json packages/cli/src start",
     "stylelint": "stylelint --report-needless-disables",
-    "test": "jest",
-    "prepare": "husky install"
+    "test": "jest"
   },
   "lint-staged": {
     "*.css": [
