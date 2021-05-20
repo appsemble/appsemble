@@ -95,6 +95,14 @@ export const paths: OpenAPIV3.PathsObject = {
     },
     get: {
       tags: ['app'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description: 'Get all existing apps.',
       operationId: 'queryApps',
       responses: {
@@ -118,6 +126,14 @@ export const paths: OpenAPIV3.PathsObject = {
   '/api/apps/me': {
     get: {
       tags: ['app'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description: 'Get all apps that are editable by the user.',
       operationId: 'queryMyApps',
       responses: {
@@ -142,6 +158,14 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description: 'Get a single app',
       operationId: 'getAppById',
       responses: {

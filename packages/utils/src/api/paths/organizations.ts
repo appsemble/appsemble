@@ -388,6 +388,14 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description:
         'Get a list of an organization’s apps. Private apps are excluded unless the user is in the organization.',
       operationId: 'getOrganizationApps',

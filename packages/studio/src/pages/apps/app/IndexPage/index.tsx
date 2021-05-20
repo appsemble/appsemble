@@ -44,7 +44,7 @@ export function IndexPage(): ReactElement {
             <CloneButton app={app} />
           </>
         }
-        description={app.definition.description}
+        description={app.messages?.app?.description || app.definition.description}
         details={
           <StarRating
             className="is-inline"
@@ -64,7 +64,7 @@ export function IndexPage(): ReactElement {
             {app.OrganizationName || app.OrganizationId}
           </Link>
         }
-        title={app.definition.name}
+        title={app.messages?.app?.name || app.definition.name}
       >
         <AppScreenshots />
       </CardHeaderControl>

@@ -47,6 +47,7 @@ export * from './SimpleBeforeUnload';
 export * from './SimpleForm';
 export * from './SimpleFormError';
 export * from './SimpleFormField';
+export * from './SimpleFormObject';
 export * from './SimpleModalFooter';
 export * from './SimpleSubmit';
 export * from './Table';

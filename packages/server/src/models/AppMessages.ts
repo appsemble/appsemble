@@ -1,4 +1,4 @@
-import { Messages as MessagesType } from '@appsemble/types';
+import { AppsembleMessages, Messages as MessagesType } from '@appsemble/types';
 import {
   BelongsTo,
   Column,
@@ -28,7 +28,7 @@ export class AppMessages extends Model implements MessagesType {
   language: string;
 
   @Column(DataType.JSON)
-  messages: Record<string, string>;
+  messages: AppsembleMessages;
 
   @CreatedAt
   created: Date;

@@ -43,18 +43,17 @@ export function getAppFromRecord(
       record.AppSnapshots?.[0]?.yaml ??
       (!omittedValues.includes('yaml') && yaml.safeDump(record.definition)),
     showAppsembleLogin: record.showAppsembleLogin ?? true,
-    rating: record.get('RatingCount')
-      ? {
-          average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,
-          count: record.get('RatingCount') ? Number(record.get('RatingCount')) : null,
-        }
-      : undefined,
-    resources: record.template && record.get('ResourceCount') ? true : undefined,
+    rating:
+      record.RatingAverage == null
+        ? undefined
+        : { count: record.RatingCount, average: record.RatingAverage },
+    resources: record.template && record.Resources?.length ? true : undefined,
     OrganizationId: record.OrganizationId,
     OrganizationName: record?.Organization?.name,
     screenshotUrls: record.AppScreenshots?.map(
       ({ id }) => `/api/apps/${record.id}/screenshots/${id}`,
     ),
+    messages: record.messages,
   };
 
   return omit(result, omittedValues);
