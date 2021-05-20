@@ -110,10 +110,11 @@ export function SettingsPage({
           maxLength={160}
           name="description"
         />
-        <FileUpload
+        <SimpleFormField
           accept="image/jpeg, image/png, image/tiff, image/webp"
+          component={FileUpload}
           fileButtonLabel={<FormattedMessage {...messages.logo} />}
-          fileLabel={<FormattedMessage {...messages.noFile} />}
+          fileLabel={icon?.name || <FormattedMessage {...messages.noFile} />}
           help={<FormattedMessage {...messages.logoDescription} />}
           label={<FormattedMessage {...messages.logo} />}
           name="logo"
