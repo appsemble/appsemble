@@ -107,7 +107,7 @@ export function RolesPage(): ReactElement {
                       <AsyncSelect onChange={(event) => onChangeRole(event, member.id)}>
                         {Object.keys(app.definition.security.roles).map((role) => (
                           <option key={role} selected={role === member.role} value={role}>
-                            {role}
+                            {app.messages?.app?.[`app.roles.${role}`] || role}
                           </option>
                         ))}
                       </AsyncSelect>

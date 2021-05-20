@@ -1,7 +1,7 @@
 import { join, parse } from 'path';
 
 import { AppsembleError, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
-import { Messages } from '@appsemble/types';
+import { AppsembleMessages, Messages } from '@appsemble/types';
 import axios from 'axios';
 import { readJson } from 'fs-extra';
 
@@ -27,7 +27,12 @@ export async function uploadMessages(
     async (messageFile) => {
       logger.verbose(`Processing ${messageFile} ⚙️`);
       const { ext, name: language } = parse(messageFile);
-      let messages: Record<string, string> = {};
+      let messages: AppsembleMessages = {
+        core: {},
+        app: {},
+        blocks: {},
+        messageIds: {},
+      };
 
       if (result.some((entry) => entry.language === language)) {
         throw new AppsembleError(
@@ -38,7 +43,7 @@ export async function uploadMessages(
       if (ext === 'json') {
         messages = await readJson(messageFile);
       } else {
-        [messages] = await readYaml<Record<string, string>>(messageFile);
+        [messages] = await readYaml<AppsembleMessages>(messageFile);
       }
       result.push({ force, language, messages });
     },

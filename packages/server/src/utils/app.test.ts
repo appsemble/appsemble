@@ -1,7 +1,7 @@
 import { UserInfo } from '@appsemble/types';
 
 import { App, AppMessages, Organization } from '../models';
-import { getApp, getRemapperContext } from './app';
+import { compareApps, getApp, getRemapperContext } from './app';
 import { setArgv } from './argv';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
@@ -153,17 +153,17 @@ describe('getRemapperContext', () => {
     await AppMessages.create({
       AppId: app.id,
       language: 'nl',
-      messages: { bye: 'Doei', hello: 'Hallo', word: 'Woord' },
+      messages: { messageIds: { bye: 'Doei', hello: 'Hallo', word: 'Woord' } },
     });
     await AppMessages.create({
       AppId: app.id,
       language: 'nl-nl',
-      messages: { bye: 'Dag', hello: 'Hoi' },
+      messages: { messageIds: { bye: 'Dag', hello: 'Hoi' } },
     });
     await AppMessages.create({
       AppId: app.id,
       language: 'nl-nl-brabants',
-      messages: { bye: 'Houdoe' },
+      messages: { messageIds: { bye: 'Houdoe' } },
     });
     const userInfo: UserInfo = {
       email: '',
@@ -183,5 +183,36 @@ describe('getRemapperContext', () => {
     expect(word.format()).toBe('Woord');
     expect(hello.format()).toBe('Hoi');
     expect(bye.format()).toBe('Houdoe');
+  });
+});
+
+describe('sortApps', () => {
+  it('should sort apps by their app rating in descending order and with no ratings last', () => {
+    const apps: Partial<App>[] = [
+      {
+        id: 2,
+        RatingAverage: 5,
+        RatingCount: 1,
+      },
+      {
+        id: 1,
+        RatingAverage: 5,
+        RatingCount: 2,
+      },
+      {
+        id: 4,
+      },
+      {
+        id: 5,
+      },
+      {
+        id: 3,
+        RatingAverage: 3,
+        RatingCount: 2,
+      },
+    ];
+    const [b, a, d, e, c] = apps;
+
+    expect(apps.sort(compareApps)).toMatchObject([a, b, c, d, e]);
   });
 });

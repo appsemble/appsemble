@@ -46,13 +46,18 @@ describe('getMessages', () => {
     authorizeStudio();
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-gb',
-      messages: { test: 'Test.' },
+      messages: { messageIds: { test: 'Test.' } },
     });
 
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
     expect(data).toMatchObject({
       language: 'en-gb',
-      messages: { core: {}, blocks: {}, app: { test: 'Test.' } },
+      messages: {
+        core: {},
+        blocks: {},
+        app: { name: 'Test App', description: 'Description' },
+        messageIds: { test: 'Test.' },
+      },
     });
   });
 
@@ -81,19 +86,19 @@ describe('getMessages', () => {
     authorizeStudio();
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
-      messages: { test: 'Test.', bla: 'bla' },
+      messages: { messageIds: { test: 'Test.', bla: 'bla' } },
     });
 
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-gb',
-      messages: { bla: 'blah' },
+      messages: { messageIds: { bla: 'blah' } },
     });
 
     const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB?merge=true`);
 
     expect(data).toMatchObject({
       language: 'en-gb',
-      messages: { core: {}, blocks: {}, app: { test: 'Test.', bla: 'blah' } },
+      messages: { messageIds: { test: 'Test.', bla: 'blah' } },
     });
   });
 
@@ -190,7 +195,7 @@ describe('getMessages', () => {
     await AppMessages.create({
       AppId: app.id,
       language: 'nl',
-      messages: { test: 'test translation' },
+      messages: { messageIds: { test: 'test translation' } },
     });
     await app.update({
       definition: {
@@ -211,7 +216,7 @@ describe('getMessages', () => {
       data: {
         language: 'nl',
         messages: {
-          app: { test: 'test translation' },
+          messageIds: { test: 'test translation' },
           core: {},
           blocks: {
             '@testorganization/test': {
@@ -243,7 +248,7 @@ describe('getMessages', () => {
     await AppMessages.create({
       AppId: app.id,
       language: 'en-gb',
-      messages: { test: 'test translation' },
+      messages: { messageIds: { test: 'test translation' } },
     });
     await app.update({
       definition: {
@@ -264,8 +269,7 @@ describe('getMessages', () => {
       data: {
         language: 'en-gb',
         messages: {
-          app: { test: 'test translation' },
-          core: {},
+          messageIds: { test: 'test translation' },
           blocks: {
             '@testorganization/test': {
               '0.0.0': { foo: 'bar', bla: 'blah' },
@@ -282,7 +286,7 @@ describe('getMessages', () => {
     await AppMessages.create({
       AppId: app.id,
       language: 'nl',
-      messages: { test: 'test translation' },
+      messages: { messageIds: { test: 'test translation' } },
     });
 
     const response = await request.get(`/api/apps/${app.id}/messages/nl`);
@@ -291,7 +295,7 @@ describe('getMessages', () => {
       data: {
         language: 'nl',
         messages: {
-          app: { test: 'test translation' },
+          messageIds: { test: 'test translation' },
           core: {
             ...Object.fromEntries(
               Object.entries(messages).filter(
@@ -311,22 +315,22 @@ describe('createMessages', () => {
     authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
-      messages: { test: 'Test.' },
+      messages: { messageIds: { test: 'Test.' } },
     });
     const translation = await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } });
 
     expect(response).toMatchObject({
       status: 201,
-      data: { language: 'en', messages: { test: 'Test.' } },
+      data: { language: 'en', messages: { messageIds: { test: 'Test.' } } },
     });
-    expect(translation.messages).toStrictEqual({ test: 'Test.' });
+    expect(translation.messages).toStrictEqual({ messageIds: { test: 'Test.' } });
   });
 
   it('should not accept invalid language tags', async () => {
     authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/messages`, {
       language: 'english',
-      messages: { test: 'Test.' },
+      messages: { messageIds: { test: 'Test.' } },
     });
 
     expect(response).toMatchObject({
@@ -341,7 +345,7 @@ describe('deleteMessages', () => {
     authorizeStudio();
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
-      messages: { test: 'Test.' },
+      messages: { messageIds: { test: 'Test.' } },
     });
 
     const response = await request.delete(`/api/apps/${app.id}/messages/en`);
@@ -380,15 +384,15 @@ describe('getLanguages', () => {
     authorizeStudio();
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'nl',
-      messages: { test: 'Geslaagd met vliegende kleuren' },
+      messages: { messageIds: { test: 'Geslaagd met vliegende kleuren' } },
     });
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en',
-      messages: { test: 'Passed with flying colors' },
+      messages: { messageIds: { test: 'Passed with flying colors' } },
     });
     await request.post(`/api/apps/${app.id}/messages`, {
       language: 'en-GB',
-      messages: { test: 'Passed with flying colours' },
+      messages: { messageIds: { test: 'Passed with flying colours' } },
     });
 
     const { data } = await request.get(`/api/apps/${app.id}/messages`);

@@ -1,12 +1,18 @@
 {
-  "date": "Datum",
-  "name": "Naam ({locale})",
-  "pages.0": "Feestdagen in Europa",
-  "pages.0.subPages.0": "Nederland",
-  "pages.0.subPages.1": "Duitsland",
-  "pages.0.subPages.2": "Spanje",
-  "pages.1": "Feestdagen in Amerika",
-  "pages.1.subPages.0": "VS",
-  "pages.1.subPages.1": "Canada",
-  "pages.1.subPages.2": "Mexico"
+  "app": {
+    "name": "Feestdagen",
+    "description": "Een eenvoudige app die feestdagen voor verschillende landen ophaalt.",
+    "pages.0": "Feestdagen in Europa",
+    "pages.0.subPages.0": "Nederland",
+    "pages.0.subPages.1": "Duitsland",
+    "pages.0.subPages.2": "Spanje",
+    "pages.1": "Feestdagen in Amerika",
+    "pages.1.subPages.0": "VS",
+    "pages.1.subPages.1": "Canada",
+    "pages.1.subPages.2": "Mexico"
+  },
+  "messageIds": {
+    "date": "Datum",
+    "name": "Naam ({locale})"
+  }
 }

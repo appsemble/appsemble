@@ -28,6 +28,11 @@ export async function getStudioMessages(ctx: KoaContext<Params>): Promise<void> 
       .find((sub) => sub.type() === 'language'),
   ).toLowerCase();
 
+  const languages = await getSupportedLanguages();
+  if (!languages.has(lang) && !languages.has(baseLanguage)) {
+    throw notFound(`Language “${language}” could not be found`);
+  }
+
   const messages = await getAppsembleMessages(lang, baseLanguage);
   if (Object.keys(messages).length === 0 && baseLanguage !== defaultLocale) {
     throw notFound(`Language “${language}” could not be found`);

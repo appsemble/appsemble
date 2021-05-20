@@ -57,7 +57,7 @@ describe('extractAppMessages', () => {
         { name: 'Second Page', blocks: [] },
       ],
     });
-    expect(result).toStrictEqual({ 'pages.0': 'First Page', 'pages.1': 'Second Page' });
+    expect(result).toMatchObject({ app: { 'pages.0': 'First Page', 'pages.1': 'Second Page' } });
   });
 
   it('should extract block header remappers', () => {
@@ -72,7 +72,7 @@ describe('extractAppMessages', () => {
         },
       ],
     });
-    expect(result).toStrictEqual({ foo: '', 'pages.0': 'Page' });
+    expect(result).toMatchObject({ messageIds: { foo: '' }, app: { 'pages.0': 'Page' } });
   });
 
   it('should extract remappers from block parameters', () => {
@@ -91,7 +91,7 @@ describe('extractAppMessages', () => {
         },
       ],
     });
-    expect(result).toStrictEqual({ foo: '', 'pages.0': 'Page' });
+    expect(result).toMatchObject({ messageIds: { foo: '' }, app: { 'pages.0': 'Page' } });
   });
 
   it('should extract remappers from actions', () => {
@@ -123,11 +123,9 @@ describe('extractAppMessages', () => {
         },
       ],
     });
-    expect(result).toStrictEqual({
-      onClickMessageId: '',
-      onErrorMessageId: '',
-      onSuccessMessageId: '',
-      'pages.0': 'Page',
+    expect(result).toMatchObject({
+      messageIds: { onClickMessageId: '', onErrorMessageId: '', onSuccessMessageId: '' },
+      app: { 'pages.0': 'Page' },
     });
   });
 
@@ -142,7 +140,7 @@ describe('extractAppMessages', () => {
         },
       ],
     });
-    expect(result).toStrictEqual({ 'pages.0': 'Tabs', 'pages.0.subPages.0': 'Tab' });
+    expect(result).toMatchObject({ app: { 'pages.0': 'Tabs', 'pages.0.subPages.0': 'Tab' } });
   });
 
   it('should append any messages returned by onBlock', () => {
@@ -155,6 +153,6 @@ describe('extractAppMessages', () => {
       onBlock,
     );
     expect(onBlock).toHaveBeenCalledWith({ type: '', version: '' }, ['pages', 0, 'blocks', 0]);
-    expect(result).toStrictEqual({ foo: 'bar', 'pages.0': 'Page' });
+    expect(result).toMatchObject({ app: { 'pages.0': 'Page' } });
   });
 });

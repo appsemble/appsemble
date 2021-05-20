@@ -59,6 +59,18 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/language' },
+      {
+        in: 'query',
+        name: 'merge',
+        description: 'Whether the language’s messages should be merged with its base language.',
+        schema: { type: 'string' },
+      },
+      {
+        in: 'query',
+        name: 'override',
+        description: 'Whether the app’s language overrides should be included and merged.',
+        schema: { type: 'string', default: 'true' },
+      },
     ],
     get: {
       tags: ['language'],

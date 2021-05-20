@@ -1104,6 +1104,11 @@ export interface App {
    * The date when the app was last updated.
    */
   $updated?: string;
+
+  /**
+   * Any pre-included translations of the app.
+   */
+  messages?: AppsembleMessages;
 }
 
 /**
@@ -1228,6 +1233,48 @@ export interface AppMember {
 }
 
 /**
+ * The layout used to store Appsemble messages.
+ */
+export interface AppsembleMessages {
+  /**
+   * Messages related to the Appsemble core.
+   *
+   * This may be an empty object if the language is the default locale.
+   */
+  core: Record<string, string>;
+
+  /**
+   * Translations for global block messages and meta properties of the app.
+   *
+   * This may be an empty object if the language is the default locale.
+   */
+  app: Record<string, string>;
+
+  /**
+   * A list of messages specific to the app.
+   */
+  messageIds: Record<string, string>;
+
+  /**
+   * A list of messages specific to each block used in the app.
+   *
+   * At root the keys represent a block type.
+   * One layer deep the keys represent a block version.
+   * Two layers deep the keys represent the key/message pairs.
+   *
+   * @example
+   * {
+   *   "<at>example/test": {
+   *     "0.0.0": {
+   *       "exampleKey": "Example Message"
+   *     }
+   *   }
+   * }
+   */
+  blocks: Record<string, Record<string, Record<string, string>>>;
+}
+
+/**
  * Translated messages for an app or block.
  */
 export interface Messages {
@@ -1244,7 +1291,7 @@ export interface Messages {
   /**
    * A mapping of message id to message content.
    */
-  messages: Record<string, string>;
+  messages: AppsembleMessages;
 }
 
 export interface AppMessages {
@@ -1256,37 +1303,7 @@ export interface AppMessages {
   /**
    * The messages available to the app
    */
-  messages: {
-    /**
-     * Messages related to the Appsemble core.
-     *
-     * This may be an empty object if the language is the default locale.
-     */
-    core: Record<string, string>;
-
-    /**
-     * A list of messages specific to the app.
-     */
-    app: Record<string, string>;
-
-    /**
-     * A list of messages specific to each block used in the app.
-     *
-     * At root the keys represent a block type.
-     * One layer deep the keys represent a block version.
-     * Two layers deep the keys represent the key/message pairs.
-     *
-     * @example
-     * {
-     *   "<at>example/test": {
-     *     "0.0.0": {
-     *       "exampleKey": "Example Message"
-     *     }
-     *   }
-     * }
-     */
-    blocks: Record<string, Record<string, Record<string, string>>>;
-  };
+  messages: AppsembleMessages;
 }
 
 /**

@@ -22,7 +22,11 @@ export function AppCard({ app }: AppCardProps): ReactElement {
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
   return (
-    <Link className="card" title={app.definition.description} to={`/${lang}/apps/${app.id}`}>
+    <Link
+      className="card"
+      title={app.messages?.app?.description || app.definition.description}
+      to={`/${lang}/apps/${app.id}`}
+    >
       <div className="card-content">
         <div className="media">
           <figure className={`image is-128x128 ${styles.figure}`}>
@@ -34,7 +38,7 @@ export function AppCard({ app }: AppCardProps): ReactElement {
           </figure>
         </div>
         <Title className={`${styles.ellipsis} ${styles.title}`} lang={appLang} size={5}>
-          {app.definition.name}
+          {app.messages?.app?.name || app.definition.name}
         </Title>
         <Subtitle className={`mb-0 ${styles.ellipsis}`} lang={appLang} size={6}>
           {app.OrganizationName || app.OrganizationId}

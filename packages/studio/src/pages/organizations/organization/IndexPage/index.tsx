@@ -3,7 +3,7 @@ import { App, BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useParams, useRouteMatch } from 'react-router-dom';
 
 import { AppCard } from '../../../../components/AppCard';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
@@ -24,8 +24,9 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
   const { url } = useRouteMatch();
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
+  const { lang } = useParams<{ lang: string }>();
 
-  const appsResult = useData<App[]>(`/api/organizations/${organization.id}/apps`);
+  const appsResult = useData<App[]>(`/api/organizations/${organization.id}/apps?language=${lang}`);
   const blocksResult = useData<BlockManifest[]>(`/api/organizations/${organization.id}/blocks`);
 
   const userOrganization = organizations?.find((org) => org.id === organization.id);
