@@ -1,7 +1,12 @@
 import { URL } from 'url';
 
 import { UserInfo } from '@appsemble/types';
-import { objectCache, RemapperContext, validateLanguage } from '@appsemble/utils';
+import {
+  extractAppMessages,
+  objectCache,
+  RemapperContext,
+  validateLanguage,
+} from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
@@ -11,6 +16,7 @@ import { FindOptions, IncludeOptions, Op } from 'sequelize';
 import { App, AppMessages } from '../models';
 import { KoaContext } from '../types';
 import { argv } from './argv';
+import { mergeMessages } from './mergeMessages';
 
 const formatters = {
   getNumberFormat: memoizeIntlConstructor(Intl.NumberFormat),
@@ -167,4 +173,30 @@ export function parseLanguage(ctx: KoaContext): {
   ) as IncludeOptions[];
 
   return { language: lang, baseLanguage, query };
+}
+
+/**
+ * Applies `messages` property to an app model instance
+ * based on the included `AppMessages` and languages.
+ *
+ * Note that this mutates `app`.
+ *
+ * @param app - The app to apply the messages to.
+ * @param language - The language to search for within AppMessages.
+ * @param baseLanguage - The base language to search for within AppMessages.
+ */
+export function applyAppMessages(app: App, language: string, baseLanguage: string): void {
+  if (app.AppMessages?.length) {
+    const baseMessages =
+      baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
+    const languageMessages = app.AppMessages.find((messages) => messages.language === language);
+
+    Object.assign(app, {
+      messages: mergeMessages(
+        extractAppMessages(app.definition),
+        baseMessages?.messages ?? {},
+        languageMessages?.messages ?? {},
+      ),
+    });
+  }
 }

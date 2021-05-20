@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 
-import { extractAppMessages, Permission } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
 import { col, fn, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
@@ -16,10 +16,9 @@ import {
 } from '../models';
 import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
-import { compareApps, parseLanguage } from '../utils/app';
+import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
-import { mergeMessages } from '../utils/mergeMessages';
 import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
 
@@ -111,19 +110,8 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
         });
       }
 
-      if (app.AppMessages?.length) {
-        const baseMessages =
-          baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
-        const languageMessages = app.AppMessages.find((messages) => messages.language === language);
+      applyAppMessages(app, language, baseLanguage);
 
-        Object.assign(app, {
-          messages: mergeMessages(
-            extractAppMessages(app.definition),
-            baseMessages?.messages ?? {},
-            languageMessages?.messages ?? {},
-          ),
-        });
-      }
       return app;
     })
     .sort(compareApps)

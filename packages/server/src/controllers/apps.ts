@@ -6,7 +6,6 @@ import {
   AppsembleValidationError,
   BlockMap,
   blockNamePattern,
-  extractAppMessages,
   normalize,
   Permission,
   StyleValidationError,
@@ -36,11 +35,10 @@ import {
   User,
 } from '../models';
 import { KoaContext } from '../types';
-import { compareApps, parseLanguage } from '../utils/app';
+import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
-import { mergeMessages } from '../utils/mergeMessages';
 import { getAppFromRecord } from '../utils/model';
 import { readAsset } from '../utils/readAsset';
 
@@ -247,19 +245,7 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
     app.RatingAverage = Number(rating.get('RatingAverage'));
   }
 
-  if (app.AppMessages?.length) {
-    const baseMessages =
-      baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
-    const languageMessages = app.AppMessages.find((messages) => messages.language === language);
-
-    Object.assign(app, {
-      messages: mergeMessages(
-        extractAppMessages(app.definition),
-        baseMessages?.messages ?? {},
-        languageMessages?.messages ?? {},
-      ),
-    });
-  }
+  applyAppMessages(app, language, baseLanguage);
 
   ctx.body = getAppFromRecord(app);
 }
@@ -296,19 +282,7 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
         });
       }
 
-      if (app.AppMessages?.length) {
-        const baseMessages =
-          baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
-        const languageMessages = app.AppMessages.find((messages) => messages.language === language);
-
-        Object.assign(app, {
-          messages: mergeMessages(
-            extractAppMessages(app.definition),
-            baseMessages?.messages ?? {},
-            languageMessages?.messages ?? {},
-          ),
-        });
-      }
+      applyAppMessages(app, language, baseLanguage);
 
       return app;
     })
@@ -355,19 +329,7 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
         });
       }
 
-      if (app.AppMessages?.length) {
-        const baseMessages =
-          baseLanguage && app.AppMessages.find((messages) => messages.language === baseLanguage);
-        const languageMessages = app.AppMessages.find((messages) => messages.language === language);
-
-        Object.assign(app, {
-          messages: mergeMessages(
-            extractAppMessages(app.definition),
-            baseMessages?.messages ?? {},
-            languageMessages?.messages ?? {},
-          ),
-        });
-      }
+      applyAppMessages(app, language, baseLanguage);
 
       return app;
     })
