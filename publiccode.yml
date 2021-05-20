@@ -1,8 +1,8 @@
 publiccodeYmlVersion: '0.2'
 name: Appsemble
-url: https://gitlab.com/appsemble/appsemble
-softwareVersion: 0.18.10
-releaseDate: '2021-05-06'
+url: 'https://gitlab.com/appsemble/appsemble'
+softwareVersion: 0.18.15
+releaseDate: '2021-05-20'
 logo: packages/server/assets/appsemble.svg
 platforms:
   - web
@@ -26,7 +26,7 @@ description:
       basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen. Ook kan er relatief
       gemakkelijk data aan de applicaties worden gekoppeld en kunnen de ontwikkelde apps in een
       eigen store worden opgeslagen.
-    documentation: https://appsemble.app/nl/docs
+    documentation: 'https://appsemble.app/nl/docs'
     features:
       - Weinig technische kennis benodigd
       - Geen leverancier afhankelijkheid
@@ -43,11 +43,11 @@ maintenance:
 localisation:
   localisationReady: true
   availableLanguages:
-    - nl
-    - en
     - da
-    - fr
     - de
+    - en
+    - fr
+    - nl
 dependsOn:
   open:
     - name: Docker
