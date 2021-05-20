@@ -3,7 +3,7 @@ name: Appsemble
 url: 'https://gitlab.com/appsemble/appsemble'
 softwareVersion: 0.18.10
 releaseDate: '2021-05-06'
-logo: 'https://appsemble.com/wp-content/uploads/2019/03/Appsemble-logo-50.png'
+logo: 'https://appsemble.app/icon-512.png'
 platforms:
   - web
 categories:
@@ -12,41 +12,42 @@ usedBy:
   - Gemeente Amsterdam
   - Gemeente Amersfoort
 roadmap: 'https://gitlab.com/groups/appsemble/-/roadmap'
-developmentStatus: development
+developmentStatus: beta
 softwareType: standalone/web
 description:
   nl:
     localisedName: Appsemble
     genericName: Appsemble
     shortDescription: >-
-      Appsemple is een open source low-code platform. In de beschikbare low-code
-      editor worden er basis bouwblokken aangeboden om snel en gemakkelijk een
-      app te bouwen.
+      Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er
+      basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen.
     longDescription: >-
-      Appsemple is een open source low-code platform. In de beschikbare low-code
-      editor worden er basis bouwblokken aangeboden om snel en gemakkelijk een
-      app te bouwen. Ook kan er relatief gemakkelijk data aan de applicaties
-      worden gekoppeld en kunnen de ontwikkelde apps in een eigen store worden
-      opgeslagen.
-    documentation: 'https://appsemble.app/en/docs'
+      Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er
+      basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen. Ook kan er relatief
+      gemakkelijk data aan de applicaties worden gekoppeld en kunnen de ontwikkelde apps in een
+      eigen store worden opgeslagen.
+    documentation: 'https://appsemble.app/nl/docs'
     features:
-      - Geen technische kennis benodigd
-      - Geen vaste leveranciers
+      - Weinig technische kennis benodigd
+      - Geen leverancier afhankelijkheid
       - Tijdbesparend
 legal:
-  license: EUPL-1.2
+  license: LGPL-3.0-only
   mainCopyrightOwner: Appsemble
   repoOwner: Appsemble
 maintenance:
   type: internal
   contacts:
-    - name: Kees van de Broek
-      email: kvdb@d-centralize.nl
+    - name: Kees van den Broek
+      email: kees@appsemble.com
 localisation:
   localisationReady: true
   availableLanguages:
     - nl
     - en
+    - da
+    - fr
+    - de
 dependsOn:
   open:
     - name: Docker
