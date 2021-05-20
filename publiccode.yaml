@@ -56,6 +56,3 @@ dependsOn:
       version: 14
     - name: Yarn
     - name: appsemble/appsemble
-installations:
-  - type: helm
-    url: 'https://charts.appsemble.com'
