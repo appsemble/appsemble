@@ -28,6 +28,7 @@ export const dialog: ActionCreator<'dialog'> = ({
         closable,
         data,
         close() {
+          close();
           reject(new Error('closed'));
         },
         fullscreen,
