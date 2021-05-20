@@ -13,7 +13,7 @@ Regular icons may be used for various purposes. Some example usages are:
 For app icons it’s generally recommended to use a transparent icon that looks good on any dark or
 light background. If no icon is specified, the organization logo will be used as a fallback. If no
 organization logo is specified either, the Appsemble logo is used.
-![Appsemble logo](../images/appsemble.svg 'Appsemble logo')
+![Appsemble logo](../../config/assets/logo.svg 'Appsemble logo')
 
 In addition to regular icons, Appsemble also supports maskable icons, sometimes referred to as
 adaptive icons. Some example usages are:
@@ -28,7 +28,7 @@ of the icons should with within a 80% diameter circle within the full image, als
 area. The rest should be filled with the background, which may be stripped when the icon is
 displayed.
 
-![Maskable icon template](../images/maskable-icon-template.svg 'Maskable icon template')
+![Maskable icon template](../../config/assets/maskable-icon-template.svg 'Maskable icon template')
 
 If no maskable icon is specified, Appsemble will scale the regular icon so it fits within this safe
 area. The transparent background is filled with a background color that can be selected.
