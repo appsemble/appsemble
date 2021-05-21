@@ -18,14 +18,14 @@ interface NewMessages {
  * @param db - The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
-  // Logger.info('Adding enum value "APIUser" to "enum_Member_role"');
-  // await db.query("ALTER TYPE \"enum_Member_role\" ADD VALUE 'APIUser' AFTER 'Member'");
+  logger.info('Adding enum value "APIUser" to "enum_Member_role"');
+  await db.query("ALTER TYPE \"enum_Member_role\" ADD VALUE 'APIUser' AFTER 'Member'");
 
-  // logger.info('Adding enum value "APIReader" to "enum_Member_role"');
-  // await db.query("ALTER TYPE \"enum_Member_role\" ADD VALUE 'APIReader' AFTER 'Member'");
+  logger.info('Adding enum value "APIReader" to "enum_Member_role"');
+  await db.query("ALTER TYPE \"enum_Member_role\" ADD VALUE 'APIReader' AFTER 'Member'");
 
-  // logger.info('Adding enum value "Translator" to "enum_Member_role"');
-  // await db.query("ALTER TYPE \"enum_Member_role\" ADD VALUE 'Translator' AFTER 'Member'");
+  logger.info('Adding enum value "Translator" to "enum_Member_role"');
+  await db.query("ALTER TYPE \"enum_Member_role\" ADD VALUE 'Translator' AFTER 'Member'");
 
   const appMessages = await db.query<{
     AppId: number;
