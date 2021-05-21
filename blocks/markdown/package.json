@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/markdown",
-  "version": "0.18.10",
+  "version": "0.18.11",
   "private": true,
   "description": "A simple block that can display content based on Markdown input.",
   "homepage": "https://appsemble.app",
@@ -16,7 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.18.10",
+    "@appsemble/sdk": "0.18.11",
     "marked": "^2.0.3"
   }
 }
