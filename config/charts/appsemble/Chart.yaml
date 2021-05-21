@@ -23,9 +23,6 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/images: |
-    - name: appsemble
-      image: appsemble/appsemble:0.18.11
   artifacthub.io/links: |
     - name: Appsemble Studio
       url: https://appsemble.app
