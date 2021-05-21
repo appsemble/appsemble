@@ -370,18 +370,18 @@ production:
   stage: deploy
   needs:
     - publish docker
-    - job: helm package
-      artifacts: true
+    - publish helm
   rules:
     - if: $CI_COMMIT_TAG
-  dependencies: []
   environment:
     name: production
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
   script:
-    - helm upgrade appsemble ./public/appsemble-*.tgz
+    - help repo appsemble https://charts.appsemble.com
+    - helm upgrade appsemble appsemble/appsemble
+      --version "$CI_COMMIT_TAG"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
