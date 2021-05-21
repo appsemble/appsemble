@@ -39,6 +39,7 @@
     "rehype-slug": "^4.0.1",
     "remark-frontmatter": "^3.0.0",
     "remark-gfm": "^1.0.0",
+    "remark-mdx-code-meta": "^1.0.0",
     "remark-mdx-frontmatter": "^1.0.1",
     "remark-mdx-images": "1.0.2",
     "remark-mermaidjs": "^2.0.0",

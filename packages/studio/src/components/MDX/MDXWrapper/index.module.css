@@ -1,4 +1,6 @@
 .root {
+  max-width: 960px;
+
   & :global(.is-pulled-right) + * {
     display: none;
     float: right;
@@ -26,5 +28,9 @@
     &:hover > a > :global(.fas):global(.fa-link) {
       opacity: 1;
     }
+  }
+
+  & pre {
+    margin-bottom: 1em;
   }
 }

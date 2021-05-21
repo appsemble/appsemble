@@ -40,11 +40,12 @@ template.
 
 ### Example
 
-```yaml
+```yaml copy
 theme:
   primaryColor: '#229954'  # Green
   linkColor: '#D68910'     # Orange
   successColor: '#76448A'  # Purple
+
 pages:
   - name: Red Page
     theme:
@@ -128,7 +129,7 @@ button.
 
 Example shared styling:
 
-```css
+```css copy
 .input,
 .button {
   border-radius: 0;
@@ -139,7 +140,7 @@ Example shared styling:
 
 Example core styling:
 
-```css
+```css copy
 .navbar {
   background-color: var(--primary-color) !important;
 }
@@ -152,7 +153,7 @@ Example core styling:
 
 Example block styling for `@appsemble/form`:
 
-```css
+```css copy
 form {
   max-width: initial !important;
   padding: 0 !important;
@@ -173,7 +174,7 @@ internally to access this page, for example, the first page would have `data-pat
 
 To target this using CSS:
 
-```css
+```css copy
 [data-path='pages.0'] {
   background-color: red;
 }
@@ -185,7 +186,7 @@ being added following by the index number of the block, such as: `pages.0.blocks
 block on the first page. The `data-type` property contains the full name of the block. Both of these
 can be combined to target specific blocks on specific pages.
 
-```css
+```css copy
 /* List blocks have a yellow background. */
 [data-type='@appsemble/list'] {
   background-color: yellow;
@@ -220,7 +221,7 @@ my-app/
 Themes uploaded using the CLI support CSS modules. This means CSS can be imported using the
 following syntax:
 
-```css
+```css copy
 @import 'other-file.css';
 ```
 
