@@ -10,7 +10,6 @@ import {
   SimpleFormField,
   SimpleModalFooter,
   Table,
-  Title,
   useConfirmation,
   useData,
   useMessages,
@@ -32,9 +31,10 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
+import { Link, useParams, useRouteMatch } from 'react-router-dom';
 
 import { useApp } from '../../..';
+import { HeaderControl } from '../../../../../../components/HeaderControl';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -50,6 +50,7 @@ export function IndexPage(): ReactElement {
   const { formatMessage } = useIntl();
   const { id: appId, resourceName } = useParams<RouteParams>();
   const push = useMessages();
+  const { url: routeUrl } = useRouteMatch();
 
   const createModal = useToggle();
   const hideModal = useToggle();
@@ -264,9 +265,19 @@ export function IndexPage(): ReactElement {
 
   return (
     <>
-      <Title>
+      <HeaderControl
+        control={
+          <Link className="button" to={`${routeUrl}/details`}>
+            <Icon icon="book" />
+            <span>
+              <FormattedMessage {...messages.api} />
+            </span>
+          </Link>
+        }
+      >
         <FormattedMessage {...messages.header} values={{ resourceName }} />
-      </Title>
+      </HeaderControl>
+
       <div className="buttons">
         <Button className="is-primary" icon="plus-square" onClick={openCreateModal}>
           <FormattedMessage {...messages.createButton} />
