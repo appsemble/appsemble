@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.18.10",
+  "version": "0.18.11",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -24,8 +24,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.18.10",
-    "@appsemble/utils": "0.18.10",
+    "@appsemble/node-utils": "0.18.11",
+    "@appsemble/utils": "0.18.11",
     "axios": "^0.21.1",
     "date-fns": "^2.21.3",
     "extract-react-intl-messages": "^4.1.1",

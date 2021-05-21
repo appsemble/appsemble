@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.10
-appVersion: 0.18.10
+version: 0.18.11
+appVersion: 0.18.11
 kubeVersion: '>=1.20.0'
 type: application
 description: The official Helm chart for Appsemble.
@@ -25,7 +25,7 @@ dependencies:
 annotations:
   artifacthub.io/images: |
     - name: appsemble
-      image: appsemble/appsemble:0.18.10
+      image: appsemble/appsemble:0.18.11
   artifacthub.io/links: |
     - name: Appsemble Studio
       url: https://appsemble.app
