@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.12](https://gitlab.com/appsemble/appsemble/-/releases/0.18.12)] - 2021-05-21
+
+### Fixed
+
+- CI: Fix release process for production.
+
 ## \[[0.18.11](https://gitlab.com/appsemble/appsemble/-/releases/0.18.11)] - 2021-05-21
 
 ### Added
