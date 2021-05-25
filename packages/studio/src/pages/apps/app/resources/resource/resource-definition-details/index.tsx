@@ -61,6 +61,7 @@ export function ResourceDefinitionDetailsPage(): ReactElement {
       <Endpoint type="create" />
       <Endpoint type="update" />
       <Endpoint type="delete" />
+      <hr />
       <CollapsibleList size={4} title="YAML View">
         <CodeBlock className="mb-4" code={yaml} language="yaml" />
       </CollapsibleList>

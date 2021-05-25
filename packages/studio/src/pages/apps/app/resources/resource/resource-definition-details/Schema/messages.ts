@@ -7,4 +7,11 @@ export const messages = defineMessages({
   type: 'Type',
   properties: 'Properties',
   options: 'Options',
+  minItems: 'Minimum items',
+  maxItems: 'Maximum items',
+  minLength: 'Minimum length',
+  maxLength: 'Maximum length',
+  minimum: 'Minimum value',
+  maximum: 'Maximum value',
+  pattern: 'Pattern',
 });
