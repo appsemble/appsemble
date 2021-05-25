@@ -73,7 +73,9 @@ export function DefinitionPage(): ReactElement {
               <FormattedMessage {...messages.learnMore} />
             </Link>
           </p>
-          <CodeBlock code={app.yaml} language="yaml" />
+          <CodeBlock copy filename="app.yaml" language="yaml">
+            {app.yaml}
+          </CodeBlock>
         </div>
       </div>
     </main>

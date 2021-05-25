@@ -7,12 +7,12 @@
 
 Clone the Appsemble Git repository.
 
-```sh
+```sh copy
 git clone https://gitlab.com/appsemble/appsemble.git
 cd appsemble
 ```
 
-```sh
+```sh copy
 helm install --name appsemble config/charts/appsemble
 ```
 

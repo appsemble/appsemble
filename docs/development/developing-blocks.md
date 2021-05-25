@@ -14,7 +14,7 @@ Next, publish the existing blocks following the instructions from the
 
 A new block can be bootstrapped by running the following command.
 
-```sh
+```sh copy
 yarn create-appsemble block
 ```
 
@@ -54,7 +54,7 @@ The block will be created in the _blocks/_ directory. Its version will be `0.0.0
 Make sure the local Appsemble server is running, then run the following to publish the newly created
 block.
 
-```sh
+```sh copy
 yarn appsemble block publish blocks/test
 ```
 
@@ -68,7 +68,7 @@ yarn appsemble block publish blocks/test
 Open the Appsemble studio on at the base URL of Appsemble. Login, and create your first app. This
 following example app will display your new block.
 
-```yaml
+```yaml copy filename="app.yaml"
 name: Test App
 defaultPage: Home
 
@@ -118,7 +118,7 @@ Now lets make the text of the button configurable using the app definition.
 
 In the app definition, specify the value of the parameter.
 
-```yaml
+```yaml copy filename="app.yaml"
 name: Test App
 defaultPage: Home
 

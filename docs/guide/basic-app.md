@@ -23,7 +23,7 @@ compliant third party APIs. This tutorial will focus on usage with Appsemble’s
 
 Add the following to the app definition:
 
-```yaml
+```yaml copy
 resources:
   person:
     schema:
@@ -55,11 +55,13 @@ object which has the properties `firstName`, `lastName`, `email`, and `descripti
 `lastName` shouldn’t be too long, whereas `email` should be a valid email address. For example, this
 could represent the following data structure:
 
-```yaml
-firstName: John
-lastName: Smith
-email: john.smith@example.com
-description: This is the best smith in town.
+```json
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "john.smith@example.com",
+  "description": "This is the best smith in town."
+}
 ```
 
 The schema is used as a safety net for invalid data, but also for representation in some places.
@@ -162,7 +164,7 @@ been registered yet.
 
 At this point, the total app definition should look like this:
 
-```yaml
+```yaml copy filename="app.yaml"
 name: My App
 defaultPage: People
 
@@ -253,7 +255,7 @@ displays the newly created person.
 
 The app should now look like this:
 
-```yaml
+```yaml copy filename="app.yaml"
 name: My App
 description: ''
 defaultPage: People
@@ -383,7 +385,7 @@ Now, when a list item is clicked, the user will be redirected to the person’s 
 
 At this point, the app definition should look like this:
 
-```yaml
+```yaml copy filename="app.yaml"
 name: My App
 description: ''
 defaultPage: People

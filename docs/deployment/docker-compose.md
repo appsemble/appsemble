@@ -3,7 +3,7 @@
 Appsemble is published as a Docker image. This makes it easy to deploy using Docker Compose. Copy
 the following contents in a file named _.docker-compose.yaml_.
 
-```yaml
+```yaml copy filename="docker-compose.yml"
 version: '3.5'
 
 x-database-name: &database-name ${DATABASE_NAME:-appsemble_database_name}

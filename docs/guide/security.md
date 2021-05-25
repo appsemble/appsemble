@@ -40,7 +40,7 @@ observed.
 
 The security definition below is used in the examples on this page.
 
-```yaml
+```yaml copy
 security:
   default:
     role: Reader

@@ -10,6 +10,7 @@ import autolink from 'rehype-autolink-headings';
 import slug from 'rehype-slug';
 import frontmatter from 'remark-frontmatter';
 import gfm from 'remark-gfm';
+import { remarkMdxCodeMeta } from 'remark-mdx-code-meta';
 import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
 import { remarkMdxImages } from 'remark-mdx-images';
 import { remarkMermaid } from 'remark-mermaidjs';
@@ -143,6 +144,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                   frontmatter,
                   gfm,
                   production && remarkMermaid,
+                  remarkMdxCodeMeta,
                   remarkMdxFrontmatter,
                   remarkMdxImages,
                   remarkHeading,

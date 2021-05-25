@@ -91,7 +91,7 @@ export function SnapshotPage(): ReactElement {
       >
         {(snapshot) => (
           <div className="is-flex is-flex-grow-1 is-flex-shrink-1">
-            <Suspense fallback={<CodeBlock code={app.yaml} language="yaml" />}>
+            <Suspense fallback={<CodeBlock language="yaml">{app.yaml}</CodeBlock>}>
               <CodeDiffBlock
                 className="is-flex-grow-1 is-flex-shrink-1"
                 language="yaml"
