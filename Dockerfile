@@ -1,5 +1,5 @@
 # Build production files
-FROM node:14-slim AS build
+FROM node:14-buster-slim AS build
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile
@@ -12,7 +12,7 @@ RUN yarn workspace @appsemble/node-utils prepack
 RUN yarn workspace @appsemble/server prepack
 
 # Install production dependencies
-FROM node:14-slim AS prod
+FROM node:14-buster-slim AS prod
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
@@ -26,7 +26,7 @@ RUN find . -name '*.ts' -delete
 RUN rm -r yarn.lock
 
 # Setup the production docker image.
-FROM node:14-slim
+FROM node:14-buster-slim
 COPY --from=prod /app /app
 COPY --from=build /app/dist /app/dist
 COPY i18n /app/i18n
