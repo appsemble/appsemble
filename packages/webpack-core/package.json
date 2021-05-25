@@ -36,6 +36,7 @@
     "optimize-css-assets-webpack-plugin": "^5.0.4",
     "postcss-loader": "^4.2.0",
     "rehype-autolink-headings": "^5.0.1",
+    "rehype-mdx-title": "^1.0.0",
     "rehype-slug": "^4.0.1",
     "remark-frontmatter": "^3.0.0",
     "remark-gfm": "^1.0.0",
