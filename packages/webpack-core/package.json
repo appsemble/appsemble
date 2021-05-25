@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.18.10",
+  "version": "0.18.12",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -18,7 +18,7 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/webpack-core"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-config",
-  "version": "0.18.10",
+  "version": "0.18.12",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -17,7 +17,7 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/webpack-config"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "main": "dist",
@@ -30,7 +30,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.18.10",
+    "@appsemble/types": "0.18.12",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "css-loader": "^5.2.4",
     "file-loader": "^6.2.0",

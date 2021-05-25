@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.18.10",
+  "version": "0.18.12",
   "private": true,
   "description": "Bootstrap an Appsemble project",
   "keywords": [
@@ -19,7 +19,7 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/create-appsemble"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "main": "dist",
   "bin": "dist/index.js",
@@ -32,7 +32,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.18.10",
+    "@appsemble/node-utils": "0.18.12",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.0.0",
     "type-fest": "^1.1.1",

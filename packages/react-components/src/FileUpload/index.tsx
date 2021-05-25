@@ -1,40 +1,38 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { ChangeEvent, ReactElement, ReactNode } from 'react';
+import { ChangeEvent, ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
 
-import { FormComponent, Icon } from '..';
+import { FormComponent, Icon, Input, SharedFormComponentProps } from '..';
 
-interface FileUploadProps {
-  id?: string;
-  name: string;
-  accept?: string;
-  label?: ReactNode;
-  fileButtonLabel?: ReactNode;
-  fileLabel?: ReactNode;
-  help?: ReactNode;
-  preview?: ReactNode;
-  icon?: IconName;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  formComponentClassName?: string;
-  className?: string;
-  required?: boolean;
-}
+type FileUploadProps = Omit<
+  ComponentPropsWithoutRef<typeof Input>,
+  keyof SharedFormComponentProps
+> &
+  SharedFormComponentProps & {
+    fileButtonLabel?: ReactNode;
+    fileLabel?: ReactNode;
+    preview?: ReactNode;
+    onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+    formComponentClassName?: string;
+  };
 
-export function FileUpload({
-  name,
-  id = name,
-  accept,
-  className,
-  fileButtonLabel,
-  fileLabel,
-  formComponentClassName,
-  help,
-  icon = 'upload',
-  label,
-  onChange,
-  preview = null,
-  required = false,
-}: FileUploadProps): ReactElement {
-  return (
+export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
+  (
+    {
+      name,
+      id = name,
+      accept,
+      className,
+      fileButtonLabel,
+      fileLabel,
+      formComponentClassName,
+      help,
+      icon = 'upload',
+      label,
+      onChange,
+      preview = null,
+      required = false,
+    },
+    ref,
+  ) => (
     <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
       {preview}
       <div className="file has-name">
@@ -45,6 +43,7 @@ export function FileUpload({
             id={id}
             name={name}
             onChange={onChange}
+            ref={ref}
             type="file"
           />
           <span className="file-cta">
@@ -56,5 +55,5 @@ export function FileUpload({
       </div>
       {help && <p className="help">{help}</p>}
     </FormComponent>
-  );
-}
+  ),
+);

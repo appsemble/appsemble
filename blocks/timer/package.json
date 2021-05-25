@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/timer",
-  "version": "0.18.10",
+  "version": "0.18.12",
   "private": true,
   "description": "A block that emits an event on an interval",
   "homepage": "https://appsemble.app",
@@ -10,12 +10,12 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "blocks/timer"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "scripts": {
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.18.10"
+    "@appsemble/sdk": "0.18.12"
   }
 }

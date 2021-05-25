@@ -187,11 +187,7 @@ async function validate(
     'package.json',
     `Repository directory should be "${normalizePath(relative(process.cwd(), dir))}"`,
   );
-  assert(
-    pkg.license === 'LGPL-3.0-or-later',
-    'package.json',
-    'License should be "LGPL-3.0-or-later"',
-  );
+  assert(pkg.license === 'LGPL-3.0-only', 'package.json', 'License should be "LGPL-3.0-only"');
   assert(
     pkg.author === 'Appsemble <info@appsemble.com> (https://appsemble.com)',
     'package.json',

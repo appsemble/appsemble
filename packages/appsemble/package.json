@@ -1,6 +1,6 @@
 {
   "name": "appsemble",
-  "version": "0.18.10",
+  "version": "0.18.12",
   "description": "A simple wrapper for @appsemble/cli",
   "keywords": [
     "app",
@@ -18,7 +18,7 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/appsemble"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "main": "dist",
   "bin": "dist/index.js",
@@ -30,6 +30,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/cli": "0.18.10"
+    "@appsemble/cli": "0.18.12"
   }
 }

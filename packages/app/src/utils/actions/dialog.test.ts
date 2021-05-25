@@ -34,7 +34,7 @@ describe('dialog', () => {
     });
     options.close();
     await expect(promise).rejects.toThrow(new Error('closed'));
-    expect(close).not.toHaveBeenCalled();
+    expect(close).toHaveBeenCalledWith();
   });
 
   it('should be possible to tweak the dialog', async () => {
@@ -64,7 +64,7 @@ describe('dialog', () => {
     });
     options.close();
     await expect(promise).rejects.toThrow(new Error('closed'));
-    expect(close).not.toHaveBeenCalled();
+    expect(close).toHaveBeenCalledWith();
   });
 
   it('should resolve if dialog.ok is called', async () => {

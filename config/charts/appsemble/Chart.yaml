@@ -1,10 +1,10 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.10
-appVersion: 0.18.10
+version: 0.18.12
+appVersion: 0.18.12
 kubeVersion: '>=1.20.0'
 type: application
-description: The official Helm chart for Appsemble.
+description: The open source low-code app building platform
 icon: https://charts.appsemble.com/icon.svg
 home: https://appsemble.com
 keywords:
@@ -23,11 +23,12 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/images: |
-    - name: appsemble
-      image: appsemble/appsemble:0.18.10
+  artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
       url: https://appsemble.app
     - name: Documentation
       url: https://appsemble.app/docs
+  artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+    - url: https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
