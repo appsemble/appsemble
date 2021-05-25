@@ -209,17 +209,34 @@ publish docker:
 
 # Publish the Helm chart to https://charts.appsemble.com
 publish helm:
+  image: dtzar/helm-kubectl:3
   needs:
     - helm package
   stage: publish
   variables:
-    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
-    VERSION: $CI_COMMIT_TAG
+    GIT_STRATEGY: none
   rules:
     - if: $CI_COMMIT_TAG
-  trigger:
-    project: appsemble/charts
-    strategy: depend
+  script:
+    - apk add git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - git init
+    - git remote add origin "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/charts"
+    - git fetch --depth 1
+    - git checkout --track origin/main
+    - git config commit.gpgSign true
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - git add public
+    - git commit --message "Add Appsemble Helm chart $CI_COMMIT_TAG"
+    - git push origin main
+    - helm repo add appsemble https://charts.appsemble.com
+    - | # Wait until the chart has been published downstream
+      while ! helm show all 'appsemble/appsemble' --version "$CI_COMMIT_TAG" 2> /dev/null; do
+        sleep 3
+        echo retrying in 3 seconds…
+        helm repo update > /dev/null
+      done
 
 # Publish npm packages to npmjs.org.
 publish npm:
