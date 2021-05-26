@@ -34,7 +34,10 @@ interface SchemaProps {
  */
 export function Schema({ name, nested, required, schema }: SchemaProps): ReactElement {
   const description =
-    nested && (schema.description || (!Array.isArray(schema.items) && schema.items.description));
+    nested &&
+    (schema.description ||
+      (schema.items && !Array.isArray(schema.items) && schema.items.description));
+
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
       {name && (
