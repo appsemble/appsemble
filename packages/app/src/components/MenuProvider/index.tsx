@@ -39,6 +39,11 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
     (page) => !page.parameters && !page.hideFromMenu && checkPagePermissions(page),
   );
 
+  if (!pages.length) {
+    // Don’t display anything if there are no pages to display.
+    return children as ReactElement;
+  }
+
   switch (layout?.navigation) {
     case 'bottom':
       return (
@@ -48,7 +53,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
         </>
       );
     case 'hidden':
-      return null;
+      return children as ReactElement;
     default:
       return (
         <SideMenuProvider
