@@ -267,12 +267,9 @@ export function IndexPage(): ReactElement {
     <>
       <HeaderControl
         control={
-          <Link className="button" to={`${routeUrl}/details`}>
-            <Icon icon="book" />
-            <span>
-              <FormattedMessage {...messages.api} />
-            </span>
-          </Link>
+          <Button component={Link} icon="book" to={`${routeUrl}/details`}>
+            <FormattedMessage {...messages.api} />
+          </Button>
         }
       >
         <FormattedMessage {...messages.header} values={{ resourceName }} />
