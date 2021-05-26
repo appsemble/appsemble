@@ -1,9 +1,4 @@
-import {
-  createFixtureStream,
-  createFormData,
-  readFixture,
-  setLogLevel,
-} from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
@@ -292,7 +287,6 @@ defaultPage: Test Page
     await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
     clock.tick(3600);
     await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
-    setLogLevel('silly');
     const response = await request.get(`/api/apps/${app.id}`);
 
     expect(response).toMatchObject({
