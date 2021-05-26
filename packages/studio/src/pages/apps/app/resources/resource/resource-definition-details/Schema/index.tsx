@@ -58,16 +58,13 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
         </SchemaDescriptor>
       )}
       {schema.enum?.length ? (
-        <div>
-          <span className="mr-2">
-            <FormattedMessage {...messages.options} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.options} />}>
           <Join separator=" | ">
             {schema.enum.map((option) => (
               <code key={option}>{JSON.stringify(option)}</code>
             ))}
           </Join>
-        </div>
+        </SchemaDescriptor>
       ) : null}
       {schema.minItems > 0 && (
         <SchemaDescriptor label={<FormattedMessage {...messages.minItems} />}>
