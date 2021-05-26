@@ -61,8 +61,8 @@ export function ResourceDefinitionDetailsPage(): ReactElement {
       <Endpoint type="query" />
       <Endpoint type="get" />
       <Endpoint type="$count" />
-      <Endpoint type="create" />
-      <Endpoint type="update" />
+      <Endpoint hasBody type="create" />
+      <Endpoint hasBody type="update" />
       <Endpoint type="delete" />
       <hr />
       <CollapsibleList size={4} title="YAML View">

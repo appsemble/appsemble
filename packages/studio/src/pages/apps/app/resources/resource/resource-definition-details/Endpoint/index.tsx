@@ -2,13 +2,14 @@ import { Title } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
+import { generateDataFromSchema } from 'utils/src/jsonschema';
 
 import { useApp } from '../../../..';
 import { messages } from './messages';
 
 interface EndpointProps {
+  hasBody?: boolean;
   type: '$count' | 'create' | 'delete' | 'get' | 'query' | 'update';
-  className?: string;
 }
 
 const methods = {
@@ -20,7 +21,7 @@ const methods = {
   delete: ['DELETE', 'id'],
 };
 
-export function Endpoint({ className, type }: EndpointProps): ReactElement {
+export function Endpoint({ hasBody, type }: EndpointProps): ReactElement {
   const { app } = useApp();
   const {
     params: { id, resourceName },
@@ -34,7 +35,7 @@ export function Endpoint({ className, type }: EndpointProps): ReactElement {
   const [method, postfix] = methods[type];
 
   return (
-    <div className={className}>
+    <div>
       <Title className="is-inline mr-2" size={5}>
         <FormattedMessage {...messages[type]} values={{ resourceName }} />
       </Title>
@@ -71,6 +72,11 @@ Accept: application/json
 Authorization: Bearer `}
           </span>
           <span className="has-text-weight-bold has-text-danger">access_token</span>
+          {hasBody && (
+            <span>
+              {`\n\n${JSON.stringify(generateDataFromSchema(resource.schema), undefined, 2)}`}
+            </span>
+          )}
         </code>
       </pre>
     </div>
