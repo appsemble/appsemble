@@ -11,6 +11,9 @@ import { Endpoint } from './Endpoint';
 import { messages } from './messages';
 import { Schema } from './Schema';
 
+/**
+ * Render the page for resource definition details.
+ */
 export function ResourceDefinitionDetailsPage(): ReactElement {
   const { app } = useApp();
   const {

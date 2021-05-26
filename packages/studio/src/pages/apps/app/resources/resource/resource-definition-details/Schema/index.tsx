@@ -8,12 +8,30 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 interface SchemaProps {
+  /**
+   * The JSON schema to render
+   */
   schema: SchemaType;
+
+  /**
+   * The name of the propery to render for nested a nested schema.
+   */
   name?: string;
+
+  /**
+   * Whether or not the schema is nested.
+   */
   nested: boolean;
+
+  /**
+   * Whether or not the schema is required by its parent schema.
+   */
   required?: boolean;
 }
 
+/**
+ * Render a JSON schema into readable API documentation.
+ */
 export function Schema({ name, nested, required, schema }: SchemaProps): ReactElement {
   const description =
     nested && (schema.description || (!Array.isArray(schema.items) && schema.items.description));
