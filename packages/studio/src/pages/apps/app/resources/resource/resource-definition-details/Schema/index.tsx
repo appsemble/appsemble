@@ -1,25 +1,42 @@
 import { Join, MarkdownContent } from '@appsemble/react-components';
-import { OpenAPIV3 } from 'openapi-types';
+import { Schema as SchemaType } from 'jsonschema';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { SchemaDescriptor } from '../SchemaDescriptor';
 import styles from './index.module.css';
 import { messages } from './messages';
 
 interface SchemaProps {
-  schema: OpenAPIV3.SchemaObject;
+  schema: SchemaType;
   name?: string;
   nested: boolean;
   required?: boolean;
 }
 
 export function Schema({ name, nested, required, schema }: SchemaProps): ReactElement {
+  const req =
+    required ||
+    (typeof schema.required === 'boolean'
+      ? schema.required === true
+      : schema.required?.includes(name));
+  const description =
+    nested && (schema.description || (!Array.isArray(schema.items) && schema.items.description));
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
       {name && (
         <div>
-          <span className="has-text-weight-bold">{name}</span>
-          {required && (
+          <span className="has-text-weight-bold">
+            {schema.title ? (
+              <>
+                <span className="mr-1">{schema.title}</span>
+                <span className="has-text-weight-normal has-text-grey-light">({name})</span>
+              </>
+            ) : (
+              name
+            )}
+          </span>
+          {req && (
             <span className="ml-2 tag is-info">
               <FormattedMessage {...messages.required} />
             </span>
@@ -27,25 +44,18 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
         </div>
       )}
       {nested ? (
-        <p>
-          <span className="mr-1">
-            <FormattedMessage {...messages.type} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.type} />}>
           <code>
-            {schema.type === 'array'
-              ? `${(schema.items as OpenAPIV3.SchemaObject).type}[]`
-              : schema.type}
+            {schema.type === 'array' && !Array.isArray(schema.items) && schema.items?.type
+              ? `${schema.items.type}[]`
+              : 'array'}
           </code>
-        </p>
+        </SchemaDescriptor>
       ) : null}
-      {schema.description && nested && <MarkdownContent content={schema.description} />}
       {schema.default != null && (
-        <p>
-          <span className="has-text-weight-bold mr-1">
-            <FormattedMessage {...messages.default} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.default} />}>
           {schema.default}
-        </p>
+        </SchemaDescriptor>
       )}
       {schema.enum?.length ? (
         <div>
@@ -54,86 +64,73 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
           </span>
           <Join separator=" | ">
             {schema.enum.map((option) => (
-              <code key={option}>{option}</code>
+              <code key={option}>{JSON.stringify(option)}</code>
             ))}
           </Join>
         </div>
       ) : null}
       {schema.minItems > 0 && (
-        <p>
-          <span className="has-text-weight-bold mr-1">
-            <FormattedMessage {...messages.minItems} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.minItems} />}>
           {schema.minItems}
-        </p>
+        </SchemaDescriptor>
       )}
       {schema.maxItems > 0 && (
-        <p>
-          <span className="has-text-weight-bold mr-1">
-            <FormattedMessage {...messages.maxItems} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.maxItems} />}>
           {schema.maxItems}
-        </p>
+        </SchemaDescriptor>
       )}
       {schema.minLength > 0 && (
-        <p>
-          <span className="has-text-weight-bold mr-1">
-            <FormattedMessage {...messages.minLength} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.minLength} />}>
           {schema.minLength}
-        </p>
+        </SchemaDescriptor>
       )}
       {schema.maxLength > 0 && (
-        <p>
-          <span className="has-text-weight-bold mr-1">
-            <FormattedMessage {...messages.maxLength} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.maxLength} />}>
           {schema.maxLength}
-        </p>
+        </SchemaDescriptor>
       )}
       {schema.minimum > 0 && (
-        <p>
-          <span className="has-text-weight-bold mr-1">
-            <FormattedMessage {...messages.minimum} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.minimum} />}>
           {schema.minimum}
-        </p>
+        </SchemaDescriptor>
       )}
       {schema.maximum > 0 && (
-        <p>
-          <span className="has-text-weight-bold mr-1">
-            <FormattedMessage {...messages.maximum} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.maximum} />}>
           {schema.maximum}
-        </p>
+        </SchemaDescriptor>
       )}
       {schema.pattern && (
-        <p>
-          <span className="has-text-weight-bold mr-1">
-            <FormattedMessage {...messages.pattern} />:
-          </span>
+        <SchemaDescriptor label={<FormattedMessage {...messages.pattern} />}>
           <code>{schema.pattern ?? 'foo'}</code>
-        </p>
+        </SchemaDescriptor>
       )}
+      {nested && description && <MarkdownContent content={description} />}
       {schema.type === 'object' &&
         Object.entries(schema.properties).map(([propertyName, property]) => (
           <Schema
             key={propertyName}
             name={propertyName}
             nested
-            required={schema?.required?.includes(propertyName)}
-            schema={property as OpenAPIV3.SchemaObject}
+            required={
+              typeof schema.required === 'object' && schema.required?.includes(propertyName)
+            }
+            schema={property}
           />
         ))}
       {schema.type === 'array' &&
-        Object.entries((schema.items as OpenAPIV3.SchemaObject).properties ?? {}).map(
+        schema.items &&
+        !Array.isArray(schema.items) &&
+        Object.entries((schema.items as SchemaType).properties ?? {}).map(
           ([propertyName, property]) => (
             <Schema
               key={propertyName}
               name={propertyName}
               nested
-              required={(schema.items as OpenAPIV3.SchemaObject).required?.includes(propertyName)}
-              schema={property as OpenAPIV3.SchemaObject}
+              required={
+                typeof (schema.items as SchemaType).required === 'object' &&
+                ((schema.items as SchemaType).required as string[]).includes(propertyName)
+              }
+              schema={property as SchemaType}
             />
           ),
         )}

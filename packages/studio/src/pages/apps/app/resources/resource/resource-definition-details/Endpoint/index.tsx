@@ -1,4 +1,4 @@
-import { Icon, Title } from '@appsemble/react-components';
+import { Title } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
@@ -35,15 +35,23 @@ export function Endpoint({ className, type }: EndpointProps): ReactElement {
 
   return (
     <div className={className}>
-      <Title size={5}>
+      <Title className="is-inline mr-2" size={5}>
         <FormattedMessage {...messages[type]} values={{ resourceName }} />
       </Title>
-      {roles.includes('$public') ? (
-        <span className="tag is-success">
-          <FormattedMessage {...messages.public} />
-        </span>
-      ) : null}
-      <pre className="mb-4">
+      <div className="is-inline">
+        {roles.includes('$public') ? (
+          <span className="tag is-warning">
+            <FormattedMessage {...messages.public} />
+          </span>
+        ) : (
+          roles.map((role) => (
+            <span className="tag is-success mr-1" key={role}>
+              <FormattedMessage {...messages.role} values={{ role }} />
+            </span>
+          ))
+        )}
+      </div>
+      <pre className="my-4">
         <code>
           <span className="has-text-weight-bold">{method} </span>
           <span>{`${window.location.origin}/api/apps/${id}/resources/${resourceName}`}</span>
@@ -65,11 +73,6 @@ Authorization: Bearer `}
           <span className="has-text-weight-bold has-text-danger">access_token</span>
         </code>
       </pre>
-      {roles.length ? (
-        <div className="mb-4">
-          <Icon icon="user" /> <FormattedMessage {...messages.roles} />: {roles.join(', ')}
-        </div>
-      ) : null}
     </div>
   );
 }

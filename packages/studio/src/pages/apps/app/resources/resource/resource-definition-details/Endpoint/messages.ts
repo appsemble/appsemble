@@ -7,6 +7,6 @@ export const messages = defineMessages({
   delete: 'Delete an existing {resourceName} resource',
   $count: 'Count {resourceName} resources',
   update: 'Update an existing {resourceName} resource',
-  roles: 'Roles',
+  role: 'Role: {role}',
   public: 'Public',
 });
