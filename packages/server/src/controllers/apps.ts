@@ -219,11 +219,12 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
     },
     include: [
       { model: Resource, attributes: ['id'], where: { clonable: true }, required: false },
-      { model: AppSnapshot, order: [['created', 'DESC']] },
+      { model: AppSnapshot },
       { model: Organization, attributes: ['id', 'name'] },
       { model: AppScreenshot, attributes: ['id'] },
       ...languageQuery,
     ],
+    order: [[{ model: AppSnapshot, as: 'AppSnapshots' }, 'created', 'DESC']],
   });
 
   if (!app) {
