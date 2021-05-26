@@ -186,5 +186,10 @@ const mapperImplementations: MapperImplementations = {
     return String(input).replace(new RegExp(regex, 'gm'), replacer);
   },
 
+  translate: (messageId, input, context) => {
+    const message = context.getMessage({ id: messageId, defaultMessage: undefined });
+    return message.format() || `{${messageId}}`;
+  },
+
   user: (values, input, context) => context.userInfo?.[values],
 };

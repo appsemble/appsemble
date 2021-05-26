@@ -306,6 +306,13 @@ export interface Remappers {
    */
   'string.replace': Record<string, string>;
 
+  /**
+   * Translate using a messageID.
+   *
+   * This does not support parameters, for more nuanced translations use `string.format`.
+   */
+  translate: string;
+
   user: keyof UserInfo;
 }
 
