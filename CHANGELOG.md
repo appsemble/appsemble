@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.13](https://gitlab.com/appsemble/appsemble/-/releases/0.18.13)] - 2021-05-26
+
+### Added
+
+- Studio: Add page for viewing the format of a resource based on its definition.
+- Studio: Add copy and download buttons on code blocks.
+
+### Fixed
+
+- App: Fix `hidden` menu navigation displaying a blank page.
+- Studio: Fix editor tabs.
+- Studio: Fix syntax highlighting for CSS in app editor.
+
 ## \[[0.18.12](https://gitlab.com/appsemble/appsemble/-/releases/0.18.12)] - 2021-05-21
 
 ### Fixed
