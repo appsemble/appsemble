@@ -46,15 +46,15 @@ export function EditorNavBar({
         </Button>
       </div>
       <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
-        <Tab href="#editor" value="editor">
+        <Tab href="#editor" value="#editor">
           <Icon icon="file-code" />
           <FormattedMessage {...messages.app} />
         </Tab>
-        <Tab href="#style-core" value="style-core">
+        <Tab href="#style-core" value="#style-core">
           <Icon icon="brush" />
           <FormattedMessage {...messages.coreStyle} />
         </Tab>
-        <Tab href="#style-shared" value="style-shared">
+        <Tab href="#style-shared" value="#style-shared">
           <Icon icon="brush" />
           <FormattedMessage {...messages.sharedStyle} />
         </Tab>
