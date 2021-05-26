@@ -15,11 +15,6 @@ interface SchemaProps {
 }
 
 export function Schema({ name, nested, required, schema }: SchemaProps): ReactElement {
-  const req =
-    required ||
-    (typeof schema.required === 'boolean'
-      ? schema.required === true
-      : schema.required?.includes(name));
   const description =
     nested && (schema.description || (!Array.isArray(schema.items) && schema.items.description));
   return (
@@ -36,7 +31,7 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
               name
             )}
           </span>
-          {req && (
+          {(required || schema.required === true) && (
             <span className="ml-2 tag is-info">
               <FormattedMessage {...messages.required} />
             </span>
