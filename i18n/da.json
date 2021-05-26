@@ -305,7 +305,7 @@
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.get": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.public": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.query": "",
-  "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.roles": "",
+  "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.role": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.update": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.default": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.description": "",

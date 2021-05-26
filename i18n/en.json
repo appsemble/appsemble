@@ -305,7 +305,7 @@
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.get": "Get a single {resourceName} resource",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.public": "Public",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.query": "Get all {resourceName} resources",
-  "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.roles": "Roles",
+  "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.role": "Role: {role}",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.update": "Update an existing {resourceName} resource",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.default": "Default value",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.description": "Description",
