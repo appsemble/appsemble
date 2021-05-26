@@ -5,16 +5,16 @@
 - A working Kubernetes cluster
 - [Helm](https://helm.sh)
 
-Clone the Appsemble Git repository.
+Appsemble can be installed using Helm by running the following commands.
 
 ```sh copy
-git clone https://gitlab.com/appsemble/appsemble.git
-cd appsemble
+helm repo add appsemble https://charts.appsemble.com
+helm repo update
+helm install --name my-appsemble appsemble/appsemble
 ```
 
-```sh copy
-helm install --name appsemble config/charts/appsemble
-```
+For more detailed instructions, see Appsemble on
+[Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble).
 
 Once Appsemble is up and running, you probably to upload blocks. For this, clone the Appsemble git
 repository and continue to the

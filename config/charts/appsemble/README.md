@@ -57,17 +57,16 @@ kubectl create secret generic sentry \
 Now the chart can be installed.
 
 ```sh
-helm dependency update config/charts/appsemble
-helm install --name my-release config/charts/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
+helm repo add appsemble https://charts.appsemble.com
+helm repo update
+helm install --name my-appsemble appsemble/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
 ```
-
-> **Note**: Appsemble isn’t published yet. Clone the repository and specify the path to the chart.
 
 ### Upgrading
 
 ```sh
-helm dependency update config/charts/appsemble
-helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
+helm repo update
+helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
 ```
 
 ## Variables
