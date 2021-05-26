@@ -1,4 +1,4 @@
-image: node:14-buster-slim
+image: node:16-buster-slim
 
 stages:
   - test
@@ -103,6 +103,24 @@ test node 12:
 
 # Run unittests using NodeJS 14.
 test node 14:
+  interruptible: true
+  image: node:14-buster-slim
+  services:
+    - name: postgres:11
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - yarn --frozen-lockfile
+    - yarn jest
+  artifacts:
+    reports:
+      junit: junit.xml
+
+# Run unittests using NodeJS 16.
+test node 16:
   interruptible: true
   services:
     - name: postgres:11
