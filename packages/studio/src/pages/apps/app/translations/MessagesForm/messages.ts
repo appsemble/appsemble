@@ -7,4 +7,5 @@ export const messages = defineMessages({
   messageIds: 'Custom messages',
   app: 'App messages',
   block: 'Block messages',
+  core: 'Core messages',
 });

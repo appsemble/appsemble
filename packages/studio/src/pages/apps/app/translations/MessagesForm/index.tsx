@@ -64,7 +64,7 @@ export function MessagesForm({
       for (const version of Object.keys(blocks[blockId])) {
         for (const messageId of Object.keys(blocks[blockId][version])) {
           if (
-            defaultAppMessages.messages.blocks[blockId][version][messageId] ===
+            defaultAppMessages.messages.blocks[blockId][version]?.[messageId] ===
             appMessages.messages.blocks[blockId][version][messageId]
           ) {
             blocks[blockId][version][messageId] = '';
@@ -146,6 +146,21 @@ export function MessagesForm({
                 </SimpleFormObject>
               ))}
             </SimpleFormObject>
+          ))}
+        </SimpleFormObject>
+      </Collapsible>
+      <Collapsible collapsed size={5} title={<FormattedMessage {...messages.core} />}>
+        <SimpleFormObject name="core">
+          {Object.entries(defaultAppMessages.messages.core).map(([id, defaultMessage]) => (
+            <SimpleFormField
+              component={TextAreaField}
+              disabled={app.locked}
+              key={id}
+              label={id}
+              name={id}
+              placeholder={defaultMessage}
+              rows={2}
+            />
           ))}
         </SimpleFormObject>
       </Collapsible>

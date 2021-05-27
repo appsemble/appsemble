@@ -545,6 +545,7 @@
   "studio.src.pages.apps.app.translations": "Vertalingen",
   "studio.src.pages.apps.app.translations.MessagesForm.app": "Appvertalingen",
   "studio.src.pages.apps.app.translations.MessagesForm.block": "Blokvertalingen",
+  "studio.src.pages.apps.app.translations.MessagesForm.core": "Corevertalingen",
   "studio.src.pages.apps.app.translations.MessagesForm.messageIds": "Eigen vertalingen",
   "studio.src.pages.apps.app.translations.MessagesForm.submit": "Opslaan",
   "studio.src.pages.apps.app.translations.MessagesForm.uploadError": "Er is een fout opgetreden bij het opslaan van de appberichten.",
