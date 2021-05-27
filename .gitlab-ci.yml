@@ -191,10 +191,8 @@ helm package:
   stage: build
   needs: []
   script:
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
     - cp LICENSE.md config/charts/appsemble/
-    - helm dependency build config/charts/appsemble
-    - config/bin/helm-package.sh -d public config/charts/appsemble/
+    - config/bin/helm-package.sh --dependency-update --destination public config/charts/appsemble/
   artifacts:
     name: Helm chart
     expose_as: Helm chart
