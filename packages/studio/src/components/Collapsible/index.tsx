@@ -30,6 +30,11 @@ interface CollapsibleProps {
   size?: 3 | 4 | 5 | 6;
 
   /**
+   * Whether the component should start out collapsed.
+   */
+  collapsed?: boolean;
+
+  /**
    * The content to display.
    */
   children: ReactNode;
@@ -41,11 +46,12 @@ interface CollapsibleProps {
 export function Collapsible({
   children,
   className,
+  collapsed: defaultValue = false,
   level = 2,
   size = 4,
   title,
 }: CollapsibleProps): ReactElement {
-  const collapsed = useToggle();
+  const collapsed = useToggle(defaultValue);
 
   return (
     <>
