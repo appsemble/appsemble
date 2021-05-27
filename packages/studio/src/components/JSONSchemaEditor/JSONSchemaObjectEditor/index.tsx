@@ -1,7 +1,7 @@
 import { Title } from '@appsemble/react-components';
 import { ReactElement, useCallback } from 'react';
 
-import { CollapsibleList } from '../../CollapsibleList';
+import { Collapsible } from '../../Collapsible';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
@@ -44,13 +44,13 @@ export function JSONSchemaObjectEditor({
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : null}>
       {nested ? (
-        <CollapsibleList
+        <Collapsible
           level={5}
           size={3}
           title={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
         >
           {content}
-        </CollapsibleList>
+        </Collapsible>
       ) : (
         <>
           <Title level={5} size={3}>

@@ -5,7 +5,7 @@ import { OpenAPIV3 } from 'openapi-types';
 import { MouseEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { CollapsibleList } from '../../CollapsibleList';
+import { Collapsible } from '../../Collapsible';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
 import { CommonJSONSchemaEditorProps } from '../types';
@@ -89,7 +89,7 @@ export function JSONSchemaArrayEditor({
         onClick={onItemAdded}
         title={formatMessage(messages.addTop, { name: name.replace(`${prefix}.`, '') })}
       />
-      <CollapsibleList
+      <Collapsible
         className={styles.title}
         level={5}
         size={3}
@@ -139,7 +139,7 @@ export function JSONSchemaArrayEditor({
             <hr />
           </div>
         ))}
-      </CollapsibleList>
+      </Collapsible>
       <ModalCard
         footer={
           <>
