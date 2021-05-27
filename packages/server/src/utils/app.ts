@@ -30,7 +30,6 @@ const formatters = {
  * @param ctx - The Koa context.
  * @param queryOptions - Additional Sequelize query options. `where` will be overwritten.
  * @param url - The URL to find the app for. This defaults to the context request origin.
- *
  * @returns The app matching the url.
  */
 export function getApp(
@@ -73,7 +72,6 @@ export function getApp(
  * @param app - The app for which to get the remapper context.
  * @param language - The preferred language for the context.
  * @param userInfo - The OAuth2 compatible user information.
- *
  * @returns A localized remapper context for the app.
  */
 export async function getRemapperContext(

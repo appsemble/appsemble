@@ -7,7 +7,6 @@ import { compareStrings } from '@appsemble/utils';
  * Implements https://tools.ietf.org/html/rfc4180
  *
  * @param body - An object containing the data to be converted.
- *
  * @returns The data serialized as CSV.
  */
 export function convertToCsv(body: any): string {

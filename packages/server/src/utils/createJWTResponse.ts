@@ -30,10 +30,8 @@ interface Options {
  * Create a JSON web token response.
  *
  * @see https://www.iana.org/assignments/jwt/jwt.xhtml
- *
  * @param sub - The id of the user that is authenticated using the token.
  * @param options - The options for creating the JWS response.
- *
  * @returns A JWT based OAuth2 response body.
  */
 export function createJWTResponse(

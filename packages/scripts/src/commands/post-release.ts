@@ -5,7 +5,6 @@ import { URL } from 'url';
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import { readJson } from 'fs-extra';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Text } from 'mdast';
 import fromMarkdown from 'mdast-util-from-markdown';
 import toMarkdown from 'mdast-util-to-markdown';
