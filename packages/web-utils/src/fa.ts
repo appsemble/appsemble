@@ -4,7 +4,7 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
  * Extracted from https://fontawesome.com/cheatsheet/free/brands
  * [...document.getElementsByClassName('icon-name')].map(i => i.innerHTML)
  */
-const brands = new Set([
+const brands = new Set<IconName>([
   '500px',
   'accessible-icon',
   'accusoft',

@@ -50,4 +50,4 @@ See also:
 
 - [API documentation](/api-explorer)
 - [Source code on GitLab](https://gitlab.com/appsemble/appsemble)
-- [Contribution guidelines](https://gitlab.com/appsemble/appsemble/blob/master/CONTRIBUTING.md)
+- [Contribution guidelines](https://gitlab.com/appsemble/appsemble/blob/main/CONTRIBUTING.md)

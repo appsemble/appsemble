@@ -12,8 +12,8 @@ workflow:
   rules:
     # By default, run jobs for every merge request.
     - if: $CI_MERGE_REQUEST_ID
-    # By default, run jobs for every commit on master.
-    - if: $CI_COMMIT_BRANCH == 'master'
+    # By default, run jobs for every commit on main.
+    - if: $CI_COMMIT_BRANCH == 'main'
     # By default, run jobs for every schedule
     - if: $CI_PIPELINE_SOURCE == 'schedule'
     # By default, run jobs for every tag
@@ -358,7 +358,7 @@ stop review:
   script:
     - helm delete "review-$CI_MERGE_REQUEST_IID"
 
-# Deploy the Docker image for master to the staging environment.
+# Deploy the Docker image for main to the staging environment.
 staging:
   image: dtzar/helm-kubectl:3
   stage: deploy
@@ -383,7 +383,7 @@ staging:
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=master"
+      --set "image.tag=main"
       --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"

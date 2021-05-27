@@ -101,7 +101,7 @@ This section is only for Appsemble maintainers.
 The release process hasn’t been fully automated yet. In order to create a release, perform the
 following steps:
 
-- Make sure you’re on the latest master branch.
+- Make sure you’re on the latest `main` branch.
 - Create a new branch.
 - Run `yarn scripts release patch` or `yarn scripts release minor` respectively.
 - Verify and commit the results, using the changelog section as the commit body. This does not
