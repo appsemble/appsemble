@@ -6,7 +6,7 @@ import { Link, useRouteMatch } from 'react-router-dom';
 
 import { useApp } from '../../..';
 import { CodeBlock } from '../../../../../../components/CodeBlock';
-import { CollapsibleList } from '../../../../../../components/CollapsibleList';
+import { Collapsible } from '../../../../../../components/Collapsible';
 import { Endpoint } from './Endpoint';
 import { messages } from './messages';
 import { Schema } from './Schema';
@@ -65,11 +65,11 @@ export function ResourceDefinitionDetailsPage(): ReactElement {
       <Endpoint hasBody type="update" />
       <Endpoint type="delete" />
       <hr />
-      <CollapsibleList size={4} title="YAML View">
+      <Collapsible size={4} title="YAML View">
         <CodeBlock className="mb-4" language="yaml">
           {yaml}
         </CodeBlock>
-      </CollapsibleList>
+      </Collapsible>
     </>
   );
 }

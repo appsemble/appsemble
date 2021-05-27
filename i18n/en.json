@@ -545,6 +545,7 @@
   "studio.src.pages.apps.app.translations": "Translations",
   "studio.src.pages.apps.app.translations.MessagesForm.app": "App messages",
   "studio.src.pages.apps.app.translations.MessagesForm.block": "Block messages",
+  "studio.src.pages.apps.app.translations.MessagesForm.core": "Core messages",
   "studio.src.pages.apps.app.translations.MessagesForm.messageIds": "Custom messages",
   "studio.src.pages.apps.app.translations.MessagesForm.submit": "Save",
   "studio.src.pages.apps.app.translations.MessagesForm.uploadError": "Something went wrong when trying to upload messages for this language.",
