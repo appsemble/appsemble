@@ -62,14 +62,16 @@ export function RolesPage(): ReactElement {
         <FormattedMessage {...messages.members} />
       </Title>
       {app.definition.security.default.policy === 'organization' && (
-        <FormattedMessage
-          {...messages.inviteOrganization}
-          values={{
-            link: (text: string) => (
-              <Link to={`/${lang}/organizations/@${app.OrganizationId}`}>{text}</Link>
-            ),
-          }}
-        />
+        <span>
+          <FormattedMessage
+            {...messages.inviteOrganization}
+            values={{
+              link: (text: string) => (
+                <Link to={`/${lang}/organizations/@${app.OrganizationId}`}>{text}</Link>
+              ),
+            }}
+          />
+        </span>
       )}
       <AsyncDataView
         emptyMessage={<FormattedMessage {...messages.noMembers} />}
