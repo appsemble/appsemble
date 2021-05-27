@@ -15,7 +15,8 @@ type TextAreaFieldProps = Omit<
 export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
   (
     {
-      addon,
+      addonLeft,
+      addonRight,
       className,
       control,
       error,
@@ -32,7 +33,8 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
     ref,
   ) => (
     <FormComponent
-      addon={addon}
+      addonLeft={addonLeft}
+      addonRight={addonRight}
       className={className}
       control={control}
       error={error}

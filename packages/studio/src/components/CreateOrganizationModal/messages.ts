@@ -9,4 +9,6 @@ export const messages = defineMessages({
   description: 'Description',
   email: 'Email',
   website: 'Website',
+  conflict: 'An organization with the given ID already exists',
+  error: 'There was a problem creating the organization.',
 });

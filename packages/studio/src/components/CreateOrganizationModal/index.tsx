@@ -1,6 +1,8 @@
 import {
   ModalCard,
+  Select,
   SimpleForm,
+  SimpleFormError,
   SimpleFormField,
   SimpleModalFooter,
   Toggle,
@@ -76,6 +78,25 @@ interface CreateOrganizationModalProps {
   title: ReactElement;
 }
 
+const defaults = {
+  description: '',
+  email: '',
+  id: '',
+  name: '',
+  website: '',
+  websiteProtocol: 'https',
+};
+
+/**
+ * Strip a website link protocol.
+ *
+ * @param link - The website link to strip the protocol from.
+ * @returns The website link without protocol.
+ */
+function preprocessWebsite(link: string): string {
+  return link.replace(/^https?:\/\//, '');
+}
+
 /**
  * Render the CreateOrganizationForm component in a modal card.
  */
@@ -84,26 +105,20 @@ export function CreateOrganizationModal({
   isActive,
   onClose,
   onCreateOrganization,
-  defaultValues = {
-    id: '',
-    name: '',
-    description: '',
-    website: '',
-    email: '',
-  },
+  defaultValues = defaults,
   disabled,
   title,
 }: CreateOrganizationModalProps): ReactElement {
   const { organizations, setOrganizations } = useUser();
 
   const submitOrganization = useCallback(
-    async ({ description, email, id, name, website }: Organization) => {
+    async ({ description, email, id, name, website, websiteProtocol }: typeof defaults) => {
       const { data } = await axios.post<Organization>('/api/organizations', {
         name,
         id: normalize(id),
         description,
         email,
-        website,
+        website: website ? `${websiteProtocol}://${website}` : undefined,
       });
       setOrganizations([...organizations, { ...data, role: 'Owner' }]);
       onCreateOrganization?.(data);
@@ -130,6 +145,15 @@ export function CreateOrganizationModal({
       title={title}
     >
       {help}
+      <SimpleFormError>
+        {(error) =>
+          axios.isAxiosError(error) && error.response.status === 409 ? (
+            <FormattedMessage {...messages.conflict} />
+          ) : (
+            <FormattedMessage {...messages.error} />
+          )
+        }
+      </SimpleFormError>
       <SimpleFormField
         disabled={disabled}
         icon="briefcase"
@@ -146,11 +170,16 @@ export function CreateOrganizationModal({
         required
       />
       <SimpleFormField
+        addonLeft={
+          <SimpleFormField component={Select} name="websiteProtocol">
+            <option value="https">https://</option>
+            <option value="http">http://</option>
+          </SimpleFormField>
+        }
         disabled={disabled}
-        icon="globe"
         label={<FormattedMessage {...messages.website} />}
         name="website"
-        type="url"
+        preprocess={preprocessWebsite}
       />
       <SimpleFormField
         disabled={disabled}
