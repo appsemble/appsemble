@@ -4,11 +4,11 @@
 
 To start developing blocks, first the Appsemble repository needs to be cloned and installed as
 described in the
-[Getting Started](https://gitlab.com/appsemble/appsemble/blob/master/README.md#getting-started)
+[Getting Started](https://gitlab.com/appsemble/appsemble/blob/main/README.md#getting-started)
 instructions in the readme.
 
 Next, publish the existing blocks following the instructions from the
-[Blocks](https://gitlab.com/appsemble/appsemble/blob/master/README.md#publishing-blocks) section.
+[Blocks](https://gitlab.com/appsemble/appsemble/blob/main/README.md#publishing-blocks) section.
 
 ## Create Your First Block
 

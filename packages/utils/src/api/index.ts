@@ -32,7 +32,7 @@ The OpenAPI explorer can be found on
 `,
       license: {
         name: 'LGPL',
-        url: 'https://gitlab.com/appsemble/appsemble/blob/master/LICENSE.md',
+        url: 'https://gitlab.com/appsemble/appsemble/blob/main/LICENSE.md',
       },
       version,
     },

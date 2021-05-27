@@ -180,14 +180,14 @@ describe('request', () => {
           <entry>
             <id>tag:github.com,2008:Repository/226361784/0.18.5</id>
             <updated>2021-03-31T17:09:00+02:00</updated>
-            <title>Merge branch &#39;release-0.18.5&#39; into &#39;master&#39;</title>
+            <title>Merge branch &#39;release-0.18.5&#39; into &#39;main&#39;</title>
             {/* eslint-disable-next-line react/forbid-elements */}
             <content type="html">&lt;p&gt;Release version 0.18.5&lt;/p&gt; &lt;p&gt;See merge request appsemble/appsemble!1747&lt;/p&gt;</content>
           </entry>
           <entry>
             <id>tag:github.com,2008:Repository/226361784/0.18.4</id>
             <updated>2021-03-24T17:40:15+01:00</updated>
-            <title>Merge branch &#39;release-0.18.4&#39; into &#39;master&#39;</title>
+            <title>Merge branch &#39;release-0.18.4&#39; into &#39;main&#39;</title>
             {/* eslint-disable-next-line react/forbid-elements */}
             <content type="html">&lt;p&gt;Release version 0.18.4&lt;/p&gt; &lt;p&gt;See merge request appsemble/appsemble!1734&lt;/p&gt;</content>
           </entry>
@@ -234,14 +234,14 @@ describe('request', () => {
           content:
             '<p>Release version 0.18.5</p> <p>See merge request appsemble/appsemble!1747</p>',
           id: 'tag:github.com,2008:Repository/226361784/0.18.5',
-          title: "Merge branch 'release-0.18.5' into 'master'",
+          title: "Merge branch 'release-0.18.5' into 'main'",
           updated: '2021-03-31T17:09:00+02:00',
         },
         {
           content:
             '<p>Release version 0.18.4</p> <p>See merge request appsemble/appsemble!1734</p>',
           id: 'tag:github.com,2008:Repository/226361784/0.18.4',
-          title: "Merge branch 'release-0.18.4' into 'master'",
+          title: "Merge branch 'release-0.18.4' into 'main'",
           updated: '2021-03-24T17:40:15+01:00',
         },
       ],
