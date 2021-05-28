@@ -151,7 +151,7 @@ export function SettingsPage(): ReactElement {
             title={<FormattedMessage {...messages.private} />}
           />
           <SimpleFormField
-            addon={
+            addonRight={
               <Button className="is-static" component="span">
                 {`.${app.OrganizationId}.${window.location.host}`}
               </Button>
