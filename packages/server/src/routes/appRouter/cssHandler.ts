@@ -5,10 +5,10 @@ import { getApp } from '../../utils/app';
 
 export function cssHandler(type: 'coreStyle' | 'sharedStyle'): KoaMiddleware {
   return async (ctx) => {
-    const app = await getApp(ctx, { attributes: [type], raw: true });
+    const { app } = await getApp(ctx, { attributes: [type], raw: true });
 
     if (!app) {
-      throw notFound();
+      throw notFound('App not found');
     }
 
     ctx.body = app[type];

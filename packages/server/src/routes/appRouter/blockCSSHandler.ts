@@ -13,7 +13,7 @@ export async function blockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
     params: { name },
   } = ctx;
 
-  const app = await getApp(ctx, {
+  const { app } = await getApp(ctx, {
     attributes: [],
     include: [
       {
@@ -26,7 +26,7 @@ export async function blockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
   });
 
   if (!app) {
-    throw notFound();
+    throw notFound('App not found');
   }
 
   const [style] = app.AppBlockStyles;
