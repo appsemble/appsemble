@@ -27,7 +27,7 @@
     "@appsemble/node-utils": "0.18.14",
     "@appsemble/utils": "0.18.14",
     "axios": "^0.21.1",
-    "date-fns": "^2.21.3",
+    "date-fns": "^2.22.1",
     "extract-react-intl-messages": "^4.1.1",
     "fs-extra": "^10.0.0",
     "globby": "^11.0.3",
