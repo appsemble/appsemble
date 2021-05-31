@@ -64,11 +64,15 @@ describe('getOrganizations', () => {
     expect(response).toMatchObject({
       status: 200,
       data: [
-        { id: 'appsemble', name: 'Appsemble', iconUrl: '/api/organizations/appsemble/icon' },
+        {
+          id: 'appsemble',
+          name: 'Appsemble',
+          iconUrl: '/api/organizations/appsemble/icon?updated=1970-01-01T00:00:00.000Z',
+        },
         {
           id: 'testorganization',
           name: 'Test Organization',
-          iconUrl: '/api/organizations/testorganization/icon',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -85,7 +89,7 @@ describe('getOrganization', () => {
       data: {
         id: 'testorganization',
         name: 'Test Organization',
-        iconUrl: '/api/organizations/testorganization/icon',
+        iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
       },
     });
   });
