@@ -1,7 +1,7 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, CardFooterButton, Form, ModalCard, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { Fragment, JSX } from 'preact';
+import { JSX } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { FilterValue, FilterValues } from '../block';
@@ -115,7 +115,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
         />
       )}
       {showModal && (
-        <Fragment>
+        <>
           <Button
             className={classNames('mx-2 my-2', { 'is-primary': true })}
             icon="filter"
@@ -124,14 +124,14 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
           />
           <ModalCard
             footer={
-              <Fragment>
+              <>
                 <CardFooterButton onClick={resetFilter}>
                   {utils.formatMessage('clearLabel')}
                 </CardFooterButton>
                 <CardFooterButton color="primary" type="submit">
                   {utils.formatMessage('submitLabel')}
                 </CardFooterButton>
-              </Fragment>
+              </>
             }
             isActive={modal.enabled}
             onClose={modal.disable}
@@ -154,7 +154,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
                 ),
             )}
           </ModalCard>
-        </Fragment>
+        </>
       )}
     </Form>
   );
