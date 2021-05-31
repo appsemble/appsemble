@@ -40,6 +40,29 @@ workflow:
   before_script:
     - yarn --frozen-lockfile --ignore-scripts
 
+# A template for creating a minor or patch release
+.release:
+  extends: .yarn
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+  allow_failure: true
+  script:
+    - apt-get install git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - yarn scripts release "$INCREMENT"
+    - VERSION="$(yarn --silent appsemble --version)"
+    - MESSAGE="$VERSION\n\n$(yarn --silent scripts get-release-notes)"
+    - git config commit.gpgSign true
+    - git config tag.gpgSign true
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - git add .
+    - git commit --message "$MESSAGE"
+    - git tag "$VERSION" --message "$MESSAGE"
+    - git push origin main --tags
+
 ###################################################################################################
 #  Test Stage                                                                                     #
 ###################################################################################################
@@ -280,6 +303,18 @@ sentry release:
   script:
     - sentry-cli releases new --finalize "$CI_COMMIT_TAG"
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+
+# Create a patch release
+release patch:
+  extends: .release
+  variables:
+    INCREMENT: patch
+
+# Create a patch release
+release minor:
+  extends: .release
+  variables:
+    INCREMENT: minor
 
 ###################################################################################################
 #  Deploy Stage                                                                                   #
