@@ -1,3 +1,5 @@
+/apps/
+/blocks/
 coverage/
 dist/
 node_modules/
