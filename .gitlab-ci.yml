@@ -62,7 +62,7 @@ workflow:
     - git add .
     - git commit --message "$MESSAGE"
     - git tag "$VERSION" --message "$MESSAGE"
-    - git push origin main --tags
+    - git push origin HEAD:main --tags
 
 ###################################################################################################
 #  Test Stage                                                                                     #
