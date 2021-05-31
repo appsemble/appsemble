@@ -1,5 +1,6 @@
 .root {
   max-width: 960px;
+  position: relative;
 
   & :global(.is-pulled-right) + * {
     display: none;
@@ -12,9 +13,11 @@
   & h4,
   & h5,
   & h6 {
+    position: relative;
+
     /* stylelint-disable-next-line selector-max-type */
     & > a {
-      left: 1.3rem;
+      left: -1em;
       position: absolute;
 
       /* stylelint-disable-next-line selector-max-compound-selectors, selector-max-type */
