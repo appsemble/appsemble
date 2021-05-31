@@ -49,6 +49,7 @@ workflow:
       when: manual
   allow_failure: true
   script:
+    - apt-get update
     - apt-get install git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
     - yarn scripts release "$INCREMENT"
@@ -310,7 +311,7 @@ release patch:
   variables:
     INCREMENT: patch
 
-# Create a patch release
+# Create a minor release
 release minor:
   extends: .release
   variables:
