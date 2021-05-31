@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto';
 
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
-import { col, fn, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
+import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import {
   App,
@@ -40,7 +40,9 @@ export async function getOrganizations(ctx: KoaContext): Promise<void> {
     description: organization.description,
     website: organization.website,
     email: organization.email,
-    iconUrl: `/api/organizations/${organization.id}/icon`,
+    iconUrl: `/api/organizations/${
+      organization.id
+    }/icon?updated=${organization.updated.toISOString()}`,
   }));
 }
 
@@ -60,7 +62,9 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
     description: organization.description,
     website: organization.website,
     email: organization.email,
-    iconUrl: `/api/organizations/${organization.id}/icon`,
+    iconUrl: `/api/organizations/${
+      organization.id
+    }/icon?updated=${organization.updated.toISOString()}`,
   };
 }
 
@@ -83,7 +87,20 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
     attributes: {
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
     },
-    include: [{ model: Organization, attributes: ['id', 'name'] }, ...languageQuery],
+    include: [
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      ...languageQuery,
+    ],
     where: { OrganizationId: organizationId },
   });
 
@@ -231,7 +248,7 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
     description: updated.description,
     website: updated.website,
     email: updated.name,
-    iconUrl: `/api/organizations/${organization.id}/icon`,
+    iconUrl: `/api/organizations/${organization.id}/icon?updated=${updated.updated.toISOString()}`,
   };
 }
 
@@ -274,12 +291,14 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
 
     // @ts-expect-error XXX Convert to a type safe expression.
     await organization.addUser(userId, { through: { role: 'Owner' } });
-    await organization.reload();
+    const updated = await organization.reload();
 
     ctx.body = {
       id: organization.id,
       name: organization.name,
-      iconUrl: `/api/organizations/${organization.id}/icon`,
+      iconUrl: `/api/organizations/${
+        organization.id
+      }/icon?updated=${updated.updated.toISOString()}`,
       description: organization.description,
       website: organization.website,
       email: organization.email,
@@ -363,7 +382,9 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = {
     id: organization.id,
     name: organization.name,
-    iconUrl: `/api/organizations/${organization.id}/icon`,
+    iconUrl: `/api/organizations/${
+      organization.id
+    }/icon?updated=${organization.updated.toISOString()}`,
   };
 }
 

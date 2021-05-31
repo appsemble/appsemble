@@ -194,7 +194,9 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     });
 
     record.Organization = await Organization.findByPk(record.OrganizationId, {
-      attributes: ['name'],
+      attributes: {
+        include: ['id', 'name', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      },
     });
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
@@ -220,7 +222,17 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
     include: [
       { model: Resource, attributes: ['id'], where: { clonable: true }, required: false },
       { model: AppSnapshot },
-      { model: Organization, attributes: ['id', 'name'] },
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
       { model: AppScreenshot, attributes: ['id'] },
       ...languageQuery,
     ],
@@ -259,7 +271,20 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
       exclude: ['icon', 'coreStyle', 'sharedStyle'],
     },
     where: { private: false },
-    include: [{ model: Organization, attributes: ['id', 'name'] }, ...languageQuery],
+    include: [
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      ...languageQuery,
+    ],
   });
 
   const ratings = await AppRating.findAll({
@@ -305,7 +330,20 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
     attributes: {
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
     },
-    include: [{ model: Organization, attributes: ['id', 'name'] }, ...languageQuery],
+    include: [
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      ...languageQuery,
+    ],
     where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
   });
 
@@ -367,7 +405,17 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
   const dbApp = await App.findOne({
     where: { id: appId },
     include: [
-      { model: Organization, attributes: ['name'] },
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
       { model: AppScreenshot, attributes: ['id'] },
     ],
   });

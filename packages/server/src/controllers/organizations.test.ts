@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -23,6 +24,7 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 let organization: Organization;
 let server: Koa;
 let user: User;
+let clock: Clock;
 
 beforeAll(createTestSchema('organizations'));
 
@@ -33,17 +35,25 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  clock = install();
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
+    icon: await readFixture('nodejs-logo.png'),
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+  await Organization.create({
+    id: 'appsemble',
+    name: 'Appsemble',
+  });
   jest.spyOn(server.context.mailer, 'sendTemplateEmail');
 });
 
-afterEach(truncate);
+afterEach(() => {
+  truncate();
+  clock.uninstall();
+});
 
 afterAll(closeTestSchema);
 
@@ -116,7 +126,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: app.definition,
-          iconUrl: `/api/apps/${app.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
           id: app.id,
           locked: false,
           path: 'test-app-2',
@@ -151,7 +162,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: appA.definition,
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
           id: appA.id,
           locked: false,
           path: 'test-app',
@@ -160,7 +172,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: appB.definition,
-          iconUrl: `/api/apps/${appB.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
           id: appB.id,
           locked: false,
           path: 'test-app-2',
