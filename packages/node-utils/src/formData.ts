@@ -26,7 +26,6 @@ function appendFormData(key: string, value: any, form: FormData): void {
  * @param data - A key / value record of fields to append to the form data.  Booleans, numbersm
  * strings, and `null` will be added to the form data raw. Objects will be transformed to JSON
  * objects. Arrays will be iterated over and every item will be appended for the given key.
- *
  * @returns The data represented as form data.
  */
 export function createFormData(data: Record<string, any>): FormData {

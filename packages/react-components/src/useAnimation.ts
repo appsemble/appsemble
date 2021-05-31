@@ -62,7 +62,6 @@ interface Classes {
  * @param isActive - Whether the value should be active eventually.
  * @param duration - The duraction of the CSS transition.
  * @param classes - The CSS classes to use for each state.
- *
  * @returns The CSS class that indicates the state of the animation.
  */
 export function useAnimation(

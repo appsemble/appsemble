@@ -24,7 +24,6 @@ enum Edm {
  * A function which accepts the name in the filter, and returns a name to replace it with.
  *
  * @param name - The original name. This uses `/` as a separator.
- *
  * @returns The new name to use instead.
  */
 type Rename = (name: string) => string;

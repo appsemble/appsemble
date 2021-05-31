@@ -137,11 +137,10 @@ export interface BaseMessage {
   timeout?: number;
 
   /**
-    * Whether or not to show the dismiss button.
-    *
-    * @default false
-
-    */
+   * Whether or not to show the dismiss button.
+   *
+   * @default false
+   */
   dismissable?: boolean;
 }
 
