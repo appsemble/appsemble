@@ -16,6 +16,7 @@ import {
 } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { organizationBlocklist } from '../utils/organizationBlocklist';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
@@ -320,6 +321,18 @@ describe('createOrganization', () => {
       data: { message: 'Another organization with the name “Foooo” already exists' },
     });
   });
+
+  it.each(organizationBlocklist)(
+    'should not allow the organization id ‘%s’',
+    async (blockedName) => {
+      authorizeStudio();
+      const response = await request.post('/api/organizations', { id: blockedName });
+      expect(response).toMatchObject({
+        status: 400,
+        data: { message: 'This organization id is not allowed.' },
+      });
+    },
+  );
 });
 
 describe('getMembers', () => {
