@@ -4,6 +4,7 @@
 
 .descriptionHidden {
   height: 12rem;
+  overflow: hidden;
   position: relative;
 
   &::after {

@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 interface MDXAnchorProps {
   /**
@@ -17,6 +17,8 @@ interface MDXAnchorProps {
  * Render a markdown link element.
  */
 export function MDXAnchor({ children, href }: MDXAnchorProps): ReactElement {
+  const { lang } = useParams<{ lang: string }>();
+
   if (/^https?:\/\//.test(href)) {
     return (
       <a href={href} rel="noopener noreferrer" target="_blank">
@@ -24,5 +26,5 @@ export function MDXAnchor({ children, href }: MDXAnchorProps): ReactElement {
       </a>
     );
   }
-  return <Link to={href}>{children}</Link>;
+  return <Link to={href.startsWith('#') ? href : `/${lang}${href}`}>{children}</Link>;
 }

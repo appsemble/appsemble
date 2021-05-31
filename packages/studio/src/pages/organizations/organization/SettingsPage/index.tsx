@@ -1,5 +1,6 @@
 import {
   FileUpload,
+  Select,
   SimpleForm,
   SimpleFormField,
   SimpleSubmit,
@@ -29,6 +30,16 @@ interface SettingsPageProps {
 }
 
 /**
+ * Strip a website link protocol.
+ *
+ * @param link - The website link to strip the protocol from.
+ * @returns The website link without protocol.
+ */
+function preprocessWebsite(link: string): string {
+  return link.replace(/^https?:\/\//, '');
+}
+
+/**
  * The page for configuring various settings of an organization.
  */
 export function SettingsPage({
@@ -44,12 +55,12 @@ export function SettingsPage({
   }, []);
 
   const onEditOrganization = useCallback(
-    async ({ description, email, name, website }) => {
+    async ({ description, email, name, website, websiteProtocol }) => {
       const formData = new FormData();
       formData.set('name', name);
       formData.set('description', description);
       formData.set('email', email);
-      formData.set('website', website);
+      formData.set('website', website ? `${websiteProtocol}://${website}` : '');
 
       if (icon) {
         formData.set('icon', icon);
@@ -73,7 +84,8 @@ export function SettingsPage({
     () => ({
       name: organization.name || '',
       email: organization.email || '',
-      website: organization.website || '',
+      website: organization.website?.replace(/^https?:\/\//, '') || '',
+      websiteProtocol: organization.website?.startsWith('http://') ? 'http' : 'https',
       description: organization.description || '',
     }),
     [organization],
@@ -99,10 +111,16 @@ export function SettingsPage({
           type="email"
         />
         <SimpleFormField
+          addonLeft={
+            <SimpleFormField component={Select} name="websiteProtocol">
+              <option value="https">https://</option>
+              <option value="http">http://</option>
+            </SimpleFormField>
+          }
           help={<FormattedMessage {...messages.websiteDescription} />}
           label={<FormattedMessage {...messages.website} />}
           name="website"
-          type="url"
+          preprocess={preprocessWebsite}
         />
         <SimpleFormField
           help={<FormattedMessage {...messages.descriptionDescription} />}

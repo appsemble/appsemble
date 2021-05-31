@@ -64,7 +64,7 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
           <code>
             {schema.type === 'array' && !Array.isArray(schema.items) && schema.items?.type
               ? `${schema.items.type}[]`
-              : 'array'}
+              : schema.type}
           </code>
         </SchemaDescriptor>
       ) : null}

@@ -5,12 +5,9 @@ import { URL } from 'url';
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import { readJson } from 'fs-extra';
-import { Text } from 'mdast';
-import fromMarkdown from 'mdast-util-from-markdown';
-import toMarkdown from 'mdast-util-to-markdown';
 import { PackageJson } from 'type-fest';
-import visit from 'unist-util-visit';
 
+import { getReleaseNotes } from '../lib/changelog';
 import { AssetLink, gitlab, Release } from '../lib/gitlab';
 
 export const command = 'post-release';
@@ -75,40 +72,6 @@ async function createGitlabRelease(releaseNotes: string): Promise<void> {
 }
 
 /**
- * Get the release notes for the latest release.
- *
- * @returns The release notes for the last version
- */
-async function getReleaseNotes(): Promise<string> {
-  const changelog = await fs.readFile('CHANGELOG.md', 'utf-8');
-  const ast = fromMarkdown(changelog);
-  let sectionStart: number;
-  let sectionEnd: number;
-  for (const [index, child] of ast.children.entries()) {
-    if (child.type !== 'heading' || child.depth !== 2) {
-      continue;
-    }
-    if (sectionStart) {
-      sectionEnd = index;
-      break;
-    } else {
-      sectionStart = index;
-    }
-  }
-  ast.children.splice(sectionEnd);
-  ast.children.splice(0, sectionStart + 1);
-  visit<Text>(ast, 'text', (node) => {
-    // eslint-disable-next-line no-param-reassign
-    node.value = node.value.replace(/\n+/g, (match) => (match.length === 1 ? ' ' : '\n\n'));
-  });
-  const releaseNotes = toMarkdown(ast, { bullet: '-', listItemIndent: 'one', strong: '_' });
-  logger.info('## Release notes');
-  logger.info('');
-  logger.info(releaseNotes);
-  return releaseNotes;
-}
-
-/**
  * Update the release on Docker Hub.
  */
 async function updateDockerHub(): Promise<void> {
@@ -133,6 +96,9 @@ async function updateDockerHub(): Promise<void> {
 
 export async function handler(): Promise<void> {
   const releaseNotes = await getReleaseNotes();
+  logger.info('## Release notes');
+  logger.info('');
+  logger.info(releaseNotes);
   await updateDockerHub();
   await createGitlabRelease(releaseNotes);
 }

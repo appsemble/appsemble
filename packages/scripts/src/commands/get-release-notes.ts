@@ -1,0 +1,10 @@
+import { getReleaseNotes } from '../lib/changelog';
+
+export const command = 'get-release-notes';
+export const description = 'Print release notes for the latest release to stdout';
+
+export async function handler(): Promise<void> {
+  const releaseNotes = await getReleaseNotes();
+  // eslint-disable-next-line no-console
+  console.log(releaseNotes);
+}
