@@ -50,7 +50,7 @@ workflow:
   allow_failure: true
   script:
     - apt-get update
-    - apt-get install git gnupg
+    - apt-get install --yes git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
     - yarn scripts release "$INCREMENT"
     - VERSION="$(yarn --silent appsemble --version)"
