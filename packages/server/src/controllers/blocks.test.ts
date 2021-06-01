@@ -43,8 +43,8 @@ describe('getBlock', () => {
 
     await authorizeClientCredentials('blocks:write');
     const { data: original } = await request.post('/api/blocks', formData);
-
     const { data: retrieved } = await request.get('/api/blocks/@xkcd/test');
+
     expect(retrieved).toStrictEqual(omit(original, ['files']));
   });
 
@@ -358,7 +358,6 @@ describe('getBlockVersion', () => {
 
     await authorizeClientCredentials('blocks:write');
     const { data: created } = await request.post('/api/blocks', formData);
-
     const { data: retrieved, status } = await request.get(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
@@ -393,7 +392,7 @@ describe('getBlockVersion', () => {
 
     expect(retrieved).toStrictEqual(created);
     expect(retrieved.iconUrl).toStrictEqual(
-      '/api/organizations/xkcd/icon?updated=1970-01-01T00:00:00:000Z',
+      '/api/organizations/xkcd/icon?updated=1970-01-01T00:00:00.000Z',
     );
     expect(status).toBe(200);
     clock.uninstall();

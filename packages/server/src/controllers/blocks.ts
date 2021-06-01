@@ -40,9 +40,13 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
       'layout',
       'parameters',
       'resources',
+      [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
-    raw: true,
     where: { name: blockId, OrganizationId: organizationId },
+    include: {
+      model: Organization,
+      attributes: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+    },
     order: [['created', 'DESC']],
   });
 
@@ -53,7 +57,12 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
   const { actions, description, events, layout, longDescription, parameters, resources, version } =
     blockVersion;
   const name = `@${organizationId}/${blockId}`;
-
+  let iconUrl = null;
+  if (blockVersion.get('hasIcon')) {
+    iconUrl = `/api/blocks/${name}/versions/${version}/icon`;
+  } else if (blockVersion.Organization.get('hasIcon')) {
+    iconUrl = `/api/organizations/@${organizationId}/icon?updated=${blockVersion.Organization.updated.toISOString()}`;
+  }
   ctx.body = {
     name,
     description,
@@ -61,7 +70,7 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
     version,
     actions,
     events,
-    iconUrl: `/api/blocks/${name}/versions/${version}/icon`,
+    iconUrl,
     layout,
     parameters,
     resources,
@@ -280,7 +289,7 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Block version not found');
   }
 
-  let iconUrl = version.get('hasIcon') ? `/api/blocks/${name}/versions/${version}/icon` : null;
+  let iconUrl = version.get('hasIcon') ? `/api/blocks/${name}/versions/${blockVersion}/icon` : null;
   if (!iconUrl && version.Organization.get('hasIcon')) {
     iconUrl = `/api/organizations/${organizationId}/icon?updated=${version.Organization.updated.toISOString()}`;
   }
