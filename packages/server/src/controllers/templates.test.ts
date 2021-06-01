@@ -136,7 +136,7 @@ describe('createTemplateApp', () => {
           pages: [],
         },
         domain: null,
-        iconUrl: `/api/apps/${response.data.id}/icon?maskable=true&updated=1970-01-01T00:00:00.000Z`,
+        iconUrl: null,
         id: response.data.id,
         path: 'test-app',
         private: false,
