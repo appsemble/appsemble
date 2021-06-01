@@ -315,6 +315,7 @@
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.update": "Update an existing {resourceName} resource",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.default": "Default value",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.description": "Description",
+  "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.format": "Format",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maxItems": "Maximum amount of items",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maxLength": "Maximum length",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maximum": "Maximum value",
