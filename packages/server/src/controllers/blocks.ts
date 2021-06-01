@@ -4,7 +4,7 @@ import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { File } from 'koas-body-parser';
 import semver from 'semver';
-import { DatabaseError, QueryTypes, UniqueConstraintError } from 'sequelize';
+import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import {
   BlockAsset,
@@ -214,9 +214,18 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         );
       }
 
+      let iconUrl = Boolean(icon) ?? null;
+      if (!iconUrl) {
+        const organization = await Organization.findByPk(OrganizationId, {
+          transaction,
+          attributes: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+        });
+        iconUrl = (organization.get('hasIcon') as boolean) || null;
+      }
+
       ctx.body = {
         actions,
-        iconUrl: `/api/blocks/${name}/versions/${version}/icon`,
+        iconUrl,
         layout,
         parameters,
         resources,

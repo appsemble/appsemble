@@ -106,7 +106,7 @@ describe('publishBlock', () => {
       events: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
-      iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+      iconUrl: null,
       layout: null,
       resources: null,
       parameters: null,
