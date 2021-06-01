@@ -32,7 +32,13 @@ interface Params {
 }
 
 export async function getOrganizations(ctx: KoaContext): Promise<void> {
-  const organizations = await Organization.findAll({ order: [['id', 'ASC']] });
+  const organizations = await Organization.findAll({
+    order: [['id', 'ASC']],
+    attributes: {
+      include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      exclude: ['icon'],
+    },
+  });
 
   ctx.body = organizations.map((organization) => ({
     id: organization.id,
@@ -40,9 +46,9 @@ export async function getOrganizations(ctx: KoaContext): Promise<void> {
     description: organization.description,
     website: organization.website,
     email: organization.email,
-    iconUrl: `/api/organizations/${
-      organization.id
-    }/icon?updated=${organization.updated.toISOString()}`,
+    iconUrl: organization.get('hasIcon')
+      ? `/api/organizations/${organization.id}/icon?updated=${organization.updated.toISOString()}`
+      : null,
   }));
 }
 
@@ -51,7 +57,12 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
     params: { organizationId },
   } = ctx;
 
-  const organization = await Organization.findByPk(organizationId);
+  const organization = await Organization.findByPk(organizationId, {
+    attributes: {
+      include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      exclude: ['icon'],
+    },
+  });
   if (!organization) {
     throw notFound('Organization not found.');
   }
@@ -62,9 +73,9 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
     description: organization.description,
     website: organization.website,
     email: organization.email,
-    iconUrl: `/api/organizations/${
-      organization.id
-    }/icon?updated=${organization.updated.toISOString()}`,
+    iconUrl: organization.get('hasIcon')
+      ? `/api/organizations/${organization.id}/icon?updated=${organization.updated.toISOString()}`
+      : null,
   };
 }
 
