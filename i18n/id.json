@@ -17,7 +17,7 @@
   "app.src.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Dapatkan pemberitahuan ketika \"{resource}\" diperbarui",
   "app.src.components.AppSettings.LanguagePreference.preferredLanguage": "Bahasa pilihan untuk aplikasi ini",
   "app.src.components.AppSettings.settings": "Pengaturan",
-  "app.src.components.ErrorFallback.home": "Kembali ke rumah",
+  "app.src.components.ErrorFallback.home": "Kembali ke beranda",
   "app.src.components.ErrorFallback.message": "Kesalahan tak terduga terjadi.",
   "app.src.components.Login.permissionError": "Karena izin yang salah dikonfigurasi, Anda tidak dapat masuk ke aplikasi. Jika menurut Anda ini adalah kesalahan, silakan tinggalkan pesan di <link> halaman toko Appsemble </link>.",
   "app.src.components.MenuProvider.storeLink": "",
