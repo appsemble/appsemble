@@ -54,7 +54,10 @@ workflow:
     - gpg --import "$GPG_PRIVATE_KEY"
     - yarn scripts release "$INCREMENT"
     - VERSION="$(yarn --silent appsemble --version)"
-    - MESSAGE="$VERSION\n\n$(yarn --silent scripts get-release-notes)"
+    - |
+      MESSAGE="$VERSION
+
+      $(yarn --silent scripts get-release-notes)"
     - git config commit.gpgSign true
     - git config tag.gpgSign true
     - git config user.email bot@appsemble.com
