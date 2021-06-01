@@ -62,7 +62,7 @@ workflow:
     - git add .
     - git commit --message "$MESSAGE"
     - git tag "$VERSION" --message "$MESSAGE"
-    - git push origin HEAD:main --tags
+    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main --tags
 
 ###################################################################################################
 #  Test Stage                                                                                     #
