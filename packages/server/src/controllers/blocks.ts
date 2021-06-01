@@ -214,13 +214,16 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         );
       }
 
-      let iconUrl = Boolean(icon) ?? null;
+      let iconUrl = icon ? `/api/blocks/${name}/versions/${version}/icon` : null;
       if (!iconUrl) {
         const organization = await Organization.findByPk(OrganizationId, {
           transaction,
           attributes: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
         });
-        iconUrl = (organization.get('hasIcon') as boolean) || null;
+
+        if (organization.get('hasIcon')) {
+          iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
+        }
       }
 
       ctx.body = {
@@ -261,18 +264,30 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
       'parameters',
       'description',
       'longDescription',
+      [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
-    include: [{ model: BlockAsset, attributes: ['filename'] }],
+    include: [
+      { model: BlockAsset, attributes: ['filename'] },
+      {
+        model: Organization,
+        attributes: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      },
+    ],
   });
 
   if (!version) {
     throw notFound('Block version not found');
   }
 
+  let iconUrl = version.get('hasIcon') ? `/api/blocks/${name}/versions/${version}/icon` : null;
+  if (!iconUrl && version.Organization.get('hasIcon')) {
+    iconUrl = `/api/organizations/${organizationId}/icon?updated=${version.Organization.updated.toISOString()}`;
+  }
+
   ctx.body = {
     files: version.BlockAssets.map((f) => f.filename),
-    iconUrl: `/api/blocks/${name}/versions/${blockVersion}/icon`,
+    iconUrl,
     name,
     version: blockVersion,
     actions: version.actions,

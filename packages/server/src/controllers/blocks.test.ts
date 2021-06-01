@@ -1,4 +1,5 @@
 import { createFixtureStream, readFixture } from '@appsemble/node-utils';
+import { install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
@@ -338,8 +339,64 @@ describe('getBlockVersion', () => {
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 
+    expect(retrieved.iconUrl).toBeNull();
     expect(retrieved).toStrictEqual(created);
     expect(status).toBe(200);
+  });
+
+  it('should use the block’s icon in the iconUrl if the block has one', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'standing.png',
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'testblock.js',
+    });
+    formData.append('icon', createFixtureStream('nodejs-logo.png'), { filepath: 'icon.png' });
+
+    await authorizeClientCredentials('blocks:write');
+    const { data: created } = await request.post('/api/blocks', formData);
+
+    const { data: retrieved, status } = await request.get(
+      '/api/blocks/@xkcd/standing/versions/1.32.9',
+    );
+
+    expect(retrieved).toStrictEqual(created);
+    expect(retrieved.iconUrl).toStrictEqual('/api/blocks/@xkcd/standing/versions/1.32.9/icon');
+    expect(status).toBe(200);
+  });
+
+  it('should use the organization icon in the iconUrl if the block does not have one', async () => {
+    const clock = install();
+    await Organization.update(
+      { icon: await readFixture('nodejs-logo.png') },
+      { where: { id: 'xkcd' } },
+    );
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'standing.png',
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'testblock.js',
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    const { data: created } = await request.post('/api/blocks', formData);
+
+    const { data: retrieved, status } = await request.get(
+      '/api/blocks/@xkcd/standing/versions/1.32.9',
+    );
+
+    expect(retrieved).toStrictEqual(created);
+    expect(retrieved.iconUrl).toStrictEqual(
+      '/api/organizations/xkcd/icon?updated=1970-01-01T00:00:00:000Z',
+    );
+    expect(status).toBe(200);
+    clock.uninstall();
   });
 
   it('should respond with 404 when trying to fetch a non existing block version', async () => {
