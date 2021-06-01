@@ -35,7 +35,7 @@ export async function getOrganizations(ctx: KoaContext): Promise<void> {
   const organizations = await Organization.findAll({
     order: [['id', 'ASC']],
     attributes: {
-      include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      include: [[literal('icon IS NOT NULL'), 'hasIcon']],
       exclude: ['icon'],
     },
   });
@@ -96,6 +96,7 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
 
   const apps = await App.findAll({
     attributes: {
+      include: [[literal('"App".icon IS NOT NULL'), 'hasIcon']],
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
     },
     include: [

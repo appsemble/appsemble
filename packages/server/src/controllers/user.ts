@@ -18,13 +18,10 @@ export async function getUser(ctx: KoaContext): Promise<void> {
     include: [
       {
         model: Organization,
-        attributes: [
-          'id',
-          'name',
-          'updated',
-          'icon',
-          [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
-        ],
+        attributes: {
+          include: ['id', 'name', 'updated', [literal('icon IS NOT NULL'), 'hasIcon']],
+          exclude: ['icon'],
+        },
       },
       {
         model: EmailAuthorization,
