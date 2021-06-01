@@ -1,0 +1,15 @@
+{
+    "app": {
+        "name": "",
+        "description": "",
+        "pages.0": "",
+        "pages.1": "",
+        "pages.2": ""
+    },
+    "messageIds": {
+        "firstName": "",
+        "lastName": "",
+        "email": "",
+        "description": ""
+    }
+}
