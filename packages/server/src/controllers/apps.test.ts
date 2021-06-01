@@ -1808,7 +1808,7 @@ describe('getAppIcon', () => {
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should generate an maskable icon from a horizontal app icon', async () => {
+  it('should generate a maskable icon from a horizontal app icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -1825,7 +1825,7 @@ describe('getAppIcon', () => {
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should generate an maskable icon from a vertical app icon', async () => {
+  it('should generate a maskable icon from a vertical app icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',

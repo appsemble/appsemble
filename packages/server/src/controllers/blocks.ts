@@ -72,36 +72,55 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
   // Sequelize does not support subqueries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
-  const blockVersions = await getDB().query<BlockVersion>(
-    'SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+  const blockVersions = await getDB().query<
+    BlockVersion & { hasIcon: boolean; hasOrganizationIcon: boolean; organizationUpdated: Date }
+  >(
+    `SELECT bv."OrganizationId", bv.name, bv.description, "longDescription",
+    version, actions, events, layout, parameters, resources,
+    bv.icon IS NOT NULL as "hasIcon", o.icon IS NOT NULL as "hasOrganizationIcon", o.updated AS "organizationUpdated"
+    FROM "BlockVersion" bv
+    INNER JOIN "Organization" o ON o.id = bv."OrganizationId"
+    WHERE bv.created IN (SELECT MAX(created)
+                          FROM "BlockVersion"
+                          GROUP BY "OrganizationId", name)`,
     { type: QueryTypes.SELECT },
   );
 
-  ctx.body = blockVersions.map(
-    ({
+  ctx.body = blockVersions.map((blockVersion) => {
+    const {
       OrganizationId,
       actions,
       description,
       events,
+      hasIcon,
+      hasOrganizationIcon,
       layout,
       longDescription,
       name,
+      organizationUpdated,
       parameters,
       resources,
       version,
-    }) => ({
+    } = blockVersion;
+    let iconUrl = null;
+    if (hasIcon) {
+      iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
+    } else if (hasOrganizationIcon) {
+      iconUrl = `/api/organizations/@${OrganizationId}/icon?updated=${organizationUpdated.toISOString()}`;
+    }
+    return {
       name: `@${OrganizationId}/${name}`,
       description,
       longDescription,
       version,
       actions,
       events,
-      iconUrl: `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`,
+      iconUrl,
       layout,
       parameters,
       resources,
-    }),
-  );
+    };
+  });
 }
 
 interface PublishBlockBody extends Omit<BlockManifest, 'files'> {

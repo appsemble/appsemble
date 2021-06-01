@@ -802,6 +802,11 @@ export interface BlockManifest {
    * @deprecated
    */
   resources?: null;
+
+  /**
+   * The URL that can be used to fetch this block’s icon.
+   */
+  iconUrl?: string;
 }
 
 /**

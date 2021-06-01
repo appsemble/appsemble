@@ -153,7 +153,12 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
     params: { organizationId },
   } = ctx;
 
-  const organization = await Organization.count({ where: { id: organizationId } });
+  const organization = await Organization.findByPk(organizationId, {
+    attributes: {
+      include: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      exclude: ['icon'],
+    },
+  });
   if (!organization) {
     throw notFound('Organization not found.');
   }
@@ -163,8 +168,12 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
   // See: https://github.com/sequelize/sequelize/issues/9509
   const blockVersions = await getDB().query<BlockVersion>(
     {
-      query:
-        'SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE "OrganizationId" = ? AND created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+      query: `SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources, icon
+        FROM "BlockVersion"
+        WHERE "OrganizationId" = ?
+        AND created IN (SELECT MAX(created)
+                        FROM "BlockVersion"
+                        GROUP BY "OrganizationId", name)`,
       values: [organizationId],
     },
     { type: QueryTypes.SELECT },
@@ -176,24 +185,33 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
       actions,
       description,
       events,
+      icon,
       layout,
       longDescription,
       name,
       parameters,
       resources,
       version,
-    }) => ({
-      name: `@${OrganizationId}/${name}`,
-      description,
-      longDescription,
-      version,
-      actions,
-      events,
-      iconUrl: `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`,
-      layout,
-      parameters,
-      resources,
-    }),
+    }) => {
+      let iconUrl = null;
+      if (icon) {
+        iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
+      } else if (organization.get('hasIcon')) {
+        iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
+      }
+      return {
+        name: `@${OrganizationId}/${name}`,
+        description,
+        longDescription,
+        version,
+        actions,
+        events,
+        iconUrl,
+        layout,
+        parameters,
+        resources,
+      };
+    },
   );
 }
 
