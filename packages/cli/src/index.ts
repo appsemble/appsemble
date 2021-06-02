@@ -47,5 +47,6 @@ export async function main(argv: string[]): Promise<void> {
 }
 
 if (require.main === module) {
+  process.title = 'appsemble';
   main(process.argv.slice(2));
 }

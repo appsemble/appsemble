@@ -74,5 +74,6 @@ function main(argv: string[]): void {
 }
 
 if (module === require.main) {
+  process.title = 'appsemble';
   main(process.argv.slice(2));
 }
