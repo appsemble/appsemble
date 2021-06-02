@@ -213,7 +213,7 @@ describe('getOrganizationBlocks', () => {
           actions: null,
           description: null,
           events: null,
-          iconUrl: '/api/blocks/@testorganization/test/versions/0.0.0/icon',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
           layout: null,
           longDescription: null,
           name: '@testorganization/test',
@@ -328,6 +328,9 @@ describe('createOrganization', () => {
   });
 
   it('should not create an organization with the same identifier', async () => {
+    // This prevents the test from hanging and timing out
+    clock.uninstall();
+
     authorizeStudio();
     await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
 
