@@ -2161,6 +2161,11 @@
   resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.0.tgz#81829b5c50e324c0e6637264cd0d2754e7d7ba1a"
   integrity sha512-pSCb1l71akSb46t3+kKyjEEe1Gb1NxxWfVeUacXwpYc4KGKF1+QnECQ26cGwVCTp9lqKAmNNN2d0FYMO2LV03Q==
 
+"@types/lcm@^0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@types/lcm/-/lcm-0.0.0.tgz#3635c72257cd5fb0eb43d4e15843c746144bb421"
+  integrity sha512-IEWAUS7GRjQpWEwnLoAyicmBuEJT5WrxRuG6g2K+ntX6GXLDsyOTAzDVDXTUQRAK1q/qcbFZNKNQNdtMmxQ5rw==
+
 "@types/leaflet@^1.5.23":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.7.0.tgz#3700fb5d29a8214fbd496565b08ec28e40cee808"
