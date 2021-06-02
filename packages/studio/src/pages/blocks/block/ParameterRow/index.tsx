@@ -2,7 +2,7 @@ import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
 import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { Fragment, ReactElement } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 interface ParameterRowProps {
   /**
@@ -46,10 +46,7 @@ export function ParameterRow({
   required,
   value,
 }: ParameterRowProps): ReactElement {
-  const {
-    params: { lang },
-    url,
-  } = useRouteMatch<{ lang: string }>();
+  const { lang } = useParams<{ lang: string }>();
 
   if (value.type === 'array' && recurse) {
     return (
@@ -108,15 +105,15 @@ export function ParameterRow({
 
   if ('$ref' in value) {
     const refName = (value as any).$ref?.split('/').pop();
-    ref = <a href={`${url}#${refName}`}>{refName}</a>;
+    ref = <a href={`#${refName}`}>{refName}</a>;
   } else if (value.type === 'array' && (value.items as any).$ref) {
     const refName = (value.items as any).$ref.split('/').pop();
-    ref = <a href={`${url}#${refName}`}>{refName}</a>;
+    ref = <a href={`#${refName}`}>{refName}</a>;
   } else if (value.type === 'array' && (value.items as any).anyOf) {
     ref = (value.items as any).anyOf.map((any: OpenAPIV3.ReferenceObject) => {
       const refName = any.$ref.split('/').pop();
       return (
-        <a href={`${url}#${refName}`} key={refName}>
+        <a href={`#${refName}`} key={refName}>
           {refName}
         </a>
       );
@@ -132,7 +129,7 @@ export function ParameterRow({
             return <Fragment key={index}>{(any as any).type}</Fragment>;
           }
           return (
-            <a href={`${url}#${refName}`} key={refName}>
+            <a href={`#${refName}`} key={refName}>
               {refName}
             </a>
           );

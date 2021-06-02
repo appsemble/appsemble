@@ -7,7 +7,7 @@ import {
   RemapperContext,
   validateLanguage,
 } from '@appsemble/utils';
-import { badRequest, notFound } from '@hapi/boom';
+import { badRequest } from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
 import tags from 'language-tags';
@@ -24,45 +24,65 @@ const formatters = {
   getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
 };
 
+interface GetAppValue {
+  /**
+   * The app for the request context.
+   */
+  app?: App;
+
+  /**
+   * The path of the app being requested.
+   */
+  appPath?: string;
+
+  /**
+   * The organization Id of the app being requested.
+   */
+  organizationId?: string;
+}
+
 /**
  * Get an app from the database based on the Koa context and URL.
  *
  * @param ctx - The Koa context.
  * @param queryOptions - Additional Sequelize query options. `where` will be overwritten.
  * @param url - The URL to find the app for. This defaults to the context request origin.
- *
  * @returns The app matching the url.
  */
-export function getApp(
+export async function getApp(
   { origin }: Pick<KoaContext, 'origin'>,
   queryOptions: FindOptions,
   url = origin,
-): Promise<App> {
+): Promise<GetAppValue> {
   const platformHost = new URL(argv.host).hostname;
   const { hostname } = new URL(url);
+
+  const value: GetAppValue = {
+    app: undefined,
+    appPath: undefined,
+    organizationId: undefined,
+  };
 
   if (hostname.endsWith(`.${platformHost}`)) {
     const subdomain = hostname
       .slice(0, Math.max(0, hostname.length - platformHost.length - 1))
       .split('.');
-    if (subdomain.length !== 2) {
-      throw notFound();
+    if (subdomain.length === 1) {
+      [value.organizationId] = subdomain;
+    } else if (subdomain.length === 2) {
+      [value.appPath, value.organizationId] = subdomain;
+      value.app = await App.findOne({
+        ...queryOptions,
+        where: { path: value.appPath, OrganizationId: value.organizationId },
+      });
     }
-    return App.findOne({
+  } else {
+    value.app = await App.findOne({
       ...queryOptions,
-      where: {
-        path: subdomain[0],
-        OrganizationId: subdomain[1],
-      },
+      where: { domain: hostname },
     });
   }
-
-  return App.findOne({
-    ...queryOptions,
-    where: {
-      domain: hostname,
-    },
-  });
+  return value;
 }
 
 /**
@@ -73,7 +93,6 @@ export function getApp(
  * @param app - The app for which to get the remapper context.
  * @param language - The preferred language for the context.
  * @param userInfo - The OAuth2 compatible user information.
- *
  * @returns A localized remapper context for the app.
  */
 export async function getRemapperContext(

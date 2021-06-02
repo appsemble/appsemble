@@ -8,7 +8,6 @@ import {
   Root,
   StaticPhrasingContent,
   Text,
-  // eslint-disable-next-line import/no-extraneous-dependencies
 } from 'mdast';
 import toMarkdown from 'mdast-util-to-markdown';
 import prettier from 'prettier';

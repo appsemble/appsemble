@@ -14,7 +14,6 @@ let baseDir: string;
  * ```ts
  * setFixtureBase(__dirname);
  * ```
- *
  * @param dir - The base directory
  */
 export function setFixtureBase(dir: string): void {
@@ -26,7 +25,6 @@ export function setFixtureBase(dir: string): void {
  *
  * @param path - The path to resolve relative to the fixture base. It will be normalized for the
  * operating system.
- *
  * @returns The full path to the fixture path.
  */
 export function resolveFixture(path: string): string {
@@ -39,7 +37,6 @@ export function resolveFixture(path: string): string {
  * @param path - The path to resolve relative to the fixture base. It will be normalized for the
  * operating system.
  * @param encoding - The text encoding of the file.
- *
  * @returns The file contents as a string or buffer.
  */
 export function readFixture(path: string): Promise<Buffer>;
@@ -53,7 +50,6 @@ export function readFixture(path: string, encoding?: BufferEncoding): Promise<Bu
  *
  * @param path - The path to resolve relative to the fixture base. It will be normalized for the
  * operating system.
- *
  * @returns A filesystem read stream for the fixture.
  */
 export function createFixtureStream(path: string): ReadStream {

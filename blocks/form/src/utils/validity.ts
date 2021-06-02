@@ -16,7 +16,6 @@ function isValid(error: FieldError): boolean {
  *
  * @param errors - The form errors to check.
  * @param fields - The fields to validate. By default all fields are validated.
- *
  * @returns If all given fields are valid.
  */
 export function isFormValid(errors: FieldErrorMap, fields = Object.keys(errors)): boolean {

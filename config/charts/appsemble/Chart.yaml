@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.14
-appVersion: 0.18.14
+version: 0.18.15
+appVersion: 0.18.15
 kubeVersion: '>=1.20.0'
 type: application
 description: The open source low-code app building platform
@@ -24,8 +24,12 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: fixed
-      description: CI: Fix release process for production.
+    - kind: added
+      description: 'Studio: Add core app message translations to the translations page.'
+    - kind: changed
+      description: 'Server: Block organization IDs that could be used to impersonate Appsemble.'
+    - kind: changed
+      description: 'Server: Redirect to Appsemble Studio for app-like URLs.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

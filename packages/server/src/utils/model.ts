@@ -38,7 +38,6 @@ export function resolveIconUrl(app: models.App): string {
  *
  * @param record - The sequelize App model to normalize.
  * @param omittedValues - A list of fields to omit from the result.
- *
  * @returns An app resource that can be safely returned from the API.
  */
 export function getAppFromRecord(

@@ -19,7 +19,7 @@ export interface OAuth2State {
    * This is a counterpart of the `redirect` query parameter. This exists because the OAuth2 flow
    * removes any query parameters on the callback.
    *
-   * **Note**: Not to be confused with the OAuth2 `redirect_uri`.
+   * > **Note**: Not to be confused with the OAuth2 `redirect_uri`.
    */
   redirect: string;
 

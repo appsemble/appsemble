@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-config",
-  "version": "0.18.14",
+  "version": "0.18.15",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -30,17 +30,17 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.18.14",
+    "@appsemble/types": "0.18.15",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
-    "css-loader": "^5.2.4",
+    "css-loader": "^5.2.6",
     "file-loader": "^6.2.0",
     "mini-css-extract-plugin": "^1.6.0",
-    "optimize-css-assets-webpack-plugin": "^5.0.4",
+    "optimize-css-assets-webpack-plugin": "^6.0.0",
     "postcss": "^7.0.32",
-    "postcss-loader": "^4.2.0",
+    "postcss-loader": "^4.3.0",
     "svgo-loader": "^3.0.0",
     "terser-webpack-plugin": "4.1.0",
-    "ts-loader": "^8.2.0",
+    "ts-loader": "^8.3.0",
     "tsconfig-paths-webpack-plugin": "^3.5.1"
   },
   "peerDependencies": {

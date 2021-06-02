@@ -1,4 +1,5 @@
 import { baseTheme, normalize } from '@appsemble/utils';
+import { notFound } from '@hapi/boom';
 
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
@@ -11,10 +12,15 @@ const iconSizes = [48, 144, 192, 512];
  * @param ctx - The Koa context.
  */
 export async function manifestHandler(ctx: KoaContext): Promise<void> {
-  const app = await getApp(ctx, {
+  const { app } = await getApp(ctx, {
     attributes: ['definition'],
     raw: true,
   });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
   const { defaultPage, description, name, theme = baseTheme } = app.definition;
   const { themeColor = '#ffffff', splashColor = themeColor } = theme;
 

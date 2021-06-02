@@ -18,10 +18,8 @@ let rootDB: Sequelize;
  *
  * afterAll(closeTestSchema);
  * ```
- *
  * @param spec - The name of the test case.
  * @param options - Additional sequelize options.
- *
  * @returns A function to pass into `beforeAll()`.
  */
 export function createTestSchema(spec: string, options: InitDBParams = {}): () => Promise<void> {

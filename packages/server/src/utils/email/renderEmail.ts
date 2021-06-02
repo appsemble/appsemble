@@ -1,5 +1,4 @@
 import yaml from 'js-yaml';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { InlineCode, Link, Parent } from 'mdast';
 import rehypeDocument from 'rehype-document';
 import rehypeStringify from 'rehype-stringify';

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { CommandModule } from 'yargs';
 
