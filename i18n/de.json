@@ -315,6 +315,7 @@
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.update": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.default": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.description": "",
+  "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.format": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maxItems": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maxLength": "",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maximum": "",

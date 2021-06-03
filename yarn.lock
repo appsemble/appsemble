@@ -2161,6 +2161,11 @@
   resolved "https://registry.yarnpkg.com/@types/language-tags/-/language-tags-1.0.0.tgz#81829b5c50e324c0e6637264cd0d2754e7d7ba1a"
   integrity sha512-pSCb1l71akSb46t3+kKyjEEe1Gb1NxxWfVeUacXwpYc4KGKF1+QnECQ26cGwVCTp9lqKAmNNN2d0FYMO2LV03Q==
 
+"@types/lcm@^0.0.0":
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/@types/lcm/-/lcm-0.0.0.tgz#3635c72257cd5fb0eb43d4e15843c746144bb421"
+  integrity sha512-IEWAUS7GRjQpWEwnLoAyicmBuEJT5WrxRuG6g2K+ntX6GXLDsyOTAzDVDXTUQRAK1q/qcbFZNKNQNdtMmxQ5rw==
+
 "@types/leaflet@^1.5.23":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.7.0.tgz#3700fb5d29a8214fbd496565b08ec28e40cee808"
@@ -7216,6 +7221,11 @@ gauge@~2.7.3:
     strip-ansi "^3.0.1"
     wide-align "^1.1.0"
 
+gcd@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/gcd/-/gcd-0.0.1.tgz#41e0bb60bcc9245635419860a22544b230ba2f75"
+  integrity sha1-QeC7YLzJJFY1QZhgoiVEsjC6L3U=
+
 gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
@@ -9879,6 +9889,13 @@ latest-version@^5.0.0:
   integrity sha512-weT+r0kTkRQdCdYCNtkMwWXQTMEswKrFBkm4ckQOMVhhqhIMI1UT2hMj+1iigIhgSZm5gTmrRXBNoGUgaTY1xA==
   dependencies:
     package-json "^6.3.0"
+
+lcm@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/lcm/-/lcm-0.0.3.tgz#4a3b11ce0363e297010806080ffeca02f77f8280"
+  integrity sha1-SjsRzgNj4pcBCAYID/7KAvd/goA=
+  dependencies:
+    gcd "^0.0.1"
 
 ldjson-stream@^1.2.1:
   version "1.2.1"
