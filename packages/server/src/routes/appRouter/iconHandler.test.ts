@@ -82,7 +82,7 @@ it('should fall back to the organization icon if no app app icon is defined', as
   expect(response.data).toMatchImageSnapshot();
 });
 
-it('should fall back to the Appsemble icon if no app or organization icon is defined', async () => {
+it('should fall back to the mobile-alt FontAwesome icon if no app or organization icon is defined', async () => {
   const app = new App();
   app.Organization = new Organization();
   jest.spyOn(appUtils, 'getApp').mockResolvedValue({ app });

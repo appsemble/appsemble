@@ -1,5 +1,6 @@
 import { URL } from 'url';
 
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, BlockAsset, BlockVersion, Organization } from '../../models';
@@ -11,6 +12,7 @@ import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/te
 let templateName: string;
 let templateParams: any;
 let requestURL: URL;
+let clock: Clock;
 
 beforeAll(createTestSchema('approuter'));
 
@@ -138,6 +140,7 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
+  clock = install();
   requestURL = new URL('http://app.test.host.example');
   // eslint-disable-next-line require-await
   jest.spyOn(render, 'render').mockImplementation(async (ctx, name, params) => {
@@ -153,7 +156,10 @@ afterEach(() => {
   templateParams = undefined;
 });
 
-afterEach(truncate);
+afterEach(() => {
+  truncate();
+  clock.uninstall();
+});
 
 afterAll(closeTestSchema);
 
@@ -265,6 +271,7 @@ it('should render the index page', async () => {
         },
       ],
     },
+    appUpdated: '1970-01-01T00:00:00.000Z',
   });
 });
 
