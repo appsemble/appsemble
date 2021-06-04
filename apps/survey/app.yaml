@@ -44,12 +44,12 @@ pages:
       - name: Introduction
         blocks:
           - type: markdown
-            version: 0.18.14
+            version: 0.18.15
             layout: static
             parameters:
               content: { string.format: { messageId: introText } }
           - type: button-list
-            version: 0.18.14
+            version: 0.18.15
             parameters:
               buttons:
                 - label: { string.format: { messageId: start } }
@@ -62,7 +62,7 @@ pages:
       - name: Familiarity
         blocks:
           - type: form
-            version: 0.18.14
+            version: 0.18.15
             actions:
               onSubmit:
                 type: flow.next
@@ -81,7 +81,7 @@ pages:
       - name: Expertise
         blocks:
           - type: form
-            version: 0.18.14
+            version: 0.18.15
             actions:
               onSubmit:
                 type: flow.next
@@ -103,12 +103,12 @@ pages:
   - name: Finished
     blocks:
       - type: markdown
-        version: 0.18.14
+        version: 0.18.15
         layout: static
         parameters:
           content: { string.format: { messageId: finished } }
       - type: button-list
-        version: 0.18.14
+        version: 0.18.15
         parameters:
           buttons:
             - label: { string.format: { messageId: backToHome } }
