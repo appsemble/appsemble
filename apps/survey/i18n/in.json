@@ -1,0 +1,19 @@
+{
+  "app": {
+    "name": "",
+    "description": "",
+    "pages.0": "",
+    "pages.1": ""
+  },
+  "messageIds": {
+    "introText": "",
+    "start": "",
+    "reached": "",
+    "knowsAppsemble": "",
+    "usedLowCode": "",
+    "lowCodePlatforms": "",
+    "usedYaml": "",
+    "finished": "",
+    "backToHome": ""
+  }
+}
