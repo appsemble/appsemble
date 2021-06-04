@@ -315,6 +315,7 @@
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Endpoint.update": "Werk een bestaande {resourceName} resource bij",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.default": "Standaardwaarde",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.description": "Beschrijving",
+  "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.format": "Formaat",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maxItems": "Maximale aantal items",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maxLength": "Minimale lengte",
   "studio.src.pages.apps.app.resources.resource.resource-definition-details.Schema.maximum": "Maximale waarde",

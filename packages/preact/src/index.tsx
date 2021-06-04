@@ -15,7 +15,6 @@ const Context = createContext<BlockProps>(null);
  * Mount a Preact component returned by a bootstrap function in the shadow DOM of a block.
  *
  * @param Component - The Preact component to mount.
- *
  * @returns A promise which gets resolved if the component calls `ready()`.
  */
 export function mount(
@@ -46,9 +45,7 @@ export function bootstrap(Component: ComponentType<BlockProps>): void {
  * A HOC which passes the Appsemble block values to he wrapped Preact component.
  *
  * @deprecated Use `useBlock()` instead.
- *
  * @param Component - The Preact componen to wrap.
- *
  * @returns The wrapper component.
  */
 export function withBlock<P extends {}>(

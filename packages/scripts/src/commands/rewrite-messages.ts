@@ -21,7 +21,6 @@ import { compareStrings } from '@appsemble/utils';
  * ```
  *
  * Now running the following command will fix the message keys:
- *
  * @example
  * ```sh
  * yarn scripts rewrite-messages

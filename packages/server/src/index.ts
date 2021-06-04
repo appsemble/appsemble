@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { CommandModule } from 'yargs';
 
@@ -73,5 +74,6 @@ function main(argv: string[]): void {
 }
 
 if (module === require.main) {
+  process.title = 'appsemble';
   main(process.argv.slice(2));
 }

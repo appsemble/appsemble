@@ -1,6 +1,7 @@
 import { Join, MarkdownContent } from '@appsemble/react-components';
+import { combineSchemas } from '@appsemble/utils';
 import { Schema as SchemaType } from 'jsonschema';
-import { ReactElement } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { SchemaDescriptor } from '../SchemaDescriptor';
@@ -33,26 +34,31 @@ interface SchemaProps {
  * Render a JSON schema into readable API documentation.
  */
 export function Schema({ name, nested, required, schema }: SchemaProps): ReactElement {
+  const mergedSchema = useMemo(
+    () => (schema.allOf ? combineSchemas(...schema.allOf) : schema),
+    [schema],
+  );
+
   const description =
     nested &&
-    (schema.description ||
-      (schema.items && !Array.isArray(schema.items) && schema.items.description));
+    (mergedSchema.description ||
+      (mergedSchema.items && !Array.isArray(mergedSchema.items) && mergedSchema.items.description));
 
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
       {name && (
         <div>
           <span className="has-text-weight-bold">
-            {schema.title ? (
+            {mergedSchema.title ? (
               <>
-                <span className="mr-1">{schema.title}</span>
+                <span className="mr-1">{mergedSchema.title}</span>
                 <span className="has-text-weight-normal has-text-grey-light">({name})</span>
               </>
             ) : (
               name
             )}
           </span>
-          {(required || schema.required === true) && (
+          {(required || mergedSchema.required === true) && (
             <span className="ml-2 tag is-info">
               <FormattedMessage {...messages.required} />
             </span>
@@ -62,91 +68,96 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
       {nested ? (
         <SchemaDescriptor label={<FormattedMessage {...messages.type} />}>
           <code>
-            {schema.type === 'array' && !Array.isArray(schema.items) && schema.items?.type
-              ? `${schema.items.type}[]`
-              : 'array'}
+            {schema.type === 'array' &&
+            !Array.isArray(mergedSchema.items) &&
+            mergedSchema.items?.type
+              ? `${mergedSchema.items.type}[]`
+              : mergedSchema.type}
           </code>
         </SchemaDescriptor>
       ) : null}
-      {schema.default != null && (
+      {mergedSchema.default != null && (
         <SchemaDescriptor label={<FormattedMessage {...messages.default} />}>
-          {schema.default}
+          {mergedSchema.default}
         </SchemaDescriptor>
       )}
-      {schema.enum?.length ? (
+      {mergedSchema.enum?.length ? (
         <SchemaDescriptor label={<FormattedMessage {...messages.options} />}>
           <Join separator=" | ">
-            {schema.enum.map((option) => (
+            {mergedSchema.enum.map((option) => (
               <code key={option}>{JSON.stringify(option)}</code>
             ))}
           </Join>
         </SchemaDescriptor>
       ) : null}
-      {schema.minItems > 0 && (
+      {mergedSchema.format ? (
+        <SchemaDescriptor label={<FormattedMessage {...messages.format} />}>
+          {mergedSchema.format}
+        </SchemaDescriptor>
+      ) : null}
+      {mergedSchema.minItems > 0 && (
         <SchemaDescriptor label={<FormattedMessage {...messages.minItems} />}>
-          {schema.minItems}
+          {mergedSchema.minItems}
         </SchemaDescriptor>
       )}
-      {schema.maxItems > 0 && (
+      {mergedSchema.maxItems > 0 && (
         <SchemaDescriptor label={<FormattedMessage {...messages.maxItems} />}>
-          {schema.maxItems}
+          {mergedSchema.maxItems}
         </SchemaDescriptor>
       )}
-      {schema.minLength > 0 && (
+      {mergedSchema.minLength > 0 && (
         <SchemaDescriptor label={<FormattedMessage {...messages.minLength} />}>
-          {schema.minLength}
+          {mergedSchema.minLength}
         </SchemaDescriptor>
       )}
-      {schema.maxLength > 0 && (
+      {mergedSchema.maxLength > 0 && (
         <SchemaDescriptor label={<FormattedMessage {...messages.maxLength} />}>
-          {schema.maxLength}
+          {mergedSchema.maxLength}
         </SchemaDescriptor>
       )}
-      {schema.minimum > 0 && (
+      {mergedSchema.minimum > 0 && (
         <SchemaDescriptor label={<FormattedMessage {...messages.minimum} />}>
-          {schema.minimum}
+          {mergedSchema.minimum}
         </SchemaDescriptor>
       )}
-      {schema.maximum > 0 && (
+      {mergedSchema.maximum > 0 && (
         <SchemaDescriptor label={<FormattedMessage {...messages.maximum} />}>
-          {schema.maximum}
+          {mergedSchema.maximum}
         </SchemaDescriptor>
       )}
-      {schema.pattern && (
+      {mergedSchema.pattern && (
         <SchemaDescriptor label={<FormattedMessage {...messages.pattern} />}>
-          <code>{schema.pattern ?? 'foo'}</code>
+          <code>{mergedSchema.pattern ?? 'foo'}</code>
         </SchemaDescriptor>
       )}
       {nested && description && <MarkdownContent content={description} />}
-      {schema.type === 'object' &&
-        Object.entries(schema.properties).map(([propertyName, property]) => (
+      {mergedSchema.type === 'object' &&
+        Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
           <Schema
             key={propertyName}
             name={propertyName}
             nested
             required={
-              typeof schema.required === 'object' && schema.required?.includes(propertyName)
+              Array.isArray(mergedSchema.required) && mergedSchema.required?.includes(propertyName)
             }
             schema={property}
           />
         ))}
-      {schema.type === 'array' &&
-        schema.items &&
-        !Array.isArray(schema.items) &&
-        Object.entries((schema.items as SchemaType).properties ?? {}).map(
-          ([propertyName, property]) => (
-            <Schema
-              key={propertyName}
-              name={propertyName}
-              nested
-              required={
-                typeof (schema.items as SchemaType).required === 'object' &&
-                ((schema.items as SchemaType).required as string[]).includes(propertyName)
-              }
-              schema={property as SchemaType}
-            />
-          ),
-        )}
+      {mergedSchema.type === 'array' &&
+        mergedSchema.items &&
+        !Array.isArray(mergedSchema.items) &&
+        Object.entries(mergedSchema.items.properties ?? {}).map(([propertyName, property]) => (
+          <Schema
+            key={propertyName}
+            name={propertyName}
+            nested
+            required={
+              typeof (schema.items as SchemaType).required === 'object' &&
+              ((schema.items as SchemaType).required as string[]).includes(propertyName)
+            }
+            schema={property}
+          />
+        ))}
     </div>
   );
 }

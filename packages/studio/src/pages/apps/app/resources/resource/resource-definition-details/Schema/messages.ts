@@ -7,6 +7,7 @@ export const messages = defineMessages({
   type: 'Type',
   properties: 'Properties',
   options: 'Options',
+  format: 'Format',
   minItems: 'Minimum amount of items',
   maxItems: 'Maximum amount of items',
   minLength: 'Minimum length',

@@ -1,7 +1,7 @@
 import { BulmaColor } from '@appsemble/sdk';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { ComponentProps, Fragment, VNode } from 'preact';
+import { ComponentProps, VNode } from 'preact';
 
 import { Icon } from '..';
 
@@ -52,10 +52,10 @@ export function Button({
       {...props}
     >
       {icon ? (
-        <Fragment>
+        <>
           <Icon icon={icon} />
           {children && <span>{children}</span>}
-        </Fragment>
+        </>
       ) : (
         children
       )}

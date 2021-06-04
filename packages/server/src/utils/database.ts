@@ -12,7 +12,6 @@ interface IterTableOptions extends Omit<FindOptions, 'limit' | 'offset'> {
  *
  * @param model - The sequelize model to iteratr
  * @param options - Additional properties to pass to the Sequelize query.
- *
  * @yields All entries in the database table.
  */
 export async function* iterTable<M extends Model>(

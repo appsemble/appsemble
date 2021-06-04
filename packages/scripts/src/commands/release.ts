@@ -7,7 +7,6 @@ import { ensureFile, readJson, remove, writeJson } from 'fs-extra';
 import globby from 'globby';
 import { safeDump } from 'js-yaml';
 import { capitalize, mapValues } from 'lodash';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { BlockContent, ListItem } from 'mdast';
 import fromMarkdown from 'mdast-util-from-markdown';
 import toString from 'mdast-util-to-string';

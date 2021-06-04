@@ -17,9 +17,7 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.18.14",
+    "@types/vimeo__player": "^2.10.0",
     "@vimeo/player": "^2.15.0"
-  },
-  "devDependencies": {
-    "@types/vimeo__player": "^2.10.0"
   }
 }

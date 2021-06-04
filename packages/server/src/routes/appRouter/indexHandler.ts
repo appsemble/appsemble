@@ -14,6 +14,7 @@ import {
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { argv } from '../../utils/argv';
+import { organizationBlocklist } from '../../utils/organizationBlocklist';
 import { createSettings, makeCSP, render } from '../../utils/render';
 import { sentryDsnToReportUri } from '../../utils/sentry';
 import { bulmaURL, faURL } from '../../utils/styleURL';
@@ -28,7 +29,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
   ctx.type = 'text/html';
   const { host, sentryDsn, sentryEnvironment } = argv;
 
-  const app = await getApp(ctx, {
+  const { app, appPath, organizationId } = await getApp(ctx, {
     attributes: [
       'definition',
       'id',
@@ -54,6 +55,13 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
   });
 
   if (!app) {
+    if (organizationId && !appPath) {
+      return ctx.redirect(
+        organizationBlocklist.includes(organizationId)
+          ? host
+          : String(new URL(`/organizations/${organizationId}`, host)),
+      );
+    }
     ctx.status = 404;
     return render(ctx, 'app/error.html', {
       bulmaURL,

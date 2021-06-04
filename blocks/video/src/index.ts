@@ -3,6 +3,7 @@ import Vimeo from '@vimeo/player';
 
 import styles from './index.module.css';
 
+// https://github.com/vimeo/player.js/blob/989954e5645999c7ef0e5fbccaea04dedf1bec17/src/lib/functions.js#L61
 const vimeoRegex = /^(https?:)?\/\/((player|www)\.)?vimeo\.com(?=$|\/)/;
 
 attach(
@@ -25,15 +26,16 @@ attach(
     utils,
   }) => {
     const onFinish = (): Promise<void> => actions.onFinish(data);
+    const errorNode = document.createElement('article');
+    errorNode.className = `my-4 message is-danger ${styles.error}`;
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'message-body';
+    errorMessage.textContent = utils.formatMessage('loadErrorMessage');
+    errorNode.append(errorMessage);
+    let playerDiv: HTMLDivElement;
 
     const setupError = (): void => {
-      const errorNode = document.createElement('article');
-      errorNode.className = `my-4 message is-danger ${styles.error}`;
-      const errorMessage = document.createElement('div');
-      errorMessage.className = 'message-body';
-      errorMessage.textContent = utils.formatMessage('loadErrorMessage');
-
-      errorNode.append(errorMessage);
+      playerDiv?.remove();
       shadowRoot.append(errorNode);
     };
 
@@ -44,24 +46,30 @@ attach(
         return;
       }
 
-      const playerDiv = document.createElement('div');
-      playerDiv.className = styles.container;
-      shadowRoot.append(playerDiv);
+      const newPlayerDiv = document.createElement('div');
+      newPlayerDiv.className = styles.container;
 
       if (width) {
-        playerDiv.style.width = width;
+        newPlayerDiv.style.width = width;
       }
       if (maxWidth) {
-        playerDiv.style.maxWidth = maxWidth;
+        newPlayerDiv.style.maxWidth = maxWidth;
       }
       if (height) {
-        playerDiv.style.height = height;
+        newPlayerDiv.style.height = height;
       }
       if (maxHeight) {
-        playerDiv.style.maxHeight = maxHeight;
+        newPlayerDiv.style.maxHeight = maxHeight;
       }
 
-      const player = new Vimeo(playerDiv, {
+      if (playerDiv) {
+        playerDiv.remove();
+      }
+
+      playerDiv = newPlayerDiv;
+      shadowRoot.append(playerDiv);
+
+      const player = new Vimeo(newPlayerDiv, {
         autoplay,
         color: theme.primaryColor,
         byline: false,
@@ -78,6 +86,7 @@ attach(
       }
 
       player.on('ended', onFinish);
+      utils.addCleanup(() => player.destroy());
     };
 
     const hasEvent = events.on.onVideo((d) => {
