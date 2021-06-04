@@ -650,14 +650,27 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
     query: { maskable, raw = false, size = 128 },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['icon', maskable && 'maskableIcon', maskable && 'iconBackground'].filter(Boolean),
-    include: [{ model: Organization, attributes: ['icon'] }],
+    attributes: [
+      'icon',
+      'updated',
+      maskable && 'maskableIcon',
+      maskable && 'iconBackground',
+    ].filter(Boolean),
+    include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
   if (!raw) {
+    let updated;
+
+    if (app.icon) {
+      updated = app.updated.toISOString();
+    } else if (app.Organization.icon) {
+      updated = app.Organization.updated.toISOString();
+    }
     return serveIcon(ctx, app, {
       maskable: Boolean(maskable),
       size: size && Number.parseInt(size as string),
+      updated,
     });
   }
 

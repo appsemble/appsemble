@@ -71,7 +71,7 @@ export async function serveIcon(
 
     // Cache app icons for 1 week.
     if (queryUpdated && updated && queryUpdated === updated) {
-      ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7}, immutable`);
+      ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7},immutable`);
     }
   }
 
