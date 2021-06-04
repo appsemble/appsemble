@@ -1,6 +1,6 @@
-name: Questionaire
+name: Survey
 description: An app which asks the user to fill out some questions.
-defaultPage: Questionaire
+defaultPage: Survey
 
 layout:
   navigation: hidden
@@ -30,7 +30,7 @@ resources:
           type: boolean
 
 pages:
-  - name: Questionaire
+  - name: Survey
     type: flow
     actions:
       onFlowFinish:
@@ -116,4 +116,4 @@ pages:
         actions:
           home:
             type: link
-            to: Questionaire
+            to: Survey
