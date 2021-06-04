@@ -73,6 +73,7 @@ declare global {
       sentryDsn: string;
       sentryEnvironment: string;
       showAppsembleLogin: boolean;
+      appUpdated: string;
     };
   }
 }

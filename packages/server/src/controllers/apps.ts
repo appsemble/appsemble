@@ -669,7 +669,7 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
     (maskable && app.maskableIcon) ||
     app.icon ||
     app.Organization.icon ||
-    (await readAsset('appsemble.png'));
+    (await readAsset('mobile-alt-solid.png'));
 
   const { format } = await sharp(icon).metadata();
   ctx.body = icon;

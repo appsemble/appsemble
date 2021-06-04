@@ -33,7 +33,7 @@ export async function serveIcon(
 
   if (!maskable) {
     // Serve the regular app icon, but scaled.
-    img = sharp(icon || Organization.icon || (await readAsset('appsemble.png'))).resize({
+    img = sharp(icon || Organization.icon || (await readAsset('mobile-alt-solid.png'))).resize({
       width: size,
       height: size,
       fit: 'contain',
@@ -47,7 +47,7 @@ export async function serveIcon(
     img.flatten({ background });
   } else {
     // Make the regular icon maskable
-    const actual = sharp(icon || Organization.icon || (await readAsset('appsemble.png')));
+    const actual = sharp(icon || Organization.icon || (await readAsset('mobile-alt-solid.png')));
     const metadata = await actual.metadata();
     const angle = Math.atan(metadata.height / metadata.width);
     actual.resize({
