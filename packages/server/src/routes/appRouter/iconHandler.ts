@@ -12,9 +12,13 @@ interface Params {
 export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const { params, query } = ctx;
   const { app } = await getApp(ctx, {
-    attributes: ['definition', 'icon', 'maskableIcon', 'iconBackground'],
+    attributes: ['definition', 'icon', 'maskableIcon', 'iconBackground', 'updated'],
     include: [{ model: Organization, attributes: ['icon'] }],
   });
 
-  await serveIcon(ctx, app, { size: Number(params.width), maskable: Boolean(query.maskable) });
+  await serveIcon(ctx, app, {
+    updated: app.updated.toISOString(),
+    size: Number(params.width),
+    maskable: Boolean(query.maskable),
+  });
 }

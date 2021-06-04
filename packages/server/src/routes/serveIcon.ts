@@ -8,12 +8,18 @@ interface ServeIconOptions {
   height?: number;
   icon: Buffer;
   width?: number;
+  immutable?: boolean;
+  updated?: string;
 }
 
 export async function serveIcon(
   ctx: KoaContext,
-  { background, height, icon, width, ...options }: ServeIconOptions,
+  { background, height, icon, immutable, updated, width, ...options }: ServeIconOptions,
 ): Promise<void> {
+  const {
+    query: { updated: queryUpdated },
+  } = ctx;
+
   // Allow icon to be null.
   let img = sharp(icon);
   const metadata = await img.metadata();
@@ -38,6 +44,8 @@ export async function serveIcon(
   ctx.body = await img.toBuffer();
   ctx.type = format;
 
-  // Cache app icons for 1 week.
-  ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7}`);
+  if (immutable || (updated && queryUpdated && updated === queryUpdated)) {
+    // Cache app icons for 1 week.
+    ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7}, immutable`);
+  }
 }

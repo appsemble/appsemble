@@ -360,6 +360,8 @@ export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
   const icon = version.icon || version.Organization.icon || (await readAsset('cubes-solid.png'));
   await serveIcon(ctx, {
     icon,
+    // Block icons never change once a version has been published.
+    immutable: true,
     ...(!version.icon && !version.Organization.icon && { width: 128, height: 128, format: 'png' }),
   });
 }

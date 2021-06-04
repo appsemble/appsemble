@@ -7,6 +7,7 @@ import { readAsset } from './readAsset';
 interface ServeIconOptions {
   maskable: boolean;
   size: number;
+  updated: string;
 }
 
 /**
@@ -26,8 +27,11 @@ const safeAreaDiameter = 0.8;
 export async function serveIcon(
   ctx: KoaContext,
   { Organization, icon, iconBackground, maskableIcon }: App,
-  { maskable, size }: ServeIconOptions,
+  { maskable, size, updated }: ServeIconOptions,
 ): Promise<void> {
+  const {
+    query: { updated: queryUpdated },
+  } = ctx;
   let img: Sharp;
   const background = iconBackground ?? white;
 
@@ -66,7 +70,9 @@ export async function serveIcon(
     img.composite([{ input: await actual.toFormat('png').toBuffer() }]);
 
     // Cache app icons for 1 week.
-    ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7}`);
+    if (queryUpdated && updated && queryUpdated === updated) {
+      ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7}, immutable`);
+    }
   }
 
   ctx.body = await img.toFormat('png').toBuffer();

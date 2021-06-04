@@ -222,7 +222,7 @@ export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void
 
   const organization = await Organization.findOne({
     where: { id: organizationId },
-    attributes: ['icon'],
+    attributes: ['icon', 'updated'],
     raw: true,
   });
 
@@ -232,6 +232,7 @@ export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void
 
   await serveIcon(ctx, {
     icon: organization.icon ?? (await readAsset('building-solid.png')),
+    updated: organization.updated.toISOString(),
     ...(!organization.icon && { width: 128, height: 128, format: 'png' }),
   });
 }
