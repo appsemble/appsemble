@@ -5,26 +5,21 @@ import { addBreadcrumb, Severity } from '@sentry/browser';
 import { SetRequired } from 'type-fest';
 
 import { MakeActionParameters } from '../types';
-import { ActionCreators, actionCreators } from './actions';
-
-interface CommonActionParams {
-  extraCreators: ActionCreators;
-  pageReady: Promise<void>;
-}
+import { actionCreators } from './actions';
 
 /**
  * Parameters to pass to `makeActions`.
  *
  * @see makeActions
  */
-export type MakeActionsParams = CommonActionParams &
-  Omit<MakeActionParameters<ActionDefinition>, 'definition'> & {
-    actions: Record<string, ActionType>;
-    context: { actions?: Record<string, ActionDefinition> };
-  };
+export type MakeActionsParams = Omit<MakeActionParameters<ActionDefinition>, 'definition'> & {
+  actions: Record<string, ActionType>;
+  context: { actions?: Record<string, ActionDefinition> };
+};
 
-type CreateActionParams<T extends ActionDefinition['type']> = CommonActionParams &
-  MakeActionParameters<Extract<ActionDefinition, { type: T }>>;
+type CreateActionParams<T extends ActionDefinition['type']> = MakeActionParameters<
+  Extract<ActionDefinition, { type: T }>
+>;
 
 /**
  * Create a callable action for an action definition and context.
@@ -32,7 +27,7 @@ type CreateActionParams<T extends ActionDefinition['type']> = CommonActionParams
  * @param params - The context to create an action for.
  * @returns An action as it is injected into a block by the SDK.
  */
-function createAction<T extends ActionDefinition['type']>({
+export function createAction<T extends ActionDefinition['type']>({
   definition,
   extraCreators,
   pageReady,
@@ -51,6 +46,7 @@ function createAction<T extends ActionDefinition['type']>({
   const [dispatch, properties] = actionCreator({
     ...params,
     definition,
+    extraCreators,
     remap,
     prefix,
   });

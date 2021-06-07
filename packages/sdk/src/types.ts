@@ -75,6 +75,7 @@ export type ResourceUpdateAction = RequestLikeAction<'resource.update'>;
  * An action that can be called from within a block.
  */
 export type Action =
+  | BaseAction<'condition'>
   | BaseAction<'dialog.error'>
   | BaseAction<'dialog.ok'>
   | BaseAction<'dialog'>
