@@ -154,6 +154,7 @@ beforeEach(() => {
 afterEach(() => {
   templateName = undefined;
   templateParams = undefined;
+  clock.uninstall();
 });
 
 afterEach(() => {
@@ -206,6 +207,7 @@ it('should render the index page', async () => {
   const settings = JSON.parse(settingsString);
   expect(settings).toStrictEqual({
     apiUrl: 'http://host.example',
+    appUpdated: '1970-01-01T00:00:00.000Z',
     blockManifests: [
       {
         name: '@test/a',

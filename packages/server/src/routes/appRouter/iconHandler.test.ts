@@ -5,7 +5,7 @@ import Koa from 'koa';
 import { appRouter } from '.';
 import { App, Organization } from '../../models';
 import * as appUtils from '../../utils/app';
-import { createTestSchema } from '../../utils/test/testSchema';
+import { closeTestSchema, createTestSchema } from '../../utils/test/testSchema';
 
 beforeAll(createTestSchema('iconHandler'));
 
@@ -14,9 +14,14 @@ beforeAll(async () => {
   await setTestApp(new Koa().use(appRouter));
 });
 
+afterAll(closeTestSchema);
+
 it('should scale and serve the app icon', async () => {
   jest.spyOn(appUtils, 'getApp').mockResolvedValue({
-    app: new App({ icon: await readFixture('tux.png') }),
+    app: new App({
+      icon: await readFixture('tux.png'),
+      updated: new Date('2020-01-01T00:00:00.000Z'),
+    }),
   });
   const response = await request.get('/icon-150.png');
   expect(response.headers['content-type']).toBe('image/png');
@@ -28,6 +33,7 @@ it('should use the splash color if an opaque icon is requested', async () => {
     app: new App({
       definition: { theme: { splashColor: '#ff0000', themeColor: '#00ff00' } },
       icon: await readFixture('tux.png'),
+      updated: new Date('2020-01-01T00:00:00.000Z'),
     }),
   });
   const response = await request.get('/icon-52.png?opaque');
@@ -40,6 +46,7 @@ it('should fall back to the theme color if splash color is undefined', async () 
     app: new App({
       definition: { theme: { themeColor: '#00ff00' } },
       icon: await readFixture('tux.png'),
+      updated: new Date('2020-01-01T00:00:00.000Z'),
     }),
   });
   const response = await request.get('/icon-85.png?opaque');
@@ -52,6 +59,7 @@ it('should fall back to a white background if neither theme color not splash col
     app: new App({
       definition: { theme: {} },
       icon: await readFixture('tux.png'),
+      updated: new Date('2020-01-01T00:00:00.000Z'),
     }),
   });
   const response = await request.get('/icon-24.png?maskable=true');
@@ -64,6 +72,7 @@ it('should fall back to a white background if theme is undefined', async () => {
     app: new App({
       definition: {},
       icon: await readFixture('tux.png'),
+      updated: new Date('2020-01-01T00:00:00.000Z'),
     }),
   });
   const response = await request.get('/icon-235.png?maskable=true');
@@ -75,6 +84,7 @@ it('should fall back to the organization icon if no app app icon is defined', as
   const app = new App();
   app.Organization = new Organization({
     icon: await readFixture('nodejs-logo.png'),
+    updated: new Date('2020-01-01T00:00:00.000Z'),
   });
   jest.spyOn(appUtils, 'getApp').mockResolvedValue({ app });
   const response = await request.get('/icon-42.png');
