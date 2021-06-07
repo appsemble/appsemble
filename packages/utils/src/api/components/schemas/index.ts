@@ -20,6 +20,7 @@ export * from './NotificationHookDataDefinition';
 export * from './NotificationHookDefinition';
 export * from './OAuth2AuthorizationCode';
 export * from './OAuth2ClientCredentials';
+export * from './ObjectRemapperDefinition';
 export * from './Organization';
 export * from './PageDefinition';
 export * from './Rating';

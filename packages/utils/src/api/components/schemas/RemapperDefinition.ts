@@ -15,14 +15,16 @@ export const RemapperDefinition: OpenAPIV3.NonArraySchemaObject = {
       description: 'A string remapper is always returned directly.',
     },
     {
-      type: 'object',
-      description: `An object based remapper is defined by a specific implementation
+      $ref: '#/components/schemas/ObjectRemapperDefinition',
+    },
+    {
+      type: 'array',
+      description: `If a remapper is an array, it represents a chain of remappers.
 
-Object based remappers may only define 1 key. The allowed value depends on the remapper.
+Each item represents a remapper which is called with the result of the remapper before it.
 `,
-      maxProperties: 1,
-      additionalProperties: {
-        type: 'object',
+      items: {
+        $ref: '#/components/schemas/ObjectRemapperDefinition',
       },
     },
   ],
