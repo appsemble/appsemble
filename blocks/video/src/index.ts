@@ -32,9 +32,12 @@ attach(
     errorMessage.className = 'message-body';
     errorMessage.textContent = utils.formatMessage('loadErrorMessage');
     errorNode.append(errorMessage);
+    let player: Vimeo;
     let playerDiv: HTMLDivElement;
+    utils.addCleanup(() => player?.destroy());
 
     const setupError = (): void => {
+      player?.destroy();
       playerDiv?.remove();
       shadowRoot.append(errorNode);
     };
@@ -62,14 +65,13 @@ attach(
         newPlayerDiv.style.maxHeight = maxHeight;
       }
 
-      if (playerDiv) {
-        playerDiv.remove();
-      }
+      playerDiv?.remove();
+      player?.destroy();
 
       playerDiv = newPlayerDiv;
       shadowRoot.append(playerDiv);
 
-      const player = new Vimeo(newPlayerDiv, {
+      player = new Vimeo(newPlayerDiv, {
         autoplay,
         color: theme.primaryColor,
         byline: false,
@@ -86,7 +88,6 @@ attach(
       }
 
       player.on('ended', onFinish);
-      utils.addCleanup(() => player.destroy());
     };
 
     const hasEvent = events.on.onVideo((d) => {
