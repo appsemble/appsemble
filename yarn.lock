@@ -33,14 +33,6 @@
     call-me-maybe "^1.0.1"
     z-schema "^4.2.3"
 
-"@appsemble/sdk@0.18.14":
-  version "0.18.14"
-  resolved "https://registry.yarnpkg.com/@appsemble/sdk/-/sdk-0.18.14.tgz#4a4513eaa36b3a0be532feb7e64f806841915bae"
-  integrity sha512-R4tZkY2xH0PPTvYrLptLcfJKl0yWhDv5u3XK+sompb29nyu8hk8lQdAlTnOfTNVF8JQd/HAfRESR0dNKqpLy0w==
-  dependencies:
-    "@fortawesome/fontawesome-common-types" "^0.2.35"
-    type-fest "^1.1.1"
-
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"
@@ -16072,11 +16064,6 @@ type-fest@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
-
-type-fest@^1.1.1:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-1.2.0.tgz#4cdf38ef9b047922c26038080cb269752ae359a2"
-  integrity sha512-++0N6KyAj0t2webXst0PE0xuXb4Dv3z1Z+4SGzK+j/epeWBZCfkQbkW/ezscZwpinmBQ5wu/l4TqagKSVcAGCA==
 
 type-fest@^1.1.3:
   version "1.1.3"
