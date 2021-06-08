@@ -84,6 +84,7 @@ export type Action =
   | BaseAction<'flow.cancel'>
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
+  | BaseAction<'flow.to'>
   | BaseAction<'link.back'>
   | BaseAction<'link.next'>
   | BaseAction<'message'>

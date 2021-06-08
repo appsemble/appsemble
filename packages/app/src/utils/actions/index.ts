@@ -57,6 +57,7 @@ export const actionCreators: ActionCreators = {
   'flow.finish': flow.finish,
   'flow.back': flow.back,
   'flow.cancel': flow.cancel,
+  'flow.to': flow.to,
   'resource.get': resource.get,
   'resource.query': resource.query,
   'resource.count': resource.count,

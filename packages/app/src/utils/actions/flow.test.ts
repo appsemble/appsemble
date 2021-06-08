@@ -9,6 +9,7 @@ beforeEach(() => {
     cancel: jest.fn().mockReturnValue({ value: 'cancel value' }),
     finish: jest.fn().mockReturnValue({ value: 'finish value' }),
     next: jest.fn().mockReturnValue({ value: 'next value' }),
+    to: jest.fn().mockReturnValue({ value: 'to value' }),
   };
 });
 
@@ -19,6 +20,7 @@ describe('flow.back', () => {
       flowActions,
     });
     const result = await action({ input: 'data' });
+    expect(flowActions.back).toHaveBeenCalledWith({ input: 'data' });
     expect(result).toStrictEqual({ value: 'back value' });
   });
 });
@@ -30,6 +32,7 @@ describe('flow.cancel', () => {
       flowActions,
     });
     const result = await action({ input: 'data' });
+    expect(flowActions.cancel).toHaveBeenCalledWith({ input: 'data' });
     expect(result).toStrictEqual({ value: 'cancel value' });
   });
 });
@@ -41,6 +44,7 @@ describe('flow.finish', () => {
       flowActions,
     });
     const result = await action({ input: 'data' });
+    expect(flowActions.finish).toHaveBeenCalledWith({ input: 'data' });
     expect(result).toStrictEqual({ value: 'finish value' });
   });
 });
@@ -52,6 +56,19 @@ describe('flow.next', () => {
       flowActions,
     });
     const result = await action({ input: 'data' });
+    expect(flowActions.next).toHaveBeenCalledWith({ input: 'data' });
     expect(result).toStrictEqual({ value: 'next value' });
+  });
+});
+
+describe('flow.to', () => {
+  it('should call the to flow action', async () => {
+    const action = createTestAction({
+      definition: { type: 'flow.to', step: { prop: 'input' } },
+      flowActions,
+    });
+    const result = await action({ input: 'data' });
+    expect(flowActions.to).toHaveBeenCalledWith({ input: 'data' }, 'data');
+    expect(result).toStrictEqual({ value: 'to value' });
   });
 });

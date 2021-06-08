@@ -95,6 +95,7 @@ export interface FlowActions {
   cancel: (data: any) => Promise<any>;
   finish: (data: any) => Promise<any>;
   next: (data: any) => Promise<any>;
+  to: (data: any, step: string) => Promise<any>;
 }
 
 export type UpdateTeam = (team: Pick<TeamMember, 'id' | 'role'>) => void;
