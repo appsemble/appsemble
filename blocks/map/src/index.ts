@@ -3,13 +3,13 @@ import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.css';
 import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.Default.css';
 import './index.css';
 
-import { attach } from '@appsemble/sdk';
+import { bootstrap } from '@appsemble/sdk';
 import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 
 import { loadMarkers, makeFilter } from './loadMarkers';
 
-attach((params) => {
+bootstrap((params) => {
   const {
     data,
     events,

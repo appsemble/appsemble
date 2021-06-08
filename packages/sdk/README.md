@@ -15,19 +15,7 @@ Register a bootstrap function.
 ```js
 import { bootstrap } from '@appsemble/sdk';
 
-bootstrap(({ shadowRoot }) => {
-  const root = document.createElement('span');
-  root.textContent = 'Hello world!';
-  shadowRoot.append(root);
-});
-```
-
-Or even simpler
-
-```js
-import { attach } from '@appsemble/sdk';
-
-attach(() => {
+bootstrap(() => {
   const root = document.createElement('span');
   root.textContent = 'Hello world!';
   return root;

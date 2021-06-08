@@ -1,8 +1,8 @@
-import { attach } from '@appsemble/sdk';
+import { bootstrap } from '@appsemble/sdk';
 
 import styles from './index.module.css';
 
-attach(({ events, parameters: { fields }, utils: { fa, remap } }) => {
+bootstrap(({ events, parameters: { fields }, utils: { fa, remap } }) => {
   const wrapper = (
     <div className={`${styles.wrapper} is-flex`}>
       <div className={styles.loader} />
