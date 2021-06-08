@@ -168,6 +168,91 @@ describe('request', () => {
     expect(result).toStrictEqual('Example content');
   });
 
+  it('should allow for using context in url remappers', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 'Example content', {}];
+    });
+
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        url: {
+          'string.format': {
+            template: 'https://example.{domain}',
+            values: {
+              domain: { context: 'test' },
+            },
+          },
+        },
+        proxy: false,
+      },
+      prefix: 'pages.0.blocks.0.actions.onClick',
+      remap,
+    });
+
+    const result = await action(null, { test: 'nl' });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe('https://example.nl');
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual('Example content');
+  });
+
+  it('should allow for using context in query remappers', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 'Example content', {}];
+    });
+
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        url: 'https://example.com',
+        proxy: false,
+        query: {
+          'object.from': {
+            example: { context: 'test' },
+          },
+        },
+      },
+      prefix: 'pages.0.blocks.0.actions.onClick',
+      remap,
+    });
+
+    const result = await action(null, { test: 'foo' });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe('https://example.com');
+    expect(request.params).toBe({ context: 'foo' });
+    expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual('Example content');
+  });
+
+  it('should allow for using context in body remappers', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 'Example content', {}];
+    });
+
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        url: 'https://example.com',
+        proxy: false,
+        body: { context: 'test' },
+      },
+      prefix: 'pages.0.blocks.0.actions.onClick',
+      remap,
+    });
+
+    const result = await action(null, { test: { foo: 'bar', baz: 1234 } });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe('https://example.com');
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBe({ foo: 'bar', baz: 1234 });
+    expect(result).toStrictEqual('Example content');
+  });
+
   it('should support deserializing an XML response', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
