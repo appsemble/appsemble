@@ -12,16 +12,16 @@ export const request: ActionCreator<'request'> = ({ definition, prefix, remap })
   const method = uncasedMethod.toUpperCase() as HTTPMethods;
 
   return [
-    async (data) => {
+    async (data, context) => {
       const req = proxy
         ? {
             method,
             url: `${apiUrl}/api/apps/${appId}/action/${prefix}`,
           }
-        : formatRequestAction(definition, data, remap);
+        : formatRequestAction(definition, data, remap, context);
 
       if (method === 'PUT' || method === 'POST' || method === 'PATCH') {
-        req.data = serializeResource(body ? remap(body, data) : data);
+        req.data = serializeResource(body ? remap(body, data, context) : data);
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
       }

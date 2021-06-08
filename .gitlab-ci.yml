@@ -8,6 +8,9 @@ stages:
   - provision
   - end 2 end
 
+variables:
+  JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
+
 workflow:
   rules:
     # By default, run jobs for every merge request.
