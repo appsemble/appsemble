@@ -275,6 +275,37 @@ defaultPage: Test Page
       },
     });
   });
+
+  it('should fetch the most recent snapshot', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
+    clock.tick(3600);
+    await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: app.id,
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        domain: null,
+        private: false,
+        path: 'test-app',
+        iconUrl: `/api/apps/${app.id}/icon`,
+        definition: app.definition,
+        OrganizationId: organization.id,
+        OrganizationName: 'Test Organization',
+        yaml: '{ name: Test App, defaultPage Test Page }',
+      },
+    });
+  });
 });
 
 describe('queryMyApps', () => {

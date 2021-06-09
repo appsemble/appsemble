@@ -1,4 +1,5 @@
 import { Schema } from 'jsonschema';
+import lcm from 'lcm';
 import { JsonArray, JsonValue } from 'type-fest';
 
 import { mapValues } from './mapValues';
@@ -67,4 +68,80 @@ export function generateDataFromSchema(schema?: Schema): JsonValue {
     default:
       break;
   }
+}
+
+/**
+ * Combine a list of schemas into one schema matching all of them.
+ *
+ * The main purpose of this function is to combine a schema using `allOf` into one schema that can
+ * be rendered. Do not use this for actual validation. Use the original `allOf` schema instead.
+ *
+ * @param schemas - The schemas to combine.
+ * @returns The combined schema.
+ */
+export function combineSchemas(...schemas: Schema[]): Schema {
+  const result: Schema = {};
+
+  for (const schema of schemas) {
+    if ('type' in schema) {
+      result.type ||= schema.type;
+    }
+    if ('format' in schema) {
+      result.format ||= schema.format;
+    }
+    if ('minimum' in schema) {
+      result.minimum =
+        'minimum' in result ? Math.max(result.minimum, schema.minimum) : schema.minimum;
+    }
+    if ('minLength' in schema) {
+      result.minLength =
+        'minLength' in result ? Math.max(result.minLength, schema.minLength) : schema.minLength;
+    }
+    if ('maximum' in schema) {
+      result.maximum =
+        'maximum' in result ? Math.min(result.maximum, schema.maximum) : schema.maximum;
+    }
+    if ('maxLength' in schema) {
+      result.maxLength =
+        'maxLength' in result ? Math.min(result.maxLength, schema.maxLength) : schema.maxLength;
+    }
+    if (schema.multipleOf) {
+      result.multipleOf = result.multipleOf
+        ? lcm(result.multipleOf, schema.multipleOf)
+        : schema.multipleOf;
+    }
+    if ('default' in schema) {
+      result.default ??= schema.default;
+    }
+    if (schema.description) {
+      result.description ||= schema.description;
+    }
+    if (schema.pattern) {
+      result.pattern ||= schema.pattern;
+    }
+    if (schema.title) {
+      result.title ||= schema.title;
+    }
+    if ('uniqueItems' in schema) {
+      result.uniqueItems ||= schema.uniqueItems;
+    }
+    if (Array.isArray(schema.required)) {
+      result.required ||= [];
+      if (Array.isArray(result.required)) {
+        result.required.push(...schema.required);
+      }
+    } else if (schema.required) {
+      result.required = true;
+    }
+    if (schema.properties) {
+      result.properties ||= {};
+      for (const [key, property] of Object.entries(schema.properties)) {
+        result.properties[key] = result.properties[key]
+          ? combineSchemas(result.properties[key], property)
+          : property;
+      }
+    }
+  }
+
+  return result;
 }

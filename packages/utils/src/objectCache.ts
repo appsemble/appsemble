@@ -6,7 +6,6 @@
  * the same value again, the memoized value is returned.
  *
  * @param factory - The function that generats new values if necessary.
- *
  * @returns A getter funcion which returns the generated or memoized value.
  */
 export function objectCache<T, K = string>(factory: (id: K) => T): (id: K) => T {

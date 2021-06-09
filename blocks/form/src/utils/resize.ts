@@ -7,7 +7,6 @@
  * @param maxWidth - The maximum width of the output
  * @param maxHeight - The maximum height of the output
  * @param quality - The quality in integer percentages.
- *
  * @returns The resized image.
  */
 export async function resize(

@@ -11,7 +11,6 @@ import { loadWebpackConfig } from './loadWebpackConfig';
  * Builds a block using Webpack.
  *
  * @param config - The config of the block to build.
- *
  * @returns The Webpack stats object.
  */
 export async function buildBlock(config: BlockConfig): Promise<Stats> {

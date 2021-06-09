@@ -13,7 +13,6 @@ import { KoaContext } from '../types';
  * @param permissions - An array of required permissions or a single required permission.
  * @param queryOptions - Additional query options. Use this to include for example the user or
  * organization the member is linked to.
- *
  * @returns The member of the organization.
  */
 export async function checkRole(

@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.15](https://gitlab.com/appsemble/appsemble/-/releases/0.18.15)] - 2021-06-01
+
+### Added
+
+- Studio: Add core app message translations to the translations page.
+
+### Changed
+
+- Server: Block organization IDs that could be used to impersonate Appsemble.
+- Server: Redirect to Appsemble Studio for app-like URLs.
+
+## \[[0.18.14](https://gitlab.com/appsemble/appsemble/-/releases/0.18.14)] - 2021-05-26
+
+### Fixed
+
+- CI: Fix release process for production.
+
+## \[[0.18.13](https://gitlab.com/appsemble/appsemble/-/releases/0.18.13)] - 2021-05-26
+
+### Added
+
+- Studio: Add page for viewing the format of a resource based on its definition.
+- Studio: Add copy and download buttons on code blocks.
+
+### Fixed
+
+- App: Fix `hidden` menu navigation displaying a blank page.
+- Studio: Fix editor tabs.
+- Studio: Fix syntax highlighting for CSS in app editor.
+
 ## \[[0.18.12](https://gitlab.com/appsemble/appsemble/-/releases/0.18.12)] - 2021-05-21
 
 ### Fixed

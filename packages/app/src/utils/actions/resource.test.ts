@@ -1,11 +1,9 @@
-import { AppDefinition, Remapper } from '@appsemble/types';
-import { remap } from '@appsemble/utils';
+import { AppDefinition } from '@appsemble/types';
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { IntlMessageFormat } from 'intl-messageformat';
 
 import { createTestAction } from '../makeActions';
-import { apiUrl, appId } from '../settings';
+import { apiUrl } from '../settings';
 
 const app: AppDefinition = {
   defaultPage: '',
@@ -14,15 +12,6 @@ const app: AppDefinition = {
   },
   pages: [],
 };
-
-function remapWithContext(remapper: Remapper, data: any): any {
-  return remap(remapper, data, {
-    getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
-    appId,
-    userInfo: null,
-    context: {},
-  });
-}
 
 let mock: MockAdapter;
 let request: AxiosRequestConfig;
@@ -44,7 +33,6 @@ describe('resource.get', () => {
     const action = createTestAction({
       app,
       definition: { type: 'resource.get', resource: 'pet' },
-      remap: remapWithContext,
     });
     const result = await action({ id: 1 });
     expect(request.method).toBe('get');
@@ -64,7 +52,6 @@ describe('resource.query', () => {
     const action = createTestAction({
       app,
       definition: { type: 'resource.query', resource: 'pet' },
-      remap: remapWithContext,
     });
     const result = await action();
     expect(request.method).toBe('get');
@@ -84,7 +71,6 @@ describe('resource.count', () => {
     const action = createTestAction({
       app,
       definition: { type: 'resource.count', resource: 'pet' },
-      remap: remapWithContext,
     });
     const result = await action();
     expect(request.method).toBe('get');
@@ -104,7 +90,6 @@ describe('resource.create', () => {
     const action = createTestAction({
       app,
       definition: { type: 'resource.create', resource: 'pet' },
-      remap: remapWithContext,
     });
     const result = await action({ type: 'fish' });
     expect(request.method).toBe('post');
@@ -124,7 +109,6 @@ describe('resource.update', () => {
     const action = createTestAction({
       app,
       definition: { type: 'resource.update', resource: 'pet' },
-      remap: remapWithContext,
     });
     const result = await action({ id: 84, type: 'fish' });
     expect(request.method).toBe('put');
@@ -144,7 +128,6 @@ describe('resource.delete', () => {
     const action = createTestAction({
       app,
       definition: { type: 'resource.delete', resource: 'pet' },
-      remap: remapWithContext,
     });
     const result = await action({ id: 63 });
     expect(request.method).toBe('delete');

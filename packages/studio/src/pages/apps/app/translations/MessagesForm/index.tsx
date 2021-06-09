@@ -13,7 +13,7 @@ import { AppMessages, AppsembleMessages } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { CollapsibleList } from 'studio/src/components/CollapsibleList';
+import { Collapsible } from 'studio/src/components/Collapsible';
 
 import { useApp } from '../..';
 import { messages } from './messages';
@@ -64,7 +64,7 @@ export function MessagesForm({
       for (const version of Object.keys(blocks[blockId])) {
         for (const messageId of Object.keys(blocks[blockId][version])) {
           if (
-            defaultAppMessages.messages.blocks[blockId][version][messageId] ===
+            defaultAppMessages.messages.blocks[blockId][version]?.[messageId] ===
             appMessages.messages.blocks[blockId][version][messageId]
           ) {
             blocks[blockId][version][messageId] = '';
@@ -95,7 +95,7 @@ export function MessagesForm({
       <SimpleFormError>{() => <FormattedMessage {...messages.uploadError} />}</SimpleFormError>
       <SimpleBeforeUnload />
       {Object.keys(defaultAppMessages.messages.messageIds).length ? (
-        <CollapsibleList size={5} title={<FormattedMessage {...messages.messageIds} />}>
+        <Collapsible size={5} title={<FormattedMessage {...messages.messageIds} />}>
           <SimpleFormObject name="messageIds">
             {Object.entries(defaultAppMessages.messages.messageIds).map(([id, defaultMessage]) => (
               <SimpleFormField
@@ -109,9 +109,9 @@ export function MessagesForm({
               />
             ))}
           </SimpleFormObject>
-        </CollapsibleList>
+        </Collapsible>
       ) : null}
-      <CollapsibleList size={5} title={<FormattedMessage {...messages.app} />}>
+      <Collapsible size={5} title={<FormattedMessage {...messages.app} />}>
         <SimpleFormObject name="app">
           {Object.entries(defaultAppMessages.messages.app).map(([id, defaultMessage]) => (
             <SimpleFormField
@@ -125,8 +125,8 @@ export function MessagesForm({
             />
           ))}
         </SimpleFormObject>
-      </CollapsibleList>
-      <CollapsibleList size={5} title={<FormattedMessage {...messages.block} />}>
+      </Collapsible>
+      <Collapsible size={5} title={<FormattedMessage {...messages.block} />}>
         <SimpleFormObject name="blocks">
           {Object.entries(defaultAppMessages.messages.blocks).map(([blockId, blockVersions]) => (
             <SimpleFormObject key={blockId} name={blockId}>
@@ -148,7 +148,22 @@ export function MessagesForm({
             </SimpleFormObject>
           ))}
         </SimpleFormObject>
-      </CollapsibleList>
+      </Collapsible>
+      <Collapsible collapsed size={5} title={<FormattedMessage {...messages.core} />}>
+        <SimpleFormObject name="core">
+          {Object.entries(defaultAppMessages.messages.core).map(([id, defaultMessage]) => (
+            <SimpleFormField
+              component={TextAreaField}
+              disabled={app.locked}
+              key={id}
+              label={id}
+              name={id}
+              placeholder={defaultMessage}
+              rows={2}
+            />
+          ))}
+        </SimpleFormObject>
+      </Collapsible>
       <FormButtons>
         <SimpleSubmit className="mb-4" disabled={app.locked}>
           <FormattedMessage {...messages.submit} />

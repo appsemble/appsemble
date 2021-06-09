@@ -5,8 +5,6 @@ import { compareApps, getApp, getRemapperContext } from './app';
 import { setArgv } from './argv';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
-let dbApp: App;
-
 beforeAll(createTestSchema('getapp'));
 
 beforeEach(async () => {
@@ -28,7 +26,7 @@ describe('getApp', () => {
   });
 
   it('should resolve an app by its default domain', async () => {
-    dbApp = await App.create({
+    const app = await App.create({
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
@@ -39,7 +37,7 @@ describe('getApp', () => {
       OrganizationId: 'test-organization',
     });
 
-    const app = await getApp(
+    const result = await getApp(
       { origin: 'http://test-app.test-organization.localhost:9999' },
       {
         attributes: [
@@ -54,18 +52,22 @@ describe('getApp', () => {
       },
     );
 
-    expect(app).toStrictEqual({
-      definition: dbApp.definition,
-      id: dbApp.id,
-      OrganizationId: dbApp.OrganizationId,
-      sharedStyle: dbApp.sharedStyle,
-      coreStyle: dbApp.coreStyle,
-      vapidPublicKey: dbApp.vapidPublicKey,
+    expect(result).toStrictEqual({
+      appPath: 'test-app',
+      organizationId: 'test-organization',
+      app: {
+        definition: app.definition,
+        id: app.id,
+        OrganizationId: app.OrganizationId,
+        sharedStyle: app.sharedStyle,
+        coreStyle: app.coreStyle,
+        vapidPublicKey: app.vapidPublicKey,
+      },
     });
   });
 
   it('should allow passing an optional url parameter', async () => {
-    dbApp = await App.create({
+    const app = await App.create({
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
@@ -76,7 +78,7 @@ describe('getApp', () => {
       OrganizationId: 'test-organization',
     });
 
-    const app = await getApp(
+    const result = await getApp(
       { origin: 'http://localhost:9999' },
       {
         attributes: [
@@ -92,18 +94,22 @@ describe('getApp', () => {
       'http://test-app.test-organization.localhost:9999',
     );
 
-    expect(app).toStrictEqual({
-      definition: dbApp.definition,
-      id: dbApp.id,
-      OrganizationId: dbApp.OrganizationId,
-      sharedStyle: dbApp.sharedStyle,
-      coreStyle: dbApp.coreStyle,
-      vapidPublicKey: dbApp.vapidPublicKey,
+    expect(result).toStrictEqual({
+      appPath: 'test-app',
+      organizationId: 'test-organization',
+      app: {
+        definition: app.definition,
+        id: app.id,
+        OrganizationId: app.OrganizationId,
+        sharedStyle: app.sharedStyle,
+        coreStyle: app.coreStyle,
+        vapidPublicKey: app.vapidPublicKey,
+      },
     });
   });
 
   it('should resolve apps with custom domains', async () => {
-    dbApp = await App.create({
+    const app = await App.create({
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
@@ -115,7 +121,7 @@ describe('getApp', () => {
       domain: 'example.com',
     });
 
-    const app = await getApp(
+    const result = await getApp(
       { origin: 'http://example.com' },
       {
         attributes: [
@@ -130,13 +136,37 @@ describe('getApp', () => {
       },
     );
 
-    expect(app).toStrictEqual({
-      definition: dbApp.definition,
-      id: dbApp.id,
-      OrganizationId: dbApp.OrganizationId,
-      sharedStyle: dbApp.sharedStyle,
-      coreStyle: dbApp.coreStyle,
-      vapidPublicKey: dbApp.vapidPublicKey,
+    expect(result).toStrictEqual({
+      appPath: undefined,
+      organizationId: undefined,
+      app: {
+        definition: app.definition,
+        id: app.id,
+        OrganizationId: app.OrganizationId,
+        sharedStyle: app.sharedStyle,
+        coreStyle: app.coreStyle,
+        vapidPublicKey: app.vapidPublicKey,
+      },
+    });
+  });
+
+  it('should resolve if no app is found', async () => {
+    const result = await getApp({ origin: 'http://my-app.my-org.localhost' }, {});
+
+    expect(result).toStrictEqual({
+      appPath: 'my-app',
+      organizationId: 'my-org',
+      app: null,
+    });
+  });
+
+  it('should resolve if a URL only matches an organization id', async () => {
+    const result = await getApp({ origin: 'http://my-org.localhost' }, {});
+
+    expect(result).toStrictEqual({
+      appPath: undefined,
+      organizationId: 'my-org',
+      app: undefined,
     });
   });
 });

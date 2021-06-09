@@ -248,7 +248,6 @@ function getProgram(blockPath: string): Program {
  * Uses the .appsemblerc file and the type definitions of the block.
  *
  * @param blockConfig - The block configuration
- *
  * @returns The block configuration appended from the TypeScript project.
  */
 export function getBlockConfigFromTypeScript(

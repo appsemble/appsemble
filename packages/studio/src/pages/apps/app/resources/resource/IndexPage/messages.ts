@@ -31,4 +31,5 @@ export const messages = defineMessages({
     'Are you sure you want to delete {amount, plural, one {this resource} other {these resources}}? Deleted resources can not be recovered.',
   deleteSuccess: 'Successfully deleted the selected resources.',
   deleteError: 'Something went wrong when deleting the selected resources.',
+  api: 'API',
 });

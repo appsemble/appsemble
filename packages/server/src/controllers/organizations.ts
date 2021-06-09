@@ -20,6 +20,7 @@ import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
+import { organizationBlocklist } from '../utils/organizationBlocklist';
 import { readAsset } from '../utils/readAsset';
 
 interface Params {
@@ -259,6 +260,10 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
 
   if (!user.primaryEmail || !user.EmailAuthorizations[0].verified) {
     throw forbidden('Email not verified.');
+  }
+
+  if (organizationBlocklist.includes(id)) {
+    throw badRequest('This organization id is not allowed.');
   }
 
   try {

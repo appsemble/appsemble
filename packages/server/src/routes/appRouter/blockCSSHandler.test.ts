@@ -75,7 +75,7 @@ it('should handle if an app is not found', async () => {
     status: 404,
     data: {
       error: 'Not Found',
-      message: 'Not Found',
+      message: 'App not found',
       statusCode: 404,
     },
   });

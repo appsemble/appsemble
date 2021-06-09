@@ -8,12 +8,15 @@ stages:
   - provision
   - end 2 end
 
+variables:
+  JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
+
 workflow:
   rules:
     # By default, run jobs for every merge request.
     - if: $CI_MERGE_REQUEST_ID
-    # By default, run jobs for every commit on master.
-    - if: $CI_COMMIT_BRANCH == 'master'
+    # By default, run jobs for every commit on main.
+    - if: $CI_COMMIT_BRANCH == 'main'
     # By default, run jobs for every schedule
     - if: $CI_PIPELINE_SOURCE == 'schedule'
     # By default, run jobs for every tag
@@ -39,6 +42,31 @@ workflow:
   dependencies: []
   before_script:
     - yarn --frozen-lockfile --ignore-scripts
+
+# A template for creating a minor or patch release
+.release:
+  extends: .yarn
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+  allow_failure: true
+  script:
+    - apt-get update
+    - apt-get install --yes git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - yarn scripts release "$INCREMENT"
+    - VERSION="$(yarn --silent appsemble --version)"
+    - |
+      MESSAGE="$VERSION
+
+      $(yarn --silent scripts get-release-notes)"
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - git add .
+    - git commit --message "$MESSAGE" --cleanup whitespace --sign
+    - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
+    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main --tags
 
 ###################################################################################################
 #  Test Stage                                                                                     #
@@ -191,10 +219,8 @@ helm package:
   stage: build
   needs: []
   script:
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
     - cp LICENSE.md config/charts/appsemble/
-    - helm dependency build config/charts/appsemble
-    - config/bin/helm-package.sh -d public config/charts/appsemble/
+    - config/bin/helm-package.sh --dependency-update --destination public config/charts/appsemble/
   artifacts:
     name: Helm chart
     expose_as: Helm chart
@@ -283,6 +309,18 @@ sentry release:
     - sentry-cli releases new --finalize "$CI_COMMIT_TAG"
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
 
+# Create a patch release
+release patch:
+  extends: .release
+  variables:
+    INCREMENT: patch
+
+# Create a minor release
+release minor:
+  extends: .release
+  variables:
+    INCREMENT: minor
+
 ###################################################################################################
 #  Deploy Stage                                                                                   #
 ###################################################################################################
@@ -358,7 +396,7 @@ stop review:
   script:
     - helm delete "review-$CI_MERGE_REQUEST_IID"
 
-# Deploy the Docker image for master to the staging environment.
+# Deploy the Docker image for main to the staging environment.
 staging:
   image: dtzar/helm-kubectl:3
   stage: deploy
@@ -383,7 +421,7 @@ staging:
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=master"
+      --set "image.tag=main"
       --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
@@ -415,7 +453,7 @@ production:
   variables:
     GIT_STRATEGY: none
   script:
-    - help repo appsemble https://charts.appsemble.com
+    - helm repo add appsemble https://charts.appsemble.com
     - helm upgrade appsemble appsemble/appsemble
       --version "$CI_COMMIT_TAG"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
@@ -450,6 +488,18 @@ post release:
     - if: $CI_COMMIT_TAG
   script:
     - yarn scripts post-release
+
+# Create a GitHub release
+github release:
+  extends: .yarn
+  stage: deploy
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - yarn scripts github-release
 
 ###################################################################################################
 #  Provision Stage                                                                                #

@@ -156,7 +156,7 @@ export function BlockPage(): ReactElement {
           {Object.entries(selectedBlockManifest.parameters.definitions).map(([key, definition]) => (
             <Fragment key={key}>
               <Title lang={defaultLocale} level={5}>
-                <a href={`${url}#${key}`} id={key}>
+                <a href={`#${key}`} id={key}>
                   {key}
                 </a>
               </Title>

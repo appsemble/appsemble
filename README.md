@@ -13,7 +13,7 @@ Our production environment is available on [appsemble.app](https://appsemble.app
 
 Our staging environment is available on
 [staging.appsemble.review](https://staging.appsemble.review). This environment hosts the latest
-changes in the `master` branch. This environment is reset every night at 04:00 AM UTC.
+changes in the `main` branch. This environment is reset every night at 04:00 AM UTC.
 
 For each of our internal merge requests a review environment is started at
 `${CI_MERGE_REQUEST_IID}.appsemble.review`.

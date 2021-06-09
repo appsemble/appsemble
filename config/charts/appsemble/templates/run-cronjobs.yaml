@@ -22,8 +22,7 @@ spec:
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               command:
-                - node
-                - packages/server/dist
+                - appsemble
                 - run-cronjobs
                 - -vv
               env:
