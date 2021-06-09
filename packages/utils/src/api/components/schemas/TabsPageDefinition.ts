@@ -8,6 +8,7 @@ export const TabsPageDefinition: OpenAPIV3.NonArraySchemaObject = {
       type: 'object',
       description: 'This describes what a page will look like in the app.',
       required: ['name', 'type', 'subPages'],
+      additionalProperties: true,
       properties: {
         type: {
           type: 'string',

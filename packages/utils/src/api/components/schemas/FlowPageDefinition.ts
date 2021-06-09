@@ -5,8 +5,10 @@ export const FlowPageDefinition: OpenAPIV3.NonArraySchemaObject = {
   allOf: [
     { $ref: '#/components/schemas/BasePageDefinition' },
     {
+      type: 'object',
       description: 'This describes what a page will look like in the app.',
       required: ['name', 'type', 'subPages'],
+      additionalProperties: true,
       properties: {
         type: {
           type: 'string',
