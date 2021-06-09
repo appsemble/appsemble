@@ -187,7 +187,7 @@ const mapperImplementations: MapperImplementations = {
   },
 
   translate: (messageId, input, context) => {
-    const message = context.getMessage({ id: messageId, defaultMessage: undefined });
+    const message = context.getMessage({ id: messageId });
     return message.format() || `{${messageId}}`;
   },
 

@@ -118,7 +118,7 @@ export async function getRemapperContext(
         Object.hasOwnProperty.call(messages.messageIds, id),
       );
       const message = msg ? msg.messages.messageIds[id] : defaultMessage;
-      return cache(message);
+      return cache(message || `'{${id}}'`);
     },
     userInfo,
     context: {},
