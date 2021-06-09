@@ -56,6 +56,7 @@
     "@types/koa__cors": "^3.0.2",
     "@types/langmap": "^0.0.1",
     "@types/language-tags": "^1.0.0",
+    "@types/lcm": "^0.0.0",
     "@types/leaflet": "^1.5.23",
     "@types/marked": "^2.0.3",
     "@types/mdx-js__react": "^1.5.3",

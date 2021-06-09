@@ -8,6 +8,9 @@ stages:
   - provision
   - end 2 end
 
+variables:
+  JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
+
 workflow:
   rules:
     # By default, run jobs for every merge request.
@@ -485,6 +488,18 @@ post release:
     - if: $CI_COMMIT_TAG
   script:
     - yarn scripts post-release
+
+# Create a GitHub release
+github release:
+  extends: .yarn
+  stage: deploy
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - yarn scripts github-release
 
 ###################################################################################################
 #  Provision Stage                                                                                #
