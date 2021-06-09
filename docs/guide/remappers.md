@@ -205,6 +205,14 @@ Examples:
 -3d - subtract 3 days
 ```
 
+### `translate`
+
+Get a translated message for the given message ID.
+
+#### Parameters
+
+The input parameter is the message ID to get the translated message for.
+
 ### `user`
 
 Get user information of the logged in user.
