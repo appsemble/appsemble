@@ -72,8 +72,8 @@ This **must** match the name of a page defined for the app.
       items: {
         oneOf: [
           { $ref: '#/components/schemas/PageDefinition' },
-          // { $ref: '#/components/schemas/TabsPageDefinition' },
-          // { $ref: '#/components/schemas/FlowPageDefinition' },
+          { $ref: '#/components/schemas/TabsPageDefinition' },
+          { $ref: '#/components/schemas/FlowPageDefinition' },
         ],
       },
     },
