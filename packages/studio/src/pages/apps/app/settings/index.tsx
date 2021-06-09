@@ -52,7 +52,7 @@ export function SettingsPage(): ReactElement {
     () => ({
       maskableIcon: null,
       domain: app.domain || '',
-      icon: `${app.iconUrl}?raw=true`,
+      icon: app.iconUrl,
       iconBackground: app.iconBackground,
       path: app.path,
       private: app.private,

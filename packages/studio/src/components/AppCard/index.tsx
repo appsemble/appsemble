@@ -37,7 +37,11 @@ export function AppCard({ app }: AppCardProps): ReactElement {
                 src={`/api/apps/${app.id}/icon?maskable=true`}
               />
             ) : (
-              <Icon className={`${styles.iconFallback} card`} icon="mobile-alt" />
+              <Icon
+                className={`${styles.iconFallback} card`}
+                icon="mobile-alt"
+                style={{ backgroundColor: app.iconBackground }}
+              />
             )}
           </figure>
         </div>

@@ -279,7 +279,9 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
     description: updated.description,
     website: updated.website,
     email: updated.name,
-    iconUrl: `/api/organizations/${organization.id}/icon?updated=${updated.updated.toISOString()}`,
+    iconUrl: updated.icon
+      ? `/api/organizations/${organization.id}/icon?updated=${updated.updated.toISOString()}`
+      : null,
   };
 }
 
@@ -322,14 +324,12 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
 
     // @ts-expect-error XXX Convert to a type safe expression.
     await organization.addUser(userId, { through: { role: 'Owner' } });
-    const updated = await organization.reload();
+    await organization.reload();
 
     ctx.body = {
       id: organization.id,
       name: organization.name,
-      iconUrl: `/api/organizations/${
-        organization.id
-      }/icon?updated=${updated.updated.toISOString()}`,
+      iconUrl: null,
       description: organization.description,
       website: organization.website,
       email: organization.email,
@@ -402,20 +402,27 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   const invite = await OrganizationInvite.findOne({
     where: { key: token },
+    include: {
+      model: Organization,
+      attributes: {
+        include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+        exclude: ['icon'],
+      },
+    },
   });
 
   if (!invite) {
     throw notFound('This token does not exist.');
   }
 
-  const organization = await Organization.findByPk(invite.OrganizationId, { raw: true });
-
   ctx.body = {
-    id: organization.id,
-    name: organization.name,
-    iconUrl: `/api/organizations/${
-      organization.id
-    }/icon?updated=${organization.updated.toISOString()}`,
+    id: invite.organization.id,
+    name: invite.organization.name,
+    iconUrl: invite.organization.get('hasIcon')
+      ? `/api/organizations/${
+          invite.organization.id
+        }/icon?updated=${invite.organization.updated.toISOString()}`
+      : null,
   };
 }
 

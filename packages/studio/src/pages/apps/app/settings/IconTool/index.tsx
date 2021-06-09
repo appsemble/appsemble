@@ -1,5 +1,6 @@
 import {
   Button,
+  Icon,
   Input,
   RadioButton,
   RadioGroup,
@@ -39,10 +40,7 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
   const [shape, setShape] = useState<keyof typeof shapes>('minimal');
 
   const iconUrl = useObjectURL(values.icon);
-  const maskableIconUrl = useObjectURL(
-    values.maskableIcon ||
-      (app.hasMaskableIcon ? `${app.iconUrl}?maskable=true&raw=true` : iconUrl),
-  );
+  const maskableIconUrl = useObjectURL(values.maskableIcon || values.icon);
   const hasMaskableIcon = values.maskableIcon || app.hasMaskableIcon;
 
   const shapeShift = useCallback((event, value) => setShape(value), []);
@@ -132,11 +130,15 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
         <div className="mb-2 mr-2">
           <IconPicker disabled={disabled} name="icon" onChange={handleChange}>
             <figure className={`image is-flex is-128x128 ${styles.icon}`}>
-              <img
-                alt={formatMessage(messages.iconPreview)}
-                className={styles.preview}
-                src={iconUrl}
-              />
+              {iconUrl ? (
+                <img
+                  alt={formatMessage(messages.iconPreview)}
+                  className={styles.preview}
+                  src={iconUrl}
+                />
+              ) : (
+                <Icon className={styles.iconFallback} icon="mobile-alt" />
+              )}
             </figure>
           </IconPicker>
           <Button
@@ -157,13 +159,17 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
                 backgroundColor: values.iconBackground || 'white',
               }}
             >
-              {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-              <img
-                alt={formatMessage(messages.maskableIconPreview)}
-                className={hasMaskableIcon ? styles.fill : styles.contain}
-                onLoad={handleMaskableIconLoad}
-                src={maskableIconUrl}
-              />
+              {maskableIconUrl ? (
+                // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                <img
+                  alt={formatMessage(messages.maskableIconPreview)}
+                  className={hasMaskableIcon ? styles.fill : styles.contain}
+                  onLoad={handleMaskableIconLoad}
+                  src={maskableIconUrl}
+                />
+              ) : (
+                <Icon className={styles.maskableIconFallback} icon="mobile-alt" />
+              )}
             </figure>
           </IconPicker>
           <Button
