@@ -1,11 +1,11 @@
 import { ReadStream } from 'fs';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { coerceFile } from 'cli/src/lib/coercers';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { coerceFile } from '../../lib/coercers';
 import { updateApp } from '../../lib/updateApp';
 import { BaseArguments } from '../../types';
 
