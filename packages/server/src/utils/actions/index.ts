@@ -2,6 +2,7 @@ import { ActionDefinition } from '@appsemble/types';
 
 import { App, User } from '../../models';
 import { Mailer } from '../email/Mailer';
+import { condition } from './condition';
 import { email } from './email';
 import { noop } from './noop';
 import { request } from './request';
@@ -17,6 +18,7 @@ export interface ServerActionParameters<T extends ActionDefinition = ActionDefin
 }
 
 export const actions = {
+  condition,
   dialog: noop,
   'dialog.error': noop,
   'dialog.ok': noop,

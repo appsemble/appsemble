@@ -1,11 +1,11 @@
 import { logger } from '@appsemble/node-utils';
-import { remap } from '@appsemble/utils';
 import { parseExpression } from 'cron-parser';
 import { Op } from 'sequelize';
 import { Argv } from 'yargs';
 
 import { App, initDB } from '../models';
-import { actions, ServerActionParameters } from '../utils/actions';
+import { handleAction } from '../utils/action';
+import { actions } from '../utils/actions';
 import { argv } from '../utils/argv';
 import { iterTable } from '../utils/database';
 import { Mailer } from '../utils/email/Mailer';
@@ -14,47 +14,6 @@ import { databaseBuilder } from './builder/database';
 
 export const command = 'run-cronjobs';
 export const description = 'Runs all cronjobs associated with apps.';
-
-async function handleAction(
-  action: (params: ServerActionParameters) => Promise<unknown>,
-  params: ServerActionParameters,
-): Promise<void> {
-  logger.info(`Running action: ${params.action.type}`);
-  let data =
-    'remap' in params.action
-      ? remap(params.action.remap, params.data, {
-          appId: params.app.id,
-          context: {},
-          // XXX: Implement getMessage and default language selections
-          getMessage() {
-            return null;
-          },
-          userInfo: undefined,
-        })
-      : params.data;
-
-  try {
-    data = await action({ ...params, data });
-    if (params.action.onSuccess) {
-      await handleAction(actions[params.action.onSuccess.type], {
-        ...params,
-        action: params.action.onSuccess,
-        data,
-      });
-    }
-  } catch (error: unknown) {
-    logger.error(`Error running action: ${params.action.type}`);
-    if (params.action.onError) {
-      return handleAction(actions[params.action.onError.type], {
-        ...params,
-        action: params.action.onError,
-        data,
-      });
-    }
-    throw error;
-  }
-  logger.info(`Succesfully ran action: ${params.action.type}`);
-}
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)

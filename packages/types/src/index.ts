@@ -510,6 +510,23 @@ export interface BaseActionDefinition<T extends Action['type']> {
   onError?: ActionDefinition;
 }
 
+export interface ConditionActionDefinition extends BaseActionDefinition<'condition'> {
+  /**
+   * The condition to check for.
+   */
+  if: Remapper;
+
+  /**
+   * The action to run if the condition is true.
+   */
+  then: ActionDefinition;
+
+  /**
+   * The action to run if the condition is false.
+   */
+  else: ActionDefinition;
+}
+
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * If false, the dialog cannot be closed by clicking outside of the dialog or on the close button.
@@ -714,6 +731,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'team.join'>
   | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'throw'>
+  | ConditionActionDefinition
   | DialogActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition

@@ -111,6 +111,24 @@ describe('iterAction', () => {
     expect(result).toBe(true);
   });
 
+  it('should call then and else for conditional actions', () => {
+    const onAction = jest.fn();
+
+    const action: ActionDefinition = {
+      type: 'condition',
+      if: true,
+      then: { type: 'noop' },
+      else: { type: 'noop' },
+    };
+
+    const result = iterAction(action, { onAction });
+
+    expect(onAction).toHaveBeenCalledWith(action, []);
+    expect(onAction).toHaveBeenCalledWith(action.then, ['then']);
+    expect(onAction).toHaveBeenCalledWith(action.else, ['else']);
+    expect(result).toBe(false);
+  });
+
   it('should return the return value of iterBlockList', () => {
     const onAction = jest.fn();
     const onBlockList = jest.fn().mockReturnValue(true);
