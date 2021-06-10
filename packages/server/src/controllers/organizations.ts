@@ -405,7 +405,7 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
     include: {
       model: Organization,
       attributes: {
-        include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+        include: [[literal('icon IS NOT NULL'), 'hasIcon']],
         exclude: ['icon'],
       },
     },
