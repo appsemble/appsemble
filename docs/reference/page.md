@@ -12,9 +12,9 @@ how they should display and what its content looks like.
 
 The name of the page. This field is always required and must be unique within the app, meaning that
 it is not possible to have two pages with the same name. The name of the page is displayed at the
-top of each page as well as in the side navigational menu, unless `navTitle` has been set.
+top of each page as well as in the side navigational menu.
 
-Note that the URL used to navigate to pages is determined by this property.
+> **Note**: The URL used to navigate to pages is determined by this property.
 
 ## `navTitle`
 
