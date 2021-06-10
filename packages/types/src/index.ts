@@ -566,6 +566,13 @@ export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
   attachments?: Remapper;
 }
 
+export interface FlowToActionDefinition extends BaseActionDefinition<'flow.to'> {
+  /**
+   * The flow step to go to.
+   */
+  step: Remapper;
+}
+
 export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
   /**
    * Where to link to.
@@ -709,6 +716,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'throw'>
   | DialogActionDefinition
   | EventActionDefinition
+  | FlowToActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
   | MessageActionDefinition
