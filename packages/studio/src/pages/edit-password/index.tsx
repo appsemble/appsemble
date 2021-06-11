@@ -15,6 +15,7 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
+import { PasswordStrengthIndicator } from '../../components/PasswordStrengthIndicator';
 import { messages } from './messages';
 
 export function EditPasswordPage(): ReactElement {
@@ -37,7 +38,7 @@ export function EditPasswordPage(): ReactElement {
   }
 
   return (
-    <Content padding>
+    <Content>
       {success ? (
         <Message color="success">
           <FormattedMessage {...messages.requestSuccess} />
@@ -50,12 +51,10 @@ export function EditPasswordPage(): ReactElement {
           <SimpleFormField
             autoComplete="new-password"
             component={PasswordField}
+            help={<PasswordStrengthIndicator minLength={8} name="password" />}
             label={<FormattedMessage {...messages.passwordLabel} />}
             name="password"
             required
-            validityMessages={{
-              valueMissing: <FormattedMessage {...messages.passwordRequired} />,
-            }}
           />
           <FormButtons>
             <SimpleSubmit className="is-pulled-right">
