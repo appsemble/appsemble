@@ -6,9 +6,18 @@ const sharedProperties: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.Sch
     maxLength: 50,
     description: `The name of an app.
 
-    This will be displayed on the top of the page and in the side menu.
+    This will be displayed on the top of the page and in the side menu, unless navTitle is set.
+
+    The name of the page is used to determine the URL path of the page.
   `,
   },
+  // XXX: Uncomment this when the Remapper schema is defined.
+  // navTitle: {
+  //   $ref: '#/components/schemas/ObjectRemapperDefinition',
+  //   description: `The name of the page when displayed in the navigation menu.
+
+  //   Context property \`name\` can be used to access the name of the page.`,
+  // },
   icon: {
     type: 'string',
     description: `An optional icon from the fontawesome icon set
@@ -55,6 +64,8 @@ export const Page: OpenAPIV3.NonArraySchemaObject = {
       type: 'object',
       description: 'This describes what a page will look like in the app.',
       required: ['name', 'blocks'],
+      // XXX: Remove this when the Remapper schema is defined.
+      additionalProperties: true,
       properties: {
         ...sharedProperties,
         type: {
@@ -75,6 +86,8 @@ export const Page: OpenAPIV3.NonArraySchemaObject = {
       type: 'object',
       description: 'This describes what a page will look like in the app.',
       required: ['name', 'type', 'subPages'],
+      // XXX: Remove this when the Remapper schema is defined.
+      additionalProperties: true,
       properties: {
         ...sharedProperties,
         type: {

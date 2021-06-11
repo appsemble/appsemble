@@ -844,9 +844,19 @@ export interface BasePageDefinition {
   /**
    * The name of the page.
    *
-   * This will be displayed on the top of the page and in the side menu.
+   * This will be displayed on the top of the page and in the side menu,
+   * unless @see navTitle is set.
+   *
+   * The name of the page is used to determine the URL path of the page.
    */
   name: string;
+
+  /**
+   * The name of the page when displayed in the navigation menu.
+   *
+   * Context property `name` can be used to access the name of the page.
+   */
+  navTitle?: Remapper;
 
   /**
    * A list of roles that may view the page.

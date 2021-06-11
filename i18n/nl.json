@@ -240,7 +240,7 @@
   "studio.src.pages.apps.app.edit.publish": "Publiceren",
   "studio.src.pages.apps.app.edit.resourceWarning": "De resource-definitie in deze appdefinitie bevat andere gegevens dan voorheen. Dit kan onverwachte gevolgen veroorzaken met oudere data.",
   "studio.src.pages.apps.app.edit.resourceWarningTitle": "Waarschuwing resources",
-  "studio.src.pages.apps.app.edit.schemaValidationFailed": "Validatie van app-schema is mislukt. Controleer of de volgende eigenschappen correct zijn",
+  "studio.src.pages.apps.app.edit.schemaValidationFailed": "Validatie van app-schema is mislukt. Controleer of de volgende eigenschappen correct zijn: {properties}",
   "studio.src.pages.apps.app.edit.sharedStyle": "Gedeelde stijl",
   "studio.src.pages.apps.app.edit.title": "Editor",
   "studio.src.pages.apps.app.edit.unexpected": "Er is iets misgegaan bij het valideren van de appdefinitie",
