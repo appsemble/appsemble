@@ -64,7 +64,7 @@ workflow:
     - git config user.email bot@appsemble.com
     - git config user.name Appsemble
     - git add .
-    - git commit --message "$MESSAGE" --cleanup whitespace --sign
+    - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
     - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
     - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main --tags
 

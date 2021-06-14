@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { createReadStream, promises as fs, ReadStream } from 'fs';
 import { URL } from 'url';
 import { inspect } from 'util';
 
@@ -47,6 +47,21 @@ interface CreateAppParams {
    * Whether the App should be marked as a template.
    */
   template: boolean;
+
+  /**
+   * The icon to upload.
+   */
+  icon: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * The background color to use for the icon in opaque contexts.
+   */
+  iconBackground: string;
+
+  /**
+   * The maskable icon to upload.
+   */
+  maskableIcon: NodeJS.ReadStream | ReadStream;
 }
 
 /**
@@ -73,14 +88,18 @@ export async function createApp({
     appsembleContext = await traverseAppDirectory(path, context, formData);
   }
 
-  const remote = appsembleContext?.remote ?? options.remote;
-  const organizationId = appsembleContext?.organization ?? options.organization;
-  const template = appsembleContext?.template ?? options.template ?? false;
-  const isPrivate = appsembleContext?.private ?? options.private;
+  const remote = appsembleContext.remote ?? options.remote;
+  const organizationId = appsembleContext.organization ?? options.organization;
+  const template = appsembleContext.template ?? options.template ?? false;
+  const isPrivate = appsembleContext.private ?? options.private;
+  const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
+  const icon = options.icon ?? appsembleContext.icon;
+  const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organzation: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
   logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
+  logger.verbose(`Icon background: ${iconBackground}`);
   if (!organizationId) {
     throw new AppsembleError(
       'An organization id must be passed as a command line flag or in the context',
@@ -89,6 +108,18 @@ export async function createApp({
   formData.append('OrganizationId', organizationId);
   formData.append('template', String(template));
   formData.append('private', String(isPrivate));
+  formData.append('iconBackground', iconBackground);
+  if (icon) {
+    const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
+    logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
+    formData.append('icon', realIcon);
+  }
+  if (maskableIcon) {
+    const realIcon =
+      typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
+    logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
+    formData.append('icon', realIcon);
+  }
 
   await authenticate(remote, 'apps:write', clientCredentials);
   const { data } = await axios.post('/api/apps', formData, { baseURL: remote });

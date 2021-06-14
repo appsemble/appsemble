@@ -113,7 +113,9 @@ export async function createApp(ctx: KoaContext): Promise<void> {
         definition,
         domain,
         icon,
+        iconBackground,
         longDescription,
+        maskableIcon,
         private: isPrivate = true,
         screenshots,
         sharedStyle,
@@ -134,6 +136,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       OrganizationId,
       coreStyle: validateStyle(coreStyle?.contents),
       longDescription,
+      iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle?.contents),
       domain: domain || null,
       private: Boolean(isPrivate),
@@ -145,6 +148,10 @@ export async function createApp(ctx: KoaContext): Promise<void> {
 
     if (icon) {
       result.icon = icon.contents;
+    }
+
+    if (maskableIcon) {
+      result.maskableIcon = maskableIcon.contents;
     }
 
     if (yaml) {

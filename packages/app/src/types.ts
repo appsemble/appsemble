@@ -96,6 +96,7 @@ export interface FlowActions {
   cancel: (data: any) => Promise<any>;
   finish: (data: any) => Promise<any>;
   next: (data: any) => Promise<any>;
+  to: (data: any, step: string) => Promise<any>;
 }
 
 export type UpdateTeam = (team: Pick<TeamMember, 'id' | 'role'>) => void;
@@ -103,8 +104,10 @@ export type UpdateTeam = (team: Pick<TeamMember, 'id' | 'role'>) => void;
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;
   definition: D;
+  extraCreators: ActionCreators;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
+  pageReady: Promise<void>;
   route: Match<{ lang: string }>;
   showDialog: ShowDialogAction;
   prefix: string;

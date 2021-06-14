@@ -39,6 +39,13 @@ export function iterAction(
     return true;
   }
 
+  if (action.type === 'condition') {
+    return Boolean(
+      iterAction(action.then, callbacks, [...prefix, 'then']) ||
+        iterAction(action.else, callbacks, [...prefix, 'else']),
+    );
+  }
+
   if ('blocks' in action) {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return iterBlockList(action.blocks, callbacks, [...prefix, 'blocks']);

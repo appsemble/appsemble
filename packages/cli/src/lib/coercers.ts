@@ -1,7 +1,6 @@
-import { ReadStream } from 'fs';
+import { createReadStream, ReadStream } from 'fs';
 import { URL } from 'url';
 
-import { createReadStream } from 'fs-extra';
 import normalizePath from 'normalize-path';
 
 /**
@@ -43,6 +42,12 @@ export function coerceRemote(value: string): string {
 export function coerceFile(value: string): NodeJS.ReadStream | ReadStream {
   if (value == null) {
     return;
+  }
+
+  // Prevent trying to read the file multiple times.
+  // https://github.com/yargs/yargs/issues/1802
+  if (typeof value === 'object') {
+    return value;
   }
 
   if (value === '-') {

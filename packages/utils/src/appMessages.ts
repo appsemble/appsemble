@@ -22,6 +22,9 @@ export function findMessageIds(obj: unknown): Record<string, string> {
     if (key === 'string.format' && typeof value?.messageId === 'string') {
       return { [value.messageId]: value.template ?? '' };
     }
+    if (key === 'translate') {
+      return { [value]: '' };
+    }
   }
   return Object.assign({}, ...entries.map(([, value]) => findMessageIds(value)));
 }

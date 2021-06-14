@@ -1,5 +1,5 @@
 import { createReadStream, promises as fs } from 'fs';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
@@ -23,6 +23,8 @@ export async function traverseAppDirectory(
 ): Promise<AppsembleContext> {
   let appFound: string;
   let discoveredContext: AppsembleContext;
+  let iconPath: string;
+  let maskableIconPath: string;
 
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, stat) => {
@@ -55,13 +57,11 @@ export async function traverseAppDirectory(
 
       case 'icon.png':
       case 'icon.svg':
-        logger.info(`Including icon ${filepath}`);
-        formData.append('icon', createReadStream(filepath));
+        iconPath = filepath;
         return;
 
       case 'maskable-icon.png':
-        logger.info(`Including maskable icon ${filepath}`);
-        formData.append('maskableIcon', createReadStream(filepath));
+        maskableIconPath = filepath;
         return;
 
       case 'readme.md':
@@ -102,5 +102,10 @@ export async function traverseAppDirectory(
   if (!appFound) {
     throw new AppsembleError('No app definition found');
   }
+  discoveredContext ||= {};
+  discoveredContext.icon = discoveredContext.icon
+    ? resolve(path, discoveredContext.icon)
+    : iconPath;
+  discoveredContext.maskableIcon ||= maskableIconPath;
   return discoveredContext;
 }

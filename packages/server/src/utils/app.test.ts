@@ -208,11 +208,13 @@ describe('getRemapperContext', () => {
     const word = context.getMessage({ id: 'word' });
     const hello = context.getMessage({ id: 'hello' });
     const bye = context.getMessage({ id: 'bye' });
-    expect(context.userInfo).toBe(userInfo);
+    const nothing = context.getMessage({ id: 'nothing' });
 
+    expect(context.userInfo).toBe(userInfo);
     expect(word.format()).toBe('Woord');
     expect(hello.format()).toBe('Hoi');
     expect(bye.format()).toBe('Houdoe');
+    expect(nothing.format()).toBe('{nothing}');
   });
 });
 

@@ -1,10 +1,11 @@
 import { Button, MenuItem, MenuSection } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
+import { normalize, remap } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
+import { appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
@@ -23,7 +24,7 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const {
     definition: { layout, security: showLogin },
   } = useAppDefinition();
-  const { isLoggedIn, logout } = useUser();
+  const { isLoggedIn, logout, userInfo } = useUser();
 
   return (
     <div className="is-flex-grow-1 is-flex-shrink-1">
@@ -33,10 +34,13 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
             id: `pages.${index}`,
             defaultMessage: page.name,
           }).format() as string;
+          const navName = page.navTitle
+            ? remap(page.navTitle, null, { appId, getMessage, userInfo, context: { name } })
+            : name;
 
           return (
             <MenuItem icon={page.icon} key={page.name} to={`${url}/${normalize(name)}`}>
-              {name}
+              {navName}
             </MenuItem>
           );
         })}
