@@ -26,7 +26,7 @@ export async function main(argv: string[]): Promise<void> {
     })
     .option('remote', {
       description: 'The Appsemble host that should be used.',
-      default: 'http://localhost:9999',
+      default: 'https://appsemble.app',
       coerce: coerceRemote,
     })
     .option('client-credentials', {
