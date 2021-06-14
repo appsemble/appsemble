@@ -11,10 +11,12 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
+import { Permission } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { checkRole } from 'studio/src/utils/checkRole';
 
 import { useUser } from '../../../../components/UserProvider';
 import { messages } from './messages';
@@ -50,6 +52,10 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
       history.push(`${url}/${data.id}/edit`);
     },
     [history, url, organizations, selectedTemplate, templates],
+  );
+
+  const createOrganizations = organizations.filter((org) =>
+    checkRole(org.role, Permission.CreateApps),
   );
 
   if (!templates?.length) {
@@ -101,12 +107,12 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
         />
         <SimpleFormField
           component={SelectField}
-          disabled={organizations?.length === 1}
+          disabled={createOrganizations.length === 1}
           label={<FormattedMessage {...messages.organization} />}
           name="selectedOrganization"
           required
         >
-          {organizations?.map((organization, index) => (
+          {createOrganizations.map((organization, index) => (
             <option key={organization.id} value={index}>
               {organization.id}
             </option>
