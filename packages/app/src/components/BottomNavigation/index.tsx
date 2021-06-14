@@ -22,7 +22,7 @@ interface BottomNavigationProps {
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { teams } = useUser();
-  const { getMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const { definition } = useAppDefinition();
   const { role, userInfo } = useUser();
 
@@ -36,7 +36,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
       <nav className="bottom-nav mb-0">
         <ul className={`${styles.list} is-flex`}>
           {pages.map((page, index) => {
-            const name = getMessage({
+            const name = getAppMessage({
               id: `pages.${index}`,
               defaultMessage: page.name,
             }).format() as string;

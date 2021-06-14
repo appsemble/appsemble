@@ -20,7 +20,7 @@ interface SideNavigationProps {
  */
 export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
-  const { getMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const {
     definition: { layout, security: showLogin },
   } = useAppDefinition();
@@ -30,7 +30,7 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
     <div className="is-flex-grow-1 is-flex-shrink-1">
       <MenuSection>
         {pages.map((page, index) => {
-          const name = getMessage({
+          const name = getAppMessage({
             id: `pages.${index}`,
             defaultMessage: page.name,
           }).format() as string;
