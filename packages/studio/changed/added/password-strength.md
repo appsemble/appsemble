@@ -1,0 +1,1 @@
+Add password strength indicator.

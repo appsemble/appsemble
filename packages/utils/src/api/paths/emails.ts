@@ -24,6 +24,7 @@ export const paths: OpenAPIV3.PathsObject = {
                 },
                 password: {
                   type: 'string',
+                  minLength: 8,
                 },
               },
             },
@@ -140,6 +141,7 @@ export const paths: OpenAPIV3.PathsObject = {
               properties: {
                 password: {
                   type: 'string',
+                  minLength: 8,
                 },
                 token: {
                   type: 'string',

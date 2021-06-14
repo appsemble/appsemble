@@ -10,7 +10,6 @@ export const messages = defineMessages({
   nameLabel: 'Display name',
   nameHelp: 'This is used to personalize communication',
   passwordLabel: 'Password',
-  passwordRequired: 'A password is required',
   emailLabel: 'Email',
   emailInvalid: 'This must be a valid email address',
   emailRequired: 'An email address is required',
