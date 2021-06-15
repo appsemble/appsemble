@@ -32,7 +32,7 @@ export function Page(): ReactElement {
     url,
   } = useRouteMatch<{ lang: string; pageId: string }>();
   const { pathname } = useLocation();
-  const { getMessage, messageIds } = useAppMessages();
+  const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
@@ -44,9 +44,9 @@ export function Page(): ReactElement {
   let index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
 
   if (index < 0) {
-    const pageMessages = messageIds.filter((id) => id.startsWith('pages.'));
+    const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
     const translatedPage = pageMessages.find(
-      (id) => normalize(getMessage({ id }).format() as string) === pageId,
+      (id) => normalize(getAppMessage({ id }).format() as string) === pageId,
     );
 
     if (translatedPage) {
@@ -100,7 +100,7 @@ export function Page(): ReactElement {
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
-    const msg = getMessage({ id: prefix, defaultMessage: page.name });
+    const msg = getAppMessage({ id: prefix, defaultMessage: page.name });
     const normalizedPageName = normalize(msg.format() as string);
 
     if (pageId !== normalize(normalizedPageName)) {
@@ -179,8 +179,8 @@ export function Page(): ReactElement {
     const i = definition.pages.indexOf(defaultPage);
     let pageName = defaultPage.name;
 
-    if (messageIds.includes(`pages.${i}`)) {
-      pageName = getMessage({ id: `pages.${i}` }).format() as string;
+    if (appMessageIds.includes(`pages.${i}`)) {
+      pageName = getAppMessage({ id: `pages.${i}` }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
@@ -192,8 +192,8 @@ export function Page(): ReactElement {
     const i = definition.pages.indexOf(redirectPage);
     let pageName = redirectPage.name;
 
-    if (messageIds.includes(`pages.${i}`)) {
-      pageName = getMessage({ id: `pages.${i}` }).format() as string;
+    if (appMessageIds.includes(`pages.${i}`)) {
+      pageName = getAppMessage({ id: `pages.${i}` }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
