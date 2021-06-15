@@ -57,7 +57,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.global.postgresql.existingSecret }}
-                  key: postgresql-password
+                  key: postgresql-postgres-password
             - name: HOST
               {{ if .Values.ingress.enabled -}}
               value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
