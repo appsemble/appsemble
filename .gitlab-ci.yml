@@ -160,7 +160,7 @@ test node 16:
   script:
     - yarn --frozen-lockfile
     - yarn jest --coverage
-    - yarn codecov
+    - yarn codecov || true
   artifacts:
     reports:
       junit: junit.xml
