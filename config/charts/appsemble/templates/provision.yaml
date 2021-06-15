@@ -62,5 +62,5 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.global.postgresql.existingSecret }}
-                  key: postgresql-password
+                  key: postgresql-postgres-password
 {{ end }}

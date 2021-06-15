@@ -42,7 +42,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: {{ .Values.global.postgresql.existingSecret }}
-                      key: postgresql-password
+                      key: postgresql-postgres-password
                 {{- with .Values.smtpSecret }}
                 - name: SMTP_HOST
                   valueFrom:

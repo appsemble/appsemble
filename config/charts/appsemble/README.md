@@ -15,7 +15,7 @@ It is recommended to create a PostgreSQL secret beforehand.
 
 ```sh
 kubectl create secret generic postgresql-secret \
-  --from-literal 'postgresql-password=my-password' \
+  --from-literal 'postgresql-postgres-password=my-password' \
   --from-literal 'postgresql-replication-password=my-postgresql-replication-password'
 ```
 
