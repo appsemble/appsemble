@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.16
-appVersion: 0.18.16
+version: 0.18.17
+appVersion: 0.18.17
 kubeVersion: '>=1.20.0'
 type: application
 description: The open source low-code app building platform
@@ -25,38 +25,15 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: >-
-        Block(data-loader): Add support for context. The data passed to the block
-        (for example the current data in a flow page) is now available in the
-        property data when using context remappers.
+      description: 'App: Add navTitle property to page.'
     - kind: added
-      description: 'Block(video): Add video block.'
-    - kind: added
-      description: 'App: Add condition action.'
-    - kind: added
-      description: 'App: Add action flow.to.'
-    - kind: added
-      description: >-
-        Appsemble: Add translate remapper. This can be used instead of
-        message.format for simpler messages that don’t use any message values.
-    - kind: added
-      description: 'Cli: Add support setting an icon when creating an app.'
-    - kind: added
-      description: 'Cli: Add support setting an icon when updating an app.'
-    - kind: added
-      description: 'Cli: Set the process name to appsemble.'
-    - kind: added
-      description: 'Server: Add condition action.'
-    - kind: added
-      description: 'Server: Allow specifying iconBackground when creating an app.'
-    - kind: added
-      description: 'Server: Allow specifying maskableIcon when creating an app.'
-    - kind: added
-      description: 'Server: Set the process name to appsemble.'
+      description: 'Studio: Add password strength indicator.'
+    - kind: changed
+      description: 'Cli: Change the default remote to https://appsemble.app.'
     - kind: fixed
-      description: >-
-        App: Fix inclusion of context within remappers for query in request actions.
-        This was causing context to not be available.
+      description: 'Cli: Fix the --ignore-conflict flag behavior.'
+    - kind: security
+      description: 'Server: Passwords must now be at least 8 characters.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

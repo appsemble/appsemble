@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.18.16",
+  "version": "0.18.17",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
