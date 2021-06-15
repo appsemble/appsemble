@@ -6,13 +6,13 @@ import {
   RadioGroup,
   useConfirmation,
   useMessages,
-  useObjectURL,
   useSimpleForm,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
+import { useUser } from 'studio/src/components/UserProvider';
 
 import { useApp } from '../..';
 import { IconPicker } from '../IconPicker';
@@ -34,14 +34,45 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const { app, setApp } = useApp();
+  const { organizations } = useUser();
   const { setValue, values } = useSimpleForm();
   const { lang } = useParams<{ lang: string }>();
 
+  const organization = organizations.find((org) => org.id === app.OrganizationId)!;
+
   const [shape, setShape] = useState<keyof typeof shapes>('minimal');
 
-  const iconUrl = useObjectURL(values.icon);
-  const maskableIconUrl = useObjectURL(values.maskableIcon || values.icon);
-  const hasMaskableIcon = values.maskableIcon || app.hasMaskableIcon;
+  let { icon, maskableIcon } = values;
+  let scaleMaskableIcon = false;
+  if (!icon) {
+    if (app.iconUrl) {
+      icon = `/api/apps/${app.id}/icon`;
+    } else {
+      if (organization.iconUrl) {
+        icon = `/api/organizations/${organization.id}/icon`;
+      }
+    }
+  }
+  if (maskableIcon) {
+    maskableIcon = URL.createObjectURL(maskableIcon);
+  } else {
+    if (app.hasMaskableIcon) {
+      maskableIcon = `/api/apps/${app.id}/icon?maskable=true`;
+    } else {
+      scaleMaskableIcon = true;
+      if (typeof icon === 'string') {
+        maskableIcon = `/api/apps/${app.id}/icon?raw=true`;
+      } else if (icon instanceof Blob) {
+        maskableIcon = URL.createObjectURL(icon);
+      }
+    }
+  }
+  if (icon instanceof Blob) {
+    icon = URL.createObjectURL(icon);
+  }
+
+  useEffect(() => () => URL.revokeObjectURL(icon), [icon]);
+  useEffect(() => () => URL.revokeObjectURL(maskableIcon), [maskableIcon]);
 
   const shapeShift = useCallback((event, value) => setShape(value), []);
 
@@ -84,9 +115,12 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
           body: formatMessage(messages.deleteIconSuccess),
           color: 'info',
         });
-        const url = `${app.iconUrl.replace(/#\d+/, '')}#${Date.now()}`;
-        setApp({ ...app, hasIcon: false, iconUrl: url });
-        setValue('icon', url);
+        setApp({
+          ...app,
+          hasIcon: false,
+          iconUrl: null,
+        });
+        setValue('icon', null);
       } catch {
         push(formatMessage(messages.errorIconDelete));
       }
@@ -130,11 +164,11 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
         <div className="mb-2 mr-2">
           <IconPicker disabled={disabled} name="icon" onChange={handleChange}>
             <figure className={`image is-flex is-128x128 ${styles.icon}`}>
-              {iconUrl ? (
+              {icon ? (
                 <img
                   alt={formatMessage(messages.iconPreview)}
                   className={styles.preview}
-                  src={iconUrl}
+                  src={icon}
                 />
               ) : (
                 <Icon className={styles.iconFallback} icon="mobile-alt" />
@@ -159,13 +193,13 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
                 backgroundColor: values.iconBackground || 'white',
               }}
             >
-              {maskableIconUrl ? (
+              {maskableIcon ? (
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
                 <img
                   alt={formatMessage(messages.maskableIconPreview)}
-                  className={hasMaskableIcon ? styles.fill : styles.contain}
+                  className={scaleMaskableIcon ? styles.contain : styles.fill}
                   onLoad={handleMaskableIconLoad}
-                  src={maskableIconUrl}
+                  src={maskableIcon}
                 />
               ) : (
                 <Icon className={styles.maskableIconFallback} icon="mobile-alt" />
