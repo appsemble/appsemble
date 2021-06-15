@@ -28,6 +28,13 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
     onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: Date | string) => void;
 
     /**
+     * A custom format to use to format the date.
+     *
+     * See: https://flatpickr.js.org/formatting/#date-formatting-tokens
+     */
+    dateFormat?: string;
+
+    /**
      * The current value as a Date object or an ISO8601 formatted string.
      */
     value: Date | string;
@@ -53,6 +60,7 @@ export function DateTimeField({
   value,
   minDate,
   maxDate,
+  dateFormat,
   id = name,
   ...props
 }: DateTimeFieldProps): VNode {
@@ -74,6 +82,20 @@ export function DateTimeField({
       return;
     }
 
+    let format = dateFormat;
+    if (!format) {
+      const date = noCalendar ? '' : ' l d M Y';
+      const time = enableTime ? 'H:i' : '';
+
+      if (date && time) {
+        format = `${date} ${time}`;
+      } else if (time) {
+        format = time;
+      } else {
+        format = date;
+      }
+    }
+
     const p = flatpickr(wrapper.current, {
       appendTo: wrapper.current,
       enableTime,
@@ -86,6 +108,7 @@ export function DateTimeField({
       wrap: true,
       minDate,
       maxDate,
+      dateFormat: format,
     });
 
     setPicker(p);
@@ -94,10 +117,10 @@ export function DateTimeField({
       p.destroy();
       setPicker(null);
     };
-  }, [disabled, enableTime, locale, maxDate, minDate, mode, noCalendar]);
+  }, [dateFormat, disabled, enableTime, locale, maxDate, minDate, mode, noCalendar]);
 
   useEffect(() => {
-    picker?.setDate(value);
+    picker?.setDate(new Date(value));
   }, [picker, value]);
 
   return (

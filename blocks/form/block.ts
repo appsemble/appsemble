@@ -217,6 +217,13 @@ export interface DateTimeField extends AbstractField {
    */
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
+  /**
+   * A custom date-time format to use.
+   *
+   * See: https://flatpickr.js.org/formatting/#date-formatting-tokens
+   */
+  format?: string;
+
   requirements?: DateTimeRequirement[];
 }
 
@@ -237,6 +244,13 @@ export interface DateField extends AbstractField {
    * @default 1
    */
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+  /**
+   * A custom date format to use.
+   *
+   * See: https://flatpickr.js.org/formatting/#date-formatting-tokens
+   */
+  format?: string;
 
   requirements?: DateTimeRequirement[];
 }

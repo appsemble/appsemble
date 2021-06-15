@@ -22,7 +22,7 @@ export function DateInput({
   value = null,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
-  const { label, name, placeholder, readOnly, tag } = field;
+  const { format, label, name, placeholder, readOnly, tag } = field;
 
   const checkboxLabel = utils.remap(label, value);
 
@@ -41,6 +41,7 @@ export function DateInput({
 
   return (
     <DateTimeComponent
+      dateFormat={format}
       disabled={disabled}
       error={dirty && error}
       id={name}
