@@ -35,9 +35,9 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
     showMenu && (
       <nav className="bottom-nav mb-0">
         <ul className={`${styles.list} is-flex`}>
-          {pages.map((page, index) => {
+          {pages.map((page) => {
             const name = getAppMessage({
-              id: `pages.${index}`,
+              id: `pages.${definition.pages.indexOf(page)}`,
               defaultMessage: page.name,
             }).format() as string;
             const navName = page.navTitle

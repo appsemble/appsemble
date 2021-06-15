@@ -22,16 +22,16 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { getAppMessage, getMessage } = useAppMessages();
   const {
-    definition: { layout, security: showLogin },
+    definition: { layout, security: showLogin, ...definition },
   } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
 
   return (
     <div className="is-flex-grow-1 is-flex-shrink-1">
       <MenuSection>
-        {pages.map((page, index) => {
+        {pages.map((page) => {
           const name = getAppMessage({
-            id: `pages.${index}`,
+            id: `pages.${definition.pages.indexOf(page)}`,
             defaultMessage: page.name,
           }).format() as string;
           const navName = page.navTitle
