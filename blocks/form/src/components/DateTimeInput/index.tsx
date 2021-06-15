@@ -35,15 +35,19 @@ export function DateTimeInput({
 
   const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
   const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
+  const formatDate = useCallback(
+    (date: Date) => utils.remap(format, date) as string,
+    [format, utils],
+  );
 
   const locale = useLocale(field);
 
   return (
     <DateTimeComponent
-      dateFormat={format}
       disabled={disabled}
       enableTime={field.type === 'date-time'}
       error={dirty && error}
+      formatDate={formatDate}
       id={name}
       iso
       label={checkboxLabel}

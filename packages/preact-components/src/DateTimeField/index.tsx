@@ -1,6 +1,8 @@
 import 'flatpickr/dist/flatpickr.css';
 
+import { useBlock } from '@appsemble/preact';
 import flatpickr from 'flatpickr';
+import { Locale } from 'flatpickr/dist/types/locale';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -28,11 +30,9 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
     onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: Date | string) => void;
 
     /**
-     * A custom format to use to format the date.
-     *
-     * See: https://flatpickr.js.org/formatting/#date-formatting-tokens
+     * A custom formatter function that can be used to define a new format.
      */
-    dateFormat?: string;
+    formatDate?: (date: Date, template?: string, locale?: Locale) => string;
 
     /**
      * The current value as a Date object or an ISO8601 formatted string.
@@ -60,13 +60,16 @@ export function DateTimeField({
   value,
   minDate,
   maxDate,
-  dateFormat,
+  formatDate,
   id = name,
   ...props
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
   const positionElement = useRef<HTMLDivElement>();
   const [picker, setPicker] = useState<flatpickr.Instance>(null);
+  const {
+    utils: { remap },
+  } = useBlock();
 
   const handleChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>) => {
@@ -82,18 +85,33 @@ export function DateTimeField({
       return;
     }
 
-    let format = dateFormat;
-    if (!format) {
-      const date = noCalendar ? '' : ' l d M Y';
-      const time = enableTime ? 'H:i' : '';
-
-      if (date && time) {
-        format = `${date} ${time}`;
-      } else if (time) {
-        format = time;
-      } else {
-        format = date;
+    let formatter = formatDate;
+    if (!formatter) {
+      let template = '';
+      if (!noCalendar) {
+        template += '{date, date, full}';
+        if (enableTime) {
+          template += ' ';
+        }
       }
+
+      if (enableTime) {
+        template += '{date, time, short}';
+      }
+
+      formatter = (date) =>
+        remap(
+          {
+            'string.format': {
+              template,
+              values: {
+                date,
+              },
+            },
+          },
+          date,
+          null,
+        );
     }
 
     const p = flatpickr(wrapper.current, {
@@ -108,7 +126,7 @@ export function DateTimeField({
       wrap: true,
       minDate,
       maxDate,
-      dateFormat: format,
+      formatDate,
     });
 
     setPicker(p);
@@ -117,7 +135,7 @@ export function DateTimeField({
       p.destroy();
       setPicker(null);
     };
-  }, [dateFormat, disabled, enableTime, locale, maxDate, minDate, mode, noCalendar]);
+  }, [disabled, enableTime, formatDate, locale, maxDate, minDate, mode, noCalendar, remap]);
 
   useEffect(() => {
     picker?.setDate(new Date(value));

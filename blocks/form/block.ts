@@ -218,11 +218,12 @@ export interface DateTimeField extends AbstractField {
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
   /**
-   * A custom date-time format to use.
+   * A remapper for the format of the date-time.
    *
-   * See: https://flatpickr.js.org/formatting/#date-formatting-tokens
+   * The value of the date-time is passed as data to the remapper
+   * and can be fetched using the `root` remapper.
    */
-  format?: string;
+  format?: Remapper;
 
   requirements?: DateTimeRequirement[];
 }
@@ -246,11 +247,12 @@ export interface DateField extends AbstractField {
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
   /**
-   * A custom date format to use.
+   * A remapper for the format of the date.
    *
-   * See: https://flatpickr.js.org/formatting/#date-formatting-tokens
+   * The value of the date-time is passed as data to the remapper
+   * and can be fetched using the `root` remapper.
    */
-  format?: string;
+  format?: Remapper;
 
   requirements?: DateTimeRequirement[];
 }
