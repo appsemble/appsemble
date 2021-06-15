@@ -544,7 +544,8 @@ provision production:
   needs:
     - production
   environment:
-    name: production provision
+    name: production
+    action: prepare
   script:
     - yarn appsemble config set context production
     - yarn appsemble config set remote https://appsemble.app
