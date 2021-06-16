@@ -22,9 +22,9 @@ export function DateInput({
   value = null,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
-  const { format, label, name, placeholder, readOnly, tag } = field;
+  const { label, name, placeholder, readOnly, tag } = field;
 
-  const checkboxLabel = utils.remap(label, value);
+  const dateLabel = utils.remap(label, value);
 
   const required = isRequired(field);
 
@@ -36,10 +36,6 @@ export function DateInput({
 
   const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
   const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
-  const formatDate = useCallback(
-    (date: Date) => utils.remap(format, date) as string,
-    [format, utils],
-  );
 
   const locale = useLocale(field);
 
@@ -47,16 +43,15 @@ export function DateInput({
     <DateTimeComponent
       disabled={disabled}
       error={dirty && error}
-      formatDate={formatDate}
       id={name}
-      label={checkboxLabel}
+      label={dateLabel}
       locale={locale}
       maxDate={maxDate}
       minDate={minDate}
       name={name}
       onChange={handleOnChange}
       optionalLabel={utils.formatMessage('optionalLabel')}
-      placeholder={utils.remap(placeholder, value)}
+      placeholder={utils.remap(placeholder, value) || dateLabel || name}
       readOnly={readOnly}
       required={required}
       tag={utils.remap(tag, value)}

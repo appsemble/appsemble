@@ -217,14 +217,6 @@ export interface DateTimeField extends AbstractField {
    */
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
-  /**
-   * A remapper for the format of the date-time.
-   *
-   * The value of the date-time is passed as data to the remapper
-   * and can be fetched using the `root` remapper.
-   */
-  format?: Remapper;
-
   requirements?: DateTimeRequirement[];
 }
 
@@ -245,14 +237,6 @@ export interface DateField extends AbstractField {
    * @default 1
    */
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-
-  /**
-   * A remapper for the format of the date.
-   *
-   * The value of the date-time is passed as data to the remapper
-   * and can be fetched using the `root` remapper.
-   */
-  format?: Remapper;
 
   requirements?: DateTimeRequirement[];
 }
