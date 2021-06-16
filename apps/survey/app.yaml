@@ -29,6 +29,9 @@ resources:
         usedYaml:
           type: boolean
 
+anchors:
+  - &version 0.18.17
+
 pages:
   - name: Survey
     type: flow
@@ -44,15 +47,15 @@ pages:
       - name: Introduction
         blocks:
           - type: markdown
-            version: 0.18.15
+            version: *version
             layout: static
             parameters:
-              content: { string.format: { messageId: introText } }
+              content: { translate: introText }
           - type: button-list
-            version: 0.18.15
+            version: *version
             parameters:
               buttons:
-                - label: { string.format: { messageId: start } }
+                - label: { translate: start }
                   onClick: onStart
                   color: primary
             actions:
@@ -62,7 +65,7 @@ pages:
       - name: Familiarity
         blocks:
           - type: form
-            version: 0.18.15
+            version: *version
             actions:
               onSubmit:
                 type: flow.next
@@ -73,15 +76,15 @@ pages:
                 - type: string
                   name: reached
                   multiline: true
-                  label: { string.format: { messageId: reached } }
+                  label: { translate: reached }
                 - type: boolean
                   name: knowsAppsemble
-                  label: { string.format: { messageId: knowsAppsemble } }
+                  label: { translate: knowsAppsemble }
 
       - name: Expertise
         blocks:
           - type: form
-            version: 0.18.15
+            version: *version
             actions:
               onSubmit:
                 type: flow.next
@@ -91,27 +94,27 @@ pages:
               fields:
                 - type: boolean
                   name: usedLowCode
-                  label: { string.format: { messageId: usedLowCode } }
+                  label: { translate: usedLowCode }
                 - type: string
                   name: lowCodePlatforms
                   multiline: true
-                  label: { string.format: { messageId: lowCodePlatforms } }
+                  label: { translate: lowCodePlatforms }
                 - type: boolean
                   name: usedYaml
-                  label: { string.format: { messageId: usedYaml } }
+                  label: { translate: usedYaml }
 
   - name: Finished
     blocks:
       - type: markdown
-        version: 0.18.15
+        version: *version
         layout: static
         parameters:
-          content: { string.format: { messageId: finished } }
+          content: { translate: finished }
       - type: button-list
-        version: 0.18.15
+        version: *version
         parameters:
           buttons:
-            - label: { string.format: { messageId: backToHome } }
+            - label: { translate: backToHome }
               onClick: home
               color: primary
         actions:
