@@ -21,7 +21,7 @@ export function createHeader(Component: Header): FC<ComponentPropsWithoutRef<Hea
       }
 
       const { top } = ref.current.getBoundingClientRect();
-      window.scrollTo({ top: top + window.scrollY - 52, behavior: 'smooth' });
+      window.scrollTo({ top: top + window.scrollY - 52 });
     }, [hash, id]);
 
     return <Component ref={ref} {...props} />;
