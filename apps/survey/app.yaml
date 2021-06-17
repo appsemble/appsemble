@@ -145,7 +145,7 @@ pages:
                 - type: radio
                   name: rating
                   label: { translate: appsembleRating }
-                  requirements: { required: true }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -200,7 +200,7 @@ pages:
                 - type: radio
                   name: graphicalEditorRating
                   label: { translate: graphicalEditor }
-                  requirements: { required: true }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -214,7 +214,7 @@ pages:
                 - type: radio
                   name: commonGroundRating
                   label: { translate: commonGround }
-                  requirements: { required: true }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -228,7 +228,7 @@ pages:
                 - type: radio
                   name: videoTutorialsRating
                   label: { translate: videoTutorials }
-                  requirements: { required: true }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -242,7 +242,7 @@ pages:
                 - type: radio
                   name: moreBlocksRating
                   label: { translate: moreBlocks }
-                  requirements: { required: true }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -256,7 +256,7 @@ pages:
                 - type: radio
                   name: moreExamplesRating
                   label: { translate: moreExamples }
-                  requirements: { required: true }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -292,7 +292,7 @@ pages:
                 - name: consideringAppsemble
                   type: radio
                   label: { translate: consideringAppsemble }
-                  requirements: { required: true }
+                  requirements: [{ required: true }]
                   options:
                     - value: 0
                       label: { translate: definitelyNot }
@@ -363,7 +363,7 @@ pages:
                 - type: string
                   name: whyNot
                   label: { translate: whyNot }
-                  requirements: { required: true }
+                  requirements: [{ required: true }]
                   placeholder: { translate: whyNotPlaceholder }
 
       - name: Anything Else
