@@ -11,23 +11,61 @@ resources:
       roles: [$public]
     schema:
       type: object
-      required:
-        - reached
-        - knowsAppsemble
-        - usedLowCode
-        - lowCodePlatforms
-        - usedYaml
       properties:
-        reached:
+        triedAppsemble:
+          type: boolean
+        rating:
+          type: number
+          min: 1
+          max: 5
+        ratingFeedback:
           type: string
-        knowsAppsemble:
-          type: boolean
-        usedLowCode:
-          type: boolean
-        lowCodePlatforms:
+        notTriedReason:
           type: string
-        usedYaml:
+        graphicalEditorRating:
+          type: number
+          min: 1
+          max: 5
+        graphicalEditorExplanation:
+          type: string
+        commonGroundRating:
+          type: number
+          min: 1
+          max: 5
+        commonGroundExplanation:
+          type: string
+        videoTutorialsRating:
+          type: number
+          min: 1
+          max: 5
+        videoTutorialsExplanation:
+          type: string
+        moreBlocksRating:
+          type: number
+          min: 1
+          max: 5
+        moreBlocksExplanation:
+          type: string
+        moreExamplesRating:
+          type: number
+          min: 1
+          max: 5
+        moreExamplesExplanation:
+          type: string
+        consideringAppsemble:
+          type: number
+          min: 0
+          max: 4
+        buildYourself:
           type: boolean
+        featureImportance: # Should this be an array of strings?
+          type: string
+        propertyImportance: # Same as above
+          type: string
+        whyNot:
+          type: string
+        anythingElse:
+          type: string
 
 anchors:
   - &version 0.18.17
@@ -68,40 +106,290 @@ pages:
             version: *version
             actions:
               onSubmit:
-                type: flow.next
+                type: condition
+                if: { prop: triedAppsemble }
+                then:
+                  type: flow.to
+                  step: Appsemble Ratings
+                else:
+                  type: flow.to
+                  step: Appsemble Feedback
               onPrevious:
                 type: flow.back
             parameters:
+              previous: true
               fields:
-                - type: string
-                  name: reached
-                  multiline: true
-                  label: { translate: reached }
-                - type: boolean
-                  name: knowsAppsemble
-                  label: { translate: knowsAppsemble }
+                - type: radio
+                  name: triedAppsemble
+                  label: { translate: triedAppsemble }
+                  options:
+                    - value: true
+                      label: { translate: yes }
+                    - value: false
+                      label: { translate: no }
 
-      - name: Expertise
+      - name: Appsemble Ratings
         blocks:
           - type: form
             version: *version
             actions:
               onSubmit:
-                type: flow.next
+                type: flow.to
+                step: Feature Ratings
               onPrevious:
-                type: flow.back
+                type: flow.to
+                step: Familiarity
             parameters:
+              previous: true
               fields:
-                - type: boolean
-                  name: usedLowCode
-                  label: { translate: usedLowCode }
+                - type: radio
+                  name: rating
+                  label: { translate: appsembleRating }
+                  requirements: { required: true }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
                 - type: string
-                  name: lowCodePlatforms
+                  name: ratingFeedback
                   multiline: true
-                  label: { translate: lowCodePlatforms }
-                - type: boolean
-                  name: usedYaml
-                  label: { translate: usedYaml }
+                  label: { translate: betterExperience }
+
+      - name: Appsemble Feedback
+        blocks:
+          - type: form
+            version: *version
+            actions:
+              onSubmit:
+                type: flow.to
+                step: Feature Ratings
+              onPrevious:
+                type: flow.to
+                step: Familiarity
+            parameters:
+              previous: true
+              fields:
+                - type: string
+                  name: notTriedReason
+                  multiline: true
+                  label: { translate: notTriedReason }
+
+      - name: Feature Ratings
+        blocks:
+          - type: form
+            version: *version
+            heading: { translate: features }
+            actions:
+              onSubmit:
+                type: flow.to
+                step: Next App With Appsemble
+              onPrevious:
+                type: condition
+                if: { prop: triedAppsemble }
+                then:
+                  type: flow.to
+                  step: Appsemble Ratings
+                else:
+                  type: flow.to
+                  step: Appsemble Feedback
+            parameters:
+              previous: true
+              fields:
+                - type: radio
+                  name: graphicalEditorRating
+                  label: { translate: graphicalEditor }
+                  requirements: { required: true }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: string
+                  name: graphicalEditorExplanation
+                  multiline: true
+                  label: { translate: explanation }
+                - type: radio
+                  name: commonGroundRating
+                  label: { translate: commonGround }
+                  requirements: { required: true }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: string
+                  name: commonGroundExplanation
+                  multiline: true
+                  label: { translate: explanation }
+                - type: radio
+                  name: videoTutorialsRating
+                  label: { translate: videoTutorials }
+                  requirements: { required: true }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: string
+                  name: videoTutorialsExplanation
+                  multiline: true
+                  label: { translate: explanation }
+                - type: radio
+                  name: moreBlocksRating
+                  label: { translate: moreBlocks }
+                  requirements: { required: true }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: string
+                  name: moreBlocksExplanation
+                  multiline: true
+                  label: { translate: explanation }
+                - type: radio
+                  name: moreExamplesRating
+                  label: { translate: moreExamples }
+                  requirements: { required: true }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: string
+                  name: moreExamplesExplanation
+                  multiline: true
+                  label: { translate: explanation }
+
+      - name: Next App With Appsemble
+        blocks:
+          - type: form
+            version: *version
+            actions:
+              onSubmit:
+                type: condition
+                condition:
+                  prop: consideringAppsemble # Any value that isn’t definitely not
+                then:
+                  type: flow.to
+                  step: Your Next app
+                else:
+                  type: flow.to
+                  step: Why Not Appsemble
+              onPrevious:
+                type: flow.to
+                step: Feature Ratings
+            parameters:
+              previous: true
+              fields:
+                - name: consideringAppsemble
+                  type: radio
+                  label: { translate: consideringAppsemble }
+                  requirements: { required: true }
+                  options:
+                    - value: 0
+                      label: { translate: definitelyNot }
+                    - value: 1
+                      label: { translate: probablyNot }
+                    - value: 2
+                      label: { translate: possibly }
+                    - value: 3
+                      label: { translate: probably }
+                    - value: 4
+                      label: { translate: definitely }
+
+      - name: Your Next app
+        blocks:
+          - type: form
+            version: *version
+            actions:
+              onSubmit:
+                type: flow.to
+                step: Anything Else
+              onPrevious:
+                type: flow.to
+                step: Next App With Appsemble
+            parameters:
+              previous: true
+              fields:
+                - type: radio
+                  name: buildYourself
+                  label: { translate: buildYourself }
+                  options:
+                    - label: { translate: myself }
+                      value: true
+                    - label: { translate: someoneElse }
+                      value: false
+                - type: string
+                  multiline: true
+                  name: featureImportance
+                  label: { translate: featureImportance }
+                  defaultValue: | # Convert this to a remapper
+                    1. Many building blocks to choose from
+                    2. Ease of use constructing the app
+                    3. Community Support
+                - type: string
+                  multiline: true
+                  name: propertyImportance
+                  label: { translate: propertyImportance }
+                  defaultValue: | # Convert this to a remapper
+                    1. Low one time build costs
+                    2. Low maintenance costs once built
+                    3. Low monthly hosting costs
+                    4. Community support
+                    5. Paid support
+
+      - name: Why Not Appsemble
+        blocks:
+          - type: form
+            version: *version
+            actions:
+              onSubmit:
+                type: flow.to
+                step: Anything Else
+              onPrevious:
+                type: flow.to
+                step: Next App With Appsemble
+            parameters:
+              previous: true
+              fields:
+                - type: string
+                  name: whyNot
+                  label: { translate: whyNot }
+                  requirements: { required: true }
+                  placeholder: { translate: whyNotPlaceholder }
+
+      - name: Anything Else
+        blocks:
+          - type: form
+            version: *version
+            actions:
+              onSubmit:
+                type: flow.to
+                step: Finished
+              onPrevious:
+                type: condition
+                condition:
+                  prop: consideringAppsemble # Any value that isn’t definitely not
+                then:
+                  type: flow.to
+                  step: Your Next app
+                else:
+                  type: flow.to
+                  step: Why Not Appsemble
+            parameters:
+              previous: true
+              fields:
+                - type: string
+                  name: anythingElse
+                  label: { translate: anythingElse }
 
   - name: Finished
     blocks:
@@ -109,7 +397,11 @@ pages:
         version: *version
         layout: static
         parameters:
-          content: { translate: finished }
+          content:
+            string.format:
+              messageId: finished
+              values:
+                appId: { app: id }
       - type: button-list
         version: *version
         parameters:
