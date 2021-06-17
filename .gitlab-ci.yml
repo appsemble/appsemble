@@ -8,6 +8,9 @@ stages:
   - provision
   - end 2 end
 
+variables:
+  JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
+
 workflow:
   rules:
     # By default, run jobs for every merge request.
@@ -61,7 +64,7 @@ workflow:
     - git config user.email bot@appsemble.com
     - git config user.name Appsemble
     - git add .
-    - git commit --message "$MESSAGE" --cleanup whitespace --sign
+    - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
     - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
     - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main --tags
 
@@ -157,7 +160,7 @@ test node 16:
   script:
     - yarn --frozen-lockfile
     - yarn jest --coverage
-    - yarn codecov
+    - yarn codecov || true
   artifacts:
     reports:
       junit: junit.xml
@@ -541,7 +544,8 @@ provision production:
   needs:
     - production
   environment:
-    name: production provision
+    name: production
+    action: prepare
   script:
     - yarn appsemble config set context production
     - yarn appsemble config set remote https://appsemble.app

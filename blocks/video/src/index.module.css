@@ -1,0 +1,18 @@
+.container {
+  margin: 0 auto;
+}
+
+.container > div {
+  display: contents;
+  height: 100%;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.container > div > iframe {
+  position: unset;
+}
+
+.error {
+  margin: 0 auto;
+  max-width: 640px;
+}

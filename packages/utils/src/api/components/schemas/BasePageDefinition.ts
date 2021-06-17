@@ -12,6 +12,13 @@ export const BasePageDefinition: OpenAPIV3.NonArraySchemaObject = {
 This will be displayed on the top of the page and in the side menu.
 `,
     },
+    navTitle: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: `The name of the page when displayed in the navigation menu.
+
+Context property \`name\` can be used to access the name of the page.
+`,
+    },
     icon: {
       type: 'string',
       description: `An optional icon from the fontawesome icon set

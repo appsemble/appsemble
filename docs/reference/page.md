@@ -14,6 +14,13 @@ The name of the page. This field is always required and must be unique within th
 it is not possible to have two pages with the same name. The name of the page is displayed at the
 top of each page as well as in the side navigational menu.
 
+> **Note**: The URL used to navigate to pages is determined by this property.
+
+## `navTitle`
+
+A [remapper](../guide/remappers.md) for the title of the page when displayed in the app’s navigation
+menu. The `context` property `name` can be used to access the name of the page.
+
 ## `icon`
 
 An Font Awesome icon to render in the navigation menu to represent the page. All supported icons can

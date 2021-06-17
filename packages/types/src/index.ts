@@ -306,6 +306,13 @@ export interface Remappers {
    */
   'string.replace': Record<string, string>;
 
+  /**
+   * Translate using a messageID.
+   *
+   * This does not support parameters, for more nuanced translations use `string.format`.
+   */
+  translate: string;
+
   user: keyof UserInfo;
 }
 
@@ -503,6 +510,23 @@ export interface BaseActionDefinition<T extends Action['type']> {
   onError?: ActionDefinition;
 }
 
+export interface ConditionActionDefinition extends BaseActionDefinition<'condition'> {
+  /**
+   * The condition to check for.
+   */
+  if: Remapper;
+
+  /**
+   * The action to run if the condition is true.
+   */
+  then: ActionDefinition;
+
+  /**
+   * The action to run if the condition is false.
+   */
+  else: ActionDefinition;
+}
+
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * If false, the dialog cannot be closed by clicking outside of the dialog or on the close button.
@@ -557,6 +581,13 @@ export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
    * Should result in an array of URLs or asset IDs.
    */
   attachments?: Remapper;
+}
+
+export interface FlowToActionDefinition extends BaseActionDefinition<'flow.to'> {
+  /**
+   * The flow step to go to.
+   */
+  step: Remapper;
 }
 
 export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
@@ -700,8 +731,10 @@ export type ActionDefinition =
   | BaseActionDefinition<'team.join'>
   | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'throw'>
+  | ConditionActionDefinition
   | DialogActionDefinition
   | EventActionDefinition
+  | FlowToActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
   | MessageActionDefinition
@@ -811,9 +844,19 @@ export interface BasePageDefinition {
   /**
    * The name of the page.
    *
-   * This will be displayed on the top of the page and in the side menu.
+   * This will be displayed on the top of the page and in the side menu,
+   * unless @see navTitle is set.
+   *
+   * The name of the page is used to determine the URL path of the page.
    */
   name: string;
+
+  /**
+   * The name of the page when displayed in the navigation menu.
+   *
+   * Context property `name` can be used to access the name of the page.
+   */
+  navTitle?: Remapper;
 
   /**
    * A list of roles that may view the page.

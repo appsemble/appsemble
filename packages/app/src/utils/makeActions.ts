@@ -1,30 +1,27 @@
 import { Action } from '@appsemble/sdk';
 import { ActionDefinition, ActionType } from '@appsemble/types';
-import { has } from '@appsemble/utils';
+import { has, remap } from '@appsemble/utils';
 import { addBreadcrumb, Severity } from '@sentry/browser';
+import { IntlMessageFormat } from 'intl-messageformat';
 import { SetRequired } from 'type-fest';
 
 import { MakeActionParameters } from '../types';
-import { ActionCreators, actionCreators } from './actions';
-
-interface CommonActionParams {
-  extraCreators: ActionCreators;
-  pageReady: Promise<void>;
-}
+import { actionCreators } from './actions';
+import { appId } from './settings';
 
 /**
  * Parameters to pass to `makeActions`.
  *
  * @see makeActions
  */
-export type MakeActionsParams = CommonActionParams &
-  Omit<MakeActionParameters<ActionDefinition>, 'definition'> & {
-    actions: Record<string, ActionType>;
-    context: { actions?: Record<string, ActionDefinition> };
-  };
+export type MakeActionsParams = Omit<MakeActionParameters<ActionDefinition>, 'definition'> & {
+  actions: Record<string, ActionType>;
+  context: { actions?: Record<string, ActionDefinition> };
+};
 
-type CreateActionParams<T extends ActionDefinition['type']> = CommonActionParams &
-  MakeActionParameters<Extract<ActionDefinition, { type: T }>>;
+type CreateActionParams<T extends ActionDefinition['type']> = MakeActionParameters<
+  Extract<ActionDefinition, { type: T }>
+>;
 
 /**
  * Create a callable action for an action definition and context.
@@ -32,12 +29,12 @@ type CreateActionParams<T extends ActionDefinition['type']> = CommonActionParams
  * @param params - The context to create an action for.
  * @returns An action as it is injected into a block by the SDK.
  */
-function createAction<T extends ActionDefinition['type']>({
+export function createAction<T extends ActionDefinition['type']>({
   definition,
   extraCreators,
   pageReady,
   prefix,
-  remap,
+  remap: localRemap,
   ...params
 }: CreateActionParams<T>): Extract<Action, { type: T }> {
   const type = (definition?.type ?? 'noop') as T;
@@ -51,7 +48,8 @@ function createAction<T extends ActionDefinition['type']>({
   const [dispatch, properties] = actionCreator({
     ...params,
     definition,
-    remap,
+    extraCreators,
+    remap: localRemap,
     prefix,
   });
   // Name the function to enhance stack traces.
@@ -65,7 +63,7 @@ function createAction<T extends ActionDefinition['type']>({
       extraCreators,
       pageReady,
       prefix: `${prefix}.onSuccess`,
-      remap,
+      remap: localRemap,
     });
   const onError =
     definition?.onError &&
@@ -75,7 +73,7 @@ function createAction<T extends ActionDefinition['type']>({
       extraCreators,
       pageReady,
       prefix: `${prefix}.onError`,
-      remap,
+      remap: localRemap,
     });
 
   const action = (async (args?: any, context?: Record<string, any>) => {
@@ -85,7 +83,7 @@ function createAction<T extends ActionDefinition['type']>({
     try {
       result = await dispatch(
         Object.hasOwnProperty.call(definition, 'remap')
-          ? remap(definition.remap, args, context)
+          ? localRemap(definition.remap, args, context)
           : args,
         context,
       );
@@ -167,7 +165,13 @@ export function createTestAction<T extends ActionDefinition['type']>(
     pageReady: Promise.resolve(),
     prefix: null,
     pushNotifications: null,
-    remap: null,
+    remap: (remapper, data, context) =>
+      remap(remapper, data, {
+        getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
+        appId,
+        userInfo: null,
+        context,
+      }),
     route: null,
     showDialog: null,
     showMessage: null,

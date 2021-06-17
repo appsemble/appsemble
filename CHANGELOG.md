@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.17](https://gitlab.com/appsemble/appsemble/-/releases/0.18.17)] - 2021-06-15
+
+### Added
+
+- App: Add `navTitle` property to page.
+- Studio: Add password strength indicator.
+
+### Changed
+
+- Cli: Change the default remote to `https://appsemble.app`.
+
+### Fixed
+
+- Cli: Fix the `--ignore-conflict` flag behavior.
+
+### Security
+
+- Server: Passwords must now be at least 8 characters.
+
+## \[[0.18.16](https://gitlab.com/appsemble/appsemble/-/releases/0.18.16)] - 2021-06-10
+
+### Added
+
+- Block(`data-loader`): Add support for `context`. The data passed to the block (for example the
+  current data in a flow page) is now available in the property `data` when using `context`
+  remappers.
+- Block(`video`): Add video block.
+- App: Add `condition` action.
+- App: Add action `flow.to`.
+- Appsemble: Add `translate` remapper. This can be used instead of `message.format` for simpler
+  messages that don’t use any message values.
+- Cli: Add support setting an icon when creating an app.
+- Cli: Add support setting an icon when updating an app.
+- Cli: Set the process name to `appsemble`.
+- Server: Add `condition` action.
+- Server: Allow specifying `iconBackground` when creating an app.
+- Server: Allow specifying `maskableIcon` when creating an app.
+- Server: Set the process name to `appsemble`.
+
+### Fixed
+
+- App: Fix inclusion of `context` within remappers for `query` in `request` actions. This was
+  causing `context` to not be available.
+
 ## \[[0.18.15](https://gitlab.com/appsemble/appsemble/-/releases/0.18.15)] - 2021-06-01
 
 ### Added

@@ -1,0 +1,23 @@
+{
+  "name": "@appsemble/video",
+  "version": "0.18.17",
+  "private": true,
+  "description": "A block that embeds a Vimeo video.",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/video"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.18.17",
+    "@types/vimeo__player": "^2.10.0",
+    "@vimeo/player": "^2.15.0"
+  }
+}

@@ -1,14 +1,20 @@
+import { ReadStream } from 'fs';
+
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { coerceFile } from '../../lib/coercers';
 import { updateApp } from '../../lib/updateApp';
 import { BaseArguments } from '../../types';
 
 interface UpdateAppArguments extends BaseArguments {
   context: string;
   paths: string[];
+  icon: NodeJS.ReadStream | ReadStream;
+  iconBackground: string;
+  maskableIcon: NodeJS.ReadStream | ReadStream;
   id: number;
   private: boolean;
   template: boolean;
@@ -31,6 +37,19 @@ export function builder(yargs: Argv): Argv {
       describe: 'The ID of the app to update.',
       type: 'number',
     })
+    .option('icon', {
+      describe: 'The icon to upload. By default "icon.png" in the app directory is used.',
+      coerce: coerceFile,
+    })
+    .option('icon-background', {
+      describe: 'The background color to use for the icon in opaque contexts.',
+      default: '#ffffff',
+    })
+    .option('maskable-icon', {
+      describe:
+        'The maskable icon to upload. By default "maskable-icon.png" in the app directory is used.',
+      coerce: coerceFile,
+    })
     .option('private', {
       describe: 'Whether the app should be marked as private.',
       default: true,
@@ -52,7 +71,10 @@ export async function handler({
   clientCredentials,
   context,
   force,
+  icon,
+  iconBackground,
   id,
+  maskableIcon,
   paths,
   private: isPrivate,
   remote,
@@ -72,8 +94,11 @@ export async function handler({
       context,
       id,
       path: dir,
+      maskableIcon,
       private: isPrivate,
       remote,
+      icon,
+      iconBackground,
       template,
       force,
     });

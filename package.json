@@ -56,6 +56,7 @@
     "@types/koa__cors": "^3.0.2",
     "@types/langmap": "^0.0.1",
     "@types/language-tags": "^1.0.0",
+    "@types/lcm": "^0.0.0",
     "@types/leaflet": "^1.5.23",
     "@types/marked": "^2.0.3",
     "@types/mdx-js__react": "^1.5.3",
@@ -146,7 +147,6 @@
     "retext-repeated-words": "^3.0.0",
     "retext-spell": "^4.0.1",
     "retext-syntax-urls": "^2.0.0",
-    "retext-usage": "^0.5.0",
     "style-search": "^0.1.0",
     "stylelint": "^13.13.1",
     "stylelint-color-format": "^1.1.0",
@@ -159,7 +159,7 @@
     "ts-jest": "^27.0.2",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.3.2",
+    "typescript": "4.2.4",
     "unified": "^9.2.1"
   },
   "engines": {
@@ -176,6 +176,7 @@
     "gitlab-client-secret": "d2d8ce5f59cea983f51d2ce496d5cdcdf19d1de4104422c565acdc11b3f2358d",
     "host": "http://localhost:9999",
     "migrate-to": "next",
+    "remote": "http://localhost:9999",
     "secret": "Local Appsemble development secret"
   }
 }

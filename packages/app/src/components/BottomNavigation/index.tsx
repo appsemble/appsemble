@@ -1,10 +1,11 @@
 import { Icon } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
+import { normalize, remap } from '@appsemble/utils';
 import { ReactElement, useMemo } from 'react';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
 import { shouldShowMenu } from '../../utils/layout';
+import { appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
@@ -21,9 +22,9 @@ interface BottomNavigationProps {
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { teams } = useUser();
-  const { getMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const { definition } = useAppDefinition();
-  const { role } = useUser();
+  const { role, userInfo } = useUser();
 
   const showMenu = useMemo(
     () => shouldShowMenu(definition, role, teams),
@@ -34,11 +35,14 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
     showMenu && (
       <nav className="bottom-nav mb-0">
         <ul className={`${styles.list} is-flex`}>
-          {pages.map((page, index) => {
-            const name = getMessage({
-              id: `pages.${index}`,
+          {pages.map((page) => {
+            const name = getAppMessage({
+              id: `pages.${definition.pages.indexOf(page)}`,
               defaultMessage: page.name,
             }).format() as string;
+            const navName = page.navTitle
+              ? remap(page.navTitle, null, { appId, getMessage, userInfo, context: { name } })
+              : name;
 
             return (
               <li className="bottom-nav-item" key={page.name}>
@@ -50,7 +54,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                   {page.icon ? (
                     <Icon className="mb-1" icon={page.icon} iconSize="3x" size="large" />
                   ) : null}
-                  <span>{name}</span>
+                  <span>{navName}</span>
                 </NavLink>
               </li>
             );
