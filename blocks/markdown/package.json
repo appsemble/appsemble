@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.18.17",
-    "marked": "^2.0.6"
+    "marked": "^2.1.1"
   }
 }

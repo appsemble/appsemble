@@ -24,7 +24,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^9.0.7",
+    "@apidevtools/json-schema-ref-parser": "^9.0.9",
     "@appsemble/react-components": "0.18.17",
     "@appsemble/sdk": "0.18.17",
     "@appsemble/types": "0.18.17",
@@ -36,7 +36,7 @@
     "@browser-logos/safari": "^2.0.0",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "@mdx-js/react": "^1.6.22",
-    "@sentry/browser": "^6.5.0",
+    "@sentry/browser": "^6.7.1",
     "@zxcvbn-ts/core": "^1.0.0-beta.0",
     "axios": "^0.21.1",
     "classnames": "2.3.1",
@@ -50,7 +50,7 @@
     "openapi-types": "^7.2.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-intl": "^5.18.1",
+    "react-intl": "^5.20.2",
     "react-router-dom": "^5.2.0"
   }
 }
