@@ -58,14 +58,38 @@ resources:
           max: 4
         buildYourself:
           type: boolean
-        featureImportance: # Should this be an array of strings?
-          type: string
-        propertyImportance: # Same as above
-          type: string
         whyNot:
           type: string
         anythingElse:
           type: string
+        featureImportanceBuildingBlocks:
+          type: number
+          min: 1
+          max: 5
+        featureImportanceConstructing:
+          type: number
+          min: 1
+          max: 5
+        featureImportanceCommunitySupport:
+          type: number
+          min: 1
+          max: 5
+        propertyImportanceBuildCosts:
+          type: number
+          min: 1
+          max: 5
+        propertyImportanceMaintenanceCosts:
+          type: number
+          min: 1
+          max: 5
+        propertyImportanceHostCosts:
+          type: number
+          min: 1
+          max: 5
+        propertyImportancePaidSupport:
+          type: number
+          min: 1
+          max: 5
 
 anchors:
   - &version 0.18.17
@@ -122,6 +146,7 @@ pages:
                 - type: radio
                   name: triedAppsemble
                   label: { translate: triedAppsemble }
+                  requirements: [{ required: true }]
                   options:
                     - value: true
                       label: { translate: yes }
@@ -175,12 +200,13 @@ pages:
                   name: notTriedReason
                   multiline: true
                   label: { translate: notTriedReason }
+                  requirements: [{ required: true }]
 
       - name: Feature Ratings
         blocks:
           - type: form
             version: *version
-            heading: { translate: features }
+            header: { translate: features }
             actions:
               onSubmit:
                 type: flow.to
@@ -275,7 +301,7 @@ pages:
             actions:
               onSubmit:
                 type: condition
-                condition:
+                if:
                   prop: consideringAppsemble # Any value that isn’t definitely not
                 then:
                   type: flow.to
@@ -327,24 +353,69 @@ pages:
                       value: true
                     - label: { translate: someoneElse }
                       value: false
-                - type: string
-                  multiline: true
-                  name: featureImportance
-                  label: { translate: featureImportance }
-                  defaultValue: | # Convert this to a remapper
-                    1. Many building blocks to choose from
-                    2. Ease of use constructing the app
-                    3. Community Support
-                - type: string
-                  multiline: true
-                  name: propertyImportance
-                  label: { translate: propertyImportance }
-                  defaultValue: | # Convert this to a remapper
-                    1. Low one time build costs
-                    2. Low maintenance costs once built
-                    3. Low monthly hosting costs
-                    4. Community support
-                    5. Paid support
+                - type: radio
+                  name: featureImportanceBuildingBlocks
+                  label: { translate: featureImportanceBuildingBlocks }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: radio
+                  name: featureImportanceConstructing
+                  label: { translate: featureImportanceConstructing }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: radio
+                  name: featureImportanceCommunitySupport
+                  label: { translate: featureImportanceCommunitySupport }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: radio
+                  name: propertyImportanceBuildCosts
+                  label: { translate: propertyImportanceBuildCosts }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: radio
+                  name: propertyImportanceMaintenanceCosts
+                  label: { translate: propertyImportanceMaintenanceCosts }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: radio
+                  name: propertyImportanceHostCosts
+                  label: { translate: propertyImportanceHostCosts }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
+                - type: radio
+                  name: propertyImportancePaidSupport
+                  label: { translate: propertyImportancePaidSupport }
+                  options:
+                    - value: 1
+                    - value: 2
+                    - value: 3
+                    - value: 4
+                    - value: 5
 
       - name: Why Not Appsemble
         blocks:
@@ -372,12 +443,11 @@ pages:
             version: *version
             actions:
               onSubmit:
-                type: flow.to
-                step: Finished
+                type: flow.finish
               onPrevious:
                 type: condition
                 condition:
-                  prop: consideringAppsemble # Any value that isn’t definitely not
+                  prop: consideringAppsemble # Any value that isn’t ‘definitely not’
                 then:
                   type: flow.to
                   step: Your Next app
