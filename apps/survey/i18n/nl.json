@@ -3,7 +3,15 @@
     "name": "Vragenlijst",
     "description": "Een app waarin een gebruiker een vragenlijst kan invullen",
     "pages.0": "Vragenlijst",
-    "pages.1": "Klaar"
+    "pages.1": "Klaar",
+    "pages.0.subPages.8.blocks.0.submitLabel": "Verzenden"
+  },
+  "blocks": {
+    "@appsemble/form": {
+      "0.18.17": {
+        "submitLabel": "Volgende"
+      }
+    }
   },
   "messageIds": {
     "introText": "# Appsemble vragenlijst\nDit is een template app die laat zien hoe een vragenlijst gebouwd zou kunnen worden met [Appsemble](https://appsemble.app).",
@@ -14,6 +22,7 @@
     "appsembleRating": "Hoe beoordeel je jouw ervaring met Appsemble?",
     "betterExperience": "Vertel ons alsjeblieft hoe we jouw ervaring kunnen verbeteren",
     "notTriedReason": "Vertel ons alsjeblieft waarom je het nog niet hebt geprobeerd?",
+    "features": "Hoe belangrijk zou u de volgende features beoordelen:",
     "graphicalEditor": "Grafische app-editor (waardoor no-code in plaats van low-code mogelijk is)",
     "explanation": "Toelichting",
     "commonGround": "Betere compatibiliteit met common ground",
@@ -33,7 +42,7 @@
     "featureImportanceConstructing": "Hoe belangrijk is het gebruiksgemak bij het bouwen van de app",
     "featureImportanceCommunitySupport": "Hoe belangrijk is het hebben van een community voor ondersteuning?",
     "propertyImportanceBuildCosts": "Hoe belangrijk is lage eenmalige bouwkosten?",
-    "propertyImportanceMaintenanceCosts": "Hoe belangrijk zijn lage onderhoudskosten als de app eenmaal is gebouwd?",
+    "propertyImportanceMaintenanceCosts": "Hoe belangrijk zijn lage onderhoudskosten als de app eenmaal  gebouwd?",
     "propertyImportanceHostCosts": "Hoe belangrijk is het om lage maandelijkse hostingkosten te hebben?",
     "propertyImportancePaidSupport": "Hoe belangrijk is betaalde ondersteuning?",
     "whyNot": "We willen graag weten waarom je Appsemble niet overweegt",
