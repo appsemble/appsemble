@@ -907,6 +907,13 @@ export interface FlowPageDefinition extends BasePageDefinition {
     onFlowCancel?: ActionDefinition;
     onFlowFinish?: ActionDefinition;
   };
+
+  /**
+   * The method used to display the progress of the flow page.
+   *
+   * @default 'corner-dots'
+   */
+  progress?: 'corner-dots' | 'hidden';
 }
 
 export interface TabsPageDefinition extends BasePageDefinition {

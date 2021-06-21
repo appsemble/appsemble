@@ -5,7 +5,7 @@
 }
 
 .dot {
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--primary-color);
   border: none;
   border-radius: 50%;
   height: 10px;

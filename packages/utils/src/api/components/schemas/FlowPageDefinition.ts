@@ -25,6 +25,11 @@ export const FlowPageDefinition: OpenAPIV3.NonArraySchemaObject = {
         actions: {
           $ref: '#/components/schemas/FlowPageActionsDefinition',
         },
+        progress: {
+          type: 'string',
+          description: 'The method that should be used to display the status of flow pages.',
+          enum: ['corner-dots', 'hidden'],
+        },
       },
     },
   ],
