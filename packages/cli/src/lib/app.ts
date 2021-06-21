@@ -57,7 +57,7 @@ export async function writeAppMessages(
   messageFiles.add(defaultLangFile);
   const blockMessageKeys: AppsembleMessages['blocks'] = {};
   const extractedMessages = extractAppMessages(app, (block) => {
-    const type = block.type.startsWith('@') ? block.type : `@appsemble/${block.type}`;
+    const type = normalizeBlockName(block.type);
     if (blockMessageKeys[type]) {
       blockMessageKeys[type][block.version] = {};
     } else {
