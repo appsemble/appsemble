@@ -43,3 +43,6 @@ annotations:
   artifacthub.io/recommendations: |
     - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
     - url: https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
+  artifacthub.io/signKey: |
+    fingerprint: C4EE8EE8B16EE94FEA3B0A7C346FF2248F310B53
+    url: https://gitlab.com/appsemble-bot.gpg
