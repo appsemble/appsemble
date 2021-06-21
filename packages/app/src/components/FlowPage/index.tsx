@@ -160,9 +160,13 @@ export function FlowPage({
     ],
   );
 
+  const { progress = 'corner-dots' } = page;
+
   return (
     <>
-      <DotProgressBar active={currentPage} amount={page.subPages.length} />
+      {progress === 'corner-dots' && (
+        <DotProgressBar active={currentPage} amount={page.subPages.length} />
+      )}
       <BlockList
         blocks={page.subPages[currentPage].blocks}
         data={data}
