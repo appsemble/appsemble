@@ -1,8 +1,11 @@
 import { OpenAPIV3 } from 'openapi-types';
 
 import { components } from './components';
+import * as schemas from './components/schemas';
 import { paths } from './paths';
 import { tags } from './tags';
+
+export { schemas };
 
 interface APIParams {
   port?: number;

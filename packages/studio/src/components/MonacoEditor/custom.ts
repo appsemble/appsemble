@@ -1,3 +1,4 @@
+import { schemas } from '@appsemble/utils';
 import {
   Environment,
   languages,
@@ -68,12 +69,8 @@ languages.yaml.yamlDefaults.setDiagnosticsOptions({
       // Not sure why this is needed, but it’s required and its value may not match the ref.
       uri: String(new URL('/notapi.json', window.location.origin)),
       schema: {
-        $ref: String(
-          new URL(
-            '/api.json#/components/schemas/App/properties/definition',
-            window.location.origin,
-          ),
-        ),
+        ...schemas.AppDefinition,
+        components: { schemas },
       },
     },
   ],
