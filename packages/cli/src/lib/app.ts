@@ -4,7 +4,7 @@ import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readYaml, writeYaml } from '@appsemble/node-utils';
 import { AppDefinition, AppsembleMessages } from '@appsemble/types';
-import { extractAppMessages, has } from '@appsemble/utils';
+import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import { readJson, writeJson } from 'fs-extra';
 
 /**
