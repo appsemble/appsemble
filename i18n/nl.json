@@ -257,7 +257,7 @@
   "studio.src.pages.apps.app.edit.appNotFound": "App bestaat niet",
   "studio.src.pages.apps.app.edit.cancel": "Annuleren",
   "studio.src.pages.apps.app.edit.coreStyle": "Corestijl",
-  "studio.src.pages.apps.app.edit.error": "Er is iets misgegaan met het laden van deze app.",
+  "studio.src.pages.apps.app.edit.error": "Er is iets misgegaan met het laden van deze app",
   "studio.src.pages.apps.app.edit.errorUpdate": "Er is iets misgegaan met het updaten van de appdefinitie.",
   "studio.src.pages.apps.app.edit.forbidden": "De gebruiker mag deze app niet updaten",
   "studio.src.pages.apps.app.edit.iframeTitle": "Appvoorbeeld",
