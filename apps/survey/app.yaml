@@ -345,6 +345,7 @@ pages:
                 - type: radio
                   name: buildYourself
                   label: { translate: buildYourself }
+                  requirements: [{ required: true }]
                   options:
                     - label: { translate: myself }
                       value: true
@@ -353,6 +354,7 @@ pages:
                 - type: radio
                   name: featureImportanceBuildingBlocks
                   label: { translate: featureImportanceBuildingBlocks }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -362,6 +364,7 @@ pages:
                 - type: radio
                   name: featureImportanceConstructing
                   label: { translate: featureImportanceConstructing }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -371,6 +374,7 @@ pages:
                 - type: radio
                   name: featureImportanceCommunitySupport
                   label: { translate: featureImportanceCommunitySupport }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -380,6 +384,7 @@ pages:
                 - type: radio
                   name: propertyImportanceBuildCosts
                   label: { translate: propertyImportanceBuildCosts }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -389,6 +394,7 @@ pages:
                 - type: radio
                   name: propertyImportanceMaintenanceCosts
                   label: { translate: propertyImportanceMaintenanceCosts }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -398,6 +404,7 @@ pages:
                 - type: radio
                   name: propertyImportanceHostCosts
                   label: { translate: propertyImportanceHostCosts }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
@@ -407,6 +414,7 @@ pages:
                 - type: radio
                   name: propertyImportancePaidSupport
                   label: { translate: propertyImportancePaidSupport }
+                  requirements: [{ required: true }]
                   options:
                     - value: 1
                     - value: 2
