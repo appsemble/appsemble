@@ -1,0 +1,53 @@
+{
+  "app": {
+    "name": "Vragenlijst",
+    "description": "Een app waarin een gebruiker een vragenlijst kan invullen",
+    "pages.0": "Vragenlijst",
+    "pages.1": "Klaar"
+  },
+  "messageIds": {
+    "introText": "# Appsemble vragenlijst\nDit is een template app die laat zien hoe een vragenlijst gebouwd zou kunnen worden met [Appsemble](https://appsemble.app).",
+    "start": "Starten",
+    "triedAppsemble": "Heb je al geprobeerd een app in Appsemble te bouwen?",
+    "yes": "Ja",
+    "no": "Nee",
+    "appsembleRating": "Hoe beoordeel je jouw ervaring met Appsemble?",
+    "betterExperience": "Vertel ons alsjeblieft hoe we jouw ervaring kunnen verbeteren",
+    "notTriedReason": "Vertel ons alsjeblieft waarom je het nog niet hebt geprobeerd?",
+    "features": "Hoe belangrijk zou u de volgende features beoordelen:",
+    "graphicalEditor": "Grafische app-editor (waardoor no-code in plaats van low-code mogelijk is)",
+    "explanation": "Toelichting",
+    "commonGround": "Betere compatibiliteit met common ground",
+    "videoTutorials": "Video-tutorials over het bouwen van apps",
+    "moreBlocks": "Meer blokken",
+    "moreExamples": "Meer voorbeeldapps",
+    "consideringAppsemble": "Overweeg je Appsemble voor je volgende app in de komende 6 maanden?",
+    "definitelyNot": "Zeker niet",
+    "probablyNot": "Waarschijnlijk niet",
+    "possibly": "Misschien",
+    "probably": "Waarschijnlijk",
+    "definitely": "Zeker",
+    "buildYourself": "Ben je van plan zelf een app te bouwen of om iemand anders deze te laten bouwen?",
+    "myself": "Ikzelf",
+    "someoneElse": "Iemand anders",
+    "featureImportanceBuildingBlocks": "Hoe belangrijk is het om uit veel blokken te hebben?",
+    "featureImportanceConstructing": "Hoe belangrijk is het gebruiksgemak bij het bouwen van de app",
+    "featureImportanceCommunitySupport": "Hoe belangrijk is het hebben van een community voor ondersteuning?",
+    "propertyImportanceBuildCosts": "Hoe belangrijk is lage eenmalige bouwkosten?",
+    "propertyImportanceMaintenanceCosts": "Hoe belangrijk zijn lage onderhoudskosten als de app eenmaal  gebouwd?",
+    "propertyImportanceHostCosts": "Hoe belangrijk is het om lage maandelijkse hostingkosten te hebben?",
+    "propertyImportancePaidSupport": "Hoe belangrijk is betaalde ondersteuning?",
+    "whyNot": "We willen graag weten waarom je Appsemble niet overweegt",
+    "whyNotPlaceholder": "bijv. Geen app nodig of liever niet met Appsemble",
+    "anythingElse": "Is er nog iets dat je ons wilt vertellen?",
+    "finished": "Bedankt voor het beantwoorden van onze vragenlijst. Je kunt [Appsemble](https://appsemble.app) zelf proberen om een eigen app te maken. Deze app kan worden gecloond vanuit onze [store page](https://appsemble.app/apps/130).",
+    "backToHome": "Terug naar begin"
+  },
+  "blocks": {
+    "@appsemble/form": {
+      "0.18.17": {
+        "submitLabel": "Volgende"
+      }
+    }
+  }
+}

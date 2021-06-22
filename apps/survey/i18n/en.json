@@ -1,0 +1,53 @@
+{
+  "app": {
+    "name": "Survey",
+    "description": "An app which asks the user to fill out some questions.",
+    "pages.0": "Survey",
+    "pages.1": "Finished"
+  },
+  "messageIds": {
+    "introText": "# Appsemble survey\nThis app is a template app used to demo how a survey app could be created using [Appsemble](https://appsemble.app).",
+    "start": "Start",
+    "triedAppsemble": "Have you tried building an app in Appsemble yet?",
+    "yes": "Yes",
+    "no": "No",
+    "appsembleRating": "How do you rate your experience with Appsemble?",
+    "betterExperience": "Please tell us how we can make your experience better",
+    "notTriedReason": "Please tell us your reasons you didn't try yet?",
+    "features": "How important would you rate the following features:",
+    "graphicalEditor": "Graphical app editor (allowing no-code rather than low-code)",
+    "explanation": "Explanation",
+    "commonGround": "Become (even) more compatible with common ground",
+    "videoTutorials": "Video tutorials on building apps",
+    "moreBlocks": "More building blocks",
+    "moreExamples": "More example apps",
+    "consideringAppsemble": "Are you considering Appsemble for your next app in the next 6 months?",
+    "definitelyNot": "Definitely not",
+    "probablyNot": "Probably not",
+    "possibly": "Possibly",
+    "probably": "Probably",
+    "definitely": "Definitely",
+    "buildYourself": "Do you intend to build an app yourself or let someone else build it?",
+    "myself": "Myself",
+    "someoneElse": "Someone else",
+    "featureImportanceBuildingBlocks": "How important is having many building blocks to choose from?",
+    "featureImportanceConstructing": "How important is the ease of use constructing the app",
+    "featureImportanceCommunitySupport": "How important is having community support?",
+    "propertyImportanceBuildCosts": "How important is having low one time building costs?",
+    "propertyImportanceMaintenanceCosts": "How important is having low maintenance costs once built?",
+    "propertyImportanceHostCosts": "How important is having low monthly hosting costs?",
+    "propertyImportancePaidSupport": "How important is having paid support?",
+    "whyNot": "We’d like to learn why you’re not considering Appsemble",
+    "whyNotPlaceholder": "e.g. No need for an app, or rather not with Appsemble",
+    "anythingElse": "Is there anything else you’d like to tell us?",
+    "finished": "Thank you for taking our survey. You can try [Appsemble](https://appsemble.app) yourself to create your own app. This app can be cloned from [our store page](https://appsemble.app/apps/{appId}).",
+    "backToHome": "Back to home"
+  },
+  "blocks": {
+    "@appsemble/form": {
+      "0.18.17": {
+        "submitLabel": "Next"
+      }
+    }
+  }
+}
