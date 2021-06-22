@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.17](https://gitlab.com/appsemble/appsemble/-/releases/0.18.17)] - 2021-06-15
+
+### Added
+
+- App: Add `navTitle` property to page.
+- Studio: Add password strength indicator.
+
+### Changed
+
+- Cli: Change the default remote to `https://appsemble.app`.
+
+### Fixed
+
+- Cli: Fix the `--ignore-conflict` flag behavior.
+
+### Security
+
+- Server: Passwords must now be at least 8 characters.
+
 ## \[[0.18.16](https://gitlab.com/appsemble/appsemble/-/releases/0.18.16)] - 2021-06-10
 
 ### Added

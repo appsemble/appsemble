@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.18.16",
+  "version": "0.18.17",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -39,7 +39,7 @@
     "koa-compose": "^4.1.0",
     "logform": "^2.2.0",
     "normalize-path": "^3.0.0",
-    "type-fest": "^1.1.3",
+    "type-fest": "^1.2.1",
     "winston": "^3.3.3",
     "yargs": "^17.0.1"
   },

@@ -4,6 +4,11 @@
 export const partialSemver = /\d+\.\d+\.\d+/;
 
 /**
+ * A pattern for validating a hexadecimal RGB color.
+ */
+export const hexColor = /^#[\dA-Fa-f]{6}$/;
+
+/**
  * A pattern for matching a full semver.
  */
 export const semver = new RegExp(`^${partialSemver.source}$`);

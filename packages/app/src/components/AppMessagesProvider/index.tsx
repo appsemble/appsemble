@@ -33,13 +33,14 @@ interface IntlMessagesProviderProps {
 
 interface AppMessageContext {
   getMessage: MessageGetter;
+  getAppMessage: MessageGetter;
   getBlockMessage: (
     blockVersion: string,
     blockName: string,
     message: IntlMessage,
     prefix?: string,
   ) => IntlMessageFormat;
-  messageIds: string[];
+  appMessageIds: string[];
 }
 
 const Context = createContext<AppMessageContext>(null);
@@ -108,6 +109,16 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     [messageCache, messages],
   );
 
+  const getAppMessage = useCallback(
+    ({ defaultMessage, id }: IntlMessage) => {
+      const message = Object.hasOwnProperty.call(messages.app, id)
+        ? messages.app[id]
+        : defaultMessage;
+      return messageCache(message || `'{${id}}'`);
+    },
+    [messageCache, messages],
+  );
+
   const getBlockMessage = useCallback(
     (blockName: string, blockVersion: string, { id }: IntlMessage, prefix: string) => {
       const message =
@@ -122,10 +133,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const value = useMemo(
     () => ({
       getMessage,
+      getAppMessage,
       getBlockMessage,
-      messageIds: messages?.messageIds ? Object.keys(messages.messageIds) : [],
+      appMessageIds: messages?.app ? Object.keys(messages.app) : [],
     }),
-    [getMessage, getBlockMessage, messages],
+    [getMessage, getAppMessage, getBlockMessage, messages],
   );
 
   if (messagesLoading) {

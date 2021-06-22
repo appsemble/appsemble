@@ -7,7 +7,6 @@ const quotes = require('retext-quotes');
 const repeatedWords = require('retext-repeated-words');
 const spell = require('retext-spell');
 const syntaxURLs = require('retext-syntax-urls');
-const usage = require('retext-usage');
 const unified = require('unified');
 
 module.exports = {
@@ -35,8 +34,7 @@ module.exports = {
           personal: readFileSync(join(__dirname, 'config/retext/personal.dic')),
         })
         .use(repeatedWords)
-        .use(quotes)
-        .use(usage),
+        .use(quotes),
     ],
   ],
 };

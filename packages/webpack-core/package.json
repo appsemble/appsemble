@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.18.16",
+  "version": "0.18.17",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -56,7 +56,7 @@
     "webpack": "^4.44.2",
     "workbox-webpack-plugin": "^6.1.5",
     "worker-loader": "^3.0.8",
-    "xdm": "^1.11.0"
+    "xdm": "^1.11.1"
   },
   "engines": {
     "node": ">=12.0.0"

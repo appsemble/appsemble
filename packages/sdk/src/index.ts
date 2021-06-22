@@ -3,7 +3,6 @@ import { Promisable } from 'type-fest';
 
 import { Action, Message, Remapper, Theme } from './types';
 
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 export * from './types';
 
 /**

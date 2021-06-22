@@ -4,7 +4,7 @@ import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readYaml, writeYaml } from '@appsemble/node-utils';
 import { AppDefinition, AppsembleMessages } from '@appsemble/types';
-import { extractAppMessages, has } from '@appsemble/utils';
+import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import { readJson, writeJson } from 'fs-extra';
 
 /**
@@ -57,10 +57,11 @@ export async function writeAppMessages(
   messageFiles.add(defaultLangFile);
   const blockMessageKeys: AppsembleMessages['blocks'] = {};
   const extractedMessages = extractAppMessages(app, (block) => {
-    if (blockMessageKeys[block.type]) {
-      blockMessageKeys[block.type][block.version] = {};
+    const type = normalizeBlockName(block.type);
+    if (blockMessageKeys[type]) {
+      blockMessageKeys[type][block.version] = {};
     } else {
-      blockMessageKeys[block.type] = {
+      blockMessageKeys[type] = {
         [block.version]: {},
       };
     }

@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 import { makePayload } from './makePayload';
 
@@ -18,9 +18,10 @@ export async function publishBlock(config: BlockConfig, ignoreConflict: boolean)
     await axios.post('/api/blocks', form);
     logger.info(`Successfully published ${config.name}@${config.version} 🎉`);
   } catch (err: unknown) {
-    if (!ignoreConflict || !((err as AxiosError).response?.status !== 409)) {
-      throw err;
+    if (ignoreConflict && axios.isAxiosError(err) && err.response.status === 409) {
+      logger.warn(`${config.name}@${config.version} was already published.`);
+      return;
     }
-    logger.warn(`${config.name}@${config.version} was already published.`);
+    throw err;
   }
 }

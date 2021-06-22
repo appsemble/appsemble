@@ -31,8 +31,7 @@ export const OAuth2ClientCredentials: OpenAPIV3.NonArraySchemaObject = {
       type: 'array',
       description: 'The scopes that have been granted to the client.',
       items: {
-        // @ts-expect-error This is valid.
-        enum: scopes,
+        enum: [...scopes],
       },
     },
   },

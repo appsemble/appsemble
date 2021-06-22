@@ -24,7 +24,7 @@ export function DateInput({
   const { utils } = useBlock();
   const { label, name, placeholder, readOnly, tag } = field;
 
-  const checkboxLabel = utils.remap(label, value);
+  const dateLabel = utils.remap(label, value);
 
   const required = isRequired(field);
 
@@ -44,14 +44,14 @@ export function DateInput({
       disabled={disabled}
       error={dirty && error}
       id={name}
-      label={checkboxLabel}
+      label={dateLabel}
       locale={locale}
       maxDate={maxDate}
       minDate={minDate}
       name={name}
       onChange={handleOnChange}
       optionalLabel={utils.formatMessage('optionalLabel')}
-      placeholder={utils.remap(placeholder, value)}
+      placeholder={utils.remap(placeholder, value) || dateLabel || name}
       readOnly={readOnly}
       required={required}
       tag={utils.remap(tag, value)}

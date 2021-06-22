@@ -1,0 +1,7 @@
+.progress::-moz-progress-bar {
+  transition: background-color 0.3s;
+}
+
+.progress::-webkit-progress-value {
+  transition: 0.3s;
+}
