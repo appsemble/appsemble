@@ -3,15 +3,7 @@
     "name": "Vragenlijst",
     "description": "Een app waarin een gebruiker een vragenlijst kan invullen",
     "pages.0": "Vragenlijst",
-    "pages.1": "Klaar",
-    "pages.0.subPages.8.blocks.0.submitLabel": "Verzenden"
-  },
-  "blocks": {
-    "@appsemble/form": {
-      "0.18.17": {
-        "submitLabel": "Volgende"
-      }
-    }
+    "pages.1": "Klaar"
   },
   "messageIds": {
     "introText": "# Appsemble vragenlijst\nDit is een template app die laat zien hoe een vragenlijst gebouwd zou kunnen worden met [Appsemble](https://appsemble.app).",
@@ -50,5 +42,12 @@
     "anythingElse": "Is er nog iets dat je ons wilt vertellen?",
     "finished": "Bedankt voor het beantwoorden van onze vragenlijst. Je kunt [Appsemble](https://appsemble.app) zelf proberen om een eigen app te maken. Deze app kan worden gecloond vanuit onze [store page](https://appsemble.app/apps/130).",
     "backToHome": "Terug naar begin"
+  },
+  "blocks": {
+    "@appsemble/form": {
+      "0.18.17": {
+        "submitLabel": "Volgende"
+      }
+    }
   }
 }

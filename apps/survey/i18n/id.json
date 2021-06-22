@@ -42,5 +42,12 @@
     "anythingElse": "",
     "finished": "",
     "backToHome": ""
+  },
+  "blocks": {
+    "@appsemble/form": {
+      "0.18.17": {
+        "submitLabel": ""
+      }
+    }
   }
 }
