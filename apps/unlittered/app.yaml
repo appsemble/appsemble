@@ -70,7 +70,7 @@ pages:
           fields:
             - name: location
               type: geocoordinates
-              label: { string.format: { messageId: location } }
+              label: { translate: location }
             - type: enum
               enum:
                 - value: Bicycle Collection
@@ -78,15 +78,15 @@ pages:
                 - value: Biodegradable Waste
                 - value: Collection
               name: process
-              label: { string.format: { messageId: process } }
+              label: { translate: process }
             - name: notes
               type: string
-              label: { string.format: { messageId: notes } }
+              label: { translate: notes }
               multiline: true
-              placeholder: { string.format: { messageId: notesExample } }
+              placeholder: { translate: notesExample }
             - name: photos
               type: file
-              label: { string.format: { messageId: photos } }
+              label: { translate: photos }
               requirements:
                 - accept:
                     - image/jpeg
@@ -158,16 +158,16 @@ pages:
           fields:
             - value: { prop: location }
               type: geocoordinates
-              label: { string.format: { messageId: location } }
+              label: { translate: location }
               latitude: { prop: latitude }
               longitude: { prop: longitude }
             - value: { prop: process }
-              label: { string.format: { messageId: process } }
+              label: { translate: process }
             - value: { prop: notes }
-              label: { string.format: { messageId: notes } }
+              label: { translate: notes }
             - value: { prop: photos }
               type: file
-              label: { string.format: { messageId: photos } }
+              label: { translate: photos }
               repeated: true
         events:
           listen:
@@ -201,7 +201,7 @@ pages:
                 - value: Biodegradable Waste
                 - value: Collection
             - name: $created
-              label: { string.format: { messageId: date } }
+              label: { translate: date }
               type: date-range
               icon: calendar-alt
         actions:

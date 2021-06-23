@@ -72,16 +72,16 @@ pages:
               to: Person List
         parameters:
           fields:
-            - label: { string.format: { messageId: firstName } }
+            - label: { translate: firstName }
               name: firstName
               type: string
-            - label: { string.format: { messageId: lastName } }
+            - label: { translate: lastName }
               name: lastName
               type: string
-            - label: { string.format: { messageId: email } }
+            - label: { translate: email }
               name: email
               type: string
-            - label: { string.format: { messageId: description } }
+            - label: { translate: description }
               multiline: true
               name: description
               type: string
@@ -104,13 +104,13 @@ pages:
         parameters:
           fields:
             - value: { prop: firstName }
-              label: { string.format: { messageId: firstName } }
+              label: { translate: firstName }
             - value: { prop: lastName }
-              label: { string.format: { messageId: lastName } }
+              label: { translate: lastName }
             - value: { prop: email }
-              label: { string.format: { messageId: email } }
+              label: { translate: email }
             - value: { prop: description }
-              label: { string.format: { messageId: description } }
+              label: { translate: description }
         events:
           listen:
             data: data
