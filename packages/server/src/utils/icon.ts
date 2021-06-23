@@ -1,21 +1,60 @@
-import sharp, { RGBA, Sharp } from 'sharp';
+import sharp, { RGBA } from 'sharp';
 
-import { App } from '../models';
 import { KoaContext } from '../types';
 import { readAsset } from './readAsset';
 
 interface ServeIconOptions {
-  maskable: boolean;
-  size: number;
-  updated: string;
+  /**
+   * If specified, fill the background with this color.
+   */
+  background?: RGBA | string;
+
+  /**
+   * If true, cache the icon for a week / immutable.
+   */
+  cache?: boolean;
+
+  /**
+   * The name of a fallback icon to use.
+   */
+  fallback: string;
+
+  /**
+   * The height to scale the image to.
+   */
+  height?: number;
+
+  /**
+   * The icon to render.
+   */
+  icon?: Buffer;
+
+  /**
+   * If true, the maskable icon is preferred over the regular icon. If no maskable icon is defined,
+   * the icon will be scaled to fit within a maskable icon diameter (80% diameter).
+   */
+  maskable?: boolean;
+
+  /**
+   * The maskable icon to render if this is preferred.
+   */
+  maskableIcon?: Buffer;
+
+  /**
+   * If true, render the raw icon. In this case all other options are ignored.
+   */
+  raw?: boolean;
+
+  /**
+   * The width to scale the image to.
+   */
+  width?: number;
 }
 
 /**
  * A transparent background color used by sharp.
  */
 const transparent: RGBA = { r: 0, g: 0, b: 0, alpha: 0 };
-
-const white: RGBA = { r: 0xff, g: 0xff, b: 0xff, alpha: 1 };
 
 /**
  * The diameter of the safe area for maskable icons.
@@ -26,51 +65,67 @@ const safeAreaDiameter = 0.8;
 
 export async function serveIcon(
   ctx: KoaContext,
-  { Organization, icon, iconBackground, maskableIcon }: App,
-  { maskable, size, updated }: ServeIconOptions,
+  {
+    background,
+    cache,
+    fallback,
+    height,
+    icon,
+    maskable,
+    maskableIcon,
+    raw,
+    width,
+  }: ServeIconOptions,
 ): Promise<void> {
-  const {
-    query: { updated: queryUpdated },
-  } = ctx;
-  let img: Sharp;
-  const background = iconBackground ?? white;
+  const buffer = (maskable && maskableIcon) || icon || (await readAsset(fallback));
+  let img = sharp(buffer);
 
+  if (raw) {
+    const { format } = await img.metadata();
+    ctx.body = buffer;
+    ctx.type = format;
+    return;
+  }
   if (!maskable) {
     // Serve the regular app icon, but scaled.
-    img = sharp(icon || Organization.icon || (await readAsset('mobile-alt-solid.png'))).resize({
-      width: size,
-      height: size,
+    img.resize({
+      width,
+      height,
       fit: 'contain',
-      background: transparent,
+      background: background || transparent,
     });
+    if (background) {
+      img.flatten({ background });
+    }
   } else if (maskableIcon) {
-    // Serve maskable icon
-    img = sharp(maskableIcon);
-    // XXX use exact size
-    img.resize({ width: size, height: size, fit: 'cover' });
-    img.flatten({ background });
+    img.resize({ width, height, fit: 'cover' });
+    if (background) {
+      img.flatten({ background });
+    }
   } else {
     // Make the regular icon maskable
-    const actual = sharp(icon || Organization.icon || (await readAsset('mobile-alt-solid.png')));
+    const actual = img;
     const metadata = await actual.metadata();
     const angle = Math.atan(metadata.height / metadata.width);
     actual.resize({
-      width: Math.ceil(Math.cos(angle) * safeAreaDiameter * size),
+      width: Math.ceil(Math.cos(angle) * safeAreaDiameter * width),
       // By leaving out height, libvips will determine this for us. This has better precision than
       // calculating this using JavasScript and passing it manually.
       // height: Math.ceil(Math.sin(angle) * safeAreaDiameter * size),
       fit: 'contain',
-      background: transparent,
+      background,
     });
-    img = sharp(Buffer.alloc(size * size * 4, 0), {
-      raw: { width: size, height: size, channels: 4 },
+    img = sharp(Buffer.alloc(width * height * 4, 0), {
+      raw: { width, height, channels: 4 },
     });
-    img.resize(size);
-    img.flatten({ background });
+    img.resize({ width, height });
     img.composite([{ input: await actual.toFormat('png').toBuffer() }]);
+    if (background) {
+      img.flatten({ background });
+    }
 
     // Cache app icons for 1 week.
-    if (queryUpdated && updated && queryUpdated === updated) {
+    if (cache) {
       ctx.set('cache-control', `public, max-age=${60 * 60 * 24 * 7},immutable`);
     }
   }

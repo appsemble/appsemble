@@ -1,3 +1,5 @@
+import { isEqual, parseISO } from 'date-fns';
+
 import { Organization } from '../../models';
 import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
@@ -5,27 +7,34 @@ import { serveIcon } from '../../utils/icon';
 
 interface Params {
   format: 'png' | 'tiff' | 'webp';
-  height: string;
-  width: string;
+  size: string;
 }
 
 export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
-  const { params, query } = ctx;
+  const {
+    params: { size = 128 },
+    query: { maskable = false, updated },
+  } = ctx;
   const { app } = await getApp(ctx, {
-    attributes: ['definition', 'icon', 'maskableIcon', 'iconBackground', 'updated'],
+    attributes: [
+      'icon',
+      'updated',
+      maskable && 'maskableIcon',
+      maskable && 'iconBackground',
+    ].filter(Boolean),
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  let updated;
-  if (app.icon) {
-    updated = app.updated.toISOString();
-  } else if (app.Organization.icon) {
-    updated = app.Organization.updated.toISOString();
-  }
+  const dbUpdated =
+    (maskable && app.maskableIcon) || app.icon ? app.updated : app.Organization.updated;
 
-  await serveIcon(ctx, app, {
-    updated,
-    size: Number(params.width),
-    maskable: Boolean(query.maskable),
+  await serveIcon(ctx, {
+    background: maskable ? app.iconBackground || '#ffffff' : undefined,
+    cache: isEqual(parseISO(updated as string), dbUpdated),
+    fallback: 'mobile-alt-solid.png',
+    height: size && Number.parseInt(size as string),
+    icon: app.icon || app.Organization.icon,
+    maskable: Boolean(maskable),
+    width: size && Number.parseInt(size as string),
   });
 }

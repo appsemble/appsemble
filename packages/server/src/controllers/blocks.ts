@@ -2,6 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import { BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
+import { isEqual, parseISO } from 'date-fns';
 import { File } from 'koas-body-parser';
 import semver from 'semver';
 import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';
@@ -14,10 +15,9 @@ import {
   Organization,
   transactional,
 } from '../models';
-import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
-import { readAsset } from '../utils/readAsset';
+import { serveIcon } from '../utils/icon';
 
 interface Params {
   blockId: string;
@@ -345,23 +345,28 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
 export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { blockId, blockVersion, organizationId },
+    query: { size, updated },
   } = ctx;
 
   const version = await BlockVersion.findOne({
     attributes: ['icon'],
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
-    include: [{ model: Organization, attributes: ['icon'] }],
+    include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
   if (!version) {
     throw notFound('Block version not found');
   }
 
-  const icon = version.icon || version.Organization.icon || (await readAsset('cubes-solid.png'));
-  await serveIcon(ctx, {
-    icon,
-    // Block icons never change once a version has been published.
-    immutable: true,
-    ...(!version.icon && !version.Organization.icon && { width: 128, height: 128, format: 'png' }),
+  const cache = version.icon
+    ? true
+    : isEqual(parseISO(updated as string), version.Organization.updated);
+
+  return serveIcon(ctx, {
+    cache,
+    fallback: 'cubes-solid.png',
+    height: size && Number.parseInt(size as string),
+    icon: version.icon || version.Organization.icon,
+    width: size && Number.parseInt(size as string),
   });
 }

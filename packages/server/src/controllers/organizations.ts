@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto';
 
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
+import { isEqual, parseISO } from 'date-fns';
 import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import {
@@ -14,14 +15,13 @@ import {
   OrganizationInvite,
   User,
 } from '../models';
-import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
+import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
 import { organizationBlocklist } from '../utils/organizationBlocklist';
-import { readAsset } from '../utils/readAsset';
 
 interface Params {
   blockId: string;
@@ -218,6 +218,7 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
 export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { organizationId },
+    query: { background, maskable, raw, size = 128, updated },
   } = ctx;
 
   const organization = await Organization.findOne({
@@ -231,9 +232,14 @@ export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void
   }
 
   await serveIcon(ctx, {
-    icon: organization.icon ?? (await readAsset('building-solid.png')),
-    updated: organization.updated.toISOString(),
-    ...(!organization.icon && { width: 128, height: 128, format: 'png' }),
+    background: background as string,
+    cache: isEqual(parseISO(updated as string), organization.updated),
+    fallback: 'building-solid.png',
+    height: size && Number.parseInt(size as string),
+    icon: organization.icon,
+    maskable: Boolean(maskable),
+    raw: Boolean(raw),
+    width: size && Number.parseInt(size as string),
   });
 }
 

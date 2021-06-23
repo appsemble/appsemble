@@ -13,12 +13,12 @@ import {
   validateStyle,
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
+import { parseISO } from 'date-fns';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { File } from 'koas-body-parser';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
-import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
 
 import {
@@ -40,7 +40,6 @@ import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
-import { readAsset } from '../utils/readAsset';
 
 interface Params {
   appId: number;
@@ -654,7 +653,7 @@ export async function getAppSnapshot(ctx: KoaContext<Params>): Promise<void> {
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
-    query: { maskable, raw = false, size = 128 },
+    query: { maskable = false, raw = false, size = 128, updated },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: [
@@ -666,34 +665,23 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  if (!raw) {
-    let updated;
-
-    if (app.icon) {
-      updated = app.updated.toISOString();
-    } else if (app.Organization.icon) {
-      updated = app.Organization.updated.toISOString();
-    }
-    return serveIcon(ctx, app, {
-      maskable: Boolean(maskable),
-      size: size && Number.parseInt(size as string),
-      updated,
-    });
-  }
-
   if (!app) {
     throw notFound('App not found');
   }
 
-  const icon =
-    (maskable && app.maskableIcon) ||
-    app.icon ||
-    app.Organization.icon ||
-    (await readAsset('mobile-alt-solid.png'));
+  const dbUpdated =
+    (maskable && app.maskableIcon) || app.icon ? app.updated : app.Organization.updated;
 
-  const { format } = await sharp(icon).metadata();
-  ctx.body = icon;
-  ctx.type = format;
+  return serveIcon(ctx, {
+    background: maskable ? app.iconBackground || '#ffffff' : undefined,
+    cache: isEqual(parseISO(updated as string), dbUpdated),
+    fallback: 'mobile-alt-solid.png',
+    height: size && Number.parseInt(size as string),
+    icon: app.icon || app.Organization.icon,
+    maskable: Boolean(maskable),
+    raw: Boolean(raw),
+    width: size && Number.parseInt(size as string),
+  });
 }
 
 export async function deleteAppIcon(ctx: KoaContext<Params>): Promise<void> {
