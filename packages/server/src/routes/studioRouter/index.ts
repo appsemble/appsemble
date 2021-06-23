@@ -17,7 +17,7 @@ export const studioRouter = tinyRouter([
     get: faviconHandler,
   },
   {
-    route: /^\/icon-(?<width>\d+)(x(?<height>\d+))?\.(?<format>png|tiff|webp)$/,
+    route: /^\/icon-(?<size>\d+)\.png$/,
     get: iconHandler,
   },
   {
