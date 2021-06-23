@@ -29,6 +29,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/js-yaml": "^3.12.5",
+    "@types/koa": "^2.13.3",
     "axios": "^0.21.1",
     "chalk": "^4.1.1",
     "cli-highlight": "^2.1.11",
@@ -45,6 +47,7 @@
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^7.1.2",
+    "@types/normalize-path": "^3.0.0",
     "axios-mock-adapter": "^1.19.0",
     "axios-test-instance": "^4.0.0"
   },

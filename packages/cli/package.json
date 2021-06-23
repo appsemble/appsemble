@@ -57,6 +57,13 @@
   },
   "devDependencies": {
     "@appsemble/types": "0.18.17",
+    "@types/concat-stream": "^1.6.0",
+    "@types/fs-extra": "^9.0.11",
+    "@types/inquirer": "^7.3.1",
+    "@types/normalize-path": "^3.0.0",
+    "@types/postcss-import": "^12.0.0",
+    "@types/postcss-load-config": "^2.0.1",
+    "@types/postcss-url": "^8.0.1",
     "concat-stream": "^2.0.0"
   },
   "peerDependencies": {
