@@ -859,6 +859,12 @@ export interface BasePageDefinition {
   navTitle?: Remapper;
 
   /**
+   * The navigation type to use for the page.
+   * Setting this will override the default navigation for the app.
+   */
+  navigation?: Navigation;
+
+  /**
    * A list of roles that may view the page.
    */
   roles?: string[];

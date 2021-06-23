@@ -15,6 +15,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { BlockList } from '../BlockList';
 import { FlowPage } from '../FlowPage';
+import { usePage } from '../MenuProvider';
 import { PageDialog } from '../PageDialog';
 import { TabsPage } from '../TabsPage';
 import { TitleBar } from '../TitleBar';
@@ -33,6 +34,7 @@ export function Page(): ReactElement {
   } = useRouteMatch<{ lang: string; pageId: string }>();
   const { pathname } = useLocation();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
+  const { page: navPage, setPage } = usePage();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
@@ -90,13 +92,22 @@ export function Page(): ReactElement {
     [page],
   );
 
-  const checkPagePermissions = (p: PageDefinition): boolean => {
-    const roles = p.roles || definition.roles || [];
+  const checkPagePermissions = useCallback(
+    (p: PageDefinition): boolean => {
+      const roles = p.roles || definition.roles || [];
 
-    return (
-      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
-    );
-  };
+      return (
+        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+      );
+    },
+    [definition.roles, definition.security, role, teams],
+  );
+
+  useEffect(() => {
+    if (page && checkPagePermissions(page) && navPage !== page) {
+      setPage(page);
+    }
+  }, [checkPagePermissions, navPage, page, setPage]);
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
