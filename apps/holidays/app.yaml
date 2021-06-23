@@ -23,7 +23,7 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
@@ -47,7 +47,7 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
@@ -71,7 +71,7 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
@@ -100,7 +100,7 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
             events:
@@ -122,7 +122,7 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
             events:
@@ -144,7 +144,7 @@ pages:
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
