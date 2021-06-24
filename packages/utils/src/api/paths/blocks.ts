@@ -144,6 +144,7 @@ export const paths: OpenAPIV3.PathsObject = {
         name: 'filename',
         in: 'query',
         description: 'The file name of the block asset to download',
+        schema: { type: 'string' },
       },
     ],
     get: {
