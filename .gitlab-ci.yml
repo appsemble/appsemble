@@ -564,7 +564,13 @@ provision production:
 lighthouse:
   interruptible: true
   stage: end 2 end
-  dependencies: []
+  needs:
+    - job: provision review
+      optional: true
+    - job: provision staging
+      optional: true
+    - job: provision production
+      optional: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
