@@ -28,6 +28,7 @@
     "type-fest": "^1.2.1"
   },
   "devDependencies": {
+    "@types/service-worker-mock": "^2.0.1",
     "service-worker-mock": "^2.0.5"
   }
 }

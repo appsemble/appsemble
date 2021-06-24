@@ -2137,7 +2137,7 @@
     "@types/webpack-dev-middleware" "^3"
     "@types/webpack-hot-client" "*"
 
-"@types/koa@*", "@types/koa@^2.11.4":
+"@types/koa@*", "@types/koa@^2.11.4", "@types/koa@^2.13.3":
   version "2.13.3"
   resolved "https://registry.yarnpkg.com/@types/koa/-/koa-2.13.3.tgz#5b44c0956d7f7bf41f74ccfb530fec60fbed45ca"
   integrity sha512-TaujBV+Dhe/FvmSMZJtCFBms+bqQacgUebk/M2C2tq8iGmHE/DDf4DcW2Hc7NqusVZmy5xzrWOjtdPKNP+fTfw==
@@ -2269,6 +2269,11 @@
   version "14.17.3"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.17.3.tgz#6d327abaa4be34a74e421ed6409a0ae2f47f4c3d"
   integrity sha512-e6ZowgGJmTuXa3GyaPbTGxX17tnThl2aSSizrFthQ7m9uLGZBXiGhgE55cjRZTF5kjZvYn9EOPOMljdjwbflxw==
+
+"@types/node@^15.12.4":
+  version "15.12.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.4.tgz#e1cf817d70a1e118e81922c4ff6683ce9d422e26"
+  integrity sha512-zrNj1+yqYF4WskCMOHwN+w9iuD12+dGm0rQ35HLl9/Ouuq52cEtd0CH9qMgrdNmi5ejC1/V7vKEXYubB+65DkA==
 
 "@types/nodemailer@^6.4.2":
   version "6.4.2"

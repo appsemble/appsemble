@@ -20,6 +20,7 @@
     "@appsemble/preact-components": "0.18.17",
     "@appsemble/utils": "0.18.17",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
+    "@types/leaflet": "^1.7.2",
     "classnames": "2.3.1",
     "date-fns": "^2.22.1",
     "flatpickr": "^4.6.9",
