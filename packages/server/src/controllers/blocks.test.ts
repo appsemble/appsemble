@@ -3,7 +3,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
 
-import { BlockMessages, BlockVersion, Member, Organization } from '../models';
+import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization';
@@ -442,6 +442,132 @@ describe('getBlockVersions', () => {
         version: '1.4.0',
       },
     ]);
+  });
+});
+
+describe('getBlockAsset', () => {
+  it('should serve a block asset', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
+      params: { filename: 'hello.js' },
+    });
+    expect(response.headers['content-type']).toBe('application/javascript; charset=utf-8');
+    expect(response.data).toStrictEqual('console.log("Hello world!")');
+  });
+
+  it('should respond with 404 the version mismatches', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.4/asset', {
+      params: { filename: 'hello.js' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block version not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should respond with 404 if the organization mismatches', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@nope/test/versions/1.2.3/asset', {
+      params: { filename: 'hello.js' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block version not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should respond with 404 if the block name mismatches', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/nope/versions/1.2.3/asset', {
+      params: { filename: 'hello.js' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block version not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should respond with 404 no filename matches', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
+      params: { filename: 'nope.js' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block has no asset named "nope.js"',
+        statusCode: 404,
+      },
+    });
   });
 });
 
