@@ -38,6 +38,8 @@ affinity: {}
 
 smtpSecret: smtp
 
+sentryAllowedDomains: null
+
 sentrySecret: {}
 
 sentryEnvironment: null

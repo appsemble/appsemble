@@ -16,7 +16,7 @@ import { getApp } from '../../utils/app';
 import { argv } from '../../utils/argv';
 import { organizationBlocklist } from '../../utils/organizationBlocklist';
 import { createSettings, makeCSP, render } from '../../utils/render';
-import { sentryDsnToReportUri } from '../../utils/sentry';
+import { getSentryClientSettings } from '../../utils/sentry';
 import { bulmaURL, faURL } from '../../utils/styleURL';
 
 /**
@@ -26,8 +26,8 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  * @returns void
  */
 export async function indexHandler(ctx: KoaContext): Promise<void> {
-  ctx.type = 'text/html';
-  const { host, sentryDsn, sentryEnvironment } = argv;
+  const { hostname } = ctx;
+  const { host } = argv;
 
   const { app, appPath, organizationId } = await getApp(ctx, {
     attributes: [
@@ -91,7 +91,8 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     },
   });
   const nonce = randomBytes(16).toString('base64');
-  const sentry = sentryDsnToReportUri(sentryDsn);
+  const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } =
+    getSentryClientSettings(hostname);
   const [settingsHash, settings] = createSettings({
     apiUrl: host,
     blockManifests: blockManifests.map(
@@ -123,8 +124,8 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     appUpdated: app.updated.toISOString(),
   });
   const csp = {
-    'report-uri': [sentry?.reportUri],
-    'connect-src': ['*', 'blob:', 'data:', sentry?.origin, sentryDsn && 'https://sentry.io'],
+    'report-uri': [reportUri],
+    'connect-src': ['*', 'blob:', 'data:', sentryOrigin, sentryDsn && 'https://sentry.io'],
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
