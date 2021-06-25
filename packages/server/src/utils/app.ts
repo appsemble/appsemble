@@ -3,6 +3,7 @@ import { URL } from 'url';
 import { UserInfo } from '@appsemble/types';
 import {
   extractAppMessages,
+  has,
   objectCache,
   RemapperContext,
   validateLanguage,
@@ -114,9 +115,7 @@ export async function getRemapperContext(
   return {
     appId: app.id,
     getMessage({ defaultMessage, id }) {
-      const msg = appMessages.find(({ messages }) =>
-        Object.hasOwnProperty.call(messages.messageIds, id),
-      );
+      const msg = appMessages.find(({ messages }) => has(messages.messageIds, id));
       const message = msg ? msg.messages.messageIds[id] : defaultMessage;
       return cache(message || `'{${id}}'`);
     },
