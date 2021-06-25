@@ -162,7 +162,7 @@ spec:
             {{- end }}
             {{- with .Values.sentryAllowedDomains }}
             - name: SENTRY_ALLOWED_DOMAINS
-              value: {{ join "," . }}
+              value: {{ join "," . | quote }}
             {{- end }}
             {{- if .Values.proxy }}
             - name: PROXY
