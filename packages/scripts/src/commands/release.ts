@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs';
 import { basename, dirname, join, parse } from 'path';
 
-import { getWorkspaces, logger, readYaml } from '@appsemble/node-utils';
+import { getWorkspaces, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
+import { AppsembleMessages } from '@appsemble/types';
 import { formatISO } from 'date-fns';
 import { ensureFile, readJson, remove, writeJson } from 'fs-extra';
 import globby from 'globby';
@@ -223,6 +224,26 @@ async function updateHelmChart(changes: Changes, version: string): Promise<void>
   );
 }
 
+async function updateAppTranslations(version: string): Promise<void> {
+  await opendirSafe('apps', (appDir) =>
+    opendirSafe(join(appDir, 'i18n'), async (i18nFile) => {
+      const content = (await readJson(i18nFile)) as AppsembleMessages;
+      if (!content.blocks) {
+        return;
+      }
+      for (const [blockId, versions] of Object.entries(content.blocks)) {
+        if (!blockId.startsWith('@appsemble')) {
+          continue;
+        }
+        const [[oldVersion, messages]] = Object.entries(versions);
+        delete versions[oldVersion];
+        versions[version] = messages;
+      }
+      await writeJson(i18nFile, content, { spaces: 2 });
+    }),
+  );
+}
+
 export function builder(yargs: Argv): Argv {
   return yargs.positional('increment', {
     description: 'Whether to increment the minor or patch version',
@@ -257,4 +278,5 @@ export async function handler({ increment }: Args): Promise<void> {
   const changes = await getAllChanges(workspaces);
   await updateChangelog(changes, version);
   await updateHelmChart(changes, version);
+  await updateAppTranslations(version);
 }
