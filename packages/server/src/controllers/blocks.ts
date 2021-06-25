@@ -342,6 +342,32 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
+export async function getBlockAsset(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { blockId, blockVersion, organizationId },
+    query: { filename },
+  } = ctx;
+
+  const block = await BlockVersion.findOne({
+    attributes: ['id'],
+    where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
+    include: [
+      { model: BlockAsset, where: { filename }, attributes: ['content', 'mime'], required: false },
+    ],
+  });
+
+  if (!block) {
+    throw notFound('Block version not found');
+  }
+
+  if (block.BlockAssets.length !== 1) {
+    throw notFound(`Block has no asset named "${filename}"`);
+  }
+
+  ctx.body = block.BlockAssets[0].content;
+  ctx.type = block.BlockAssets[0].mime;
+}
+
 export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { blockId, blockVersion, organizationId },

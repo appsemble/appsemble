@@ -135,6 +135,29 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/asset': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
+      { $ref: '#/components/parameters/blockVersion' },
+      {
+        name: 'filename',
+        in: 'query',
+        description: 'The file name of the block asset to download',
+        schema: { type: 'string' },
+      },
+    ],
+    get: {
+      tags: ['block'],
+      description: 'Download a single block asset',
+      operationId: 'getBlockAsset',
+      responses: {
+        200: {
+          description: 'The asset that has been requested.',
+        },
+      },
+    },
+  },
   '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/icon': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
