@@ -1,15 +1,15 @@
 {
   "app": {
+    "description": "Простое приложение для просмотра форм и данных с использованием API ресурсов",
     "name": "",
-    "description": "",
-    "pages.0": "",
-    "pages.1": "",
-    "pages.2": ""
+    "pages.0": "Список лиц",
+    "pages.1": "Форма регистрации лица",
+    "pages.2": "Подробности о лице"
   },
   "messageIds": {
-    "firstName": "",
-    "lastName": "",
-    "email": "",
-    "description": ""
+    "description": "Описание",
+    "email": "Эл. почта",
+    "firstName": "Имя",
+    "lastName": "Фамилия"
   }
 }

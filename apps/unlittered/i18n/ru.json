@@ -1,18 +1,18 @@
 {
   "app": {
+    "description": "Приложение, в котором можно сообщать о мусоре и отображать его на интерактивной карте.",
     "name": "",
-    "description": "",
     "pages.0": "",
     "pages.1": "",
     "pages.2": "",
     "pages.3": ""
   },
   "messageIds": {
-    "location": "",
-    "process": "",
-    "notes": "",
+    "date": "Дата",
+    "location": "Расположение",
+    "notes": "Примечания",
     "notesExample": "",
-    "photos": "",
-    "date": ""
+    "photos": "Фотографии",
+    "process": "Процесс"
   }
 }

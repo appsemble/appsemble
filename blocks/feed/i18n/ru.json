@@ -1,6 +1,6 @@
 {
-  "anonymousLabel": "",
-  "emptyLabel": "",
-  "replyErrorMessage": "",
-  "replyLabel": ""
+  "anonymousLabel": "Безымянный",
+  "emptyLabel": "Данные не найдены",
+  "replyErrorMessage": "При отправке этого сообщения что-то пошло не так.",
+  "replyLabel": "Оставить сообщение…"
 }

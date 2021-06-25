@@ -1,5 +1,5 @@
 {
-  "buttonLabel": "",
-  "newMessage": "",
-  "updatedMessage": ""
+  "buttonLabel": "Обновить",
+  "newMessage": "Доступны новые данные",
+  "updatedMessage": "Данные были изменены"
 }
