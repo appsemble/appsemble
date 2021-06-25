@@ -1,7 +1,6 @@
 import { SideMenuProvider } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import { apiUrl, appId } from 'app/src/utils/settings';
 import {
   createContext,
   Dispatch,
@@ -14,6 +13,7 @@ import {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { BottomNavigation } from '../BottomNavigation';
 import { SideNavigation } from '../SideNavigation';
