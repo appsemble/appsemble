@@ -22,7 +22,7 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { getAppMessage, getMessage } = useAppMessages();
   const {
-    definition: { layout, security: showLogin, ...definition },
+    definition: { layout, security, ...definition },
   } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
 
@@ -55,7 +55,7 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
           </MenuItem>
         )}
 
-        {showLogin &&
+        {security &&
           layout?.login === 'navigation' &&
           (isLoggedIn ? (
             <li>

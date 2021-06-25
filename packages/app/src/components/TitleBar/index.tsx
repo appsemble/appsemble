@@ -37,7 +37,7 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
         <div className={`navbar-brand ${styles.title}`}>
           <h2 className="navbar-item title is-4">{children || definition.name}</h2>
         </div>
-        {(definition?.layout?.login == null || definition?.layout?.login === 'navbar') && (
+        {(definition.layout?.login == null || definition.layout?.login === 'navbar') && (
           <div className={`navbar-end ${styles.dropdownContainer}`}>
             <div className="navbar-item is-paddingless px-1">
               <ProfileDropdown />
