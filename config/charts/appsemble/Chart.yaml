@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.17
-appVersion: 0.18.17
+version: 0.18.18
+appVersion: 0.18.18
 kubeVersion: '>=1.20.0'
 type: application
 description: The open source low-code app building platform
@@ -25,15 +25,18 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: 'App: Add navTitle property to page.'
+      description: 'App: Add Russian translations.'
     - kind: added
-      description: 'Studio: Add password strength indicator.'
+      description: >-
+        Appsemble: Add progress property to flow pages. This can be used to set the
+        method used to display the progress of a flow page’s steps.
+    - kind: added
+      description: 'Studio: Add Russian translations.'
     - kind: changed
-      description: 'Cli: Change the default remote to https://appsemble.app.'
-    - kind: fixed
-      description: 'Cli: Fix the --ignore-conflict flag behavior.'
-    - kind: security
-      description: 'Server: Passwords must now be at least 8 characters.'
+      description: >-
+        Appsemble: Change the background color of corner-dots in flow pages. More
+        often than not these ended up being invisible due to the default background
+        color.
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

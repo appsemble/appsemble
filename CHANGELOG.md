@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.18](https://gitlab.com/appsemble/appsemble/-/releases/0.18.18)] - 2021-06-25
+
+### Added
+
+- App: Add Russian translations.
+- Appsemble: Add `progress` property to `flow` pages. This can be used to set the method used to
+  display the progress of a flow page’s steps.
+- Studio: Add Russian translations.
+
+### Changed
+
+- Appsemble: Change the background color of `corner-dots` in `flow` pages. More often than not these
+  ended up being invisible due to the default background color.
+
 ## \[[0.18.17](https://gitlab.com/appsemble/appsemble/-/releases/0.18.17)] - 2021-06-15
 
 ### Added
