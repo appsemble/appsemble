@@ -48,6 +48,7 @@ export function IndexPage(): ReactElement {
               <ListButton
                 alt={formatMessage(messages.logo)}
                 description={organization.role}
+                icon="building"
                 image={organization.iconUrl}
                 key={organization.id}
                 subtitle={organization.id}
@@ -70,6 +71,7 @@ export function IndexPage(): ReactElement {
               {allOrganizations.map((organization) => (
                 <ListButton
                   alt={formatMessage(messages.logo)}
+                  icon="building"
                   image={organization.iconUrl}
                   key={organization.id}
                   subtitle={organization.id}

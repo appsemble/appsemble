@@ -11,6 +11,29 @@ import * as models from '../models';
 import { argv } from './argv';
 
 /**
+ * Resolves the icon url for an app based on whether it’s present and when it was updated.
+ *
+ * @param app - The app to resolve the icon url for.
+ * @returns A URL that can be safely cached.
+ */
+export function resolveIconUrl(app: models.App): string {
+  const hasIcon = app.get('hasIcon') ?? Boolean(app.icon);
+
+  if (hasIcon) {
+    return `/api/apps/${app.id}/icon?maskable=true&updated=${app.updated.toISOString()}`;
+  }
+
+  const organizationHasIcon = app.Organization?.get('hasIcon');
+  if (organizationHasIcon) {
+    return `/api/organizations/${app.OrganizationId}/icon?background=${
+      app.iconBackground || '#ffffff'
+    }&maskable=true&updated=${app.Organization?.updated?.toISOString()}`;
+  }
+
+  return null;
+}
+
+/**
  * Normalizes an app record for consistant return values.
  *
  * @param record - The sequelize App model to normalize.
@@ -35,7 +58,7 @@ export function getAppFromRecord(
     hasIcon: record.get('hasIcon') ?? Boolean(record.icon),
     hasMaskableIcon: record.get('hasMaskableIcon') ?? Boolean(record.maskableIcon),
     iconBackground: record.iconBackground || '#ffffff',
-    iconUrl: `/api/apps/${record.id}/icon`,
+    iconUrl: resolveIconUrl(record),
     longDescription: record.longDescription,
     definition,
     yaml:

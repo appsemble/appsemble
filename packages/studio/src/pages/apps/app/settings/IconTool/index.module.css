@@ -17,6 +17,14 @@
   width: unset !important;
 }
 
+.iconFallback {
+  font-size: 8rem;
+}
+
+.maskableIconFallback {
+  font-size: 5rem;
+}
+
 .preview {
   object-fit: contain;
 }

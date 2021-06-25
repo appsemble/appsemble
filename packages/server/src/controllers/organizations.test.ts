@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -23,6 +24,7 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 let organization: Organization;
 let server: Koa;
 let user: User;
+let clock: Clock;
 
 beforeAll(createTestSchema('organizations'));
 
@@ -33,17 +35,25 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  clock = install();
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
+    icon: await readFixture('nodejs-logo.png'),
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+  await Organization.create({
+    id: 'appsemble',
+    name: 'Appsemble',
+  });
   jest.spyOn(server.context.mailer, 'sendTemplateEmail');
 });
 
-afterEach(truncate);
+afterEach(() => {
+  truncate();
+  clock.uninstall();
+});
 
 afterAll(closeTestSchema);
 
@@ -54,11 +64,15 @@ describe('getOrganizations', () => {
     expect(response).toMatchObject({
       status: 200,
       data: [
-        { id: 'appsemble', name: 'Appsemble', iconUrl: '/api/organizations/appsemble/icon' },
+        {
+          id: 'appsemble',
+          name: 'Appsemble',
+          iconUrl: null,
+        },
         {
           id: 'testorganization',
           name: 'Test Organization',
-          iconUrl: '/api/organizations/testorganization/icon',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -75,7 +89,7 @@ describe('getOrganization', () => {
       data: {
         id: 'testorganization',
         name: 'Test Organization',
-        iconUrl: '/api/organizations/testorganization/icon',
+        iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
       },
     });
   });
@@ -116,7 +130,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: app.definition,
-          iconUrl: `/api/apps/${app.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
           id: app.id,
           locked: false,
           path: 'test-app-2',
@@ -151,7 +166,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: appA.definition,
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
           id: appA.id,
           locked: false,
           path: 'test-app',
@@ -160,7 +176,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: appB.definition,
-          iconUrl: `/api/apps/${appB.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
           id: appB.id,
           locked: false,
           path: 'test-app-2',
@@ -196,7 +213,7 @@ describe('getOrganizationBlocks', () => {
           actions: null,
           description: null,
           events: null,
-          iconUrl: '/api/blocks/@testorganization/test/versions/0.0.0/icon',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
           layout: null,
           longDescription: null,
           name: '@testorganization/test',
@@ -217,11 +234,76 @@ describe('getOrganizationBlocks', () => {
 });
 
 describe('getOrganizationIcon', () => {
-  it('should return the organization logo', async () => {
-    const buffer = await readFixture('testpattern.png');
-    await organization.update({ icon: buffer });
+  it('should return the organization logo squared by default', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
     const response = await request.get(`/api/organizations/${organization.id}/icon`, {
       responseType: 'arraybuffer',
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should set a background color if specified', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { background: '#ffff00' },
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should scale the icon is maskable is true', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { maskable: true },
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should be able to resize images', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { size: 96 },
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should be able to combine maskable, background, and size', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { background: '#00ffff', maskable: true, size: 192 },
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should be possible retrieve the raw icon', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { raw: true },
+    });
+
+    expect(response.data).toStrictEqual(icon);
+  });
+
+  it('should have a fallback icon', async () => {
+    await organization.update({ icon: null });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { raw: true },
     });
 
     expect(response.data).toMatchImageSnapshot();
@@ -311,6 +393,9 @@ describe('createOrganization', () => {
   });
 
   it('should not create an organization with the same identifier', async () => {
+    // This prevents the test from hanging and timing out
+    clock.uninstall();
+
     authorizeStudio();
     await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
 

@@ -26,6 +26,10 @@
   "dependencies": {
     "@appsemble/node-utils": "0.18.17",
     "@appsemble/utils": "0.18.17",
+    "@types/fs-extra": "^9.0.11",
+    "@types/js-yaml": "^3.12.5",
+    "@types/normalize-path": "^3.0.0",
+    "@types/semver": "^7.3.6",
     "axios": "^0.21.1",
     "date-fns": "^2.22.1",
     "extract-react-intl-messages": "^4.1.1",

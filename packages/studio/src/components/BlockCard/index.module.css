@@ -34,3 +34,9 @@
 .title {
   line-height: 1.35;
 }
+
+.iconFallback {
+  font-size: 3rem;
+  height: 64px;
+  width: 64px;
+}

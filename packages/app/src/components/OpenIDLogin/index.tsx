@@ -3,7 +3,14 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { oauth2Scope } from '../../utils/constants';
-import { apiUrl, appId, definition, logins, showAppsembleLogin } from '../../utils/settings';
+import {
+  apiUrl,
+  appId,
+  appUpdated,
+  definition,
+  logins,
+  showAppsembleLogin,
+} from '../../utils/settings';
 import { Main } from '../Main';
 import { TitleBar } from '../TitleBar';
 import styles from './index.module.css';
@@ -28,7 +35,7 @@ export function OpenIDLogin(): ReactElement {
       <TitleBar />
       <Content className={`is-flex appsemble-login ${styles.wrapper}`} padding>
         <figure className="my-4">
-          <img alt={definition.name} src="/icon-256.png" />
+          <img alt={definition.name} src={`/icon-256.png?updated=${appUpdated}`} />
         </figure>
         {showAppsembleLogin && (
           <OAuth2LoginButton

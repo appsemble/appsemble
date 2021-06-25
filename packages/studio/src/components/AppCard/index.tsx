@@ -1,4 +1,4 @@
-import { Subtitle, Title } from '@appsemble/react-components';
+import { Icon, Subtitle, Title } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
@@ -30,11 +30,19 @@ export function AppCard({ app }: AppCardProps): ReactElement {
       <div className="card-content">
         <div className="media">
           <figure className={`image is-128x128 ${styles.figure}`}>
-            <img
-              alt={formatMessage(messages.icon)}
-              className="is-rounded card"
-              src={`/api/apps/${app.id}/icon?maskable=true`}
-            />
+            {app.iconUrl ? (
+              <img
+                alt={formatMessage(messages.icon)}
+                className="is-rounded card"
+                src={`/api/apps/${app.id}/icon?maskable=true`}
+              />
+            ) : (
+              <Icon
+                className={`${styles.iconFallback} card`}
+                icon="mobile-alt"
+                style={{ backgroundColor: app.iconBackground }}
+              />
+            )}
           </figure>
         </div>
         <Title className={`${styles.ellipsis} ${styles.title}`} lang={appLang} size={5}>

@@ -57,10 +57,10 @@ export class App extends Model {
   domain: string;
 
   @Column
-  icon: Buffer;
+  icon?: Buffer;
 
   @Column
-  maskableIcon: Buffer;
+  maskableIcon?: Buffer;
 
   @Column
   iconBackground: string;

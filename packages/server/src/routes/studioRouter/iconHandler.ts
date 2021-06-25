@@ -1,21 +1,18 @@
 import { KoaContext } from '../../types';
-import { readAsset } from '../../utils/readAsset';
-import { serveIcon } from '../serveIcon';
+import { serveIcon } from '../../utils/icon';
 
 interface Params {
-  format: 'png' | 'tiff' | 'webp';
-  height: string;
-  width: string;
+  size: string;
 }
 
 export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const { params, request } = ctx;
-  const width = Number(params.width);
-  const height = Number(params.height || params.width);
-  const { format } = params;
-  const opaque = 'opaque' in request.query || format === 'tiff';
-  const background = opaque && '#ffffff';
+  const size = Number(params.size);
 
-  const icon = await readAsset('appsemble.svg');
-  await serveIcon(ctx, { background, format: format ?? 'png', height, width, icon });
+  await serveIcon(ctx, {
+    background: 'opaque' in request.query ? '#ffffff' : undefined,
+    fallback: 'appsemble.png',
+    height: size,
+    width: size,
+  });
 }

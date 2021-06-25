@@ -110,7 +110,7 @@ describe('queryApps', () => {
           domain: null,
           private: false,
           path: 'test-app',
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -122,7 +122,7 @@ describe('queryApps', () => {
           domain: null,
           private: false,
           path: 'another-app',
-          iconUrl: `/api/apps/${appB.id}/icon`,
+          iconUrl: null,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -165,7 +165,7 @@ describe('queryApps', () => {
           domain: null,
           private: false,
           path: 'test-app',
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -265,7 +265,7 @@ describe('getAppById', () => {
         domain: null,
         private: false,
         path: 'test-app',
-        iconUrl: `/api/apps/${appA.id}/icon`,
+        iconUrl: null,
         definition: appA.definition,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
@@ -298,11 +298,77 @@ defaultPage: Test Page
         domain: null,
         private: false,
         path: 'test-app',
-        iconUrl: `/api/apps/${app.id}/icon`,
+        iconUrl: null,
         definition: app.definition,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
         yaml: '{ name: Test App, defaultPage Test Page }',
+      },
+    });
+  });
+
+  it('should resolve an icon url for an app with an icon', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        icon: await readFixture('nodejs-logo.png'),
+      },
+      { raw: true },
+    );
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        iconUrl: `/api/apps/${app.id}/icon?maskable=true&updated=1970-01-01T00:00:00.000Z`,
+      },
+    });
+  });
+
+  it('should resolve an icon url for an app with an organization icon fallback', async () => {
+    await organization.update({
+      icon: await readFixture('nodejs-logo.png'),
+    });
+
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        iconUrl:
+          '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
+      },
+    });
+  });
+
+  it('should resolve an icon url for an app without an icon as null', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        iconUrl: null,
       },
     });
   });
@@ -353,7 +419,7 @@ describe('queryMyApps', () => {
           domain: null,
           private: false,
           path: 'test-app',
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -370,7 +436,7 @@ describe('queryMyApps', () => {
           domain: null,
           private: false,
           path: 'test-app',
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -382,7 +448,7 @@ describe('queryMyApps', () => {
           domain: null,
           private: false,
           path: 'test-app-b',
-          iconUrl: `/api/apps/${appB.id}/icon`,
+          iconUrl: null,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
           OrganizationName: 'Test Organization B',
@@ -399,6 +465,7 @@ describe('createApp', () => {
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
         definition: {
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -470,6 +537,7 @@ pages:
           defaultPage: 'Test Page',
           pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
         },
+        icon: createFixtureStream('nodejs-logo.png'),
         screenshots: createFixtureStream('standing.png'),
       }),
     );
@@ -934,7 +1002,7 @@ describe('patchApp', () => {
         domain: null,
         private: true,
         path: 'test-app',
-        iconUrl: `/api/apps/${app.id}/icon`,
+        iconUrl: null,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
         definition: {
@@ -1173,7 +1241,7 @@ pages:
         domain: null,
         private: false,
         path: 'test-app',
-        iconUrl: `/api/apps/${app.id}/icon`,
+        iconUrl: null,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
         definition: {
@@ -1740,7 +1808,7 @@ describe('getAppIcon', () => {
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should generate an maskable icon from a horizontal app icon', async () => {
+  it('should generate a maskable icon from a horizontal app icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -1757,7 +1825,7 @@ describe('getAppIcon', () => {
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should generate an maskable icon from a vertical app icon', async () => {
+  it('should generate a maskable icon from a vertical app icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',

@@ -1,4 +1,4 @@
-import { Button, MarkdownContent, Title, useToggle } from '@appsemble/react-components';
+import { Button, Icon, MarkdownContent, Title, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement } from 'react';
@@ -53,11 +53,19 @@ export function IndexPage(): ReactElement {
           />
         }
         icon={
-          <img
-            alt={formatMessage(messages.appLogo)}
-            className="is-rounded card"
-            src={`/api/apps/${app.id}/icon?maskable=true`}
-          />
+          app.iconUrl ? (
+            <img
+              alt={formatMessage(messages.appLogo)}
+              className="is-rounded card"
+              src={app.iconUrl}
+            />
+          ) : (
+            <Icon
+              className={`${styles.iconFallback} card`}
+              icon="mobile-alt"
+              style={{ backgroundColor: app.iconBackground }}
+            />
+          )
         }
         subtitle={
           <Link to={`/${lang}/organizations/${app.OrganizationId}`}>

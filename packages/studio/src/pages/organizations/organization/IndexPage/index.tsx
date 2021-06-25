@@ -77,11 +77,15 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
           </>
         }
         icon={
-          <img
-            alt={formatMessage(messages.logo)}
-            className="px-4 py-4 card"
-            src={organization.iconUrl}
-          />
+          organization.iconUrl ? (
+            <img
+              alt={formatMessage(messages.logo)}
+              className="px-4 py-4 card"
+              src={organization.iconUrl}
+            />
+          ) : (
+            <Icon className={`px-4 py-4 card ${styles.iconFallback}`} icon="building" />
+          )
         }
         subtitle={organization.id}
         title={organization.name || organization.id}
