@@ -1,4 +1,4 @@
-import { Subtitle, Title } from '@appsemble/react-components';
+import { Icon, Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
@@ -25,10 +25,14 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
     <div className={`card is-flex ${styles.root}`} key={block.name} title={block.name}>
       <header className="px-2 py-2 is-flex">
         <figure className={`image is-64x64 ${styles.nogrow}`}>
-          <img
-            alt={`@${org}${name} ${messages.blockLogo}`}
-            src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
-          />
+          {block.iconUrl ? (
+            <img
+              alt={`@${org}${name} ${messages.blockLogo}`}
+              src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
+            />
+          ) : (
+            <Icon className={styles.iconFallback} icon="cubes" />
+          )}
         </figure>
         <div className={`pl-3 pr-1 ${styles.header} ${styles.ellipsis}`}>
           <Title

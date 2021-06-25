@@ -37,6 +37,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
       'coreStyle',
       'vapidPublicKey',
       'showAppsembleLogin',
+      'updated',
     ],
     include: [
       {
@@ -119,6 +120,7 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     showAppsembleLogin: app.showAppsembleLogin ?? true,
     sentryDsn,
     sentryEnvironment,
+    appUpdated: app.updated.toISOString(),
   });
   const csp = {
     'report-uri': [sentry?.reportUri],
@@ -146,5 +148,6 @@ export async function indexHandler(ctx: KoaContext): Promise<void> {
     nonce,
     settings,
     themeColor: app.definition.theme?.themeColor || '#ffffff',
+    appUpdated: app.updated.toISOString(),
   });
 }
