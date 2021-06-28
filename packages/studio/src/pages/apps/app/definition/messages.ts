@@ -3,7 +3,6 @@ import { defineMessages } from 'react-intl';
 export const messages = defineMessages({
   title: 'App definition',
   description: 'The app definition for {appName}',
-  appLogo: 'App logo',
   view: 'View App',
   cloneText:
     'Want to create a new app based on {name}? This app can be cloned by pressing the clone button.',

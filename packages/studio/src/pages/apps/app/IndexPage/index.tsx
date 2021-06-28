@@ -1,9 +1,10 @@
-import { Button, Icon, MarkdownContent, Title, useToggle } from '@appsemble/react-components';
+import { Button, MarkdownContent, Title, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
+import { AppIcon } from 'studio/src/components/AppIcon';
 import { CloneButton } from 'studio/src/components/CloneButton';
 
 import { useApp } from '..';
@@ -22,7 +23,6 @@ export function IndexPage(): ReactElement {
   const { app } = useApp();
   const descriptionToggle = useToggle();
   const { lang } = useParams<{ lang: string }>();
-  const { formatMessage } = useIntl();
 
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
@@ -52,21 +52,7 @@ export function IndexPage(): ReactElement {
             value={app.rating?.average ?? 0}
           />
         }
-        icon={
-          app.iconUrl ? (
-            <img
-              alt={formatMessage(messages.appLogo)}
-              className="is-rounded card"
-              src={app.iconUrl}
-            />
-          ) : (
-            <Icon
-              className={`${styles.iconFallback} card`}
-              icon="mobile-alt"
-              style={{ backgroundColor: app.iconBackground }}
-            />
-          )
-        }
+        icon={<AppIcon app={app} />}
         subtitle={
           <Link to={`/${lang}/organizations/${app.OrganizationId}`}>
             {app.OrganizationName || app.OrganizationId}
