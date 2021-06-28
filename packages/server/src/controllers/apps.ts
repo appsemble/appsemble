@@ -687,6 +687,7 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
     height: size && Number.parseInt(size as string),
     icon: app.icon || app.Organization.icon,
     maskable: Boolean(maskable),
+    maskableIcon: app.maskableIcon,
     raw: Boolean(raw),
     width: size && Number.parseInt(size as string),
   });
