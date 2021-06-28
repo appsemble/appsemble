@@ -1,6 +1,5 @@
-import { JwtPayload } from '@appsemble/types';
 import { compare } from 'bcrypt';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 import { GetApiKeyUser, GetHttpUser, GetOAuth2User } from 'koas-security';
 import { Op } from 'sequelize';
 
@@ -34,7 +33,7 @@ export function authentication(): AuthenticationCheckers {
     app(accessToken) {
       const { aud, scope, sub } = verify(accessToken, secret) as JwtPayload;
       // XXX use origin check when default app domains are implemented.
-      const [prefix, id] = aud.split(':');
+      const [prefix, id] = (aud as string).split(':');
       if (prefix !== 'app') {
         return;
       }

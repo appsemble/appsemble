@@ -1,8 +1,7 @@
 import { randomBytes } from 'crypto';
 
-import { JwtPayload } from '@appsemble/types';
 import { conflict, notAcceptable, notFound } from '@hapi/boom';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 import { literal } from 'sequelize';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
