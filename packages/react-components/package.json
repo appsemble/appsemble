@@ -30,12 +30,12 @@
     "@appsemble/web-utils": "0.18.18",
     "@creativebulma/bulma-tagsinput": "^1.0.3",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
-    "@sentry/browser": "^6.7.1",
+    "@sentry/browser": "^6.7.2",
     "@types/creativebulma__bulma-tagsinput": "^1.0.1",
     "@types/css-modules": "^1.0.2",
     "@types/marked": "^2.0.3",
     "@types/react": "^17.0.11",
-    "@types/react-dom": "^17.0.7",
+    "@types/react-dom": "^17.0.8",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-transition-group": "^4.4.1",
     "@types/webpack-env": "^1.16.0",
@@ -44,16 +44,16 @@
     "date-fns": "^2.22.1",
     "fast-deep-equal": "^3.1.3",
     "flatpickr": "^4.6.9",
-    "marked": "^2.1.1",
+    "marked": "^2.1.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-intl": "^5.20.2",
+    "react-intl": "^5.20.4",
     "react-router-dom": "^5.2.0",
     "react-transition-group": "^4.4.2",
     "type-fest": "^1.2.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7"
+    "@testing-library/react": "^12.0.0"
   }
 }
