@@ -1,10 +1,9 @@
 import querystring from 'querystring';
 import { URL } from 'url';
 
-import { JwtPayload } from '@appsemble/types';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 import raw from 'raw-body';
 
 import { OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models';
@@ -151,7 +150,8 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         const { refresh_token: token } = checkTokenRequestParameters(query, ['refresh_token']);
         try {
           const payload = verify(token, argv.secret) as JwtPayload;
-          ({ aud, scope, sub } = payload);
+          ({ scope, sub } = payload);
+          aud = payload.aud as string;
           refreshToken = true;
         } catch {
           throw new GrantError('invalid_grant');

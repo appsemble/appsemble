@@ -20,7 +20,7 @@
     "@appsemble/preact-components": "0.18.18",
     "@appsemble/sdk": "0.18.18",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
-    "@types/leaflet": "^1.7.2",
+    "@types/leaflet": "^1.7.3",
     "leaflet": "~1.5.1",
     "preact": "^10.5.13"
   }
