@@ -1,0 +1,21 @@
+.button {
+  border: none;
+  height: 3rem;
+  justify-content: left;
+  padding: 0.5em 0.75em;
+  width: 100%;
+}
+
+.button :global(.icon) {
+  /* .button > .icon.is-medium ends up being smaller than .icon.is-medium on its own, we want to match the size.
+  These styles are necessary to match the other buttons used in this menu. */
+  height: 2rem !important;
+  margin-left: 0 !important;
+  margin-right: 0.25rem !important;
+  width: 2rem !important;
+}
+
+.button:hover {
+  background-color: hsl(0, 0%, 96%);
+  color: hsl(0, 0%, 21%);
+}

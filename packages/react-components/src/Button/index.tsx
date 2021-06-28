@@ -1,4 +1,4 @@
-import { BulmaColor } from '@appsemble/sdk';
+import { BulmaColor, BulmaSize } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ElementType, ReactElement } from 'react';
 
@@ -26,6 +26,11 @@ type ButtonProps<C extends ElementType = 'button'> = ComponentPropsWithoutRef<C>
      * Set to true to indicate the button is in a loading state.
      */
     loading?: boolean;
+
+    /**
+     * The size that should be used for the button’s icons.
+     */
+    iconSize?: Exclude<BulmaSize, 'normal'>;
   };
 
 /**
@@ -40,6 +45,7 @@ export function Button<C extends ElementType = 'button'>({
   component: Component = 'button',
   icon,
   iconPosition = 'left',
+  iconSize,
   inverted,
   loading,
   ...props
@@ -59,7 +65,7 @@ export function Button<C extends ElementType = 'button'>({
       })}
       {...props}
     >
-      <ButtonChildren icon={icon} iconPosition={iconPosition}>
+      <ButtonChildren icon={icon} iconPosition={iconPosition} iconSize={iconSize}>
         {children}
       </ButtonChildren>
     </Component>
