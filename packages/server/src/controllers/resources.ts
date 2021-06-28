@@ -716,7 +716,6 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
     }),
   });
 
-  await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
   verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
