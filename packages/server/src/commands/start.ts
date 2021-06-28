@@ -79,6 +79,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'Secret key used to sign JWTs and cookies',
       required: true,
     })
+    .option('sentry-allowed-domains', {
+      desc: 'Domains for apps where Sentry integration should be injected if Sentry is configured. Comma separated domains and wildcards are allowed.',
+      default: '*',
+    })
     .option('disable-registration', {
       desc: 'If specified, user registration will be disabled on the server',
       type: 'boolean',

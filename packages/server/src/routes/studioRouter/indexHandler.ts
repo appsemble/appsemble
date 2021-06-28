@@ -5,7 +5,7 @@ import { KoaContext } from '../../types';
 import { argv } from '../../utils/argv';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
 import { createSettings, makeCSP, render } from '../../utils/render';
-import { sentryDsnToReportUri } from '../../utils/sentry';
+import { getSentryClientSettings } from '../../utils/sentry';
 
 /**
  * Serve `index.html` for editor related routes.
@@ -14,15 +14,8 @@ import { sentryDsnToReportUri } from '../../utils/sentry';
  * @returns void
  */
 export function indexHandler(ctx: KoaContext): Promise<void> {
-  const {
-    disableRegistration,
-    githubClientId,
-    gitlabClientId,
-    googleClientId,
-    host,
-    sentryDsn,
-    sentryEnvironment,
-  } = argv;
+  const { hostname } = ctx;
+  const { disableRegistration, githubClientId, gitlabClientId, googleClientId, host } = argv;
   const logins = [];
   if (githubClientId) {
     logins.push({
@@ -52,7 +45,8 @@ export function indexHandler(ctx: KoaContext): Promise<void> {
     });
   }
   const nonce = randomBytes(16).toString('base64');
-  const sentry = sentryDsnToReportUri(sentryDsn);
+  const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } =
+    getSentryClientSettings(hostname);
   const [settingsHash, settings] = createSettings({
     enableRegistration: !disableRegistration,
     logins,
@@ -60,13 +54,13 @@ export function indexHandler(ctx: KoaContext): Promise<void> {
     sentryEnvironment,
   });
   const csp = makeCSP({
-    'report-uri': [sentry?.reportUri],
+    'report-uri': [reportUri],
     // This is needed for Webpack.
     'connect-src':
       process.env.NODE_ENV === 'production'
-        ? [sentryDsn && 'https://sentry.io', sentryDsn && new URL(sentryDsn).origin, "'self'"]
+        ? [sentryDsn && 'https://sentry.io', sentryOrigin, "'self'"]
         : ['*'],
-    'default-src': ["'self'", sentry?.origin],
+    'default-src': ["'self'", sentryOrigin],
     'img-src': ['blob:', 'data:', '*'],
     'script-src': [
       "'self'",

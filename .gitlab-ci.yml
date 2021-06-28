@@ -380,6 +380,7 @@ review:
       --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
+      --set "sentryAllowedDomains={*.appsemble.review}"
       --set "sentryEnvironment=$CI_ENVIRONMENT_NAME"
       --set "sentrySecret=sentry"
 
@@ -439,6 +440,7 @@ staging:
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "proxy=true"
+      --set "sentryAllowedDomains={*.appsemble.review}"
       --set "sentryEnvironment=staging"
       --set "sentrySecret=sentry"
 
@@ -476,6 +478,7 @@ production:
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
       --set "proxy=true"
+      --set "sentryAllowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentryEnvironment=production"
       --set "sentrySecret=sentry"
       --wait

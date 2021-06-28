@@ -160,6 +160,10 @@ spec:
             - name: SENTRY_ENVIRONMENT
               value: {{ . | quote }}
             {{- end }}
+            {{- with .Values.sentryAllowedDomains }}
+            - name: SENTRY_ALLOWED_DOMAINS
+              value: {{ join "," . | quote }}
+            {{- end }}
             {{- if .Values.proxy }}
             - name: PROXY
               value: 'true'

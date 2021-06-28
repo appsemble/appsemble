@@ -189,6 +189,11 @@ export interface Argv {
    */
   sentryEnvironment: string;
 
+  /**
+   * Domain wildcards for apps where Sentry integration should be injected if Sentry is configured
+   */
+  sentryAllowedDomains?: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // OAuth2                                                                                       //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
