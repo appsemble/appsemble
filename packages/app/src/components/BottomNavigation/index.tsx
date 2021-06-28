@@ -94,7 +94,13 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
             definition.layout?.login === 'navigation' &&
             (isLoggedIn ? (
               <li className="bottom-nav-item">
-                <Button icon="sign-out-alt" onClick={logout}>
+                <Button
+                  className="bottom-nav-item-button is-flex-direction-column is-flex px-4 py-4 has-text-centered"
+                  icon="sign-out-alt"
+                  iconSize="large"
+                  iconSizeModifier="3x"
+                  onClick={logout}
+                >
                   <FormattedMessage {...messages.logout} />
                 </Button>
               </li>

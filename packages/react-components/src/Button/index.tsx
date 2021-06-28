@@ -31,6 +31,11 @@ type ButtonProps<C extends ElementType = 'button'> = ComponentPropsWithoutRef<C>
      * The size that should be used for the button’s icons.
      */
     iconSize?: Exclude<BulmaSize, 'normal'>;
+
+    /**
+     * The size modifier that should be used for the button’s icons.
+     */
+    iconSizeModifier?: '2x' | '3x' | 'lg';
   };
 
 /**
@@ -46,6 +51,7 @@ export function Button<C extends ElementType = 'button'>({
   icon,
   iconPosition = 'left',
   iconSize,
+  iconSizeModifier,
   inverted,
   loading,
   ...props
@@ -65,7 +71,12 @@ export function Button<C extends ElementType = 'button'>({
       })}
       {...props}
     >
-      <ButtonChildren icon={icon} iconPosition={iconPosition} iconSize={iconSize}>
+      <ButtonChildren
+        icon={icon}
+        iconPosition={iconPosition}
+        iconSize={iconSize}
+        iconSizeModifier={iconSizeModifier}
+      >
         {children}
       </ButtonChildren>
     </Component>
