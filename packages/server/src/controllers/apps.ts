@@ -275,6 +275,10 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
   const apps = await App.findAll({
     attributes: {
       exclude: ['icon', 'coreStyle', 'sharedStyle'],
+      include: [
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+      ],
     },
     where: { private: false },
     include: [
@@ -335,6 +339,10 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
   const apps = await App.findAll({
     attributes: {
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
+      include: [
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+      ],
     },
     include: [
       {
