@@ -21,7 +21,7 @@ This project uses Prettier. The code is linted using [ESLint].
 ### CSS
 
 This project uses Prettier. The code is linted using [Stylelint]. For a detailed view of the
-ruleset, see [stylelint.config.js](./stylelint.config.js).
+ruleset, see [stylelint.config.js](./.stylelintrc.yaml).
 
 ### Testing
 
