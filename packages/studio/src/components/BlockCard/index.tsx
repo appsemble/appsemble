@@ -1,6 +1,6 @@
 import { Icon, Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
-import { defaultLocale } from '@appsemble/utils';
+import { defaultLocale, parseBlockName } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ interface BlockCardProps {
  * Display a card that contains basic information of a block and a link to further documentation.
  */
 export function BlockCard({ block }: BlockCardProps): ReactElement {
-  const [org, ...name] = block.name.split('/');
+  const [org, name] = parseBlockName(block.name);
   const { lang } = useParams<{ lang: string }>();
 
   return (
@@ -26,10 +26,7 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
       <header className="px-2 py-2 is-flex">
         <figure className={`image is-64x64 ${styles.nogrow}`}>
           {block.iconUrl ? (
-            <img
-              alt={`@${org}${name} ${messages.blockLogo}`}
-              src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
-            />
+            <img alt={`${block.name} ${messages.blockLogo}`} src={block.iconUrl} />
           ) : (
             <Icon className={styles.iconFallback} icon="cubes" />
           )}
@@ -44,7 +41,7 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
             {name}
           </Title>
           <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
-            <Link to={`/${lang}/organizations/${org}`}>{org}</Link>
+            <Link to={`/${lang}/organizations/${org}`}>{`@${org}`}</Link>
           </Subtitle>
         </div>
         <span className={`subtitle is-6 has-text-grey ${styles.nogrow}`}>{block.version}</span>

@@ -45,7 +45,7 @@ describe('getBlock', () => {
     const { data: original } = await request.post('/api/blocks', formData);
     const { data: retrieved } = await request.get('/api/blocks/@xkcd/test');
 
-    expect(retrieved).toStrictEqual(omit(original, ['files']));
+    expect(retrieved).toStrictEqual(original);
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
@@ -432,7 +432,8 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
-        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+        files: ['standing.png', 'testblock.js'],
+        iconUrl: null,
         layout: null,
         parameters: null,
         resources: null,
@@ -479,7 +480,8 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
-        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+        files: ['testblock.js'],
+        iconUrl: null,
         layout: null,
         parameters: null,
         resources: null,
@@ -491,7 +493,8 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
-        iconUrl: '/api/blocks/@xkcd/standing/versions/1.4.0/icon',
+        files: ['testblock.js'],
+        iconUrl: null,
         layout: null,
         parameters: null,
         resources: null,

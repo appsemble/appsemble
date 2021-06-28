@@ -1,5 +1,6 @@
 import {
   Content,
+  Icon,
   Loader,
   MarkdownContent,
   Message,
@@ -92,10 +93,11 @@ export function BlockPage(): ReactElement {
     <Content className={`content ${styles.content}`}>
       <div>
         <figure className="image is-inline-block is-marginless is-64x64 mr-4">
-          <img
-            alt={formatMessage(messages.blockIcon)}
-            src={`/api/blocks/@${organization}/${blockName}/versions/${urlVersion}/icon`}
-          />
+          {selectedBlockManifest.iconUrl ? (
+            <img alt={formatMessage(messages.blockIcon)} src={selectedBlockManifest.iconUrl} />
+          ) : (
+            <Icon className={styles.iconFallback} icon="cubes" />
+          )}
         </figure>
         <header className="is-inline-block">
           <Title lang={defaultLocale} level={2}>
