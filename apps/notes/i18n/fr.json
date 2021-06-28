@@ -1,13 +1,13 @@
 {
   "app": {
-    "name": "",
-    "description": "",
-    "app.roles.User": "",
-    "app.roles.User.description": "",
-    "pages.0": ""
+    "app.roles.User": "Utilisateur",
+    "app.roles.User.description": "Un utilisateur qui garde ses propres notes.",
+    "description": "Gardez des notes personnelles",
+    "name": "Notes",
+    "pages.0": "Notes"
   },
   "messageIds": {
-    "title": "",
-    "body": ""
+    "body": "Corps",
+    "title": "Titre"
   }
 }

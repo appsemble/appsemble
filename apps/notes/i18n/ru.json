@@ -1,13 +1,13 @@
 {
   "app": {
-    "name": "",
-    "description": "",
-    "app.roles.User": "",
-    "app.roles.User.description": "",
-    "pages.0": ""
+    "app.roles.User": "Пользователь",
+    "app.roles.User.description": "Пользователь, который ведёт собственные заметки.",
+    "description": "Сохранить личные заметки",
+    "name": "Заметки",
+    "pages.0": "Заметки"
   },
   "messageIds": {
-    "title": "",
-    "body": ""
+    "body": "Содержание",
+    "title": "Название"
   }
 }

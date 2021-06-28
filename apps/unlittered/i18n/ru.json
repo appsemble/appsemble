@@ -1,18 +1,18 @@
 {
   "app": {
-    "name": "",
-    "description": "",
-    "pages.0": "",
-    "pages.1": "",
-    "pages.2": "",
-    "pages.3": ""
+    "description": "Приложение, в котором можно сообщать о мусоре и отображать его на интерактивной карте.",
+    "name": "Unlittered",
+    "pages.0": "Сообщить о мусоре",
+    "pages.1": "Обзор мест",
+    "pages.2": "Подробная информация",
+    "pages.3": "Список мусора"
   },
   "messageIds": {
-    "location": "",
-    "process": "",
-    "notes": "",
-    "notesExample": "",
-    "photos": "",
-    "date": ""
+    "date": "Дата",
+    "location": "Расположение",
+    "notes": "Примечания",
+    "notesExample": "Пример: в кустах стоит велосипед",
+    "photos": "Фотографии",
+    "process": "Процесс"
   }
 }

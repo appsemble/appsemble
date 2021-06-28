@@ -1,8 +1,8 @@
 {
   "app": {
-    "name": "",
     "description": "",
-    "pages.0": "",
-    "pages.1": ""
+    "name": "",
+    "pages.0": "Пример страницы A",
+    "pages.1": "Пример страницы B"
   }
 }
