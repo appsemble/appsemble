@@ -17,7 +17,7 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
- * - Remove column `resources` to table `BlockVersion`.
+ * - Add column `resources` to table `BlockVersion`.
  *
  * @param db - The sequelize database.
  */
