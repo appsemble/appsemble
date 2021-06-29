@@ -1,9 +1,10 @@
 import { BlockDefinition } from '@appsemble/types';
 
+import { blockNamePattern } from './constants';
+
 export type IdentifiableBlock = Pick<BlockDefinition, 'type' | 'version'>;
 
 const prefix = '@appsemble/';
-const blockNamePattern = /^@([a-z-]+)\/([a-z-]+)$/;
 
 /**
  * Normalize a block name by prefixing it with `@appsemble` if necessary.
@@ -54,13 +55,13 @@ export function filterBlocks(blocks: IdentifiableBlock[]): IdentifiableBlock[] {
   const visited = new Set();
   const result: IdentifiableBlock[] = [];
 
-  blocks.forEach(({ type, version }) => {
+  for (const { type, version } of blocks) {
     const name = normalizeBlockName(type);
     const asString = `${name}@${version}`;
     if (!visited.has(asString)) {
       result.push({ type: name, version });
     }
     visited.add(asString);
-  });
+  }
   return result;
 }
