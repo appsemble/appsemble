@@ -13,6 +13,25 @@
   flex: 1 0 0;
 }
 
+.bottom-nav-item-button {
+  border: none;
+  color: var(--link-color);
+  height: 100%;
+  justify-content: flex-end;
+  width: 100%;
+
+  &:hover {
+    color: hsl(0, 0%, 21%);
+  }
+}
+
+.bottom-nav-item-button .icon {
+  height: unset !important;
+  margin: 0 !important;
+  margin-bottom: 0.25rem !important;
+  width: unset !important;
+}
+
 .bottom-nav-item-link {
   align-items: center;
   flex-flow: column;

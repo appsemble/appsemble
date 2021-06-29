@@ -6,7 +6,7 @@ import styles from './index.module.css';
 
 interface SideNavLinkProps {
   /**
-   * If true, only highligh on an exact match.
+   * If true, only highlight on an exact match.
    */
   exact?: boolean;
 

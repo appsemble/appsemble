@@ -9,6 +9,7 @@ import { appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface SideNavigationProps {
@@ -22,7 +23,7 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
   const { getAppMessage, getMessage } = useAppMessages();
   const {
-    definition: { layout, security: showLogin, ...definition },
+    definition: { layout, security, ...definition },
   } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
 
@@ -54,15 +55,17 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
             <FormattedMessage {...messages.feedback} />
           </MenuItem>
         )}
-
-        {showLogin &&
+        {security &&
           layout?.login === 'navigation' &&
           (isLoggedIn ? (
-            <li>
-              <Button icon="sign-out-alt" onClick={logout}>
-                <FormattedMessage {...messages.logout} />
-              </Button>
-            </li>
+            <Button
+              className={styles.button}
+              icon="sign-out-alt"
+              iconSize="medium"
+              onClick={logout}
+            >
+              <FormattedMessage {...messages.logout} />
+            </Button>
           ) : (
             <MenuItem icon="sign-in-alt" to={`${url}/Login`}>
               <FormattedMessage {...messages.login} />
