@@ -13,7 +13,6 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
     longDescription,
     name,
     parameters,
-    resources,
     version,
   } = blockVersion;
   const blockName = `@${Organization.id}/${name}`;
@@ -35,7 +34,6 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
     longDescription,
     name: blockName,
     parameters,
-    resources,
     version,
   };
 }
