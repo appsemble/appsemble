@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { URL } from 'url';
+import { URL, URLSearchParams } from 'url';
 
 import * as types from '@appsemble/types';
 import { forbidden } from '@hapi/boom';
@@ -20,14 +20,19 @@ export function resolveIconUrl(app: models.App): string {
   const hasIcon = app.get('hasIcon') ?? Boolean(app.icon);
 
   if (hasIcon) {
-    return `/api/apps/${app.id}/icon?maskable=true&updated=${app.updated.toISOString()}`;
+    return `/api/apps/${app.id}/icon?${new URLSearchParams({
+      maskable: 'true',
+      updated: app.updated.toISOString(),
+    })}`;
   }
 
   const organizationHasIcon = app.Organization?.get('hasIcon');
   if (organizationHasIcon) {
-    return `/api/organizations/${app.OrganizationId}/icon?background=${
-      app.iconBackground || '#ffffff'
-    }&maskable=true&updated=${app.Organization?.updated?.toISOString()}`;
+    return `/api/organizations/${app.OrganizationId}/icon?${new URLSearchParams({
+      background: app.iconBackground || '#ffffff',
+      maskable: 'true',
+      updated: app.Organization.updated.toISOString(),
+    })}`;
   }
 
   return null;

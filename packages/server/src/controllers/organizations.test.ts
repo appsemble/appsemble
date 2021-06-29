@@ -131,7 +131,7 @@ describe('getOrganizationApps', () => {
           OrganizationId: 'testorganization',
           definition: app.definition,
           iconUrl:
-            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: app.id,
           locked: false,
           path: 'test-app-2',
@@ -167,7 +167,7 @@ describe('getOrganizationApps', () => {
           OrganizationId: 'testorganization',
           definition: appA.definition,
           iconUrl:
-            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appA.id,
           locked: false,
           path: 'test-app',
@@ -177,7 +177,7 @@ describe('getOrganizationApps', () => {
           OrganizationId: 'testorganization',
           definition: appB.definition,
           iconUrl:
-            '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appB.id,
           locked: false,
           path: 'test-app-2',

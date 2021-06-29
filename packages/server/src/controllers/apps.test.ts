@@ -323,7 +323,7 @@ defaultPage: Test Page
     expect(response).toMatchObject({
       status: 200,
       data: {
-        iconUrl: `/api/apps/${app.id}/icon?maskable=true&updated=1970-01-01T00:00:00.000Z`,
+        iconUrl: `/api/apps/${app.id}/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z`,
       },
     });
   });
@@ -348,7 +348,7 @@ defaultPage: Test Page
       status: 200,
       data: {
         iconUrl:
-          '/api/organizations/testorganization/icon?background=#ffffff&maskable=true&updated=1970-01-01T00:00:00.000Z',
+          '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
       },
     });
   });
