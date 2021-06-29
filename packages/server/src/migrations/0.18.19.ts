@@ -17,13 +17,13 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
- * - Remove column `resources` from table `BlockVersion`.
+ * - Remove column `resources` to table `BlockVersion`.
  *
  * @param db - The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-  logger.info('Removing column resources from BlockVersion');
+  logger.info('Adding column resources to BlockVersion');
   await queryInterface.addColumn('BlockVersion', 'resources', {
     type: DataTypes.JSON,
   });
