@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.18
-appVersion: 0.18.18
+version: 0.18.19
+appVersion: 0.18.19
 kubeVersion: '>=1.20.0'
 type: application
 description: The open source low-code app building platform
@@ -25,18 +25,23 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: 'App: Add Russian translations.'
-    - kind: added
       description: >-
-        Appsemble: Add progress property to flow pages. This can be used to set the
-        method used to display the progress of a flow page’s steps.
-    - kind: added
-      description: 'Studio: Add Russian translations.'
+        Server: Add new option --sentry-allowed-domains to only serve Sentry on apps
+        from specific domains.
     - kind: changed
       description: >-
-        Appsemble: Change the background color of corner-dots in flow pages. More
-        often than not these ended up being invisible due to the default background
-        color.
+        App: Sync up bottom navigation with side navigation in terms of the
+        available options based on the layout property.
+    - kind: removed
+      description: 'Server: Remove block resources.'
+    - kind: fixed
+      description: 'App: Fix usage of navigation property in pages.'
+    - kind: fixed
+      description: 'Server: Fix serving maskable app icons.'
+    - kind: fixed
+      description: 'Studio: Use app icons provided by the API.'
+    - kind: fixed
+      description: 'Studio: Use block icons provided by the API.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

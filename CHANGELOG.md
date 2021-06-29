@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.19](https://gitlab.com/appsemble/appsemble/-/releases/0.18.19)] - 2021-06-29
+
+### Added
+
+- Server: Add new option `--sentry-allowed-domains` to only serve Sentry on apps from specific
+  domains.
+
+### Changed
+
+- App: Sync up bottom navigation with side navigation in terms of the available options based on the
+  `layout` property.
+
+### Removed
+
+- Server: Remove block resources.
+
+### Fixed
+
+- App: Fix usage of `navigation` property in pages.
+- Server: Fix serving maskable app icons.
+- Studio: Use app icons provided by the API.
+- Studio: Use block icons provided by the API.
+
 ## \[[0.18.18](https://gitlab.com/appsemble/appsemble/-/releases/0.18.18)] - 2021-06-25
 
 ### Added
