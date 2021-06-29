@@ -109,7 +109,6 @@ describe('publishBlock', () => {
       name: '@xkcd/standing',
       iconUrl: null,
       layout: null,
-      resources: null,
       parameters: null,
       version: '1.32.9',
       description: null,
@@ -436,7 +435,6 @@ describe('getBlockVersions', () => {
         iconUrl: null,
         layout: null,
         parameters: null,
-        resources: null,
         version: '1.32.9',
       },
     ]);
@@ -484,7 +482,6 @@ describe('getBlockVersions', () => {
         iconUrl: null,
         layout: null,
         parameters: null,
-        resources: null,
         version: '1.32.9',
       },
       {
@@ -497,7 +494,6 @@ describe('getBlockVersions', () => {
         iconUrl: null,
         layout: null,
         parameters: null,
-        resources: null,
         version: '1.4.0',
       },
     ]);

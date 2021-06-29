@@ -1,0 +1,1 @@
+Remove block resources.

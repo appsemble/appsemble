@@ -42,7 +42,6 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
       'events',
       'layout',
       'parameters',
-      'resources',
       [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
     where: { name: blockId, OrganizationId: organizationId },
@@ -71,7 +70,7 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
     BlockVersion & { hasIcon: boolean; hasOrganizationIcon: boolean; organizationUpdated: Date }
   >(
     `SELECT bv."OrganizationId", bv.name, bv.description, "longDescription",
-    version, actions, events, layout, parameters, resources,
+    version, actions, events, layout, parameters,
     bv.icon IS NOT NULL as "hasIcon", o.icon IS NOT NULL as "hasOrganizationIcon", o.updated AS "organizationUpdated"
     FROM "BlockVersion" bv
     INNER JOIN "Organization" o ON o.id = bv."OrganizationId"
@@ -94,7 +93,6 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
       name,
       organizationUpdated,
       parameters,
-      resources,
       version,
     } = blockVersion;
     let iconUrl = null;
@@ -113,7 +111,6 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
       iconUrl,
       layout,
       parameters,
-      resources,
     };
   });
 }
@@ -176,7 +173,6 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         layout = null,
         longDescription = null,
         parameters,
-        resources = null,
       } = await BlockVersion.create(
         { ...data, icon: icon?.contents, name: blockId, OrganizationId },
         { transaction },
@@ -226,7 +222,6 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         iconUrl,
         layout,
         parameters,
-        resources,
         events,
         version,
         files: files.map((file) => decodeURIComponent(file.filename)),
@@ -254,7 +249,6 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
       'events',
       'layout',
       'name',
-      'resources',
       'parameters',
       'description',
       'longDescription',
@@ -292,7 +286,6 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
       'events',
       'layout',
       'version',
-      'resources',
       'parameters',
       [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
