@@ -225,7 +225,6 @@ describe('getOrganizationBlocks', () => {
               type: 'object',
             },
           },
-          resources: null,
           version: '0.0.0',
         },
       ],

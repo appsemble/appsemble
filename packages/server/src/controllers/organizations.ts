@@ -168,7 +168,7 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
   // See: https://github.com/sequelize/sequelize/issues/9509
   const blockVersions = await getDB().query<BlockVersion>(
     {
-      query: `SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources, icon
+      query: `SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, icon
         FROM "BlockVersion"
         WHERE "OrganizationId" = ?
         AND created IN (SELECT MAX(created)
@@ -190,7 +190,6 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
       longDescription,
       name,
       parameters,
-      resources,
       version,
     }) => {
       let iconUrl = null;
@@ -209,7 +208,6 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
         iconUrl,
         layout,
         parameters,
-        resources,
       };
     },
   );

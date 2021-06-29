@@ -832,11 +832,6 @@ export interface BlockManifest {
   parameters?: Schema;
 
   /**
-   * @deprecated
-   */
-  resources?: null;
-
-  /**
    * The URL that can be used to fetch this block’s icon.
    */
   iconUrl?: string;
@@ -1511,7 +1506,6 @@ export interface BlockConfig
     | 'messages'
     | 'name'
     | 'parameters'
-    | 'resources'
     | 'version'
   > {
   /**

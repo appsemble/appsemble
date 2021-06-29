@@ -16,6 +16,7 @@ import {
   transactional,
 } from '../models';
 import { KoaContext } from '../types';
+import { blockVersionToJson } from '../utils/block';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
 
@@ -32,21 +33,25 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
 
   const blockVersion = await BlockVersion.findOne({
     attributes: [
+      'created',
       'description',
       'longDescription',
+      'name',
       'version',
       'actions',
       'events',
       'layout',
       'parameters',
-      'resources',
       [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
     where: { name: blockId, OrganizationId: organizationId },
-    include: {
-      model: Organization,
-      attributes: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
-    },
+    include: [
+      { model: BlockAsset, attributes: ['filename'] },
+      {
+        model: Organization,
+        attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      },
+    ],
     order: [['created', 'DESC']],
   });
 
@@ -54,27 +59,7 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Block definition not found');
   }
 
-  const { actions, description, events, layout, longDescription, parameters, resources, version } =
-    blockVersion;
-  const name = `@${organizationId}/${blockId}`;
-  let iconUrl = null;
-  if (blockVersion.get('hasIcon')) {
-    iconUrl = `/api/blocks/${name}/versions/${version}/icon`;
-  } else if (blockVersion.Organization.get('hasIcon')) {
-    iconUrl = `/api/organizations/@${organizationId}/icon?updated=${blockVersion.Organization.updated.toISOString()}`;
-  }
-  ctx.body = {
-    name,
-    description,
-    longDescription,
-    version,
-    actions,
-    events,
-    iconUrl,
-    layout,
-    parameters,
-    resources,
-  };
+  ctx.body = blockVersionToJson(blockVersion);
 }
 
 export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
@@ -85,7 +70,7 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
     BlockVersion & { hasIcon: boolean; hasOrganizationIcon: boolean; organizationUpdated: Date }
   >(
     `SELECT bv."OrganizationId", bv.name, bv.description, "longDescription",
-    version, actions, events, layout, parameters, resources,
+    version, actions, events, layout, parameters,
     bv.icon IS NOT NULL as "hasIcon", o.icon IS NOT NULL as "hasOrganizationIcon", o.updated AS "organizationUpdated"
     FROM "BlockVersion" bv
     INNER JOIN "Organization" o ON o.id = bv."OrganizationId"
@@ -108,14 +93,13 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
       name,
       organizationUpdated,
       parameters,
-      resources,
       version,
     } = blockVersion;
     let iconUrl = null;
     if (hasIcon) {
       iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
     } else if (hasOrganizationIcon) {
-      iconUrl = `/api/organizations/@${OrganizationId}/icon?updated=${organizationUpdated.toISOString()}`;
+      iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organizationUpdated.toISOString()}`;
     }
     return {
       name: `@${OrganizationId}/${name}`,
@@ -127,7 +111,6 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
       iconUrl,
       layout,
       parameters,
-      resources,
     };
   });
 }
@@ -190,7 +173,6 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         layout = null,
         longDescription = null,
         parameters,
-        resources = null,
       } = await BlockVersion.create(
         { ...data, icon: icon?.contents, name: blockId, OrganizationId },
         { transaction },
@@ -240,7 +222,6 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
         iconUrl,
         layout,
         parameters,
-        resources,
         events,
         version,
         files: files.map((file) => decodeURIComponent(file.filename)),
@@ -261,18 +242,17 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { blockId, blockVersion, organizationId },
   } = ctx;
-  const name = `@${organizationId}/${blockId}`;
 
   const version = await BlockVersion.findOne({
     attributes: [
-      'id',
       'actions',
       'events',
       'layout',
-      'resources',
+      'name',
       'parameters',
       'description',
       'longDescription',
+      'version',
       [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
@@ -280,7 +260,7 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
       { model: BlockAsset, attributes: ['filename'] },
       {
         model: Organization,
-        attributes: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+        attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
       },
     ],
   });
@@ -289,45 +269,34 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Block version not found');
   }
 
-  let iconUrl = version.get('hasIcon') ? `/api/blocks/${name}/versions/${blockVersion}/icon` : null;
-  if (!iconUrl && version.Organization.get('hasIcon')) {
-    iconUrl = `/api/organizations/${organizationId}/icon?updated=${version.Organization.updated.toISOString()}`;
-  }
-
-  ctx.body = {
-    files: version.BlockAssets.map((f) => f.filename),
-    iconUrl,
-    name,
-    version: blockVersion,
-    actions: version.actions,
-    events: version.events,
-    layout: version.layout,
-    resources: version.resources,
-    parameters: version.parameters,
-    description: version.description,
-    longDescription: version.longDescription,
-  };
+  ctx.body = blockVersionToJson(version);
 }
 
 export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { blockId, organizationId },
   } = ctx;
-  const name = `@${organizationId}/${blockId}`;
 
   const blockVersions = await BlockVersion.findAll({
     attributes: [
       'actions',
       'description',
       'longDescription',
+      'name',
       'events',
       'layout',
       'version',
-      'resources',
       'parameters',
+      [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
-    raw: true,
     where: { name: blockId, OrganizationId: organizationId },
+    include: [
+      { model: BlockAsset, attributes: ['filename'] },
+      {
+        model: Organization,
+        attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      },
+    ],
     order: [['created', 'DESC']],
   });
 
@@ -335,11 +304,7 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('Block not found.');
   }
 
-  ctx.body = blockVersions.map((blockVersion) => ({
-    name,
-    iconUrl: `/api/blocks/${name}/versions/${blockVersion.version}/icon`,
-    ...blockVersion,
-  }));
+  ctx.body = blockVersions.map(blockVersionToJson);
 }
 
 export async function getBlockAsset(ctx: KoaContext<Params>): Promise<void> {
