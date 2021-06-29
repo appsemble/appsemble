@@ -1,6 +1,6 @@
 import { SideMenuProvider } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
-import { checkAppRole } from '@appsemble/utils';
+import { checkAppRole, noop } from '@appsemble/utils';
 import {
   createContext,
   Dispatch,
@@ -29,7 +29,7 @@ interface MenuProviderContext {
   setPage: Dispatch<SetStateAction<PageDefinition>>;
 }
 
-const Context = createContext<MenuProviderContext>(null);
+const Context = createContext<MenuProviderContext>({ page: undefined, setPage: noop });
 
 export function usePage(): MenuProviderContext {
   return useContext(Context);
