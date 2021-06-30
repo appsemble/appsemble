@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.20](https://gitlab.com/appsemble/appsemble/-/releases/0.18.20)] - 2021-06-30
+
+### Fixed
+
+- App: Fix crash that happened on builtin pages.
+- Server: Escape query parameters in returned icon URLs.
+
 ## \[[0.18.19](https://gitlab.com/appsemble/appsemble/-/releases/0.18.19)] - 2021-06-29
 
 ### Added

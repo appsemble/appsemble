@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.19
-appVersion: 0.18.19
+version: 0.18.20
+appVersion: 0.18.20
 kubeVersion: '>=1.20.0'
 type: application
 description: The open source low-code app building platform
@@ -24,24 +24,10 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: added
-      description: >-
-        Server: Add new option --sentry-allowed-domains to only serve Sentry on apps
-        from specific domains.
-    - kind: changed
-      description: >-
-        App: Sync up bottom navigation with side navigation in terms of the
-        available options based on the layout property.
-    - kind: removed
-      description: 'Server: Remove block resources.'
     - kind: fixed
-      description: 'App: Fix usage of navigation property in pages.'
+      description: 'App: Fix crash that happened on builtin pages.'
     - kind: fixed
-      description: 'Server: Fix serving maskable app icons.'
-    - kind: fixed
-      description: 'Studio: Use app icons provided by the API.'
-    - kind: fixed
-      description: 'Studio: Use block icons provided by the API.'
+      description: 'Server: Escape query parameters in returned icon URLs.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
