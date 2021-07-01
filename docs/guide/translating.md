@@ -26,6 +26,8 @@ translation methods provided by Appsemble. If a set of translations is used for 
 worth considering contributing these for other users to use via
 [Weblate](https://hosted.weblate.org/projects/appsemble/appsemble).
 
+[![Translation status](https://hosted.weblate.org/widgets/appsemble/-/appsemble/multi-auto.svg 'Translation status')](https://hosted.weblate.org/engage/appsemble/)
+
 ## Custom messages
 
 It is possible to provide custom messages within an app. This can be done by using the
