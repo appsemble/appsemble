@@ -23,6 +23,7 @@ import { serveIcon } from '../utils/icon';
 interface Params {
   blockId: string;
   blockVersion: string;
+  language: string;
   organizationId: string;
 }
 
@@ -331,6 +332,34 @@ export async function getBlockAsset(ctx: KoaContext<Params>): Promise<void> {
 
   ctx.body = block.BlockAssets[0].content;
   ctx.type = block.BlockAssets[0].mime;
+}
+
+export async function getBlockMessages(ctx: KoaContext<Params>): Promise<void> {
+  const {
+    params: { blockId, blockVersion, language, organizationId },
+  } = ctx;
+
+  const block = await BlockVersion.findOne({
+    attributes: ['id'],
+    where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
+    include: [
+      {
+        model: BlockMessages,
+        required: false,
+        where: { language },
+      },
+    ],
+  });
+
+  if (!block) {
+    throw notFound('Block version not found');
+  }
+
+  if (block.BlockMessages.length !== 1) {
+    throw notFound(`Block has no messages for language "${language}"`);
+  }
+
+  ctx.body = block.BlockMessages[0].messages;
 }
 
 export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
