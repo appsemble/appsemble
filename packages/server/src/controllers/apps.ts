@@ -76,6 +76,7 @@ async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
     ...blockVersion,
     name: `@${blockVersion.OrganizationId}/${blockVersion.name}`,
     files: null,
+    languages: null,
   }));
 }
 

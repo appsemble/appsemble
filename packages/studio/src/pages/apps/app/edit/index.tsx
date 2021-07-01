@@ -162,6 +162,7 @@ export default function EditPage(): ReactElement {
             files: data.files,
             actions: data.actions,
             events: data.events,
+            languages: data.languages,
           };
         }),
       );

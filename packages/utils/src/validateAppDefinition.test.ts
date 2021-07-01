@@ -57,6 +57,7 @@ describe('checkBlocks', () => {
             name: '@appsemble/test',
             version: '1.2.3',
             files: [],
+            languages: null,
             parameters: {
               type: 'object',
               properties: {
@@ -79,7 +80,7 @@ describe('checkBlocks', () => {
   it('should not throw on success', () => {
     expect(() =>
       checkBlocks({ 'pages.0.blocks.0': { type: 'test', version: '1.2.3' } }, [
-        { name: '@appsemble/test', version: '1.2.3', files: [] },
+        { name: '@appsemble/test', version: '1.2.3', files: [], languages: null },
       ]),
     ).not.toThrow();
   });
@@ -109,7 +110,15 @@ describe('checkBlocks', () => {
             actions: { onClick: { type: 'noop' } },
           },
         },
-        [{ name: '@appsemble/test', version: '1.2.3', files: [], actions: { onTap: {} } }],
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            languages: null,
+            actions: { onTap: {} },
+          },
+        ],
       );
     } catch (err: unknown) {
       error = err as AppsembleValidationError;
@@ -139,6 +148,7 @@ describe('checkBlocks', () => {
             version: '1.2.3',
             files: [],
             actions: { $any: {} },
+            languages: null,
             parameters: {
               type: 'object',
               properties: { customAction: { type: 'string', format: 'action' } },
@@ -167,7 +177,7 @@ describe('checkBlocks', () => {
             actions: { onClick: { type: 'noop' } },
           },
         },
-        [{ name: '@appsemble/test', version: '1.2.3', files: [] }],
+        [{ name: '@appsemble/test', version: '1.2.3', files: [], languages: null }],
       );
     } catch (err: unknown) {
       error = err as AppsembleValidationError;
@@ -197,6 +207,7 @@ describe('checkBlocks', () => {
             files: [],
             actions: {},
             events: {},
+            languages: null,
             parameters: {
               type: 'object',
               properties: { customAction: { type: 'string', format: 'action' } },
@@ -232,6 +243,7 @@ describe('checkBlocks', () => {
             files: [],
             actions: {},
             events: {},
+            languages: null,
           },
         ],
       );
@@ -262,6 +274,7 @@ describe('checkBlocks', () => {
             files: [],
             actions: {},
             events: { emit: { $any: {} } },
+            languages: null,
           },
         ],
       ),
@@ -285,6 +298,7 @@ describe('checkBlocks', () => {
             files: [],
             actions: {},
             events: { listen: { $any: {} } },
+            languages: null,
           },
         ],
       ),
