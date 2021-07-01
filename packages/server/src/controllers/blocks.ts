@@ -51,6 +51,11 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
         model: Organization,
         attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
       },
+      {
+        model: BlockMessages,
+        attributes: ['language'],
+        required: false,
+      },
     ],
     order: [['created', 'DESC']],
   });
@@ -165,15 +170,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
 
   try {
     await transactional(async (transaction) => {
-      const {
-        actions = null,
-        description = null,
-        events,
-        id,
-        layout = null,
-        longDescription = null,
-        parameters,
-      } = await BlockVersion.create(
+      const createdBlock = await BlockVersion.create(
         { ...data, icon: icon?.contents, name: blockId, OrganizationId },
         { transaction },
       );
@@ -183,10 +180,10 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
           `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.filename)}`,
         );
       });
-      await BlockAsset.bulkCreate(
+      createdBlock.BlockAssets = await BlockAsset.bulkCreate(
         files.map((file) => ({
           name: blockId,
-          BlockVersionId: id,
+          BlockVersionId: createdBlock.id,
           filename: decodeURIComponent(file.filename),
           mime: file.mime,
           content: file.contents,
@@ -199,36 +196,20 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
           Object.entries(messages).map(([language, content]) => ({
             language,
             messages: content,
-            BlockVersionId: id,
+            BlockVersionId: createdBlock.id,
           })),
           { transaction },
         );
       }
 
-      let iconUrl = icon ? `/api/blocks/${name}/versions/${version}/icon` : null;
-      if (!iconUrl) {
-        const organization = await Organization.findByPk(OrganizationId, {
-          transaction,
+      createdBlock.Organization = new Organization({ id: OrganizationId });
+      if (!icon) {
+        await createdBlock.Organization.reload({
           attributes: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
         });
-
-        if (organization.get('hasIcon')) {
-          iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
-        }
       }
 
-      ctx.body = {
-        actions,
-        iconUrl,
-        layout,
-        parameters,
-        events,
-        version,
-        files: files.map((file) => decodeURIComponent(file.filename)),
-        name,
-        description,
-        longDescription,
-      };
+      ctx.body = blockVersionToJson(createdBlock);
     });
   } catch (err: unknown) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
@@ -261,6 +242,11 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
       {
         model: Organization,
         attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      },
+      {
+        model: BlockMessages,
+        required: false,
+        attributes: ['language'],
       },
     ],
   });
@@ -295,6 +281,11 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
       {
         model: Organization,
         attributes: ['id', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      },
+      {
+        model: BlockMessages,
+        required: false,
+        attributes: ['language'],
       },
     ],
     order: [['created', 'DESC']],

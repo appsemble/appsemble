@@ -835,6 +835,13 @@ export interface BlockManifest {
    * The URL that can be used to fetch this block’s icon.
    */
   iconUrl?: string;
+
+  /**
+   * The languages that are supported by the block by default.
+   *
+   * If the block has no messages, this property is `null`.
+   */
+  languages: string[] | null;
 }
 
 /**

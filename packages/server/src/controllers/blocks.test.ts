@@ -83,7 +83,10 @@ describe('queryBlocks', () => {
     const { data: pen } = await request.post('/api/blocks', formDataB);
 
     const { data: bam } = await request.get('/api/blocks');
-    expect(bam).toMatchObject([omit(apple, ['files']), omit(pen, ['files'])]);
+    expect(bam).toMatchObject([
+      omit(apple, ['files', 'languages']),
+      omit(pen, ['files', 'languages']),
+    ]);
   });
 });
 
@@ -108,6 +111,7 @@ describe('publishBlock', () => {
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
       iconUrl: null,
+      languages: null,
       layout: null,
       parameters: null,
       version: '1.32.9',
@@ -391,7 +395,7 @@ describe('getBlockVersion', () => {
 
     expect(retrieved).toStrictEqual(created);
     expect(retrieved.iconUrl).toStrictEqual(
-      '/api/organizations/xkcd/icon?updated=1970-01-01T00:00:00.000Z',
+      '/api/organizations/xkcd/icon?updated=1970-01-01T00%3A00%3A00.000Z',
     );
     expect(status).toBe(200);
     clock.uninstall();
@@ -433,6 +437,7 @@ describe('getBlockVersions', () => {
         events: null,
         files: ['standing.png', 'testblock.js'],
         iconUrl: null,
+        languages: null,
         layout: null,
         parameters: null,
         version: '1.32.9',
@@ -457,6 +462,7 @@ describe('getBlockVersions', () => {
     formDataA.append('files', createFixtureStream('standing.png'), {
       filepath: 'testblock.js',
     });
+    formDataA.append('messages', JSON.stringify({ en: { foo: 'Foo' } }));
     await authorizeClientCredentials('blocks:write');
     await request.post('/api/blocks', formDataA);
 
@@ -480,6 +486,7 @@ describe('getBlockVersions', () => {
         events: null,
         files: ['testblock.js'],
         iconUrl: null,
+        languages: null,
         layout: null,
         parameters: null,
         version: '1.32.9',
@@ -492,6 +499,7 @@ describe('getBlockVersions', () => {
         events: null,
         files: ['testblock.js'],
         iconUrl: null,
+        languages: ['en'],
         layout: null,
         parameters: null,
         version: '1.4.0',
