@@ -232,7 +232,7 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
       entry: require.resolve('@appsemble/service-worker/src/index.ts'),
       filename: 'service-worker.js',
       minimize: production,
-      publicPath: '/',
+      publicPath: production ? '/' : '/app/',
       transformOptions: ({ assets }) => assets,
     }),
   );

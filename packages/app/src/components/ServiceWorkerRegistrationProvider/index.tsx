@@ -12,7 +12,7 @@ import {
 } from 'react';
 
 import { Permission, ServiceWorkerRegistrationContextType } from '../../types';
-import { apiUrl, appId, vapidPublicKey } from '../../utils/settings';
+import { apiUrl, appId, blockManifests, vapidPublicKey } from '../../utils/settings';
 
 interface ServiceWorkerRegistrationProviderProps {
   children: ReactNode;
@@ -33,9 +33,19 @@ export function ServiceWorkerRegistrationProvider({
   const [subscription, setSubscription] = useState<PushSubscription>();
 
   useEffect(() => {
-    serviceWorkerRegistrationPromise.then((registration) =>
-      registration?.pushManager.getSubscription().then(setSubscription),
-    );
+    serviceWorkerRegistrationPromise.then((registration) => {
+      const controller = navigator.serviceWorker?.controller;
+      if (controller) {
+        controller.postMessage(
+          blockManifests.flatMap((block) =>
+            block.files.map(
+              (file) => `/api/blocks/${block.name}/versions/${block.version}/${file}`,
+            ),
+          ),
+        );
+      }
+      registration?.pushManager.getSubscription().then(setSubscription);
+    });
   }, [serviceWorkerRegistrationPromise]);
 
   const requestPermission = useCallback(async () => {
