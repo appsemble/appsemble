@@ -1,4 +1,5 @@
 import {
+  FileUpload,
   ModalCard,
   Select,
   SimpleForm,
@@ -12,6 +13,7 @@ import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { IconPreview } from 'studio/src/pages/organizations/organization/SettingsPage/IconPreview';
 
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
@@ -85,6 +87,7 @@ const defaults = {
   name: '',
   website: '',
   websiteProtocol: 'https',
+  icon: null as File,
 };
 
 /**
@@ -112,14 +115,19 @@ export function CreateOrganizationModal({
   const { organizations, setOrganizations } = useUser();
 
   const submitOrganization = useCallback(
-    async ({ description, email, id, name, website, websiteProtocol }: typeof defaults) => {
-      const { data } = await axios.post<Organization>('/api/organizations', {
-        name,
-        id: normalize(id),
-        description,
-        email,
-        website: website ? `${websiteProtocol}://${website}` : undefined,
-      });
+    async ({ description, email, icon, id, name, website, websiteProtocol }: typeof defaults) => {
+      const formData = new FormData();
+      formData.set('id', normalize(id));
+      formData.set('name', name);
+      formData.set('description', description);
+      formData.set('email', email);
+      formData.set('website', website ? `${websiteProtocol}://${website}` : '');
+
+      if (icon) {
+        formData.set('icon', icon);
+      }
+
+      const { data } = await axios.post<Organization>('/api/organizations', formData);
       setOrganizations([...organizations, { ...data, role: 'Owner' }]);
       onCreateOrganization?.(data);
     },
@@ -193,6 +201,16 @@ export function CreateOrganizationModal({
         icon="info"
         label={<FormattedMessage {...messages.description} />}
         name="description"
+      />
+      <SimpleFormField
+        accept="image/jpeg, image/png, image/tiff, image/webp"
+        component={FileUpload}
+        fileButtonLabel={<FormattedMessage {...messages.logo} />}
+        fileLabel={<FormattedMessage {...messages.selectFile} />}
+        help={<FormattedMessage {...messages.logoDescription} />}
+        label={<FormattedMessage {...messages.logo} />}
+        name="icon"
+        preview={<IconPreview organization={{ iconUrl: null } as Organization} />}
       />
     </ModalCard>
   );

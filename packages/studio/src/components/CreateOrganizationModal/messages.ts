@@ -11,4 +11,7 @@ export const messages = defineMessages({
   website: 'Website',
   conflict: 'An organization with the given ID already exists',
   error: 'There was a problem creating the organization.',
+  logo: 'Logo',
+  logoDescription: 'The logo that represents this organization',
+  selectFile: 'Select logo',
 });

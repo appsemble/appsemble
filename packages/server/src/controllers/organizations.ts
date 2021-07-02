@@ -292,7 +292,7 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
 export async function createOrganization(ctx: KoaContext): Promise<void> {
   const {
     request: {
-      body: { description, email, id, name, website },
+      body: { description, email, icon, id, name, website },
     },
     user: { id: userId },
   } = ctx;
@@ -322,7 +322,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
 
   try {
     const organization = await Organization.create(
-      { id, name, email, description, website },
+      { id, name, email, description, website, icon: icon ? icon.contents : null },
       { include: [User] },
     );
 
@@ -333,7 +333,9 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
     ctx.body = {
       id: organization.id,
       name: organization.name,
-      iconUrl: null,
+      iconUrl: icon
+        ? `/api/organizations/${organization.id}/icon?updated=${organization.created.toISOString()}`
+        : null,
       description: organization.description,
       website: organization.website,
       email: organization.email,
