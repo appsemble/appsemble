@@ -168,6 +168,7 @@ export const paths: OpenAPIV3.PathsObject = {
         name: 'language',
         schema: { type: 'string' },
         description: 'The language to get messages for.',
+        required: true,
       },
     ],
     get: {
