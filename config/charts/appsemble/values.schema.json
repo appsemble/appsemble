@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "replicaCount": {
+      "type": "integer"
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "repository": {
+          "type": "string",
+          "description": "Set this to `registry.gitlab.io/appsemble/appsemble` to support prerelease versions."
+        },
+        "tag": {
+          "type": ["string", "null"],
+          "description": "If specified, this Docker image tag will be used. Otherwise, it will use the chart’s `appVersion`."
+        },
+        "pullPolicy": {
+          "description": "This can be used to override the default image pull policy.",
+          "enum": ["Always", "IfNotPresent"]
+        }
+      }
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "This can be used to override the name in the templates."
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "This can be used to override the full name in the templates."
+    },
+    "service": {
+      "type": "object",
+      "additionalItems": false,
+      "properties": {
+        "type": {
+          "description": "The type of the Appsemble service.",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"]
+        },
+        "port": {
+          "type": "integer",
+          "description": "The HTTP port on which the Appsemble service will be exposed to the cluster.",
+          "minimum": 1,
+          "maximum": 65535
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "additionalItems": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether or not the service should be exposed through an ingress."
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations for the Appsemble ingress.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "host": {
+          "type": "string",
+          "description": "The host name on which the ingress will expose the service."
+        },
+        "tls": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "secretName": {
+              "type": "string",
+              "description": "The secret name to use to configure TLS for the top level host."
+            },
+            "wildcardSecretName": {
+              "type": "string",
+              "description": "The secret name to use to configure TLS for the direct wildcard host."
+            }
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "object"
+    },
+    "nodeSelector": {
+      "type": "object"
+    },
+    "tolerations": {
+      "type": "array"
+    },
+    "affinity": {
+      "type": "object"
+    },
+    "smtpSecret": {
+      "type": "string",
+      "description": "The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`."
+    },
+    "oauthSecret": {
+      "type": ["string", "null"],
+      "description": "The secret which holds client ids and client secrets for OAuth2 providers."
+    },
+    "sentryAllowedDomains": {
+      "type": ["array", "null"],
+      "description": "A list of domains on which Sentry integration will be enabled. Wildcards are supported.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sentrySecret": {
+      "type": ["string", "null"],
+      "description": "The secret from which to read the Sentry DSN.  "
+    },
+    "sentryEnvironment": {
+      "type": ["string", "null"],
+      "description": "The environment to send with Sentry error reports"
+    },
+    "secretSecret": {
+      "type": "string",
+      "description": "The Kubernetes secret which holds the `SECRET` environment variable."
+    },
+    "cronjob": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "jobsHistoryLimit": {
+          "type": "integer",
+          "description": "How long to keep logs for cronjobs in days."
+        }
+      }
+    },
+    "gitlab": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "app": {
+          "type": ["string", "null"]
+        },
+        "env": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "migrateTo": {
+      "type": ["string", "null"],
+      "description": "If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`"
+    },
+    "proxy": {
+      "type": "boolean",
+      "description": "If `true`, The proxy is trusted for logging purposes."
+    },
+    "global": {
+      "type": "object"
+    },
+    "postgresql": {
+      "type": "object"
+    },
+    "postgresSSL": {
+      "type": "boolean",
+      "description": "If `true`, connect establish the PostgreSQL connection over SSL."
+    }
+  }
+}
