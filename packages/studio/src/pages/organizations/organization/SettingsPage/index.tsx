@@ -99,12 +99,6 @@ export function SettingsPage({
           name="name"
         />
         <SimpleFormField
-          help={<FormattedMessage {...messages.emailDescription} />}
-          label={<FormattedMessage {...messages.email} />}
-          name="email"
-          type="email"
-        />
-        <SimpleFormField
           addonLeft={
             <SimpleFormField component={Select} name="websiteProtocol">
               <option value="https">https://</option>
@@ -115,6 +109,12 @@ export function SettingsPage({
           label={<FormattedMessage {...messages.website} />}
           name="website"
           preprocess={preprocessWebsite}
+        />
+        <SimpleFormField
+          help={<FormattedMessage {...messages.emailDescription} />}
+          label={<FormattedMessage {...messages.email} />}
+          name="email"
+          type="email"
         />
         <SimpleFormField
           help={<FormattedMessage {...messages.descriptionDescription} />}

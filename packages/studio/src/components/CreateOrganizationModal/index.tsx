@@ -164,12 +164,14 @@ export function CreateOrganizationModal({
       </SimpleFormError>
       <SimpleFormField
         disabled={disabled}
+        help={<FormattedMessage {...messages.organizationNameDescription} />}
         icon="briefcase"
         label={<FormattedMessage {...messages.organizationName} />}
         name="name"
       />
       <SimpleFormField
         disabled={disabled}
+        help={<FormattedMessage {...messages.organizationIdDescription} />}
         icon="at"
         label={<FormattedMessage {...messages.organizationId} />}
         maxLength={30}
@@ -185,12 +187,14 @@ export function CreateOrganizationModal({
           </SimpleFormField>
         }
         disabled={disabled}
+        help={<FormattedMessage {...messages.websiteDescription} />}
         label={<FormattedMessage {...messages.website} />}
         name="website"
         preprocess={preprocessWebsite}
       />
       <SimpleFormField
         disabled={disabled}
+        help={<FormattedMessage {...messages.emailDescription} />}
         icon="envelope"
         label={<FormattedMessage {...messages.email} />}
         name="email"
@@ -198,6 +202,7 @@ export function CreateOrganizationModal({
       />
       <SimpleFormField
         disabled={disabled}
+        help={<FormattedMessage {...messages.descriptionDescription} />}
         icon="info"
         label={<FormattedMessage {...messages.description} />}
         name="description"
