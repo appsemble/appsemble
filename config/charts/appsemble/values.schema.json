@@ -112,7 +112,7 @@
     },
     "sentrySecret": {
       "type": ["string", "null"],
-      "description": "The secret from which to read the Sentry DSN.  "
+      "description": "The secret from which to read the Sentry DSN."
     },
     "sentryEnvironment": {
       "type": ["string", "null"],
@@ -161,6 +161,39 @@
     "postgresSSL": {
       "type": "boolean",
       "description": "If `true`, connect establish the PostgreSQL connection over SSL."
+    },
+    "provision": {
+      "type": "object",
+      "description": "Provision the database with a preconfigured account and client credentials. This is for development purposes only.",
+      "additionalProperties": false,
+      "required": ["account"],
+      "properties": {
+        "account": {
+          "type": "object",
+          "description": "The account to create.",
+          "additionalProperties": false,
+          "required": ["clientCredentials", "email", "name", "password"],
+          "properties": {
+            "clientCredentials": {
+              "type": "string",
+              "description": "Client credentials that can be used to authenticate the user."
+            },
+            "email": {
+              "type": "string",
+              "description": "The email address of the user account.",
+              "format": "email"
+            },
+            "name": {
+              "type": "string",
+              "description": "The display name of the user account."
+            },
+            "password": {
+              "type": "string",
+              "description": "The password of the user account."
+            }
+          }
+        }
+      }
     }
   }
 }
