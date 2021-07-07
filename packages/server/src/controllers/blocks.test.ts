@@ -634,6 +634,57 @@ describe('getBlockAsset', () => {
   });
 });
 
+describe('getBlockMessages', () => {
+  it('should download block messages', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockMessages.create({
+      BlockVersionId: block.id,
+      language: 'en',
+      messages: { hello: 'Hello' },
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    expect(response).toMatchObject({
+      status: 200,
+      data: { hello: 'Hello' },
+    });
+  });
+
+  it('should return 404 if the block messages don’t exist', async () => {
+    await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block has no messages for language "en"',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should return 404 if the block doesn’t exist', async () => {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block version not found',
+        statusCode: 404,
+      },
+    });
+  });
+});
+
 describe('getBlockIcon', () => {
   it('should serve the block icon', async () => {
     const icon = await readFixture('testpattern.png');
