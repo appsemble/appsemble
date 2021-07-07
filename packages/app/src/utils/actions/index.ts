@@ -13,6 +13,7 @@ import { message } from './message';
 import { noop } from './noop';
 import { request } from './request';
 import * as resource from './resource';
+import { share } from './share';
 import { staticAction } from './static';
 import { teamJoin, teamList } from './team';
 import { throwAction } from './throw';
@@ -70,6 +71,7 @@ export const actionCreators: ActionCreators = {
   'resource.subscription.unsubscribe': resource.unsubscribe,
   'resource.subscription.toggle': resource.toggle,
   'resource.subscription.status': resource.status,
+  share,
   static: staticAction,
   'team.join': teamJoin,
   'team.list': teamList,

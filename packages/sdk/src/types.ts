@@ -94,6 +94,7 @@ export type Action =
   | BaseAction<'resource.subscription.subscribe'>
   | BaseAction<'resource.subscription.toggle'>
   | BaseAction<'resource.subscription.unsubscribe'>
+  | BaseAction<'share'>
   | BaseAction<'static'>
   | BaseAction<'team.join'>
   | BaseAction<'team.list'>

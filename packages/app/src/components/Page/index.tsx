@@ -1,6 +1,13 @@
 import { EventEmitter } from 'events';
 
-import { Button, Content, Message, useLocationString } from '@appsemble/react-components';
+import {
+  Button,
+  Content,
+  Message,
+  ModalCard,
+  useLocationString,
+  useToggle,
+} from '@appsemble/react-components';
 import { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
@@ -71,6 +78,7 @@ export function Page(): ReactElement {
       setDialog(null);
     };
   }, []);
+  const showShareDialog = useToggle(true);
 
   useEffect(() => {
     if (!page) {
@@ -172,6 +180,44 @@ export function Page(): ReactElement {
           remap={remapWithContext}
           showDialog={showDialog}
         />
+        <ModalCard
+          isActive={showShareDialog.enabled}
+          onClose={showShareDialog.disable}
+          title={<FormattedMessage {...messages.share} />}
+        >
+          <div className="buttons is-justify-content-center">
+            <Button
+              component="a"
+              href="mailto:?subject=Test Subject&body=Body!"
+              icon="envelope"
+              onClick={showShareDialog.disable}
+            >
+              <FormattedMessage {...messages.email} />
+            </Button>
+            <Button
+              className={styles.twitter}
+              component="a"
+              href={`https://twitter.com/intent/tweet?text=Hello world&url=${window.origin}`}
+              icon="twitter"
+              onClick={showShareDialog.disable}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <FormattedMessage {...messages.shareOn} values={{ name: 'Twitter' }} />
+            </Button>
+            <Button
+              className={styles.facebook}
+              component="a"
+              href={`https://www.facebook.com/sharer/sharer.php?u=${window.origin}&t=ExampleTitle`}
+              icon="facebook-f"
+              onClick={showShareDialog.disable}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <FormattedMessage {...messages.shareOn} values={{ name: 'Facebook' }} />
+            </Button>
+          </div>
+        </ModalCard>
       </main>
     );
   }
