@@ -12,62 +12,56 @@ import { robotsHandler } from './robotsHandler';
 import { serviceWorkerHandler } from './serviceWorkerHandler';
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
-const production = process.env.NODE_ENV === 'production';
 
-export const appRouter = tinyRouter(
-  [
-    {
-      route: '/manifest.json',
-      get: manifestHandler,
-    },
-    {
-      route: '/robots.txt',
-      get: robotsHandler,
-    },
-    production
-      ? null
-      : {
-          route: '/service-worker.js',
-          get: serviceWorkerHandler,
-        },
-
-    {
-      route: /^\/icon-(?<size>\d+)\.png$/,
-      get: iconHandler,
-    },
-    {
-      route: new RegExp(
-        `^/api/blocks/${blockName}/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
-      ),
-      get: blockAssetHandler,
-    },
-    {
-      route: '/core.css',
-      get: cssHandler('coreStyle'),
-    },
-    {
-      route: '/shared.css',
-      get: cssHandler('sharedStyle'),
-    },
-    {
-      route: new RegExp(`^/${blockName}\\.css`),
-      get: blockCSSHandler,
-    },
-    {
-      route: /(^|\/)\.well-known(\/|$)/,
-      any: noop,
-    },
-    {
-      route: '/index.html',
-      get: indexHandler,
-    },
-    {
-      route: /\.[a-z]\w*$/i,
-      any: staticHandler('app'),
-    },
-    {
-      route: /.*/,
-      get: indexHandler,
-    },
-  ].filter(Boolean),
-);
+export const appRouter = tinyRouter([
+  {
+    route: '/manifest.json',
+    get: manifestHandler,
+  },
+  {
+    route: '/robots.txt',
+    get: robotsHandler,
+  },
+  {
+    route: '/service-worker.js',
+    get: serviceWorkerHandler,
+  },
+  {
+    route: /^\/icon-(?<size>\d+)\.png$/,
+    get: iconHandler,
+  },
+  {
+    route: new RegExp(
+      `^/api/blocks/${blockName}/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
+    ),
+    get: blockAssetHandler,
+  },
+  {
+    route: '/core.css',
+    get: cssHandler('coreStyle'),
+  },
+  {
+    route: '/shared.css',
+    get: cssHandler('sharedStyle'),
+  },
+  {
+    route: new RegExp(`^/${blockName}\\.css`),
+    get: blockCSSHandler,
+  },
+  {
+    route: /(^|\/)\.well-known(\/|$)/,
+    any: noop,
+  },
+  {
+    route: '/index.html',
+    get: indexHandler,
+  },
+  {
+    route: /\.[a-z]\w*$/i,
+    any: staticHandler('app'),
+  },
+  {
+    route: /.*/,
+    get: indexHandler,
+  },
+]);
