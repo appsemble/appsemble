@@ -85,5 +85,8 @@ export async function callBootstrap(
     loadedBlocks.add(manifest.name);
   }
   const bootstrap = await getBootstrap(manifest.name);
-  await bootstrap(params);
+  const result = await bootstrap(params);
+  if (result instanceof Element) {
+    params.shadowRoot.append(result);
+  }
 }

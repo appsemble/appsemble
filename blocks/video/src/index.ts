@@ -1,4 +1,4 @@
-import { attach } from '@appsemble/sdk';
+import { bootstrap } from '@appsemble/sdk';
 import Vimeo from '@vimeo/player';
 
 import styles from './index.module.css';
@@ -6,7 +6,7 @@ import styles from './index.module.css';
 // https://github.com/vimeo/player.js/blob/989954e5645999c7ef0e5fbccaea04dedf1bec17/src/lib/functions.js#L61
 const vimeoRegex = /^(https?:)?\/\/((player|www)\.)?vimeo\.com(?=$|\/)/;
 
-attach(
+bootstrap(
   ({
     actions,
     data,

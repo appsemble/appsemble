@@ -1,4 +1,4 @@
-import { attach, Messages } from '@appsemble/sdk';
+import { bootstrap, Messages } from '@appsemble/sdk';
 import equal from 'fast-deep-equal';
 
 import styles from './index.module.css';
@@ -7,7 +7,7 @@ type Item = Record<string, unknown>;
 
 type Data = Item | Item[];
 
-attach(({ events, parameters: { color = 'dark', id = 'id' }, utils }) => {
+bootstrap(({ events, parameters: { color = 'dark', id = 'id' }, utils }) => {
   let oldData: Data;
   let pendingData: Data;
   let message: HTMLElement;
