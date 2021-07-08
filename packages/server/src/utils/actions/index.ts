@@ -46,6 +46,7 @@ export const actions = {
   'resource.subscription.subscribe': noop,
   'resource.subscription.toggle': noop,
   'resource.subscription.unsubscribe': noop,
+  share: noop,
   static: staticAction,
   'team.join': noop,
   'team.list': noop,
