@@ -1,15 +1,22 @@
-.twitter {
-  background-color: hsl(203, 89%, 53%);
+.light {
   color: hsl(0, 0%, 100%);
   &:hover {
     color: hsl(0, 0%, 100%);
   }
 }
 
+.twitter {
+  background-color: hsl(203, 89%, 53%);
+}
+
 .facebook {
   background-color: hsl(220, 46%, 48%);
-  color: hsl(0, 0%, 100%);
-  &:hover {
-    color: hsl(0, 0%, 100%);
-  }
+}
+
+.whatsapp {
+  background-color: hsl(142, 70%, 49%);
+}
+
+.linkedin {
+  background-color: hsl(199, 85%, 36%);
 }
