@@ -32,9 +32,36 @@ export const paths: OpenAPIV3.PathsObject = {
         description: 'The organization to create',
         required: true,
         content: {
-          'application/json': {
+          'multipart/form-data': {
             schema: {
-              $ref: '#/components/schemas/Organization',
+              type: 'object',
+              properties: {
+                id: {
+                  $ref: '#/components/schemas/Organization/properties/id',
+                },
+                name: {
+                  $ref: '#/components/schemas/Organization/properties/name',
+                },
+                description: {
+                  $ref: '#/components/schemas/Organization/properties/description',
+                },
+                email: {
+                  $ref: '#/components/schemas/Organization/properties/email',
+                },
+                website: {
+                  $ref: '#/components/schemas/Organization/properties/website',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The organization icon.',
+                },
+              },
+            },
+            encoding: {
+              icon: {
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
+              },
             },
           },
         },

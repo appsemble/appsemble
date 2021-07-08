@@ -355,7 +355,10 @@ describe('patchOrganization', () => {
 describe('createOrganization', () => {
   it('should create a new organization', async () => {
     authorizeStudio();
-    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
+    const response = await request.post(
+      '/api/organizations',
+      createFormData({ id: 'foo', name: 'Foooo' }),
+    );
 
     expect(response).toMatchObject({
       status: 201,
@@ -370,6 +373,33 @@ describe('createOrganization', () => {
             role: 'Owner',
           },
         ],
+        iconUrl: null,
+        invites: [],
+      },
+    });
+  });
+
+  it('should create a new organization with an icon', async () => {
+    authorizeStudio();
+    const formData = createFormData({ id: 'foo', name: 'Foooo' });
+    const buffer = await readFixture('testpattern.png');
+    formData.append('icon', buffer, { filename: 'icon.png' });
+    const response = await request.post('/api/organizations', formData);
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: 'foo',
+        name: 'Foooo',
+        members: [
+          {
+            id: expect.any(String),
+            name: 'Test User',
+            primaryEmail: 'test@example.com',
+            role: 'Owner',
+          },
+        ],
+        iconUrl: '/api/organizations/foo/icon?updated=1970-01-01T00:00:00.000Z',
         invites: [],
       },
     });
@@ -379,7 +409,10 @@ describe('createOrganization', () => {
     await EmailAuthorization.update({ verified: false }, { where: { UserId: user.id } });
 
     authorizeStudio();
-    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
+    const response = await request.post(
+      '/api/organizations',
+      createFormData({ id: 'foo', name: 'Foooo' }),
+    );
 
     expect(response).toMatchObject({
       status: 403,
@@ -396,9 +429,12 @@ describe('createOrganization', () => {
     clock.uninstall();
 
     authorizeStudio();
-    await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
+    await request.post('/api/organizations', createFormData({ id: 'foo', name: 'Foooo' }));
 
-    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
+    const response = await request.post(
+      '/api/organizations',
+      createFormData({ id: 'foo', name: 'Foooo' }),
+    );
 
     expect(response).toMatchObject({
       status: 409,
@@ -410,7 +446,10 @@ describe('createOrganization', () => {
     'should not allow the organization id ‘%s’',
     async (blockedName) => {
       authorizeStudio();
-      const response = await request.post('/api/organizations', { id: blockedName });
+      const response = await request.post(
+        '/api/organizations',
+        createFormData({ id: blockedName }),
+      );
       expect(response).toMatchObject({
         status: 400,
         data: { message: 'This organization id is not allowed.' },
