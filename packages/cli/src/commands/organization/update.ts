@@ -62,8 +62,8 @@ export async function handler({
   const formData = new FormData();
 
   if (desc) {
-    logger.info(`Setting desc to ${desc}`);
-    formData.append('desc', desc);
+    logger.info(`Setting description to ${desc}`);
+    formData.append('description', desc);
   }
 
   if (email) {

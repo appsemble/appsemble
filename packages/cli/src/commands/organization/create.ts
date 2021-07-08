@@ -60,8 +60,8 @@ export async function handler({
   formData.append('id', id);
 
   if (desc) {
-    logger.info(`Setting desc to ${desc}`);
-    formData.append('desc', desc);
+    logger.info(`Setting description to ${desc}`);
+    formData.append('description', desc);
   }
 
   if (email) {
