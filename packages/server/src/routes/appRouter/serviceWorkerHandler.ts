@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 import { resolve } from 'path';
 
 import { filterBlocks, getAppBlocks } from '@appsemble/utils';
