@@ -1,13 +1,6 @@
 import { EventEmitter } from 'events';
 
-import {
-  Button,
-  Content,
-  Message,
-  ModalCard,
-  useLocationString,
-  useToggle,
-} from '@appsemble/react-components';
+import { Button, Content, Message, useLocationString } from '@appsemble/react-components';
 import { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
@@ -15,7 +8,7 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogParams } from '../../types';
+import { ShowDialogParams, ShowShareDialog } from '../../types';
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -29,6 +22,7 @@ import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
 import styles from './index.module.css';
 import { messages } from './messages';
+import { ShareDialog, ShareDialogState } from './ShareDialog';
 
 export function Page(): ReactElement {
   const { definition } = useAppDefinition();
@@ -44,6 +38,19 @@ export function Page(): ReactElement {
   const { page: navPage, setPage } = usePage();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
+
+  const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
+  const showShareDialog: ShowShareDialog = useCallback(
+    (params) =>
+      new Promise<void>((resolve, reject) => {
+        setShareDialogParams({
+          params,
+          resolve,
+          reject,
+        });
+      }),
+    [],
+  );
 
   const ee = useRef<EventEmitter>();
   if (!ee.current) {
@@ -78,7 +85,6 @@ export function Page(): ReactElement {
       setDialog(null);
     };
   }, []);
-  const showShareDialog = useToggle(true);
 
   useEffect(() => {
     if (!page) {
@@ -142,6 +148,7 @@ export function Page(): ReactElement {
             prefix={prefix}
             remap={remapWithContext}
             showDialog={showDialog}
+            showShareDialog={showShareDialog}
             subPages={page.subPages}
           />
         ) : (
@@ -156,6 +163,7 @@ export function Page(): ReactElement {
                   prefix={prefix}
                   remap={remapWithContext}
                   showDialog={showDialog}
+                  showShareDialog={showShareDialog}
                 />
               ) : (
                 <BlockList
@@ -166,6 +174,7 @@ export function Page(): ReactElement {
                   prefix={`${prefix}.blocks`}
                   remap={remapWithContext}
                   showDialog={showDialog}
+                  showShareDialog={showShareDialog}
                 />
               )}
             </Route>
@@ -179,45 +188,12 @@ export function Page(): ReactElement {
           page={page}
           remap={remapWithContext}
           showDialog={showDialog}
+          showShareDialog={showShareDialog}
         />
-        <ModalCard
-          isActive={showShareDialog.enabled}
-          onClose={showShareDialog.disable}
-          title={<FormattedMessage {...messages.share} />}
-        >
-          <div className="buttons is-justify-content-center">
-            <Button
-              component="a"
-              href="mailto:?subject=Test Subject&body=Body!"
-              icon="envelope"
-              onClick={showShareDialog.disable}
-            >
-              <FormattedMessage {...messages.email} />
-            </Button>
-            <Button
-              className={styles.twitter}
-              component="a"
-              href={`https://twitter.com/intent/tweet?text=Hello world&url=${window.origin}`}
-              icon="twitter"
-              onClick={showShareDialog.disable}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <FormattedMessage {...messages.shareOn} values={{ name: 'Twitter' }} />
-            </Button>
-            <Button
-              className={styles.facebook}
-              component="a"
-              href={`https://www.facebook.com/sharer/sharer.php?u=${window.origin}&t=ExampleTitle`}
-              icon="facebook-f"
-              onClick={showShareDialog.disable}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <FormattedMessage {...messages.shareOn} values={{ name: 'Facebook' }} />
-            </Button>
-          </div>
-        </ModalCard>
+        <ShareDialog
+          setShareDialogParams={setShareDialogParams}
+          shareDialogParams={shareDialogParams}
+        />
       </main>
     );
   }

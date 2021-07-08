@@ -6,7 +6,7 @@ import { checkAppRole } from '@appsemble/utils';
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { ShowDialogAction } from '../../types';
+import { ShowDialogAction, ShowShareDialog } from '../../types';
 import { ActionCreators } from '../../utils/actions';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { Block } from '../Block';
@@ -22,6 +22,7 @@ interface BlockListProps {
   prefix: string;
   remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   showDialog: ShowDialogAction;
+  showShareDialog: ShowShareDialog;
 }
 
 function filterBlocks(
@@ -50,6 +51,7 @@ export function BlockList({
   prefix,
   remap,
   showDialog,
+  showShareDialog,
 }: BlockListProps): ReactElement {
   const { definition, revision } = useAppDefinition();
   const { isLoggedIn, role, teams } = useUser();
@@ -111,6 +113,7 @@ export function BlockList({
           ready={ready}
           remap={remap}
           showDialog={showDialog}
+          showShareDialog={showShareDialog}
         />
       ))}
     </>

@@ -1,14 +1,14 @@
 import { ActionCreator } from '.';
 
-export const share: ActionCreator<'share'> = ({ definition, remap }) => [
+export const share: ActionCreator<'share'> = ({ definition, remap, showShareDialog }) => [
   async (data) => {
     const title = definition?.title && remap(definition.title, data);
     const text = definition?.text && remap(definition.text, data);
     const url = definition?.url && remap(definition.url, data);
 
-    if (navigator.share) {
-      await navigator.share({ title, text, url });
-    }
+    await (navigator.share
+      ? navigator.share({ title, text, url })
+      : showShareDialog({ title, text, url }));
 
     return data;
   },

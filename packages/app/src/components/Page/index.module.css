@@ -7,19 +7,3 @@
 .hasBottomNavigation > :last-child {
   padding-bottom: 7rem;
 }
-
-.twitter {
-  background-color: hsl(203, 89%, 53%);
-  color: hsl(0, 0%, 100%);
-  &:hover {
-    color: hsl(0, 0%, 100%);
-  }
-}
-
-.facebook {
-  background-color: hsl(220, 46%, 48%);
-  color: hsl(0, 0%, 100%);
-  &:hover {
-    color: hsl(0, 0%, 100%);
-  }
-}

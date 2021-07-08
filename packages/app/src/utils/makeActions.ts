@@ -174,6 +174,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
       }),
     route: null,
     showDialog: null,
+    showShareDialog: null,
     showMessage: null,
     teams: [],
     updateTeam: null,
