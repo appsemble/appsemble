@@ -13,7 +13,7 @@ interface UpdateOrganizationArguments extends BaseArguments {
   description: string;
   email: string;
   id: string;
-  logo: ReadStream;
+  icon: ReadStream;
   name: string;
   website: string;
 }
@@ -39,8 +39,8 @@ export function builder(yargs: Argv): Argv {
     .option('description', {
       describe: 'A short of the organization',
     })
-    .option('logo', {
-      describe: 'The file location of the logo representing the organization.',
+    .option('icon', {
+      describe: 'The file location of the icon representing the organization.',
       coerce: coerceFile,
     });
 }
@@ -49,8 +49,8 @@ export async function handler({
   clientCredentials,
   description: desc,
   email,
+  icon,
   id,
-  logo,
   name,
   remote,
   website,
@@ -71,9 +71,9 @@ export async function handler({
     formData.append('email', email);
   }
 
-  if (logo) {
-    logger.info(`Including logo ${logo.path || 'from stdin'}`);
-    formData.append('icon', logo);
+  if (icon) {
+    logger.info(`Including icon ${icon.path || 'from stdin'}`);
+    formData.append('icon', icon);
   }
 
   if (name) {
