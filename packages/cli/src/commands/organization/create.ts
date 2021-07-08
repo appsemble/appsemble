@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
+import { coerceFile } from '../../lib/coercers';
 import { BaseArguments } from '../../types';
 
 interface CreateOrganizationArguments extends BaseArguments {
@@ -11,6 +12,7 @@ interface CreateOrganizationArguments extends BaseArguments {
   id: string;
   name: string;
   website: string;
+  logo: ReadStream;
 }
 
 export const command = 'create <id>';
@@ -33,6 +35,10 @@ export function builder(yargs: Argv): Argv {
     })
     .option('description', {
       describe: 'A short of the organization',
+    })
+    .option('logo', {
+      describe: 'The file location of the logo representing the organization.',
+      coerce: coerceFile,
     });
 }
 
@@ -41,13 +47,43 @@ export async function handler({
   description: desc,
   email,
   id,
+  logo,
   name,
   remote,
   website,
 }: CreateOrganizationArguments): Promise<void> {
   await authenticate(remote, 'organizations:write', clientCredentials);
 
+  const formData = new FormData();
+
+  formData.append('id', id);
+
+  if (desc) {
+    logger.info(`Setting desc to ${desc}`);
+    formData.append('desc', desc);
+  }
+
+  if (email) {
+    logger.info(`Setting email to ${email}`);
+    formData.append('email', email);
+  }
+
+  if (logo) {
+    logger.info(`Including logo ${logo.path || 'from stdin'}`);
+    formData.append('icon', logo);
+  }
+
+  if (name) {
+    logger.info(`Setting name to ${name}`);
+    formData.append('name', name);
+  }
+
+  if (website) {
+    logger.info(`Setting website to ${website}`);
+    formData.append('website', website);
+  }
+
   logger.info(`Creating organization ${id}${name ? ` (${name})` : ''}`);
-  await axios.post('/api/organizations', { description: desc, email, id, name, website });
+  await axios.post('/api/organizations', formData);
   logger.info(`Successfully created organization ${id}${name ? ` (${name})` : ''}`);
 }
