@@ -105,6 +105,8 @@
     "unist-util-visit": "^2.0.3",
     "uuid": "^8.3.2",
     "web-push": "^3.4.4",
+    "xast-util-to-xml": "^2.0.1",
+    "xastscript": "^2.1.1",
     "xml-crypto": "^2.1.2",
     "xmldom": "^0.6.0",
     "yargs": "^17.0.1"
@@ -141,9 +143,7 @@
     "axios-test-instance": "^4.0.0",
     "jest-image-snapshot": "^4.5.1",
     "koa-webpack": "^6.0.0",
-    "memfs": "^3.2.2",
-    "xast-util-to-xml": "^2.0.1",
-    "xastscript": "^2.1.1"
+    "memfs": "^3.2.2"
   },
   "peerDependencies": {
     "webpack": "^4"
