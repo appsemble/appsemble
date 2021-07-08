@@ -18,7 +18,7 @@ export async function serviceWorkerHandler(ctx: KoaContext): Promise<void> {
   const filename = production ? '/service-worker.js' : '/app/service-worker.js';
   const serviceWorker = production
     ? await fs.readFile(
-        resolve(__dirname, '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
+        resolve(__dirname, '..', '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
         'utf8',
       )
     : ctx.state.fs.readFileSync(filename, 'utf-8');
