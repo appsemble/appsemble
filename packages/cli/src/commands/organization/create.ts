@@ -1,5 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
+import FormData from 'form-data';
+import { ReadStream } from 'fs-extra';
 import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
@@ -55,7 +57,6 @@ export async function handler({
   await authenticate(remote, 'organizations:write', clientCredentials);
 
   const formData = new FormData();
-
   formData.append('id', id);
 
   if (desc) {
