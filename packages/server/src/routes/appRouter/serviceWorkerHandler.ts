@@ -1,3 +1,6 @@
+import fs from 'fs/promises';
+import { resolve } from 'path';
+
 import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
@@ -11,13 +14,20 @@ import { getApp } from '../../utils/app';
  * @param ctx - The Koa context.
  */
 export async function serviceWorkerHandler(ctx: KoaContext): Promise<void> {
-  const filename =
-    process.env.NODE_ENV === 'production' ? '/service-worker.js' : '/app/service-worker.js';
-  const serviceWorker = ctx.state.fs.readFileSync(filename, 'utf-8');
+  const production = process.env.NODE_ENV === 'production';
+  const filename = production ? '/service-worker.js' : '/app/service-worker.js';
+  const serviceWorker = production
+    ? await fs.readFile(
+        resolve(__dirname, '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
+        'utf8',
+      )
+    : ctx.state.fs.readFileSync(filename, 'utf-8');
 
   const { app } = await getApp(ctx, {
     attributes: ['definition'],
   });
+  ctx.assert(app, 404, 'App does not exist.');
+
   const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
