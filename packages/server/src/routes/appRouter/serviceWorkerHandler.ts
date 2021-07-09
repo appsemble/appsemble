@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 
-import { filterBlocks, getAppBlocks } from '@appsemble/utils';
+import { filterBlocks, getAppBlocks, prefixBlockURL } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { BlockAsset, BlockVersion } from '../../models';
@@ -50,8 +50,8 @@ export async function serviceWorkerHandler(ctx: KoaContext): Promise<void> {
 
   ctx.body = `const blockAssets=${JSON.stringify(
     blockManifests.flatMap((block) =>
-      block.BlockAssets.map(
-        (asset) => `/api/blocks/${block.name}/versions/${block.version}/${asset.filename}`,
+      block.BlockAssets.map((asset) =>
+        prefixBlockURL({ type: block.name, version: block.version }, asset.filename),
       ),
     ),
   )};${serviceWorker}`;

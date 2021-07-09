@@ -1,8 +1,7 @@
 import { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@appsemble/sdk';
 import { BlockManifest } from '@appsemble/types';
+import { prefixBlockURL } from '@appsemble/utils';
 import { Promisable } from 'type-fest';
-
-import { prefixBlockURL } from './prefixBlockURL';
 
 const bootstrappers = new Map<string, BootstrapFunction>();
 const resolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
