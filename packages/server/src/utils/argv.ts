@@ -237,6 +237,13 @@ export interface Argv {
    * @default false
    */
   disableRegistration: boolean;
+
+  /**
+   * The remote to use synchronizing blocks.
+   *
+   * @example 'https://appsemble.app'
+   */
+  remote: string;
 }
 
 const defaults: Argv = {
@@ -278,6 +285,7 @@ const defaults: Argv = {
   googleClientId: undefined,
   googleClientSecret: undefined,
   disableRegistration: false,
+  remote: null,
 };
 
 export const argv = { ...defaults };

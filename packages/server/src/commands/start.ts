@@ -108,6 +108,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
       required: true,
     })
+    .option('remote', {
+      desc: 'The remote that will be used for downloading unknown blocks. For example: https://appsemble.app',
+      required: true,
+    })
     .option('proxy', {
       desc: 'Trust proxy headers. This is used to detect the source IP for logging.',
       default: false,
