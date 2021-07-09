@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.20
-appVersion: 0.18.20
+version: 0.18.21
+appVersion: 0.18.21
 kubeVersion: '>=1.20.0'
 type: application
 description: The open source low-code app building platform
@@ -24,10 +24,22 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: fixed
-      description: 'App: Fix crash that happened on builtin pages.'
-    - kind: fixed
-      description: 'Server: Escape query parameters in returned icon URLs.'
+    - kind: added
+      description: >-
+        App: Append returned element from the bootstrap SDK function to the shadow
+        root.
+    - kind: added
+      description: 'Cli: Add support for including an icon when creating an organization.'
+    - kind: added
+      description: 'Server: Add support for including an icon when creating an organization.'
+    - kind: added
+      description: >-
+        Server: The block APIs now return a list of languages supported by the
+        block.
+    - kind: added
+      description: 'Studio: Add support for including an icon when creating an organization.'
+    - kind: removed
+      description: 'Sdk: Remove attach function.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

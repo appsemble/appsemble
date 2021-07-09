@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.21](https://gitlab.com/appsemble/appsemble/-/releases/0.18.21)] - 2021-07-09
+
+### Added
+
+- App: Append returned element from the `bootstrap` SDK function to the shadow root.
+- Cli: Add support for including an icon when creating an organization.
+- Server: Add support for including an icon when creating an organization.
+- Server: The block APIs now return a list of languages supported by the block.
+- Studio: Add support for including an icon when creating an organization.
+
+### Removed
+
+- Sdk: Remove `attach` function.
+
 ## \[[0.18.20](https://gitlab.com/appsemble/appsemble/-/releases/0.18.20)] - 2021-06-30
 
 ### Fixed
