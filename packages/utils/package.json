@@ -42,7 +42,7 @@
     "openapi-types": "^7.2.3",
     "parse-duration": "^1.0.0",
     "postcss": "^7.0.36",
-    "type-fest": "^1.2.1"
+    "type-fest": "^1.2.2"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^10.0.2",

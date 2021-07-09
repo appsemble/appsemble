@@ -26,13 +26,13 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "@types/case-sensitive-paths-webpack-plugin": "^2.1.5",
+    "@types/case-sensitive-paths-webpack-plugin": "^2.1.6",
     "@types/mini-css-extract-plugin": "^1.4.3",
-    "@types/optimize-css-assets-webpack-plugin": "^5.0.3",
-    "@types/serviceworker-webpack-plugin": "^1.0.2",
+    "@types/optimize-css-assets-webpack-plugin": "^5.0.4",
+    "@types/serviceworker-webpack-plugin": "^1.0.3",
     "@types/terser-webpack-plugin": "^4.1.0",
-    "@types/unused-webpack-plugin": "^2.4.1",
-    "@types/workbox-webpack-plugin": "^5.1.7",
+    "@types/unused-webpack-plugin": "^2.4.2",
+    "@types/workbox-webpack-plugin": "^5.1.8",
     "babel-loader": "^8.2.2",
     "bulma": "0.9.3",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
@@ -49,7 +49,7 @@
     "remark-gfm": "^1.0.0",
     "remark-mdx-code-meta": "^1.0.0",
     "remark-mdx-frontmatter": "^1.0.1",
-    "remark-mdx-images": "1.0.2",
+    "remark-mdx-images": "1.0.3",
     "remark-mermaidjs": "^2.0.0",
     "serviceworker-webpack-plugin": "^1.0.1",
     "svgo-loader": "^3.0.0",
@@ -63,7 +63,7 @@
     "webpack": "^4.44.2",
     "workbox-webpack-plugin": "^6.1.5",
     "worker-loader": "^3.0.8",
-    "xdm": "^1.11.1"
+    "xdm": "^1.12.0"
   },
   "engines": {
     "node": ">=12.0.0"

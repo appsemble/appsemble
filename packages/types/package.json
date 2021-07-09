@@ -34,6 +34,6 @@
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "jsonschema": "^1.4.0",
     "openapi-types": "^7.2.3",
-    "type-fest": "^1.2.1"
+    "type-fest": "^1.2.2"
   }
 }
