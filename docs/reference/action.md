@@ -208,6 +208,19 @@ by sending an event action that matches the name of what the block is listening 
 | `event`   | true     | The name of the event to emit.                                                                    |
 | `waitFor` | false    | If specified, the action will wait for this event to have been emitted and respond with its data. |
 
+## `share`
+
+The `share` action can be used to display a prompt that allows the user to share something with
+others, primarily via social media. Depending on whether the user’s browser supports a native share
+function it will either display a native dialog for sharing links, or display a more limited
+fallback in a dialog.
+
+| Parameter | Required | Description                                                                        |
+| --------- | -------- | ---------------------------------------------------------------------------------- |
+| `url`     | false    | The url that is being shared.                                                      |
+| `title`   | false    | The title that should be shared. This may be combined with `text` in the fallback. |
+| `text`    | false    | The main body that should be shared.                                               |
+
 ## `static`
 
 The `static` action returns static data defined in the action definition. This is useful for example

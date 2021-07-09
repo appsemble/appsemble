@@ -1,5 +1,5 @@
 import { Button, ModalCard } from '@appsemble/react-components';
-import { Dispatch, ReactElement, SetStateAction, useCallback, useMemo } from 'react';
+import { Dispatch, ReactElement, SetStateAction, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { ShowShareDialogParams } from '../../../types';
@@ -17,6 +17,26 @@ export interface ShareDialogState {
   reject: (error: string) => void;
 }
 
+function spaceReplacer(input: string): string {
+  return input.replaceAll('+', '%20');
+}
+
+function createUrl(
+  origin: string,
+  params: Record<string, string>,
+  replacer?: (input: string) => string,
+): string {
+  const url = new URL(origin);
+  for (const [key, value] of Object.entries(params)) {
+    if (value) {
+      url.searchParams.set(key, value);
+    }
+  }
+
+  const result = String(url);
+  return replacer ? replacer(result) : result;
+}
+
 export function ShareDialog({
   setShareDialogParams,
   shareDialogParams,
@@ -27,62 +47,21 @@ export function ShareDialog({
       return null;
     });
   }, [setShareDialogParams]);
+
   const resolveShareDialog = useCallback(() => {
-    setShareDialogParams((old) => {
-      old?.resolve();
-      return null;
-    });
+    // Defer immediately setting the params to null
+    // to allow for the default <a> click handler to resolve the url properly.
+    setTimeout(() => {
+      setShareDialogParams((old) => {
+        old?.resolve();
+        return null;
+      });
+    }, 0);
   }, [setShareDialogParams]);
 
   const title = shareDialogParams?.params.title;
   const text = shareDialogParams?.params.text;
   const url = shareDialogParams?.params.url;
-
-  const emailParams = useMemo(() => {
-    const result = new URLSearchParams();
-    if (title) {
-      result.set('subject', title);
-    }
-    if (text || url) {
-      result.set('body', text && url ? `${text}\n${url}` : text || url);
-    }
-
-    return result;
-  }, [text, title, url]);
-
-  const twitterParams = useMemo(() => {
-    const result = new URLSearchParams();
-    if (title || text) {
-      result.set('text', title && text ? `${title}\n${text}` : title || text);
-    }
-    if (url) {
-      result.set('url', url);
-    }
-
-    return result;
-  }, [text, title, url]);
-
-  const whatsappParams = useMemo(
-    () => new URLSearchParams({ text: [title, text, url].filter(Boolean).join('\n') }),
-    [text, title, url],
-  );
-
-  const linkedinParams = useMemo(() => {
-    const result = new URLSearchParams({ mini: 'true' });
-
-    if (text) {
-      result.set('summary', text);
-    }
-    if (url) {
-      result.set('url', url);
-    }
-
-    if (title) {
-      result.set('title', title);
-    }
-
-    return result;
-  }, [text, title, url]);
 
   return (
     <ModalCard
@@ -93,7 +72,14 @@ export function ShareDialog({
       <div className="buttons is-justify-content-center">
         <Button
           component="a"
-          href={`mailto:?${emailParams}`}
+          href={createUrl(
+            'mailto:',
+            {
+              subject: title,
+              body: text && url ? `${text}\n${url}` : text || url,
+            },
+            spaceReplacer,
+          )}
           icon="envelope"
           onClick={resolveShareDialog}
         >
@@ -102,7 +88,10 @@ export function ShareDialog({
         <Button
           className={`${styles.twitter} ${styles.light}`}
           component="a"
-          href={`https://twitter.com/intent/tweet?${twitterParams}`}
+          href={createUrl('https://twitter.com/intent/tweet', {
+            text: title && text ? `${title}\n${text}` : title || text,
+            url,
+          })}
           icon="twitter"
           onClick={resolveShareDialog}
           rel="noopener noreferrer"
@@ -113,7 +102,7 @@ export function ShareDialog({
         <Button
           className={`${styles.whatsapp} ${styles.light}`}
           component="a"
-          href={`whatsapp://send?${whatsappParams}`}
+          href={createUrl('https://wa.me', { text: [title, text, url].filter(Boolean).join('\n') })}
           icon="whatsapp"
           onClick={resolveShareDialog}
           rel="noopener noreferrer"
@@ -121,29 +110,36 @@ export function ShareDialog({
         >
           <FormattedMessage {...messages.shareOn} values={{ name: 'WhatsApp' }} />
         </Button>
-        <Button
-          className={`${styles.linkedin} ${styles.light}`}
-          component="a"
-          href={`https://www.linkedin.com/shareArticle?${linkedinParams}`}
-          icon="linkedin"
-          onClick={resolveShareDialog}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <FormattedMessage {...messages.shareOn} values={{ name: 'LinkedIn' }} />
-        </Button>
         {url && (
-          <Button
-            className={`${styles.facebook} ${styles.light}`}
-            component="a"
-            href={`https://www.facebook.com/sharer/sharer.php?${new URLSearchParams({ u: url })}`}
-            icon="facebook-f"
-            onClick={resolveShareDialog}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <FormattedMessage {...messages.shareOn} values={{ name: 'Facebook' }} />
-          </Button>
+          <>
+            <Button
+              className={`${styles.linkedin} ${styles.light}`}
+              component="a"
+              href={createUrl('https://www.linkedin.com/shareArticle', {
+                mini: 'true',
+                summary: text,
+                url,
+                title,
+              })}
+              icon="linkedin"
+              onClick={resolveShareDialog}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <FormattedMessage {...messages.shareOn} values={{ name: 'LinkedIn' }} />
+            </Button>
+            <Button
+              className={`${styles.facebook} ${styles.light}`}
+              component="a"
+              href={createUrl('https://www.facebook.com/sharer/sharer.php', { u: url })}
+              icon="facebook-f"
+              onClick={resolveShareDialog}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <FormattedMessage {...messages.shareOn} values={{ name: 'Facebook' }} />
+            </Button>
+          </>
         )}
       </div>
     </ModalCard>
