@@ -1,12 +1,18 @@
 import { Join, MarkdownContent } from '@appsemble/react-components';
 import { combineSchemas } from '@appsemble/utils';
 import { Schema as SchemaType } from 'jsonschema';
-import { ReactElement, useMemo } from 'react';
+import { FC, ReactElement, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { SchemaDescriptor } from '../SchemaDescriptor';
 import styles from './index.module.css';
 import { messages } from './messages';
+import { SchemaDescriptor } from './SchemaDescriptor';
+
+export interface RenderRefProps {
+  isArray: boolean;
+
+  ref: string;
+}
 
 interface SchemaProps {
   /**
@@ -22,7 +28,12 @@ interface SchemaProps {
   /**
    * Whether or not the schema is nested.
    */
-  nested: boolean;
+  nested?: boolean;
+
+  /**
+   * A component used to render found JSON references.
+   */
+  renderRef?: FC<RenderRefProps>;
 
   /**
    * Whether or not the schema is required by its parent schema.
@@ -33,7 +44,13 @@ interface SchemaProps {
 /**
  * Render a JSON schema into readable API documentation.
  */
-export function Schema({ name, nested, required, schema }: SchemaProps): ReactElement {
+export function Schema({
+  name,
+  nested,
+  renderRef: RenderRef = null,
+  required,
+  schema,
+}: SchemaProps): ReactElement {
   const mergedSchema = useMemo(
     () => (schema.allOf ? combineSchemas(...schema.allOf) : schema),
     [schema],
@@ -46,7 +63,7 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
 
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
-      {name && (
+      {name ? (
         <div>
           <span className="has-text-weight-bold">
             {mergedSchema.title ? (
@@ -64,21 +81,29 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
             </span>
           )}
         </div>
-      )}
-      {nested ? (
-        <SchemaDescriptor label={<FormattedMessage {...messages.type} />}>
-          <code>
-            {schema.type === 'array' &&
-            !Array.isArray(mergedSchema.items) &&
-            mergedSchema.items?.type
-              ? `${mergedSchema.items.type}[]`
-              : mergedSchema.type}
-          </code>
-        </SchemaDescriptor>
       ) : null}
+      {name ? <hr /> : null}
+      {nested &&
+        (mergedSchema.$ref || mergedSchema.type ? (
+          <SchemaDescriptor label={<FormattedMessage {...messages.type} />}>
+            <code>
+              {mergedSchema.$ref
+                ? RenderRef && <RenderRef isArray={false} ref={mergedSchema.$ref} />
+                : mergedSchema.type === 'array'
+                ? !mergedSchema.items || Array.isArray(mergedSchema.items)
+                  ? 'array'
+                  : mergedSchema.items.type
+                  ? `${mergedSchema.items.type}[]`
+                  : mergedSchema.items.$ref
+                  ? RenderRef && <RenderRef isArray ref={mergedSchema.items.$ref} />
+                  : 'array'
+                : mergedSchema.type}
+            </code>
+          </SchemaDescriptor>
+        ) : null)}
       {mergedSchema.default != null && (
         <SchemaDescriptor label={<FormattedMessage {...messages.default} />}>
-          {mergedSchema.default}
+          <code>{JSON.stringify(mergedSchema.default)}</code>
         </SchemaDescriptor>
       )}
       {mergedSchema.enum?.length ? (
@@ -131,18 +156,20 @@ export function Schema({ name, nested, required, schema }: SchemaProps): ReactEl
         </SchemaDescriptor>
       )}
       {nested && description && <MarkdownContent content={description} />}
-      {mergedSchema.type === 'object' &&
-        Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
-          <Schema
-            key={propertyName}
-            name={propertyName}
-            nested
-            required={
-              Array.isArray(mergedSchema.required) && mergedSchema.required?.includes(propertyName)
-            }
-            schema={property}
-          />
-        ))}
+      {mergedSchema.type === 'object' && mergedSchema.properties
+        ? Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
+            <Schema
+              key={propertyName}
+              name={propertyName}
+              nested
+              required={
+                Array.isArray(mergedSchema.required) &&
+                mergedSchema.required?.includes(propertyName)
+              }
+              schema={property}
+            />
+          ))
+        : null}
       {mergedSchema.type === 'array' &&
         mergedSchema.items &&
         !Array.isArray(mergedSchema.items) &&
