@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@appsemble/utils": "0.18.21",
-    "type-fest": "^1.2.1"
+    "type-fest": "^1.2.2"
   },
   "devDependencies": {
     "@types/service-worker-mock": "^2.0.1",

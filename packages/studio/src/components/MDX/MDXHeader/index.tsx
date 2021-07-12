@@ -1,5 +1,5 @@
-import { ComponentPropsWithoutRef, FC, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useScrollTo } from '@appsemble/react-components';
+import { ComponentPropsWithoutRef, FC, useRef } from 'react';
 
 type Header = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
@@ -11,18 +11,10 @@ type Header = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
  * matches the element id.
  */
 export function createHeader(Component: Header): FC<ComponentPropsWithoutRef<Header>> {
-  return ({ id, ...props }) => {
+  return (props) => {
     const ref = useRef<HTMLHeadingElement>();
-    const { hash } = useLocation();
 
-    useEffect(() => {
-      if (hash.slice(1) !== id) {
-        return;
-      }
-
-      const { top } = ref.current.getBoundingClientRect();
-      window.scrollTo({ top: top + window.scrollY - 52 });
-    }, [hash, id]);
+    useScrollTo(ref);
 
     return <Component ref={ref} {...props} />;
   };
