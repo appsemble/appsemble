@@ -35,12 +35,12 @@
     "@appsemble/node-utils": "0.18.21",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.1.1",
-    "type-fest": "^1.2.1",
+    "type-fest": "^1.2.2",
     "yargs": "^17.0.1"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.11",
-    "@types/inquirer": "^7.3.2"
+    "@types/fs-extra": "^9.0.12",
+    "@types/inquirer": "^7.3.3"
   },
   "engines": {
     "node": ">=12.0.0"
