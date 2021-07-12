@@ -1,3 +1,7 @@
+.container {
+  max-width: 360px;
+}
+
 .light {
   border-color: transparent;
   color: hsl(0, 0%, 100%);

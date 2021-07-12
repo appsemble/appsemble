@@ -56,12 +56,14 @@ export function ShareDialog({
 
   return (
     <ModalCard
+      cardClassName={styles.container}
       isActive={Boolean(shareDialogParams)}
       onClose={rejectShareDialog}
       title={<FormattedMessage {...messages.share} />}
     >
-      <div className="buttons is-justify-content-center">
+      <div className="buttons is-fullwidth is-justify-content-start">
         <Button
+          className="is-fullwidth is-justify-content-start"
           component="a"
           href={createUrl('mailto:', {
             subject: title,
@@ -73,7 +75,7 @@ export function ShareDialog({
           <FormattedMessage {...messages.email} />
         </Button>
         <Button
-          className={`${styles.twitter} ${styles.light}`}
+          className={`${styles.twitter} ${styles.light} is-fullwidth is-justify-content-start`}
           component="a"
           href={createUrl('https://twitter.com/intent/tweet', {
             text: title && text ? `${title}\n${text}` : title || text,
@@ -87,7 +89,7 @@ export function ShareDialog({
           <FormattedMessage {...messages.shareOn} values={{ name: 'Twitter' }} />
         </Button>
         <Button
-          className={`${styles.whatsapp} ${styles.light}`}
+          className={`${styles.whatsapp} ${styles.light} is-fullwidth is-justify-content-start`}
           component="a"
           href={createUrl('https://wa.me', { text: [title, text, url].filter(Boolean).join('\n') })}
           icon="whatsapp"
@@ -98,13 +100,13 @@ export function ShareDialog({
           <FormattedMessage {...messages.shareOn} values={{ name: 'WhatsApp' }} />
         </Button>
         <Button
-          className={`${styles.telegram} ${styles.light}`}
+          className={`${styles.telegram} ${styles.light} is-fullwidth is-justify-content-start`}
           component="a"
           href={createUrl('https://t.me/share', {
             url,
             text: [title, text].filter(Boolean).join('\n'),
           })}
-          icon="telegram"
+          icon="telegram-plane"
           onClick={resolveShareDialog}
           rel="noopener noreferrer"
           target="_blank"
@@ -114,7 +116,7 @@ export function ShareDialog({
         {url && (
           <>
             <Button
-              className={`${styles.linkedin} ${styles.light}`}
+              className={`${styles.linkedin} ${styles.light} is-fullwidth is-justify-content-start`}
               component="a"
               href={createUrl('https://www.linkedin.com/shareArticle', {
                 summary: text,
@@ -129,7 +131,7 @@ export function ShareDialog({
               <FormattedMessage {...messages.shareOn} values={{ name: 'LinkedIn' }} />
             </Button>
             <Button
-              className={`${styles.facebook} ${styles.light}`}
+              className={`${styles.facebook} ${styles.light} is-fullwidth is-justify-content-start`}
               component="a"
               href={createUrl('https://www.facebook.com/sharer/sharer.php', { u: url })}
               icon="facebook-f"
