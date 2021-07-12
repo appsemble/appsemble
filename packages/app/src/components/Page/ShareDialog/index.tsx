@@ -17,15 +17,7 @@ export interface ShareDialogState {
   reject: (error: string) => void;
 }
 
-function spaceReplacer(input: string): string {
-  return input.replaceAll('+', '%20');
-}
-
-function createUrl(
-  origin: string,
-  params: Record<string, string>,
-  replacer?: (input: string) => string,
-): string {
+function createUrl(origin: string, params: Record<string, string>): string {
   const url = new URL(origin);
   for (const [key, value] of Object.entries(params)) {
     if (value) {
@@ -33,8 +25,7 @@ function createUrl(
     }
   }
 
-  const result = String(url);
-  return replacer ? replacer(result) : result;
+  return String(url);
 }
 
 export function ShareDialog({
@@ -72,14 +63,10 @@ export function ShareDialog({
       <div className="buttons is-justify-content-center">
         <Button
           component="a"
-          href={createUrl(
-            'mailto:',
-            {
-              subject: title,
-              body: text && url ? `${text}\n${url}` : text || url,
-            },
-            spaceReplacer,
-          )}
+          href={createUrl('mailto:', {
+            subject: title,
+            body: text && url ? `${text}\n${url}` : text || url,
+          }).replaceAll('+', '%20')}
           icon="envelope"
           onClick={resolveShareDialog}
         >
@@ -110,13 +97,26 @@ export function ShareDialog({
         >
           <FormattedMessage {...messages.shareOn} values={{ name: 'WhatsApp' }} />
         </Button>
+        <Button
+          className={`${styles.telegram} ${styles.light}`}
+          component="a"
+          href={createUrl('https://t.me/share', {
+            url,
+            text: [title, text].filter(Boolean).join('\n'),
+          })}
+          icon="telegram"
+          onClick={resolveShareDialog}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <FormattedMessage {...messages.shareOn} values={{ name: 'Telegram' }} />
+        </Button>
         {url && (
           <>
             <Button
               className={`${styles.linkedin} ${styles.light}`}
               component="a"
               href={createUrl('https://www.linkedin.com/shareArticle', {
-                mini: 'true',
                 summary: text,
                 url,
                 title,
