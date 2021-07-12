@@ -1,6 +1,9 @@
 .light {
+  border-color: transparent;
   color: hsl(0, 0%, 100%);
-  &:hover {
+  &:hover,
+  &:active {
+    border-color: transparent;
     color: hsl(0, 0%, 100%);
   }
 }
