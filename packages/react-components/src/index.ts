@@ -69,6 +69,7 @@ export * from './useObjectURL';
 export * from './useData';
 export * from './useForceUpdate';
 export * from './useQuery';
+export * from './useScrollTo';
 export * from './useToggle';
 export * from './useLocationString';
 export * from './ValuePickerProvider';
