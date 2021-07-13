@@ -29,7 +29,7 @@
   "app.src.components.OpenIDCallback.error": "An unexpected error occurred while logging in",
   "app.src.components.OpenIDCallback.retry": "Back to login",
   "app.src.components.OpenIDLogin.loginWith": "Login with {name}",
-  "app.src.components.Page.ShareDialog.email": "Email",
+  "app.src.components.Page.ShareDialog.email": "Share via email",
   "app.src.components.Page.ShareDialog.share": "Share",
   "app.src.components.Page.ShareDialog.shareOn": "Share on {name}",
   "app.src.components.Page.logout": "Logout",
