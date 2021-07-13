@@ -62,14 +62,12 @@ export function Collapsible({
           iconPosition="right"
           onClick={collapsed.toggle}
         >
-          <Title className={`mb-0 ${className}`} level={level} size={size}>
+          <Title className={classNames('mb-0', className)} level={level} size={size}>
             {title}
           </Title>
         </Button>
       </div>
-      <div className={classNames([styles.list, { 'is-hidden': collapsed.enabled }])}>
-        {children}
-      </div>
+      <div className={classNames(styles.list, { 'is-hidden': collapsed.enabled })}>{children}</div>
     </>
   );
 }
