@@ -1,21 +1,28 @@
 import { Permission } from './Permission';
 
-const member = [Permission.ViewApps];
+const member = [Permission.ViewApps, Permission.ViewMembers];
+const Translator = [...member, Permission.EditAppMessages];
+const APIReader = [...member, Permission.ReadAssets, Permission.ReadResources];
+const APIUser = [...APIReader, Permission.ManageAssets, Permission.ManageResources];
+
 const AppEditor = [
   ...member,
   Permission.EditApps,
-  Permission.PushNotifications,
-  Permission.ManageResources,
   Permission.EditAppMessages,
+  Permission.ManageAssets,
+  Permission.ManageResources,
+  Permission.PushNotifications,
+  Permission.ReadAssets,
+  Permission.ReadResources,
 ];
 const Maintainer = [
   ...AppEditor,
-  Permission.PublishBlocks,
   Permission.CreateApps,
-  Permission.EditAppSettings,
   Permission.DeleteApps,
+  Permission.EditAppSettings,
   Permission.InviteMember,
   Permission.ManageTeams,
+  Permission.PublishBlocks,
 ];
 const Owner = [
   ...Maintainer,
@@ -26,6 +33,9 @@ const Owner = [
 
 export const roles = {
   Member: member,
+  Translator,
+  APIReader,
+  APIUser,
   AppEditor,
   Maintainer,
   Owner,

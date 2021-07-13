@@ -1,0 +1,13 @@
+{
+  "app": {
+    "app.roles.User": "Utilisateur",
+    "app.roles.User.description": "Un utilisateur qui garde ses propres notes.",
+    "description": "Gardez des notes personnelles",
+    "name": "Notes",
+    "pages.0": "Notes"
+  },
+  "messageIds": {
+    "body": "Corps",
+    "title": "Titre"
+  }
+}

@@ -1039,7 +1039,6 @@ describe('queryResources', () => {
       {
         id: idB,
         foo: 'bar',
-        $clonable: false,
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         $expires: '1970-01-01T00:10:00.000Z',
@@ -1060,7 +1059,6 @@ describe('queryResources', () => {
       status: 200,
       data: [
         {
-          $clonable: false,
           $created: '1970-01-01T00:00:00.000Z',
           $updated: '1970-01-01T00:00:00.000Z',
           foo: 'bar',
@@ -1105,7 +1103,6 @@ describe('queryResources', () => {
       status: 200,
       data: [
         {
-          $clonable: false,
           $created: '1970-01-01T00:00:00.000Z',
           $updated: '1970-01-01T00:00:00.000Z',
           foo: 'bar',

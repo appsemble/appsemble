@@ -38,7 +38,7 @@ export async function readYaml<R>(path: string): Promise<[R, string]> {
     throw new AppsembleError(`Error reading file ${path}`);
   }
   try {
-    return [(yaml.safeLoad(content) as unknown) as R, content];
+    return [yaml.safeLoad(content) as unknown as R, content];
   } catch (error: unknown) {
     if (error instanceof yaml.YAMLException) {
       throw new AppsembleError(`Error parsing ${path}\n${error.message}`);

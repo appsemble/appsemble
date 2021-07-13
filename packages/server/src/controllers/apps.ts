@@ -5,20 +5,20 @@ import { BlockManifest } from '@appsemble/types';
 import {
   AppsembleValidationError,
   BlockMap,
-  blockNamePattern,
   normalize,
+  parseBlockName,
   Permission,
   StyleValidationError,
   validateAppDefinition,
   validateStyle,
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
+import { parseISO } from 'date-fns';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { File } from 'koas-body-parser';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
-import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
 
 import {
@@ -35,11 +35,13 @@ import {
   User,
 } from '../models';
 import { KoaContext } from '../types';
+import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
+import { argv } from '../utils/argv';
+import { blockVersionToJson, syncBlock } from '../utils/block';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
-import { readAsset } from '../utils/readAsset';
 
 interface Params {
   appId: number;
@@ -50,33 +52,35 @@ interface Params {
 }
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
+  const uniqueBlocks = uniqWith(
+    Object.values(blocks).map(({ type, version }) => {
+      const [OrganizationId, name] = parseBlockName(type);
+      return {
+        name,
+        OrganizationId,
+        version,
+      };
+    }),
+    isEqual,
+  );
   const blockVersions = await BlockVersion.findAll({
-    raw: true,
     attributes: { exclude: ['id'] },
-    where: {
-      [Op.or]: uniqWith(
-        Object.values(blocks).map(({ type, version }) => {
-          const [, OrganizationId, name] = type.match(blockNamePattern) || [
-            null,
-            'appsemble',
-            type,
-          ];
-          return {
-            name,
-            OrganizationId,
-            version,
-          };
-        }),
-        isEqual,
-      ),
-    },
+    where: { [Op.or]: uniqueBlocks },
   });
+  const result: BlockManifest[] = blockVersions.map(blockVersionToJson);
 
-  return blockVersions.map((blockVersion) => ({
-    ...blockVersion,
-    name: `@${blockVersion.OrganizationId}/${blockVersion.name}`,
-    files: null,
-  }));
+  if (argv.remote) {
+    const knownIdentifiers = new Set(
+      blockVersions.map((block) => `@${block.OrganizationId}/${block.name}@${block.version}`),
+    );
+    const unknownBlocks = uniqueBlocks.filter(
+      (block) => !knownIdentifiers.has(`@${block.OrganizationId}/${block.name}@${block.version}`),
+    );
+    const syncedBlocks = await Promise.all(unknownBlocks.map(syncBlock));
+    result.push(...syncedBlocks.filter(Boolean));
+  }
+
+  return result;
 }
 
 function handleAppValidationError(error: Error, app: Partial<App>): never {
@@ -112,7 +116,9 @@ export async function createApp(ctx: KoaContext): Promise<void> {
         definition,
         domain,
         icon,
+        iconBackground,
         longDescription,
+        maskableIcon,
         private: isPrivate = true,
         screenshots,
         sharedStyle,
@@ -133,6 +139,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       OrganizationId,
       coreStyle: validateStyle(coreStyle?.contents),
       longDescription,
+      iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle?.contents),
       domain: domain || null,
       private: Boolean(isPrivate),
@@ -144,6 +151,10 @@ export async function createApp(ctx: KoaContext): Promise<void> {
 
     if (icon) {
       result.icon = icon.contents;
+    }
+
+    if (maskableIcon) {
+      result.maskableIcon = maskableIcon.contents;
     }
 
     if (yaml) {
@@ -193,7 +204,9 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     });
 
     record.Organization = await Organization.findByPk(record.OrganizationId, {
-      attributes: ['name'],
+      attributes: {
+        include: ['id', 'name', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      },
     });
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
@@ -206,100 +219,179 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
   } = ctx;
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const app = await App.findByPk(appId, {
     attributes: {
       include: [
-        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
-        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
-        [fn('COUNT', col('Resources.id')), 'ResourceCount'],
-        [literal('icon IS NOT NULL'), 'hasIcon'],
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
         [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
       ],
-      exclude: ['icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
+      exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
     },
     include: [
-      { model: AppRating, attributes: [] },
-      { model: Resource, attributes: [], where: { clonable: true }, required: false },
-      { model: AppSnapshot, order: [['created', 'DESC']], limit: 1 },
+      { model: Resource, attributes: ['id'], where: { clonable: true }, required: false },
+      { model: AppSnapshot },
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      { model: AppScreenshot, attributes: ['id'] },
+      ...languageQuery,
     ],
-    group: ['App.id'],
+    order: [[{ model: AppSnapshot, as: 'AppSnapshots' }, 'created', 'DESC']],
   });
 
   if (!app) {
     throw notFound('App not found');
   }
 
-  app.Organization = await Organization.findByPk(app.OrganizationId, { attributes: ['name'] });
-  app.AppScreenshots = await AppScreenshot.findAll({
-    attributes: ['id'],
+  const rating = await AppRating.findOne({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
     where: { AppId: app.id },
+    group: ['AppId'],
   });
+
+  if (rating) {
+    app.RatingCount = Number(rating.get('RatingCount'));
+    app.RatingAverage = Number(rating.get('RatingAverage'));
+  }
+
+  applyAppMessages(app, language, baseLanguage);
 
   ctx.body = getAppFromRecord(app);
 }
 
 export async function queryApps(ctx: KoaContext): Promise<void> {
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
+
   const apps = await App.findAll({
     attributes: {
-      include: [
-        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
-        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
-      ],
       exclude: ['icon', 'coreStyle', 'sharedStyle'],
+      include: [
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+      ],
     },
     where: { private: false },
-    include: [{ model: AppRating, attributes: [] }],
-    group: ['App.id'],
-    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
+    include: [
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      ...languageQuery,
+    ],
   });
 
-  const organizations = await Organization.findAll({
-    where: { id: apps.map((app) => app.OrganizationId) },
-    attributes: ['id', 'name'],
+  const ratings = await AppRating.findAll({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
+    where: { AppId: apps.map((app) => app.id) },
+    group: ['AppId'],
   });
 
-  ctx.body = apps.map((app) => {
-    Object.assign(app, {
-      Organization: organizations.find((org) => org.id === app.OrganizationId),
-    });
-    return getAppFromRecord(app, ['yaml']);
-  });
+  ctx.body = apps
+    .map((app) => {
+      const rating = ratings.find((r) => r.AppId === app.id);
+
+      if (rating) {
+        Object.assign(app, {
+          RatingAverage: Number(rating.get('RatingAverage')),
+          RatingCount: Number(rating.get('RatingCount')),
+        });
+      }
+
+      applyAppMessages(app, language, baseLanguage);
+
+      return app;
+    })
+    .sort(compareApps)
+    .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
 export async function queryMyApps(ctx: KoaContext): Promise<void> {
   const { user } = ctx;
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const memberships = await Member.findAll({
     attributes: ['OrganizationId'],
     raw: true,
     where: { UserId: user.id },
   });
+
   const apps = await App.findAll({
     attributes: {
-      include: [
-        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
-        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
-      ],
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
+      include: [
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+      ],
     },
-    include: [{ model: AppRating, attributes: [] }],
-    group: ['App.id'],
-    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
+    include: [
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      ...languageQuery,
+    ],
     where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
   });
 
-  const organizations = await Organization.findAll({
-    where: { id: apps.map((app) => app.OrganizationId) },
-    attributes: ['id', 'name'],
+  const ratings = await AppRating.findAll({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
+    where: { AppId: apps.map((app) => app.id) },
+    group: ['AppId'],
   });
 
-  ctx.body = apps.map((app) => {
-    Object.assign(app, {
-      Organization: organizations.find((org) => org.id === app.OrganizationId),
-    });
-    return getAppFromRecord(app, ['yaml']);
-  });
+  ctx.body = apps
+    .map((app) => {
+      const rating = ratings.find((r) => r.AppId === app.id);
+
+      if (rating) {
+        Object.assign(app, {
+          RatingAverage: Number(rating.get('RatingAverage')),
+          RatingCount: Number(rating.get('RatingCount')),
+        });
+      }
+
+      applyAppMessages(app, language, baseLanguage);
+
+      return app;
+    })
+    .sort(compareApps)
+    .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
 export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
@@ -331,7 +423,17 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
   const dbApp = await App.findOne({
     where: { id: appId },
     include: [
-      { model: Organization, attributes: ['name'] },
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
       { model: AppScreenshot, attributes: ['id'] },
     ],
   });
@@ -563,33 +665,36 @@ export async function getAppSnapshot(ctx: KoaContext<Params>): Promise<void> {
 export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId },
-    query: { maskable, raw = false, size = 128 },
+    query: { maskable = false, raw = false, size = 128, updated },
   } = ctx;
   const app = await App.findByPk(appId, {
-    attributes: ['icon', maskable && 'maskableIcon', maskable && 'iconBackground'].filter(Boolean),
-    include: [{ model: Organization, attributes: ['icon'] }],
+    attributes: [
+      'icon',
+      'updated',
+      maskable && 'maskableIcon',
+      maskable && 'iconBackground',
+    ].filter(Boolean),
+    include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
-
-  if (!raw) {
-    return serveIcon(ctx, app, {
-      maskable: Boolean(maskable),
-      size: size && Number.parseInt(size as string),
-    });
-  }
 
   if (!app) {
     throw notFound('App not found');
   }
 
-  const icon =
-    (maskable && app.maskableIcon) ||
-    app.icon ||
-    app.Organization.icon ||
-    (await readAsset('appsemble.png'));
+  const dbUpdated =
+    (maskable && app.maskableIcon) || app.icon ? app.updated : app.Organization.updated;
 
-  const { format } = await sharp(icon).metadata();
-  ctx.body = icon;
-  ctx.type = format;
+  return serveIcon(ctx, {
+    background: maskable ? app.iconBackground || '#ffffff' : undefined,
+    cache: isEqual(parseISO(updated as string), dbUpdated),
+    fallback: 'mobile-alt-solid.png',
+    height: size && Number.parseInt(size as string),
+    icon: app.icon || app.Organization.icon,
+    maskable: Boolean(maskable),
+    maskableIcon: app.maskableIcon,
+    raw: Boolean(raw),
+    width: size && Number.parseInt(size as string),
+  });
 }
 
 export async function deleteAppIcon(ctx: KoaContext<Params>): Promise<void> {

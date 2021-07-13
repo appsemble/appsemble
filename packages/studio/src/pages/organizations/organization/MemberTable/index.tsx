@@ -2,7 +2,7 @@ import { Button, Loader, Message, Table, useData, useToggle } from '@appsemble/r
 import { OrganizationInvite } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { ReactElement, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { HeaderControl } from '../../../../components/HeaderControl';
@@ -18,6 +18,7 @@ import { messages } from './messages';
 export function MemberTable(): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();
   const { userInfo } = useUser();
+  const { formatMessage } = useIntl();
 
   const {
     data: members,
@@ -27,7 +28,6 @@ export function MemberTable(): ReactElement {
   } = useData<Member[]>(`/api/organizations/${organizationId}/members`);
   const {
     data: invites,
-    error: invitesError,
     loading: invitesLoading,
     setData: setInvites,
   } = useData<OrganizationInvite[]>(`/api/organizations/${organizationId}/invites`);
@@ -56,13 +56,18 @@ export function MemberTable(): ReactElement {
   const me = members?.find((member) => member.id === userInfo.sub);
   const ownerCount = me && members.filter((member) => member.role === 'Owner').length;
   const mayEdit = me && checkRole(me.role, Permission.ManageMembers);
+  const mayEditRole = me && checkRole(me.role, Permission.ManageRoles);
   const mayInvite = me && checkRole(me.role, Permission.InviteMember);
 
   return (
     <>
       <HeaderControl
         control={
-          <Button onClick={addMembersModal.enable}>
+          <Button
+            disabled={!mayInvite}
+            onClick={addMembersModal.enable}
+            title={!mayInvite && formatMessage(messages.notAllowed)}
+          >
             <FormattedMessage {...messages.addMembers} />
           </Button>
         }
@@ -72,7 +77,7 @@ export function MemberTable(): ReactElement {
       </HeaderControl>
       {membersLoading || invitesLoading ? (
         <Loader />
-      ) : membersError || invitesError ? (
+      ) : membersError ? (
         <Message color="danger">
           <FormattedMessage {...messages.membersError} />
         </Message>
@@ -93,13 +98,14 @@ export function MemberTable(): ReactElement {
               <MemberRow
                 key={member.id}
                 mayEdit={mayEdit}
+                mayEditRole={mayEditRole}
                 member={member}
                 onChanged={onMemberChanged}
                 onDeleted={onMemberDeleted}
                 ownerCount={ownerCount}
               />
             ))}
-            {invites.map((invite) => (
+            {invites?.map((invite) => (
               <InviteRow
                 invite={invite}
                 key={invite.email}

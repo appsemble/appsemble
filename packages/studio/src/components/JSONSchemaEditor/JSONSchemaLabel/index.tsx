@@ -9,14 +9,16 @@ export function JSONSchemaLabel({
 }: Pick<CommonJSONSchemaEditorProps<never>, 'name' | 'prefix' | 'schema'>): ReactElement {
   const displayName = name.slice(prefix.length + 1);
 
-  return (schema?.title ? (
-    <>
-      {`${schema.title} `}
-      {displayName ? (
-        <span className="has-text-weight-normal has-text-grey-light">({displayName})</span>
-      ) : null}
-    </>
-  ) : (
-    displayName
-  )) as ReactElement;
+  return (
+    schema?.title ? (
+      <>
+        {`${schema.title} `}
+        {displayName ? (
+          <span className="has-text-weight-normal has-text-grey-light">({displayName})</span>
+        ) : null}
+      </>
+    ) : (
+      displayName
+    )
+  ) as ReactElement;
 }

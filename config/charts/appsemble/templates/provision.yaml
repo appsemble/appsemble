@@ -10,6 +10,7 @@ metadata:
   annotations:
     helm.sh/hook: post-install,post-upgrade
     helm.sh/hook-weight: '1'
+    {{ include "appsemble.gitlab" . | indent 4 }}
 spec:
   template:
     spec:
@@ -61,5 +62,5 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.global.postgresql.existingSecret }}
-                  key: postgresql-password
+                  key: postgresql-postgres-password
 {{ end }}

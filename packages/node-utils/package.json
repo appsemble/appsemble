@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.18.8",
+  "version": "0.18.21",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -17,7 +17,7 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/node-utils"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "main": "dist",
@@ -29,22 +29,25 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/js-yaml": "^3.12.5",
+    "@types/koa": "^2.13.4",
     "axios": "^0.21.1",
-    "chalk": "^4.1.0",
+    "chalk": "^4.1.1",
     "cli-highlight": "^2.1.11",
-    "fast-glob": "^3.2.5",
+    "fast-glob": "^3.2.7",
     "form-data": "^4.0.0",
     "js-yaml": "^3.14.1",
     "koa": "^2.13.1",
     "koa-compose": "^4.1.0",
     "logform": "^2.2.0",
     "normalize-path": "^3.0.0",
-    "type-fest": "^1.0.1",
+    "type-fest": "^1.2.2",
     "winston": "^3.3.3",
-    "yargs": "^16.2.0"
+    "yargs": "^17.0.1"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^7.0.4",
+    "@sinonjs/fake-timers": "^7.1.2",
+    "@types/normalize-path": "^3.0.0",
     "axios-mock-adapter": "^1.19.0",
     "axios-test-instance": "^4.0.0"
   },

@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { TeamRole } from '../../constants';
+import { hexColor, TeamRole } from '../../constants';
 
 export const paths: OpenAPIV3.PathsObject = {
   '/api/apps': {
@@ -51,7 +51,11 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                iconBackground: { $ref: '#/components/schemas/Color' },
+                iconBackground: {
+                  type: 'string',
+                  pattern: hexColor.source,
+                  description: 'The background color to use for the maskable icon.',
+                },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',
@@ -95,6 +99,14 @@ export const paths: OpenAPIV3.PathsObject = {
     },
     get: {
       tags: ['app'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description: 'Get all existing apps.',
       operationId: 'queryApps',
       responses: {
@@ -118,6 +130,14 @@ export const paths: OpenAPIV3.PathsObject = {
   '/api/apps/me': {
     get: {
       tags: ['app'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description: 'Get all apps that are editable by the user.',
       operationId: 'queryMyApps',
       responses: {
@@ -142,6 +162,14 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description: 'Get a single app',
       operationId: 'getAppById',
       responses: {
@@ -199,7 +227,10 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                iconBackground: { $ref: '#/components/schemas/Color' },
+                iconBackground: {
+                  type: 'string',
+                  pattern: hexColor.source,
+                },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',
@@ -441,6 +472,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+      security: [{ studio: [] }, { app: ['openid'] }],
     },
   },
   '/api/apps/{appId}/members/{memberId}': {

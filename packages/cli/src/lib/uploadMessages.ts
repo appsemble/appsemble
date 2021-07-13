@@ -1,9 +1,9 @@
-import { existsSync, promises as fs } from 'fs';
 import { join, parse } from 'path';
 
-import { logger, readYaml } from '@appsemble/node-utils';
-import { AppMessages } from '@appsemble/types';
+import { AppsembleError, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
+import { AppsembleMessages, Messages } from '@appsemble/types';
 import axios from 'axios';
+import { readJson } from 'fs-extra';
 
 /**
  * Upload messages for an app.
@@ -19,25 +19,39 @@ export async function uploadMessages(
   remote: string,
   force: boolean,
 ): Promise<void> {
-  if (!existsSync(join(path, 'messages'))) {
-    return;
-  }
+  const result: Messages[] = [];
 
-  const messageDir = await fs.readdir(join(path, 'i18n'));
+  logger.info('Searching for translations 🕵');
+  await opendirSafe(
+    join(path, 'i18n'),
+    async (messageFile) => {
+      logger.verbose(`Processing ${messageFile} ⚙️`);
+      const { ext, name: language } = parse(messageFile);
+      let messages: AppsembleMessages = {
+        core: {},
+        app: {},
+        blocks: {},
+        messageIds: {},
+      };
 
-  if (messageDir.length === 0) {
-    return;
-  }
+      if (result.some((entry) => entry.language === language)) {
+        throw new AppsembleError(
+          `Found duplicate language “${language}”. Make sure each language only exists once in the directory.`,
+        );
+      }
 
-  logger.info(`Traversing app messages for ${messageDir.length} languages 🕵`);
-  const result: AppMessages[] = [];
+      if (ext === 'json') {
+        messages = await readJson(messageFile);
+      } else {
+        [messages] = await readYaml<AppsembleMessages>(messageFile);
+      }
+      result.push({ force, language, messages });
+    },
+    { allowMissing: true },
+  );
 
-  for (const messageFile of messageDir) {
-    logger.verbose(`Processing ${join(path, 'i18n', messageFile)} ⚙️`);
-    const language = parse(messageFile).name;
-    const [messages] = await readYaml(join(path, 'i18n', messageFile));
-    // XXX This type is incorrect
-    result.push({ force, language, messages } as AppMessages);
+  if (!result.length) {
+    logger.info('No translations found 🤷');
   }
 
   for (const language of result) {

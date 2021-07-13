@@ -1,0 +1,43 @@
+.root td {
+  vertical-align: middle !important;
+}
+
+.id {
+  overflow-x: hidden;
+  text-align: right !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.author {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal {
+  max-width: 100vw;
+  width: 960px;
+}
+
+.noBorder {
+  border: none;
+}
+
+.dropdown :global(.dropdown-trigger) button {
+  background: transparent;
+  border: none;
+}
+
+.actionCell {
+  margin-bottom: -1px;
+}
+
+.boolean {
+  text-align: center !important;
+
+  & label {
+    margin: 0 !important;
+    padding-left: 1rem !important;
+  }
+}

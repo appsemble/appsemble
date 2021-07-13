@@ -61,7 +61,7 @@ function httpErrorToString(error: AxiosError): string {
 function toString(info: TransformableInfo): string {
   if (info instanceof Error) {
     if (info.request && info.response) {
-      return httpErrorToString((info as Error) as AxiosError);
+      return httpErrorToString(info as Error as AxiosError);
     }
     return info.stack;
   }

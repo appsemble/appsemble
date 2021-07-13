@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentProps, Fragment, JSX } from 'preact';
+import { ComponentProps, JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
@@ -59,7 +59,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
 
     return (
-      <Fragment>
+      <>
         <input
           {...props}
           className={classNames('input', {
@@ -82,7 +82,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ))}
           </datalist>
         )}
-      </Fragment>
+      </>
     );
   },
 );

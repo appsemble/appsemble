@@ -8,8 +8,9 @@ import { BaseArguments } from '../../types';
 
 interface BuildBlockArguments extends BaseArguments {
   paths: string[];
-  languages: string[];
-  verify: true;
+  languages: string;
+  verify: string;
+  format: 'json' | 'yaml';
 }
 
 export const command = 'extract-messages <paths...>';
@@ -21,22 +22,35 @@ export function builder(yargs: Argv): Argv {
       describe: 'The paths to the apps to extract messages from.',
     })
     .option('languages', {
-      type: 'array',
-      describe: 'The languages to extract.',
-      default: [],
+      describe: 'The languages to extract as a comma separated list.',
+    })
+    .option('format', {
+      describe: 'The format that should be used for the output.',
+      type: 'string',
+      choices: ['yaml', 'json'],
+      default: 'json',
     })
     .option('verify', {
-      type: 'boolean',
-      describe: 'If specified, the CLI will fail if a missing translation is found',
+      describe:
+        'A comma separated list of languages to verify. The CLI will fail if a message is missing for one of the given languages',
     });
 }
 
-export async function handler({ languages, paths, verify }: BuildBlockArguments): Promise<void> {
+export async function handler({
+  format = 'json',
+  languages = '',
+  paths,
+  verify = '',
+}: BuildBlockArguments): Promise<void> {
   const normalizedPaths = paths.map((path) => normalizePath(path));
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
-  // Const langs = [...new Set(['en', ...languages.map((language) => language.toLowerCase())])];
   logger.info(`Extracting messages from ${directories.length} apps`);
   for (const dir of directories) {
-    await writeAppMessages(dir, languages, verify);
+    await writeAppMessages(
+      dir,
+      languages.split(',').filter(Boolean),
+      verify.split(',').filter(Boolean),
+      format,
+    );
   }
 }

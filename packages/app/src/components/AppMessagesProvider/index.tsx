@@ -33,13 +33,14 @@ interface IntlMessagesProviderProps {
 
 interface AppMessageContext {
   getMessage: MessageGetter;
+  getAppMessage: MessageGetter;
   getBlockMessage: (
     blockVersion: string,
     blockName: string,
     message: IntlMessage,
     prefix?: string,
   ) => IntlMessageFormat;
-  messageIds: string[];
+  appMessageIds: string[];
 }
 
 const Context = createContext<AppMessageContext>(null);
@@ -100,10 +101,20 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   const getMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
+      const message = Object.hasOwnProperty.call(messages.messageIds, id)
+        ? messages.messageIds[id]
+        : defaultMessage;
+      return messageCache(message || `'{${id}}'`);
+    },
+    [messageCache, messages],
+  );
+
+  const getAppMessage = useCallback(
+    ({ defaultMessage, id }: IntlMessage) => {
       const message = Object.hasOwnProperty.call(messages.app, id)
         ? messages.app[id]
         : defaultMessage;
-      return messageCache(message);
+      return messageCache(message || `'{${id}}'`);
     },
     [messageCache, messages],
   );
@@ -112,7 +123,6 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     (blockName: string, blockVersion: string, { id }: IntlMessage, prefix: string) => {
       const message =
         (prefix && messages.app?.[`${prefix}.${id}`]) ||
-        messages.app?.[`${blockName}/${blockVersion}/${id}`] ||
         messages.blocks?.[blockName]?.[blockVersion]?.[id] ||
         '';
       return messageCache(message);
@@ -123,10 +133,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
   const value = useMemo(
     () => ({
       getMessage,
+      getAppMessage,
       getBlockMessage,
-      messageIds: messages?.app ? Object.keys(messages.app) : [],
+      appMessageIds: messages?.app ? Object.keys(messages.app) : [],
     }),
-    [getMessage, getBlockMessage, messages],
+    [getMessage, getAppMessage, getBlockMessage, messages],
   );
 
   if (messagesLoading) {

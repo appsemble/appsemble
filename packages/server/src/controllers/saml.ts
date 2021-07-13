@@ -230,12 +230,13 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
 
   const attributes = new Map(
     Array.from(
-      (x('AttributeStatement', NS.saml)?.childNodes as unknown) as Iterable<Element>,
+      x('AttributeStatement', NS.saml)?.childNodes as unknown as Iterable<Element>,
       (el) => [el.getAttribute('Name')?.trim(), el.firstChild?.textContent?.trim()],
     ),
   );
   const email = secret.emailAttribute && attributes.get(secret.emailAttribute)?.toLowerCase();
   const name = secret.nameAttribute && attributes.get(secret.nameAttribute);
+  const role = app.definition.security?.default?.role;
   let user: User;
   if (authorization) {
     // If the user is already linked to a known SAML authorization, use that account.
@@ -246,6 +247,13 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
       } catch {
         // The SAML login is already linked to an account, but the email address is registered to
         // another account. In this case ignore the email address.
+      }
+    }
+
+    if (role) {
+      const appMember = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
+      if (!appMember) {
+        await AppMember.create({ UserId: user.id, AppId: appId, role });
       }
     }
   } else {
@@ -271,7 +279,6 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
           { transaction },
         );
 
-        const role = app.definition.security?.default?.role;
         if (role) {
           const appMember = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
           if (!appMember) {

@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -16,12 +17,14 @@ import {
 } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { organizationBlocklist } from '../utils/organizationBlocklist';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 let organization: Organization;
 let server: Koa;
 let user: User;
+let clock: Clock;
 
 beforeAll(createTestSchema('organizations'));
 
@@ -32,17 +35,25 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  clock = install();
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
     name: 'Test Organization',
+    icon: await readFixture('nodejs-logo.png'),
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+  await Organization.create({
+    id: 'appsemble',
+    name: 'Appsemble',
+  });
   jest.spyOn(server.context.mailer, 'sendTemplateEmail');
 });
 
-afterEach(truncate);
+afterEach(() => {
+  truncate();
+  clock.uninstall();
+});
 
 afterAll(closeTestSchema);
 
@@ -53,11 +64,15 @@ describe('getOrganizations', () => {
     expect(response).toMatchObject({
       status: 200,
       data: [
-        { id: 'appsemble', name: 'Appsemble', iconUrl: '/api/organizations/appsemble/icon' },
+        {
+          id: 'appsemble',
+          name: 'Appsemble',
+          iconUrl: null,
+        },
         {
           id: 'testorganization',
           name: 'Test Organization',
-          iconUrl: '/api/organizations/testorganization/icon',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
         },
       ],
     });
@@ -74,7 +89,7 @@ describe('getOrganization', () => {
       data: {
         id: 'testorganization',
         name: 'Test Organization',
-        iconUrl: '/api/organizations/testorganization/icon',
+        iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
       },
     });
   });
@@ -115,7 +130,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: app.definition,
-          iconUrl: `/api/apps/${app.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: app.id,
           locked: false,
           path: 'test-app-2',
@@ -150,7 +166,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: appA.definition,
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appA.id,
           locked: false,
           path: 'test-app',
@@ -159,7 +176,8 @@ describe('getOrganizationApps', () => {
         {
           OrganizationId: 'testorganization',
           definition: appB.definition,
-          iconUrl: `/api/apps/${appB.id}/icon`,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: appB.id,
           locked: false,
           path: 'test-app-2',
@@ -195,7 +213,7 @@ describe('getOrganizationBlocks', () => {
           actions: null,
           description: null,
           events: null,
-          iconUrl: '/api/blocks/@testorganization/test/versions/0.0.0/icon',
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
           layout: null,
           longDescription: null,
           name: '@testorganization/test',
@@ -207,7 +225,6 @@ describe('getOrganizationBlocks', () => {
               type: 'object',
             },
           },
-          resources: null,
           version: '0.0.0',
         },
       ],
@@ -216,11 +233,76 @@ describe('getOrganizationBlocks', () => {
 });
 
 describe('getOrganizationIcon', () => {
-  it('should return the organization logo', async () => {
-    const buffer = await readFixture('testpattern.png');
-    await organization.update({ icon: buffer });
+  it('should return the organization logo squared by default', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
     const response = await request.get(`/api/organizations/${organization.id}/icon`, {
       responseType: 'arraybuffer',
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should set a background color if specified', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { background: '#ffff00' },
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should scale the icon is maskable is true', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { maskable: true },
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should be able to resize images', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { size: 96 },
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should be able to combine maskable, background, and size', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { background: '#00ffff', maskable: true, size: 192 },
+    });
+
+    expect(response.data).toMatchImageSnapshot();
+  });
+
+  it('should be possible retrieve the raw icon', async () => {
+    const icon = await readFixture('tux.png');
+    await organization.update({ icon });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { raw: true },
+    });
+
+    expect(response.data).toStrictEqual(icon);
+  });
+
+  it('should have a fallback icon', async () => {
+    await organization.update({ icon: null });
+    const response = await request.get(`/api/organizations/${organization.id}/icon`, {
+      responseType: 'arraybuffer',
+      params: { raw: true },
     });
 
     expect(response.data).toMatchImageSnapshot();
@@ -273,7 +355,10 @@ describe('patchOrganization', () => {
 describe('createOrganization', () => {
   it('should create a new organization', async () => {
     authorizeStudio();
-    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
+    const response = await request.post(
+      '/api/organizations',
+      createFormData({ id: 'foo', name: 'Foooo' }),
+    );
 
     expect(response).toMatchObject({
       status: 201,
@@ -288,6 +373,33 @@ describe('createOrganization', () => {
             role: 'Owner',
           },
         ],
+        iconUrl: null,
+        invites: [],
+      },
+    });
+  });
+
+  it('should create a new organization with an icon', async () => {
+    authorizeStudio();
+    const formData = createFormData({ id: 'foo', name: 'Foooo' });
+    const buffer = await readFixture('testpattern.png');
+    formData.append('icon', buffer, { filename: 'icon.png' });
+    const response = await request.post('/api/organizations', formData);
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: 'foo',
+        name: 'Foooo',
+        members: [
+          {
+            id: expect.any(String),
+            name: 'Test User',
+            primaryEmail: 'test@example.com',
+            role: 'Owner',
+          },
+        ],
+        iconUrl: '/api/organizations/foo/icon?updated=1970-01-01T00:00:00.000Z',
         invites: [],
       },
     });
@@ -297,7 +409,10 @@ describe('createOrganization', () => {
     await EmailAuthorization.update({ verified: false }, { where: { UserId: user.id } });
 
     authorizeStudio();
-    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
+    const response = await request.post(
+      '/api/organizations',
+      createFormData({ id: 'foo', name: 'Foooo' }),
+    );
 
     expect(response).toMatchObject({
       status: 403,
@@ -310,16 +425,37 @@ describe('createOrganization', () => {
   });
 
   it('should not create an organization with the same identifier', async () => {
-    authorizeStudio();
-    await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
+    // This prevents the test from hanging and timing out
+    clock.uninstall();
 
-    const response = await request.post('/api/organizations', { id: 'foo', name: 'Foooo' });
+    authorizeStudio();
+    await request.post('/api/organizations', createFormData({ id: 'foo', name: 'Foooo' }));
+
+    const response = await request.post(
+      '/api/organizations',
+      createFormData({ id: 'foo', name: 'Foooo' }),
+    );
 
     expect(response).toMatchObject({
       status: 409,
       data: { message: 'Another organization with the name “Foooo” already exists' },
     });
   });
+
+  it.each(organizationBlocklist)(
+    'should not allow the organization id ‘%s’',
+    async (blockedName) => {
+      authorizeStudio();
+      const response = await request.post(
+        '/api/organizations',
+        createFormData({ id: blockedName }),
+      );
+      expect(response).toMatchObject({
+        status: 400,
+        data: { message: 'This organization id is not allowed.' },
+      });
+    },
+  );
 });
 
 describe('getMembers', () => {
@@ -337,6 +473,20 @@ describe('getMembers', () => {
           role: 'Owner',
         },
       ],
+    });
+  });
+
+  it('should should not fetch organization members if the user is not a member', async () => {
+    authorizeStudio();
+    await Organization.create({ id: 'org' });
+    const response = await request.get('/api/organizations/org/members');
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User is not part of this organization.',
+      },
     });
   });
 });
@@ -361,6 +511,28 @@ describe('getInvites', () => {
           email: 'test2@example.com',
         },
       ],
+    });
+  });
+
+  it('should return forbidden if the user is a member but does not have invite permissions', async () => {
+    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await OrganizationInvite.create({
+      email: 'test2@example.com',
+      key: 'abcde',
+      OrganizationId: 'testorganization',
+    });
+
+    authorizeStudio();
+    const response = await request.get('/api/organizations/testorganization/invites');
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+      },
     });
   });
 });

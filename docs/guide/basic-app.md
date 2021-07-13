@@ -23,7 +23,7 @@ compliant third party APIs. This tutorial will focus on usage with Appsemble’s
 
 Add the following to the app definition:
 
-```yaml
+```yaml copy
 resources:
   person:
     schema:
@@ -55,11 +55,13 @@ object which has the properties `firstName`, `lastName`, `email`, and `descripti
 `lastName` shouldn’t be too long, whereas `email` should be a valid email address. For example, this
 could represent the following data structure:
 
-```yaml
-firstName: John
-lastName: Smith
-email: john.smith@example.com
-description: This is the best smith in town.
+```json
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "john.smith@example.com",
+  "description": "This is the best smith in town."
+}
 ```
 
 The schema is used as a safety net for invalid data, but also for representation in some places.
@@ -80,7 +82,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 -   - name: Example Page A
 -     blocks:
 -       - type: action-button
--         version: 0.18.8
+-         version: 0.18.21
 -         parameters:
 -           icon: arrow-right
 -         actions:
@@ -91,7 +93,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 -   - name: Example Page B
 -     blocks:
 -       - type: action-button
--         version: 0.18.8
+-         version: 0.18.21
 -         parameters:
 -           icon: arrow-left
 -         actions:
@@ -101,7 +103,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 +   - name: People
 +     blocks:
 +       - type: table
-+         version: 0.18.8
++         version: 0.18.21
 +         events:
 +           listen:
 +             data: people
@@ -144,7 +146,7 @@ Let’s add such a `data-loader` block.
     - name: People
       blocks:
 +       - type: data-loader
-+         version: 0.18.8
++         version: 0.18.21
 +         actions:
 +           onLoad:
 +             type: resource.query
@@ -153,7 +155,7 @@ Let’s add such a `data-loader` block.
 +           emit:
 +             data: people
         - type: table
-          version: 0.18.8
+          version: 0.18.21
 ```
 
 When the app is saved, it will start off by showing a spinner. It then quickly turns into some
@@ -162,7 +164,7 @@ been registered yet.
 
 At this point, the total app definition should look like this:
 
-```yaml
+```yaml copy filename="app.yaml"
 name: My App
 defaultPage: People
 
@@ -192,7 +194,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.18.8
+        version: 0.18.21
         actions:
           onLoad:
             type: resource.query
@@ -201,7 +203,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.18.8
+        version: 0.18.21
         events:
           listen:
             data: people
@@ -225,7 +227,7 @@ Add a new page:
 +   - name: Register
 +     blocks:
 +       - type: form
-+         version: 0.18.8
++         version: 0.18.21
 +         actions:
 +           onSubmit:
 +             type: resource.create
@@ -253,7 +255,7 @@ displays the newly created person.
 
 The app should now look like this:
 
-```yaml
+```yaml copy filename="app.yaml"
 name: My App
 description: ''
 defaultPage: People
@@ -284,7 +286,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.18.8
+        version: 0.18.21
         parameters:
           fields:
             - name: firstName
@@ -301,7 +303,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.18.8
+        version: 0.18.21
         actions:
           onLoad:
             type: resource.query
@@ -310,7 +312,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.18.8
+        version: 0.18.21
         events:
           listen:
             data: people
@@ -338,7 +340,7 @@ Add a new page:
 +       - id
 +     blocks:
 +       - type: data-loader
-+         version: 0.18.8
++         version: 0.18.21
 +         actions:
 +           onLoad:
 +             type: resource.get
@@ -347,7 +349,7 @@ Add a new page:
 +           emit:
 +             data: person
 +       - type: detail-viewer
-+         version: 0.18.8
++         version: 0.18.21
 +         events:
 +           listen:
 +             data: person
@@ -383,7 +385,7 @@ Now, when a list item is clicked, the user will be redirected to the person’s 
 
 At this point, the app definition should look like this:
 
-```yaml
+```yaml copy filename="app.yaml"
 name: My App
 description: ''
 defaultPage: People
@@ -414,7 +416,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.18.8
+        version: 0.18.21
         parameters:
           fields:
             - name: firstName
@@ -431,7 +433,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.18.8
+        version: 0.18.21
         actions:
           onLoad:
             type: resource.query
@@ -440,7 +442,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.18.8
+        version: 0.18.21
         events:
           listen:
             data: people
@@ -458,7 +460,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.18.8
+        version: 0.18.21
         actions:
           onLoad:
             type: resource.get
@@ -467,7 +469,7 @@ pages:
           emit:
             data: person
       - type: detail-viewer
-        version: 0.18.8
+        version: 0.18.21
         events:
           listen:
             data: person

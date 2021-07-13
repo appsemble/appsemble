@@ -67,7 +67,7 @@ export function GeoCoordinatesInput({
 
     const onMove = (): void => {
       const { lat, lng } = map.getCenter();
-      onChange(({ currentTarget: { name } } as unknown) as Event, {
+      onChange({ currentTarget: { name } } as unknown as Event, {
         latitude: lat,
         longitude: lng,
       });

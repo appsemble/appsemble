@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "Opgeruimd Staat Netjes",
+    "description": "Een app waarin zwerfafval kan worden gemeld en weergegeven op een interactieve kaart.",
+    "pages.0": "Afval rapporteren",
+    "pages.1": "Afvaloverzicht",
+    "pages.2": "Afvaldetails",
+    "pages.3": "Afvallijst"
+  },
+  "messageIds": {
+    "location": "Locatie",
+    "process": "Proces",
+    "notes": "Notities",
+    "notesExample": "Bijvoorbeeld: Er ligt een fiets in de bosjes",
+    "photos": "Foto’s",
+    "date": "Datum"
+  }
+}

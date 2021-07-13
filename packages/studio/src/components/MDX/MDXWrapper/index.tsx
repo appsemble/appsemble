@@ -17,7 +17,7 @@ export interface MDXWrapperProps extends Omit<typeof import('*.md'), 'default'> 
  */
 export function MDXWrapper({ children }: MDXWrapperProps): ReactElement {
   return (
-    <main className={`container content pl-6 pr-2 py-2 ${styles.root}`} lang={defaultLocale}>
+    <main className={`content pl-6 ${styles.root}`} lang={defaultLocale}>
       {children}
     </main>
   );

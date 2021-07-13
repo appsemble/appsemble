@@ -21,7 +21,6 @@ import { compareStrings } from '@appsemble/utils';
  * ```
  *
  * Now running the following command will fix the message keys:
- *
  * @example
  * ```sh
  * yarn scripts rewrite-messages
@@ -32,7 +31,7 @@ const replacements: [RegExp, string][] = [];
 export const command = 'rewrite-messages';
 export const description = `Fix i18n message keys for moved files. Open ${__filename} for details`;
 
-const translationdDir = 'translations';
+const translationdDir = 'i18n';
 
 export async function handler(): Promise<void> {
   const filenames = await fs.readdir(translationdDir);

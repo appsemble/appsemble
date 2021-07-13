@@ -29,7 +29,6 @@ export interface Toggle {
  * A hook for keeping track of a boolean state.
  *
  * @param initialState - The initial value.
- *
  * @returns The toggle state.
  */
 export function useToggle(initialState = false): Toggle {

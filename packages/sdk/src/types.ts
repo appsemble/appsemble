@@ -75,6 +75,7 @@ export type ResourceUpdateAction = RequestLikeAction<'resource.update'>;
  * An action that can be called from within a block.
  */
 export type Action =
+  | BaseAction<'condition'>
   | BaseAction<'dialog.error'>
   | BaseAction<'dialog.ok'>
   | BaseAction<'dialog'>
@@ -84,6 +85,7 @@ export type Action =
   | BaseAction<'flow.cancel'>
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
+  | BaseAction<'flow.to'>
   | BaseAction<'link.back'>
   | BaseAction<'link.next'>
   | BaseAction<'message'>
@@ -137,11 +139,10 @@ export interface BaseMessage {
   timeout?: number;
 
   /**
-    * Whether or not to show the dismiss button.
-    *
-    * @default false
-
-    */
+   * Whether or not to show the dismiss button.
+   *
+   * @default false
+   */
   dismissable?: boolean;
 }
 

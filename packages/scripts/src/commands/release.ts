@@ -1,18 +1,21 @@
 import { promises as fs } from 'fs';
-import { basename, dirname, join } from 'path';
+import { basename, dirname, join, parse } from 'path';
 
-import { getWorkspaces, logger } from '@appsemble/node-utils';
+import { getWorkspaces, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
+import { AppsembleMessages } from '@appsemble/types';
 import { formatISO } from 'date-fns';
 import { ensureFile, readJson, remove, writeJson } from 'fs-extra';
 import globby from 'globby';
+import { safeDump } from 'js-yaml';
 import { capitalize, mapValues } from 'lodash';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { BlockContent, ListItem, Root } from 'mdast';
-import remark from 'remark';
+import { BlockContent, ListItem } from 'mdast';
+import fromMarkdown from 'mdast-util-from-markdown';
+import toString from 'mdast-util-to-string';
 import * as semver from 'semver';
 import { PackageJson } from 'type-fest';
 import { Argv } from 'yargs';
 
+import { outputYaml } from '../lib/fs';
 import {
   createHeading,
   createLink,
@@ -75,6 +78,35 @@ async function updatePkg(dir: string, version: string): Promise<void> {
 }
 
 /**
+ * Update `publiccode.yml`.
+ *
+ * @param version - The software version to set
+ */
+async function updatePublicCodeYml(version: string): Promise<void> {
+  const [publicCode] = await readYaml<any>('publiccode.yml');
+  const i18nFiles = await fs.readdir('i18n');
+  const availableLanguages = i18nFiles.map((f) => parse(f).name).sort();
+  await outputYaml(
+    'publiccode.yml',
+    mapValues(publicCode, (value, key) => {
+      switch (key) {
+        case 'softwareVersion':
+          return version;
+        case 'releaseDate':
+          return formatISO(new Date(), { representation: 'date' });
+        case 'localisation':
+          return {
+            ...value,
+            availableLanguages,
+          };
+        default:
+          return value;
+      }
+    }),
+  );
+}
+
+/**
  * Replace content of a file.
  *
  * @param filename - The filename of the file to replace.
@@ -105,10 +137,10 @@ async function processChangesDir(dir: string, prefix: string): Promise<ListItem[
     .map((line) => `${prefix}: ${line}`)
     .map((line) => line.trim())
     .map((line) => (line.endsWith('.') ? line : `${line}.`))
-    .map((line) => createListItem(remark.parse(line).children as BlockContent[]));
+    .map((line) => createListItem(fromMarkdown(line).children as BlockContent[]));
 }
 
-async function processChanges(dir: string): Promise<Changes> {
+async function processDirectoryChanges(dir: string): Promise<Changes> {
   const changesDir = join(dir, 'changed');
   const base = basename(dir);
   const parent = basename(dirname(dir));
@@ -124,12 +156,9 @@ async function processChanges(dir: string): Promise<Changes> {
   return result;
 }
 
-async function updateChangelog(workspaces: string[], version: string): Promise<void> {
-  const changesByPackage = await Promise.all(
-    workspaces.map((workspace) => processChanges(workspace)),
-  );
-  const changelog = remark.parse(await fs.readFile('CHANGELOG.md', 'utf-8')) as Root;
-  const changesByCategory = changesByPackage.reduce<Changes>(
+async function getAllChanges(directories: string[]): Promise<Changes> {
+  const changesByPackage = await Promise.all(directories.map(processDirectoryChanges));
+  return changesByPackage.reduce(
     (acc, change) => {
       acc.added.push(...change.added);
       acc.changed.push(...change.changed);
@@ -141,6 +170,10 @@ async function updateChangelog(workspaces: string[], version: string): Promise<v
     },
     { added: [], changed: [], deprecated: [], removed: [], fixed: [], security: [] },
   );
+}
+
+async function updateChangelog(changesByCategory: Changes, version: string): Promise<void> {
+  const changelog = fromMarkdown(await fs.readFile('CHANGELOG.md', 'utf-8'));
   const changesSection = [
     createHeading(2, [
       '[',
@@ -165,6 +198,52 @@ async function updateChangelog(workspaces: string[], version: string): Promise<v
   await fs.writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));
 }
 
+async function updateHelmChart(changes: Changes, version: string): Promise<void> {
+  const [chart] = await readYaml<any>('config/charts/appsemble/Chart.yaml');
+  const changelog = safeDump(
+    Object.entries(changes).flatMap(([kind, entries]) =>
+      entries.map((entry: ListItem) => ({
+        kind,
+        description: toString(entry).replace(/\s+/g, ' '),
+      })),
+    ),
+  );
+  await outputYaml(
+    'config/charts/appsemble/Chart.yaml',
+    mapValues(chart, (value, key) => {
+      switch (key) {
+        case 'appVersion':
+        case 'version':
+          return version;
+        case 'annotations':
+          return mapValues(value, (val, k) => (k === 'artifacthub.io/changes' ? changelog : val));
+        default:
+          return value;
+      }
+    }),
+  );
+}
+
+async function updateAppTranslations(version: string): Promise<void> {
+  await opendirSafe('apps', (appDir) =>
+    opendirSafe(join(appDir, 'i18n'), async (i18nFile) => {
+      const content = (await readJson(i18nFile)) as AppsembleMessages;
+      if (!content.blocks) {
+        return;
+      }
+      for (const [blockId, versions] of Object.entries(content.blocks)) {
+        if (!blockId.startsWith('@appsemble')) {
+          continue;
+        }
+        const [[oldVersion, messages]] = Object.entries(versions);
+        delete versions[oldVersion];
+        versions[version] = messages;
+      }
+      await writeJson(i18nFile, content, { spaces: 2 });
+    }),
+  );
+}
+
 export function builder(yargs: Argv): Argv {
   return yargs.positional('increment', {
     description: 'Whether to increment the minor or patch version',
@@ -181,7 +260,6 @@ export async function handler({ increment }: Args): Promise<void> {
   const paths = await globby(
     [
       'apps/*/app.yaml',
-      'config/charts/*/Chart.yaml',
       'docs/*.md',
       'docs/**/*.md',
       'docs/*.mdx',
@@ -196,5 +274,9 @@ export async function handler({ increment }: Args): Promise<void> {
   await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
   await updatePkg(process.cwd(), version);
-  await updateChangelog(workspaces, version);
+  await updatePublicCodeYml(version);
+  const changes = await getAllChanges(workspaces);
+  await updateChangelog(changes, version);
+  await updateHelmChart(changes, version);
+  await updateAppTranslations(version);
 }

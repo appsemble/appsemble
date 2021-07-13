@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto';
 
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
+import { isEqual, parseISO } from 'date-fns';
 import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import {
@@ -14,12 +15,13 @@ import {
   OrganizationInvite,
   User,
 } from '../models';
-import { serveIcon } from '../routes/serveIcon';
 import { KoaContext } from '../types';
+import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
+import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
-import { readAsset } from '../utils/readAsset';
+import { organizationBlocklist } from '../utils/organizationBlocklist';
 
 interface Params {
   blockId: string;
@@ -30,7 +32,13 @@ interface Params {
 }
 
 export async function getOrganizations(ctx: KoaContext): Promise<void> {
-  const organizations = await Organization.findAll({ order: [['id', 'ASC']] });
+  const organizations = await Organization.findAll({
+    order: [['id', 'ASC']],
+    attributes: {
+      include: [[literal('icon IS NOT NULL'), 'hasIcon']],
+      exclude: ['icon'],
+    },
+  });
 
   ctx.body = organizations.map((organization) => ({
     id: organization.id,
@@ -38,7 +46,9 @@ export async function getOrganizations(ctx: KoaContext): Promise<void> {
     description: organization.description,
     website: organization.website,
     email: organization.email,
-    iconUrl: `/api/organizations/${organization.id}/icon`,
+    iconUrl: organization.get('hasIcon')
+      ? `/api/organizations/${organization.id}/icon?updated=${organization.updated.toISOString()}`
+      : null,
   }));
 }
 
@@ -47,7 +57,12 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
     params: { organizationId },
   } = ctx;
 
-  const organization = await Organization.findByPk(organizationId);
+  const organization = await Organization.findByPk(organizationId, {
+    attributes: {
+      include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      exclude: ['icon'],
+    },
+  });
   if (!organization) {
     throw notFound('Organization not found.');
   }
@@ -58,7 +73,9 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
     description: organization.description,
     website: organization.website,
     email: organization.email,
-    iconUrl: `/api/organizations/${organization.id}/icon`,
+    iconUrl: organization.get('hasIcon')
+      ? `/api/organizations/${organization.id}/icon?updated=${organization.updated.toISOString()}`
+      : null,
   };
 }
 
@@ -67,6 +84,7 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
     params: { organizationId },
     user,
   } = ctx;
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const memberInclude = user
     ? { include: [{ model: User, where: { id: user.id }, required: false }] }
@@ -78,32 +96,56 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
 
   const apps = await App.findAll({
     attributes: {
-      include: [
-        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
-        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
-      ],
+      include: [[literal('"App".icon IS NOT NULL'), 'hasIcon']],
       exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
     },
-    include: [{ model: AppRating, attributes: [] }],
-    group: ['App.id'],
-    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
+    include: [
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      ...languageQuery,
+    ],
     where: { OrganizationId: organizationId },
-  });
-
-  const organizations = await Organization.findAll({
-    where: { id: apps.map((app) => app.OrganizationId) },
-    attributes: ['id', 'name'],
   });
 
   const filteredApps =
     user && organization.Users.length ? apps : apps.filter((app) => !app.private);
 
-  ctx.body = filteredApps.map((app) => {
-    Object.assign(app, {
-      Organization: organizations.find((org) => org.id === app.OrganizationId),
-    });
-    return getAppFromRecord(app, ['yaml']);
+  const ratings = await AppRating.findAll({
+    attributes: [
+      'AppId',
+      [fn('AVG', col('rating')), 'RatingAverage'],
+      [fn('COUNT', col('AppId')), 'RatingCount'],
+    ],
+    where: { AppId: filteredApps.map((app) => app.id) },
+    group: ['AppId'],
   });
+
+  ctx.body = filteredApps
+    .map((app) => {
+      const rating = ratings.find((r) => r.AppId === app.id);
+
+      if (rating) {
+        Object.assign(app, {
+          RatingAverage: Number(rating.get('RatingAverage')),
+          RatingCount: Number(rating.get('RatingCount')),
+        });
+      }
+
+      applyAppMessages(app, language, baseLanguage);
+
+      return app;
+    })
+    .sort(compareApps)
+    .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
 export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<void> {
@@ -111,7 +153,12 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
     params: { organizationId },
   } = ctx;
 
-  const organization = await Organization.count({ where: { id: organizationId } });
+  const organization = await Organization.findByPk(organizationId, {
+    attributes: {
+      include: ['updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
+      exclude: ['icon'],
+    },
+  });
   if (!organization) {
     throw notFound('Organization not found.');
   }
@@ -121,8 +168,12 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
   // See: https://github.com/sequelize/sequelize/issues/9509
   const blockVersions = await getDB().query<BlockVersion>(
     {
-      query:
-        'SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE "OrganizationId" = ? AND created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+      query: `SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, icon
+        FROM "BlockVersion"
+        WHERE "OrganizationId" = ?
+        AND created IN (SELECT MAX(created)
+                        FROM "BlockVersion"
+                        GROUP BY "OrganizationId", name)`,
       values: [organizationId],
     },
     { type: QueryTypes.SELECT },
@@ -134,35 +185,43 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
       actions,
       description,
       events,
+      icon,
       layout,
       longDescription,
       name,
       parameters,
-      resources,
       version,
-    }) => ({
-      name: `@${OrganizationId}/${name}`,
-      description,
-      longDescription,
-      version,
-      actions,
-      events,
-      iconUrl: `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`,
-      layout,
-      parameters,
-      resources,
-    }),
+    }) => {
+      let iconUrl = null;
+      if (icon) {
+        iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
+      } else if (organization.get('hasIcon')) {
+        iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
+      }
+      return {
+        name: `@${OrganizationId}/${name}`,
+        description,
+        longDescription,
+        version,
+        actions,
+        events,
+        iconUrl,
+        layout,
+        parameters,
+      };
+    },
   );
 }
 
 export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { organizationId },
+    query: { background, maskable, raw, size = 128, updated },
   } = ctx;
 
   const organization = await Organization.findOne({
     where: { id: organizationId },
-    attributes: ['icon'],
+    attributes: ['icon', 'updated'],
     raw: true,
   });
 
@@ -171,8 +230,14 @@ export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void
   }
 
   await serveIcon(ctx, {
-    icon: organization.icon ?? (await readAsset('appsemble.png')),
-    ...(!organization.icon && { width: 128, height: 128, format: 'png' }),
+    background: background as string,
+    cache: isEqual(parseISO(updated as string), organization.updated),
+    fallback: 'building-solid.png',
+    height: size && Number.parseInt(size as string),
+    icon: organization.icon,
+    maskable: Boolean(maskable),
+    raw: Boolean(raw),
+    width: size && Number.parseInt(size as string),
   });
 }
 
@@ -218,14 +283,16 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
     description: updated.description,
     website: updated.website,
     email: updated.name,
-    iconUrl: `/api/organizations/${organization.id}/icon`,
+    iconUrl: updated.icon
+      ? `/api/organizations/${organization.id}/icon?updated=${updated.updated.toISOString()}`
+      : null,
   };
 }
 
 export async function createOrganization(ctx: KoaContext): Promise<void> {
   const {
     request: {
-      body: { description, email, id, name, website },
+      body: { description, email, icon, id, name, website },
     },
     user: { id: userId },
   } = ctx;
@@ -249,9 +316,13 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
     throw forbidden('Email not verified.');
   }
 
+  if (organizationBlocklist.includes(id)) {
+    throw badRequest('This organization id is not allowed.');
+  }
+
   try {
     const organization = await Organization.create(
-      { id, name, email, description, website },
+      { id, name, email, description, website, icon: icon ? icon.contents : null },
       { include: [User] },
     );
 
@@ -262,7 +333,9 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
     ctx.body = {
       id: organization.id,
       name: organization.name,
-      iconUrl: `/api/organizations/${organization.id}/icon`,
+      iconUrl: icon
+        ? `/api/organizations/${organization.id}/icon?updated=${organization.created.toISOString()}`
+        : null,
       description: organization.description,
       website: organization.website,
       email: organization.email,
@@ -294,6 +367,7 @@ export async function getMembers(ctx: KoaContext<Params>): Promise<void> {
   if (!organization) {
     throw notFound('Organization not found.');
   }
+  await checkRole(ctx, organization.id, Permission.ViewMembers);
 
   ctx.body = organization.Users.map((user) => ({
     id: user.id,
@@ -308,15 +382,22 @@ export async function getInvites(ctx: KoaContext<Params>): Promise<void> {
     params: { organizationId },
   } = ctx;
 
-  const organization = await Organization.findByPk(organizationId, {
-    include: [OrganizationInvite],
+  const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
+    include: [
+      {
+        model: Organization,
+        required: false,
+        include: [OrganizationInvite],
+      },
+    ],
   });
-  if (!organization) {
+
+  if (!member.Organization) {
     throw notFound('Organization not found.');
   }
 
-  ctx.body = organization.OrganizationInvites.map((invite) => ({
-    email: invite.email,
+  ctx.body = member.Organization.OrganizationInvites.map(({ email }) => ({
+    email,
   }));
 }
 
@@ -327,18 +408,27 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
 
   const invite = await OrganizationInvite.findOne({
     where: { key: token },
+    include: {
+      model: Organization,
+      attributes: {
+        include: [[literal('icon IS NOT NULL'), 'hasIcon']],
+        exclude: ['icon'],
+      },
+    },
   });
 
   if (!invite) {
     throw notFound('This token does not exist.');
   }
 
-  const organization = await Organization.findByPk(invite.OrganizationId, { raw: true });
-
   ctx.body = {
-    id: organization.id,
-    name: organization.name,
-    iconUrl: `/api/organizations/${organization.id}/icon`,
+    id: invite.organization.id,
+    name: invite.organization.name,
+    iconUrl: invite.organization.get('hasIcon')
+      ? `/api/organizations/${
+          invite.organization.id
+        }/icon?updated=${invite.organization.updated.toISOString()}`
+      : null,
   };
 }
 

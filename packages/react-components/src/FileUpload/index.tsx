@@ -1,60 +1,66 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { ChangeEvent, ReactElement, ReactNode } from 'react';
+import { ChangeEvent, ComponentPropsWithoutRef, forwardRef, ReactNode, useCallback } from 'react';
 
-import { FormComponent, Icon } from '..';
+import { FormComponent, Icon, Input, SharedFormComponentProps } from '..';
 
-interface FileUploadProps {
-  id?: string;
-  name: string;
-  accept?: string;
-  label?: ReactNode;
-  fileButtonLabel?: ReactNode;
-  fileLabel?: ReactNode;
-  help?: ReactNode;
-  preview?: ReactNode;
-  icon?: IconName;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  formComponentClassName?: string;
-  className?: string;
-  required?: boolean;
-}
+type FileUploadProps = Omit<
+  ComponentPropsWithoutRef<typeof Input>,
+  keyof SharedFormComponentProps
+> &
+  SharedFormComponentProps & {
+    fileButtonLabel?: ReactNode;
+    fileLabel?: ReactNode;
+    preview?: ReactNode;
+    onChange: (event: ChangeEvent<HTMLInputElement>, value: File) => void;
+    formComponentClassName?: string;
+  };
 
-export function FileUpload({
-  name,
-  id = name,
-  accept,
-  className,
-  fileButtonLabel,
-  fileLabel,
-  formComponentClassName,
-  help,
-  icon = 'upload',
-  label,
-  onChange,
-  preview = null,
-  required = false,
-}: FileUploadProps): ReactElement {
-  return (
-    <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
-      {preview}
-      <div className="file has-name">
-        <label className={`file-label ${className}`} htmlFor={id}>
-          <input
-            accept={accept}
-            className="file-input"
-            id={id}
-            name={name}
-            onChange={onChange}
-            type="file"
-          />
-          <span className="file-cta">
-            <Icon icon={icon} />
-            {fileButtonLabel && <span className="file-label">{fileButtonLabel}</span>}
-          </span>
-          {fileLabel && <span className="file-name">{fileLabel}</span>}
-        </label>
-      </div>
-      {help && <p className="help">{help}</p>}
-    </FormComponent>
-  );
-}
+export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
+  (
+    {
+      name,
+      id = name,
+      accept,
+      className,
+      fileButtonLabel,
+      fileLabel,
+      formComponentClassName,
+      help,
+      icon = 'upload',
+      label,
+      onChange,
+      preview = null,
+      required = false,
+    },
+    ref,
+  ) => {
+    const handleChange = useCallback(
+      (event: ChangeEvent<HTMLInputElement>) => onChange(event, event.currentTarget.files[0]),
+      [onChange],
+    );
+
+    return (
+      <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
+        {preview}
+        <div className="file has-name">
+          <label className={`file-label ${className}`} htmlFor={id}>
+            <input
+              accept={accept}
+              className="file-input"
+              id={id}
+              name={name}
+              onChange={handleChange}
+              ref={ref}
+              type="file"
+            />
+            <span className="file-cta">
+              <Icon icon={icon} />
+              {fileButtonLabel && <span className="file-label">{fileButtonLabel}</span>}
+            </span>
+            {fileLabel && <span className="file-name">{fileLabel}</span>}
+          </label>
+        </div>
+        {help && <p className="help">{help}</p>}
+      </FormComponent>
+    );
+  },
+);

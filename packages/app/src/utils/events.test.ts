@@ -1,5 +1,7 @@
 import { EventEmitter } from 'events';
 
+import { noop } from '@appsemble/utils';
+
 import { createEvents } from './events';
 
 describe('createEvents', () => {
@@ -89,7 +91,7 @@ describe('createEvents', () => {
 
     it('should indicate if the event listener is implemented when registering', () => {
       const events = createEvents(ee, promise, { listen: { foo: {} } });
-      const implemented = events.on.foo(() => {});
+      const implemented = events.on.foo(noop);
       expect(implemented).toBe(false);
     });
 
@@ -139,7 +141,7 @@ describe('createEvents', () => {
 
     it('should indicate if the event listener is implemented when unregistering', () => {
       const events = createEvents(ee, promise, { listen: { foo: {} } });
-      const implemented = events.off.foo(() => {});
+      const implemented = events.off.foo(noop);
       expect(implemented).toBe(false);
     });
 

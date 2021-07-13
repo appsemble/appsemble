@@ -1,25 +1,28 @@
 .root {
-  height: 100%;
+  flex: 1 1 auto;
 }
 
 .leftPanel {
-  flex: 1 1 0;
+  flex: 1 1 auto;
 }
 
 .rightPanel {
   background-color: hsl(0, 0%, 7%);
   border-radius: 22px;
   box-sizing: border-box;
-  flex: 1 1 0;
+  flex: 0 0 40vw;
 }
 
 .editorForm {
-  flex-flow: column;
-  height: 100%;
+  flex: 1 1 auto;
 }
 
 .appFrame {
   background-color: hsl(0, 0%, 100%);
   border: none;
   flex: 1;
+}
+
+.editor {
+  height: 100%;
 }

@@ -29,7 +29,7 @@ Within a notification hook it’s possible to define how notifications are sent.
 automatically send notifications for users with specific roles, the author of a resource, as well as
 allowing users to subscribe to resources of a specific type and individual resources.
 
-```yaml
+```yaml copy
 notifications: opt-in # Enable notifications in the app
 
 security:
@@ -100,7 +100,7 @@ pages:
     roles: []
     blocks:
       - type: data-loader
-        version: 0.18.8
+        version: 0.18.21
         actions:
           onLoad:
             type: resource.query
@@ -109,7 +109,7 @@ pages:
           emit:
             data: data
       - type: table
-        version: 0.18.8
+        version: 0.18.21
         parameters:
           fields:
             - name:

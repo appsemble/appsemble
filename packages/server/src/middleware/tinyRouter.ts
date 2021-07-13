@@ -15,7 +15,6 @@ type Route = {
  * A tiny dynamic router middleware for GET requests.
  *
  * @param routes - The routes to serve.
- *
  * @returns Middleware that serves middleware matching the route regex.
  */
 export function tinyRouter(routes: Route[]): KoaMiddleware {

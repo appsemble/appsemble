@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.18.8",
+  "version": "0.18.21",
   "description": "Build your own blocks",
   "keywords": [
     "app",
@@ -20,7 +20,7 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/sdk"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "main": "dist",
@@ -33,6 +33,6 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-common-types": "^0.2.35",
-    "type-fest": "^1.0.1"
+    "type-fest": "^1.2.2"
   }
 }

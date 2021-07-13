@@ -32,9 +32,36 @@ export const paths: OpenAPIV3.PathsObject = {
         description: 'The organization to create',
         required: true,
         content: {
-          'application/json': {
+          'multipart/form-data': {
             schema: {
-              $ref: '#/components/schemas/Organization',
+              type: 'object',
+              properties: {
+                id: {
+                  $ref: '#/components/schemas/Organization/properties/id',
+                },
+                name: {
+                  $ref: '#/components/schemas/Organization/properties/name',
+                },
+                description: {
+                  $ref: '#/components/schemas/Organization/properties/description',
+                },
+                email: {
+                  $ref: '#/components/schemas/Organization/properties/email',
+                },
+                website: {
+                  $ref: '#/components/schemas/Organization/properties/website',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The organization icon.',
+                },
+              },
+            },
+            encoding: {
+              icon: {
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
+              },
             },
           },
         },
@@ -136,6 +163,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+      security: [{ studio: [] }],
     },
   },
   '/api/organizations/{organizationId}/invites/resend': {
@@ -236,6 +264,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+      security: [{ studio: [] }],
     },
     post: {
       tags: ['organization'],
@@ -386,6 +415,14 @@ export const paths: OpenAPIV3.PathsObject = {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
+      parameters: [
+        {
+          name: 'language',
+          schema: { type: 'string' },
+          description: 'The language to include the translations of, if available',
+          in: 'query',
+        },
+      ],
       description:
         'Get a list of an organization’s apps. Private apps are excluded unless the user is in the organization.',
       operationId: 'getOrganizationApps',

@@ -1,8 +1,8 @@
 import { randomBytes } from 'crypto';
 
-import { JwtPayload } from '@appsemble/types';
 import { conflict, notAcceptable, notFound } from '@hapi/boom';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
+import { literal } from 'sequelize';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
 import { KoaContext } from '../types';
@@ -17,7 +17,10 @@ export async function getUser(ctx: KoaContext): Promise<void> {
     include: [
       {
         model: Organization,
-        attributes: ['id', 'name'],
+        attributes: {
+          include: ['id', 'name', 'updated', [literal('icon IS NOT NULL'), 'hasIcon']],
+          exclude: ['icon'],
+        },
       },
       {
         model: EmailAuthorization,
@@ -29,10 +32,12 @@ export async function getUser(ctx: KoaContext): Promise<void> {
     id: dbUser.id,
     name: dbUser.name,
     primaryEmail: dbUser.primaryEmail,
-    organizations: dbUser.Organizations.map(({ id, name }) => ({
-      id,
-      name,
-      iconUrl: `/api/organizations/${id}/icon`,
+    organizations: dbUser.Organizations.map((org) => ({
+      id: org.id,
+      name: org.name,
+      iconUrl: org.get('hasIcon')
+        ? `/api/organizations/${org.id}/icon?updated=${org.updated.toISOString()}`
+        : null,
     })),
     emails: dbUser.EmailAuthorizations.map(({ email, verified }) => ({
       email,
@@ -46,24 +51,29 @@ export async function getUser(ctx: KoaContext): Promise<void> {
 export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
   const { user } = ctx;
 
-  const dbUser = await User.findOne({
-    where: { id: user.id },
-    include: [
-      {
-        model: Organization,
-        attributes: ['id', 'name', 'description', 'website', 'email'],
-      },
+  const organizations = await Organization.findAll({
+    attributes: [
+      'id',
+      'name',
+      'description',
+      'website',
+      'email',
+      'updated',
+      [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
     ],
+    include: [{ model: User, where: { id: user.id } }],
   });
 
-  ctx.body = dbUser.Organizations.map((org) => ({
+  ctx.body = organizations.map((org) => ({
     id: org.id,
     name: org.name,
-    role: org.Member.role,
+    role: org.Users[0].Member.role,
     description: org.description,
     website: org.website,
     email: org.email,
-    iconUrl: `/api/organizations/${org.id}/icon`,
+    iconUrl: org.get('hasIcon')
+      ? `/api/organizations/${org.id}/icon?updated=${org.updated.toISOString()}`
+      : null,
   }));
 }
 

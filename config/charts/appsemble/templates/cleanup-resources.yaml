@@ -12,6 +12,9 @@ spec:
   jobTemplate:
     spec:
       template:
+        metadata:
+          annotations:
+            {{ include "appsemble.gitlab" . | indent 12 }}
         spec:
           restartPolicy: Never
           containers:
@@ -19,8 +22,7 @@ spec:
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               command:
-                - node
-                - packages/server/dist
+                - appsemble
                 - cleanup-resources
                 - -vv
               env:
@@ -40,5 +42,5 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: {{ .Values.global.postgresql.existingSecret }}
-                      key: postgresql-password
+                      key: postgresql-postgres-password
 {{ end }}

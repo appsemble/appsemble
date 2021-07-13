@@ -10,15 +10,17 @@ beforeAll(async () => {
 });
 
 it('should serve a PWA manifest', async () => {
-  jest.spyOn(appUtils, 'getApp').mockResolvedValue(({
-    path: 'test-app',
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-      theme: { splashColor: '#deffde', themeColor: '#fa86ff' },
-    },
-    OrganizationId: 'manitest',
-  } as Partial<App>) as App);
+  jest.spyOn(appUtils, 'getApp').mockResolvedValue({
+    app: {
+      path: 'test-app',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        theme: { splashColor: '#deffde', themeColor: '#fa86ff' },
+      },
+      OrganizationId: 'manitest',
+    } as Partial<App> as App,
+  });
   const response = await request.get('/manifest.json');
   expect(response).toMatchObject({
     status: 200,
@@ -89,14 +91,16 @@ it('should serve a PWA manifest', async () => {
 });
 
 it('should fallback to sane defaults', async () => {
-  jest.spyOn(appUtils, 'getApp').mockResolvedValue(({
-    path: 'test-app',
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-    },
-    OrganizationId: 'manitest',
-  } as Partial<App>) as App);
+  jest.spyOn(appUtils, 'getApp').mockResolvedValue({
+    app: {
+      path: 'test-app',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      OrganizationId: 'manitest',
+    } as Partial<App> as App,
+  });
   const response = await request.get('/manifest.json');
   expect(response).toMatchObject({
     status: 200,

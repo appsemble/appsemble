@@ -7,7 +7,7 @@ import { logger } from './logger';
 let yargs: Argv;
 
 beforeEach(() => {
-  yargs = ({ showHelp: jest.fn() } as Partial<Argv>) as Argv;
+  yargs = { showHelp: jest.fn() } as Partial<Argv> as Argv;
   jest.spyOn(console, 'error').mockImplementation();
   jest.spyOn(process, 'exit').mockImplementation();
   jest.spyOn(logger, 'error').mockImplementation();

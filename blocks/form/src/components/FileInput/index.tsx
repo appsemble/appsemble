@@ -34,7 +34,7 @@ export function FileInput({
       } else {
         copy[index] = val;
       }
-      onChange(({ currentTarget: { name } } as unknown) as Event, copy);
+      onChange({ currentTarget: { name } } as unknown as Event, copy);
     },
     [name, onChange, value],
   );

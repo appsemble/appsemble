@@ -69,7 +69,7 @@ export function ModalCard<T extends ElementType = 'div'>({
   component: Component = 'div' as T,
   footer = null,
   isActive,
-  onClose = () => {},
+  onClose,
   title,
   ...props
 }: ModalCardProps<T> & Omit<ComponentProps<T>, keyof ModalCardProps<T>>): VNode {

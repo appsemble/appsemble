@@ -1,6 +1,6 @@
-import { AppDefinition, BlockDefinition } from '@appsemble/types';
+import { AppDefinition, AppsembleMessages, BlockDefinition } from '@appsemble/types';
 
-import { compareStrings, iterApp, Prefix } from '.';
+import { iterApp, Prefix } from '.';
 
 /**
  * Recursively find `string.format` remapper message IDs.
@@ -8,22 +8,25 @@ import { compareStrings, iterApp, Prefix } from '.';
  * @param obj - The object to search.
  * @returns All message IDs found
  */
-export function findMessageIds(obj: unknown): string[] {
+export function findMessageIds(obj: unknown): Record<string, string> {
   if (!obj || typeof obj !== 'object') {
-    return [];
+    return {};
   }
   if (Array.isArray(obj)) {
-    return obj.flatMap((item) => findMessageIds(item));
+    return Object.assign({}, ...obj.map((item) => findMessageIds(item)));
   }
   const entries = Object.entries(obj);
   // Remappers throw if multiple keys are defined, so this means it’s not a remapper.
   if (entries.length === 1) {
     const [[key, value]] = entries;
     if (key === 'string.format' && typeof value?.messageId === 'string') {
-      return [value.messageId];
+      return { [value.messageId]: value.template ?? '' };
+    }
+    if (key === 'translate') {
+      return { [value]: '' };
     }
   }
-  return entries.flatMap(([, value]) => findMessageIds(value));
+  return Object.assign({}, ...entries.map(([, value]) => findMessageIds(value)));
 }
 
 /**
@@ -36,31 +39,47 @@ export function findMessageIds(obj: unknown): string[] {
  */
 export function extractAppMessages(
   app: AppDefinition,
-  onBlock?: (block: BlockDefinition, prefix: Prefix) => string[],
-): string[] {
-  const messageIds: string[] = [];
+  onBlock?: (block: BlockDefinition, prefix: Prefix) => void,
+): Pick<AppsembleMessages, 'app' | 'messageIds'> {
+  const messages: Pick<AppsembleMessages, 'app' | 'messageIds'> = {
+    app: {
+      name: app.name,
+      description: app.description,
+      ...Object.fromEntries(
+        Object.entries(app.security?.roles ?? {}).flatMap(([role, roleDefinition]) => [
+          [`app.roles.${role}`, role],
+          [`app.roles.${role}.description`, roleDefinition.description],
+        ]),
+      ),
+    },
+    messageIds: {},
+  };
 
   iterApp(app, {
     onBlock(block, prefix) {
-      messageIds.push(...findMessageIds(block.header), ...findMessageIds(block.parameters));
+      Object.assign(
+        messages.messageIds,
+        findMessageIds(block.header),
+        findMessageIds(block.parameters),
+      );
 
       if (onBlock) {
-        messageIds.push(...onBlock(block, prefix));
+        onBlock(block, prefix);
       }
     },
     onAction(action) {
-      messageIds.push(...findMessageIds(action.remap));
+      Object.assign(messages.messageIds, findMessageIds(action.remap));
     },
     onPage(page, prefix) {
-      messageIds.push(prefix.join('.'));
+      messages.app[prefix.join('.')] = page.name;
 
       if (page.type === 'tabs') {
-        messageIds.push(
-          ...page.subPages.map((subPage, index) => `${prefix.join('.')}.subPages.${index}`),
-        );
+        page.subPages.forEach((subPage, index) => {
+          messages.app[`${prefix.join('.')}.subPages.${index}`] = subPage.name ?? '';
+        });
       }
     },
   });
 
-  return [...new Set(messageIds)].sort(compareStrings);
+  return messages;
 }

@@ -34,8 +34,11 @@ export async function request({ action, app, data, user }: ServerActionParameter
       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
     },
   );
-  const axiosConfig = formatRequestAction({ ...action, method }, data, (remapper, d) =>
-    remap(remapper, d, context),
+  const axiosConfig = formatRequestAction(
+    { ...action, method },
+    data,
+    (remapper, d) => remap(remapper, d, context),
+    context.context,
   );
   const response = await axios(axiosConfig);
 

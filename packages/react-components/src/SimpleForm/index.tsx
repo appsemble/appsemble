@@ -37,6 +37,7 @@ interface SimpleFormContext {
 }
 
 const Context = createContext<SimpleFormContext>(null);
+export const SimpleFormProvider = Context.Provider;
 
 export function SimpleForm<T extends {}>({
   children,

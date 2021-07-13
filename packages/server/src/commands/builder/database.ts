@@ -4,8 +4,7 @@ export function databaseBuilder(yargs: Argv): Argv {
   const production = process.env.NODE_ENV === 'production';
   return yargs
     .option('database-host', {
-      desc:
-        'The host of the database to connect to. This defaults to the connected database container.',
+      desc: 'The host of the database to connect to. This defaults to the connected database container.',
     })
     .option('database-port', {
       desc: 'The port of the database to connect to.',
@@ -29,8 +28,7 @@ export function databaseBuilder(yargs: Argv): Argv {
       implies: ['database-name', 'database-user'],
     })
     .option('database-url', {
-      desc:
-        'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
+      desc: 'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: [
         'database-host',
         production && 'database-name',

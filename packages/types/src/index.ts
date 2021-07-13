@@ -6,6 +6,9 @@ import { JsonObject, RequireExactlyOne } from 'type-fest';
 
 export * from './author';
 export * from './snapshot';
+export * from './resource';
+export * from './template';
+
 export { Theme };
 
 /**
@@ -303,6 +306,13 @@ export interface Remappers {
    */
   'string.replace': Record<string, string>;
 
+  /**
+   * Translate using a messageID.
+   *
+   * This does not support parameters, for more nuanced translations use `string.format`.
+   */
+  translate: string;
+
   user: keyof UserInfo;
 }
 
@@ -335,7 +345,6 @@ export interface RoleDefinition {
 }
 
 export interface Security {
-  login?: 'password';
   default: {
     role: string;
     policy?: 'everyone' | 'invite' | 'organization';
@@ -501,6 +510,23 @@ export interface BaseActionDefinition<T extends Action['type']> {
   onError?: ActionDefinition;
 }
 
+export interface ConditionActionDefinition extends BaseActionDefinition<'condition'> {
+  /**
+   * The condition to check for.
+   */
+  if: Remapper;
+
+  /**
+   * The action to run if the condition is true.
+   */
+  then: ActionDefinition;
+
+  /**
+   * The action to run if the condition is false.
+   */
+  else: ActionDefinition;
+}
+
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * If false, the dialog cannot be closed by clicking outside of the dialog or on the close button.
@@ -555,6 +581,13 @@ export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
    * Should result in an array of URLs or asset IDs.
    */
   attachments?: Remapper;
+}
+
+export interface FlowToActionDefinition extends BaseActionDefinition<'flow.to'> {
+  /**
+   * The flow step to go to.
+   */
+  step: Remapper;
 }
 
 export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
@@ -641,11 +674,14 @@ export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   action?: 'create' | 'delete' | 'update';
 }
 
-export type ResourceSubscriptionSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
+export type ResourceSubscriptionSubscribeActionDefinition =
+  BaseResourceSubscribeActionDefinition<'resource.subscription.subscribe'>;
 
-export type ResourceSubscriptionUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
+export type ResourceSubscriptionUnsubscribeActionDefinition =
+  BaseResourceSubscribeActionDefinition<'resource.subscription.unsubscribe'>;
 
-export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
+export type ResourceSubscriptionToggleActionDefinition =
+  BaseResourceSubscribeActionDefinition<'resource.subscription.toggle'>;
 
 export type ResourceSubscriptionStatusActionDefinition = Omit<
   BaseResourceSubscribeActionDefinition<'resource.subscription.status'>,
@@ -695,8 +731,10 @@ export type ActionDefinition =
   | BaseActionDefinition<'team.join'>
   | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'throw'>
+  | ConditionActionDefinition
   | DialogActionDefinition
   | EventActionDefinition
+  | FlowToActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
   | MessageActionDefinition
@@ -794,9 +832,16 @@ export interface BlockManifest {
   parameters?: Schema;
 
   /**
-   * @deprecated
+   * The URL that can be used to fetch this block’s icon.
    */
-  resources?: null;
+  iconUrl?: string;
+
+  /**
+   * The languages that are supported by the block by default.
+   *
+   * If the block has no messages, this property is `null`.
+   */
+  languages: string[] | null;
 }
 
 /**
@@ -806,9 +851,25 @@ export interface BasePageDefinition {
   /**
    * The name of the page.
    *
-   * This will be displayed on the top of the page and in the side menu.
+   * This will be displayed on the top of the page and in the side menu,
+   * unless @see navTitle is set.
+   *
+   * The name of the page is used to determine the URL path of the page.
    */
   name: string;
+
+  /**
+   * The name of the page when displayed in the navigation menu.
+   *
+   * Context property `name` can be used to access the name of the page.
+   */
+  navTitle?: Remapper;
+
+  /**
+   * The navigation type to use for the page.
+   * Setting this will override the default navigation for the app.
+   */
+  navigation?: Navigation;
 
   /**
    * A list of roles that may view the page.
@@ -856,11 +917,16 @@ export interface FlowPageDefinition extends BasePageDefinition {
    * A mapping of actions that can be fired by the page to action handlers.
    */
   actions?: {
-    'flow.back'?: ActionDefinition;
-    'flow.cancel'?: ActionDefinition;
-    'flow.finish'?: ActionDefinition;
-    'flow.next'?: ActionDefinition;
+    onFlowCancel?: ActionDefinition;
+    onFlowFinish?: ActionDefinition;
   };
+
+  /**
+   * The method used to display the progress of the flow page.
+   *
+   * @default 'corner-dots'
+   */
+  progress?: 'corner-dots' | 'hidden';
 }
 
 export interface TabsPageDefinition extends BasePageDefinition {
@@ -1101,6 +1167,11 @@ export interface App {
    * The date when the app was last updated.
    */
   $updated?: string;
+
+  /**
+   * Any pre-included translations of the app.
+   */
+  messages?: AppsembleMessages;
 }
 
 /**
@@ -1225,9 +1296,56 @@ export interface AppMember {
 }
 
 /**
+ * The layout used to store Appsemble messages.
+ */
+export interface AppsembleMessages {
+  /**
+   * Messages related to the Appsemble core.
+   *
+   * This may be an empty object if the language is the default locale.
+   */
+  core: Record<string, string>;
+
+  /**
+   * Translations for global block messages and meta properties of the app.
+   *
+   * This may be an empty object if the language is the default locale.
+   */
+  app: Record<string, string>;
+
+  /**
+   * A list of messages specific to the app.
+   */
+  messageIds: Record<string, string>;
+
+  /**
+   * A list of messages specific to each block used in the app.
+   *
+   * At root the keys represent a block type.
+   * One layer deep the keys represent a block version.
+   * Two layers deep the keys represent the key/message pairs.
+   *
+   * @example
+   * {
+   *   "<at>example/test": {
+   *     "0.0.0": {
+   *       "exampleKey": "Example Message"
+   *     }
+   *   }
+   * }
+   */
+  blocks: Record<string, Record<string, Record<string, string>>>;
+}
+
+/**
  * Translated messages for an app or block.
  */
 export interface Messages {
+  /**
+   * If true, force update app messages.
+   */
+  force?: boolean;
+
   /**
    * The language represented by these messages.
    */
@@ -1236,7 +1354,7 @@ export interface Messages {
   /**
    * A mapping of message id to message content.
    */
-  messages: Record<string, string>;
+  messages: AppsembleMessages;
 }
 
 export interface AppMessages {
@@ -1248,37 +1366,7 @@ export interface AppMessages {
   /**
    * The messages available to the app
    */
-  messages: {
-    /**
-     * Messages related to the Appsemble core.
-     *
-     * This may be an empty object if the language is the default locale.
-     */
-    core: Record<string, string>;
-
-    /**
-     * A list of messages specific to the app.
-     */
-    app: Record<string, string>;
-
-    /**
-     * A list of messages specific to each block used in the app.
-     *
-     * At root the keys represent a block type.
-     * One layer deep the keys represent a block version.
-     * Two layers deep the keys represent the key/message pairs.
-     *
-     * @example
-     * {
-     *   "<at>example/test": {
-     *     "0.0.0": {
-     *       "exampleKey": "Example Message"
-     *     }
-     *   }
-     * }
-     */
-    blocks: Record<string, Record<string, Record<string, string>>>;
-  };
+  messages: AppsembleMessages;
 }
 
 /**
@@ -1425,7 +1513,6 @@ export interface BlockConfig
     | 'messages'
     | 'name'
     | 'parameters'
-    | 'resources'
     | 'version'
   > {
   /**

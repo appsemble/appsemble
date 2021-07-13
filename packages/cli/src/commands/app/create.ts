@@ -1,13 +1,19 @@
+import { ReadStream } from 'fs';
+
 import { logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { coerceFile } from '../../lib/coercers';
 import { createApp } from '../../lib/createApp';
 import { BaseArguments } from '../../types';
 
 interface CreateAppArguments extends BaseArguments {
   context: string;
+  icon: NodeJS.ReadStream | ReadStream;
+  iconBackground: string;
+  maskableIcon: NodeJS.ReadStream | ReadStream;
   paths: string[];
   organization: string;
   private: boolean;
@@ -28,6 +34,19 @@ export function builder(yargs: Argv): Argv {
     .option('organization', {
       describe: 'The ID the app should be created for.',
     })
+    .option('icon', {
+      describe: 'The icon to upload. By default "icon.png" in the app directory is used.',
+      coerce: coerceFile,
+    })
+    .option('icon-background', {
+      describe: 'The background color to use for the icon in opaque contexts.',
+      default: '#ffffff',
+    })
+    .option('maskable-icon', {
+      describe:
+        'The maskable icon to upload. By default "maskable-icon.png" in the app directory is used.',
+      coerce: coerceFile,
+    })
     .option('private', {
       describe: 'Whether the app should be marked as private.',
       default: true,
@@ -43,6 +62,9 @@ export function builder(yargs: Argv): Argv {
 export async function handler({
   clientCredentials,
   context,
+  icon,
+  iconBackground,
+  maskableIcon,
   organization,
   paths,
   private: isPrivate,
@@ -60,6 +82,9 @@ export async function handler({
       context,
       organization,
       path: dir,
+      icon,
+      iconBackground,
+      maskableIcon,
       private: isPrivate,
       remote,
       template,

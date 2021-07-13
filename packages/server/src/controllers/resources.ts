@@ -112,7 +112,6 @@ function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOpt
  * This must include the app member and organization relationships.
  * @param resourceType - The resource type to check the role for.
  * @param action - The resource action to theck the role for.
- *
  * @returns Query options to filter the resource for the user context.
  */
 async function verifyPermission(
@@ -132,7 +131,9 @@ async function verifyPermission(
   } = ctx;
 
   if ('studio' in users || 'cli' in users) {
-    await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
+    await (action === 'count' || action === 'get' || action === 'query'
+      ? checkRole(ctx, app.OrganizationId, Permission.ReadResources)
+      : checkRole(ctx, app.OrganizationId, Permission.ManageResources));
     return;
   }
 
@@ -304,7 +305,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     id: resource.id,
     $created: resource.created,
     $updated: resource.updated,
-    $clonable: resource.clonable,
+    $clonable: app.template ? resource.clonable : undefined,
     ...(resource.expires != null && {
       $expires: resource.expires,
     }),
@@ -682,6 +683,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = {
     ...resource.data,
     id: resourceId,
+    $clonable: app.template ? clonable : undefined,
     $created: resource.created,
     $updated: resource.updated,
     $expires: resource.expires ?? undefined,
@@ -714,7 +716,6 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
     }),
   });
 
-  await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
   verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 

@@ -1,3 +1,6 @@
+import { URL } from 'url';
+
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, BlockAsset, BlockVersion, Organization } from '../../models';
@@ -8,6 +11,8 @@ import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/te
 
 let templateName: string;
 let templateParams: any;
+let requestURL: URL;
+let clock: Clock;
 
 beforeAll(createTestSchema('approuter'));
 
@@ -123,6 +128,43 @@ beforeAll(async () => {
       content: Buffer.from(''),
     },
   ]);
+  setArgv({ host: 'http://host.example', secret: 'test' });
+  const server = await createServer({
+    middleware(ctx, next) {
+      Object.defineProperty(ctx, 'origin', { get: () => requestURL.origin });
+      Object.defineProperty(ctx, 'hostname', { get: () => requestURL.hostname });
+      return next();
+    },
+  });
+  await setTestApp(server);
+});
+
+beforeEach(() => {
+  clock = install();
+  requestURL = new URL('http://app.test.host.example');
+  // eslint-disable-next-line require-await
+  jest.spyOn(render, 'render').mockImplementation(async (ctx, name, params) => {
+    templateName = name;
+    templateParams = params;
+    ctx.body = '<!doctype html>';
+    ctx.type = 'html';
+  });
+});
+
+afterEach(() => {
+  templateName = undefined;
+  templateParams = undefined;
+  clock.uninstall();
+});
+
+afterEach(() => {
+  truncate();
+  clock.uninstall();
+});
+
+afterAll(closeTestSchema);
+
+it('should render the index page', async () => {
   await App.create({
     OrganizationId: 'test',
     definition: {
@@ -143,11 +185,7 @@ beforeAll(async () => {
                 {
                   type: 'a',
                   version: '0.1.1',
-                  actions: {
-                    whatever: {
-                      blocks: [{ type: '@test/b', version: '0.0.2' }],
-                    },
-                  },
+                  actions: { whatever: { blocks: [{ type: '@test/b', version: '0.0.2' }] } },
                 },
               ],
             },
@@ -159,37 +197,6 @@ beforeAll(async () => {
     vapidPublicKey: '',
     vapidPrivateKey: '',
   });
-  setArgv({ host: 'http://host.example', secret: 'test' });
-  const server = await createServer({
-    middleware(ctx, next) {
-      Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
-      Object.defineProperty(ctx, 'hostname', { value: 'app.test.host.example' });
-      return next();
-    },
-  });
-  await setTestApp(server);
-});
-
-beforeEach(() => {
-  // eslint-disable-next-line require-await
-  jest.spyOn(render, 'render').mockImplementation(async (ctx, name, params) => {
-    templateName = name;
-    templateParams = params;
-    ctx.body = '<!doctype html>';
-    ctx.type = 'html';
-  });
-});
-
-afterEach(() => {
-  templateName = undefined;
-  templateParams = undefined;
-});
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
-
-it('should render the index page', async () => {
   const { headers, status } = await request.get('/');
   expect(templateName).toBe('app/index.html');
   expect(status).toBe(200);
@@ -200,6 +207,7 @@ it('should render the index page', async () => {
   const settings = JSON.parse(settingsString);
   expect(settings).toStrictEqual({
     apiUrl: 'http://host.example',
+    appUpdated: '1970-01-01T00:00:00.000Z',
     blockManifests: [
       {
         name: '@test/a',
@@ -266,4 +274,30 @@ it('should render the index page', async () => {
       ],
     },
   });
+});
+
+it('should render a 404 page if no app is found', async () => {
+  const { headers, status } = await request.get('/');
+  expect(templateName).toBe('app/error.html');
+  expect(status).toBe(404);
+  expect(headers['content-type']).toBe('text/html; charset=utf-8');
+  expect(templateParams).toStrictEqual({
+    bulmaURL: expect.any(String),
+    faURL: expect.any(String),
+    message: 'The app you are looking for could not be found.',
+  });
+});
+
+it('should redirect if only the organization id is given', async () => {
+  requestURL = new URL('http://org.host.example');
+  const { headers, status } = await request.get('/');
+  expect(status).toBe(302);
+  expect(headers.location).toBe('http://host.example/organizations/org');
+});
+
+it('should redirect to the app root if the organization id is disallowed', async () => {
+  requestURL = new URL('http://www.host.example');
+  const { headers, status } = await request.get('/');
+  expect(status).toBe(302);
+  expect(headers.location).toBe('http://host.example');
 });

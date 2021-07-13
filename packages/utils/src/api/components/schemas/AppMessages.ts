@@ -6,11 +6,7 @@ export const AppMessages: OpenAPIV3.NonArraySchemaObject = {
   required: ['language', 'messages'],
   properties: {
     language: { type: 'string', description: 'The language the messages represent.' },
-    messages: {
-      type: 'object',
-      description: 'A mapping of the messages for this language',
-      additionalProperties: { type: 'string' },
-    },
+    messages: { $ref: '#/components/schemas/AppsembleMessages' },
     force: {
       type: 'boolean',
       writeOnly: true,

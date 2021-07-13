@@ -1,4 +1,4 @@
-import { generateDataFromSchema } from './jsonschema';
+import { combineSchemas, generateDataFromSchema } from './jsonschema';
 
 describe('generateDataFromSchema', () => {
   it('should not crash if no schema is defined', () => {
@@ -101,6 +101,103 @@ describe('generateDataFromSchema', () => {
         properties: { bool: { type: 'boolean' }, num: { type: 'number' }, str: { type: 'string' } },
       });
       expect(result).toStrictEqual({ bool: false, num: 0, str: '' });
+    });
+  });
+});
+
+describe('combineSchemas', () => {
+  it('should use the first type found', () => {
+    const result = combineSchemas({ type: 'number' }, { type: 'string' });
+    expect(result).toStrictEqual({ type: 'number' });
+  });
+
+  it('should use the first format found', () => {
+    const result = combineSchemas({ format: 'email' }, { format: 'uuid' });
+    expect(result).toStrictEqual({ format: 'email' });
+  });
+
+  it('should determine the minimum', () => {
+    const result = combineSchemas({}, { minimum: 3 }, { minimum: 1 }, { minimum: 2 }, {});
+    expect(result).toStrictEqual({ minimum: 3 });
+  });
+
+  it('should determine the min length', () => {
+    const result = combineSchemas({}, { minLength: 3 }, { minLength: 1 }, { minLength: 2 }, {});
+    expect(result).toStrictEqual({ minLength: 3 });
+  });
+
+  it('should determine the maximum', () => {
+    const result = combineSchemas({}, { maximum: 3 }, { maximum: 1 }, { maximum: 2 }, {});
+    expect(result).toStrictEqual({ maximum: 1 });
+  });
+
+  it('should determine the max length', () => {
+    const result = combineSchemas({}, { maxLength: 3 }, { maxLength: 1 }, { maxLength: 2 }, {});
+    expect(result).toStrictEqual({ maxLength: 1 });
+  });
+
+  it('should use the least common multiple for multipleOf', () => {
+    const result = combineSchemas({}, { multipleOf: 0 }, { multipleOf: 6 }, { multipleOf: 8 }, {});
+    expect(result).toStrictEqual({ multipleOf: 24 });
+  });
+
+  it('should assign the first non-nullish default', () => {
+    const result = combineSchemas({}, { default: null }, { default: 'a' }, { default: 'b' }, {});
+    expect(result).toStrictEqual({ default: 'a' });
+  });
+
+  it('should use the first truthy description', () => {
+    const result = combineSchemas(
+      {},
+      { description: '' },
+      { description: 'Hi' },
+      { description: 'Bye' },
+      {},
+    );
+    expect(result).toStrictEqual({ description: 'Hi' });
+  });
+
+  it('should use the first truthy title', () => {
+    const result = combineSchemas({}, { title: '' }, { title: 'Hi' }, { title: 'Bye' }, {});
+    expect(result).toStrictEqual({ title: 'Hi' });
+  });
+
+  it('should set uniqueItems to true if any schema requires this', () => {
+    const result = combineSchemas({}, { uniqueItems: false }, { uniqueItems: true }, {});
+    expect(result).toStrictEqual({ uniqueItems: true });
+  });
+
+  it('should merge required arrays', () => {
+    const result = combineSchemas({}, { required: ['foo'] }, { required: ['bar'] }, {});
+    expect(result).toStrictEqual({ required: ['foo', 'bar'] });
+  });
+
+  it('should assign required if it’s true', () => {
+    const result = combineSchemas({}, { required: true }, { required: false }, {});
+    expect(result).toStrictEqual({ required: true });
+  });
+
+  it('should merge properties', () => {
+    const result = combineSchemas(
+      {},
+      { properties: { foo: { type: 'string' } } },
+      { properties: { bar: { type: 'number' } } },
+      { properties: { foo: { title: 'Foo' }, bar: { title: 'Bar' } } },
+      { required: ['foo', 'bar'] },
+      {},
+    );
+    expect(result).toStrictEqual({
+      required: ['foo', 'bar'],
+      properties: {
+        foo: {
+          title: 'Foo',
+          type: 'string',
+        },
+        bar: {
+          title: 'Bar',
+          type: 'number',
+        },
+      },
     });
   });
 });

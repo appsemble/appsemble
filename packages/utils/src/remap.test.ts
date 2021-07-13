@@ -19,7 +19,7 @@ function runTests(tests: Record<string, TestCase>): void {
     (name, { context, expected, input, mappers, messages, userInfo }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
-          new IntlMessageFormat(messages?.app?.[id] ?? defaultMessage),
+          new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
         userInfo,
         context,
         appId: 6789,
@@ -333,7 +333,7 @@ describe('prop', () => {
     },
     'handle numbers': {
       input: { names: ['foo', 'bar'] },
-      mappers: [{ prop: 'names' }, { prop: (0 as unknown) as string }],
+      mappers: [{ prop: 'names' }, { prop: 0 as unknown as string }],
       expected: 'foo',
     },
     'handle null': {
@@ -439,8 +439,9 @@ describe('string.format', () => {
       expected: 'Krabby Patty',
       messages: {
         core: {},
+        app: {},
         blocks: {},
-        app: {
+        messageIds: {
           patty: '{type} Patty',
         },
       },
@@ -469,6 +470,41 @@ describe('static', () => {
       input: null,
       mappers: [{ static: '1234 AA' }, { 'string.replace': { '\\s+': '' } }],
       expected: '1234AA',
+    },
+  });
+});
+
+describe('translate', () => {
+  runTests({
+    'format multilingual messages': {
+      input: null,
+      mappers: {
+        translate: 'patty',
+      },
+      expected: 'Patty',
+      messages: {
+        core: {},
+        app: {},
+        blocks: {},
+        messageIds: {
+          patty: 'Patty',
+        },
+      },
+    },
+    'handle untranslated multilingual messages': {
+      input: null,
+      mappers: {
+        translate: 'patty',
+      },
+      expected: '{patty}',
+      messages: {
+        core: {},
+        app: {},
+        blocks: {},
+        messageIds: {
+          patty: '',
+        },
+      },
     },
   });
 });

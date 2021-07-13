@@ -1,7 +1,11 @@
+/apps/
+/blocks/
+.git/
 coverage/
 dist/
 node_modules/
 public/
 *.test.*
 *.log
-.git*
+*ignore
+Dockerfile

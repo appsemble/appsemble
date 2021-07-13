@@ -61,6 +61,12 @@ export interface AppsembleContext {
    */
   organization?: string;
 
+  icon?: string;
+
+  iconBackground?: string;
+
+  maskableIcon?: string;
+
   /**
    * If `id` is specified, this will override `--organization-id` passed by the command line when
    * updating an app.

@@ -1,4 +1,4 @@
-import { partialNormalized, partialSemver } from '@appsemble/utils';
+import { noop, partialNormalized, partialSemver } from '@appsemble/utils';
 
 import { tinyRouter } from '../../middleware/tinyRouter';
 import { staticHandler } from '../static';
@@ -9,6 +9,7 @@ import { iconHandler } from './iconHandler';
 import { indexHandler } from './indexHandler';
 import { manifestHandler } from './manifestHandler';
 import { robotsHandler } from './robotsHandler';
+import { serviceWorkerHandler } from './serviceWorkerHandler';
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 
@@ -22,7 +23,11 @@ export const appRouter = tinyRouter([
     get: robotsHandler,
   },
   {
-    route: /^\/icon-(?<width>\d+)(x(?<height>\d+))?\.(?<format>png|tiff|webp)$/,
+    route: '/service-worker.js',
+    get: serviceWorkerHandler,
+  },
+  {
+    route: /^\/icon-(?<size>\d+)\.png$/,
     get: iconHandler,
   },
   {
@@ -45,7 +50,7 @@ export const appRouter = tinyRouter([
   },
   {
     route: /(^|\/)\.well-known(\/|$)/,
-    any() {},
+    any: noop,
   },
   {
     route: '/index.html',

@@ -30,3 +30,13 @@
   border-top: 1px solid hsl(0, 0%, 93%);
   flex: 1 0 auto;
 }
+
+.title {
+  line-height: 1.35;
+}
+
+.iconFallback {
+  font-size: 3rem;
+  height: 64px;
+  width: 64px;
+}

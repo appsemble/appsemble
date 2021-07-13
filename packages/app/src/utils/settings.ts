@@ -1,5 +1,6 @@
 export const {
   apiUrl,
+  appUpdated,
   blockManifests,
   definition,
   id: appId,

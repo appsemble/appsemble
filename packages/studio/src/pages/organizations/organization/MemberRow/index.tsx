@@ -15,7 +15,15 @@ import { Member } from '../../../../types';
 import { messages } from './messages';
 
 interface MemberRowProps {
+  /**
+   * Whether the user may delete members.
+   */
   mayEdit: boolean;
+
+  /**
+   * Whether the user has the permission to edit other user’s roles.
+   */
+  mayEditRole: boolean;
 
   /**
    * The member represented by this row.
@@ -44,6 +52,7 @@ interface MemberRowProps {
  */
 export function MemberRow({
   mayEdit,
+  mayEditRole,
   member,
   onChanged,
   onDeleted,
@@ -112,7 +121,7 @@ export function MemberRow({
       <td align="right">
         <AsyncSelect
           className="mr-2"
-          disabled={!mayEdit || (member.role === 'Owner' && ownerCount < 2) || id === sub}
+          disabled={!mayEditRole || (member.role === 'Owner' && ownerCount < 2) || id === sub}
           id={`role-${id}`}
           name="role"
           onChange={onChangeRole}

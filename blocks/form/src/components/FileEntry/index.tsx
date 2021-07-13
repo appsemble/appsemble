@@ -34,7 +34,7 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
   const onRemove = useCallback(
     (event: Event) => {
       event.preventDefault();
-      onChange(({ currentTarget: { name } } as any) as Event, null);
+      onChange({ currentTarget: { name } } as any as Event, null);
     },
     [name, onChange],
   );

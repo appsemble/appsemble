@@ -1,8 +1,8 @@
 import { Theme } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
-import sass from 'node-sass';
 import postcss from 'postcss';
+import sass from 'sass';
 
 import { KoaContext } from '../../types';
 
@@ -21,8 +21,8 @@ const postCss = postcss([autoprefixer]);
 function processStyle(theme: Partial<Theme>): string {
   return `
     @charset "utf-8";
-    @import url(https://fonts.googleapis.com/css?display=swap&family=Libre+Franklin|Open+Sans);
-    $family-sans-serif: 'Libre Franklin', sans-serif !default;
+    @import url(https://fonts.googleapis.com/css?display=swap&family=Open+Sans);
+    $family-sans-serif: 'Open Sans', sans-serif !default;
     $primary: ${theme.primaryColor || baseTheme.primaryColor};
     $link: ${theme.linkColor || baseTheme.linkColor};
     $info: ${theme.infoColor || baseTheme.infoColor};

@@ -79,6 +79,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'Secret key used to sign JWTs and cookies',
       required: true,
     })
+    .option('sentry-allowed-domains', {
+      desc: 'Domains for apps where Sentry integration should be injected if Sentry is configured. Comma separated domains and wildcards are allowed.',
+      default: '*',
+    })
     .option('disable-registration', {
       desc: 'If specified, user registration will be disabled on the server',
       type: 'boolean',
@@ -93,18 +97,19 @@ export function builder(yargs: Argv): Argv {
       implies: ['service-name', 'service-port'],
     })
     .option('service-name', {
-      desc:
-        'The name of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
+      desc: 'The name of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
       implies: ['service-port'],
     })
     .option('service-port', {
-      desc:
-        'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
+      desc: 'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
       implies: ['service-name'],
     })
     .option('host', {
-      desc:
-        'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
+      desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
+      required: true,
+    })
+    .option('remote', {
+      desc: 'The remote that will be used for downloading unknown blocks. For example: https://appsemble.app',
       required: true,
     })
     .option('proxy', {

@@ -4,7 +4,7 @@ import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
 import { IndexPage } from './IndexPage';
 import { messages } from './messages';
-import { ResourcePage } from './resource';
+import { ResourceRoutes } from './resource';
 
 export function ResourcesRoutes(): ReactElement {
   const { path, url } = useRouteMatch();
@@ -15,7 +15,7 @@ export function ResourcesRoutes(): ReactElement {
         <IndexPage />
       </Route>
       <Route path={`${path}/:resourceName`}>
-        <ResourcePage />
+        <ResourceRoutes />
       </Route>
       <Redirect to={url} />
     </MetaSwitch>

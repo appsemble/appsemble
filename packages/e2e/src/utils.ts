@@ -38,7 +38,7 @@ export async function open(url: string): Promise<void> {
 /**
  * Perform a login in Appsemble Studio using a user flow.
  *
- * @param url - The URL to naviage to after logging in.
+ * @param url - The URL to navigate to after logging in.
  */
 export async function login(url: string): Promise<void> {
   await open(createURL(`/en/login?${new URLSearchParams({ redirect: url })}`));

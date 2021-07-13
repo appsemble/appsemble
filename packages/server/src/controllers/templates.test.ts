@@ -65,7 +65,7 @@ beforeEach(async () => {
   await AppMessages.create({
     AppId: t2.id,
     language: 'nl-nl',
-    messages: { test: 'Dit is een testbericht' },
+    messages: { messageIds: { test: 'Dit is een testbericht' } },
   });
   t2.AppBlockStyles = [
     await AppBlockStyle.create({
@@ -136,8 +136,8 @@ describe('createTemplateApp', () => {
           pages: [],
         },
         domain: null,
-        iconUrl: '/api/apps/3/icon',
-        id: 3,
+        iconUrl: null,
+        id: response.data.id,
         path: 'test-app',
         private: false,
         yaml: 'name: Test app\ndescription: This is a test app\npages: []\n',
@@ -181,7 +181,7 @@ describe('createTemplateApp', () => {
     expect(app.AppBlockStyles[0].style).toStrictEqual(template.AppBlockStyles[0].style);
   });
 
-  it('should copy app message when cloning an app', async () => {
+  it('should copy app messages when cloning an app', async () => {
     const [, template] = templates;
     authorizeStudio();
     const response = await request.post<App>('/api/templates', {
@@ -196,9 +196,7 @@ describe('createTemplateApp', () => {
     const { data: messages } = await request.get(`/api/apps/${id}/messages/nl-nl`);
 
     expect(messages.language).toStrictEqual('nl-nl');
-    expect(messages.messages.app).toStrictEqual({
-      test: 'Dit is een testbericht',
-    });
+    expect(messages.messages.messageIds).toStrictEqual({ test: 'Dit is een testbericht' });
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {

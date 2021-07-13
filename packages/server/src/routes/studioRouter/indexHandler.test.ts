@@ -60,6 +60,7 @@ it('should pass login options from argv to the studio', async () => {
     gitlabClientId: 'GitLab secret',
     googleClientId: 'Google secret',
     sentryDsn: 'https://secret@sentry.io/path',
+    sentryAllowedDomains: '*',
   });
   const response = await request.get('/');
   expect(response).toMatchObject({

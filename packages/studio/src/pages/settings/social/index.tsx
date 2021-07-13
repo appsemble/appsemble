@@ -35,9 +35,12 @@ export function SocialPage(): ReactElement {
   const location = useLocationString();
   const connecting = useToggle();
 
-  const { data: accounts, error, loading, setData: setAccounts } = useData<ConnectedAccount[]>(
-    '/api/oauth2/connected',
-  );
+  const {
+    data: accounts,
+    error,
+    loading,
+    setData: setAccounts,
+  } = useData<ConnectedAccount[]>('/api/oauth2/connected');
 
   const disconnect = useCallback(
     async ({ authorizationUrl, name }: OAuth2Provider) => {

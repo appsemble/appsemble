@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, FormButtons } from '@appsemble/preact-components';
-import { Fragment, JSX, VNode } from 'preact';
+import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { FieldError, InputProps, ObjectField, Values } from '../../../block';
@@ -56,7 +56,7 @@ export function ObjectInput({
     <fieldset className="appsemble-object">
       <legend className="title is-5">{utils.remap(field.label, value)}</legend>
       {field.repeated ? (
-        <Fragment>
+        <>
           {(values || []).map((val, index) => (
             // eslint-disable-next-line react/jsx-key
             <div>
@@ -85,7 +85,7 @@ export function ObjectInput({
               </Button>
             </FormButtons>
           )}
-        </Fragment>
+        </>
       ) : (
         <ObjectEntry
           disabled={disabled}

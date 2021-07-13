@@ -11,7 +11,6 @@ import { RequireDirectoryOptions } from 'yargs';
  * The extension is set correctly for JavaScript and TypeScript files automatically.
  *
  * @param filename - The filename for which to get command dir options.
- *
  * @returns Options that work for JavaScript as well as TypeScript.
  */
 export function commandDirOptions(filename: string): [string, RequireDirectoryOptions] {

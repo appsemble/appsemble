@@ -107,6 +107,14 @@ page.
 On [flow pages](page.md#subpages), triggers the [`onFlowCancel`](page.md#onflowfinish) action on the
 page.
 
+## `flow.to`
+
+On [flow pages](page.md#subpages), move to a specific step.
+
+| Parameter | Required | Description                                                                                              |
+| --------- | -------- | -------------------------------------------------------------------------------------------------------- |
+| `step`    | true     | The name of the step to move to. This is a remapper which gets called with the action input and context. |
+
 ## `resource`
 
 The resource actions simplify the usage of [request](#request) by providing it with defaults based

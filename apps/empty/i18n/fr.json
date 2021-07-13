@@ -1,0 +1,8 @@
+{
+  "app": {
+    "name": "",
+    "description": "",
+    "pages.0": "Exemple de page A",
+    "pages.1": "Exemple de page B"
+  }
+}

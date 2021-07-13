@@ -11,7 +11,7 @@ describe('/apps', () => {
   });
 
   it('should display “My Apps” when logged in', async () => {
-    await login();
+    await login('/en/apps');
     expect(page.url()).toBe(createURL('/en/apps'));
     await page.waitForResponse(createURL('/api/apps'));
     await expect(page).toMatch('My Apps');

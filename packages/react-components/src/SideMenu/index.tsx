@@ -1,3 +1,4 @@
+import { noop } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,
@@ -25,7 +26,7 @@ type SideMenuContext = [
   setMenu: Dispatch<SetStateAction<ReactElement>>,
 ];
 
-const Context = createContext<SideMenuContext>(null);
+const Context = createContext<SideMenuContext>([false, noop, noop]);
 
 interface SideMenuProviderProps {
   /**

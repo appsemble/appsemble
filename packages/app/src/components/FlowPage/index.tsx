@@ -92,14 +92,33 @@ export function FlowPage({
     [actions],
   );
 
+  const to = useCallback(
+    (d: any, step: string) => {
+      if (typeof step !== 'string') {
+        throw new TypeError(`Expected page to be a string, got: ${JSON.stringify(step)}`);
+      }
+      const found = page.subPages.findIndex((p) => p.name === step);
+      if (found === -1) {
+        throw new Error(`No matching page was found for ${step}`);
+      }
+
+      setData(d);
+      setCurrentPage(found);
+
+      return d;
+    },
+    [page],
+  );
+
   const flowActions = useMemo(
     () => ({
       next,
       finish,
       back,
       cancel,
+      to,
     }),
-    [back, cancel, finish, next],
+    [back, cancel, finish, next, to],
   );
 
   actions = useMemo(
@@ -141,9 +160,13 @@ export function FlowPage({
     ],
   );
 
+  const { progress = 'corner-dots' } = page;
+
   return (
     <>
-      <DotProgressBar active={currentPage} amount={page.subPages.length} />
+      {progress === 'corner-dots' && (
+        <DotProgressBar active={currentPage} amount={page.subPages.length} />
+      )}
       <BlockList
         blocks={page.subPages[currentPage].blocks}
         data={data}

@@ -1,6 +1,8 @@
 import { onFetch } from './onFetch';
 
 declare const self: ServiceWorkerGlobalScope;
+declare const serviceWorkerOption: string[];
+declare const blockAssets: string[];
 
 self.addEventListener('fetch', onFetch);
 self.addEventListener('push', (event: PushEvent) => {
@@ -13,3 +15,11 @@ self.addEventListener('push', (event: PushEvent) => {
 self.addEventListener('notificationclick', () => {
   self.clients.openWindow(self.registration.scope);
 });
+
+self.addEventListener('install', (event) =>
+  event.waitUntil(
+    caches
+      .open('appsemble')
+      .then((cache) => cache.addAll([...serviceWorkerOption, ...blockAssets])),
+  ),
+);

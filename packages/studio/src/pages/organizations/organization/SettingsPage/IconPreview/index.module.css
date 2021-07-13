@@ -1,0 +1,11 @@
+.icon {
+  height: 128px !important;
+  object-fit: contain;
+  width: 128px !important;
+}
+
+.iconFallback {
+  font-size: 5rem;
+  height: 128px;
+  width: 128px;
+}

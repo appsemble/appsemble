@@ -15,6 +15,9 @@ module.exports = {
     },
   },
   rules: {
+    // https://github.com/benmosher/eslint-plugin-import/pull/2097
+    'import/no-extraneous-dependencies': 'off',
+
     'jest/no-restricted-matchers': 'off',
 
     'jsdoc/require-jsdoc': 'off',
@@ -52,7 +55,6 @@ module.exports = {
             },
           },
         ],
-        '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-shadow': ['error', { hoist: 'functions' }],
 

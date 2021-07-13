@@ -81,8 +81,6 @@ fine-grain control over which users have access to specific pages or blocks.
 - **roles\[key].inherits**: The name of the role to inherit from. Note that this role must exist and
   can not inherit itself via this field or the `inherits` field of the referenced role.
 - **roles\[key].defaultPage**: The default page to redirect users with this role to.
-- **login** (_**deprecated**_): By default, users can login to apps using OAuth2. In order to
-  support legacy apps, this can be set to `password` to enable a less secure login mechanism.
 
 ## `roles`
 

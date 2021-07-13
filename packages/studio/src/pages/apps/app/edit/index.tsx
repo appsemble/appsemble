@@ -1,6 +1,5 @@
 import RefParser from '@apidevtools/json-schema-ref-parser';
 import {
-  Form,
   Loader,
   useBeforeUnload,
   useConfirmation,
@@ -8,11 +7,11 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { AppDefinition, BlockManifest } from '@appsemble/types';
-import { api, filterBlocks, getAppBlocks, validateStyle } from '@appsemble/utils';
+import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
+import equal from 'fast-deep-equal';
 import { safeDump, safeLoad } from 'js-yaml';
-import { Schema, Validator } from 'jsonschema';
-import { isEqual } from 'lodash';
+import { Validator } from 'jsonschema';
 import { editor } from 'monaco-editor';
 import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -28,16 +27,7 @@ import { messages } from './messages';
 
 const validator = new Validator();
 
-type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
-
-const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
-
-const monacoDefaultOptions: Options = {
-  insertSpaces: true,
-  tabSize: 2,
-  minimap: { enabled: false },
-  readOnly: false,
-};
+const openApiDocumentPromise = RefParser.dereference({ components: { schemas } });
 
 /**
  * These properties are passed to the allow attribute of the app preview. For a full list, see
@@ -70,8 +60,6 @@ export default function EditPage(): ReactElement {
   const [valid, setValid] = useState(false);
   const [dirty, setDirty] = useState(true);
   const [openApiDocument, setOpenApiDocument] = useState<OpenAPIV3.Document>();
-
-  const [decorationList, setDecorationList] = useState<string[]>([]);
 
   const frame = useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -148,7 +136,7 @@ export default function EditPage(): ReactElement {
 
     const validatorResult = validator.validate(
       definition,
-      (openApiDocument.components.schemas.App as Schema).properties.definition,
+      openApiDocument.components.schemas.AppDefinition,
     );
     if (!validatorResult.valid) {
       push({
@@ -174,6 +162,7 @@ export default function EditPage(): ReactElement {
             files: data.files,
             actions: data.actions,
             events: data.events,
+            languages: data.languages,
           };
         }),
       );
@@ -245,7 +234,7 @@ export default function EditPage(): ReactElement {
       const newApp = safeLoad(appDefinition) as AppDefinition;
       const originalApp = safeLoad(initialDefinition) as AppDefinition;
 
-      if (!isEqual(newApp.resources, originalApp.resources)) {
+      if (!equal(newApp.resources, originalApp.resources)) {
         promptUpdateApp();
         return;
       }
@@ -304,18 +293,15 @@ export default function EditPage(): ReactElement {
 
   return (
     <div className={`${styles.root} is-flex`}>
-      <div className={styles.leftPanel}>
-        <Form onSubmit={onSave}>
-          <EditorNavBar dirty={dirty} onUpload={onUpload} valid={valid} />
-        </Form>
+      <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
+        <EditorNavBar dirty={dirty} onPreview={onSave} onUpload={onUpload} valid={valid} />
         <div className={styles.editorForm}>
           <MonacoEditor
-            decorationList={decorationList}
+            className={styles.editor}
             language={language}
             onChange={onValueChange}
-            onChangeDecorationList={setDecorationList}
             onSave={onSave}
-            options={monacoDefaultOptions}
+            readOnly={app.locked}
             value={value}
           />
         </div>

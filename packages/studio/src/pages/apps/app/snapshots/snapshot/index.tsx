@@ -90,9 +90,16 @@ export function SnapshotPage(): ReactElement {
         result={result}
       >
         {(snapshot) => (
-          <Suspense fallback={<CodeBlock code={app.yaml} language="yaml" />}>
-            <CodeDiffBlock language="yaml" modified={snapshot.yaml} original={app.yaml} />
-          </Suspense>
+          <div className="is-flex is-flex-grow-1 is-flex-shrink-1">
+            <Suspense fallback={<CodeBlock language="yaml">{app.yaml}</CodeBlock>}>
+              <CodeDiffBlock
+                className="is-flex-grow-1 is-flex-shrink-1"
+                language="yaml"
+                modified={snapshot.yaml}
+                original={app.yaml}
+              />
+            </Suspense>
+          </div>
         )}
       </AsyncDataView>
     </>

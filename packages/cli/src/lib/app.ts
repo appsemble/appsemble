@@ -1,26 +1,29 @@
 import { existsSync, promises as fs } from 'fs';
-import { join } from 'path';
+import { join, parse } from 'path';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readYaml, writeYaml } from '@appsemble/node-utils';
-import { AppDefinition } from '@appsemble/types';
-import { extractAppMessages, has } from '@appsemble/utils';
+import { AppDefinition, AppsembleMessages } from '@appsemble/types';
+import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
+import { readJson, writeJson } from 'fs-extra';
 
 /**
  * @param path - The path to the app directory.
  * @param languages - A list of languages for which translations should be added in addition to the
  * existing ones.
- * @param verify - If true, an error will be thrown if translations are missing.
+ * @param verify - A list of languages to verify.
+ * @param format - The file format that should be used for the output.
  */
 export async function writeAppMessages(
   path: string,
   languages: string[],
-  verify: boolean,
+  verify: string[],
+  format: 'json' | 'yaml',
 ): Promise<void> {
   logger.info(`Extracting messages from ${path}`);
   let app: AppDefinition;
   let i18nDir = join(path, 'i18n');
-  const messageFiles: string[] = [];
+  const messageFiles = new Set<string>();
 
   await opendirSafe(path, async (filepath, stat) => {
     switch (stat.name.toLowerCase()) {
@@ -32,7 +35,9 @@ export async function writeAppMessages(
         // For case insensitivity
         i18nDir = filepath;
         const i18nFiles = await fs.readdir(filepath);
-        messageFiles.push(...i18nFiles.map((f) => join(filepath, f)));
+        for (const f of i18nFiles) {
+          messageFiles.add(join(filepath, f));
+        }
         break;
       }
       default:
@@ -45,33 +50,141 @@ export async function writeAppMessages(
   // Ensure the i18n directory exists.
   await fs.mkdir(i18nDir, { recursive: true });
 
-  messageFiles.push(...languages.map((lang) => join(i18nDir, `${lang}.yaml`)));
-  const messageIds = extractAppMessages(app);
-  logger.verbose(`Found message IDs: ${inspect(messageIds)}`);
+  for (const lang of [...languages, ...verify]) {
+    messageFiles.add(join(i18nDir, `${lang}.${format}`));
+  }
+  const defaultLangFile = join(i18nDir, `${app.defaultLanguage || 'en'}.${format}`);
+  messageFiles.add(defaultLangFile);
+  const blockMessageKeys: AppsembleMessages['blocks'] = {};
+  const extractedMessages = extractAppMessages(app, (block) => {
+    const type = normalizeBlockName(block.type);
+    if (blockMessageKeys[type]) {
+      blockMessageKeys[type][block.version] = {};
+    } else {
+      blockMessageKeys[type] = {
+        [block.version]: {},
+      };
+    }
+  });
+  logger.verbose(`Found message IDs: ${inspect(extractedMessages)}`);
   for (const filepath of messageFiles) {
     logger.info(`Processing ${filepath}`);
-    let oldMessages: Record<string, string>;
+    let oldMessages: AppsembleMessages;
     if (existsSync(filepath)) {
-      [oldMessages] = await readYaml<Record<string, string>>(filepath);
+      if (format === 'json') {
+        oldMessages = await readJson(filepath);
+      } else {
+        [oldMessages] = await readYaml<AppsembleMessages>(filepath);
+      }
     } else if (verify) {
       throw new AppsembleError(`Missing translations file: ${filepath}`);
     } else {
-      oldMessages = {};
+      oldMessages = {
+        core: {},
+        blocks: {},
+        ...extractedMessages,
+      };
     }
-    const newMessages = Object.fromEntries(
-      messageIds.map((key) => {
-        if (has(oldMessages, key) && oldMessages[key]) {
-          if (typeof oldMessages[key] !== 'string') {
-            throw new AppsembleError(`Invalid translation key: ${key}`);
+
+    const newMessageIds = Object.fromEntries(
+      Object.keys(extractedMessages.messageIds).map((key) => {
+        if (has(oldMessages.messageIds, key) && oldMessages.messageIds[key]) {
+          if (typeof oldMessages.messageIds[key] !== 'string') {
+            throw new AppsembleError(`Invalid translation key: messageIds.${key}`);
           }
-          return [key, oldMessages[key]];
+
+          return [key, oldMessages.messageIds[key]];
         }
-        if (verify) {
-          throw new AppsembleError(`Missing translation key: ${key}`);
+
+        if (verify.includes(parse(filepath).name)) {
+          throw new AppsembleError(`Missing translation: messageIds.${key}`);
         }
+
         return [key, ''];
       }),
     );
-    await writeYaml(filepath, newMessages, { sortKeys: true });
+
+    const newAppMessages = Object.fromEntries(
+      Object.keys(extractedMessages.app).map((key) => {
+        if (has(oldMessages.app, key) && oldMessages.app[key]) {
+          if (typeof oldMessages.app[key] !== 'string') {
+            throw new AppsembleError(`Invalid translation key: app.${key}`);
+          }
+
+          return [key, oldMessages.app[key]];
+        }
+
+        if (filepath === defaultLangFile) {
+          return [key, extractedMessages.app[key]];
+        }
+
+        if (verify.includes(parse(filepath).name)) {
+          throw new AppsembleError(`Missing translation: app.${key}`);
+        }
+
+        return [key, ''];
+      }),
+    );
+
+    const coreMessages = oldMessages.core ?? {};
+    for (const [key, value] of Object.entries(coreMessages)) {
+      if (!value || typeof value !== 'string') {
+        throw new AppsembleError(`Invalid translation key: core.${key}`);
+      }
+    }
+
+    const blockMessages: AppsembleMessages['blocks'] = {};
+    Object.keys(oldMessages.blocks ?? {}).forEach((key) => {
+      if (!Object.keys(blockMessageKeys).includes(key)) {
+        throw new AppsembleError(
+          `Invalid translation key: blocks.${key}\nThis block is not used in the app`,
+        );
+      }
+    });
+
+    for (const [blockName] of Object.entries(blockMessageKeys)) {
+      if (oldMessages.blocks?.[blockName]) {
+        const currentVersionKeys = Object.keys(blockMessageKeys[blockName]);
+        blockMessages[blockName] = {};
+
+        for (const [version, oldValues] of Object.entries(oldMessages.blocks[blockName])) {
+          if (!currentVersionKeys.includes(version)) {
+            throw new AppsembleError(
+              `Invalid translation key: blocks.${blockName}.${version}
+This block version is not used in the app`,
+            );
+          }
+
+          for (const [oldValueKey, oldValue] of Object.entries(
+            oldMessages.blocks[blockName][version],
+          )) {
+            if (typeof oldValue !== 'string') {
+              throw new AppsembleError(
+                `Invalid translation key: blocks.${blockName}.${version}.${oldValueKey}`,
+              );
+            }
+
+            if (verify.includes(parse(filepath).name) && !oldValue) {
+              throw new AppsembleError(
+                `Missing translation: blocks.${blockName}.${version}.${oldValueKey}`,
+              );
+            }
+          }
+
+          blockMessages[blockName][version] = oldValues;
+        }
+      }
+    }
+
+    const result = {
+      app: newAppMessages,
+      ...(Object.keys(newMessageIds).length && { messageIds: newMessageIds }),
+      ...(Object.keys(blockMessages).length && { blocks: blockMessages }),
+      ...(Object.keys(coreMessages).length && { core: coreMessages }),
+    };
+
+    await (format === 'yaml'
+      ? writeYaml(filepath, result, { sortKeys: true })
+      : writeJson(filepath, result, { spaces: 2 }));
   }
 }

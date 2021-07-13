@@ -4,6 +4,8 @@ metadata:
   name: {{ include "appsemble.fullname" . }}
   labels:
     {{ include "appsemble.labels" . }}
+  annotations:
+    {{ include "appsemble.gitlab" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -15,6 +17,8 @@ spec:
       labels:
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
         app.kubernetes.io/name: {{ include "appsemble.name" . }}
+      annotations:
+        {{ include "appsemble.gitlab" . | indent 10 }}
     spec:
       enableServiceLinks: false
       containers:
@@ -53,7 +57,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.global.postgresql.existingSecret }}
-                  key: postgresql-password
+                  key: postgresql-postgres-password
             - name: HOST
               {{ if .Values.ingress.enabled -}}
               value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
@@ -154,6 +158,14 @@ spec:
             {{- end }}
             {{- with .Values.sentryEnvironment }}
             - name: SENTRY_ENVIRONMENT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.sentryAllowedDomains }}
+            - name: SENTRY_ALLOWED_DOMAINS
+              value: {{ join "," . | quote }}
+            {{- end }}
+            {{- with .Values.remote }}
+            - name: REMOTE
               value: {{ . | quote }}
             {{- end }}
             {{- if .Values.proxy }}

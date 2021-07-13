@@ -1,20 +1,13 @@
 import querystring from 'querystring';
 import { URL } from 'url';
 
-import { JwtPayload } from '@appsemble/types';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 import raw from 'raw-body';
 
-import {
-  EmailAuthorization,
-  OAuth2AuthorizationCode,
-  OAuth2ClientCredentials,
-  User,
-} from '../../models';
+import { OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models';
 import { KoaContext } from '../../types';
-import { getApp } from '../../utils/app';
 import { argv } from '../../utils/argv';
 import { createJWTResponse } from '../../utils/createJWTResponse';
 import { hasScope } from '../../utils/oauth2';
@@ -153,44 +146,12 @@ export async function tokenHandler(ctx: KoaContext): Promise<void> {
         sub = client.UserId;
         break;
       }
-      // XXX The password grant type is supported for now for legacy apps.
-      case 'password': {
-        const { password, scope: requestedScope, username } = checkTokenRequestParameters(query, [
-          'password',
-          'scope',
-          'username',
-        ]);
-
-        // Validate the app as a client.
-        const app = await getApp(ctx, { attributes: ['id'] }, header.referer);
-        if (!app) {
-          throw new GrantError('invalid_client');
-        }
-
-        // Validate user credentials
-        const emailAuth = await EmailAuthorization.findOne({
-          include: [User],
-          where: { email: username.toLowerCase() },
-        });
-        if (!emailAuth) {
-          throw new GrantError('invalid_grant');
-        }
-        const isValidPassword = await compare(password, emailAuth.User.password);
-        if (!isValidPassword) {
-          throw new GrantError('invalid_grant');
-        }
-
-        scope = requestedScope;
-        aud = `app:${app.id}`;
-        sub = emailAuth.User.id;
-        refreshToken = true;
-        break;
-      }
       case 'refresh_token': {
         const { refresh_token: token } = checkTokenRequestParameters(query, ['refresh_token']);
         try {
           const payload = verify(token, argv.secret) as JwtPayload;
-          ({ aud, scope, sub } = payload);
+          ({ scope, sub } = payload);
+          aud = payload.aud as string;
           refreshToken = true;
         } catch {
           throw new GrantError('invalid_grant');

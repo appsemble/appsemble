@@ -20,7 +20,7 @@ a colon (`:`) and encoded as base64.
 
 For example, in NodeJS the client credentials can be encoded as base64 as follows:
 
-```js
+```js copy
 const [clientId, clientSecret] = clientCredentials.split(':');
 const encoded = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 ```
@@ -67,7 +67,7 @@ Content-Disposition: form-data; name="app"
       "blocks": [
         {
           "type": "action-button",
-          "version": "0.18.8",
+          "version": "0.18.21",
           "parameters": {
             "icon": "plus"
           },

@@ -111,6 +111,24 @@ describe('iterAction', () => {
     expect(result).toBe(true);
   });
 
+  it('should call then and else for conditional actions', () => {
+    const onAction = jest.fn();
+
+    const action: ActionDefinition = {
+      type: 'condition',
+      if: true,
+      then: { type: 'noop' },
+      else: { type: 'noop' },
+    };
+
+    const result = iterAction(action, { onAction });
+
+    expect(onAction).toHaveBeenCalledWith(action, []);
+    expect(onAction).toHaveBeenCalledWith(action.then, ['then']);
+    expect(onAction).toHaveBeenCalledWith(action.else, ['else']);
+    expect(result).toBe(false);
+  });
+
   it('should return the return value of iterBlockList', () => {
     const onAction = jest.fn();
     const onBlockList = jest.fn().mockReturnValue(true);
@@ -347,7 +365,7 @@ describe('iterPage', () => {
       name: 'Page',
       type: 'flow',
       actions: {
-        'flow.finish': {
+        onFlowFinish: {
           type: 'log',
         },
       },
@@ -356,7 +374,7 @@ describe('iterPage', () => {
 
     const result = iterPage(page, { onAction, onPage });
 
-    expect(onAction).toHaveBeenCalledWith(page.actions['flow.finish'], ['actions', 'flow.finish']);
+    expect(onAction).toHaveBeenCalledWith(page.actions.onFlowFinish, ['actions', 'onFlowFinish']);
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(result).toBe(false);
   });
@@ -370,7 +388,7 @@ describe('iterPage', () => {
       name: 'Page',
       type: 'flow',
       actions: {
-        'flow.finish': {
+        onFlowFinish: {
           type: 'log',
         },
       },
@@ -394,7 +412,7 @@ describe('iterPage', () => {
 
     const result = iterPage(page, { onAction, onPage, onBlockList });
 
-    expect(onAction).toHaveBeenCalledWith(page.actions['flow.finish'], ['actions', 'flow.finish']);
+    expect(onAction).toHaveBeenCalledWith(page.actions.onFlowFinish, ['actions', 'onFlowFinish']);
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(onBlockList).toHaveBeenCalledWith(page.subPages[0].blocks, ['subPages', 0, 'blocks']);
     expect(result).toBe(false);

@@ -15,6 +15,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { BlockList } from '../BlockList';
 import { FlowPage } from '../FlowPage';
+import { usePage } from '../MenuProvider';
 import { PageDialog } from '../PageDialog';
 import { TabsPage } from '../TabsPage';
 import { TitleBar } from '../TitleBar';
@@ -32,7 +33,8 @@ export function Page(): ReactElement {
     url,
   } = useRouteMatch<{ lang: string; pageId: string }>();
   const { pathname } = useLocation();
-  const { getMessage, messageIds } = useAppMessages();
+  const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
+  const { page: navPage, setPage } = usePage();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
@@ -44,9 +46,9 @@ export function Page(): ReactElement {
   let index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
 
   if (index < 0) {
-    const pageMessages = messageIds.filter((id) => id.startsWith('pages.'));
+    const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
     const translatedPage = pageMessages.find(
-      (id) => normalize(getMessage({ id }).format() as string) === pageId,
+      (id) => normalize(getAppMessage({ id }).format() as string) === pageId,
     );
 
     if (translatedPage) {
@@ -90,17 +92,26 @@ export function Page(): ReactElement {
     [page],
   );
 
-  const checkPagePermissions = (p: PageDefinition): boolean => {
-    const roles = p.roles || definition.roles || [];
+  const checkPagePermissions = useCallback(
+    (p: PageDefinition): boolean => {
+      const roles = p.roles || definition.roles || [];
 
-    return (
-      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
-    );
-  };
+      return (
+        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+      );
+    },
+    [definition.roles, definition.security, role, teams],
+  );
+
+  useEffect(() => {
+    if (page && checkPagePermissions(page) && navPage !== page) {
+      setPage(page);
+    }
+  }, [checkPagePermissions, navPage, page, setPage]);
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
-    const msg = getMessage({ id: prefix, defaultMessage: page.name });
+    const msg = getAppMessage({ id: prefix, defaultMessage: page.name });
     const normalizedPageName = normalize(msg.format() as string);
 
     if (pageId !== normalize(normalizedPageName)) {
@@ -179,8 +190,8 @@ export function Page(): ReactElement {
     const i = definition.pages.indexOf(defaultPage);
     let pageName = defaultPage.name;
 
-    if (messageIds.includes(`pages.${i}`)) {
-      pageName = getMessage({ id: `pages.${i}` }).format() as string;
+    if (appMessageIds.includes(`pages.${i}`)) {
+      pageName = getAppMessage({ id: `pages.${i}` }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
@@ -192,8 +203,8 @@ export function Page(): ReactElement {
     const i = definition.pages.indexOf(redirectPage);
     let pageName = redirectPage.name;
 
-    if (messageIds.includes(`pages.${i}`)) {
-      pageName = getMessage({ id: `pages.${i}` }).format() as string;
+    if (appMessageIds.includes(`pages.${i}`)) {
+      pageName = getAppMessage({ id: `pages.${i}` }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;

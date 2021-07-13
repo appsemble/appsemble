@@ -52,7 +52,7 @@ export function Modal<T extends ElementType = 'div'>({
   closeButtonLabel,
   component: Component = 'div' as T,
   isActive,
-  onClose = () => {},
+  onClose,
   ...props
 }: ModalProps<T> & Omit<ComponentProps<T>, keyof ModalProps<T>>): VNode {
   const openClass = useAnimation(isActive, 300, {
@@ -64,7 +64,7 @@ export function Modal<T extends ElementType = 'div'>({
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose(event);
+        onClose?.(event);
       }
     },
     [onClose],

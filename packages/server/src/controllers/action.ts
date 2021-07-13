@@ -116,8 +116,11 @@ async function handleRequestProxy(
       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
     },
   );
-  const axiosConfig = formatRequestAction(action, data, (remapper, d) =>
-    remap(remapper, d, context),
+  const axiosConfig = formatRequestAction(
+    action,
+    data,
+    (remapper, d) => remap(remapper, d, context),
+    context.context,
   );
 
   if (axiosConfig.method.toUpperCase() !== method) {

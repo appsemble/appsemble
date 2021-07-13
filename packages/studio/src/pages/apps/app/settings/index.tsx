@@ -13,6 +13,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
+import { App } from '@appsemble/types';
 import { domainPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useMemo } from 'react';
@@ -52,7 +53,7 @@ export function SettingsPage(): ReactElement {
     () => ({
       maskableIcon: null,
       domain: app.domain || '',
-      icon: `${app.iconUrl}?raw=true`,
+      icon: null,
       iconBackground: app.iconBackground,
       path: app.path,
       private: app.private,
@@ -63,22 +64,22 @@ export function SettingsPage(): ReactElement {
   );
 
   const onSubmit = async (values: FormValues): Promise<void> => {
-    const data = new FormData();
-    data.set('domain', values.domain);
-    data.set('path', values.path);
-    data.set('private', String(values.private));
-    data.set('iconBackground', values.iconBackground);
-    data.set('longDescription', values.longDescription);
+    const form = new FormData();
+    form.set('domain', values.domain);
+    form.set('path', values.path);
+    form.set('private', String(values.private));
+    form.set('iconBackground', values.iconBackground);
+    form.set('longDescription', values.longDescription);
     if (values.icon !== app.iconUrl) {
-      data.set('icon', values.icon);
+      form.set('icon', values.icon);
     }
     if (values.maskableIcon) {
-      data.set('maskableIcon', values.maskableIcon);
+      form.set('maskableIcon', values.maskableIcon);
     }
 
-    await axios.patch(`/api/apps/${app.id}`, data);
+    const { data } = await axios.patch<App>(`/api/apps/${app.id}`, form);
     push({ color: 'success', body: formatMessage(messages.updateSuccess) });
-    setApp({ ...app, hasIcon: data.has('icon'), hasMaskableIcon: data.has('maskableIcon') });
+    setApp(data);
   };
 
   const onDelete = useConfirmation({
@@ -151,7 +152,7 @@ export function SettingsPage(): ReactElement {
             title={<FormattedMessage {...messages.private} />}
           />
           <SimpleFormField
-            addon={
+            addonRight={
               <Button className="is-static" component="span">
                 {`.${app.OrganizationId}.${window.location.host}`}
               </Button>
@@ -180,6 +181,7 @@ export function SettingsPage(): ReactElement {
               />
             }
             label={<FormattedMessage {...messages.domain} />}
+            maxLength={253}
             name="domain"
             pattern={domainPattern}
             preprocess={preprocessDomain}

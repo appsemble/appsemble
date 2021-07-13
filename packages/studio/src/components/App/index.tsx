@@ -11,13 +11,17 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 import { Routes } from '../../pages';
 import { Breadcrumbs } from '../Breadcrumbs';
+import { CodeBlock } from '../CodeBlock';
 import { ErrorFallback } from '../ErrorFallback';
-import { MDXAnchor, MDXPre, MDXWrapper } from '../MDX';
+import { HighlightedCode } from '../HighlightedCode';
+import { MDXAnchor, MDXWrapper } from '../MDX';
+import { createHeader } from '../MDX/MDXHeader';
 import { SideMenuBase } from '../SideMenuBase';
 import { SideMenuBottom } from '../SideMenuBottom';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
 import { Toolbar } from '../Toolbar';
 import { UserProvider } from '../UserProvider';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function App(): ReactElement {
@@ -28,26 +32,35 @@ export function App(): ReactElement {
           <MDXProvider
             components={{
               a: MDXAnchor,
-              pre: MDXPre,
+              pre: CodeBlock,
+              code: HighlightedCode,
               wrapper: MDXWrapper,
+              h1: createHeader('h1'),
+              h2: createHeader('h2'),
+              h3: createHeader('h3'),
+              h4: createHeader('h4'),
+              h5: createHeader('h5'),
+              h6: createHeader('h6'),
             }}
           >
             <UserProvider>
-              <ErrorHandler fallback={ErrorFallback}>
-                <Confirmation>
-                  <MessagesProvider>
-                    <MetaProvider description={messages.description} title="Appsemble">
+              <MetaProvider description={messages.description} title="Appsemble">
+                <ErrorHandler fallback={ErrorFallback}>
+                  <Confirmation>
+                    <MessagesProvider>
                       <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
                         <Toolbar />
-                        <div className="px-3 py-3">
+                        <div
+                          className={`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`}
+                        >
                           <Breadcrumbs />
                           <Routes />
                         </div>
                       </SideMenuProvider>
-                    </MetaProvider>
-                  </MessagesProvider>
-                </Confirmation>
-              </ErrorHandler>
+                    </MessagesProvider>
+                  </Confirmation>
+                </ErrorHandler>
+              </MetaProvider>
             </UserProvider>
           </MDXProvider>
         </StudioMessagesProvider>

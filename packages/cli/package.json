@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.18.8",
+  "version": "0.18.21",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -18,7 +18,7 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/cli"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "main": "dist",
   "bin": {
@@ -32,38 +32,45 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.18.8",
-    "@appsemble/types": "0.18.8",
-    "@appsemble/utils": "0.18.8",
+    "@appsemble/node-utils": "0.18.21",
+    "@appsemble/types": "0.18.21",
+    "@appsemble/utils": "0.18.21",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "axios": "^0.21.1",
-    "chalk": "^4.1.0",
+    "chalk": "^4.1.1",
     "cosmiconfig": "^7.0.0",
-    "fast-glob": "^3.2.5",
+    "fast-glob": "^3.2.7",
     "form-data": "^4.0.0",
-    "fs-extra": "^9.1.0",
-    "inquirer": "^8.0.0",
+    "fs-extra": "^10.0.0",
+    "inquirer": "^8.1.1",
     "jsonschema": "^1.4.0",
     "normalize-path": "^3.0.0",
-    "postcss": "^7.0.32",
+    "postcss": "^7.0.36",
     "postcss-import": "^12.0.1",
     "postcss-load-config": "3.0.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^7.0.1",
-    "type-fest": "^1.0.1",
-    "typescript": "^4.2.4",
-    "typescript-json-schema": "^0.50.0",
-    "yargs": "^16.2.0"
+    "type-fest": "^1.2.2",
+    "typescript": "4.2.4",
+    "typescript-json-schema": "0.50.1",
+    "yargs": "^17.0.1"
   },
   "devDependencies": {
-    "@appsemble/types": "0.18.8",
+    "@appsemble/types": "0.18.21",
+    "@types/concat-stream": "^1.6.1",
+    "@types/fs-extra": "^9.0.12",
+    "@types/inquirer": "^7.3.3",
+    "@types/normalize-path": "^3.0.0",
+    "@types/postcss-import": "^12.0.1",
+    "@types/postcss-load-config": "^2.0.1",
+    "@types/postcss-url": "^8.0.2",
     "concat-stream": "^2.0.0"
   },
   "peerDependencies": {
     "webpack": "^4"
   },
   "optionalDependencies": {
-    "keytar": "^7.6.0"
+    "keytar": "^7.7.0"
   },
   "engines": {
     "node": ">=12.0.0"
