@@ -89,27 +89,30 @@ required.
 
 ## `flow.next`
 
-On [flow pages](page.md#subpages), proceed to the next page if it is present. Otherwise, the flow is
-considered to be complete and [`flow.finish`](#flowfinish) will be called instead.
+On [flow pages](/docs/reference/app#flow-page-definition-sub-pages), proceed to the next page if it
+is present. Otherwise, the flow is considered to be complete and [`flow.finish`](#flowfinish) will
+be called instead.
 
 ## `flow.back`
 
-On [flow pages](page.md#subpages), return to the previous page if it is present. If this is called
-on the first page, nothing happens.
+On [flow pages](/docs/reference/app#flow-page-definition-sub-pages), return to the previous page if
+it is present. If this is called on the first page, nothing happens.
 
 ## `flow.finish`
 
-On [flow pages](page.md#subpages), triggers the [`onFlowFinish`](page.md#onflowfinish) action on the
+On [flow pages](/docs/reference/app#flow-page-definition-sub-pages), triggers the
+[`onFlowFinish`](/docs/reference/app#flow-page-actions-definition-on-flow-finish) action on the
 page.
 
 ## `flow.cancel`
 
-On [flow pages](page.md#subpages), triggers the [`onFlowCancel`](page.md#onflowfinish) action on the
+On [flow pages](/docs/reference/app#flow-page-definition-sub-pages), triggers the
+[`onFlowCancel`](/docs/reference/app#flow-page-actions-definition-on-flow-cancel) action on the
 page.
 
 ## `flow.to`
 
-On [flow pages](page.md#subpages), move to a specific step.
+On [flow pages](/docs/reference/app#flow-page-definition-sub-pages), move to a specific step.
 
 | Parameter | Required | Description                                                                                              |
 | --------- | -------- | -------------------------------------------------------------------------------------------------------- |

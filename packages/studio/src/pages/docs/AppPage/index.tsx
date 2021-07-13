@@ -54,20 +54,24 @@ export function AppPage(): ReactElement {
       >
         <FormattedMessage {...messages.title} />
       </HeaderControl>
-      {entries.map(([name, schema]) => (
-        <Fragment key={name}>
-          <Title id={decamelize(name, { separator: '-' })} size={4}>
-            {name}
-          </Title>
-          {showYaml.enabled ? (
-            <CodeBlock className="mb-5" language="yaml">
-              {safeDump(schema)}
-            </CodeBlock>
-          ) : (
-            <Schema renderRef={Ref} schema={schema} />
-          )}
-        </Fragment>
-      ))}
+      {entries.map(([name, schema]) => {
+        const id = decamelize(name, { separator: '-' });
+
+        return (
+          <Fragment key={name}>
+            <Title id={id} size={4}>
+              {name}
+            </Title>
+            {showYaml.enabled ? (
+              <CodeBlock className="mb-5" language="yaml">
+                {safeDump(schema)}
+              </CodeBlock>
+            ) : (
+              <Schema idPrefix={id} renderRef={Ref} schema={schema} />
+            )}
+          </Fragment>
+        );
+      })}
     </main>
   );
 }

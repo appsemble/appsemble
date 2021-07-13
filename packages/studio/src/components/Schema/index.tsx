@@ -1,5 +1,6 @@
 import { Join, MarkdownContent, Title } from '@appsemble/react-components';
 import { combineSchemas } from '@appsemble/utils';
+import decamelize from 'decamelize';
 import { Schema as SchemaType } from 'jsonschema';
 import { FC, ReactElement, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -15,6 +16,11 @@ export interface RenderRefProps {
 }
 
 interface SchemaProps {
+  /**
+   * If specified, use this prefix for the generated title ID.
+   */
+  idPrefix?: string;
+
   /**
    * The JSON schema to render
    */
@@ -45,6 +51,7 @@ interface SchemaProps {
  * Render a JSON schema into readable API documentation.
  */
 export function Schema({
+  idPrefix,
   name,
   nested,
   renderRef: RenderRef = null,
@@ -61,11 +68,19 @@ export function Schema({
     (mergedSchema.description ||
       (mergedSchema.items && !Array.isArray(mergedSchema.items) && mergedSchema.items.description));
 
+  let id = idPrefix;
+  if (name) {
+    id = decamelize(name, { separator: '-' });
+    if (idPrefix) {
+      id = `${idPrefix}-${id}`;
+    }
+  }
+
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
       {name ? (
         <div className="pb-2">
-          <Title className="is-inline-block is-marginless" size={5}>
+          <Title className="is-inline-block is-marginless" id={id} size={5}>
             {mergedSchema.title ? (
               <>
                 <span className="mr-1">{mergedSchema.title}</span>
@@ -158,6 +173,7 @@ export function Schema({
       {mergedSchema.type === 'object' && mergedSchema.properties
         ? Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
             <Schema
+              idPrefix={id}
               key={propertyName}
               name={propertyName}
               nested
@@ -175,6 +191,7 @@ export function Schema({
         !Array.isArray(mergedSchema.items) &&
         Object.entries(mergedSchema.items.properties ?? {}).map(([propertyName, property]) => (
           <Schema
+            idPrefix={id}
             key={propertyName}
             name={propertyName}
             nested
