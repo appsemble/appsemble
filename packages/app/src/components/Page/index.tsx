@@ -200,7 +200,7 @@ export function Page(): ReactElement {
 
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
-  if (!isLoggedIn) {
+  if (page && !isLoggedIn) {
     return <Redirect to={`/${lang}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 
