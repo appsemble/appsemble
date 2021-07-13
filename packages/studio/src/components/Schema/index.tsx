@@ -1,4 +1,4 @@
-import { Join, MarkdownContent } from '@appsemble/react-components';
+import { Join, MarkdownContent, Title } from '@appsemble/react-components';
 import { combineSchemas } from '@appsemble/utils';
 import { Schema as SchemaType } from 'jsonschema';
 import { FC, ReactElement, useMemo } from 'react';
@@ -11,7 +11,7 @@ import { SchemaDescriptor } from './SchemaDescriptor';
 export interface RenderRefProps {
   isArray: boolean;
 
-  ref: string;
+  jsonRef: string;
 }
 
 interface SchemaProps {
@@ -64,8 +64,8 @@ export function Schema({
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
       {name ? (
-        <div>
-          <span className="has-text-weight-bold">
+        <div className="pb-2">
+          <Title className="is-inline-block is-marginless" size={5}>
             {mergedSchema.title ? (
               <>
                 <span className="mr-1">{mergedSchema.title}</span>
@@ -74,7 +74,7 @@ export function Schema({
             ) : (
               name
             )}
-          </span>
+          </Title>
           {(required || mergedSchema.required === true) && (
             <span className="ml-2 tag is-info">
               <FormattedMessage {...messages.required} />
@@ -82,20 +82,19 @@ export function Schema({
           )}
         </div>
       ) : null}
-      {name ? <hr /> : null}
       {nested &&
         (mergedSchema.$ref || mergedSchema.type ? (
           <SchemaDescriptor label={<FormattedMessage {...messages.type} />}>
             <code>
               {mergedSchema.$ref
-                ? RenderRef && <RenderRef isArray={false} ref={mergedSchema.$ref} />
+                ? RenderRef && <RenderRef isArray={false} jsonRef={mergedSchema.$ref} />
                 : mergedSchema.type === 'array'
                 ? !mergedSchema.items || Array.isArray(mergedSchema.items)
                   ? 'array'
                   : mergedSchema.items.type
                   ? `${mergedSchema.items.type}[]`
                   : mergedSchema.items.$ref
-                  ? RenderRef && <RenderRef isArray ref={mergedSchema.items.$ref} />
+                  ? RenderRef && <RenderRef isArray jsonRef={mergedSchema.items.$ref} />
                   : 'array'
                 : mergedSchema.type}
             </code>
@@ -162,6 +161,7 @@ export function Schema({
               key={propertyName}
               name={propertyName}
               nested
+              renderRef={RenderRef}
               required={
                 Array.isArray(mergedSchema.required) &&
                 mergedSchema.required?.includes(propertyName)
@@ -178,6 +178,7 @@ export function Schema({
             key={propertyName}
             name={propertyName}
             nested
+            renderRef={RenderRef}
             required={
               typeof (schema.items as SchemaType).required === 'object' &&
               ((schema.items as SchemaType).required as string[]).includes(propertyName)
