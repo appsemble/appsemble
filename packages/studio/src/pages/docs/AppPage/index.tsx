@@ -1,5 +1,5 @@
 import { Checkbox, Title, useMeta, useToggle } from '@appsemble/react-components';
-import { iterJSONSchema, schemas } from '@appsemble/utils';
+import { defaultLocale, iterJSONSchema, schemas } from '@appsemble/utils';
 import decamelize from 'decamelize';
 import { safeDump } from 'js-yaml';
 import { Schema as JSONSchema } from 'jsonschema';
@@ -39,7 +39,7 @@ export function AppPage(): ReactElement {
   const showYaml = useToggle();
 
   return (
-    <main>
+    <main lang={defaultLocale}>
       <HeaderControl
         className="pb-3"
         control={
