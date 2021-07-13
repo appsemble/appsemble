@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
 import { shouldShowMenu } from '../../utils/layout';
-import { appId } from '../../utils/settings';
+import { appId, sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
@@ -76,7 +76,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
               </NavLink>
             </li>
           )}
-          {definition.layout?.feedback === 'navigation' && (
+          {definition.layout?.feedback === 'navigation' && sentryDsn && (
             <li className="bottom-nav-item">
               <NavLink
                 activeClassName="is-active"
