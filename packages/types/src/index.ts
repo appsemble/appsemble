@@ -608,6 +608,23 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
   level?: LogAction['level'];
 }
 
+export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
+  /**
+   * The URL that is being shared.
+   */
+  url?: Remapper;
+
+  /**
+   * The main body that is being shared.
+   */
+  text?: Remapper;
+
+  /**
+   * The title that is being shared, if supported.
+   */
+  title?: Remapper;
+}
+
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
   extends BaseActionDefinition<T> {
   /**
@@ -749,6 +766,7 @@ export type ActionDefinition =
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
+  | ShareActionDefinition
   | StaticActionDefinition;
 
 export interface ActionType {

@@ -6,7 +6,7 @@ import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
 import { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogAction } from '../../types';
+import { ShowDialogAction, ShowShareDialog } from '../../types';
 import { makeActions } from '../../utils/makeActions';
 import { BlockList } from '../BlockList';
 import { DotProgressBar } from '../DotProgressBar';
@@ -20,6 +20,7 @@ interface FlowPageProps {
   prefix: string;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showDialog: ShowDialogAction;
+  showShareDialog: ShowShareDialog;
 }
 
 export function FlowPage({
@@ -29,6 +30,7 @@ export function FlowPage({
   prefix,
   remap,
   showDialog,
+  showShareDialog,
 }: FlowPageProps): ReactElement {
   const history = useHistory();
   const route = useRouteMatch<{ lang: string }>();
@@ -129,6 +131,7 @@ export function FlowPage({
         context: page,
         history,
         showDialog,
+        showShareDialog,
         extraCreators: {},
         flowActions,
         prefix,
@@ -153,6 +156,7 @@ export function FlowPage({
       remap,
       route,
       showDialog,
+      showShareDialog,
       showMessage,
       teams,
       userInfo,
@@ -177,6 +181,7 @@ export function FlowPage({
         prefix={`${prefix}.subPages.${currentPage}.blocks`}
         remap={remap}
         showDialog={showDialog}
+        showShareDialog={showShareDialog}
       />
     </>
   );
