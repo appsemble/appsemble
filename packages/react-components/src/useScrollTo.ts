@@ -12,7 +12,7 @@ export function useScrollTo(ref: MutableRefObject<HTMLElement>): void {
   useEffect(() => {
     const element = ref.current;
 
-    if (!element) {
+    if (!element?.id) {
       return;
     }
 

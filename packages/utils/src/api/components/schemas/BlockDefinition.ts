@@ -28,7 +28,11 @@ Some examples:
     version: {
       type: 'string',
       pattern: semver.source,
-      description: 'The block version to use.',
+      description: `The version of the block to use.
+
+Since blocks may change over time, a version must be specified in order to ensure that the block
+will remain the same until it is manually updated.
+`,
     },
     layout: {
       type: 'string',
