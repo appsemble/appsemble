@@ -164,6 +164,10 @@ spec:
             - name: SENTRY_ALLOWED_DOMAINS
               value: {{ join "," . | quote }}
             {{- end }}
+            {{- with .Values.remote }}
+            - name: REMOTE
+              value: {{ . | quote }}
+            {{- end }}
             {{- if .Values.proxy }}
             - name: PROXY
               value: 'true'

@@ -107,6 +107,7 @@ helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.existingS
 | `postgresql.fullnameOverride`          | `appsemble-postgresql`        | The name used for the PostgreSQL database.                                                                                                |
 | `postgresql.enabled`                   | `true`                        | Set this to false explicitly to not include a PostgreSQL installation. This is useful if the database is managed by another service.      |
 | `postgresql.persistence.enabled`       | `false`                       | Enable to create a persistent volume for the data.                                                                                        |
+| `remote`                               | `null`                        | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
 | `postgresSSL`                          | `false`                       | If `true`, connect establish the PostgreSQL connection over SSL.                                                                          |
 
 [sentry]: https://sentry.io

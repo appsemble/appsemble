@@ -1,5 +1,7 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { Clock, install } from '@sinonjs/fake-timers';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
@@ -9,6 +11,8 @@ import {
   AppRating,
   AppScreenshot,
   AppSnapshot,
+  BlockAsset,
+  BlockMessages,
   BlockVersion,
   Member,
   Organization,
@@ -958,6 +962,186 @@ pages:
     expect(response).toMatchObject({
       status: 400,
       data: {},
+    });
+  });
+
+  describe('block synchronization', () => {
+    let mock: MockAdapter;
+
+    beforeEach(() => {
+      setArgv({ host: 'http://localhost', remote: 'https://appsemble.example', secret: 'test' });
+      mock = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+      setArgv({ host: 'http://localhost', secret: 'test' });
+      mock.reset();
+    });
+
+    it('should not synchronize if the remote returns an invalid block name', async () => {
+      authorizeStudio();
+
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
+        .reply(200, {
+          name: '@appsemble/invalid',
+          version: '1.2.3',
+        });
+      const response = await request.post(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          path: 'a',
+          definition: {
+            name: 'Test App',
+            defaultPage: 'Test Page',
+            pages: [
+              {
+                name: 'Test Page',
+                blocks: [{ type: 'upstream', version: '1.2.3' }],
+              },
+            ],
+          },
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          data: {
+            'pages.0.blocks.0': 'Unknown block type “@appsemble/upstream”',
+          },
+          error: 'Bad Request',
+          message: 'Appsemble definition is invalid.',
+          statusCode: 400,
+        },
+      });
+    });
+
+    it('should not synchronize if the remote returns an invalid block version', async () => {
+      authorizeStudio();
+
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
+        .reply(200, {
+          name: '@appsemble/upstream',
+          version: '3.2.1',
+        });
+      const response = await request.post(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          path: 'a',
+          definition: {
+            name: 'Test App',
+            defaultPage: 'Test Page',
+            pages: [
+              {
+                name: 'Test Page',
+                blocks: [{ type: 'upstream', version: '1.2.3' }],
+              },
+            ],
+          },
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          data: {
+            'pages.0.blocks.0': 'Unknown block type “@appsemble/upstream”',
+          },
+          error: 'Bad Request',
+          message: 'Appsemble definition is invalid.',
+          statusCode: 400,
+        },
+      });
+    });
+
+    it('should store the remote block in the local database', async () => {
+      authorizeStudio();
+
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
+        .reply(200, {
+          actions: {},
+          description: 'This is a block',
+          events: {},
+          files: ['a.js', 'b.css'],
+          iconUrl: null,
+          languages: ['en'],
+          layout: 'float',
+          longDescription: 'This is a useful block.',
+          name: '@appsemble/upstream',
+          parameters: {},
+          version: '1.2.3',
+        });
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/asset')
+        .reply(({ params: { filename } }) => {
+          switch (filename) {
+            case 'a.js':
+              return [
+                200,
+                Buffer.from('console.log("a");\n'),
+                { 'content-type': 'application/javascript' },
+              ];
+            case 'b.css':
+              return [200, Buffer.from('b{background:blue;}\n'), { 'content-type': 'text/css' }];
+            default:
+              return [404];
+          }
+        });
+      mock
+        .onGet(
+          'https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/messages/en',
+        )
+        .reply(200, { hello: 'world' });
+      const response = await request.post(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          path: 'a',
+          definition: {
+            name: 'Test App',
+            defaultPage: 'Test Page',
+            pages: [
+              {
+                name: 'Test Page',
+                blocks: [{ type: 'upstream', version: '1.2.3' }],
+              },
+            ],
+          },
+        }),
+      );
+      expect(response).toMatchObject({ status: 201 });
+      const block = await BlockVersion.findOne({
+        where: { OrganizationId: 'appsemble', name: 'upstream' },
+        include: [BlockAsset, BlockMessages],
+      });
+      expect(block).toMatchObject({
+        actions: {},
+        description: 'This is a block',
+        events: {},
+        icon: null,
+        layout: 'float',
+        longDescription: 'This is a useful block.',
+        name: 'upstream',
+        OrganizationId: 'appsemble',
+        parameters: {},
+        version: '1.2.3',
+        BlockAssets: [
+          {
+            filename: 'a.js',
+            mime: 'application/javascript',
+            content: Buffer.from('console.log("a");\n'),
+          },
+          {
+            filename: 'b.css',
+            mime: 'text/css',
+            content: Buffer.from('b{background:blue;}\n'),
+          },
+        ],
+        BlockMessages: [{ language: 'en', messages: { hello: 'world' } }],
+      });
     });
   });
 });

@@ -5,8 +5,8 @@ import { BlockManifest } from '@appsemble/types';
 import {
   AppsembleValidationError,
   BlockMap,
-  blockNamePattern,
   normalize,
+  parseBlockName,
   Permission,
   StyleValidationError,
   validateAppDefinition,
@@ -36,6 +36,8 @@ import {
 } from '../models';
 import { KoaContext } from '../types';
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
+import { argv } from '../utils/argv';
+import { blockVersionToJson, syncBlock } from '../utils/block';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
@@ -50,34 +52,35 @@ interface Params {
 }
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
+  const uniqueBlocks = uniqWith(
+    Object.values(blocks).map(({ type, version }) => {
+      const [OrganizationId, name] = parseBlockName(type);
+      return {
+        name,
+        OrganizationId,
+        version,
+      };
+    }),
+    isEqual,
+  );
   const blockVersions = await BlockVersion.findAll({
-    raw: true,
     attributes: { exclude: ['id'] },
-    where: {
-      [Op.or]: uniqWith(
-        Object.values(blocks).map(({ type, version }) => {
-          const [, OrganizationId, name] = type.match(blockNamePattern) || [
-            null,
-            'appsemble',
-            type,
-          ];
-          return {
-            name,
-            OrganizationId,
-            version,
-          };
-        }),
-        isEqual,
-      ),
-    },
+    where: { [Op.or]: uniqueBlocks },
   });
+  const result: BlockManifest[] = blockVersions.map(blockVersionToJson);
 
-  return blockVersions.map((blockVersion) => ({
-    ...blockVersion,
-    name: `@${blockVersion.OrganizationId}/${blockVersion.name}`,
-    files: null,
-    languages: null,
-  }));
+  if (argv.remote) {
+    const knownIdentifiers = new Set(
+      blockVersions.map((block) => `@${block.OrganizationId}/${block.name}@${block.version}`),
+    );
+    const unknownBlocks = uniqueBlocks.filter(
+      (block) => !knownIdentifiers.has(`@${block.OrganizationId}/${block.name}@${block.version}`),
+    );
+    const syncedBlocks = await Promise.all(unknownBlocks.map(syncBlock));
+    result.push(...syncedBlocks.filter(Boolean));
+  }
+
+  return result;
 }
 
 function handleAppValidationError(error: Error, app: Partial<App>): never {
