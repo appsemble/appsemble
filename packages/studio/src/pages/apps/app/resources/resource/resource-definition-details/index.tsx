@@ -7,9 +7,9 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import { useApp } from '../../..';
 import { CodeBlock } from '../../../../../../components/CodeBlock';
 import { Collapsible } from '../../../../../../components/Collapsible';
+import { Schema } from '../../../../../../components/Schema';
 import { Endpoint } from './Endpoint';
 import { messages } from './messages';
-import { Schema } from './Schema';
 
 /**
  * Render the page for resource definition details.
@@ -51,7 +51,7 @@ export function ResourceDefinitionDetailsPage(): ReactElement {
           <Title size={4}>
             <FormattedMessage {...messages.properties} />
           </Title>
-          <Schema nested={false} schema={resource.schema} />
+          <Schema schema={resource.schema} />
         </>
       )}
       <hr />
