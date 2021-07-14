@@ -1,15 +1,15 @@
 {
   "app": {
-    "description": "",
-    "name": "",
-    "pages.0": "",
-    "pages.1": "",
-    "pages.2": ""
+    "description": "Jednostavan program za obrasce i pregled podataka korištenjem API resursa",
+    "name": "Osoba",
+    "pages.0": "Popis osoba",
+    "pages.1": "Obrazac za registriranje osobe",
+    "pages.2": "Detalji osobe"
   },
   "messageIds": {
-    "description": "",
-    "email": "",
-    "firstName": "",
-    "lastName": ""
+    "description": "Opis",
+    "email": "E-mail",
+    "firstName": "Ime",
+    "lastName": "Prezime"
   }
 }

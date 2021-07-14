@@ -1,4 +1,4 @@
 {
-  "error": "",
-  "noData": ""
+  "error": "Dogodila se greška tijekom dohvaćanja podataka.",
+  "noData": "Nema podataka."
 }
