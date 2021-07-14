@@ -1,6 +1,6 @@
 {
-  "anonymousLabel": "",
-  "emptyLabel": "",
-  "replyErrorMessage": "",
-  "replyLabel": ""
+  "anonymousLabel": "Anonimno",
+  "emptyLabel": "Nema podataka za prikaz",
+  "replyErrorMessage": "Dogodila se greška tijekom pokušaja slanja ove poruke.",
+  "replyLabel": "Ostavi poruku …"
 }
