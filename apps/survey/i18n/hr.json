@@ -1,0 +1,53 @@
+{
+  "app": {
+    "description": "",
+    "name": "",
+    "pages.0": "",
+    "pages.1": ""
+  },
+  "blocks": {
+    "@appsemble/form": {
+      "0.18.20": {
+        "submitLabel": ""
+      }
+    }
+  },
+  "messageIds": {
+    "anythingElse": "",
+    "appsembleRating": "",
+    "backToHome": "",
+    "betterExperience": "",
+    "buildYourself": "",
+    "commonGround": "",
+    "consideringAppsemble": "",
+    "definitely": "",
+    "definitelyNot": "",
+    "explanation": "",
+    "featureImportanceBuildingBlocks": "",
+    "featureImportanceCommunitySupport": "",
+    "featureImportanceConstructing": "",
+    "features": "",
+    "finished": "",
+    "graphicalEditor": "",
+    "introText": "",
+    "moreBlocks": "",
+    "moreExamples": "",
+    "myself": "",
+    "no": "",
+    "notTriedReason": "",
+    "possibly": "",
+    "probably": "",
+    "probablyNot": "",
+    "propertyImportanceBuildCosts": "",
+    "propertyImportanceHostCosts": "",
+    "propertyImportanceMaintenanceCosts": "",
+    "propertyImportancePaidSupport": "",
+    "someoneElse": "",
+    "start": "",
+    "triedAppsemble": "",
+    "videoTutorials": "",
+    "whyNot": "",
+    "whyNotPlaceholder": "",
+    "yes": ""
+  }
+}
