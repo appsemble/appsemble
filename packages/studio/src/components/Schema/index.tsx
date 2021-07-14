@@ -1,5 +1,6 @@
 import { Join, MarkdownContent, Title } from '@appsemble/react-components';
 import { combineSchemas } from '@appsemble/utils';
+import classNames from 'classnames';
 import decamelize from 'decamelize';
 import { Schema as SchemaType } from 'jsonschema';
 import { FC, ReactElement, useMemo } from 'react';
@@ -16,6 +17,11 @@ export interface RenderRefProps {
 }
 
 interface SchemaProps {
+  /**
+   * If this is true, anchors will be rendered for all properties.
+   */
+  anchors?: boolean;
+
   /**
    * If specified, use this prefix for the generated title ID.
    */
@@ -51,6 +57,7 @@ interface SchemaProps {
  * Render a JSON schema into readable API documentation.
  */
 export function Schema({
+  anchors,
   idPrefix,
   name,
   nested,
@@ -79,8 +86,8 @@ export function Schema({
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
       {name ? (
-        <div className="pb-2">
-          <Title className="is-inline-block is-marginless" id={id} size={5}>
+        <div className={classNames('pb-2', { [styles.hasAnchor]: anchors })}>
+          <Title anchor={anchors} className="is-inline-block is-marginless" id={id} size={5}>
             {mergedSchema.title ? (
               <>
                 <span className="mr-1">{mergedSchema.title}</span>
@@ -173,6 +180,7 @@ export function Schema({
       {mergedSchema.type === 'object' && mergedSchema.properties
         ? Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
             <Schema
+              anchors={anchors}
               idPrefix={id}
               key={propertyName}
               name={propertyName}
@@ -191,6 +199,7 @@ export function Schema({
         !Array.isArray(mergedSchema.items) &&
         Object.entries(mergedSchema.items.properties ?? {}).map(([propertyName, property]) => (
           <Schema
+            anchors={anchors}
             idPrefix={id}
             key={propertyName}
             name={propertyName}

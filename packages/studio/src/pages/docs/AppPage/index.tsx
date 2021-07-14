@@ -41,7 +41,8 @@ export function AppPage(): ReactElement {
   return (
     <main lang={defaultLocale}>
       <HeaderControl
-        className="pb-3"
+        anchor
+        className="pb-3 pl-4"
         control={
           <Checkbox
             label={<FormattedMessage {...messages.showYaml} />}
@@ -51,6 +52,7 @@ export function AppPage(): ReactElement {
             value={showYaml.enabled}
           />
         }
+        id="app-reference"
       >
         <FormattedMessage {...messages.title} />
       </HeaderControl>
@@ -59,16 +61,18 @@ export function AppPage(): ReactElement {
 
         return (
           <Fragment key={name}>
-            <Title id={id} size={4}>
+            <Title anchor className="pl-4" id={id} size={4}>
               {name}
             </Title>
-            {showYaml.enabled ? (
-              <CodeBlock className="mb-5" language="yaml">
-                {safeDump(schema)}
-              </CodeBlock>
-            ) : (
-              <Schema idPrefix={id} renderRef={Ref} schema={schema} />
-            )}
+            <div className="pl-6">
+              {showYaml.enabled ? (
+                <CodeBlock className="mb-5" language="yaml">
+                  {safeDump(schema)}
+                </CodeBlock>
+              ) : (
+                <Schema anchors idPrefix={id} renderRef={Ref} schema={schema} />
+              )}
+            </div>
           </Fragment>
         );
       })}
