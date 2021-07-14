@@ -9,7 +9,11 @@ export const BasePageDefinition: OpenAPIV3.NonArraySchemaObject = {
       maxLength: 50,
       description: `The name of an app.
 
-This will be displayed on the top of the page and in the side menu.
+This field is always required and must be unique within the app, meaning that it is not possible to
+have two pages with the same name. The name of the page is displayed at the top of each page as well
+as in the side navigational menu.
+
+> **Note**: The URL used to navigate to pages is determined by this property.
 `,
     },
     navTitle: {
@@ -28,8 +32,11 @@ This will be displayed in the navigation menu.
     },
     parameters: {
       type: 'array',
-      description:
-        'Page parameters can be used for linking to a page that should display a single resource.',
+      description: `Page parameters can be used for linking to a page that should display a single resource.
+
+This defined as a list of strings representing the properties to pass through. More often than not
+passing \`id\` through is sufficient, depending on the block.
+`,
       items: {
         type: 'string',
         minLength: 1,
@@ -40,7 +47,12 @@ This will be displayed in the navigation menu.
       type: 'array',
       description: `The list of roles that are allowed to view this page.
 
-If a user does not have the right role, they are redirected to \`defaultPage\`.
+If the user doesn’t have any of the roles in the list the page will be unavailable to them. An empty
+list can be used to specify that users need to log in but do not need a specific role.
+
+Users trying to visit a page without having the correct roles will be redirected to the first page
+that they are allowed to view. If there aren’t any accessible pages, the user will be logged out and
+instructed to contact the app owner to get permissions.
 `,
       items: {
         type: 'string',
@@ -51,10 +63,22 @@ If a user does not have the right role, they are redirected to \`defaultPage\`.
     },
     navigation: {
       $ref: '#/components/schemas/AppLayoutDefinition/properties/navigation',
+      description: `The type of navigation displayed on the page.
+
+This overrides the navigation property of the app itself. Defaults to \`left-menu\` if navigation or
+App navigation are not set.
+
+Set to \`bottom\` to use a navigation pane at the bottom of the screen instead of the default side
+menu. Set to \`hidden\` to display no navigational menus at all.
+`,
     },
     hideFromMenu: {
       type: 'boolean',
-      description: 'Whether or not the page should be displayed in navigational menus.',
+      description: `Whether or not the page should be displayed in navigational menus.
+
+By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+page from menus.
+`,
       default: false,
     },
   },

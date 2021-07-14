@@ -20,7 +20,10 @@ The following values are allowed:
 
     role: {
       type: 'string',
-      description: 'The default role to apply to members.',
+      description: `The default role to apply to members.
+
+This must match with one of the roles defined within the security definition.
+`,
     },
   },
 };

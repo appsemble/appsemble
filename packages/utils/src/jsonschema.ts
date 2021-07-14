@@ -145,3 +145,52 @@ export function combineSchemas(...schemas: Schema[]): Schema {
 
   return result;
 }
+
+/**
+ * Recursively iterate over a JSON schema and call the callback with every sub schema found.
+ *
+ * @param schema - The JSON schema to iterate.
+ * @param onSchema - The callback to call with the found JSON schema.
+ */
+export function iterJSONSchema(schema: Schema, onSchema: (schema: Schema) => void): void {
+  if (!schema) {
+    return;
+  }
+  onSchema(schema);
+
+  if (schema.properties) {
+    for (const property of Object.values(schema.properties)) {
+      iterJSONSchema(property, onSchema);
+    }
+  }
+
+  if (typeof schema.additionalProperties === 'object') {
+    iterJSONSchema(schema.additionalProperties, onSchema);
+  }
+
+  if (schema.items) {
+    if (Array.isArray(schema.items)) {
+      for (const item of schema.items) {
+        iterJSONSchema(item, onSchema);
+      }
+    } else {
+      iterJSONSchema(schema.items, onSchema);
+    }
+  }
+
+  if (typeof schema.additionalItems === 'object') {
+    iterJSONSchema(schema.additionalItems, onSchema);
+  }
+
+  if (schema.oneOf) {
+    for (const oneOf of schema.oneOf) {
+      iterJSONSchema(oneOf, onSchema);
+    }
+  }
+
+  if (schema.allOf) {
+    for (const allOf of schema.allOf) {
+      iterJSONSchema(allOf, onSchema);
+    }
+  }
+}

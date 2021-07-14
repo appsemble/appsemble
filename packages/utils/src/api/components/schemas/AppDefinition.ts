@@ -19,7 +19,9 @@ This will be displayed for example on the home screen or in the browser tab.
       type: 'array',
       description: `The list of roles that are allowed to view this app.
 
-This determines the default roles required for resource actions as well as pages, unless otherwise specified.
+This list is used as the default roles for the roles property on pages and blocks, which can be
+overridden by defining them for a specific page or block. Note that these roles must be defined in
+\`security.roles\`.
 `,
       items: {
         type: 'string',
@@ -38,11 +40,22 @@ This will be displayed on the app store.
       enum: ['navigation', 'menu', 'hidden'],
       description: 'Where the login and logout buttons should be located.',
     },
-    layout: { $ref: '#/components/schemas/AppLayoutDefinition' },
+    layout: {
+      $ref: '#/components/schemas/AppLayoutDefinition',
+      description: 'Properties related to the layout of the app.',
+    },
     notifications: {
       enum: ['opt-in', 'startup'],
       type: 'string',
-      description: 'The strategy to use for apps to subscribe to push notifications.',
+      description: `The strategy to use for apps to subscribe to push notifications.
+
+If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
+app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
+receiving push notifications by pressing the subscribe button in the App settings page. Setting this
+to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+
+> **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
+`,
     },
     defaultPage: {
       type: 'string',
