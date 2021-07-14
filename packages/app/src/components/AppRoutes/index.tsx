@@ -3,6 +3,7 @@ import { ReactElement } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
+import { sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { AppSettings } from '../AppSettings';
 import { Login } from '../Login';
@@ -39,9 +40,11 @@ export function AppRoutes(): ReactElement {
       <Route exact path="/:lang/Callback" sensitive>
         <OpenIDCallback />
       </Route>
-      <Route exact path="/:lang/Feedback" sensitive>
-        <SentryFeedback />
-      </Route>
+      {sentryDsn && (
+        <Route exact path="/:lang/Feedback" sensitive>
+          <SentryFeedback />
+        </Route>
+      )}
       <Route path="/:lang/:pageId">
         <Page />
       </Route>

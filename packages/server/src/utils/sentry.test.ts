@@ -45,6 +45,33 @@ describe('getSentryClientSettings', () => {
     });
   });
 
+  it('should work with multiple allowed domains', () => {
+    setArgv({
+      sentryAllowedDomains: 'appsemble.app,*.test.appsemble.app',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/42',
+      sentryEnvironment: 'test',
+    });
+    const resultA = getSentryClientSettings('appsemble.app');
+    const resultB = getSentryClientSettings('testApp.test.appsemble.app');
+    const resultC = getSentryClientSettings('example.com');
+    const resultD = getSentryClientSettings('testApp.appsemble.appsemble.app');
+
+    expect(resultA).toStrictEqual({
+      reportUri: 'https://sentry.io/api/42/security/?sentry_key=0123456789abcdef',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/42',
+      sentryEnvironment: 'test',
+      sentryOrigin: 'https://sentry.io',
+    });
+    expect(resultB).toStrictEqual({
+      reportUri: 'https://sentry.io/api/42/security/?sentry_key=0123456789abcdef',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/42',
+      sentryEnvironment: 'test',
+      sentryOrigin: 'https://sentry.io',
+    });
+    expect(resultC).toStrictEqual({});
+    expect(resultD).toStrictEqual({});
+  });
+
   it('should return an empty object if the domain isn’t allowed', () => {
     setArgv({
       sentryAllowedDomains: '*.foo.example',
