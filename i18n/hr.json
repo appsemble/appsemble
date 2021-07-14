@@ -355,7 +355,7 @@
   "studio.src.pages.apps.app.resources.resource.IndexPage.newTitle": "Stvaranje novog resursa {resource}",
   "studio.src.pages.apps.app.resources.resource.IndexPage.notFound": "Ovaj resurs nije pronađen u definiciji programa. Potvrdi ako ovaj resurs postoji.",
   "studio.src.pages.apps.app.resources.resource.IndexPage.notManaged": "Ovim resursom ne upravlja Appsemble. Ovaj resurs možeš pronaći na {link}",
-  "studio.src.pages.apps.app.resources.resource.IndexPage.resourceWarning": "",
+  "studio.src.pages.apps.app.resources.resource.IndexPage.resourceWarning": "Stvarno želiš izbrisati {amount, plural, one {ovaj resurs} other {ovi resursi}}? Izbrisani resursi se ne mogu obnoviti.",
   "studio.src.pages.apps.app.resources.resource.IndexPage.resourceWarningTitle": "Upozorenje brisanja",
   "studio.src.pages.apps.app.resources.resource.IndexPage.resources": "Resursi",
   "studio.src.pages.apps.app.resources.resource.IndexPage.updated": "Aktualizirano",
