@@ -1,22 +1,13 @@
 import classNames from 'classnames';
-import { ReactElement, ReactNode } from 'react';
+import { ComponentPropsWithoutRef, ReactElement, useRef } from 'react';
 
-interface TitleProps {
-  /**
-   * The content to render inside the header element.
-   */
-  children: ReactNode;
+import { useScrollTo } from '../useScrollTo';
 
-  /**
-   * An additional class name to add.
-   */
-  className?: string;
+type Level = 1 | 2 | 3 | 4 | 5 | 6;
 
-  /**
-   * The locale of the title content.
-   */
-  lang?: string;
+type HeadingComponentType = `h${Level}`;
 
+interface TitleProps extends ComponentPropsWithoutRef<HeadingComponentType> {
   /**
    * The header level.
    *
@@ -36,17 +27,16 @@ interface TitleProps {
  * A bulma styled title element.
  */
 export function Title({
-  children,
   className,
-  lang,
   size = 3,
   level = (size - 2) as TitleProps['size'],
+  ...props
 }: TitleProps): ReactElement {
-  const Component = `h${level}` as 'h1';
+  const ref = useRef<HTMLHeadingElement>();
 
-  return (
-    <Component className={classNames(`title is-${size}`, className)} lang={lang}>
-      {children}
-    </Component>
-  );
+  useScrollTo(ref);
+
+  const Component = `h${level}` as HeadingComponentType;
+
+  return <Component className={classNames(`title is-${size}`, className)} ref={ref} {...props} />;
 }
