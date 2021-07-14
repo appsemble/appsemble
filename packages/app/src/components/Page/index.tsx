@@ -57,12 +57,13 @@ export function Page(): ReactElement {
     ee.current = new EventEmitter();
   }
 
-  let index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
+  const normalizedPageId = normalize(pageId);
+  let index = definition.pages.findIndex((p) => normalize(p.name) === normalizedPageId);
 
   if (index < 0) {
     const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
     const translatedPage = pageMessages.find(
-      (id) => normalize(getAppMessage({ id }).format() as string) === pageId,
+      (id) => normalize(getAppMessage({ id }).format() as string) === normalizedPageId,
     );
 
     if (translatedPage) {
