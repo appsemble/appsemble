@@ -215,7 +215,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     } catch (error: unknown) {
       // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
       if (error instanceof AppsembleError) {
-        ctx.status = 200;
+        ctx.status = 204;
         return;
       }
 
