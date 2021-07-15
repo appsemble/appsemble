@@ -18,6 +18,7 @@ interface CreateAppArguments extends BaseArguments {
   organization: string;
   private: boolean;
   template: boolean;
+  dryRun: boolean;
 }
 
 export const command = 'create <paths...>';
@@ -56,12 +57,18 @@ export function builder(yargs: Argv): Argv {
       describe: 'Whether the app should be marked as a template.',
       default: false,
       type: 'boolean',
+    })
+    .option('dryRun', {
+      describe: 'Whether the API should be called to run without actually creating the app.',
+      default: false,
+      type: 'boolean',
     });
 }
 
 export async function handler({
   clientCredentials,
   context,
+  dryRun,
   icon,
   iconBackground,
   maskableIcon,
@@ -88,6 +95,7 @@ export async function handler({
       private: isPrivate,
       remote,
       template,
+      dryRun,
     });
   }
 }
