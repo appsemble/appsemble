@@ -1148,7 +1148,7 @@ pages:
   it('should allow for dry runs without creating an app', async () => {
     authorizeStudio();
     const createdResponse = await request.post(
-      '/api/apps?dryRun=true',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),
@@ -1168,6 +1168,7 @@ pages:
           ],
         },
       }),
+      { params: { dryRun: true } },
     );
 
     const appCount = await App.count();
@@ -1178,7 +1179,7 @@ pages:
   it('should still return errors during dry runs', async () => {
     authorizeStudio();
     const createdResponse = await request.post(
-      '/api/apps?dryRun=true',
+      '/api/apps',
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),
@@ -1197,6 +1198,7 @@ pages:
           ],
         },
       }),
+      { params: { dryRun: true } },
     );
 
     const appCount = await App.count();
