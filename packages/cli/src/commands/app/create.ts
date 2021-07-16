@@ -58,7 +58,7 @@ export function builder(yargs: Argv): Argv {
       default: false,
       type: 'boolean',
     })
-    .option('dryRun', {
+    .option('dry-run', {
       describe: 'Whether the API should be called to run without actually creating the app.',
       default: false,
       type: 'boolean',

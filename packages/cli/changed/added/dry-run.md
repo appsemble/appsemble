@@ -1,1 +1,1 @@
-Added `--dryRun` option to `appsemble app create`.
+Added `--dry-run` option to `appsemble app create`.
