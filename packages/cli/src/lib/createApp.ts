@@ -62,6 +62,11 @@ interface CreateAppParams {
    * The maskable icon to upload.
    */
   maskableIcon: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * Whether the API should be called with a dry run.
+   */
+  dryRun: boolean;
 }
 
 /**
@@ -72,6 +77,7 @@ interface CreateAppParams {
 export async function createApp({
   clientCredentials,
   context,
+  dryRun,
   path,
   ...options
 }: CreateAppParams): Promise<void> {
@@ -122,9 +128,15 @@ export async function createApp({
   }
 
   await authenticate(remote, 'apps:write', clientCredentials);
-  const { data } = await axios.post('/api/apps', formData, { baseURL: remote });
+  const { data } = await axios.post('/api/apps', formData, { baseURL: remote, params: { dryRun } });
 
-  if (file.isDirectory()) {
+  if (dryRun) {
+    logger.info('Skipped uploading block themes and app messages.');
+    logger.info('Successfully ran dry run. The app should be valid when creating it.');
+    return;
+  }
+
+  if (file.isDirectory() && !dryRun) {
     // After uploading the app, upload block styles and messages if they are available
     await traverseBlockThemes(path, data.id, remote, false);
     await uploadMessages(path, data.id, remote, false);
