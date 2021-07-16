@@ -37,7 +37,7 @@ export function ListButton({
           {image ? (
             <img alt={alt} src={image} />
           ) : (
-            <i className={`${fa(icon)} fa-3x has-color-black`} />
+            <i className={`${fa(icon)} fa-3x has-text-dark`} />
           )}
         </figure>
         <div className={`ml-4 ${styles.content}`}>

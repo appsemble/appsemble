@@ -11,8 +11,11 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 import { Routes } from '../../pages';
 import { Breadcrumbs } from '../Breadcrumbs';
+import { CodeBlock } from '../CodeBlock';
 import { ErrorFallback } from '../ErrorFallback';
-import { MDXAnchor, MDXPre, MDXWrapper } from '../MDX';
+import { HighlightedCode } from '../HighlightedCode';
+import { MDXAnchor, MDXWrapper } from '../MDX';
+import { createHeader } from '../MDX/MDXHeader';
 import { SideMenuBase } from '../SideMenuBase';
 import { SideMenuBottom } from '../SideMenuBottom';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
@@ -29,8 +32,15 @@ export function App(): ReactElement {
           <MDXProvider
             components={{
               a: MDXAnchor,
-              pre: MDXPre,
+              pre: CodeBlock,
+              code: HighlightedCode,
               wrapper: MDXWrapper,
+              h1: createHeader('h1'),
+              h2: createHeader('h2'),
+              h3: createHeader('h3'),
+              h4: createHeader('h4'),
+              h5: createHeader('h5'),
+              h6: createHeader('h6'),
             }}
           >
             <UserProvider>

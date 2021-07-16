@@ -10,11 +10,14 @@ module.exports = {
     },
     node: {
       convertPath: {
-        'src/**': ['src/(.+?).ts$', 'dist/$1.js'],
+        'src/**': ['src/(.+?).tsx?$', 'dist/$1.js'],
       },
     },
   },
   rules: {
+    // https://github.com/benmosher/eslint-plugin-import/pull/2097
+    'import/no-extraneous-dependencies': 'off',
+
     'jest/no-restricted-matchers': 'off',
 
     'jsdoc/require-jsdoc': 'off',

@@ -1,13 +1,15 @@
 import { Button, MenuItem, MenuSection } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
+import { normalize, remap } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
+import { appId, sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface SideNavigationProps {
@@ -19,24 +21,27 @@ interface SideNavigationProps {
  */
 export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
   const { url } = useRouteMatch();
-  const { getMessage } = useAppMessages();
+  const { getAppMessage, getMessage } = useAppMessages();
   const {
-    definition: { layout, security: showLogin },
+    definition: { layout, security, ...definition },
   } = useAppDefinition();
-  const { isLoggedIn, logout } = useUser();
+  const { isLoggedIn, logout, userInfo } = useUser();
 
   return (
     <div className="is-flex-grow-1 is-flex-shrink-1">
       <MenuSection>
-        {pages.map((page, index) => {
-          const name = getMessage({
-            id: `pages.${index}`,
+        {pages.map((page) => {
+          const name = getAppMessage({
+            id: `pages.${definition.pages.indexOf(page)}`,
             defaultMessage: page.name,
           }).format() as string;
+          const navName = page.navTitle
+            ? remap(page.navTitle, null, { appId, getMessage, userInfo, context: { name } })
+            : name;
 
           return (
             <MenuItem icon={page.icon} key={page.name} to={`${url}/${normalize(name)}`}>
-              {name}
+              {navName}
             </MenuItem>
           );
         })}
@@ -45,20 +50,22 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
             <FormattedMessage {...messages.settings} />
           </MenuItem>
         )}
-        {layout?.feedback === 'navigation' && (
+        {layout?.feedback === 'navigation' && sentryDsn && (
           <MenuItem icon="comment" to={`${url}/Feedback`}>
             <FormattedMessage {...messages.feedback} />
           </MenuItem>
         )}
-
-        {showLogin &&
+        {security &&
           layout?.login === 'navigation' &&
           (isLoggedIn ? (
-            <li>
-              <Button icon="sign-out-alt" onClick={logout}>
-                <FormattedMessage {...messages.logout} />
-              </Button>
-            </li>
+            <Button
+              className={styles.button}
+              icon="sign-out-alt"
+              iconSize="medium"
+              onClick={logout}
+            >
+              <FormattedMessage {...messages.logout} />
+            </Button>
           ) : (
             <MenuItem icon="sign-in-alt" to={`${url}/Login`}>
               <FormattedMessage {...messages.login} />

@@ -8,10 +8,9 @@ import {
   Root,
   StaticPhrasingContent,
   Text,
-  // eslint-disable-next-line import/no-extraneous-dependencies
 } from 'mdast';
+import toMarkdown from 'mdast-util-to-markdown';
 import prettier from 'prettier';
-import remark from 'remark';
 
 /**
  * Ensure a node is valid by converting a string to a text node.
@@ -91,5 +90,5 @@ export function createRoot(children: BlockContent[]): Root {
  */
 export async function dumpMarkdown(mdast: Root, filename: string): Promise<string> {
   const prettierConfig = await prettier.resolveConfig(filename, { editorconfig: true });
-  return prettier.format(remark.stringify(mdast), { ...prettierConfig, parser: 'markdown' });
+  return prettier.format(toMarkdown(mdast), { ...prettierConfig, parser: 'markdown' });
 }

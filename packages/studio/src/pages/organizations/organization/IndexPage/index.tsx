@@ -9,7 +9,7 @@ import { AppCard } from '../../../../components/AppCard';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { BlockCard } from '../../../../components/BlockCard';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
-import { CollapsibleList } from '../../../../components/CollapsibleList';
+import { Collapsible } from '../../../../components/Collapsible';
 import { useUser } from '../../../../components/UserProvider';
 import { Organization } from '../../../../types';
 import { checkRole } from '../../../../utils/checkRole';
@@ -77,17 +77,21 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
           </>
         }
         icon={
-          <img
-            alt={formatMessage(messages.logo)}
-            className="px-4 py-4 card"
-            src={organization.iconUrl}
-          />
+          organization.iconUrl ? (
+            <img
+              alt={formatMessage(messages.logo)}
+              className="px-4 py-4 card"
+              src={organization.iconUrl}
+            />
+          ) : (
+            <Icon className={`px-4 py-4 card ${styles.iconFallback}`} icon="building" />
+          )
         }
         subtitle={organization.id}
         title={organization.name || organization.id}
       >
         <div className="px-5 pt-2 pb-4 has-background-white-bis">
-          <CollapsibleList title={<FormattedMessage {...messages.apps} />}>
+          <Collapsible title={<FormattedMessage {...messages.apps} />}>
             <AsyncDataView
               emptyMessage={<FormattedMessage {...messages.appsEmpty} />}
               errorMessage={<FormattedMessage {...messages.appsError} />}
@@ -102,9 +106,9 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
                 </div>
               )}
             </AsyncDataView>
-          </CollapsibleList>
+          </Collapsible>
           <hr className="has-background-grey-lighter" />
-          <CollapsibleList title={<FormattedMessage {...messages.blocks} />}>
+          <Collapsible title={<FormattedMessage {...messages.blocks} />}>
             <AsyncDataView
               emptyMessage={<FormattedMessage {...messages.blocksEmpty} />}
               errorMessage={<FormattedMessage {...messages.blocksError} />}
@@ -119,7 +123,7 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
                 </div>
               )}
             </AsyncDataView>
-          </CollapsibleList>
+          </Collapsible>
         </div>
       </CardHeaderControl>
     </Content>

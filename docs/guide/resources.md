@@ -6,16 +6,16 @@ app is called a ´resource´.
 
 ## Defining resources
 
-Resources can be defined within an [app definition](../reference/app.md) within the `resources`
-property. Each object within `resources` is considered to be a Resource, named after the name it is
-given within `resources`.
+Resources can be defined within an [app definition](/docs/reference/app#app-definition) within the
+`resources` property. Each object within `resources` is considered to be a Resource, named after the
+name it is given within `resources`.
 
 The shape of a resource is defined using [JSON Schema](https://json-schema.org/). This makes it
 possible for submitted data to be validated on types and required properties automatically.
 
 An example of a resource definition:
 
-```yaml
+```yaml copy
 person:
   roles: [$public] # This makes all person resource actions public by default.
   schema:
@@ -87,7 +87,7 @@ standardized HTTP method, but external APIs may differ.
 
 The following example demonstrates a more complex resource definition for an external API.
 
-```yaml
+```yaml copy
 person:
   schema: ... # see schema above
   id: myId # the name of the field to use when calling get, update and delete
@@ -124,7 +124,7 @@ will take precedence over the one defined as the default for the resource’s me
 
 Below is an example of what the query object looks like when in use.
 
-```yaml
+```yaml copy
 person:
   query:
     roles: [$public] # This makes all person resource actions public by default.
@@ -136,7 +136,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.18.10
+        version: 0.18.21
         actions:
           onLoad:
             type: resource.query

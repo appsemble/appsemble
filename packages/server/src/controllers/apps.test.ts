@@ -1,5 +1,7 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { Clock, install } from '@sinonjs/fake-timers';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
@@ -9,6 +11,8 @@ import {
   AppRating,
   AppScreenshot,
   AppSnapshot,
+  BlockAsset,
+  BlockMessages,
   BlockVersion,
   Member,
   Organization,
@@ -110,7 +114,7 @@ describe('queryApps', () => {
           domain: null,
           private: false,
           path: 'test-app',
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -122,7 +126,7 @@ describe('queryApps', () => {
           domain: null,
           private: false,
           path: 'another-app',
-          iconUrl: `/api/apps/${appB.id}/icon`,
+          iconUrl: null,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -165,7 +169,7 @@ describe('queryApps', () => {
           domain: null,
           private: false,
           path: 'test-app',
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -265,13 +269,110 @@ describe('getAppById', () => {
         domain: null,
         private: false,
         path: 'test-app',
-        iconUrl: `/api/apps/${appA.id}/icon`,
+        iconUrl: null,
         definition: appA.definition,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
         yaml: `name: Test App
 defaultPage: Test Page
 `,
+      },
+    });
+  });
+
+  it('should fetch the most recent snapshot', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
+    clock.tick(3600);
+    await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: app.id,
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        domain: null,
+        private: false,
+        path: 'test-app',
+        iconUrl: null,
+        definition: app.definition,
+        OrganizationId: organization.id,
+        OrganizationName: 'Test Organization',
+        yaml: '{ name: Test App, defaultPage Test Page }',
+      },
+    });
+  });
+
+  it('should resolve an icon url for an app with an icon', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        icon: await readFixture('nodejs-logo.png'),
+      },
+      { raw: true },
+    );
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        iconUrl: `/api/apps/${app.id}/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z`,
+      },
+    });
+  });
+
+  it('should resolve an icon url for an app with an organization icon fallback', async () => {
+    await organization.update({
+      icon: await readFixture('nodejs-logo.png'),
+    });
+
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        iconUrl:
+          '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
+      },
+    });
+  });
+
+  it('should resolve an icon url for an app without an icon as null', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        iconUrl: null,
       },
     });
   });
@@ -322,7 +423,7 @@ describe('queryMyApps', () => {
           domain: null,
           private: false,
           path: 'test-app',
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -339,7 +440,7 @@ describe('queryMyApps', () => {
           domain: null,
           private: false,
           path: 'test-app',
-          iconUrl: `/api/apps/${appA.id}/icon`,
+          iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
@@ -351,7 +452,7 @@ describe('queryMyApps', () => {
           domain: null,
           private: false,
           path: 'test-app-b',
-          iconUrl: `/api/apps/${appB.id}/icon`,
+          iconUrl: null,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
           OrganizationName: 'Test Organization B',
@@ -368,6 +469,7 @@ describe('createApp', () => {
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
         definition: {
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -439,6 +541,7 @@ pages:
           defaultPage: 'Test Page',
           pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
         },
+        icon: createFixtureStream('nodejs-logo.png'),
         screenshots: createFixtureStream('standing.png'),
       }),
     );
@@ -861,6 +964,258 @@ pages:
       data: {},
     });
   });
+
+  describe('block synchronization', () => {
+    let mock: MockAdapter;
+
+    beforeEach(() => {
+      setArgv({ host: 'http://localhost', remote: 'https://appsemble.example', secret: 'test' });
+      mock = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+      setArgv({ host: 'http://localhost', secret: 'test' });
+      mock.reset();
+    });
+
+    it('should not synchronize if the remote returns an invalid block name', async () => {
+      authorizeStudio();
+
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
+        .reply(200, {
+          name: '@appsemble/invalid',
+          version: '1.2.3',
+        });
+      const response = await request.post(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          path: 'a',
+          definition: {
+            name: 'Test App',
+            defaultPage: 'Test Page',
+            pages: [
+              {
+                name: 'Test Page',
+                blocks: [{ type: 'upstream', version: '1.2.3' }],
+              },
+            ],
+          },
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          data: {
+            'pages.0.blocks.0': 'Unknown block type “@appsemble/upstream”',
+          },
+          error: 'Bad Request',
+          message: 'Appsemble definition is invalid.',
+          statusCode: 400,
+        },
+      });
+    });
+
+    it('should not synchronize if the remote returns an invalid block version', async () => {
+      authorizeStudio();
+
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
+        .reply(200, {
+          name: '@appsemble/upstream',
+          version: '3.2.1',
+        });
+      const response = await request.post(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          path: 'a',
+          definition: {
+            name: 'Test App',
+            defaultPage: 'Test Page',
+            pages: [
+              {
+                name: 'Test Page',
+                blocks: [{ type: 'upstream', version: '1.2.3' }],
+              },
+            ],
+          },
+        }),
+      );
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          data: {
+            'pages.0.blocks.0': 'Unknown block type “@appsemble/upstream”',
+          },
+          error: 'Bad Request',
+          message: 'Appsemble definition is invalid.',
+          statusCode: 400,
+        },
+      });
+    });
+
+    it('should store the remote block in the local database', async () => {
+      authorizeStudio();
+
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
+        .reply(200, {
+          actions: {},
+          description: 'This is a block',
+          events: {},
+          files: ['a.js', 'b.css'],
+          iconUrl: null,
+          languages: ['en'],
+          layout: 'float',
+          longDescription: 'This is a useful block.',
+          name: '@appsemble/upstream',
+          parameters: {},
+          version: '1.2.3',
+        });
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/asset')
+        .reply(({ params: { filename } }) => {
+          switch (filename) {
+            case 'a.js':
+              return [
+                200,
+                Buffer.from('console.log("a");\n'),
+                { 'content-type': 'application/javascript' },
+              ];
+            case 'b.css':
+              return [200, Buffer.from('b{background:blue;}\n'), { 'content-type': 'text/css' }];
+            default:
+              return [404];
+          }
+        });
+      mock
+        .onGet(
+          'https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3/messages/en',
+        )
+        .reply(200, { hello: 'world' });
+      const response = await request.post(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          path: 'a',
+          definition: {
+            name: 'Test App',
+            defaultPage: 'Test Page',
+            pages: [
+              {
+                name: 'Test Page',
+                blocks: [{ type: 'upstream', version: '1.2.3' }],
+              },
+            ],
+          },
+        }),
+      );
+      expect(response).toMatchObject({ status: 201 });
+      const block = await BlockVersion.findOne({
+        where: { OrganizationId: 'appsemble', name: 'upstream' },
+        include: [BlockAsset, BlockMessages],
+      });
+      expect(block).toMatchObject({
+        actions: {},
+        description: 'This is a block',
+        events: {},
+        icon: null,
+        layout: 'float',
+        longDescription: 'This is a useful block.',
+        name: 'upstream',
+        OrganizationId: 'appsemble',
+        parameters: {},
+        version: '1.2.3',
+        BlockAssets: [
+          {
+            filename: 'a.js',
+            mime: 'application/javascript',
+            content: Buffer.from('console.log("a");\n'),
+          },
+          {
+            filename: 'b.css',
+            mime: 'text/css',
+            content: Buffer.from('b{background:blue;}\n'),
+          },
+        ],
+        BlockMessages: [{ language: 'en', messages: { hello: 'world' } }],
+      });
+    });
+  });
+
+  it('should allow for dry runs without creating an app', async () => {
+    authorizeStudio();
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      { params: { dryRun: true } },
+    );
+
+    const appCount = await App.count();
+    expect(createdResponse.status).toStrictEqual(204);
+    expect(appCount).toStrictEqual(0);
+  });
+
+  it('should still return errors during dry runs', async () => {
+    authorizeStudio();
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        definition: {
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      { params: { dryRun: true } },
+    );
+
+    const appCount = await App.count();
+    expect(createdResponse.status).toStrictEqual(400);
+    expect(createdResponse.data).toMatchObject({
+      message: 'JSON schema validation failed',
+      errors: [
+        {
+          code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+          params: ['name'],
+          message: 'Missing required property: name',
+          path: ['definition'],
+        },
+      ],
+    });
+    expect(appCount).toStrictEqual(0);
+  });
 });
 
 describe('patchApp', () => {
@@ -903,7 +1258,7 @@ describe('patchApp', () => {
         domain: null,
         private: true,
         path: 'test-app',
-        iconUrl: `/api/apps/${app.id}/icon`,
+        iconUrl: null,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
         definition: {
@@ -1142,7 +1497,7 @@ pages:
         domain: null,
         private: false,
         path: 'test-app',
-        iconUrl: `/api/apps/${app.id}/icon`,
+        iconUrl: null,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
         definition: {
@@ -1709,7 +2064,7 @@ describe('getAppIcon', () => {
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should generate an maskable icon from a horizontal app icon', async () => {
+  it('should generate a maskable icon from a horizontal app icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -1726,7 +2081,7 @@ describe('getAppIcon', () => {
     expect(response.data).toMatchImageSnapshot();
   });
 
-  it('should generate an maskable icon from a vertical app icon', async () => {
+  it('should generate a maskable icon from a vertical app icon', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',

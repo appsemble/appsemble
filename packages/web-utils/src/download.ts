@@ -1,6 +1,22 @@
 import axios from 'axios';
 
 /**
+ * Download a blob or a string representing file content.
+ *
+ * @param blob - The file content to download.
+ * @param filename - The filename to save the download as.
+ */
+export function downloadBlob(blob: Blob | string, filename: string): void {
+  const object = typeof blob === 'string' ? new Blob([blob]) : blob;
+  const downloadUrl = URL.createObjectURL(object);
+  const link = document.createElement('a');
+  link.href = downloadUrl;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(downloadUrl);
+}
+
+/**
  * Download a file using the default axios instance.
  *
  * This also uses the Authorization header set for the default axios instance.
@@ -14,11 +30,5 @@ export async function download(url: string, filename: string, accept?: string): 
     responseType: 'blob',
     headers: { accept },
   });
-
-  const downloadUrl = URL.createObjectURL(data);
-  const link = document.createElement('a');
-  link.href = downloadUrl;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(downloadUrl);
+  downloadBlob(data, filename);
 }

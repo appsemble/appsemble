@@ -54,9 +54,6 @@ export class BlockVersion extends Model {
   parameters: Schema;
 
   @Column(DataType.JSON)
-  resources: any;
-
-  @Column(DataType.JSON)
   actions?: Record<string, ActionType>;
 
   @Column(DataType.JSON)

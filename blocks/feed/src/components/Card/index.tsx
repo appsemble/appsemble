@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { Button, Input, Location } from '@appsemble/preact-components';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { DivIcon, Icon } from 'leaflet';
-import { Fragment, JSX, VNode } from 'preact';
+import { JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { AvatarWrapper } from '../AvatarWrapper';
@@ -209,7 +209,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
           </Button>
         )}
         {actions.onLoadReply.type !== 'noop' && replies && (
-          <Fragment>
+          <>
             <div className={styles.replies} ref={replyContainer}>
               {replies.map((reply: any) => {
                 const author =
@@ -244,7 +244,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
                 type="submit"
               />
             </form>
-          </Fragment>
+          </>
         )}
       </div>
     </article>

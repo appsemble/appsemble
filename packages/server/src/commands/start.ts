@@ -79,6 +79,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'Secret key used to sign JWTs and cookies',
       required: true,
     })
+    .option('sentry-allowed-domains', {
+      desc: 'Domains for apps where Sentry integration should be injected if Sentry is configured. Comma separated domains and wildcards are allowed.',
+      default: '*',
+    })
     .option('disable-registration', {
       desc: 'If specified, user registration will be disabled on the server',
       type: 'boolean',
@@ -102,6 +106,10 @@ export function builder(yargs: Argv): Argv {
     })
     .option('host', {
       desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
+      required: true,
+    })
+    .option('remote', {
+      desc: 'The remote that will be used for downloading unknown blocks. For example: https://appsemble.app',
       required: true,
     })
     .option('proxy', {

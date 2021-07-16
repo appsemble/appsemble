@@ -2,8 +2,9 @@ import { Button, MarkdownContent, Title, useToggle } from '@appsemble/react-comp
 import { defaultLocale } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
+import { AppIcon } from 'studio/src/components/AppIcon';
 import { CloneButton } from 'studio/src/components/CloneButton';
 
 import { useApp } from '..';
@@ -22,7 +23,6 @@ export function IndexPage(): ReactElement {
   const { app } = useApp();
   const descriptionToggle = useToggle();
   const { lang } = useParams<{ lang: string }>();
-  const { formatMessage } = useIntl();
 
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
@@ -52,13 +52,7 @@ export function IndexPage(): ReactElement {
             value={app.rating?.average ?? 0}
           />
         }
-        icon={
-          <img
-            alt={formatMessage(messages.appLogo)}
-            className="is-rounded card"
-            src={`/api/apps/${app.id}/icon?maskable=true`}
-          />
-        }
+        icon={<AppIcon app={app} />}
         subtitle={
           <Link to={`/${lang}/organizations/${app.OrganizationId}`}>
             {app.OrganizationName || app.OrganizationId}

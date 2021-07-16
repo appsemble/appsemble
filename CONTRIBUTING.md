@@ -21,7 +21,7 @@ This project uses Prettier. The code is linted using [ESLint].
 ### CSS
 
 This project uses Prettier. The code is linted using [Stylelint]. For a detailed view of the
-ruleset, see [stylelint.config.js](./stylelint.config.js).
+ruleset, see [stylelint.config.js](./.stylelintrc.yaml).
 
 ### Testing
 
@@ -96,22 +96,10 @@ The hosts file can be found in the following location:
 
 ## Releasing
 
-This section is only for Appsemble maintainers.
+A release can be created by triggering the `release patch` or `release minor` job in the pipeline
+for the `main` branch.
 
-The release process hasn’t been fully automated yet. In order to create a release, perform the
-following steps:
-
-- Make sure you’re on the latest master branch.
-- Create a new branch.
-- Run `yarn scripts release patch` or `yarn scripts release minor` respectively.
-- Verify and commit the results, using the changelog section as the commit body. This does not
-  include the header of the tag itself.
-- Push.
-- Create a merge request. GitLab should automatically use the commit message as the description.
-- Once merged, [create a git tag](https://gitlab.com/appsemble/appsemble/-/tags/new) without a
-  message or release notes.
-
-CI will take care of the rest.
+> **Note**: Migrations are still added manually. Make sure the release matches any new migrations.
 
 [dnsmasq]: http://www.thekelleys.org.uk/dnsmasq/doc.html
 [eslint]: https://eslint.org

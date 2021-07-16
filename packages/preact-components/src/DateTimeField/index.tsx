@@ -1,5 +1,6 @@
 import 'flatpickr/dist/flatpickr.css';
 
+import { useBlock } from '@appsemble/preact';
 import flatpickr from 'flatpickr';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -59,6 +60,9 @@ export function DateTimeField({
   const wrapper = useRef<HTMLDivElement>();
   const positionElement = useRef<HTMLDivElement>();
   const [picker, setPicker] = useState<flatpickr.Instance>(null);
+  const {
+    utils: { remap },
+  } = useBlock();
 
   const handleChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>) => {
@@ -74,6 +78,18 @@ export function DateTimeField({
       return;
     }
 
+    let template = '';
+    if (!noCalendar) {
+      template += '{date, date, full}';
+      if (enableTime) {
+        template += ' ';
+      }
+    }
+
+    if (enableTime) {
+      template += '{date, time, short}';
+    }
+
     const p = flatpickr(wrapper.current, {
       appendTo: wrapper.current,
       enableTime,
@@ -86,6 +102,18 @@ export function DateTimeField({
       wrap: true,
       minDate,
       maxDate,
+      formatDate: (date) =>
+        remap(
+          {
+            'string.format': {
+              template,
+              values: {
+                date: { static: date },
+              },
+            },
+          },
+          null,
+        ),
     });
 
     setPicker(p);
@@ -94,10 +122,10 @@ export function DateTimeField({
       p.destroy();
       setPicker(null);
     };
-  }, [disabled, enableTime, locale, maxDate, minDate, mode, noCalendar]);
+  }, [disabled, enableTime, locale, maxDate, minDate, mode, noCalendar, remap]);
 
   useEffect(() => {
-    picker?.setDate(value);
+    picker?.setDate(new Date(value));
   }, [picker, value]);
 
   return (

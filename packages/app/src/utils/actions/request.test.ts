@@ -1,7 +1,3 @@
-/** @jsx x */
-/** @jsxFrag null */
-/** @jsxRuntime classic */
-import { remap } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
@@ -144,7 +140,6 @@ describe('request', () => {
     const action = createTestAction({
       definition: { type: 'request', method: 'post', body: { static: { remapped: 'data' } } },
       prefix: 'pages.0.blocks.0.actions.onClick',
-      remap,
     });
     await action({ hello: 'post' });
     expect(request.data).toBe('{"remapped":"data"}');
@@ -158,13 +153,95 @@ describe('request', () => {
     const action = createTestAction({
       definition: { type: 'request', proxy: false, url: 'https://example.com' },
       prefix: 'pages.0.blocks.0.actions.onClick',
-      remap,
     });
     const result = await action({ hello: 'get' });
     expect(request.method).toBe('get');
     expect(request.url).toBe('https://example.com');
     expect(request.params).toBeUndefined();
     expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual('Example content');
+  });
+
+  it('should allow for using context in url remappers', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 'Example content', {}];
+    });
+
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        url: {
+          'string.format': {
+            template: 'https://example.{domain}',
+            values: {
+              domain: { context: 'test' },
+            },
+          },
+        },
+        proxy: false,
+      },
+      prefix: 'pages.0.blocks.0.actions.onClick',
+    });
+
+    const result = await action(null, { test: 'nl' });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe('https://example.nl');
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual('Example content');
+  });
+
+  it('should allow for using context in query remappers', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 'Example content', {}];
+    });
+
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        url: 'https://example.com',
+        proxy: false,
+        query: {
+          'object.from': {
+            example: { context: 'test' },
+          },
+        },
+      },
+      prefix: 'pages.0.blocks.0.actions.onClick',
+    });
+
+    const result = await action(null, { test: 'foo' });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe('https://example.com');
+    expect(request.params).toStrictEqual({ example: 'foo' });
+    expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual('Example content');
+  });
+
+  it('should allow for using context in body remappers', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, 'Example content', {}];
+    });
+
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        url: 'https://example.com',
+        method: 'post',
+        proxy: false,
+        body: { context: 'test' },
+      },
+      prefix: 'pages.0.blocks.0.actions.onClick',
+    });
+
+    const result = await action(null, { test: { foo: 'bar', baz: 1234 } });
+    expect(request.method).toBe('post');
+    expect(request.url).toBe('https://example.com');
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBe('{"foo":"bar","baz":1234}');
     expect(result).toStrictEqual('Example content');
   });
 
@@ -180,14 +257,14 @@ describe('request', () => {
           <entry>
             <id>tag:github.com,2008:Repository/226361784/0.18.5</id>
             <updated>2021-03-31T17:09:00+02:00</updated>
-            <title>Merge branch &#39;release-0.18.5&#39; into &#39;master&#39;</title>
+            <title>Merge branch &#39;release-0.18.5&#39; into &#39;main&#39;</title>
             {/* eslint-disable-next-line react/forbid-elements */}
             <content type="html">&lt;p&gt;Release version 0.18.5&lt;/p&gt; &lt;p&gt;See merge request appsemble/appsemble!1747&lt;/p&gt;</content>
           </entry>
           <entry>
             <id>tag:github.com,2008:Repository/226361784/0.18.4</id>
             <updated>2021-03-24T17:40:15+01:00</updated>
-            <title>Merge branch &#39;release-0.18.4&#39; into &#39;master&#39;</title>
+            <title>Merge branch &#39;release-0.18.4&#39; into &#39;main&#39;</title>
             {/* eslint-disable-next-line react/forbid-elements */}
             <content type="html">&lt;p&gt;Release version 0.18.4&lt;/p&gt; &lt;p&gt;See merge request appsemble/appsemble!1734&lt;/p&gt;</content>
           </entry>
@@ -223,7 +300,6 @@ describe('request', () => {
         },
       },
       prefix: 'pages.0.blocks.0.actions.onClick',
-      remap,
     });
     const result = await action({ hello: 'get' });
     expect(result).toStrictEqual({
@@ -234,14 +310,14 @@ describe('request', () => {
           content:
             '<p>Release version 0.18.5</p> <p>See merge request appsemble/appsemble!1747</p>',
           id: 'tag:github.com,2008:Repository/226361784/0.18.5',
-          title: "Merge branch 'release-0.18.5' into 'master'",
+          title: "Merge branch 'release-0.18.5' into 'main'",
           updated: '2021-03-31T17:09:00+02:00',
         },
         {
           content:
             '<p>Release version 0.18.4</p> <p>See merge request appsemble/appsemble!1734</p>',
           id: 'tag:github.com,2008:Repository/226361784/0.18.4',
-          title: "Merge branch 'release-0.18.4' into 'master'",
+          title: "Merge branch 'release-0.18.4' into 'main'",
           updated: '2021-03-24T17:40:15+01:00',
         },
       ],

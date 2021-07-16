@@ -19,9 +19,9 @@ definitions are required to restrict access to the app itself.
 
 ## Security Definition
 
-The security definition, as defined [here](../reference/app.md#security), can be used to define the
-roles that are used within the app. The security definition also determines how the default role is
-assigned.
+The security definition, as defined [here](/docs/reference/app#security-definition), can be used to
+define the roles that are used within the app. The security definition also determines how the
+default role is assigned.
 
 The `policy` property can be set to `everyone` to give everyone the default role, `organization` to
 only do this for users being in the same organization as the app, and `invite` which does not assign
@@ -40,7 +40,7 @@ observed.
 
 The security definition below is used in the examples on this page.
 
-```yaml
+```yaml copy
 security:
   default:
     role: Reader
@@ -56,10 +56,10 @@ security:
 
 ### Root app roles
 
-By specifying the [`roles`](../reference/app.md#roles) property to the root of the app definition,
-each user must at least have one of these roles in order to view the app. Consequently, each page
-and block will use this property as its default implementation unless it is overridden by specifying
-another `roles` list at that level.
+By specifying the [`roles`](/docs/reference/app#app-definition-roles) property to the root of the
+app definition, each user must at least have one of these roles in order to view the app.
+Consequently, each page and block will use this property as its default implementation unless it is
+overridden by specifying another `roles` list at that level.
 
 ```yaml
 name: Example app
@@ -77,8 +77,8 @@ roles:
 
 ### Page app roles
 
-By specifying the [`roles`](../reference/page.md#roles) property for a page, visiting the page
-requires the user to have at least one of the roles specified in this list.
+By specifying the [`roles`](/docs/reference/app#base-page-definition-roles) property for a page,
+visiting the page requires the user to have at least one of the roles specified in this list.
 
 If a visiting user is not logged in and tries to view the page, they will instead be prompted to log
 in.

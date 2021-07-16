@@ -3,7 +3,7 @@
 Appsemble is published as a Docker image. This makes it easy to deploy using Docker Compose. Copy
 the following contents in a file named _.docker-compose.yaml_.
 
-```yaml
+```yaml copy filename="docker-compose.yml"
 version: '3.5'
 
 x-database-name: &database-name ${DATABASE_NAME:-appsemble_database_name}
@@ -83,6 +83,6 @@ $ docker-compose down
 
 Once Appsemble is up and running, you probably to upload blocks. For this, clone the Appsemble git
 repository and continue to the
-[Blocks in the readme](https://gitlab.com/appsemble/appsemble/blob/master/README.md#publishing-blocks).
+[Blocks in the readme](https://gitlab.com/appsemble/appsemble/blob/main/README.md#publishing-blocks).
 
 [appsemble tags page]: https://hub.docker.com/r/appsemble/appsemble/tags

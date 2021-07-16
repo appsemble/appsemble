@@ -13,10 +13,10 @@ of event to refresh its data.
 
 In an app definition this can be defined as follows, taking the `data-loader` block as an example:
 
-```yaml
+```yaml copy
 blocks:
   - type: data-loader
-    version: 0.18.10
+    version: 0.18.21
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -68,10 +68,10 @@ Any data received from the action will be passed to the event.
 
 For example, let’s say we want an `action-button` to trigger the `data-loader` to refresh its data:
 
-```yaml
+```yaml copy
 blocks:
   - type: data-loader
-    version: 0.18.10
+    version: 0.18.21
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -82,7 +82,7 @@ blocks:
       listen:
         refresh: refreshExample
   - type: action-button
-    version: 0.18.10
+    version: 0.18.21
     parameters:
       icon: sync
     actions:

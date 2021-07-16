@@ -7,11 +7,11 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { AppDefinition, BlockManifest } from '@appsemble/types';
-import { api, filterBlocks, getAppBlocks, validateStyle } from '@appsemble/utils';
+import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
 import { safeDump, safeLoad } from 'js-yaml';
-import { Schema, Validator } from 'jsonschema';
+import { Validator } from 'jsonschema';
 import { editor } from 'monaco-editor';
 import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -27,7 +27,7 @@ import { messages } from './messages';
 
 const validator = new Validator();
 
-const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
+const openApiDocumentPromise = RefParser.dereference({ components: { schemas } });
 
 /**
  * These properties are passed to the allow attribute of the app preview. For a full list, see
@@ -136,7 +136,7 @@ export default function EditPage(): ReactElement {
 
     const validatorResult = validator.validate(
       definition,
-      (openApiDocument.components.schemas.App as Schema).properties.definition,
+      openApiDocument.components.schemas.AppDefinition,
     );
     if (!validatorResult.valid) {
       push({
@@ -162,6 +162,7 @@ export default function EditPage(): ReactElement {
             files: data.files,
             actions: data.actions,
             events: data.events,
+            languages: data.languages,
           };
         }),
       );

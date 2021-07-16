@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { AppCard } from '../../../../components/AppCard';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { CollapsibleList } from '../../../../components/CollapsibleList';
+import { Collapsible } from '../../../../components/Collapsible';
 import styles from './index.module.css';
 import { messages } from './messages';
 
@@ -71,13 +71,13 @@ export function CollapsibleAppList({
         }
 
         return (
-          <CollapsibleList title={title}>
+          <Collapsible title={title}>
             <div className={styles.list}>
               {filteredApps.map((app) => (
                 <AppCard app={app} key={app.id} />
               ))}
             </div>
-          </CollapsibleList>
+          </Collapsible>
         );
       }}
     </AsyncDataView>

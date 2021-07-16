@@ -16,3 +16,7 @@ export const back: ActionCreator<'flow.back'> = ({ flowActions }) => [
 export const cancel: ActionCreator<'flow.cancel'> = ({ flowActions }) => [
   (data) => flowActions.cancel(data),
 ];
+
+export const to: ActionCreator<'flow.to'> = ({ definition, flowActions, remap }) => [
+  (data, context) => flowActions.to(data, remap(definition.step, data, context)),
+];

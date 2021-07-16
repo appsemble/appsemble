@@ -3,6 +3,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
+import { AppPage } from './AppPage';
 import { Doc } from './Doc';
 import { messages } from './messages';
 
@@ -14,41 +15,44 @@ const docs = context
     return {
       Component,
       icon,
-      path: key
+      p: key
         .replace(/^\.\//, '')
         .replace(/\.mdx?$/, '')
         .replace(/(^|\/)index$/, '/'),
       title,
     };
   })
-  .sort((a, b) => a.path.localeCompare(b.path));
+  .sort((a, b) => a.p.localeCompare(b.p));
+
+function getUrl(p: string, base: string): string {
+  return p === '/' ? base : `${base}/${p.replace(/\/$/, '')}`;
+}
 
 /**
  * Render the documentation in the root of the Apsemble repository.
  */
 export function DocsRoutes(): ReactElement {
-  const { url } = useRouteMatch();
-
-  function getUrl(path: string): string {
-    return path === '/' ? url : `${url}/${path.replace(/\/$/, '')}`;
-  }
+  const { path, url } = useRouteMatch();
 
   useSideMenu(
     <MenuSection label={<FormattedMessage {...messages.title} />}>
       {docs
-        .filter(({ path }) => path.endsWith('/'))
-        .map(({ icon, path, title }) => {
-          const subRoutes = docs.filter(
-            (subRoute) => subRoute.path !== path && subRoute.path.startsWith(path),
-          );
+        .filter(({ p }) => p.endsWith('/'))
+        .map(({ icon, p, title }) => {
+          const subRoutes = docs.filter((subRoute) => subRoute.p !== p && subRoute.p.startsWith(p));
           return [
-            <MenuItem exact icon={icon} key={`${path}-title`} to={getUrl(path)}>
+            <MenuItem exact icon={icon} key={`${path}-title`} to={getUrl(p, url)}>
               {title}
             </MenuItem>,
             subRoutes.length ? (
               <MenuSection key={`${path}-section`}>
+                {getUrl(p, url).endsWith('/docs/reference') && (
+                  <MenuItem exact to={getUrl('reference/app', url)}>
+                    <FormattedMessage {...messages.app} />
+                  </MenuItem>
+                )}
                 {subRoutes.map((subRoute) => (
-                  <MenuItem key={subRoute.path} to={getUrl(subRoute.path)}>
+                  <MenuItem key={subRoute.p} to={getUrl(subRoute.p, url)}>
                     {subRoute.title}
                   </MenuItem>
                 ))}
@@ -61,13 +65,16 @@ export function DocsRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={messages.title}>
-      {docs.map(({ Component, path, title }) => (
-        <Route exact key={path} path={getUrl(path)} strict>
+      <Route exact path={`${url}/reference/app`}>
+        <AppPage />
+      </Route>
+      {docs.map(({ Component, p, title }) => (
+        <Route exact key={p} path={getUrl(p, path)} strict>
           <Doc component={Component} title={title} />
         </Route>
       ))}
-      {docs.map(({ path }) => (
-        <Redirect exact from={`${getUrl(path)}/`} key={path} to={getUrl(path)} />
+      {docs.map(({ p }) => (
+        <Redirect exact from={`${getUrl(p, path)}/`} key={p} to={getUrl(p, path)} />
       ))}
       <Redirect to={url} />
     </MetaSwitch>

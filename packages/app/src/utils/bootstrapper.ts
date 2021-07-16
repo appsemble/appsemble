@@ -1,8 +1,7 @@
 import { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@appsemble/sdk';
 import { BlockManifest } from '@appsemble/types';
+import { prefixBlockURL } from '@appsemble/utils';
 import { Promisable } from 'type-fest';
-
-import { prefixBlockURL } from './prefixBlockURL';
 
 const bootstrappers = new Map<string, BootstrapFunction>();
 const resolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
@@ -85,5 +84,8 @@ export async function callBootstrap(
     loadedBlocks.add(manifest.name);
   }
   const bootstrap = await getBootstrap(manifest.name);
-  await bootstrap(params);
+  const result = await bootstrap(params);
+  if (result instanceof Element) {
+    params.shadowRoot.append(result);
+  }
 }

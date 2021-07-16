@@ -1,6 +1,9 @@
 import {
+  FileUpload,
   ModalCard,
+  Select,
   SimpleForm,
+  SimpleFormError,
   SimpleFormField,
   SimpleModalFooter,
   Toggle,
@@ -10,6 +13,7 @@ import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { IconPreview } from 'studio/src/pages/organizations/organization/SettingsPage/IconPreview';
 
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
@@ -76,6 +80,26 @@ interface CreateOrganizationModalProps {
   title: ReactElement;
 }
 
+const defaults = {
+  description: '',
+  email: '',
+  id: '',
+  name: '',
+  website: '',
+  websiteProtocol: 'https',
+  icon: null as File,
+};
+
+/**
+ * Strip a website link protocol.
+ *
+ * @param link - The website link to strip the protocol from.
+ * @returns The website link without protocol.
+ */
+function preprocessWebsite(link: string): string {
+  return link.replace(/^https?:\/\//, '');
+}
+
 /**
  * Render the CreateOrganizationForm component in a modal card.
  */
@@ -84,27 +108,26 @@ export function CreateOrganizationModal({
   isActive,
   onClose,
   onCreateOrganization,
-  defaultValues = {
-    id: '',
-    name: '',
-    description: '',
-    website: '',
-    email: '',
-  },
+  defaultValues = defaults,
   disabled,
   title,
 }: CreateOrganizationModalProps): ReactElement {
   const { organizations, setOrganizations } = useUser();
 
   const submitOrganization = useCallback(
-    async ({ description, email, id, name, website }: Organization) => {
-      const { data } = await axios.post<Organization>('/api/organizations', {
-        name,
-        id: normalize(id),
-        description,
-        email,
-        website,
-      });
+    async ({ description, email, icon, id, name, website, websiteProtocol }: typeof defaults) => {
+      const formData = new FormData();
+      formData.set('id', normalize(id));
+      formData.set('name', name);
+      formData.set('description', description);
+      formData.set('email', email);
+      formData.set('website', website ? `${websiteProtocol}://${website}` : '');
+
+      if (icon) {
+        formData.set('icon', icon);
+      }
+
+      const { data } = await axios.post<Organization>('/api/organizations', formData);
       setOrganizations([...organizations, { ...data, role: 'Owner' }]);
       onCreateOrganization?.(data);
     },
@@ -130,14 +153,25 @@ export function CreateOrganizationModal({
       title={title}
     >
       {help}
+      <SimpleFormError>
+        {(error) =>
+          axios.isAxiosError(error) && error.response.status === 409 ? (
+            <FormattedMessage {...messages.conflict} />
+          ) : (
+            <FormattedMessage {...messages.error} />
+          )
+        }
+      </SimpleFormError>
       <SimpleFormField
         disabled={disabled}
+        help={<FormattedMessage {...messages.organizationNameDescription} />}
         icon="briefcase"
         label={<FormattedMessage {...messages.organizationName} />}
         name="name"
       />
       <SimpleFormField
         disabled={disabled}
+        help={<FormattedMessage {...messages.organizationIdDescription} />}
         icon="at"
         label={<FormattedMessage {...messages.organizationId} />}
         maxLength={30}
@@ -146,14 +180,21 @@ export function CreateOrganizationModal({
         required
       />
       <SimpleFormField
+        addonLeft={
+          <SimpleFormField component={Select} name="websiteProtocol">
+            <option value="https">https://</option>
+            <option value="http">http://</option>
+          </SimpleFormField>
+        }
         disabled={disabled}
-        icon="globe"
+        help={<FormattedMessage {...messages.websiteDescription} />}
         label={<FormattedMessage {...messages.website} />}
         name="website"
-        type="url"
+        preprocess={preprocessWebsite}
       />
       <SimpleFormField
         disabled={disabled}
+        help={<FormattedMessage {...messages.emailDescription} />}
         icon="envelope"
         label={<FormattedMessage {...messages.email} />}
         name="email"
@@ -161,9 +202,20 @@ export function CreateOrganizationModal({
       />
       <SimpleFormField
         disabled={disabled}
+        help={<FormattedMessage {...messages.descriptionDescription} />}
         icon="info"
         label={<FormattedMessage {...messages.description} />}
         name="description"
+      />
+      <SimpleFormField
+        accept="image/jpeg, image/png, image/tiff, image/webp"
+        component={FileUpload}
+        fileButtonLabel={<FormattedMessage {...messages.logo} />}
+        fileLabel={<FormattedMessage {...messages.selectFile} />}
+        help={<FormattedMessage {...messages.logoDescription} />}
+        label={<FormattedMessage {...messages.logo} />}
+        name="icon"
+        preview={<IconPreview organization={{ iconUrl: null } as Organization} />}
       />
     </ModalCard>
   );

@@ -1,8 +1,8 @@
 import './index.css';
 
-import { attach } from '@appsemble/sdk';
+import { bootstrap } from '@appsemble/sdk';
 
-attach(({ actions, data, parameters: { icon }, utils: { fa } }) => {
+bootstrap(({ actions, data, parameters: { icon }, utils: { fa } }) => {
   let node;
   const iconNode = document.createElement('i');
   iconNode.className = fa(icon);

@@ -2,6 +2,7 @@ import { Action } from '@appsemble/sdk';
 import { ActionDefinition } from '@appsemble/types';
 
 import { MakeActionParameters } from '../../types';
+import { condition } from './condition';
 import { dialog } from './dialog';
 import { email } from './email';
 import { event } from './event';
@@ -12,6 +13,7 @@ import { message } from './message';
 import { noop } from './noop';
 import { request } from './request';
 import * as resource from './resource';
+import { share } from './share';
 import { staticAction } from './static';
 import { teamJoin, teamList } from './team';
 import { throwAction } from './throw';
@@ -42,6 +44,7 @@ export type ActionCreators = {
 };
 
 export const actionCreators: ActionCreators = {
+  condition,
   link,
   'link.back': back,
   'link.next': next,
@@ -57,6 +60,7 @@ export const actionCreators: ActionCreators = {
   'flow.finish': flow.finish,
   'flow.back': flow.back,
   'flow.cancel': flow.cancel,
+  'flow.to': flow.to,
   'resource.get': resource.get,
   'resource.query': resource.query,
   'resource.count': resource.count,
@@ -67,6 +71,7 @@ export const actionCreators: ActionCreators = {
   'resource.subscription.unsubscribe': resource.unsubscribe,
   'resource.subscription.toggle': resource.toggle,
   'resource.subscription.status': resource.status,
+  share,
   static: staticAction,
   'team.join': teamJoin,
   'team.list': teamList,

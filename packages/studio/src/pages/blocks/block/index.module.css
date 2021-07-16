@@ -5,3 +5,9 @@
 .description img {
   width: 300px;
 }
+
+.iconFallback {
+  font-size: 3rem;
+  height: 64px;
+  width: 64px;
+}

@@ -15,7 +15,7 @@ It is recommended to create a PostgreSQL secret beforehand.
 
 ```sh
 kubectl create secret generic postgresql-secret \
-  --from-literal 'postgresql-password=my-password' \
+  --from-literal 'postgresql-postgres-password=my-password' \
   --from-literal 'postgresql-replication-password=my-postgresql-replication-password'
 ```
 
@@ -57,17 +57,16 @@ kubectl create secret generic sentry \
 Now the chart can be installed.
 
 ```sh
-helm dependency update config/charts/appsemble
-helm install --name my-release config/charts/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
+helm repo add appsemble https://charts.appsemble.com
+helm repo update
+helm install --name my-appsemble appsemble/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
 ```
-
-> **Note**: Appsemble isn’t published yet. Clone the repository and specify the path to the chart.
 
 ### Upgrading
 
 ```sh
-helm dependency update config/charts/appsemble
-helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
+helm repo update
+helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
 ```
 
 ## Variables
@@ -78,14 +77,13 @@ helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existin
 | `image.repository`                     | `appsemble/appsemble`         | Set this to `registry.gitlab.io/appsemble/appsemble` to support prerelease versions.                                                      |
 | `image.tag`                            | `nil`                         | If specified, this Docker image tag will be used. Otherwise, it will use the chart’s `appVersion`.                                        |
 | `image.pullPolicy`                     | `IfNotPresent`                | This can be used to override the default image pull policy.                                                                               |
-| `app`                                  | `appsemble`                   | The app annotation for Appsemble related resources.                                                                                       |
 | `nameOverride`                         | `''`                          | This can be used to override the name in the templates.                                                                                   |
 | `fullnameOverride`                     | `''`                          | This can be used to override the full name in the templates.                                                                              |
 | `service.type`                         | `ClusterIP`                   | The type of the Appsemble service.                                                                                                        |
 | `service.port`                         | 80                            | The HTTP port on which the Appsemble service will be exposed to the cluster.                                                              |
 | `ingress.enabled`                      | `true`                        | Whether or not the service should be exposed through an ingress.                                                                          |
 | `ingress.annotations`                  |                               | Annotations for the Appsemble ingress.                                                                                                    |
-| `ingress.host`                         | `''`                          | The hosts name on which the ingress will expose the service.                                                                              |
+| `ingress.host`                         | `''`                          | The host name on which the ingress will expose the service.                                                                               |
 | `ingress.tls.secretName`               | `nil`                         | The secret name to use to configure TLS for the top level host.                                                                           |
 | `ingress.tls.wildcardSecretName`       | `nil`                         | The secret name to use to configure TLS for the direct wildcard host.                                                                     |
 | `resources`                            | `{}`                          |                                                                                                                                           |
@@ -94,8 +92,9 @@ helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existin
 | `affinity`                             | `{}`                          |                                                                                                                                           |
 | `smtpSecret`                           | `smtp`                        | The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`. |
 | `oauthSecret`                          | `nil`                         | The secret which holds client ids and client secrets for OAuth2 providers.                                                                |
+| `sentryAllowedDomains`                 | `[]`                          | A list of domains on which Sentry integration will be enabled. Wildcards are supported.                                                   |
 | `sentrySecret`                         | `nil`                         | The secret from which to read the [Sentry] DSN.                                                                                           |
-| `sentryEnvironment`                    | `nil`                         | The environment to send with Sentry error reports                                                                                         |
+| `sentryEnvironment`                    | `nil`                         | The environment to send with Sentry error reports.                                                                                        |
 | `secretSecret`                         | `appsemble`                   | The Kubernetes secret which holds the `SECRET` environment variable.                                                                      |
 | `cronjob.jobsHistoryLimit`             | 3                             | How long to keep logs for cronjobs in days.                                                                                               |
 | `migrateTo`                            | `nil`                         | If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`.                   |
@@ -108,6 +107,7 @@ helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existin
 | `postgresql.fullnameOverride`          | `appsemble-postgresql`        | The name used for the PostgreSQL database.                                                                                                |
 | `postgresql.enabled`                   | `true`                        | Set this to false explicitly to not include a PostgreSQL installation. This is useful if the database is managed by another service.      |
 | `postgresql.persistence.enabled`       | `false`                       | Enable to create a persistent volume for the data.                                                                                        |
+| `remote`                               | `null`                        | A remote Appsemble server to connect to in order to synchronize blocks.                                                                   |
 | `postgresSSL`                          | `false`                       | If `true`, connect establish the PostgreSQL connection over SSL.                                                                          |
 
 [sentry]: https://sentry.io

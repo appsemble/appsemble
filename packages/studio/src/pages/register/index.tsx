@@ -12,6 +12,7 @@ import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { PasswordStrengthIndicator } from '../../components/PasswordStrengthIndicator';
 import { useUser } from '../../components/UserProvider';
 import { messages } from './messages';
 
@@ -67,12 +68,11 @@ export function RegisterPage(): ReactElement {
         <SimpleFormField
           autoComplete="new-password"
           component={PasswordField}
+          help={<PasswordStrengthIndicator minLength={8} name="password" />}
           label={<FormattedMessage {...messages.passwordLabel} />}
+          minLength={8}
           name="password"
           required
-          validityMessages={{
-            valueMissing: <FormattedMessage {...messages.passwordRequired} />,
-          }}
         />
         <FormButtons>
           <SimpleSubmit className="is-pulled-right">

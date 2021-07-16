@@ -1,8 +1,11 @@
 import { OpenAPIV3 } from 'openapi-types';
 
 import { components } from './components';
+import * as schemas from './components/schemas';
 import { paths } from './paths';
 import { tags } from './tags';
+
+export { schemas };
 
 interface APIParams {
   port?: number;
@@ -32,7 +35,7 @@ The OpenAPI explorer can be found on
 `,
       license: {
         name: 'LGPL',
-        url: 'https://gitlab.com/appsemble/appsemble/blob/master/LICENSE.md',
+        url: 'https://gitlab.com/appsemble/appsemble/blob/main/LICENSE.md',
       },
       version,
     },

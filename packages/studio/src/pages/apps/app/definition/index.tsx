@@ -2,6 +2,7 @@ import { Button, Title, useMeta } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
+import { AppIcon } from 'studio/src/components/AppIcon';
 
 import { useApp } from '..';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
@@ -38,13 +39,7 @@ export function DefinitionPage(): ReactElement {
           </>
         }
         description={app.definition.description}
-        icon={
-          <img
-            alt={formatMessage(messages.appLogo)}
-            className="is-rounded card"
-            src={`/api/apps/${app.id}/icon?maskable=true`}
-          />
-        }
+        icon={<AppIcon app={app} />}
         subtitle={
           <Link to={`/${lang}/organizations/${app.OrganizationId}`}>
             {app.OrganizationName || app.OrganizationId}
@@ -73,7 +68,9 @@ export function DefinitionPage(): ReactElement {
               <FormattedMessage {...messages.learnMore} />
             </Link>
           </p>
-          <CodeBlock code={app.yaml} language="yaml" />
+          <CodeBlock copy filename="app.yaml" language="yaml">
+            {app.yaml}
+          </CodeBlock>
         </div>
       </div>
     </main>

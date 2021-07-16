@@ -73,6 +73,7 @@ declare global {
       sentryDsn: string;
       sentryEnvironment: string;
       showAppsembleLogin: boolean;
+      appUpdated: string;
     };
   }
 }
@@ -89,12 +90,19 @@ export interface ShowDialogParams {
 }
 
 export type ShowDialogAction = (params: ShowDialogParams) => () => void;
+export interface ShowShareDialogParams {
+  url?: string;
+  text?: string;
+  title?: string;
+}
+export type ShowShareDialog = (params: ShowShareDialogParams) => Promise<void>;
 
 export interface FlowActions {
   back: (data: any) => Promise<any>;
   cancel: (data: any) => Promise<any>;
   finish: (data: any) => Promise<any>;
   next: (data: any) => Promise<any>;
+  to: (data: any, step: string) => Promise<any>;
 }
 
 export type UpdateTeam = (team: Pick<TeamMember, 'id' | 'role'>) => void;
@@ -102,9 +110,12 @@ export type UpdateTeam = (team: Pick<TeamMember, 'id' | 'role'>) => void;
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;
   definition: D;
+  extraCreators: ActionCreators;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
+  pageReady: Promise<void>;
   route: Match<{ lang: string }>;
+  showShareDialog: ShowShareDialog;
   showDialog: ShowDialogAction;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;

@@ -474,6 +474,41 @@ describe('static', () => {
   });
 });
 
+describe('translate', () => {
+  runTests({
+    'format multilingual messages': {
+      input: null,
+      mappers: {
+        translate: 'patty',
+      },
+      expected: 'Patty',
+      messages: {
+        core: {},
+        app: {},
+        blocks: {},
+        messageIds: {
+          patty: 'Patty',
+        },
+      },
+    },
+    'handle untranslated multilingual messages': {
+      input: null,
+      mappers: {
+        translate: 'patty',
+      },
+      expected: '{patty}',
+      messages: {
+        core: {},
+        app: {},
+        blocks: {},
+        messageIds: {
+          patty: '',
+        },
+      },
+    },
+  });
+});
+
 describe('user', () => {
   runTests({
     'insert user info': {

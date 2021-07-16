@@ -19,8 +19,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - node
-            - packages/server/dist
+            - appsemble
             - cleanup
             - -vv
           env:
@@ -40,7 +39,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.global.postgresql.existingSecret }}
-                  key: postgresql-password
+                  key: postgresql-postgres-password
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
             - name: SERVICE_NAME

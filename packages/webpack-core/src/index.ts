@@ -7,9 +7,11 @@ import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import autolink from 'rehype-autolink-headings';
+import { rehypeMdxTitle } from 'rehype-mdx-title';
 import slug from 'rehype-slug';
 import frontmatter from 'remark-frontmatter';
 import gfm from 'remark-gfm';
+import { remarkMdxCodeMeta } from 'remark-mdx-code-meta';
 import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
 import { remarkMdxImages } from 'remark-mdx-images';
 import { remarkMermaid } from 'remark-mermaidjs';
@@ -22,7 +24,6 @@ import { GenerateSW } from 'workbox-webpack-plugin';
 
 import './types';
 import studioPkg from '../package.json';
-import { remarkHeading } from './remark/heading';
 import { remarkRewriteLinks } from './remark/rewriteLinks';
 
 const minify: MinifyOptions = {
@@ -143,12 +144,13 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                   frontmatter,
                   gfm,
                   production && remarkMermaid,
+                  remarkMdxCodeMeta,
                   remarkMdxFrontmatter,
                   remarkMdxImages,
-                  remarkHeading,
                   remarkRewriteLinks,
                 ].filter(Boolean),
                 rehypePlugins: [
+                  rehypeMdxTitle,
                   slug,
                   [
                     autolink,
@@ -230,7 +232,7 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
       entry: require.resolve('@appsemble/service-worker/src/index.ts'),
       filename: 'service-worker.js',
       minimize: production,
-      publicPath: '/',
+      publicPath: production ? '/' : '/app/',
       transformOptions: ({ assets }) => assets,
     }),
   );

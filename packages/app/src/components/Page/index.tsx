@@ -8,19 +8,21 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogParams } from '../../types';
+import { ShowDialogParams, ShowShareDialog } from '../../types';
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { BlockList } from '../BlockList';
 import { FlowPage } from '../FlowPage';
+import { usePage } from '../MenuProvider';
 import { PageDialog } from '../PageDialog';
 import { TabsPage } from '../TabsPage';
 import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
 import styles from './index.module.css';
 import { messages } from './messages';
+import { ShareDialog, ShareDialogState } from './ShareDialog';
 
 export function Page(): ReactElement {
   const { definition } = useAppDefinition();
@@ -32,21 +34,36 @@ export function Page(): ReactElement {
     url,
   } = useRouteMatch<{ lang: string; pageId: string }>();
   const { pathname } = useLocation();
-  const { getMessage, messageIds } = useAppMessages();
+  const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
+  const { page: navPage, setPage } = usePage();
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
+
+  const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
+  const showShareDialog: ShowShareDialog = useCallback(
+    (params) =>
+      new Promise<void>((resolve, reject) => {
+        setShareDialogParams({
+          params,
+          resolve,
+          reject,
+        });
+      }),
+    [],
+  );
 
   const ee = useRef<EventEmitter>();
   if (!ee.current) {
     ee.current = new EventEmitter();
   }
 
-  let index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
+  const normalizedPageId = normalize(pageId);
+  let index = definition.pages.findIndex((p) => normalize(p.name) === normalizedPageId);
 
   if (index < 0) {
-    const pageMessages = messageIds.filter((id) => id.startsWith('pages.'));
+    const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
     const translatedPage = pageMessages.find(
-      (id) => normalize(getMessage({ id }).format() as string) === pageId,
+      (id) => normalize(getAppMessage({ id }).format() as string) === normalizedPageId,
     );
 
     if (translatedPage) {
@@ -90,17 +107,26 @@ export function Page(): ReactElement {
     [page],
   );
 
-  const checkPagePermissions = (p: PageDefinition): boolean => {
-    const roles = p.roles || definition.roles || [];
+  const checkPagePermissions = useCallback(
+    (p: PageDefinition): boolean => {
+      const roles = p.roles || definition.roles || [];
 
-    return (
-      roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
-    );
-  };
+      return (
+        roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
+      );
+    },
+    [definition.roles, definition.security, role, teams],
+  );
+
+  useEffect(() => {
+    if (page && checkPagePermissions(page) && navPage !== page) {
+      setPage(page);
+    }
+  }, [checkPagePermissions, navPage, page, setPage]);
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
-    const msg = getMessage({ id: prefix, defaultMessage: page.name });
+    const msg = getAppMessage({ id: prefix, defaultMessage: page.name });
     const normalizedPageName = normalize(msg.format() as string);
 
     if (pageId !== normalize(normalizedPageName)) {
@@ -123,6 +149,7 @@ export function Page(): ReactElement {
             prefix={prefix}
             remap={remapWithContext}
             showDialog={showDialog}
+            showShareDialog={showShareDialog}
             subPages={page.subPages}
           />
         ) : (
@@ -137,6 +164,7 @@ export function Page(): ReactElement {
                   prefix={prefix}
                   remap={remapWithContext}
                   showDialog={showDialog}
+                  showShareDialog={showShareDialog}
                 />
               ) : (
                 <BlockList
@@ -147,6 +175,7 @@ export function Page(): ReactElement {
                   prefix={`${prefix}.blocks`}
                   remap={remapWithContext}
                   showDialog={showDialog}
+                  showShareDialog={showShareDialog}
                 />
               )}
             </Route>
@@ -160,6 +189,11 @@ export function Page(): ReactElement {
           page={page}
           remap={remapWithContext}
           showDialog={showDialog}
+          showShareDialog={showShareDialog}
+        />
+        <ShareDialog
+          setShareDialogParams={setShareDialogParams}
+          shareDialogParams={shareDialogParams}
         />
       </main>
     );
@@ -167,7 +201,7 @@ export function Page(): ReactElement {
 
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
-  if (!isLoggedIn) {
+  if (page && !isLoggedIn) {
     return <Redirect to={`/${lang}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 
@@ -179,8 +213,8 @@ export function Page(): ReactElement {
     const i = definition.pages.indexOf(defaultPage);
     let pageName = defaultPage.name;
 
-    if (messageIds.includes(`pages.${i}`)) {
-      pageName = getMessage({ id: `pages.${i}` }).format() as string;
+    if (appMessageIds.includes(`pages.${i}`)) {
+      pageName = getAppMessage({ id: `pages.${i}` }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
@@ -192,8 +226,8 @@ export function Page(): ReactElement {
     const i = definition.pages.indexOf(redirectPage);
     let pageName = redirectPage.name;
 
-    if (messageIds.includes(`pages.${i}`)) {
-      pageName = getMessage({ id: `pages.${i}` }).format() as string;
+    if (appMessageIds.includes(`pages.${i}`)) {
+      pageName = getAppMessage({ id: `pages.${i}` }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;

@@ -6,7 +6,7 @@ import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
 import { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogAction } from '../../types';
+import { ShowDialogAction, ShowShareDialog } from '../../types';
 import { makeActions } from '../../utils/makeActions';
 import { BlockList } from '../BlockList';
 import { DotProgressBar } from '../DotProgressBar';
@@ -20,6 +20,7 @@ interface FlowPageProps {
   prefix: string;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showDialog: ShowDialogAction;
+  showShareDialog: ShowShareDialog;
 }
 
 export function FlowPage({
@@ -29,6 +30,7 @@ export function FlowPage({
   prefix,
   remap,
   showDialog,
+  showShareDialog,
 }: FlowPageProps): ReactElement {
   const history = useHistory();
   const route = useRouteMatch<{ lang: string }>();
@@ -92,14 +94,33 @@ export function FlowPage({
     [actions],
   );
 
+  const to = useCallback(
+    (d: any, step: string) => {
+      if (typeof step !== 'string') {
+        throw new TypeError(`Expected page to be a string, got: ${JSON.stringify(step)}`);
+      }
+      const found = page.subPages.findIndex((p) => p.name === step);
+      if (found === -1) {
+        throw new Error(`No matching page was found for ${step}`);
+      }
+
+      setData(d);
+      setCurrentPage(found);
+
+      return d;
+    },
+    [page],
+  );
+
   const flowActions = useMemo(
     () => ({
       next,
       finish,
       back,
       cancel,
+      to,
     }),
-    [back, cancel, finish, next],
+    [back, cancel, finish, next, to],
   );
 
   actions = useMemo(
@@ -110,6 +131,7 @@ export function FlowPage({
         context: page,
         history,
         showDialog,
+        showShareDialog,
         extraCreators: {},
         flowActions,
         prefix,
@@ -134,6 +156,7 @@ export function FlowPage({
       remap,
       route,
       showDialog,
+      showShareDialog,
       showMessage,
       teams,
       userInfo,
@@ -141,9 +164,13 @@ export function FlowPage({
     ],
   );
 
+  const { progress = 'corner-dots' } = page;
+
   return (
     <>
-      <DotProgressBar active={currentPage} amount={page.subPages.length} />
+      {progress === 'corner-dots' && (
+        <DotProgressBar active={currentPage} amount={page.subPages.length} />
+      )}
       <BlockList
         blocks={page.subPages[currentPage].blocks}
         data={data}
@@ -154,6 +181,7 @@ export function FlowPage({
         prefix={`${prefix}.subPages.${currentPage}.blocks`}
         remap={remap}
         showDialog={showDialog}
+        showShareDialog={showShareDialog}
       />
     </>
   );

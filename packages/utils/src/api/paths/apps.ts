@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { TeamRole } from '../../constants';
+import { hexColor, TeamRole } from '../../constants';
 
 export const paths: OpenAPIV3.PathsObject = {
   '/api/apps': {
@@ -8,6 +8,15 @@ export const paths: OpenAPIV3.PathsObject = {
       tags: ['app'],
       description: 'Create a new app',
       operationId: 'createApp',
+      parameters: [
+        {
+          in: 'query',
+          name: 'dryRun',
+          description:
+            'Validate whether an app could be created without actually creating one. Must be set to ‘true’.',
+          schema: { type: 'string' },
+        },
+      ],
       requestBody: {
         content: {
           'multipart/form-data': {
@@ -51,7 +60,11 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                iconBackground: { $ref: '#/components/schemas/Color' },
+                iconBackground: {
+                  type: 'string',
+                  pattern: hexColor.source,
+                  description: 'The background color to use for the maskable icon.',
+                },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',
@@ -223,7 +236,10 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The app icon.',
                 },
-                iconBackground: { $ref: '#/components/schemas/Color' },
+                iconBackground: {
+                  type: 'string',
+                  pattern: hexColor.source,
+                },
                 coreStyle: {
                   type: 'string',
                   format: 'binary',

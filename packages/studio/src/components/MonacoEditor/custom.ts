@@ -1,3 +1,4 @@
+import { schemas } from '@appsemble/utils';
 import {
   Environment,
   languages,
@@ -13,6 +14,7 @@ import MonacoWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worke
 
 // Cherry-picking these features makes the editor more light weight, resulting in a smaller bundle
 // size and a snappier user experience.
+import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
 import 'monaco-editor/esm/vs/editor/contrib/comment/comment';
 import 'monaco-editor/esm/vs/editor/contrib/contextmenu/contextmenu';
 import 'monaco-editor/esm/vs/editor/contrib/find/findController';
@@ -67,12 +69,8 @@ languages.yaml.yamlDefaults.setDiagnosticsOptions({
       // Not sure why this is needed, but it’s required and its value may not match the ref.
       uri: String(new URL('/notapi.json', window.location.origin)),
       schema: {
-        $ref: String(
-          new URL(
-            '/api.json#/components/schemas/App/properties/definition',
-            window.location.origin,
-          ),
-        ),
+        ...schemas.AppDefinition,
+        components: { schemas },
       },
     },
   ],

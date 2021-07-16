@@ -6,9 +6,9 @@ export const BlockVersion: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: `A version of a block definition
 
-    Block versions can’t be updated or deleted. This ensures apps that use a block version can never
-    be broken by alterations of block definitions.
-  `,
+Block versions can’t be updated or deleted. This ensures apps that use a block version can never
+be broken by alterations of block definitions.
+`,
   required: ['name', 'version', 'files'],
   properties: {
     name: {
@@ -16,8 +16,8 @@ export const BlockVersion: OpenAPIV3.NonArraySchemaObject = {
       readOnly: true,
       description: `The name of a block.
 
-        This uses the same form as scoped npm packages. For example, \`@appsemble/form\`.
-      `,
+This uses the same form as scoped npm packages. For example, \`@appsemble/form\`.
+`,
       pattern: `^@${partialNormalized.source}/${partialNormalized.source}$`,
     },
     description: {
@@ -49,13 +49,13 @@ export const BlockVersion: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: `How the block will be displayed on the screen.
 
-        - **\`float\`**: The block will float somewhere on the screen.
-        - **\`grow\`**: The block will be positioned in the main page. It will grow to fill up
-          remaining space on the page.
-        - **\`static\`**: The block will be positioned in the main page. It will take up a fixed
-          amount of space.
-        - **\`hidden\`**: The block will not be rendered at all.
-      `,
+- **\`float\`**: The block will float somewhere on the screen.
+- **\`grow\`**: The block will be positioned in the main page. It will grow to fill up remaining
+  space on the page.
+- **\`static\`**: The block will be positioned in the main page. It will take up a fixed amount of
+  space.
+- **\`hidden\`**: The block will not be rendered at all.
+`,
       default: 'grow',
       enum: ['float', 'grow', 'static', 'hidden'],
     },
@@ -63,17 +63,17 @@ export const BlockVersion: OpenAPIV3.NonArraySchemaObject = {
       type: 'object',
       description: `An object which describes the actions a block can trigger.
 
-        This will be used to validate app definitions.
-      `,
+This will be used to validate app definitions.
+`,
       additionalProperties: true,
     },
     parameters: {
       type: 'object',
       description: `A draft 7 JSON schema to use for block parameter validation.
 
-        If the parameters of a block definition don’t conform to this schema, the app definition
-        will be considered invalid.
-      `,
+If the parameters of a block definition don’t conform to this schema, the app definition will be
+considered invalid.
+`,
     },
     events: {
       type: 'object',

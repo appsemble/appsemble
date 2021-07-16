@@ -131,10 +131,12 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
       };
     }
 
-    const prefixed = blockPrefixes.filter(([b]) => b === name);
-    for (const [messageId, value] of Object.entries(blockVersionMessages)) {
-      for (const [, prefix] of prefixed) {
-        appMessages.app[`${prefix.join('.')}.${messageId}`] = value;
+    if (override !== 'true') {
+      const prefixed = blockPrefixes.filter(([b]) => b === name);
+      for (const [messageId, value] of Object.entries(blockVersionMessages)) {
+        for (const [, prefix] of prefixed) {
+          appMessages.app[`${prefix.join('.')}.${messageId}`] = value;
+        }
       }
     }
   });

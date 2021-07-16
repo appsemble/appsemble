@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact",
-  "version": "0.18.10",
+  "version": "0.18.21",
   "description": "Build your own blocks using Preact",
   "keywords": [
     "app",
@@ -21,7 +21,7 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/preact"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "main": "dist",
@@ -33,7 +33,7 @@
     "test": "jest"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "0.18.10",
+    "@appsemble/sdk": "0.18.21",
     "preact": "^10"
   }
 }

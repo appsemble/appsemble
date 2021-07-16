@@ -22,6 +22,7 @@ describe('makeActions', () => {
       remap,
       route: null,
       showDialog: null,
+      showShareDialog: null,
       showMessage: null,
       teams: [],
       updateTeam: null,

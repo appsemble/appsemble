@@ -1,3 +1,4 @@
+import { BulmaSize } from '@appsemble/sdk';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { ReactElement, ReactNode } from 'react';
 
@@ -20,6 +21,16 @@ interface ButtonChildrenProps {
    * @default 'left'
    */
   iconPosition?: 'left' | 'right';
+
+  /**
+   * The size that should be used for the button’s icons.
+   */
+  iconSize?: Exclude<BulmaSize, 'normal'>;
+
+  /**
+   * The size modifier that should be used for the button’s icons.
+   */
+  iconSizeModifier?: '2x' | '3x' | 'lg';
 }
 
 /**
@@ -31,12 +42,14 @@ export function ButtonChildren({
   children,
   icon,
   iconPosition,
+  iconSize,
+  iconSizeModifier,
 }: ButtonChildrenProps): ReactElement {
   return icon ? (
     <>
-      {iconPosition === 'left' && <Icon icon={icon} />}
+      {iconPosition === 'left' && <Icon icon={icon} iconSize={iconSizeModifier} size={iconSize} />}
       {children && <span>{children}</span>}
-      {iconPosition === 'right' && <Icon icon={icon} />}
+      {iconPosition === 'right' && <Icon icon={icon} iconSize={iconSizeModifier} size={iconSize} />}
     </>
   ) : (
     (children as ReactElement)

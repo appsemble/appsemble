@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/react-components",
-  "version": "0.18.10",
+  "version": "0.18.21",
   "private": true,
   "description": "Reusable React components for internal use",
   "keywords": [
@@ -18,34 +18,42 @@
     "url": "https://gitlab.com/appsemble/appsemble.git",
     "directory": "packages/react-components"
   },
-  "license": "LGPL-3.0-or-later",
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "scripts": {
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.18.10",
-    "@appsemble/types": "0.18.10",
-    "@appsemble/web-utils": "0.18.10",
+    "@appsemble/sdk": "0.18.21",
+    "@appsemble/types": "0.18.21",
+    "@appsemble/web-utils": "0.18.21",
     "@creativebulma/bulma-tagsinput": "^1.0.3",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
-    "@sentry/browser": "^6.3.5",
+    "@sentry/browser": "^6.9.0",
+    "@types/creativebulma__bulma-tagsinput": "^1.0.2",
+    "@types/css-modules": "^1.0.2",
+    "@types/marked": "^2.0.4",
+    "@types/react": "^17.0.14",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-router-dom": "^5.1.8",
+    "@types/react-transition-group": "^4.4.2",
+    "@types/webpack-env": "^1.16.2",
     "axios": "^0.21.1",
     "classnames": "2.3.1",
-    "date-fns": "^2.21.3",
+    "date-fns": "^2.22.1",
     "fast-deep-equal": "^3.1.3",
     "flatpickr": "^4.6.9",
-    "marked": "^2.0.3",
+    "marked": "^2.1.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-intl": "^5.17.5",
+    "react-intl": "^5.20.4",
     "react-router-dom": "^5.2.0",
-    "react-transition-group": "^4.4.1",
-    "type-fest": "^1.1.1"
+    "react-transition-group": "^4.4.2",
+    "type-fest": "^1.2.2"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.12.0",
-    "@testing-library/react": "^11.2.6s"
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0"
   }
 }

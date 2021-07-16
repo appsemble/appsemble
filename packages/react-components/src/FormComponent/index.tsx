@@ -12,9 +12,14 @@ import { messages } from './messages';
  */
 export interface SharedFormComponentProps {
   /**
-   * A Bulma addon to display.
+   * A Bulma addon to display left of the field.
    */
-  addon?: ReactNode;
+  addonLeft?: ReactNode;
+
+  /**
+   * A Bulma addon to display right of the field.
+   */
+  addonRight?: ReactNode;
 
   /**
    * An additional control node to render right of the form field.
@@ -70,7 +75,8 @@ export interface FormComponentProps extends SharedFormComponentProps {
  * A wrapper for creating consistent form components.
  */
 export function FormComponent({
-  addon,
+  addonLeft,
+  addonRight,
   children,
   className,
   control,
@@ -113,12 +119,11 @@ export function FormComponent({
           )}
         </label>
       ) : null}
-      {addon ? (
+      {addonLeft || addonRight ? (
         <div className="field is-marginless has-addons">
+          {addonLeft && <div className="control">{addonLeft}</div>}
           {controls}
-          <label className="control" htmlFor={id}>
-            {addon}
-          </label>
+          {addonRight && <div className="control">{addonRight}</div>}
         </div>
       ) : (
         controls

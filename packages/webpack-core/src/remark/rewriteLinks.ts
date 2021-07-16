@@ -1,6 +1,5 @@
 import { relative, resolve } from 'path';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Link, Root } from 'mdast';
 import { Attacher } from 'unified';
 import visit from 'unist-util-visit';

@@ -24,7 +24,8 @@ function getHelpExtra(maxLength: number, value?: number | string | readonly stri
 export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
   (
     {
-      addon,
+      addonLeft,
+      addonRight,
       className,
       control,
       error,
@@ -41,7 +42,8 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     ref,
   ) => (
     <FormComponent
-      addon={addon}
+      addonLeft={addonLeft}
+      addonRight={addonRight}
       className={className}
       control={control}
       error={error}

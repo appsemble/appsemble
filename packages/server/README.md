@@ -42,6 +42,7 @@ passed as a command line parameter instead, if desired.
 | `SMTP_FROM`            |              | The address to use when sending emails.                                                                                |
 | `DISABLE_REGISTRATION` | `false`      | If specified, user registration will be disabled on the server                                                         |
 | `HOST`                 |              | The external host on which the server is available. This should include the protocol, hostname, and optionally port.   |
+| `REMOTE`               | `null`       | A remote Appsemble server to connect to in order to synchronize blocks.                                                |
 
 ## Setting up Social Login
 

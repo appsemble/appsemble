@@ -1,10 +1,19 @@
-import { SideMenuProvider, Toggle } from '@appsemble/react-components';
+import { SideMenuProvider } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
-import { checkAppRole } from '@appsemble/utils';
-import { apiUrl, appId } from 'app/src/utils/settings';
-import { createContext, ReactElement, ReactNode, useContext } from 'react';
+import { checkAppRole, noop } from '@appsemble/utils';
+import {
+  createContext,
+  Dispatch,
+  ReactElement,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { BottomNavigation } from '../BottomNavigation';
 import { SideNavigation } from '../SideNavigation';
@@ -15,9 +24,14 @@ interface MenuProviderProps {
   children: ReactNode;
 }
 
-const Context = createContext<Toggle>(null);
+interface MenuProviderContext {
+  page: PageDefinition;
+  setPage: Dispatch<SetStateAction<PageDefinition>>;
+}
 
-export function useMenu(): Toggle {
+const Context = createContext<MenuProviderContext>({ page: undefined, setPage: noop });
+
+export function usePage(): MenuProviderContext {
   return useContext(Context);
 }
 
@@ -26,9 +40,11 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
     definition: { layout = {}, ...definition },
   } = useAppDefinition();
   const { role, teams } = useUser();
+  const [page, setPage] = useState<PageDefinition>();
+  const value = useMemo(() => ({ page, setPage }), [page, setPage]);
 
-  const checkPagePermissions = (page: PageDefinition): boolean => {
-    const roles = page.roles || definition.roles || [];
+  const checkPagePermissions = (p: PageDefinition): boolean => {
+    const roles = p.roles || definition.roles || [];
 
     return (
       roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role, teams))
@@ -36,21 +52,31 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
   };
 
   const pages = definition.pages.filter(
-    (page) => !page.parameters && !page.hideFromMenu && checkPagePermissions(page),
+    (p) => !p.parameters && !p.hideFromMenu && checkPagePermissions(p),
   );
 
-  switch (layout?.navigation) {
+  if (!pages.length) {
+    // Don’t display anything if there are no pages to display.
+    return children as ReactElement;
+  }
+
+  let navigationElement: ReactElement;
+  const navigation = page?.navigation || layout?.navigation;
+
+  switch (navigation) {
     case 'bottom':
-      return (
+      navigationElement = (
         <>
           {children}
           <BottomNavigation pages={pages} />
         </>
       );
+      break;
     case 'hidden':
-      return null;
+      navigationElement = children as ReactElement;
+      break;
     default:
-      return (
+      navigationElement = (
         <SideMenuProvider
           base={<SideNavigation pages={pages} />}
           bottom={
@@ -70,4 +96,6 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
         </SideMenuProvider>
       );
   }
+
+  return <Context.Provider value={value}>{navigationElement}</Context.Provider>;
 }

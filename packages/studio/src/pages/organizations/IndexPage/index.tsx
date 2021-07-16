@@ -5,7 +5,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../components/AsyncDataView';
-import { CollapsibleList } from '../../../components/CollapsibleList';
+import { Collapsible } from '../../../components/Collapsible';
 import { CreateOrganizationModal } from '../../../components/CreateOrganizationModal';
 import { HeaderControl } from '../../../components/HeaderControl';
 import { ListButton } from '../../../components/ListButton';
@@ -42,12 +42,13 @@ export function IndexPage(): ReactElement {
         <FormattedMessage {...messages.title} />
       </HeaderControl>
       {organizations?.length ? (
-        <CollapsibleList title={<FormattedMessage {...messages.myOrganizations} />}>
+        <Collapsible title={<FormattedMessage {...messages.myOrganizations} />}>
           <ul>
             {organizations.map((organization) => (
               <ListButton
                 alt={formatMessage(messages.logo)}
                 description={organization.role}
+                icon="building"
                 image={organization.iconUrl}
                 key={organization.id}
                 subtitle={organization.id}
@@ -56,9 +57,9 @@ export function IndexPage(): ReactElement {
               />
             ))}
           </ul>
-        </CollapsibleList>
+        </Collapsible>
       ) : null}
-      <CollapsibleList title={<FormattedMessage {...messages.allOrganizations} />}>
+      <Collapsible title={<FormattedMessage {...messages.allOrganizations} />}>
         <AsyncDataView
           emptyMessage={<FormattedMessage {...messages.noOrganizations} />}
           errorMessage={<FormattedMessage {...messages.error} />}
@@ -70,6 +71,7 @@ export function IndexPage(): ReactElement {
               {allOrganizations.map((organization) => (
                 <ListButton
                   alt={formatMessage(messages.logo)}
+                  icon="building"
                   image={organization.iconUrl}
                   key={organization.id}
                   subtitle={organization.id}
@@ -80,7 +82,7 @@ export function IndexPage(): ReactElement {
             </ul>
           )}
         </AsyncDataView>
-      </CollapsibleList>
+      </Collapsible>
       {userInfo?.email_verified && (
         <CreateOrganizationModal
           isActive={modal.enabled}

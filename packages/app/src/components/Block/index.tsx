@@ -3,20 +3,19 @@ import { EventEmitter } from 'events';
 import { Title, useMessages } from '@appsemble/react-components';
 import { Utils } from '@appsemble/sdk';
 import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
-import { baseTheme, normalizeBlockName } from '@appsemble/utils';
+import { baseTheme, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogAction } from '../../types';
+import { ShowDialogAction, ShowShareDialog } from '../../types';
 import { ActionCreators } from '../../utils/actions';
 import { callBootstrap } from '../../utils/bootstrapper';
 import { createEvents } from '../../utils/events';
 import { injectCSS } from '../../utils/injectCSS';
 import { makeActions } from '../../utils/makeActions';
-import { prefixBlockURL } from '../../utils/prefixBlockURL';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
@@ -47,8 +46,8 @@ interface BlockProps {
    * The page in which the block is rendered.
    */
   page: PageDefinition;
-
   showDialog: ShowDialogAction;
+  showShareDialog: ShowShareDialog;
   ready: (block: BlockDefinition) => void;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   pageReady: Promise<void>;
@@ -73,6 +72,7 @@ export function Block({
   ready,
   remap,
   showDialog,
+  showShareDialog,
 }: BlockProps): ReactElement {
   const history = useHistory();
   const params = useParams();
@@ -115,6 +115,7 @@ export function Block({
       context: block,
       history,
       showDialog,
+      showShareDialog,
       extraCreators,
       flowActions,
       pushNotifications,
@@ -211,6 +212,7 @@ export function Block({
     remap,
     route,
     showDialog,
+    showShareDialog,
     teams,
     updateTeam,
     userInfo,

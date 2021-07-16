@@ -2,6 +2,160 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.21](https://gitlab.com/appsemble/appsemble/-/releases/0.18.21)] - 2021-07-09
+
+### Added
+
+- App: Append returned element from the `bootstrap` SDK function to the shadow root.
+- Cli: Add support for including an icon when creating an organization.
+- Server: Add support for including an icon when creating an organization.
+- Server: The block APIs now return a list of languages supported by the block.
+- Studio: Add support for including an icon when creating an organization.
+
+### Removed
+
+- Sdk: Remove `attach` function.
+
+## \[[0.18.20](https://gitlab.com/appsemble/appsemble/-/releases/0.18.20)] - 2021-06-30
+
+### Fixed
+
+- App: Fix crash that happened on builtin pages.
+- Server: Escape query parameters in returned icon URLs.
+
+## \[[0.18.19](https://gitlab.com/appsemble/appsemble/-/releases/0.18.19)] - 2021-06-29
+
+### Added
+
+- Server: Add new option `--sentry-allowed-domains` to only serve Sentry on apps from specific
+  domains.
+
+### Changed
+
+- App: Sync up bottom navigation with side navigation in terms of the available options based on the
+  `layout` property.
+
+### Removed
+
+- Server: Remove block resources.
+
+### Fixed
+
+- App: Fix usage of `navigation` property in pages.
+- Server: Fix serving maskable app icons.
+- Studio: Use app icons provided by the API.
+- Studio: Use block icons provided by the API.
+
+## \[[0.18.18](https://gitlab.com/appsemble/appsemble/-/releases/0.18.18)] - 2021-06-25
+
+### Added
+
+- App: Add Russian translations.
+- Appsemble: Add `progress` property to `flow` pages. This can be used to set the method used to
+  display the progress of a flow page’s steps.
+- Studio: Add Russian translations.
+
+### Changed
+
+- Appsemble: Change the background color of `corner-dots` in `flow` pages. More often than not these
+  ended up being invisible due to the default background color.
+
+## \[[0.18.17](https://gitlab.com/appsemble/appsemble/-/releases/0.18.17)] - 2021-06-15
+
+### Added
+
+- App: Add `navTitle` property to page.
+- Studio: Add password strength indicator.
+
+### Changed
+
+- Cli: Change the default remote to `https://appsemble.app`.
+
+### Fixed
+
+- Cli: Fix the `--ignore-conflict` flag behavior.
+
+### Security
+
+- Server: Passwords must now be at least 8 characters.
+
+## \[[0.18.16](https://gitlab.com/appsemble/appsemble/-/releases/0.18.16)] - 2021-06-10
+
+### Added
+
+- Block(`data-loader`): Add support for `context`. The data passed to the block (for example the
+  current data in a flow page) is now available in the property `data` when using `context`
+  remappers.
+- Block(`video`): Add video block.
+- App: Add `condition` action.
+- App: Add action `flow.to`.
+- Appsemble: Add `translate` remapper. This can be used instead of `message.format` for simpler
+  messages that don’t use any message values.
+- Cli: Add support setting an icon when creating an app.
+- Cli: Add support setting an icon when updating an app.
+- Cli: Set the process name to `appsemble`.
+- Server: Add `condition` action.
+- Server: Allow specifying `iconBackground` when creating an app.
+- Server: Allow specifying `maskableIcon` when creating an app.
+- Server: Set the process name to `appsemble`.
+
+### Fixed
+
+- App: Fix inclusion of `context` within remappers for `query` in `request` actions. This was
+  causing `context` to not be available.
+
+## \[[0.18.15](https://gitlab.com/appsemble/appsemble/-/releases/0.18.15)] - 2021-06-01
+
+### Added
+
+- Studio: Add core app message translations to the translations page.
+
+### Changed
+
+- Server: Block organization IDs that could be used to impersonate Appsemble.
+- Server: Redirect to Appsemble Studio for app-like URLs.
+
+## \[[0.18.14](https://gitlab.com/appsemble/appsemble/-/releases/0.18.14)] - 2021-05-26
+
+### Fixed
+
+- CI: Fix release process for production.
+
+## \[[0.18.13](https://gitlab.com/appsemble/appsemble/-/releases/0.18.13)] - 2021-05-26
+
+### Added
+
+- Studio: Add page for viewing the format of a resource based on its definition.
+- Studio: Add copy and download buttons on code blocks.
+
+### Fixed
+
+- App: Fix `hidden` menu navigation displaying a blank page.
+- Studio: Fix editor tabs.
+- Studio: Fix syntax highlighting for CSS in app editor.
+
+## \[[0.18.12](https://gitlab.com/appsemble/appsemble/-/releases/0.18.12)] - 2021-05-21
+
+### Fixed
+
+- CI: Fix release process for production.
+
+## \[[0.18.11](https://gitlab.com/appsemble/appsemble/-/releases/0.18.11)] - 2021-05-21
+
+### Added
+
+- Cli: Add support for parsing app messages from JSON.
+- Server: Add roles “APIReader”, “APIUser”, and “Translator”.
+- Studio: Add options for translating certain metadata of apps. These currently are: app name, app
+  description, role names, and role descriptions. These localized names are used when displaying
+  apps.
+
+### Changed
+
+- Server: Change structure of app messages for more consistent formatting for both input and output.
+  This allows for a more consistent API as well as more specific translations.
+- Studio: Change translations page to split off messages by categories.
+
 ## \[[0.18.10](https://gitlab.com/appsemble/appsemble/-/releases/0.18.10)] - 2021-05-05
 
 ### Changed

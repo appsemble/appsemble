@@ -1,9 +1,10 @@
 import { createFixtureStream, readFixture } from '@appsemble/node-utils';
+import { install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
 
-import { BlockMessages, BlockVersion, Member, Organization } from '../models';
+import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization';
@@ -42,9 +43,9 @@ describe('getBlock', () => {
 
     await authorizeClientCredentials('blocks:write');
     const { data: original } = await request.post('/api/blocks', formData);
-
     const { data: retrieved } = await request.get('/api/blocks/@xkcd/test');
-    expect(retrieved).toStrictEqual(omit(original, ['files']));
+
+    expect(retrieved).toStrictEqual(original);
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
@@ -82,7 +83,10 @@ describe('queryBlocks', () => {
     const { data: pen } = await request.post('/api/blocks', formDataB);
 
     const { data: bam } = await request.get('/api/blocks');
-    expect(bam).toMatchObject([omit(apple, ['files']), omit(pen, ['files'])]);
+    expect(bam).toMatchObject([
+      omit(apple, ['files', 'languages']),
+      omit(pen, ['files', 'languages']),
+    ]);
   });
 });
 
@@ -106,9 +110,9 @@ describe('publishBlock', () => {
       events: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
-      iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+      iconUrl: null,
+      languages: null,
       layout: null,
-      resources: null,
       parameters: null,
       version: '1.32.9',
       description: null,
@@ -338,8 +342,63 @@ describe('getBlockVersion', () => {
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 
+    expect(retrieved.iconUrl).toBeNull();
     expect(retrieved).toStrictEqual(created);
     expect(status).toBe(200);
+  });
+
+  it('should use the block’s icon in the iconUrl if the block has one', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'standing.png',
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'testblock.js',
+    });
+    formData.append('icon', createFixtureStream('nodejs-logo.png'), { filepath: 'icon.png' });
+
+    await authorizeClientCredentials('blocks:write');
+    const { data: created } = await request.post('/api/blocks', formData);
+    const { data: retrieved, status } = await request.get(
+      '/api/blocks/@xkcd/standing/versions/1.32.9',
+    );
+
+    expect(retrieved).toStrictEqual(created);
+    expect(retrieved.iconUrl).toStrictEqual('/api/blocks/@xkcd/standing/versions/1.32.9/icon');
+    expect(status).toBe(200);
+  });
+
+  it('should use the organization icon in the iconUrl if the block does not have one', async () => {
+    const clock = install();
+    await Organization.update(
+      { icon: await readFixture('nodejs-logo.png') },
+      { where: { id: 'xkcd' } },
+    );
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'standing.png',
+    });
+    formData.append('files', createFixtureStream('standing.png'), {
+      filepath: 'testblock.js',
+    });
+
+    await authorizeClientCredentials('blocks:write');
+    const { data: created } = await request.post('/api/blocks', formData);
+
+    const { data: retrieved, status } = await request.get(
+      '/api/blocks/@xkcd/standing/versions/1.32.9',
+    );
+
+    expect(retrieved).toStrictEqual(created);
+    expect(retrieved.iconUrl).toStrictEqual(
+      '/api/organizations/xkcd/icon?updated=1970-01-01T00%3A00%3A00.000Z',
+    );
+    expect(status).toBe(200);
+    clock.uninstall();
   });
 
   it('should respond with 404 when trying to fetch a non existing block version', async () => {
@@ -376,10 +435,11 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
-        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+        files: ['standing.png', 'testblock.js'],
+        iconUrl: null,
+        languages: null,
         layout: null,
         parameters: null,
-        resources: null,
         version: '1.32.9',
       },
     ]);
@@ -402,6 +462,7 @@ describe('getBlockVersions', () => {
     formDataA.append('files', createFixtureStream('standing.png'), {
       filepath: 'testblock.js',
     });
+    formDataA.append('messages', JSON.stringify({ en: { foo: 'Foo' } }));
     await authorizeClientCredentials('blocks:write');
     await request.post('/api/blocks', formDataA);
 
@@ -423,10 +484,11 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
-        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+        files: ['testblock.js'],
+        iconUrl: null,
+        languages: null,
         layout: null,
         parameters: null,
-        resources: null,
         version: '1.32.9',
       },
       {
@@ -435,13 +497,191 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
-        iconUrl: '/api/blocks/@xkcd/standing/versions/1.4.0/icon',
+        files: ['testblock.js'],
+        iconUrl: null,
+        languages: ['en'],
         layout: null,
         parameters: null,
-        resources: null,
         version: '1.4.0',
       },
     ]);
+  });
+});
+
+describe('getBlockAsset', () => {
+  it('should serve a block asset', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
+      params: { filename: 'hello.js' },
+    });
+    expect(response.headers['content-type']).toBe('application/javascript; charset=utf-8');
+    expect(response.data).toStrictEqual('console.log("Hello world!")');
+  });
+
+  it('should respond with 404 the version mismatches', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.4/asset', {
+      params: { filename: 'hello.js' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block version not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should respond with 404 if the organization mismatches', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@nope/test/versions/1.2.3/asset', {
+      params: { filename: 'hello.js' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block version not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should respond with 404 if the block name mismatches', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/nope/versions/1.2.3/asset', {
+      params: { filename: 'hello.js' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block version not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should respond with 404 no filename matches', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockAsset.create({
+      BlockVersionId: block.id,
+      filename: 'hello.js',
+      content: 'console.log("Hello world!")',
+      mime: 'application/javascript',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/asset', {
+      params: { filename: 'nope.js' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block has no asset named "nope.js"',
+        statusCode: 404,
+      },
+    });
+  });
+});
+
+describe('getBlockMessages', () => {
+  it('should download block messages', async () => {
+    const block = await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockMessages.create({
+      BlockVersionId: block.id,
+      language: 'en',
+      messages: { hello: 'Hello' },
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    expect(response).toMatchObject({
+      status: 200,
+      data: { hello: 'Hello' },
+    });
+  });
+
+  it('should return 404 if the block messages don’t exist', async () => {
+    await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block has no messages for language "en"',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should return 404 if the block doesn’t exist', async () => {
+    const response = await request.get('/api/blocks/@xkcd/test/versions/1.2.3/messages/en');
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Block version not found',
+        statusCode: 404,
+      },
+    });
   });
 });
 

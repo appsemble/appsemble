@@ -1,4 +1,4 @@
-image: node:14-slim
+image: node:16-buster-slim
 
 stages:
   - test
@@ -8,12 +8,18 @@ stages:
   - provision
   - end 2 end
 
+variables:
+  JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
+  JEST_JUNIT_CLASSNAME: '{classname}'
+  JEST_JUNIT_SUITE_NAME: '{filepath}'
+  JEST_JUNIT_TITLE: '{title}'
+
 workflow:
   rules:
     # By default, run jobs for every merge request.
     - if: $CI_MERGE_REQUEST_ID
-    # By default, run jobs for every commit on master.
-    - if: $CI_COMMIT_BRANCH == 'master'
+    # By default, run jobs for every commit on main.
+    - if: $CI_COMMIT_BRANCH == 'main'
     # By default, run jobs for every schedule
     - if: $CI_PIPELINE_SOURCE == 'schedule'
     # By default, run jobs for every tag
@@ -39,6 +45,31 @@ workflow:
   dependencies: []
   before_script:
     - yarn --frozen-lockfile --ignore-scripts
+
+# A template for creating a minor or patch release
+.release:
+  extends: .yarn
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      when: manual
+  allow_failure: true
+  script:
+    - apt-get update
+    - apt-get install --yes git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - yarn scripts release "$INCREMENT"
+    - VERSION="$(yarn --silent appsemble --version)"
+    - |
+      MESSAGE="$VERSION
+
+      $(yarn --silent scripts get-release-notes)"
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - git add .
+    - git commit --message "$MESSAGE" --cleanup whitespace --gpg-sign
+    - git tag "$VERSION" --message "$MESSAGE" --cleanup whitespace --sign
+    - git push "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble" HEAD:main --tags
 
 ###################################################################################################
 #  Test Stage                                                                                     #
@@ -86,7 +117,7 @@ stylelint:
 # Run unittests using NodeJS 12.
 test node 12:
   interruptible: true
-  image: node:12-slim
+  image: node:12-buster-slim
   services:
     - name: postgres:11
   variables:
@@ -104,6 +135,24 @@ test node 12:
 # Run unittests using NodeJS 14.
 test node 14:
   interruptible: true
+  image: node:14-buster-slim
+  services:
+    - name: postgres:11
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - yarn --frozen-lockfile
+    - yarn jest
+  artifacts:
+    reports:
+      junit: junit.xml
+
+# Run unittests using NodeJS 16.
+test node 16:
+  interruptible: true
   services:
     - name: postgres:11
   variables:
@@ -114,7 +163,7 @@ test node 14:
   script:
     - yarn --frozen-lockfile
     - yarn jest --coverage
-    - yarn codecov
+    - yarn codecov || true
   artifacts:
     reports:
       junit: junit.xml
@@ -173,10 +222,8 @@ helm package:
   stage: build
   needs: []
   script:
-    - helm repo add bitnami https://charts.bitnami.com/bitnami
     - cp LICENSE.md config/charts/appsemble/
-    - helm dependency build config/charts/appsemble
-    - config/bin/helm-package.sh -d public config/charts/appsemble/
+    - config/bin/helm-package.sh --dependency-update --destination public config/charts/appsemble/
   artifacts:
     name: Helm chart
     expose_as: Helm chart
@@ -209,16 +256,34 @@ publish docker:
 
 # Publish the Helm chart to https://charts.appsemble.com
 publish helm:
+  image: dtzar/helm-kubectl:3
   needs:
     - helm package
   stage: publish
   variables:
-    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+    GIT_STRATEGY: none
   rules:
     - if: $CI_COMMIT_TAG
-  trigger:
-    project: appsemble/charts
-    strategy: depend
+  script:
+    - apk add git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - git init
+    - git remote add origin "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/charts"
+    - git fetch --depth 1
+    - git checkout --track origin/main
+    - git config commit.gpgSign true
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - git add public
+    - git commit --message "Add Appsemble Helm chart $CI_COMMIT_TAG"
+    - git push origin main
+    - helm repo add appsemble https://charts.appsemble.com
+    - | # Wait until the chart has been published downstream
+      while ! helm show all 'appsemble/appsemble' --version "$CI_COMMIT_TAG" 2> /dev/null; do
+        sleep 3
+        echo retrying in 3 seconds…
+        helm repo update > /dev/null
+      done
 
 # Publish npm packages to npmjs.org.
 publish npm:
@@ -246,6 +311,18 @@ sentry release:
   script:
     - sentry-cli releases new --finalize "$CI_COMMIT_TAG"
     - sentry-cli releases set-commits --auto "$CI_COMMIT_TAG"
+
+# Create a patch release
+release patch:
+  extends: .release
+  variables:
+    INCREMENT: patch
+
+# Create a minor release
+release minor:
+  extends: .release
+  variables:
+    INCREMENT: minor
 
 ###################################################################################################
 #  Deploy Stage                                                                                   #
@@ -303,6 +380,8 @@ review:
       --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
+      --set "remote=https://appsemble.app"
+      --set "sentryAllowedDomains={*.appsemble.review}"
       --set "sentryEnvironment=$CI_ENVIRONMENT_NAME"
       --set "sentrySecret=sentry"
 
@@ -322,7 +401,7 @@ stop review:
   script:
     - helm delete "review-$CI_MERGE_REQUEST_IID"
 
-# Deploy the Docker image for master to the staging environment.
+# Deploy the Docker image for main to the staging environment.
 staging:
   image: dtzar/helm-kubectl:3
   stage: deploy
@@ -347,7 +426,7 @@ staging:
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=master"
+      --set "image.tag=main"
       --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
@@ -362,6 +441,8 @@ staging:
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "proxy=true"
+      --set "remote=https://appsemble.app"
+      --set "sentryAllowedDomains={*.appsemble.review}"
       --set "sentryEnvironment=staging"
       --set "sentrySecret=sentry"
 
@@ -370,18 +451,18 @@ production:
   stage: deploy
   needs:
     - publish docker
-    - job: helm package
-      artifacts: true
+    - publish helm
   rules:
     - if: $CI_COMMIT_TAG
-  dependencies: []
   environment:
     name: production
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
   script:
-    - helm upgrade appsemble ./public/appsemble-*.tgz
+    - helm repo add appsemble https://charts.appsemble.com
+    - helm upgrade appsemble appsemble/appsemble
+      --version "$CI_COMMIT_TAG"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
@@ -399,6 +480,7 @@ production:
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
       --set "proxy=true"
+      --set "sentryAllowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentryEnvironment=production"
       --set "sentrySecret=sentry"
       --wait
@@ -415,6 +497,18 @@ post release:
   script:
     - yarn scripts post-release
 
+# Create a GitHub release
+github release:
+  extends: .yarn
+  stage: deploy
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - yarn scripts github-release
+
 ###################################################################################################
 #  Provision Stage                                                                                #
 ###################################################################################################
@@ -428,9 +522,15 @@ provision review:
   needs:
     - review
   script:
+    - yarn scripts release patch
     - yarn appsemble config set context review
     - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
-    - yarn appsemble organization create appsemble --name Appsemble --email support@appsemble.com --website https://appsemble.com --description 'The open source low-code app building platform'
+    - yarn appsemble organization create appsemble
+      --description 'The open source low-code app building platform'
+      --email support@appsemble.com
+      --icon packages/server/assets/appsemble.png
+      --name Appsemble
+      --website https://appsemble.com
     - yarn appsemble -vv block publish blocks/*
     - yarn appsemble -vv app create apps/*
 
@@ -443,9 +543,15 @@ provision staging:
   needs:
     - staging
   script:
+    - yarn scripts release patch
     - yarn appsemble config set context staging
     - yarn appsemble config set remote https://staging.appsemble.review
-    - yarn appsemble organization create appsemble --name Appsemble --email support@appsemble.com --website https://appsemble.com --description 'The open source low-code app building platform'
+    - yarn appsemble organization create appsemble
+      --description 'The open source low-code app building platform'
+      --email support@appsemble.com
+      --icon packages/server/assets/appsemble.png
+      --name Appsemble
+      --website https://appsemble.com
     - yarn appsemble -vv block publish blocks/*
     - yarn appsemble -vv app create apps/*
 
@@ -458,7 +564,8 @@ provision production:
   needs:
     - production
   environment:
-    name: production provision
+    name: production
+    action: prepare
   script:
     - yarn appsemble config set context production
     - yarn appsemble config set remote https://appsemble.app
@@ -474,7 +581,13 @@ provision production:
 lighthouse:
   interruptible: true
   stage: end 2 end
-  dependencies: []
+  needs:
+    - job: provision review
+      optional: true
+    - job: provision staging
+      optional: true
+    - job: provision production
+      optional: true
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'

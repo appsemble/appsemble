@@ -1,7 +1,7 @@
-import { attach } from '@appsemble/sdk';
+import { bootstrap } from '@appsemble/sdk';
 import classNames from 'classnames';
 
-attach(({ actions, data, events, parameters: { buttons }, utils }) => (
+bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
   <div className="buttons is-centered">
     {buttons.map(
       ({

@@ -15,7 +15,7 @@ it('should serve the Appsemble icon', async () => {
 });
 
 it('should serve a white background if an opaque icon is requested', async () => {
-  const response = await request.get('/icon-23.png');
+  const response = await request.get('/icon-23.png?opaque=true');
   expect(response.headers).toMatchObject({ 'content-type': 'image/png' });
   expect(response.data).toMatchImageSnapshot();
 });

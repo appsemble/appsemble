@@ -3,7 +3,6 @@ import { Promisable } from 'type-fest';
 
 import { Action, Message, Remapper, Theme } from './types';
 
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 export * from './types';
 
 /**
@@ -225,7 +224,8 @@ export interface BootstrapParams {
   utils: Utils;
 }
 
-export type BootstrapFunction = (params: BootstrapParams) => Promisable<void>;
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+export type BootstrapFunction = (params: BootstrapParams) => Promisable<Element | void>;
 
 export interface AppsembleBootstrapEvent extends CustomEvent {
   detail: {
@@ -238,35 +238,17 @@ export interface AppsembleBootstrapEvent extends CustomEvent {
  * Register a boostrap function.
  *
  * @param fn - The bootstrap function to register
+ *
+ * If the function returns an element, it’s appended to the shadow root.
  */
 export function bootstrap(fn: BootstrapFunction): void {
-  const event = new CustomEvent('AppsembleBootstrap', {
+  const event: AppsembleBootstrapEvent = new CustomEvent('AppsembleBootstrap', {
     detail: {
       fn,
       document,
     },
-  }) as AppsembleBootstrapEvent;
+  });
   if (document.currentScript) {
     document.currentScript.dispatchEvent(event);
   }
-}
-
-/**
- * Attach the returned node to the shadow root.
- *
- * This convenience wrapper attaches nodes returned by the bootstrap function to the shadow root.
- * This means that the initialization function for a block simply has to return a node.
- *
- * @param fn - The bootstrap function to register.
- */
-// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-export function attach(fn: (params: BootstrapParams) => Promisable<HTMLElement | void>): void {
-  bootstrap(async (params): Promise<void> => {
-    const { shadowRoot } = params;
-
-    const node = await fn(params);
-    if (node instanceof HTMLElement) {
-      shadowRoot.append(node);
-    }
-  });
 }

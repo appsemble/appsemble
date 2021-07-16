@@ -1,0 +1,76 @@
+publiccodeYmlVersion: '0.2'
+name: Appsemble
+url: 'https://gitlab.com/appsemble/appsemble'
+softwareVersion: 0.18.21
+releaseDate: '2021-07-09'
+logo: config/assets/logo.svg
+monochromeLogo: config/assets/logo-monochrome.svg
+platforms:
+  - web
+categories:
+  - it-development
+usedBy:
+  - Gemeente Amsterdam
+  - Gemeente Amersfoort
+roadmap: 'https://gitlab.com/groups/appsemble/-/roadmap'
+developmentStatus: beta
+softwareType: standalone/web
+description:
+  en:
+    localisedName: Appsemble
+    genericName: Appsemble
+    shortDescription: >-
+      Appsemple is an open source low-code app building platform. The low-code editor allows users
+      to build apps without the need for technical knowledge.
+    longDescription: >-
+      Appsemble is an open source low-code app building platform. Appsemble enables users to build
+      production grade apps in no time using blocks. Appsemble apps can also use existing data
+      sources. The apps built using Appsemble are discoverable in an internal app store.
+    documentation: 'https://appsemble.app/docs'
+    features:
+      - Not much technical knowledge required
+      - Provider independant
+      - Time saving
+  nl:
+    localisedName: Appsemble
+    genericName: Appsemble
+    shortDescription: >-
+      Appsemple is een open source low-code app platform. In de beschikbare low-code editor worden
+      er basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen.
+    longDescription: >-
+      Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er
+      basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen. Ook kan er relatief
+      gemakkelijk data aan de applicaties worden gekoppeld en kunnen de ontwikkelde apps in een
+      eigen store worden opgeslagen.
+    documentation: 'https://appsemble.app/docs'
+    features:
+      - Weinig technische kennis benodigd
+      - Geen leverancier afhankelijkheid
+      - Tijdbesparend
+legal:
+  license: LGPL-3.0-only
+  mainCopyrightOwner: Appsemble
+  repoOwner: Appsemble
+maintenance:
+  type: internal
+  contacts:
+    - name: Kees van den Broek
+      email: kees@appsemble.com
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - da
+    - de
+    - en
+    - fr
+    - id
+    - nl
+    - ru
+dependsOn:
+  open:
+    - name: Docker
+    - name: Docker Compose
+    - name: NodeJS
+      versionMin: 12
+    - name: Yarn
+    - name: appsemble/appsemble

@@ -10,7 +10,7 @@ pages:
       - name: Netherlands
         blocks:
           - type: data-loader
-            version: 0.18.10
+            version: 0.18.21
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v2/NextPublicHolidays/NL
@@ -19,11 +19,11 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.18.10
+            version: 0.18.21
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
@@ -34,7 +34,7 @@ pages:
       - name: Germany
         blocks:
           - type: data-loader
-            version: 0.18.10
+            version: 0.18.21
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v2/NextPublicHolidays/DE
@@ -43,11 +43,11 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.18.10
+            version: 0.18.21
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
@@ -58,7 +58,7 @@ pages:
       - name: Spain
         blocks:
           - type: data-loader
-            version: 0.18.10
+            version: 0.18.21
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v2/NextPublicHolidays/ES
@@ -67,11 +67,11 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.18.10
+            version: 0.18.21
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }
@@ -87,7 +87,7 @@ pages:
       - name: USA
         blocks:
           - type: data-loader
-            version: 0.18.10
+            version: 0.18.21
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v2/NextPublicHolidays/US
@@ -96,11 +96,11 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.18.10
+            version: 0.18.21
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
             events:
@@ -109,7 +109,7 @@ pages:
       - name: Canada
         blocks:
           - type: data-loader
-            version: 0.18.10
+            version: 0.18.21
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v2/NextPublicHolidays/CA
@@ -118,11 +118,11 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.18.10
+            version: 0.18.21
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
             events:
@@ -131,7 +131,7 @@ pages:
       - name: Mexico
         blocks:
           - type: data-loader
-            version: 0.18.10
+            version: 0.18.21
             actions:
               onLoad:
                 url: https://date.nager.at/Api/v2/NextPublicHolidays/MX
@@ -140,11 +140,11 @@ pages:
               emit:
                 data: holidays
           - type: table
-            version: 0.18.10
+            version: 0.18.21
             parameters:
               fields:
                 - value: { prop: date }
-                  label: { string.format: { messageId: date } }
+                  label: { translate: date }
                 - value: { prop: name }
                   label: { string.format: { messageId: name, values: { locale: EN } } }
                 - value: { prop: localName }

@@ -1,5 +1,7 @@
 import { BlockDefinition } from '@appsemble/types';
 
+import { blockNamePattern } from './constants';
+
 export type IdentifiableBlock = Pick<BlockDefinition, 'type' | 'version'>;
 
 const prefix = '@appsemble/';
@@ -31,6 +33,19 @@ export function stripBlockName(name: string): string {
 }
 
 /**
+ * Parse a block name into a tuple of organization id and block id.
+ *
+ * @param name - The block name to parse.
+ * @returns A tuple containing the organization id and block id.
+ */
+export function parseBlockName(name: string): [string, string] {
+  const match = blockNamePattern.exec(normalizeBlockName(name));
+  if (match) {
+    return match.slice(1, 3) as [string, string];
+  }
+}
+
+/**
  * Filter blocks unique by their type and version.
  *
  * @param blocks - Input blocks.
@@ -40,13 +55,17 @@ export function filterBlocks(blocks: IdentifiableBlock[]): IdentifiableBlock[] {
   const visited = new Set();
   const result: IdentifiableBlock[] = [];
 
-  blocks.forEach(({ type, version }) => {
+  for (const { type, version } of blocks) {
     const name = normalizeBlockName(type);
     const asString = `${name}@${version}`;
     if (!visited.has(asString)) {
       result.push({ type: name, version });
     }
     visited.add(asString);
-  });
+  }
   return result;
+}
+
+export function prefixBlockURL(block: IdentifiableBlock, url: string): string {
+  return `/api/blocks/${normalizeBlockName(block.type)}/versions/${block.version}/${url}`;
 }
