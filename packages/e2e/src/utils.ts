@@ -32,7 +32,9 @@ export async function open(url: string): Promise<void> {
     );
     tag.textContent = '0.0.0';
   });
-  await page.waitForNavigation({ waitUntil: 'networkidle0' });
+  await page.waitForFunction(
+    () => document.getElementsByClassName('.appsemble-loader').length === 0,
+  );
 }
 
 /**
@@ -47,7 +49,10 @@ export async function login(url: string): Promise<void> {
     password: BOT_ACCOUNT_PASSWORD,
   });
   await expect(page).toClick('button[type="submit"]', { text: 'Login' });
-  await page.waitForNavigation({ waitUntil: 'networkidle0' });
+  await page.waitForFunction(
+    () => document.getElementsByClassName('.appsemble-loader').length === 0,
+  );
+  await page.waitForFunction((pathname: string) => window.location.pathname === pathname, {}, url);
 }
 
 /**

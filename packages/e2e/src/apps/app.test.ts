@@ -3,7 +3,7 @@ import { login, open } from '../utils';
 describe('/apps/:appId', () => {
   beforeAll(async () => {
     await open('/en/apps');
-    await login();
+    await login('/en/apps');
     await page.waitForResponse('/api/apps');
     // Const [button] = await page.$x("//a[contains(., 'Person')]");
     // await button.click();
@@ -47,7 +47,11 @@ describe('/apps/:appId', () => {
   it('should link to the snapshots page', async () => {
     await expect(page).toClick('a', { text: 'Person' });
     await expect(page).toClick('a', { text: 'Snapshots' });
-    // XXX How to assert this is the snapshots page?
+    await expect(page).toMatch('Snapshots');
+    // The list of <ul> on this page should be:
+    // 3 menu-lists for the navigation menu, breadcrumbs, list of snapshots
+    expect(document.getElementsByTagName('ul')[4].children.length).toBeGreaterThanOrEqual(1);
+    // XXX: Perhaps add a specific match for the dates of snapshots to show up here.
   });
 
   it('should link to the app settings', async () => {

@@ -5,7 +5,7 @@ describe('/docs', () => {
     await open('/en/docs');
   });
 
-  it('should render a list of blocks', async () => {
+  it('should render the getting started page', async () => {
     await expect(page).toMatch('Getting Started');
   });
 });

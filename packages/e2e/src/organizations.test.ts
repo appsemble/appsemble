@@ -1,4 +1,4 @@
-import { createURL, open } from './utils';
+import { open } from './utils';
 
 describe('/organizations', () => {
   beforeEach(async () => {
@@ -14,8 +14,9 @@ describe('/organizations', () => {
   it('should link to organization details', async () => {
     await Promise.all([
       expect(page).toClick('[href="/en/organizations/appsemble"]', { text: 'Appsemble' }),
-      page.waitForResponse(createURL('/api/organizations/appsemble/apps')),
-      page.waitForResponse(createURL('/api/organizations/appsemble/blocks')),
+      await page.waitForFunction(
+        () => document.getElementsByClassName('.appsemble-loader').length === 0,
+      ),
     ]);
     await expect(page).toMatch('Apps');
     await expect(page).toMatch('Blocks');
