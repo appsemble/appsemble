@@ -161,7 +161,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     if (yaml) {
       try {
         // The YAML should be valid YAML.
-        jsYaml.safeLoad(yaml);
+        jsYaml.load(yaml);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -188,9 +188,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     try {
       await transactional(async (transaction) => {
         record = await App.create(result, { transaction });
-        const newYaml = yaml
-          ? yaml.contents?.toString('utf8') || yaml
-          : jsYaml.safeDump(definition);
+        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.dump(definition);
         record.AppSnapshots = [
           await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
         ];
@@ -519,7 +517,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        appFromYaml = jsYaml.safeLoad(yaml.contents || yaml);
+        appFromYaml = jsYaml.load(yaml.contents || yaml);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -553,9 +551,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
       if (definition) {
-        const newYaml = yaml
-          ? yaml.contents?.toString('utf8') || yaml
-          : jsYaml.safeDump(definition);
+        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.dump(definition);
         const snapshot = await AppSnapshot.create(
           { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
           { transaction },

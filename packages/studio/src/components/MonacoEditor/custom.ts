@@ -1,17 +1,13 @@
 import { schemas } from '@appsemble/utils';
-import {
-  Environment,
-  languages,
-  IEvent as MonacoIEvent,
-} from 'monaco-editor/esm/vs/editor/editor.api';
+import { Environment } from 'monaco-editor/esm/vs/editor/editor.api';
 import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker';
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker';
+import { setDiagnosticsOptions } from 'monaco-yaml';
 import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
 // Webpack loader syntax is required here, because  json.worker and yaml.worker also import this
 // file.
 // eslint-disable-next-line import/no-unresolved, import/no-webpack-loader-syntax, node/no-extraneous-import
 import MonacoWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
-
 // Cherry-picking these features makes the editor more light weight, resulting in a smaller bundle
 // size and a snappier user experience.
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
@@ -23,20 +19,8 @@ import 'monaco-editor/esm/vs/editor/contrib/format/formatActions';
 import 'monaco-editor/esm/vs/editor/contrib/hover/hover';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
-import 'monaco-yaml';
-
-declare module 'monaco-editor/esm/vs/editor/editor.api' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace, @typescript-eslint/no-shadow
-  namespace languages.yaml {
-    type DiagnosticsOptions = monaco.languages.yaml.DiagnosticsOptions;
-    type LanguageServiceDefaults = monaco.languages.yaml.LanguageServiceDefaults;
-    export const yamlDefaults: LanguageServiceDefaults;
-  }
-}
 
 declare global {
-  type IEvent<T> = MonacoIEvent<T>;
-
   interface Window {
     MonacoEnvironment: Environment;
   }
@@ -59,7 +43,8 @@ window.MonacoEnvironment = {
   },
 };
 
-languages.yaml.yamlDefaults.setDiagnosticsOptions({
+setDiagnosticsOptions({
+  completion: true,
   validate: true,
   format: true,
   enableSchemaRequest: true,

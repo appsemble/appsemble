@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto';
 
 import { normalize, Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
-import { safeDump } from 'js-yaml';
+import { dump } from 'js-yaml';
 import { UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
@@ -103,7 +103,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
       /**
        * XXX: Replace this with the template’s YAML but with the edited name and description
        */
-      yaml: safeDump(result.definition),
+      yaml: dump(result.definition),
     });
     record.AppSnapshots = [snapshot];
     if (template.AppBlockStyles.length) {
