@@ -1,7 +1,7 @@
 import { Checkbox, Title, useMeta, useToggle } from '@appsemble/react-components';
 import { defaultLocale, iterJSONSchema, schemas } from '@appsemble/utils';
 import decamelize from 'decamelize';
-import { safeDump } from 'js-yaml';
+import { dump } from 'js-yaml';
 import { Schema as JSONSchema } from 'jsonschema';
 import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -67,7 +67,7 @@ export function AppPage(): ReactElement {
             <div className="pl-6">
               {showYaml.enabled ? (
                 <CodeBlock className="mb-5" language="yaml">
-                  {safeDump(schema)}
+                  {dump(schema)}
                 </CodeBlock>
               ) : (
                 <Schema anchors idPrefix={id} renderRef={Ref} schema={schema} />

@@ -10,7 +10,7 @@ import { AppDefinition, BlockManifest } from '@appsemble/types';
 import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
-import { safeDump, safeLoad } from 'js-yaml';
+import { dump, load } from 'js-yaml';
 import { Validator } from 'jsonschema';
 import { editor } from 'monaco-editor';
 import { OpenAPIV3 } from 'openapi-types';
@@ -103,7 +103,7 @@ export default function EditPage(): ReactElement {
     let { yaml: yamlDefinition } = app;
 
     if (!yamlDefinition) {
-      yamlDefinition = safeDump(definition);
+      yamlDefinition = dump(definition);
       push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
     }
 
@@ -116,7 +116,7 @@ export default function EditPage(): ReactElement {
     let definition: AppDefinition;
     // Attempt to parse the YAML into a JSON object
     try {
-      definition = safeLoad(appDefinition) as AppDefinition;
+      definition = load(appDefinition) as AppDefinition;
     } catch {
       push(formatMessage(messages.invalidYaml));
       setValid(false);
@@ -189,7 +189,7 @@ export default function EditPage(): ReactElement {
     }
 
     const { id } = params;
-    const definition = safeLoad(appDefinition) as AppDefinition;
+    const definition = load(appDefinition) as AppDefinition;
 
     try {
       const formData = new FormData();
@@ -231,8 +231,8 @@ export default function EditPage(): ReactElement {
 
   const onUpload = useCallback(async () => {
     if (valid) {
-      const newApp = safeLoad(appDefinition) as AppDefinition;
-      const originalApp = safeLoad(initialDefinition) as AppDefinition;
+      const newApp = load(appDefinition) as AppDefinition;
+      const originalApp = load(initialDefinition) as AppDefinition;
 
       if (!equal(newApp.resources, originalApp.resources)) {
         promptUpdateApp();
@@ -248,7 +248,7 @@ export default function EditPage(): ReactElement {
       switch (location.hash) {
         case '#editor': {
           setAppDefinition(value);
-          const definition = safeLoad(value) as AppDefinition;
+          const definition = load(value) as AppDefinition;
           setApp({ ...app, yaml: value, definition });
           break;
         }
