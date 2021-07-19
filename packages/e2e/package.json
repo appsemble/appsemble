@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/e2e",
-  "version": "0.18.8",
+  "version": "0.18.21",
   "private": true,
   "description": "End-to-end tests used for testing Appsemble apps in an existing environment.",
   "keywords": [
@@ -24,7 +24,7 @@
     "e2e": "cypress run"
   },
   "dependencies": {
-    "@appsemble/utils": "0.18.8",
+    "@appsemble/utils": "0.18.21",
     "cypress": "^7.7.0",
     "eslint-plugin-cypress": "^2.11.3"
   },

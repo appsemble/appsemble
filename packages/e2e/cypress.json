@@ -6,5 +6,5 @@
   "reporterOptions": {
     "mochaFile": "junit.xml"
   },
-  "testFiles": "**/*.test.ts"
+  "testFiles": "**/*.spec.ts"
 }
