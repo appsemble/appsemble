@@ -3,6 +3,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
+import { AppPage } from './AppPage';
 import { Doc } from './Doc';
 import { messages } from './messages';
 
@@ -45,6 +46,11 @@ export function DocsRoutes(): ReactElement {
             </MenuItem>,
             subRoutes.length ? (
               <MenuSection key={`${path}-section`}>
+                {getUrl(p, url).endsWith('/docs/reference') && (
+                  <MenuItem exact to={getUrl('reference/app', url)}>
+                    <FormattedMessage {...messages.app} />
+                  </MenuItem>
+                )}
                 {subRoutes.map((subRoute) => (
                   <MenuItem key={subRoute.p} to={getUrl(subRoute.p, url)}>
                     {subRoute.title}
@@ -59,6 +65,9 @@ export function DocsRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={messages.title}>
+      <Route exact path={`${url}/reference/app`}>
+        <AppPage />
+      </Route>
       {docs.map(({ Component, p, title }) => (
         <Route exact key={p} path={getUrl(p, path)} strict>
           <Doc component={Component} title={title} />

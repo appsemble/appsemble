@@ -1144,6 +1144,78 @@ pages:
       });
     });
   });
+
+  it('should allow for dry runs without creating an app', async () => {
+    authorizeStudio();
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      { params: { dryRun: true } },
+    );
+
+    const appCount = await App.count();
+    expect(createdResponse.status).toStrictEqual(204);
+    expect(appCount).toStrictEqual(0);
+  });
+
+  it('should still return errors during dry runs', async () => {
+    authorizeStudio();
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        icon: createFixtureStream('nodejs-logo.png'),
+        definition: {
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      { params: { dryRun: true } },
+    );
+
+    const appCount = await App.count();
+    expect(createdResponse.status).toStrictEqual(400);
+    expect(createdResponse.data).toMatchObject({
+      message: 'JSON schema validation failed',
+      errors: [
+        {
+          code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+          params: ['name'],
+          message: 'Missing required property: name',
+          path: ['definition'],
+        },
+      ],
+    });
+    expect(appCount).toStrictEqual(0);
+  });
 });
 
 describe('patchApp', () => {

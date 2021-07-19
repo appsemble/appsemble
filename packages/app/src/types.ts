@@ -90,6 +90,12 @@ export interface ShowDialogParams {
 }
 
 export type ShowDialogAction = (params: ShowDialogParams) => () => void;
+export interface ShowShareDialogParams {
+  url?: string;
+  text?: string;
+  title?: string;
+}
+export type ShowShareDialog = (params: ShowShareDialogParams) => Promise<void>;
 
 export interface FlowActions {
   back: (data: any) => Promise<any>;
@@ -109,6 +115,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   history: RouteComponentProps['history'];
   pageReady: Promise<void>;
   route: Match<{ lang: string }>;
+  showShareDialog: ShowShareDialog;
   showDialog: ShowDialogAction;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;

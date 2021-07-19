@@ -1,6 +1,6 @@
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
-import { safeDump } from 'js-yaml';
+import { dump } from 'js-yaml';
 
 import {
   App,
@@ -75,7 +75,7 @@ beforeEach(async () => {
     }),
   ];
   t1.AppSnapshots = [
-    await AppSnapshot.create({ AppId: t1.id, UserId: user.id, yaml: safeDump(t1.definition) }),
+    await AppSnapshot.create({ AppId: t1.id, UserId: user.id, yaml: dump(t1.definition) }),
   ];
 
   templates = [t1, t2];

@@ -38,7 +38,7 @@ export async function readYaml<R>(path: string): Promise<[R, string]> {
     throw new AppsembleError(`Error reading file ${path}`);
   }
   try {
-    return [yaml.safeLoad(content) as unknown as R, content];
+    return [yaml.load(content) as unknown as R, content];
   } catch (error: unknown) {
     if (error instanceof yaml.YAMLException) {
       throw new AppsembleError(`Error parsing ${path}\n${error.message}`);
@@ -59,7 +59,7 @@ export async function writeYaml(
   data: unknown,
   dumpOptions: DumpOptions,
 ): Promise<void> {
-  await fs.writeFile(path, yaml.safeDump(data, dumpOptions));
+  await fs.writeFile(path, yaml.dump(data, dumpOptions));
 }
 
 interface OpenDirSafeOptions {

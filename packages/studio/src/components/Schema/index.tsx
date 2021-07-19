@@ -1,5 +1,7 @@
-import { Join, MarkdownContent } from '@appsemble/react-components';
+import { Join, MarkdownContent, Title } from '@appsemble/react-components';
 import { combineSchemas } from '@appsemble/utils';
+import classNames from 'classnames';
+import decamelize from 'decamelize';
 import { Schema as SchemaType } from 'jsonschema';
 import { FC, ReactElement, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -11,10 +13,20 @@ import { SchemaDescriptor } from './SchemaDescriptor';
 export interface RenderRefProps {
   isArray: boolean;
 
-  ref: string;
+  jsonRef: string;
 }
 
 interface SchemaProps {
+  /**
+   * If this is true, anchors will be rendered for all properties.
+   */
+  anchors?: boolean;
+
+  /**
+   * If specified, use this prefix for the generated title ID.
+   */
+  idPrefix?: string;
+
   /**
    * The JSON schema to render
    */
@@ -45,6 +57,8 @@ interface SchemaProps {
  * Render a JSON schema into readable API documentation.
  */
 export function Schema({
+  anchors,
+  idPrefix,
   name,
   nested,
   renderRef: RenderRef = null,
@@ -61,11 +75,19 @@ export function Schema({
     (mergedSchema.description ||
       (mergedSchema.items && !Array.isArray(mergedSchema.items) && mergedSchema.items.description));
 
+  let id = idPrefix;
+  if (name) {
+    id = decamelize(name, { separator: '-' });
+    if (idPrefix) {
+      id = `${idPrefix}-${id}`;
+    }
+  }
+
   return (
     <div className={nested ? `${styles.nested} px-3 py-3 my-2 mx-0` : ''}>
       {name ? (
-        <div>
-          <span className="has-text-weight-bold">
+        <div className={classNames('pb-2', { [styles.hasAnchor]: anchors })}>
+          <Title anchor={anchors} className="is-inline-block is-marginless" id={id} size={5}>
             {mergedSchema.title ? (
               <>
                 <span className="mr-1">{mergedSchema.title}</span>
@@ -74,7 +96,7 @@ export function Schema({
             ) : (
               name
             )}
-          </span>
+          </Title>
           {(required || mergedSchema.required === true) && (
             <span className="ml-2 tag is-info">
               <FormattedMessage {...messages.required} />
@@ -82,20 +104,19 @@ export function Schema({
           )}
         </div>
       ) : null}
-      {name ? <hr /> : null}
       {nested &&
         (mergedSchema.$ref || mergedSchema.type ? (
           <SchemaDescriptor label={<FormattedMessage {...messages.type} />}>
             <code>
               {mergedSchema.$ref
-                ? RenderRef && <RenderRef isArray={false} ref={mergedSchema.$ref} />
+                ? RenderRef && <RenderRef isArray={false} jsonRef={mergedSchema.$ref} />
                 : mergedSchema.type === 'array'
                 ? !mergedSchema.items || Array.isArray(mergedSchema.items)
                   ? 'array'
                   : mergedSchema.items.type
                   ? `${mergedSchema.items.type}[]`
                   : mergedSchema.items.$ref
-                  ? RenderRef && <RenderRef isArray ref={mergedSchema.items.$ref} />
+                  ? RenderRef && <RenderRef isArray jsonRef={mergedSchema.items.$ref} />
                   : 'array'
                 : mergedSchema.type}
             </code>
@@ -159,9 +180,12 @@ export function Schema({
       {mergedSchema.type === 'object' && mergedSchema.properties
         ? Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
             <Schema
+              anchors={anchors}
+              idPrefix={id}
               key={propertyName}
               name={propertyName}
               nested
+              renderRef={RenderRef}
               required={
                 Array.isArray(mergedSchema.required) &&
                 mergedSchema.required?.includes(propertyName)
@@ -175,9 +199,12 @@ export function Schema({
         !Array.isArray(mergedSchema.items) &&
         Object.entries(mergedSchema.items.properties ?? {}).map(([propertyName, property]) => (
           <Schema
+            anchors={anchors}
+            idPrefix={id}
             key={propertyName}
             name={propertyName}
             nested
+            renderRef={RenderRef}
             required={
               typeof (schema.items as SchemaType).required === 'object' &&
               ((schema.items as SchemaType).required as string[]).includes(propertyName)

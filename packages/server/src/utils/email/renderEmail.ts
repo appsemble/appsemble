@@ -60,7 +60,7 @@ export async function renderEmail(
 
   if (!sub) {
     visit<YamlNode>(mdast, 'yaml', (node, index, parent: Parent) => {
-      ({ subject } = yaml.safeLoad(node.value) as Email);
+      ({ subject } = yaml.load(node.value) as Email);
       parent.children.splice(index, 1);
     });
   }

@@ -1,21 +1,18 @@
 import classNames from 'classnames';
-import { ReactElement, ReactNode } from 'react';
+import { ComponentPropsWithoutRef, ReactElement, useRef } from 'react';
 
-interface TitleProps {
-  /**
-   * The content to render inside the header element.
-   */
-  children: ReactNode;
+import { useScrollTo } from '../useScrollTo';
+import styles from './index.module.css';
 
-  /**
-   * An additional class name to add.
-   */
-  className?: string;
+type Level = 1 | 2 | 3 | 4 | 5 | 6;
 
+type HeadingComponentType = `h${Level}`;
+
+interface TitleProps extends ComponentPropsWithoutRef<HeadingComponentType> {
   /**
-   * The locale of the title content.
+   * If the title has a title and `anchor` is true, an anchor will be rendered.
    */
-  lang?: string;
+  anchor?: boolean;
 
   /**
    * The header level.
@@ -36,16 +33,32 @@ interface TitleProps {
  * A bulma styled title element.
  */
 export function Title({
+  anchor,
   children,
   className,
-  lang,
+  id,
   size = 3,
   level = (size - 2) as TitleProps['size'],
+  ...props
 }: TitleProps): ReactElement {
-  const Component = `h${level}` as 'h1';
+  const ref = useRef<HTMLHeadingElement>();
+
+  useScrollTo(ref);
+
+  const Component = `h${level}` as HeadingComponentType;
 
   return (
-    <Component className={classNames(`title is-${size}`, className)} lang={lang}>
+    <Component
+      className={classNames(`title is-${size}`, styles.root, className)}
+      id={id}
+      ref={ref}
+      {...props}
+    >
+      {id && anchor && (
+        <a className={styles.anchor} href={`#${id}`}>
+          <span className={`fas fa-link fa-xs has-text-grey-lighter mr-${size}`} />
+        </a>
+      )}
       {children}
     </Component>
   );

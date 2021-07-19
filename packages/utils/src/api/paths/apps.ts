@@ -8,6 +8,15 @@ export const paths: OpenAPIV3.PathsObject = {
       tags: ['app'],
       description: 'Create a new app',
       operationId: 'createApp',
+      parameters: [
+        {
+          in: 'query',
+          name: 'dryRun',
+          description:
+            'Validate whether an app could be created without actually creating one. Must be set to ‘true’.',
+          schema: { type: 'string' },
+        },
+      ],
       requestBody: {
         content: {
           'multipart/form-data': {

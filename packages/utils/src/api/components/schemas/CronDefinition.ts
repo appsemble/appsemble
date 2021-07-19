@@ -10,6 +10,9 @@ export const CronDefinition: OpenAPIV3.NonArraySchemaObject = {
     action: {
       type: 'object',
       description: 'A mapping of actions that can be fired by the cronjob.',
+      additionalProperties: {
+        $ref: '#/components/schemas/ActionDefinition',
+      },
     },
   },
 };

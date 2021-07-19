@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { appId } from '../../utils/settings';
+import { appId, sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
@@ -50,7 +50,7 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
             <FormattedMessage {...messages.settings} />
           </MenuItem>
         )}
-        {layout?.feedback === 'navigation' && (
+        {layout?.feedback === 'navigation' && sentryDsn && (
           <MenuItem icon="comment" to={`${url}/Feedback`}>
             <FormattedMessage {...messages.feedback} />
           </MenuItem>

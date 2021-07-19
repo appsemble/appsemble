@@ -1,4 +1,5 @@
 import { Icon, NavbarDropdown, NavbarItem } from '@appsemble/react-components';
+import { sentryDsn } from 'app/src/utils/settings';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -61,7 +62,7 @@ export function ProfileDropdown(): ReactElement {
           <FormattedMessage {...messages.settings} />
         </NavbarItem>
       )}
-      {(layout?.feedback ?? 'navbar') === 'navbar' && (
+      {(layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn && (
         <NavbarItem icon="comment" to={`/${lang}/Feedback`}>
           <FormattedMessage {...messages.feedback} />
         </NavbarItem>

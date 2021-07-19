@@ -68,7 +68,7 @@ export function getAppFromRecord(
     definition,
     yaml:
       record.AppSnapshots?.[0]?.yaml ??
-      (!omittedValues.includes('yaml') && yaml.safeDump(record.definition)),
+      (!omittedValues.includes('yaml') && yaml.dump(record.definition)),
     showAppsembleLogin: record.showAppsembleLogin ?? true,
     rating:
       record.RatingAverage == null

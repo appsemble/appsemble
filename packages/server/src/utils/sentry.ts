@@ -1,7 +1,7 @@
 import { URL } from 'url';
 
 import { init } from '@sentry/node';
-import { isMatch } from 'matcher';
+import matcher from 'matcher';
 
 import { argv } from './argv';
 import { readPackageJson } from './readPackageJson';
@@ -38,7 +38,7 @@ export function getSentryClientSettings(domain: string): SentrySettings {
   if (
     !argv.sentryDsn ||
     !argv.sentryAllowedDomains ||
-    !isMatch(domain, argv.sentryAllowedDomains.split(','))
+    !matcher(domain, argv.sentryAllowedDomains.split(',')).length
   ) {
     return {};
   }

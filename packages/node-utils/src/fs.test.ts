@@ -39,9 +39,11 @@ describe('readYaml', () => {
     const path = resolveFixture('invalid-yaml.txt');
     await expect(readYaml(path)).rejects.toThrow(
       new AppsembleError(`Error parsing ${path}
-end of the stream or a document separator is expected at line 2, column 1:
-    - indentation
-    ^`),
+end of the stream or a document separator is expected (2:1)
+
+ 1 |   - bad
+ 2 | - indentation
+-----^`),
     );
   });
 });

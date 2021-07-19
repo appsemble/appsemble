@@ -1,3 +1,6 @@
+import { readdirSync } from 'fs';
+import { join, resolve } from 'path';
+
 import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import ts from 'typescript';
 
@@ -261,6 +264,24 @@ describe('getBlockConfigFromTypeScript', () => {
         required: ['param'],
         type: 'object',
       },
+    });
+  });
+
+  describe('official blocks', () => {
+    const blocksDir = resolve(__dirname, '..', '..', '..', '..', 'blocks');
+
+    it.each(readdirSync(blocksDir))('%s', (name) => {
+      const dir = join(blocksDir, name);
+
+      const result = getBlockConfigFromTypeScript({
+        name,
+        version: '',
+        output: '',
+        webpack: undefined,
+        dir,
+      });
+
+      expect(result).toMatchSnapshot();
     });
   });
 });

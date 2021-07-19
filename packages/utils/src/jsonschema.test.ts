@@ -1,4 +1,4 @@
-import { combineSchemas, generateDataFromSchema } from './jsonschema';
+import { combineSchemas, generateDataFromSchema, iterJSONSchema } from './jsonschema';
 
 describe('generateDataFromSchema', () => {
   it('should not crash if no schema is defined', () => {
@@ -199,5 +199,108 @@ describe('combineSchemas', () => {
         },
       },
     });
+  });
+});
+
+describe('iterJSONSchema', () => {
+  it('should handle properties', () => {
+    const onSchema = jest.fn();
+    const schema = {
+      type: 'object',
+      properties: {
+        foo: { description: 'foo' },
+      },
+    };
+
+    iterJSONSchema(schema, onSchema);
+
+    expect(onSchema).toHaveBeenCalledTimes(2);
+    expect(onSchema).toHaveBeenCalledWith(schema);
+    expect(onSchema).toHaveBeenCalledWith(schema.properties.foo);
+  });
+
+  it('should handle additionalProperties', () => {
+    const onSchema = jest.fn();
+    const schema = {
+      type: 'object',
+      additionalProperties: { description: 'foo' },
+    };
+
+    iterJSONSchema(schema, onSchema);
+
+    expect(onSchema).toHaveBeenCalledTimes(2);
+    expect(onSchema).toHaveBeenCalledWith(schema);
+    expect(onSchema).toHaveBeenCalledWith(schema.additionalProperties);
+  });
+
+  it('should handle an items object', () => {
+    const onSchema = jest.fn();
+    const schema = {
+      type: 'array',
+      items: { description: 'foo' },
+    };
+
+    iterJSONSchema(schema, onSchema);
+
+    expect(onSchema).toHaveBeenCalledTimes(2);
+    expect(onSchema).toHaveBeenCalledWith(schema);
+    expect(onSchema).toHaveBeenCalledWith(schema.items);
+  });
+
+  it('should handle an items array', () => {
+    const onSchema = jest.fn();
+    const schema = {
+      type: 'array',
+      items: [{ description: 'foo' }, { description: 'bar' }],
+    };
+
+    iterJSONSchema(schema, onSchema);
+
+    expect(onSchema).toHaveBeenCalledTimes(3);
+    expect(onSchema).toHaveBeenCalledWith(schema);
+    expect(onSchema).toHaveBeenCalledWith(schema.items[0]);
+    expect(onSchema).toHaveBeenCalledWith(schema.items[1]);
+  });
+
+  it('should handle additionalItems', () => {
+    const onSchema = jest.fn();
+    const schema = {
+      type: 'array',
+      additionalItems: { description: 'foo' },
+    };
+
+    iterJSONSchema(schema, onSchema);
+
+    expect(onSchema).toHaveBeenCalledTimes(2);
+    expect(onSchema).toHaveBeenCalledWith(schema);
+    expect(onSchema).toHaveBeenCalledWith(schema.additionalItems);
+  });
+
+  it('should handle oneOf', () => {
+    const onSchema = jest.fn();
+    const schema = {
+      type: 'array',
+      oneOf: [{ description: 'foo' }],
+    };
+
+    iterJSONSchema(schema, onSchema);
+
+    expect(onSchema).toHaveBeenCalledTimes(2);
+    expect(onSchema).toHaveBeenCalledWith(schema);
+    expect(onSchema).toHaveBeenCalledWith(schema.oneOf[0]);
+  });
+
+  it('should handle allOf', () => {
+    const onSchema = jest.fn();
+    const schema = {
+      type: 'array',
+      allOf: [{ description: 'foo' }],
+    };
+
+    iterJSONSchema(schema, onSchema);
+
+    expect(onSchema).toHaveBeenCalledTimes(2);
+    expect(onSchema).toHaveBeenCalledWith(schema);
+    expect(onSchema).toHaveBeenCalledWith(schema.allOf[0]);
   });
 });

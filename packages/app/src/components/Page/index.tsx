@@ -8,7 +8,7 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogParams } from '../../types';
+import { ShowDialogParams, ShowShareDialog } from '../../types';
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -22,6 +22,7 @@ import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
 import styles from './index.module.css';
 import { messages } from './messages';
+import { ShareDialog, ShareDialogState } from './ShareDialog';
 
 export function Page(): ReactElement {
   const { definition } = useAppDefinition();
@@ -38,17 +39,31 @@ export function Page(): ReactElement {
 
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
+  const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
+  const showShareDialog: ShowShareDialog = useCallback(
+    (params) =>
+      new Promise<void>((resolve, reject) => {
+        setShareDialogParams({
+          params,
+          resolve,
+          reject,
+        });
+      }),
+    [],
+  );
+
   const ee = useRef<EventEmitter>();
   if (!ee.current) {
     ee.current = new EventEmitter();
   }
 
-  let index = definition.pages.findIndex((p) => normalize(p.name) === pageId);
+  const normalizedPageId = normalize(pageId);
+  let index = definition.pages.findIndex((p) => normalize(p.name) === normalizedPageId);
 
   if (index < 0) {
     const pageMessages = appMessageIds.filter((id) => id.startsWith('pages.'));
     const translatedPage = pageMessages.find(
-      (id) => normalize(getAppMessage({ id }).format() as string) === pageId,
+      (id) => normalize(getAppMessage({ id }).format() as string) === normalizedPageId,
     );
 
     if (translatedPage) {
@@ -134,6 +149,7 @@ export function Page(): ReactElement {
             prefix={prefix}
             remap={remapWithContext}
             showDialog={showDialog}
+            showShareDialog={showShareDialog}
             subPages={page.subPages}
           />
         ) : (
@@ -148,6 +164,7 @@ export function Page(): ReactElement {
                   prefix={prefix}
                   remap={remapWithContext}
                   showDialog={showDialog}
+                  showShareDialog={showShareDialog}
                 />
               ) : (
                 <BlockList
@@ -158,6 +175,7 @@ export function Page(): ReactElement {
                   prefix={`${prefix}.blocks`}
                   remap={remapWithContext}
                   showDialog={showDialog}
+                  showShareDialog={showShareDialog}
                 />
               )}
             </Route>
@@ -171,6 +189,11 @@ export function Page(): ReactElement {
           page={page}
           remap={remapWithContext}
           showDialog={showDialog}
+          showShareDialog={showShareDialog}
+        />
+        <ShareDialog
+          setShareDialogParams={setShareDialogParams}
+          shareDialogParams={shareDialogParams}
         />
       </main>
     );
@@ -178,7 +201,7 @@ export function Page(): ReactElement {
 
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
-  if (!isLoggedIn) {
+  if (page && !isLoggedIn) {
     return <Redirect to={`/${lang}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 

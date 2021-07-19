@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockManifest } from '@appsemble/types';
 import {
   AppsembleValidationError,
@@ -125,6 +125,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
         template = false,
         yaml,
       },
+      query: { dryRun },
     },
   } = ctx;
 
@@ -160,7 +161,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     if (yaml) {
       try {
         // The YAML should be valid YAML.
-        jsYaml.safeLoad(yaml);
+        jsYaml.load(yaml);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -184,24 +185,40 @@ export async function createApp(ctx: KoaContext): Promise<void> {
     }
 
     let record: App;
-    await transactional(async (transaction) => {
-      record = await App.create(result, { transaction });
-      const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.safeDump(definition);
-      record.AppSnapshots = [
-        await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
-      ];
-      logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
-      record.AppScreenshots = screenshots?.length
-        ? await AppScreenshot.bulkCreate(
-            screenshots.map((screenshot: File) => ({
-              screenshot: screenshot.contents,
-              AppId: record.id,
-            })),
-            // These queries provide huge logs.
-            { transaction, logging: false },
-          )
-        : [];
-    });
+    try {
+      await transactional(async (transaction) => {
+        record = await App.create(result, { transaction });
+        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.dump(definition);
+        record.AppSnapshots = [
+          await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
+        ];
+        logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
+        record.AppScreenshots = screenshots?.length
+          ? await AppScreenshot.bulkCreate(
+              screenshots.map((screenshot: File) => ({
+                screenshot: screenshot.contents,
+                AppId: record.id,
+              })),
+              // These queries provide huge logs.
+              { transaction, logging: false },
+            )
+          : [];
+
+        if (dryRun === 'true') {
+          // Manually calling `await transaction.rollback()` causes an error
+          // when the transaction goes out of scope.
+          throw new AppsembleError('Dry run');
+        }
+      });
+    } catch (error: unknown) {
+      // AppsembleError is only thrown when dryRun is set, meaning it’s only used to test
+      if (error instanceof AppsembleError) {
+        ctx.status = 204;
+        return;
+      }
+
+      throw error;
+    }
 
     record.Organization = await Organization.findByPk(record.OrganizationId, {
       attributes: {
@@ -500,7 +517,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        appFromYaml = jsYaml.safeLoad(yaml.contents || yaml);
+        appFromYaml = jsYaml.load(yaml.contents || yaml);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -534,9 +551,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
       if (definition) {
-        const newYaml = yaml
-          ? yaml.contents?.toString('utf8') || yaml
-          : jsYaml.safeDump(definition);
+        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.dump(definition);
         const snapshot = await AppSnapshot.create(
           { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
           { transaction },

@@ -8,6 +8,8 @@ import { notFound } from '@hapi/boom';
 import axios from 'axios';
 import { md, pki } from 'node-forge';
 import { v4 } from 'uuid';
+import toXml from 'xast-util-to-xml';
+import h from 'xastscript';
 import { SignedXml, xpath } from 'xml-crypto';
 import { DOMImplementation, DOMParser } from 'xmldom';
 
@@ -357,53 +359,40 @@ export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
     throw notFound('SAML secret not found');
   }
 
-  const doc = dom.createDocument(NS.md, 'md:EntityDescriptor', null);
-  const entityDescriptor = doc.documentElement;
-  entityDescriptor.setAttributeNS(NS.xmlns, 'xmlns:md', NS.md);
-  entityDescriptor.setAttribute('entityID', String(new URL(path, argv.host)));
-
-  const spssoDescriptor = doc.createElementNS(NS.md, 'md:SPSSODescriptor');
-  spssoDescriptor.setAttribute('AuthnRequestsSigned', 'true');
-  spssoDescriptor.setAttribute('WantAssertionsSigned', 'true');
-  spssoDescriptor.setAttribute('protocolSupportEnumeration', NS.samlp);
-  // eslint-disable-next-line unicorn/prefer-dom-node-append
-  entityDescriptor.appendChild(spssoDescriptor);
-
-  const createKeyDescriptor = (use: string): void => {
-    const keyDescriptor = doc.createElementNS(NS.md, 'md:KeyDescriptor');
-    keyDescriptor.setAttribute('use', use);
-    // eslint-disable-next-line unicorn/prefer-dom-node-append
-    spssoDescriptor.appendChild(keyDescriptor);
-
-    const keyInfo = doc.createElementNS(NS.ds, 'ds:KeyInfo');
-    keyInfo.setAttributeNS(NS.xmlns, 'xmlns:ds', NS.ds);
-    // eslint-disable-next-line unicorn/prefer-dom-node-append
-    entityDescriptor.appendChild(keyInfo);
-
-    const x509Data = doc.createElementNS(NS.ds, 'ds:X509Data');
-    // eslint-disable-next-line unicorn/prefer-dom-node-append
-    keyInfo.appendChild(x509Data);
-
-    const x509Certificate = doc.createElementNS(NS.ds, 'ds:X509Certificate');
-    x509Certificate.textContent = stripPem(secret.spCertificate, true);
-    // eslint-disable-next-line unicorn/prefer-dom-node-append
-    x509Data.appendChild(x509Certificate);
-  };
-
-  createKeyDescriptor('signing');
-  createKeyDescriptor('encryption');
-
-  const assertionConsumerService = doc.createElementNS(NS.md, 'md:AssertionConsumerService');
-  assertionConsumerService.setAttribute(
-    'Binding',
-    'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+  ctx.body = toXml(
+    <>
+      {{
+        type: 'instruction',
+        name: 'xml',
+        value: 'version="1.0" encoding="utf-8"',
+      }}
+      <md:EntityDescriptor entityID={String(new URL(path, argv.host))} xmlns:md={NS.md}>
+        <md:SPSSODescriptor
+          AuthnRequestsSigned="true"
+          protocolSupportEnumeration={NS.samlp}
+          WantAssertionsSigned="true"
+        >
+          <md:KeyDescriptor use="signing">
+            <ds:KeyInfo xmlns:ds={NS.ds}>
+              <ds:X509Data>
+                <ds:X509Certificate>{stripPem(secret.spCertificate, true)}</ds:X509Certificate>
+              </ds:X509Data>
+            </ds:KeyInfo>
+          </md:KeyDescriptor>
+          <md:KeyDescriptor use="encryption">
+            <ds:KeyInfo xmlns:ds={NS.ds}>
+              <ds:X509Data>
+                <ds:X509Certificate>{stripPem(secret.spCertificate, true)}</ds:X509Certificate>
+              </ds:X509Data>
+            </ds:KeyInfo>
+          </md:KeyDescriptor>
+          <md:AssertionConsumerService
+            Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+            Location={String(new URL(`/api/apps/${appId}/saml/${appSamlSecretId}/acs`, argv.host))}
+          />
+        </md:SPSSODescriptor>
+      </md:EntityDescriptor>
+    </>,
+    { closeEmptyElements: true, tightClose: true },
   );
-  assertionConsumerService.setAttribute(
-    'Location',
-    String(new URL(`/api/apps/${appId}/saml/${appSamlSecretId}/acs`, argv.host)),
-  );
-  // eslint-disable-next-line unicorn/prefer-dom-node-append
-  entityDescriptor.appendChild(assertionConsumerService);
-
-  ctx.body = `<?xml version="1.0" encoding="utf-8"?>\n${doc}`;
 }

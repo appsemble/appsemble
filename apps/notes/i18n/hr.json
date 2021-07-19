@@ -1,0 +1,13 @@
+{
+  "app": {
+    "app.roles.User": "Korisnik",
+    "app.roles.User.description": "Korisnik koji čuva vlastite napomene.",
+    "description": "Sačuvaj osobne napomene",
+    "name": "Napomene",
+    "pages.0": "Napomene"
+  },
+  "messageIds": {
+    "body": "Sadržaj",
+    "title": "Naslov"
+  }
+}
