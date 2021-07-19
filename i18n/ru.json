@@ -423,7 +423,7 @@
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.scopeLabel": "",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.tokenUrlHelp": "",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.tokenUrlLabel": "URL-адрес токена",
-  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.userInfoUrlHelp": "",
+  "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.userInfoUrlHelp": "URL-адрес, с которого Appsemble будет получать информацию о пользователе.",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.OAuth2Modal.userInfoUrlLabel": "",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.addNew": "",
   "studio.src.pages.apps.app.secrets.OAuth2Secrets.error": "",
