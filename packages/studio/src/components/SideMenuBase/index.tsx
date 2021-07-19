@@ -22,7 +22,7 @@ export function SideMenuBase(): ReactElement {
       <MenuItem icon="briefcase" to={`/${lang}/organizations`}>
         <FormattedMessage {...messages.organizations} />
       </MenuItem>
-      <MenuItem icon="scroll" to={`/${lang}/docs`}>
+      <MenuItem icon="book" to={`/${lang}/docs`}>
         <FormattedMessage {...messages.documentation} />
       </MenuItem>
     </MenuSection>
