@@ -1,11 +1,9 @@
-import { open } from './utils';
-
 describe('/docs', () => {
-  beforeEach(async () => {
-    await open('/en/docs');
+  beforeEach(() => {
+    cy.visit('/en/docs');
   });
 
-  it('should render the getting started page', async () => {
-    await expect(page).toMatch('Getting Started');
+  it('should render the getting started page', () => {
+    cy.contains('Getting Started').should('exist');
   });
 });

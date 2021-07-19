@@ -1,19 +1,24 @@
-import { open } from './utils';
+import { waitForAPICall } from './utils';
 
 describe('/blocks', () => {
-  beforeEach(async () => {
-    await open('/en/blocks');
+  beforeEach(() => {
+    cy.visit('/en/blocks');
+    waitForAPICall({ url: '/api/blocks' });
   });
 
-  it('should render a list of blocks', async () => {
-    await expect(page).toMatch('data-loader');
-    await expect(page).toMatch('@appsemble');
+  it('should render a list of blocks', () => {
+    cy.get('[title="@appsemble/data-loader"]').as('data-loader').should('exist');
+    cy.get('@data-loader').contains('data-loader');
+    cy.get('@data-loader').contains('@appsemble');
+    cy.get('@data-loader').contains('data-loader');
+    cy.get('@data-loader').contains('A block that fetches data and emits it using the events API.');
   });
 
-  it('should link to block details', async () => {
-    await expect(page).toClick('[title="@appsemble/data-loader"] a', { text: 'View details' });
-    await expect(page).toMatch('Parameters');
-    await expect(page).toMatch('Actions');
-    await expect(page).toMatch('Events');
+  it('should link to block details', () => {
+    cy.get('[title="@appsemble/data-loader"]').as('data-loader').should('exist');
+    cy.get('@data-loader').contains('View details').click();
+    cy.contains('Parameters').should('exist');
+    cy.contains('Actions').should('exist');
+    cy.contains('Events').should('exist');
   });
 });

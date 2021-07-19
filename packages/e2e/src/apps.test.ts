@@ -1,38 +1,37 @@
-import { createURL, login, open } from './utils';
+import { login, waitForAPICall } from './utils';
 
 describe('/apps', () => {
-  beforeEach(async () => {
-    await open('/en/apps');
+  beforeEach(() => {
+    cy.visit('/en/apps');
   });
 
-  it('should show the page header', async () => {
-    await expect(page).toMatch('All Apps');
-    await expect(page).not.toMatch('My Apps');
+  it('should show the page header', () => {
+    cy.contains('All Apps').should('exist');
+    cy.contains('My Apps').should('not.exist');
   });
 
-  it('should display “My Apps” when logged in', async () => {
-    await login('/en/apps');
-    expect(page.url()).toBe(createURL('/en/apps'));
-    await page.waitForResponse(createURL('/api/apps'));
-    await expect(page).toMatch('My Apps');
-    await expect(page).toMatch('All Apps');
+  it('should display “My Apps” when logged in', () => {
+    login('/en/apps');
+    cy.contains('My Apps').should('exist');
   });
 
-  it('should render a list of apps', async () => {
-    await expect(page).toMatch('Empty');
-    await expect(page).toMatch('Holidays');
-    await expect(page).toMatch('Notes');
-    await expect(page).toMatch('Person');
-    await expect(page).toMatch('Unlittered');
+  it('should render a list of apps', () => {
+    waitForAPICall({
+      method: 'GET',
+      url: '/api/apps*',
+    });
+    cy.contains('Empty App').should('exist');
+    cy.contains('Holidays').should('exist');
+    cy.contains('Notes').should('exist');
+    cy.contains('Person').should('exist');
+    cy.contains('Survey').should('exist');
+    cy.contains('Unlittered').should('exist');
   });
 
-  it('should link to app details', async () => {
-    await expect(page).toClick('a', { text: 'Empty' });
-    await expect(page).toMatch(
+  it('should link to app details', () => {
+    cy.contains('Empty App').click();
+    cy.contains(
       'Empty App is a bare-bones app with two pages and buttons switching between them.',
-    );
-    await expect(page).toMatch(
-      'This is a very minimalist app. It serves as a starting point for you to start building your own app. It contains two pages, each with a single action button that links to the other page.',
-    );
+    ).should('exist');
   });
 });

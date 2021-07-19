@@ -1,0 +1,6 @@
+# The video output should only be available as a test artifact or for local debugging.
+cypress/videos/*
+
+cypress.env.json
+
+test-results.xml

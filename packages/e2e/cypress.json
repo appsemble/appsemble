@@ -1,0 +1,7 @@
+{
+  "integrationFolder": "src",
+  "viewportWidth": 1920,
+  "viewportHeight": 1080,
+  "reporter": "junit",
+  "testFiles": "**/*.test.ts"
+}

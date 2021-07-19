@@ -3,6 +3,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": ["dom"],
-    "types": ["expect-puppeteer", "jest", "jest-environment-puppeteer", "node"]
+    "types": ["cypress", "node"]
   }
 }
