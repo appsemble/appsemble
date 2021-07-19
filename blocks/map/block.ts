@@ -50,7 +50,7 @@ interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
   /**
    * The color to apply to the icon.
    *
-   * @default primary
+   * @default "primary"
    */
   color?: BulmaColor;
 }
@@ -70,7 +70,7 @@ declare module '@appsemble/sdk' {
     /**
      * The error message to display when the location couldn’t be determined.
      *
-     * @default 'Couldn’t find your location. Are location services enabled?'
+     * @default "Couldn’t find your location. Are location services enabled?"
      */
     locationError: never;
   }
@@ -90,7 +90,7 @@ declare module '@appsemble/sdk' {
      *
      * These are used for filtering purposes.
      *
-     * @default 'lat'
+     * @default "lat"
      */
     filterLatitudeName?: string;
 
@@ -99,7 +99,7 @@ declare module '@appsemble/sdk' {
      *
      * These are used for filtering purposes.
      *
-     * @default 'lng'
+     * @default "lng"
      */
     filterLongitudeName?: string;
 
@@ -132,7 +132,7 @@ declare module '@appsemble/sdk' {
      *
      * @default 80
      * @minimum 1
-     * @TJS-type integer
+     * @type integer
      */
     maxClusterRadius?: number;
   }

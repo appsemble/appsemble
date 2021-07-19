@@ -4,6 +4,7 @@ import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockConfig, BlockManifest } from '@appsemble/types';
 import { Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
+import { createFormatter, createParser, SchemaGenerator } from 'ts-json-schema-generator';
 import {
   createProgram,
   findConfigFile,
@@ -21,12 +22,10 @@ import {
   parseJsonConfigFileContent,
   Program,
   readConfigFile,
-  SourceFile,
   sys,
   TypeChecker,
   TypeElement,
 } from 'typescript';
-import { buildGenerator } from 'typescript-json-schema';
 
 /**
  * Get the tsdoc comment for a TypeScript node.
@@ -153,29 +152,29 @@ function processEvents(
  * Get the JSON schema for parameters based on a TypeScript program.
  *
  * @param program - The TypeScript program from which to extract parameters.
- * @param sourceFile - The source file from which to extract parameters.
+ * @param iface - The interface node from which to extract parameters.
  * @returns The JSON schema for the block parameters.
  */
-function processParameters(program: Program, sourceFile: SourceFile): Schema {
-  if (!sourceFile) {
+function processParameters(program: Program, iface: InterfaceDeclaration): Schema {
+  if (!iface) {
     return;
   }
-  const generator = buildGenerator(
-    program,
-    {
-      noExtraProps: true,
-      required: true,
-    },
-    [sourceFile.fileName],
-  );
-  generator.setSchemaOverride('IconName', {
-    type: 'string',
-    format: 'fontawesome',
+  const formatter = createFormatter({}, (fmt) => {
+    fmt.addTypeFormatter({
+      supportsType: (type) => type.getName() === 'IconName',
+      getDefinition: () => ({ type: 'string', format: 'fontawesome' }),
+      getChildren: () => [],
+    });
   });
-  const schema = generator.getSchemaForSymbol('Parameters');
+  const parser = createParser(program, { topRef: false });
+  const generator = new SchemaGenerator(program, parser, formatter);
+  const schema = generator.createSchemaFromNodes([iface]) as Schema;
+  if (schema.definitions && !Object.keys(schema.definitions).length) {
+    delete schema.definitions;
+  }
   // This is the tsdoc that has been added to the SDK to aid the block developer.
   delete schema.description;
-  return schema as Schema;
+  return schema;
 }
 
 /**
@@ -264,7 +263,7 @@ export function getBlockConfigFromTypeScript(
   let eventEmitterInterface: InterfaceDeclaration;
   let eventListenerInterface: InterfaceDeclaration;
   let messagesInterface: InterfaceDeclaration;
-  let parametersSourceFile: SourceFile;
+  let patametersInterface: InterfaceDeclaration;
 
   program.getSourceFiles().forEach((sourceFile) => {
     const fileName = relative(process.cwd(), sourceFile.fileName);
@@ -316,10 +315,10 @@ export function getBlockConfigFromTypeScript(
             break;
           case 'Parameters':
             logger.info(`Found augmented interface 'Parameters' in '${loc}'`);
-            if (parametersSourceFile) {
+            if (patametersInterface) {
               throw new AppsembleError(`Found duplicate interface 'Parameters' in '${loc}'`);
             }
-            parametersSourceFile = sourceFile;
+            patametersInterface = iface;
             break;
           case 'Messages':
             logger.info(`Found augmented interface 'Messages' in '${loc}'`);
@@ -342,7 +341,7 @@ export function getBlockConfigFromTypeScript(
     parameters:
       'parameters' in blockConfig
         ? blockConfig.parameters
-        : processParameters(program, parametersSourceFile),
+        : processParameters(program, patametersInterface),
     messages:
       'messages' in blockConfig
         ? blockConfig.messages

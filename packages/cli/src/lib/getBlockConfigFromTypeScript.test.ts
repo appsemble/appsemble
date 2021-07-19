@@ -30,7 +30,7 @@ describe('getBlockConfigFromTypeScript', () => {
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         additionalProperties: false,
-        definitions: { IconName: { format: 'fontawesome', type: 'string' } },
+        definitions: {},
         properties: {
           param1: { type: 'string' },
           param2: { type: 'number' },
@@ -192,8 +192,10 @@ describe('getBlockConfigFromTypeScript', () => {
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         additionalProperties: false,
-        definitions: { IconName: { format: 'fontawesome', type: 'string' } },
-        properties: { icon: { $ref: '#/definitions/IconName' } },
+        definitions: {},
+        properties: {
+          icon: { description: 'This is an icon.', format: 'fontawesome', type: 'string' },
+        },
         type: 'object',
       },
     });
@@ -252,12 +254,7 @@ describe('getBlockConfigFromTypeScript', () => {
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         additionalProperties: false,
-        definitions: {
-          IconName: {
-            format: 'fontawesome',
-            type: 'string',
-          },
-        },
+        definitions: {},
         properties: {
           param: {},
         },

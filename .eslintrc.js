@@ -21,10 +21,7 @@ module.exports = {
     'jest/no-restricted-matchers': 'off',
 
     'jsdoc/require-jsdoc': 'off',
-    'jsdoc/check-tag-names': [
-      'error',
-      { definedTags: ['format', 'maximum', 'minimum', 'TJS-pattern', 'TJS-type'], jsxTags: true },
-    ],
+    'jsdoc/check-tag-names': 'off',
 
     'unicorn/consistent-destructuring': 'off',
     'unicorn/no-unsafe-regex': 'off',
