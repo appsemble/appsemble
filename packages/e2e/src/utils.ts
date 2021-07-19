@@ -14,7 +14,7 @@ export function login(redirect: string): void {
 /**
  * Intercept and wait for an API call to have finished.
  *
- * @param - - Object containing the method and url of the API method.
+ * @param params - Object containing the method and url of the API method.
  */
 export function waitForAPICall({ method = 'GET', url }: { method?: string; url: string }): void {
   cy.intercept({ url, method, times: 1 }).as('waitForAPICall');
