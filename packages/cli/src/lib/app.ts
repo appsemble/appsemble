@@ -27,7 +27,7 @@ export async function writeAppMessages(
 
   await opendirSafe(path, async (filepath, stat) => {
     switch (stat.name.toLowerCase()) {
-      case 'app.yaml': {
+      case 'app-definition.yaml': {
         [app] = await readYaml<AppDefinition>(filepath);
         break;
       }

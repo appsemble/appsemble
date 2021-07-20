@@ -164,7 +164,7 @@ been registered yet.
 
 At this point, the total app definition should look like this:
 
-```yaml copy filename="app.yaml"
+```yaml copy filename="app-definition.yaml"
 name: My App
 defaultPage: People
 
@@ -255,7 +255,7 @@ displays the newly created person.
 
 The app should now look like this:
 
-```yaml copy filename="app.yaml"
+```yaml copy filename="app-definition.yaml"
 name: My App
 description: ''
 defaultPage: People
@@ -385,7 +385,7 @@ Now, when a list item is clicked, the user will be redirected to the person’s 
 
 At this point, the app definition should look like this:
 
-```yaml copy filename="app.yaml"
+```yaml copy filename="app-definition.yaml"
 name: My App
 description: ''
 defaultPage: People
