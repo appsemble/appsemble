@@ -1,8 +1,8 @@
 publiccodeYmlVersion: '0.2'
 name: Appsemble
-url: 'https://gitlab.com/appsemble/appsemble'
-softwareVersion: 0.18.21
-releaseDate: '2021-07-09'
+url: https://gitlab.com/appsemble/appsemble
+softwareVersion: 0.18.22
+releaseDate: '2021-07-20'
 logo: config/assets/logo.svg
 monochromeLogo: config/assets/logo-monochrome.svg
 platforms:
@@ -12,7 +12,7 @@ categories:
 usedBy:
   - Gemeente Amsterdam
   - Gemeente Amersfoort
-roadmap: 'https://gitlab.com/groups/appsemble/-/roadmap'
+roadmap: https://gitlab.com/groups/appsemble/-/roadmap
 developmentStatus: beta
 softwareType: standalone/web
 description:
@@ -26,7 +26,7 @@ description:
       Appsemble is an open source low-code app building platform. Appsemble enables users to build
       production grade apps in no time using blocks. Appsemble apps can also use existing data
       sources. The apps built using Appsemble are discoverable in an internal app store.
-    documentation: 'https://appsemble.app/docs'
+    documentation: https://appsemble.app/docs
     features:
       - Not much technical knowledge required
       - Provider independant
@@ -42,7 +42,7 @@ description:
       basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen. Ook kan er relatief
       gemakkelijk data aan de applicaties worden gekoppeld en kunnen de ontwikkelde apps in een
       eigen store worden opgeslagen.
-    documentation: 'https://appsemble.app/docs'
+    documentation: https://appsemble.app/docs
     features:
       - Weinig technische kennis benodigd
       - Geen leverancier afhankelijkheid
@@ -63,6 +63,7 @@ localisation:
     - de
     - en
     - fr
+    - hr
     - id
     - nl
     - ru

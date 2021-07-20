@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.22](https://gitlab.com/appsemble/appsemble/-/releases/0.18.22)] - 2021-07-20
+
+### Added
+
+- App: Add Croatian translations.
+- App: Add `share` action.
+- Cli: Added `--dry-run` option to `appsemble app create`.
+- Server: Add block synchronization with remote Appsemble instances.
+- Server: Add option to do a dry run of the app creation endpoint. By adding `?dryRun=true` to the
+  query string, apps can now be validated without having to create a new app or using an existing
+  app.
+- Studio: Add Croatian translations.
+
+### Changed
+
+- Cli: Replace [`typescript-json-schema`](https://github.com/YousefED/typescript-json-schema) with
+  [`ts-json-schema-generator`](https://github.com/vega/ts-json-schema-generator).
+- Cli: The CLI now looks for `app-definition.yaml` instead of `app.yaml`.
+
 ## \[[0.18.21](https://gitlab.com/appsemble/appsemble/-/releases/0.18.21)] - 2021-07-09
 
 ### Added

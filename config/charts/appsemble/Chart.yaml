@@ -1,12 +1,12 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.21
-appVersion: 0.18.21
+version: 0.18.22
+appVersion: 0.18.22
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
-icon: 'https://charts.appsemble.com/icon.svg'
-home: 'https://appsemble.com'
+icon: https://charts.appsemble.com/icon.svg
+home: https://appsemble.com
 keywords:
   - app
   - apps
@@ -15,31 +15,34 @@ keywords:
   - low-code
   - lowcode
 sources:
-  - 'https://gitlab.com/appsemble/appsemble'
-  - 'https://gitlab.com/appsemble/charts'
+  - https://gitlab.com/appsemble/appsemble
+  - https://gitlab.com/appsemble/charts
 dependencies:
   - name: postgresql
     version: 10.5.0
-    repository: 'https://charts.bitnami.com/bitnami'
+    repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: |
     - kind: added
+      description: 'App: Add Croatian translations.'
+    - kind: added
+      description: 'App: Add share action.'
+    - kind: added
+      description: 'Cli: Added --dry-run option to appsemble app create.'
+    - kind: added
+      description: 'Server: Add block synchronization with remote Appsemble instances.'
+    - kind: added
       description: >-
-        App: Append returned element from the bootstrap SDK function to the shadow
-        root.
+        Server: Add option to do a dry run of the app creation endpoint. By adding
+        ?dryRun=true to the query string, apps can now be validated without having
+        to create a new app or using an existing app.
     - kind: added
-      description: 'Cli: Add support for including an icon when creating an organization.'
-    - kind: added
-      description: 'Server: Add support for including an icon when creating an organization.'
-    - kind: added
-      description: >-
-        Server: The block APIs now return a list of languages supported by the
-        block.
-    - kind: added
-      description: 'Studio: Add support for including an icon when creating an organization.'
-    - kind: removed
-      description: 'Sdk: Remove attach function.'
+      description: 'Studio: Add Croatian translations.'
+    - kind: changed
+      description: 'Cli: Replace typescript-json-schema with ts-json-schema-generator.'
+    - kind: changed
+      description: 'Cli: The CLI now looks for app-definition.yaml instead of app.yaml.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
