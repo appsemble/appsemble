@@ -621,7 +621,7 @@ e2e:
     - yarn --frozen-lockfile
     - yarn workspace @appsemble/e2e run e2e
   artifacts:
-    expose_as: Cypress videos/screenshots
+    expose_as: Cypress videos and screenshots
     when: always
     paths:
       - packages/e2e/cypress/videos
