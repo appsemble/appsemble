@@ -126,7 +126,7 @@ By adding a directory called `i18n` you can start adding support for languages b
 
 ```
 my-app/
-├── app.yaml
+├── app-definition.yaml
 └── i18n/
     ├── en.json
     ├── nl.json

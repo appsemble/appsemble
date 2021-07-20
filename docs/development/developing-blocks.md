@@ -68,7 +68,7 @@ yarn appsemble block publish blocks/test
 Open the Appsemble studio on at the base URL of Appsemble. Login, and create your first app. This
 following example app will display your new block.
 
-```yaml copy filename="app.yaml"
+```yaml copy filename="app-definition.yaml"
 name: Test App
 defaultPage: Home
 
@@ -118,7 +118,7 @@ Now lets make the text of the button configurable using the app definition.
 
 In the app definition, specify the value of the parameter.
 
-```yaml copy filename="app.yaml"
+```yaml copy filename="app-definition.yaml"
 name: Test App
 defaultPage: Home
 

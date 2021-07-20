@@ -207,7 +207,7 @@ Themes may also be uploaded as part of an app by the CLI. To do this, create a d
 
 ```
 my-app/
-├── app.yaml
+├── app-definition.yaml
 └── theme/
     ├── @appsemble/
     │   └── form/
