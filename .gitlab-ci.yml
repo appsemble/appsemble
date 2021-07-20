@@ -605,6 +605,7 @@ lighthouse:
 
 e2e:
   stage: end 2 end
+  image: cypress/browsers:node14.17.0-chrome91-ff89
   needs:
     - job: provision review
       optional: true
@@ -618,7 +619,6 @@ e2e:
     - if: $CI_COMMIT_TAG
   script:
     - yarn --frozen-lockfile
-    - yarn install-chrome-dependencies
     - yarn workspace @appsemble/e2e run e2e
   artifacts:
     expose_as: E2E reports
