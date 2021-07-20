@@ -3,7 +3,7 @@
 exports[`Loader should match its snapshot 1`] = `
 <div>
   <div
-    class="loader appsemble-loader"
+    class="loader"
   />
 </div>
 `;

@@ -13,7 +13,5 @@ export function Loader({
   component: Component = 'div',
   ...props
 }: LoaderProps): ReactElement {
-  return (
-    <Component className={classNames(styles.loader, 'appsemble-loader', className)} {...props} />
-  );
+  return <Component className={classNames(styles.loader, className)} {...props} />;
 }

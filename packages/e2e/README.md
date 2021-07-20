@@ -10,9 +10,9 @@ To run end to end tests, run:
 yarn e2e
 ```
 
-The tests use [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer).
+The tests use [Cypress](https://www.cypress.io/).
 
-After each test a screenshot will be saved in the `__screenshots__` directory for further
+After each test a video will be saved in the `packages/e2e/cypress/videos` directory for further
 inspection.
 
 The end to end tests use the following environment variables:
@@ -22,5 +22,3 @@ The end to end tests use the following environment variables:
 - `CI_MERGE_REQUEST_IID` — By default tests are run against the staging environment on
   https://staging.appsemble.review. If this variable is specified, tests are run against the merge
   request review environment instead.
-- `DUMPIO` — If set to `true`, puppeteer IO will be dumped to the terminal.
-- `HEADLESS` — By default a headless browser is used. Set this to `false` to disable headless mode,
