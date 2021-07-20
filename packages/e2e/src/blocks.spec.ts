@@ -1,9 +1,6 @@
-import { waitForAPICall } from './utils';
-
 describe('/blocks', () => {
   beforeEach(() => {
     cy.visit('/en/blocks');
-    waitForAPICall({ url: '/api/blocks' });
   });
 
   it('should render a list of blocks', () => {

@@ -4,13 +4,18 @@ node_modules/
 # Build output for various packages
 dist/
 
-# This may be used for testting create-appsemble
+# This may be used for testing create-appsemble
 /blocks/test/
 
 # Jest output
 coverage/
 __diff_output__/
 junit.xml
+
+# Cypress test output and configuration
+**/cypress/videos/*
+**/cypress/screenshots/*
+**/cypress.env.json
 
 # Use this prefix for GitLab reports
 /gl-*
