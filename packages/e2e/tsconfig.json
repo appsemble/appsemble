@@ -2,6 +2,7 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "module": "commonjs",
+    "lib": ["dom"],
     "types": ["cypress", "node"]
   }
 }
