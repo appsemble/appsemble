@@ -34,44 +34,6 @@
     call-me-maybe "^1.0.1"
     z-schema "^4.2.3"
 
-"@appsemble/sdk@0.18.8":
-  version "0.18.8"
-  resolved "https://registry.yarnpkg.com/@appsemble/sdk/-/sdk-0.18.8.tgz#9828c9197c3ff5de3f16cfca714ce7b839700e6f"
-  integrity sha512-IqUVmbUcteZ9mF9+52hn3G+zdMtbrxe9fco/Ittu6kfBsaoGRQM2jM/WKEiuPqlkZOBuxm1hopANS4WE/ohhNg==
-  dependencies:
-    "@fortawesome/fontawesome-common-types" "^0.2.35"
-    type-fest "^1.0.1"
-
-"@appsemble/types@0.18.8":
-  version "0.18.8"
-  resolved "https://registry.yarnpkg.com/@appsemble/types/-/types-0.18.8.tgz#062d16a1779406e194716ebb9df4ce498128ad37"
-  integrity sha512-M9YBGPLnNQpcbN2yivRGTDrYCYRarpOByB//BSFdJ5csYWxuYAP9rm6HoKpTEptf5WXNV/i+kOIE5bW/Qu9ZqA==
-  dependencies:
-    "@appsemble/sdk" "0.18.8"
-    "@fortawesome/fontawesome-common-types" "^0.2.35"
-    jsonschema "^1.4.0"
-    openapi-types "^7.2.3"
-    type-fest "^1.0.1"
-
-"@appsemble/utils@0.18.8":
-  version "0.18.8"
-  resolved "https://registry.yarnpkg.com/@appsemble/utils/-/utils-0.18.8.tgz#77deeec4f32c7ad14732510f24f06e235dacf747"
-  integrity sha512-Z5V2NMq6LBweY0tYdbspYHxzn28/vzC9odQUjtPvCIL0c8wU+vle5YWU0Tv1qcfmXgGlgsWPc4feObtb7Wf9uw==
-  dependencies:
-    "@appsemble/types" "0.18.8"
-    axios "^0.21.1"
-    cron-parser "^3.3.0"
-    date-fns "^2.20.0"
-    fast-deep-equal "^3.1.3"
-    intl-messageformat "^9.6.6"
-    jsonschema "^1.4.0"
-    langmap "^0.0.16"
-    language-tags "^1.0.5"
-    openapi-types "^7.2.3"
-    parse-duration "^1.0.0"
-    postcss "^7.0.32"
-    type-fest "^1.0.1"
-
 "@babel/code-frame@7.12.11":
   version "7.12.11"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.11.tgz#f4ad435aa263db935b8f10f2c552d23fb716a63f"
@@ -5012,7 +4974,7 @@ create-require@^1.1.0:
   resolved "https://registry.yarnpkg.com/create-require/-/create-require-1.1.1.tgz#c1d7e8f1e5f6cfc9ff65f9cd352d37348756c333"
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
-cron-parser@^3.3.0, cron-parser@^3.5.0:
+cron-parser@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/cron-parser/-/cron-parser-3.5.0.tgz#b1a9da9514c0310aa7ef99c2f3f1d0f8c235257c"
   integrity sha512-wyVZtbRs6qDfFd8ap457w3XVntdvqcwBGxBoTvJQH9KGVKL/fB+h2k3C8AqiVxvUQKN1Ps/Ns46CNViOpVDhfQ==
@@ -5638,7 +5600,7 @@ data-urls@^2.0.0:
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
 
-date-fns@^2.20.0, date-fns@^2.22.1:
+date-fns@^2.22.1:
   version "2.22.1"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.22.1.tgz#1e5af959831ebb1d82992bf67b765052d8f0efc4"
   integrity sha512-yUFPQjrxEmIsMqlHhAhmxkuH769baF21Kk+nZwZGyrMoyLA+LugaQtC0+Tqf9CBUUULWwUJt6Q5ySI3LJDDCGg==
@@ -8431,7 +8393,7 @@ intl-messageformat-parser@^5.3.7:
   dependencies:
     "@formatjs/intl-numberformat" "^5.5.2"
 
-intl-messageformat@9.7.1, intl-messageformat@^9.6.6, intl-messageformat@^9.7.1:
+intl-messageformat@9.7.1, intl-messageformat@^9.7.1:
   version "9.7.1"
   resolved "https://registry.yarnpkg.com/intl-messageformat/-/intl-messageformat-9.7.1.tgz#98e3f6d063413196ff7b63f63bcc3975ad67e83c"
   integrity sha512-DNiuD+/59G9qaYu3U0KgwCV0zpN9XRoUvc8izSNCNAA5MknhiIUONFE0WtScP+E/7JfoENu+CX57P/SURRbI0A==
@@ -15967,7 +15929,7 @@ type-fest@^0.8.1:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
 
-type-fest@^1.0.1, type-fest@^1.2.2:
+type-fest@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-1.2.2.tgz#1930bc36b2064f7ab4aa307a6d1b65965199c698"
   integrity sha512-pfkPYCcuV0TJoo/jlsUeWNV8rk7uMU6ocnYNvca1Vu+pyKi8Rl8Zo2scPt9O72gCsXIm+dMxOOWuA3VFDSdzWA==

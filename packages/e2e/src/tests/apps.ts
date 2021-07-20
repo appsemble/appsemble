@@ -1,4 +1,4 @@
-import { login, waitForAPICall } from './utils';
+import { login, waitForAPICall } from '../utils';
 
 describe('/apps', () => {
   beforeEach(() => {

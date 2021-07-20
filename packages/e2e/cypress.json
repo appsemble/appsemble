@@ -1,10 +1,9 @@
 {
-  "integrationFolder": "src",
+  "integrationFolder": "src/tests",
   "viewportWidth": 1920,
   "viewportHeight": 1080,
   "reporter": "junit",
   "reporterOptions": {
     "mochaFile": "junit.xml"
-  },
-  "testFiles": "**/*.spec.ts"
+  }
 }
