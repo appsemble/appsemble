@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/e2e",
-  "version": "0.18.21",
+  "version": "0.18.23",
   "private": true,
   "description": "End-to-end tests used for testing Appsemble apps in an existing environment.",
   "keywords": [
@@ -25,7 +25,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/utils": "0.18.21",
+    "@appsemble/utils": "0.18.23",
     "cypress": "^8.0.0"
   },
   "engines": {
