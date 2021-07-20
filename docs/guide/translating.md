@@ -41,7 +41,7 @@ Let’s look at a simple example of what this looks like in an app.
 ```yaml
 blocks:
   - type: markdown
-    version: 0.18.21
+    version: 0.18.23
     parameters:
       content:
         translate: myMessage
@@ -58,7 +58,7 @@ Alternatively using `string.format`:
 ```yaml
 blocks:
   - type: markdown
-    version: 0.18.21
+    version: 0.18.23
     parameters:
       content:
         string.format:
@@ -126,7 +126,7 @@ By adding a directory called `i18n` you can start adding support for languages b
 
 ```
 my-app/
-├── app.yaml
+├── app-definition.yaml
 └── i18n/
     ├── en.json
     ├── nl.json
@@ -148,7 +148,7 @@ The format used for these translation files is similar to the format shown on th
   },
   "blocks": {
     "@appsemble/form": {
-      "0.18.21": {
+      "0.18.23": {
         "submit": "An example override of the submit message in the form block."
       }
     }

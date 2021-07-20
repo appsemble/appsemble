@@ -110,7 +110,6 @@ export function builder(yargs: Argv): Argv {
     })
     .option('remote', {
       desc: 'The remote that will be used for downloading unknown blocks. For example: https://appsemble.app',
-      required: true,
     })
     .option('proxy', {
       desc: 'Trust proxy headers. This is used to detect the source IP for logging.',

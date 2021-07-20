@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/feed",
-  "version": "0.18.21",
+  "version": "0.18.23",
   "private": true,
   "description": "A block that displays a feed of cards.",
   "homepage": "https://appsemble.app",
@@ -16,9 +16,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.18.21",
-    "@appsemble/preact-components": "0.18.21",
-    "@appsemble/sdk": "0.18.21",
+    "@appsemble/preact": "0.18.23",
+    "@appsemble/preact-components": "0.18.23",
+    "@appsemble/sdk": "0.18.23",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "@types/leaflet": "^1.7.4",
     "leaflet": "~1.5.1",

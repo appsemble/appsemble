@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.18.21",
+  "version": "0.18.23",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -32,9 +32,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.18.21",
-    "@appsemble/types": "0.18.21",
-    "@appsemble/utils": "0.18.21",
+    "@appsemble/node-utils": "0.18.23",
+    "@appsemble/types": "0.18.23",
+    "@appsemble/utils": "0.18.23",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "axios": "^0.21.1",
     "chalk": "^4.1.1",
@@ -50,13 +50,13 @@
     "postcss-load-config": "3.0.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^7.0.1",
+    "ts-json-schema-generator": "^0.94.1",
     "type-fest": "^1.2.2",
-    "typescript": "4.2.4",
-    "typescript-json-schema": "0.50.1",
+    "typescript": "~4.3.5",
     "yargs": "^17.0.1"
   },
   "devDependencies": {
-    "@appsemble/types": "0.18.21",
+    "@appsemble/types": "0.18.23",
     "@types/concat-stream": "^1.6.1",
     "@types/fs-extra": "^9.0.12",
     "@types/inquirer": "^7.3.3",

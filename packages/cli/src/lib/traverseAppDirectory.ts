@@ -42,7 +42,7 @@ export async function traverseAppDirectory(
         break;
       }
 
-      case 'app.yaml': {
+      case 'app-definition.yaml': {
         logger.info(`Using app definition from ${filepath}`);
         if (appFound) {
           throw new AppsembleError('Found duplicate app definition');
