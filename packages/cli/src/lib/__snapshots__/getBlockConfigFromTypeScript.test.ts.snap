@@ -12,16 +12,11 @@ Object {
   "parameters": Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
-    "definitions": Object {
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
-      },
-    },
     "properties": Object {
       "icon": Object {
-        "$ref": "#/definitions/IconName",
         "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.",
+        "format": "fontawesome",
+        "type": "string",
       },
     },
     "required": Array [
@@ -95,42 +90,21 @@ By default buttons only take up as much space as needed.",
             "type": "boolean",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
             "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
 
 Will not render if undefined.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "inverted": Object {
             "description": "Whether the text and background colors should be inverted.",
             "type": "boolean",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label to display.
 
 Will not render if undefined.",
-            "format": "remapper",
           },
           "light": Object {
             "description": "When set to true, the ‘light’ set of Bulma colors are used.",
@@ -156,9 +130,29 @@ Will not render if undefined.",
         },
         "type": "object",
       },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
     },
     "properties": Object {
@@ -210,12 +204,6 @@ event, which in turn triggers the \`data\` emit event.",
   "parameters": Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
-    "definitions": Object {
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
-      },
-    },
     "properties": Object {
       "skipInitialLoad": Object {
         "description": "By default the \`onLoad\` action is triggered immediately.
@@ -282,19 +270,15 @@ This will be called with the \`count\` parameter, which refers to the amount of 
         ],
         "type": "string",
       },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
-      },
     },
     "properties": Object {
       "color": Object {
         "$ref": "#/definitions/BulmaColor",
-        "default": "'dark'",
+        "default": "dark",
         "description": "The Bulma color to use for the message and the refresh button.",
       },
       "id": Object {
-        "default": "'id'",
+        "default": "id",
         "description": "The property used to identify resources when comparing them in case of array data.",
         "type": "string",
       },
@@ -322,51 +306,6 @@ Compatible data that is received will be displayed.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": Object {
-      "AssetMarkerIcon": Object {
-        "additionalProperties": false,
-        "description": "A marker based on an existing asset.",
-        "properties": Object {
-          "anchor": Object {
-            "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may
-be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a
-height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
-treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-            "items": Array [
-              Object {
-                "type": "number",
-              },
-              Object {
-                "type": "number",
-              },
-            ],
-            "maxItems": 2,
-            "minItems": 2,
-            "type": "array",
-          },
-          "asset": Object {
-            "description": "The id of an asset to use.",
-            "type": "string",
-          },
-          "size": Object {
-            "default": 28,
-            "description": "The height of marker icons in pixels.",
-            "type": "number",
-          },
-        },
-        "required": Array [
-          "asset",
-        ],
-        "type": "object",
-      },
       "BulmaColor": Object {
         "description": "A color known to Bulma.",
         "enum": Array [
@@ -381,6 +320,20 @@ treated in a special way, since they are often used to represent a location:
         ],
         "type": "string",
       },
+      "Field": Object {
+        "anyOf": Array [
+          Object {
+            "$ref": "#/definitions/FileField",
+          },
+          Object {
+            "$ref": "#/definitions/GeoCoordinatesField",
+          },
+          Object {
+            "$ref": "#/definitions/StringField",
+          },
+        ],
+        "description": "All supported types of fields.",
+      },
       "FieldGroup": Object {
         "additionalProperties": false,
         "description": "A group of fields that is repeated for each item in it value.",
@@ -388,72 +341,17 @@ treated in a special way, since they are often used to represent a location:
           "fields": Object {
             "description": "The list of fields to repeat.",
             "items": Object {
-              "anyOf": Array [
-                Object {
-                  "$ref": "#/definitions/FileField",
-                },
-                Object {
-                  "$ref": "#/definitions/GeoCoordinatesField",
-                },
-                Object {
-                  "$ref": "#/definitions/StringField",
-                },
-              ],
-              "description": "All supported types of fields.",
+              "$ref": "#/definitions/Field",
             },
             "type": "array",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
-            "format": "remapper",
           },
           "value": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The Remapper used to retrieve the data.",
-            "format": "remapper",
           },
         },
         "required": Array [
@@ -466,147 +364,32 @@ treated in a special way, since they are often used to represent a location:
         "description": "Displays files as images.",
         "properties": Object {
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
-            "format": "remapper",
           },
           "repeated": Object {
             "description": "Display one or multiple files.",
             "type": "boolean",
           },
           "repeatedName": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The name of the property of the data to fetch from within each item.
 
 If not set, the item itself is used as the url.",
-            "format": "remapper",
           },
           "type": Object {
+            "const": "file",
             "description": "The name of the type of the field.",
-            "enum": Array [
-              "file",
-            ],
             "type": "string",
           },
           "value": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The Remapper used to retrieve the data.",
-            "format": "remapper",
           },
         },
         "required": Array [
           "type",
         ],
-        "type": "object",
-      },
-      "FontAwesomeMarkerIcon": Object {
-        "additionalProperties": false,
-        "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
-        "properties": Object {
-          "anchor": Object {
-            "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may
-be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a
-height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
-treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-            "items": Array [
-              Object {
-                "type": "number",
-              },
-              Object {
-                "type": "number",
-              },
-            ],
-            "maxItems": 2,
-            "minItems": 2,
-            "type": "array",
-          },
-          "color": Object {
-            "$ref": "#/definitions/BulmaColor",
-            "default": "primary",
-            "description": "The color to apply to the icon.",
-          },
-          "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
-          },
-          "size": Object {
-            "default": 28,
-            "description": "The height of marker icons in pixels.",
-            "type": "number",
-          },
-        },
         "type": "object",
       },
       "GeoCoordinatesField": Object {
@@ -614,124 +397,31 @@ treated in a special way, since they are often used to represent a location:
         "description": "Displays a map with a marker.",
         "properties": Object {
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
-            "format": "remapper",
           },
           "latitude": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The name of the field used to access the longitude value.
 
-If \`fields[].name\` is set it is retrieved relatively, otherwise it is fetched from the root of
-the data.",
-            "format": "remapper",
+If \`fields[].name\` is set it is retrieved relatively, otherwise it is fetched from the root of the data.",
           },
           "longitude": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The name of the field used to access the latitude value.
 
-If \`fields[].name\` is set it is retrieved relatively, otherwise it is fetched from the root of
-the data.",
-            "format": "remapper",
+If \`fields[].name\` is set it is retrieved relatively, otherwise it is fetched from the root of the data.",
           },
           "type": Object {
+            "const": "geocoordinates",
             "description": "The name of the type of the field.",
-            "enum": Array [
-              "geocoordinates",
-            ],
             "type": "string",
           },
           "value": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The path to base the longitude and latitude fields from.
 
-If \`fields[].latitude\` and \`fields[].longitude\` are not set it defaults to \`fields[].name.lat\`
-and \`fields[].name.lng\`.",
-            "format": "remapper",
+If \`fields[].latitude\` and \`fields[].longitude\` are not set it defaults to \`fields[].name.lat\` and \`fields[].name.lng\`.",
           },
         },
         "required": Array [
@@ -739,9 +429,29 @@ and \`fields[].name.lng\`.",
         ],
         "type": "object",
       },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
       "StringField": Object {
         "additionalProperties": false,
@@ -750,63 +460,17 @@ and \`fields[].name.lng\`.",
 If the content is an object it will be converted using \`JSON.stringify()\`.",
         "properties": Object {
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
-            "format": "remapper",
           },
           "type": Object {
+            "const": "string",
             "description": "The name of the type of the field.",
-            "enum": Array [
-              "string",
-            ],
             "type": "string",
           },
           "value": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The Remapper used to retrieve the data.",
-            "format": "remapper",
           },
         },
         "type": "object",
@@ -818,13 +482,7 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
         "items": Object {
           "anyOf": Array [
             Object {
-              "$ref": "#/definitions/FileField",
-            },
-            Object {
-              "$ref": "#/definitions/GeoCoordinatesField",
-            },
-            Object {
-              "$ref": "#/definitions/StringField",
+              "$ref": "#/definitions/Field",
             },
             Object {
               "$ref": "#/definitions/FieldGroup",
@@ -842,10 +500,80 @@ If not defined, Appsemble’s Asset API will be used instead.",
       "icons": Object {
         "anyOf": Array [
           Object {
-            "$ref": "#/definitions/FontAwesomeMarkerIcon",
+            "additionalProperties": false,
+            "description": "A marker based on an existing asset.",
+            "properties": Object {
+              "anchor": Object {
+                "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+                "items": Object {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+              },
+              "asset": Object {
+                "description": "The id of an asset to use.",
+                "type": "string",
+              },
+              "size": Object {
+                "default": 28,
+                "description": "The height of marker icons in pixels.",
+                "type": "number",
+              },
+            },
+            "required": Array [
+              "asset",
+            ],
+            "type": "object",
           },
           Object {
-            "$ref": "#/definitions/AssetMarkerIcon",
+            "additionalProperties": false,
+            "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
+            "properties": Object {
+              "anchor": Object {
+                "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+                "items": Object {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+              },
+              "color": Object {
+                "$ref": "#/definitions/BulmaColor",
+                "description": "The color to apply to the icon.",
+              },
+              "icon": Object {
+                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "size": Object {
+                "default": 28,
+                "description": "The height of marker icons in pixels.",
+                "type": "number",
+              },
+            },
+            "type": "object",
           },
         ],
         "description": "Custom icon configuration for geocoordinate fields.",
@@ -922,73 +650,29 @@ Compatible data that is received will be displayed.",
         ],
         "type": "string",
       },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
-      },
-      "Reply": Object {
-        "additionalProperties": false,
-        "properties": Object {
-          "author": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "default": "[{ prop: '$author' }, { prop: 'name' }]",
-            "description": "The author of the reply.",
-            "format": "remapper",
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
           },
-          "content": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "default": "[{ prop: 'content' }]",
-            "description": "The content of the reply.",
-            "format": "remapper",
+          Object {
+            "type": "boolean",
           },
-          "parentId": Object {
-            "description": "The field that is used to associate the ID of the resource this reply belongs to.",
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
             "type": "string",
           },
-        },
-        "type": "object",
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
     },
     "properties": Object {
@@ -997,56 +681,12 @@ Compatible data that is received will be displayed.",
         "type": "string",
       },
       "description": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The description or content of the card.",
-        "format": "remapper",
       },
       "heading": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The heading displayed on the card.",
-        "format": "remapper",
       },
       "marker": Object {
         "anyOf": Array [
@@ -1056,127 +696,17 @@ Compatible data that is received will be displayed.",
               "anchor": Object {
                 "description": "The anchor X and Y offset used for positioning the image.
 
-By default, the center of the icon will be used to mark the location.
-For many icons, it may be desirable to customize this. For example, for a symmetric pin
-which has a width of 10, and a  height of 16, you’ll probably want to set this to \`[5, 16]\`
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a  height of 16, you’ll probably want to set this to \`[5, 16]\`
 
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
-treated in a special way, since they are often used to represent a location:
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
 
 - \`map-marker\`
 - \`map-marker-alt\`
 - \`map-pin\`
 - \`thumbtrack\`",
-                "items": Array [
-                  Object {
-                    "type": "number",
-                  },
-                  Object {
-                    "type": "number",
-                  },
-                ],
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "color": Object {
-                "$ref": "#/definitions/BulmaColor",
-                "default": "primary",
-                "description": "The color to apply to the icon.",
-              },
-              "icon": Object {
-                "$ref": "#/definitions/IconName",
-                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
-              },
-              "latitude": Object {
-                "anyOf": Array [
-                  Object {
-                    "additionalProperties": true,
-                    "properties": Object {},
-                    "type": "object",
-                  },
-                  Object {
-                    "items": Object {
-                      "additionalProperties": true,
-                      "properties": Object {},
-                      "type": "object",
-                    },
-                    "type": "array",
-                  },
-                  Object {
-                    "type": Array [
-                      "string",
-                      "number",
-                      "boolean",
-                    ],
-                  },
-                ],
-                "description": "The latitude of the marker.",
-                "format": "remapper",
-              },
-              "longitude": Object {
-                "anyOf": Array [
-                  Object {
-                    "additionalProperties": true,
-                    "properties": Object {},
-                    "type": "object",
-                  },
-                  Object {
-                    "items": Object {
-                      "additionalProperties": true,
-                      "properties": Object {},
-                      "type": "object",
-                    },
-                    "type": "array",
-                  },
-                  Object {
-                    "type": Array [
-                      "string",
-                      "number",
-                      "boolean",
-                    ],
-                  },
-                ],
-                "description": "The longitude of the marker.",
-                "format": "remapper",
-              },
-              "size": Object {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "required": Array [
-              "latitude",
-              "longitude",
-            ],
-            "type": "object",
-          },
-          Object {
-            "additionalProperties": false,
-            "properties": Object {
-              "anchor": Object {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location.
-For many icons, it may be desirable to customize this. For example, for a symmetric pin
-which has a width of 10, and a  height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
-treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": Array [
-                  Object {
-                    "type": "number",
-                  },
-                  Object {
-                    "type": "number",
-                  },
-                ],
+                "items": Object {
+                  "type": "number",
+                },
                 "maxItems": 2,
                 "minItems": 2,
                 "type": "array",
@@ -1186,56 +716,12 @@ treated in a special way, since they are often used to represent a location:
                 "type": "string",
               },
               "latitude": Object {
-                "anyOf": Array [
-                  Object {
-                    "additionalProperties": true,
-                    "properties": Object {},
-                    "type": "object",
-                  },
-                  Object {
-                    "items": Object {
-                      "additionalProperties": true,
-                      "properties": Object {},
-                      "type": "object",
-                    },
-                    "type": "array",
-                  },
-                  Object {
-                    "type": Array [
-                      "string",
-                      "number",
-                      "boolean",
-                    ],
-                  },
-                ],
+                "$ref": "#/definitions/Remapper",
                 "description": "The latitude of the marker.",
-                "format": "remapper",
               },
               "longitude": Object {
-                "anyOf": Array [
-                  Object {
-                    "additionalProperties": true,
-                    "properties": Object {},
-                    "type": "object",
-                  },
-                  Object {
-                    "items": Object {
-                      "additionalProperties": true,
-                      "properties": Object {},
-                      "type": "object",
-                    },
-                    "type": "array",
-                  },
-                  Object {
-                    "type": Array [
-                      "string",
-                      "number",
-                      "boolean",
-                    ],
-                  },
-                ],
+                "$ref": "#/definitions/Remapper",
                 "description": "The longitude of the marker.",
-                "format": "remapper",
               },
               "size": Object {
                 "default": 28,
@@ -1250,34 +736,63 @@ treated in a special way, since they are often used to represent a location:
             ],
             "type": "object",
           },
+          Object {
+            "additionalProperties": false,
+            "properties": Object {
+              "anchor": Object {
+                "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a  height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+                "items": Object {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+              },
+              "color": Object {
+                "$ref": "#/definitions/BulmaColor",
+                "default": "primary",
+                "description": "The color to apply to the icon.",
+              },
+              "icon": Object {
+                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "latitude": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The latitude of the marker.",
+              },
+              "longitude": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The longitude of the marker.",
+              },
+              "size": Object {
+                "default": 28,
+                "description": "The height of marker icons in pixels.",
+                "type": "number",
+              },
+            },
+            "required": Array [
+              "latitude",
+              "longitude",
+            ],
+            "type": "object",
+          },
         ],
         "description": "The location marker that is displayed on the card.",
       },
       "picture": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The highlighted picture.",
-        "format": "remapper",
       },
       "pictureBase": Object {
         "description": "The base URL used to display pictures.
@@ -1286,86 +801,48 @@ If not defined, the Asset API will be used instead.",
         "type": "string",
       },
       "pictures": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "A list of pictures that are displayed below the highlighted picture.",
-        "format": "remapper",
       },
       "reply": Object {
-        "$ref": "#/definitions/Reply",
+        "additionalProperties": false,
         "description": "The definition used to display replies.",
+        "properties": Object {
+          "author": Object {
+            "$ref": "#/definitions/Remapper",
+            "default": Array [
+              Object {
+                "prop": "$author",
+              },
+              Object {
+                "prop": "name",
+              },
+            ],
+            "description": "The author of the reply.",
+          },
+          "content": Object {
+            "$ref": "#/definitions/Remapper",
+            "default": Array [
+              Object {
+                "prop": "content",
+              },
+            ],
+            "description": "The content of the reply.",
+          },
+          "parentId": Object {
+            "description": "The field that is used to associate the ID of the resource this reply belongs to.",
+            "type": "string",
+          },
+        },
+        "type": "object",
       },
       "subtitle": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The subtitle displayed on the card.",
-        "format": "remapper",
       },
       "title": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The title displayed on the card.",
-        "format": "remapper",
       },
     },
     "type": "object",
@@ -1410,38 +887,49 @@ Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": Object {
+      "AbstractField<\\"date\\",string>": Object {
+        "additionalProperties": false,
+        "properties": Object {
+          "defaultValue": Object {
+            "description": "The filter to apply by default.",
+            "type": "string",
+          },
+          "icon": Object {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": Object {
+            "$ref": "#/definitions/Remapper",
+            "description": "The label displayed next to the field.",
+          },
+          "name": Object {
+            "description": "The name of the field to filter on.",
+            "type": "string",
+          },
+          "type": Object {
+            "const": "date",
+            "description": "The type of the filter field.",
+            "type": "string",
+          },
+        },
+        "required": Array [
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
       "ButtonOption": Object {
         "additionalProperties": false,
         "properties": Object {
           "icon": Object {
-            "$ref": "#/definitions/IconName",
             "description": "An icon to render on the button.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "User-facing label describing the option.",
-            "format": "remapper",
           },
           "value": Object {
             "description": "The value that gets submitted when filtering.",
@@ -1449,8 +937,8 @@ Object {
           },
         },
         "required": Array [
-          "icon",
           "value",
+          "icon",
         ],
         "type": "object",
       },
@@ -1465,35 +953,13 @@ Object {
             "type": "array",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name of the field to filter on.",
@@ -1507,10 +973,8 @@ the label.",
             "type": "array",
           },
           "type": Object {
+            "const": "buttons",
             "description": "The type of the filter field.",
-            "enum": Array [
-              "buttons",
-            ],
             "type": "string",
           },
         },
@@ -1522,170 +986,44 @@ the label.",
         "type": "object",
       },
       "DateField": Object {
-        "additionalProperties": false,
-        "properties": Object {
-          "defaultValue": Object {
-            "description": "The filter to apply by default.",
-            "type": "string",
-          },
-          "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
-          },
-          "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The label displayed next to the field.",
-            "format": "remapper",
-          },
-          "name": Object {
-            "description": "The name of the field to filter on.",
-            "type": "string",
-          },
-          "type": Object {
-            "description": "The type of the filter field.",
-            "enum": Array [
-              "date",
-            ],
-            "type": "string",
-          },
-        },
-        "required": Array [
-          "name",
-          "type",
-        ],
-        "type": "object",
+        "$ref": "#/definitions/AbstractField%3C%22date%22%2Cstring%3E",
       },
       "DateRangeField": Object {
         "additionalProperties": false,
         "properties": Object {
           "defaultValue": Object {
             "description": "The filter to apply by default.",
-            "items": Array [
-              Object {
-                "type": "string",
-              },
-              Object {
-                "type": "string",
-              },
-            ],
+            "items": Object {
+              "type": "string",
+            },
             "maxItems": 2,
             "minItems": 2,
             "type": "array",
           },
           "fromLabel": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label to render on the \`from\` field.",
-            "format": "remapper",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name of the field to filter on.",
             "type": "string",
           },
           "toLabel": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label to render on the \`to\` field.",
-            "format": "remapper",
           },
           "type": Object {
+            "const": "date-range",
             "description": "The type of the filter field.",
-            "enum": Array [
-              "date-range",
-            ],
             "type": "string",
           },
         },
@@ -1710,45 +1048,21 @@ the label.",
             "type": "array",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name of the field to filter on.",
             "type": "string",
           },
           "type": Object {
+            "const": "enum",
             "description": "The type of the filter field.",
-            "enum": Array [
-              "enum",
-            ],
             "type": "string",
           },
         },
@@ -1763,30 +1077,8 @@ the label.",
         "additionalProperties": false,
         "properties": Object {
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "User facing label describing the option.",
-            "format": "remapper",
           },
           "value": Object {
             "description": "The value that gets submitted when filtering.",
@@ -1795,9 +1087,48 @@ the label.",
         },
         "type": "object",
       },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
+      "Field": Object {
+        "anyOf": Array [
+          Object {
+            "$ref": "#/definitions/ButtonsField",
+          },
+          Object {
+            "$ref": "#/definitions/DateField",
+          },
+          Object {
+            "$ref": "#/definitions/DateRangeField",
+          },
+          Object {
+            "$ref": "#/definitions/EnumField",
+          },
+          Object {
+            "$ref": "#/definitions/StringField",
+          },
+        ],
+      },
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
       "StringField": Object {
         "additionalProperties": false,
@@ -1813,45 +1144,21 @@ By setting this to true, an exact match is used.",
             "type": "boolean",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name of the field to filter on.",
             "type": "string",
           },
           "type": Object {
+            "const": "string",
             "description": "The type of the filter field.",
-            "enum": Array [
-              "string",
-            ],
             "type": "string",
           },
         },
@@ -1866,23 +1173,7 @@ the label.",
       "fields": Object {
         "description": "A list of fields the user is allowed to search on.",
         "items": Object {
-          "anyOf": Array [
-            Object {
-              "$ref": "#/definitions/ButtonsField",
-            },
-            Object {
-              "$ref": "#/definitions/DateField",
-            },
-            Object {
-              "$ref": "#/definitions/DateRangeField",
-            },
-            Object {
-              "$ref": "#/definitions/EnumField",
-            },
-            Object {
-              "$ref": "#/definitions/StringField",
-            },
-          ],
+          "$ref": "#/definitions/Field",
         },
         "type": "array",
       },
@@ -1961,207 +1252,6 @@ Compatible data that is received will be displayed and mapped to the fields as d
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": Object {
-      "AcceptRequirement": Object {
-        "additionalProperties": false,
-        "properties": Object {
-          "accept": Object {
-            "description": "The list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).",
-            "items": Object {
-              "type": "string",
-            },
-            "type": "array",
-          },
-          "errorMessage": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
-          },
-        },
-        "required": Array [
-          "accept",
-        ],
-        "type": "object",
-      },
-      "ActionEnumField": Object {
-        "additionalProperties": false,
-        "description": "A dropdown list containing a list of values based on the output of an action.",
-        "properties": Object {
-          "action": Object {
-            "description": "This action will be fired to fetch dynamic enum options.
-
-The action should return an array of objects that contain the \`label\` and \`value\` property.",
-            "format": "action",
-            "type": "string",
-          },
-          "defaultValue": Object {
-            "description": "The default value of the field.",
-          },
-          "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
-          },
-          "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The label displayed next to the field.",
-            "format": "remapper",
-          },
-          "loadError": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "default": "'Error loading options'",
-            "description": "This message is displayed if the options failed to load.",
-            "format": "remapper",
-          },
-          "name": Object {
-            "description": "The name used when storing this field.",
-            "type": "string",
-          },
-          "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
-          },
-          "readOnly": Object {
-            "description": "Whether the field should be read-only.",
-            "type": "boolean",
-          },
-          "requirements": Object {
-            "description": "The requirements that are used to validate the field with.
-
-These are evaluated in the order they are defined in.",
-            "items": Object {
-              "$ref": "#/definitions/RequiredRequirement",
-            },
-            "type": "array",
-          },
-          "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
-          },
-          "type": Object {
-            "description": "The type of the field.",
-            "enum": Array [
-              "enum",
-            ],
-            "type": "string",
-          },
-        },
-        "required": Array [
-          "action",
-          "name",
-          "type",
-        ],
-        "type": "object",
-      },
       "BooleanField": Object {
         "additionalProperties": false,
         "description": "A checkbox that returns \`true\` when checked and \`false\` when not.",
@@ -2171,91 +1261,25 @@ Won’t display if the field has no label of its own.",
             "type": "boolean",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "labelText": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The text to display next to the checkbox.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name used when storing this field.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
@@ -2273,39 +1297,14 @@ This typically means that the checkbox *must* be checked.",
             "type": "array",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
+            "const": "boolean",
             "description": "The type of the field.",
-            "enum": Array [
-              "boolean",
-            ],
             "type": "string",
           },
         },
@@ -2320,30 +1319,8 @@ Won’t display if the field has no label of its own.",
         "description": "An option that is displayed in a dropdown menu or radio button field.",
         "properties": Object {
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label used to display the option.",
-            "format": "remapper",
           },
           "value": Object {
             "description": "The value to use when selecting the option.",
@@ -2359,65 +1336,21 @@ Won’t display if the field has no label of its own.",
         "description": "A date/time picker that results in an exact date and time.",
         "properties": Object {
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name used when storing this field.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
@@ -2425,15 +1358,7 @@ the label.",
           },
           "requirements": Object {
             "items": Object {
-              "anyOf": Array [
-                Object {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                Object {
-                  "$ref": "#/definitions/RangeRequirement",
-                },
-              ],
-              "description": "All requirements applicable to date-time fields.",
+              "$ref": "#/definitions/DateTimeRequirement",
             },
             "type": "array",
           },
@@ -2454,39 +1379,14 @@ the label.",
             "type": "number",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
+            "const": "date",
             "description": "The type of the field.",
-            "enum": Array [
-              "date",
-            ],
             "type": "string",
           },
         },
@@ -2501,65 +1401,21 @@ Won’t display if the field has no label of its own.",
         "description": "A date/time picker that results in an exact date and time.",
         "properties": Object {
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name used when storing this field.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
@@ -2567,15 +1423,7 @@ the label.",
           },
           "requirements": Object {
             "items": Object {
-              "anyOf": Array [
-                Object {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                Object {
-                  "$ref": "#/definitions/RangeRequirement",
-                },
-              ],
-              "description": "All requirements applicable to date-time fields.",
+              "$ref": "#/definitions/DateTimeRequirement",
             },
             "type": "array",
           },
@@ -2596,39 +1444,14 @@ the label.",
             "type": "number",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
+            "const": "date-time",
             "description": "The type of the field.",
-            "enum": Array [
-              "date-time",
-            ],
             "type": "string",
           },
         },
@@ -2638,187 +1461,249 @@ Won’t display if the field has no label of its own.",
         ],
         "type": "object",
       },
-      "EventEnumField": Object {
-        "additionalProperties": false,
-        "description": "A dropdown list containing a list of values based on the output of an event.",
-        "properties": Object {
-          "defaultValue": Object {
-            "description": "The default value of the field.",
+      "DateTimeRequirement": Object {
+        "anyOf": Array [
+          Object {
+            "additionalProperties": false,
+            "description": "A requirement used to enforce the range of available dates.",
+            "properties": Object {
+              "errorMessage": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The error message that is displayed when the requirement is not met.",
+              },
+              "from": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The minimum date that can be picked.",
+              },
+              "to": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The maximum date that can be picked.",
+              },
+            },
+            "type": "object",
           },
-          "event": Object {
-            "description": "Wait until an event has been fired containing the list of options.
+          Object {
+            "$ref": "#/definitions/RequiredRequirement",
+          },
+        ],
+        "description": "All requirements applicable to date-time fields.",
+      },
+      "EnumField": Object {
+        "anyOf": Array [
+          Object {
+            "additionalProperties": false,
+            "description": "A dropdown list containing a list of values based on the output of an action.",
+            "properties": Object {
+              "action": Object {
+                "description": "This action will be fired to fetch dynamic enum options.
 
-The event should return an array of objects that contain the \`label\` and \`value\` property.",
-            "format": "event-listener",
-            "type": "string",
-          },
-          "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
-          },
-          "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
+The action should return an array of objects that contain the \`label\` and \`value\` property.",
+                "format": "action",
+                "type": "string",
               },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
+              "defaultValue": Object {
+                "description": "The default value of the field.",
               },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
+              "icon": Object {
+                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+                "format": "fontawesome",
+                "type": "string",
               },
-            ],
-            "description": "The label displayed next to the field.",
-            "format": "remapper",
-          },
-          "loadError": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
+              "label": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The label displayed next to the field.",
               },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
+              "loadError": Object {
+                "$ref": "#/definitions/Remapper",
+                "default": "Error loading options",
+                "description": "This message is displayed if the options failed to load.",
               },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
+              "name": Object {
+                "description": "The name used when storing this field.",
+                "type": "string",
               },
-            ],
-            "default": "'Error loading options'",
-            "description": "This message is displayed if the options failed to load.",
-            "format": "remapper",
-          },
-          "name": Object {
-            "description": "The name used when storing this field.",
-            "type": "string",
-          },
-          "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
+              "placeholder": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The placeholder to display when the field is empty.",
               },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
+              "readOnly": Object {
+                "description": "Whether the field should be read-only.",
+                "type": "boolean",
               },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
-          },
-          "readOnly": Object {
-            "description": "Whether the field should be read-only.",
-            "type": "boolean",
-          },
-          "requirements": Object {
-            "description": "The requirements that are used to validate the field with.
+              "requirements": Object {
+                "description": "The requirements that are used to validate the field with.
 
 These are evaluated in the order they are defined in.",
-            "items": Object {
-              "$ref": "#/definitions/RequiredRequirement",
-            },
-            "type": "array",
-          },
-          "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
                 "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
+                  "$ref": "#/definitions/RequiredRequirement",
                 },
                 "type": "array",
               },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The label that is shown to the right of the label.
+              "tag": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
-          },
-          "type": Object {
-            "description": "The type of the field.",
-            "enum": Array [
-              "enum",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+              },
+              "type": Object {
+                "const": "enum",
+                "description": "The type of the field.",
+                "type": "string",
+              },
+            },
+            "required": Array [
+              "action",
+              "name",
+              "type",
             ],
-            "type": "string",
+            "type": "object",
           },
-        },
-        "required": Array [
-          "event",
-          "name",
-          "type",
+          Object {
+            "additionalProperties": false,
+            "description": "A dropdown list containing a list of values based on the output of an event.",
+            "properties": Object {
+              "defaultValue": Object {
+                "description": "The default value of the field.",
+              },
+              "event": Object {
+                "description": "Wait until an event has been fired containing the list of options.
+
+The event should return an array of objects that contain the \`label\` and \`value\` property.",
+                "format": "event-listener",
+                "type": "string",
+              },
+              "icon": Object {
+                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "label": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The label displayed next to the field.",
+              },
+              "loadError": Object {
+                "$ref": "#/definitions/Remapper",
+                "default": "Error loading options",
+                "description": "This message is displayed if the options failed to load.",
+              },
+              "name": Object {
+                "description": "The name used when storing this field.",
+                "type": "string",
+              },
+              "placeholder": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The placeholder to display when the field is empty.",
+              },
+              "readOnly": Object {
+                "description": "Whether the field should be read-only.",
+                "type": "boolean",
+              },
+              "requirements": Object {
+                "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+                "items": Object {
+                  "$ref": "#/definitions/RequiredRequirement",
+                },
+                "type": "array",
+              },
+              "tag": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+              },
+              "type": Object {
+                "const": "enum",
+                "description": "The type of the field.",
+                "type": "string",
+              },
+            },
+            "required": Array [
+              "event",
+              "name",
+              "type",
+            ],
+            "type": "object",
+          },
+          Object {
+            "additionalProperties": false,
+            "description": "A dropdown list containing a list of predetermined values.",
+            "properties": Object {
+              "defaultValue": Object {
+                "description": "The default value of the field.",
+              },
+              "enum": Object {
+                "description": "The list of available choices.",
+                "items": Object {
+                  "$ref": "#/definitions/Choice",
+                },
+                "type": "array",
+              },
+              "icon": Object {
+                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "label": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The label displayed next to the field.",
+              },
+              "name": Object {
+                "description": "The name used when storing this field.",
+                "type": "string",
+              },
+              "placeholder": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The placeholder to display when the field is empty.",
+              },
+              "readOnly": Object {
+                "description": "Whether the field should be read-only.",
+                "type": "boolean",
+              },
+              "requirements": Object {
+                "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+                "items": Object {
+                  "$ref": "#/definitions/RequiredRequirement",
+                },
+                "type": "array",
+              },
+              "tag": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+              },
+              "type": Object {
+                "const": "enum",
+                "description": "The type of the field.",
+                "type": "string",
+              },
+            },
+            "required": Array [
+              "enum",
+              "name",
+              "type",
+            ],
+            "type": "object",
+          },
         ],
-        "type": "object",
       },
       "Field": Object {
         "anyOf": Array [
           Object {
-            "$ref": "#/definitions/DateTimeField",
+            "$ref": "#/definitions/BooleanField",
           },
           Object {
             "$ref": "#/definitions/DateField",
           },
           Object {
-            "$ref": "#/definitions/BooleanField",
+            "$ref": "#/definitions/DateTimeField",
           },
           Object {
-            "$ref": "#/definitions/RadioField",
-          },
-          Object {
-            "$ref": "#/definitions/SyncEnumField",
-          },
-          Object {
-            "$ref": "#/definitions/ActionEnumField",
-          },
-          Object {
-            "$ref": "#/definitions/EventEnumField",
+            "$ref": "#/definitions/EnumField",
           },
           Object {
             "$ref": "#/definitions/FileField",
@@ -2833,10 +1718,13 @@ Won’t display if the field has no label of its own.",
             "$ref": "#/definitions/NumberField",
           },
           Object {
-            "$ref": "#/definitions/StringField",
+            "$ref": "#/definitions/ObjectField",
           },
           Object {
-            "$ref": "#/definitions/ObjectField",
+            "$ref": "#/definitions/RadioField",
+          },
+          Object {
+            "$ref": "#/definitions/StringField",
           },
         ],
       },
@@ -2848,62 +1736,18 @@ Won’t display if the field has no label of its own.",
             "description": "The default value for the field.",
           },
           "emptyFileLabel": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "default": "' '",
+            "$ref": "#/definitions/Remapper",
+            "default": " ",
             "description": "The label that is shown for empty files.",
-            "format": "remapper",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "maxHeight": Object {
             "description": "The maximum height of uploaded images.",
@@ -2918,30 +1762,8 @@ the label.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "quality": Object {
             "description": "The quality modifier to use when uploading images, in percentages.",
@@ -2961,55 +1783,19 @@ the label.",
 
 These are evaluated in the order they are defined in.",
             "items": Object {
-              "anyOf": Array [
-                Object {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                Object {
-                  "$ref": "#/definitions/LengthRequirement",
-                },
-                Object {
-                  "$ref": "#/definitions/AcceptRequirement",
-                },
-              ],
-              "description": "All requirements applicable to file fields.",
+              "$ref": "#/definitions/FileRequirement",
             },
             "type": "array",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
+            "const": "file",
             "description": "The type of the field.",
-            "enum": Array [
-              "file",
-            ],
             "type": "string",
           },
         },
@@ -3019,53 +1805,54 @@ Won’t display if the field has no label of its own.",
         ],
         "type": "object",
       },
-      "FormRequirement": Object {
-        "additionalProperties": false,
-        "properties": Object {
-          "action": Object {
-            "description": "The name of the action to trigger when the requirement is checked.",
-            "format": "action",
-            "type": "string",
-          },
-          "errorMessage": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
+      "FileRequirement": Object {
+        "anyOf": Array [
+          Object {
+            "additionalProperties": false,
+            "properties": Object {
+              "accept": Object {
+                "description": "The list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).",
                 "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
+                  "type": "string",
                 },
                 "type": "array",
               },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
+              "errorMessage": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The error message that is displayed when the requirement is not met.",
               },
-            ],
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
-          },
-          "isValid": Object {
-            "description": "The list of fields that must be valid before running the requirement action.",
-            "items": Object {
-              "type": "string",
             },
-            "type": "array",
+            "required": Array [
+              "accept",
+            ],
+            "type": "object",
           },
-        },
-        "required": Array [
-          "action",
-          "isValid",
+          Object {
+            "additionalProperties": false,
+            "description": "A requirement used to enforce the length or amount of items in the input.",
+            "properties": Object {
+              "errorMessage": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The error message that is displayed when the requirement is not met.",
+              },
+              "maxLength": Object {
+                "description": "The maximum length.",
+                "minimum": 1,
+                "type": "number",
+              },
+              "minLength": Object {
+                "description": "The minimum length.",
+                "minimum": 1,
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "$ref": "#/definitions/RequiredRequirement",
+          },
         ],
-        "type": "object",
+        "description": "All requirements applicable to file fields.",
       },
       "GeoCoordinatesField": Object {
         "additionalProperties": false,
@@ -3079,150 +1866,52 @@ Won’t display if the field has no label of its own.",
             "description": "The location (latitude, longitude) to default to when the user’s location cannot be found.
 
 This can be used to set the location to something that is more relevant to the user.",
-            "items": Array [
-              Object {
-                "type": "number",
-              },
-              Object {
-                "type": "number",
-              },
-            ],
+            "items": Object {
+              "type": "number",
+            },
             "maxItems": 2,
             "minItems": 2,
             "type": "array",
           },
           "defaultValue": Object {
-            "additionalProperties": true,
             "description": "The default value of the field.",
-            "properties": Object {},
             "type": "object",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "locationError": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "default": "'Couldn’t find your location. Are location services enabled?'",
+            "$ref": "#/definitions/Remapper",
+            "default": "Couldn’t find your location. Are location services enabled?",
             "description": "The error message to display when the location couldn’t be determined.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name used when storing this field.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
             "type": "boolean",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
+            "const": "geocoordinates",
             "description": "The type of the field.",
-            "enum": Array [
-              "geocoordinates",
-            ],
             "type": "string",
           },
         },
@@ -3240,104 +1929,35 @@ Won’t display if the field has no label of its own.",
             "description": "The default value of the field.",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name used when storing this field.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
             "type": "boolean",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
+            "const": "hidden",
             "description": "The type of the field.",
-            "enum": Array [
-              "hidden",
-            ],
             "type": "string",
           },
         },
@@ -3345,94 +1965,6 @@ Won’t display if the field has no label of its own.",
           "name",
           "type",
         ],
-        "type": "object",
-      },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
-      },
-      "LengthRequirement": Object {
-        "additionalProperties": false,
-        "description": "A requirement used to enforce the length or amount of items in the input.",
-        "properties": Object {
-          "errorMessage": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
-          },
-          "maxLength": Object {
-            "description": "The maximum length.",
-            "minimum": 1,
-            "type": "number",
-          },
-          "minLength": Object {
-            "description": "The minimum length.",
-            "minimum": 1,
-            "type": "number",
-          },
-        },
-        "type": "object",
-      },
-      "MinMaxRequirement": Object {
-        "additionalProperties": false,
-        "description": "Minimum and maximum form requirements for number fields.",
-        "properties": Object {
-          "errorMessage": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
-          },
-          "max": Object {
-            "description": "The maximum value of the field.",
-            "type": "number",
-          },
-          "min": Object {
-            "description": "The minimum value of the field.",
-            "type": "number",
-          },
-        },
         "type": "object",
       },
       "NumberField": Object {
@@ -3444,65 +1976,21 @@ Won’t display if the field has no label of its own.",
             "type": "number",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name used when storing this field.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
@@ -3513,49 +2001,15 @@ the label.",
 
 These are evaluated in the order they are defined in.",
             "items": Object {
-              "anyOf": Array [
-                Object {
-                  "$ref": "#/definitions/MinMaxRequirement",
-                },
-                Object {
-                  "$ref": "#/definitions/StepRequirement",
-                },
-                Object {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-              ],
-              "description": "All requirements applicable to number fields.",
+              "$ref": "#/definitions/NumberRequirement",
             },
             "type": "array",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
             "description": "The type of the field.",
@@ -3572,35 +2026,60 @@ Won’t display if the field has no label of its own.",
         ],
         "type": "object",
       },
+      "NumberRequirement": Object {
+        "anyOf": Array [
+          Object {
+            "additionalProperties": false,
+            "description": "Minimum and maximum form requirements for number fields.",
+            "properties": Object {
+              "errorMessage": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The error message that is displayed when the requirement is not met.",
+              },
+              "max": Object {
+                "description": "The maximum value of the field.",
+                "type": "number",
+              },
+              "min": Object {
+                "description": "The minimum value of the field.",
+                "type": "number",
+              },
+            },
+            "type": "object",
+          },
+          Object {
+            "$ref": "#/definitions/RequiredRequirement",
+          },
+          Object {
+            "additionalProperties": false,
+            "description": "Requirement used to indicate how big a step should be for the field.
+
+Note that for \`integer\` type fields are rounded _down_.",
+            "properties": Object {
+              "errorMessage": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The error message that is displayed when the requirement is not met.",
+              },
+              "step": Object {
+                "description": "The amount to increment or decrement when using the stepper buttons of the field.",
+                "type": "number",
+              },
+            },
+            "required": Array [
+              "step",
+            ],
+            "type": "object",
+          },
+        ],
+        "description": "All requirements applicable to number fields.",
+      },
       "ObjectField": Object {
         "additionalProperties": false,
         "properties": Object {
           "addLabel": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "default": "'Remove'",
+            "$ref": "#/definitions/Remapper",
+            "default": "Remove",
             "description": "The label to show on the button for adding a new entry for repeated fields.",
-            "format": "remapper",
           },
           "fields": Object {
             "description": "The fields contained by this object.",
@@ -3610,96 +2089,30 @@ Won’t display if the field has no label of its own.",
             "type": "array",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name used when storing this field.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
             "type": "boolean",
           },
           "removeLabel": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "default": "'Add'",
+            "$ref": "#/definitions/Remapper",
+            "default": "Add",
             "description": "The label to show on the button for removing an entry for repeated fields.",
-            "format": "remapper",
           },
           "repeated": Object {
             "description": "If true, this field represents an array of objects.",
@@ -3708,44 +2121,19 @@ the label.",
           "requirements": Object {
             "description": "Requirements that are applicable to an object field.",
             "items": Object {
-              "$ref": "#/definitions/LengthRequirement",
+              "$ref": "#/definitions/ObjectRequirement",
             },
             "type": "array",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
+            "const": "object",
             "description": "The type of the field.",
-            "enum": Array [
-              "object",
-            ],
             "type": "string",
           },
         },
@@ -3756,6 +2144,27 @@ Won’t display if the field has no label of its own.",
         ],
         "type": "object",
       },
+      "ObjectRequirement": Object {
+        "additionalProperties": false,
+        "description": "All requirements applicable to object fields.",
+        "properties": Object {
+          "errorMessage": Object {
+            "$ref": "#/definitions/Remapper",
+            "description": "The error message that is displayed when the requirement is not met.",
+          },
+          "maxLength": Object {
+            "description": "The maximum length.",
+            "minimum": 1,
+            "type": "number",
+          },
+          "minLength": Object {
+            "description": "The minimum length.",
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
       "RadioField": Object {
         "additionalProperties": false,
         "description": "A radio button that returns the associated value when selected.",
@@ -3764,35 +2173,13 @@ Won’t display if the field has no label of its own.",
             "description": "The default value of the field.",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "name": Object {
             "description": "The name used when storing this field.",
@@ -3806,30 +2193,8 @@ the label.",
             "type": "array",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
@@ -3845,38 +2210,13 @@ These are evaluated in the order they are defined in.",
             "type": "array",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
-            "enum": Array [
-              "radio",
-            ],
+            "const": "radio",
             "type": "string",
           },
         },
@@ -3886,168 +2226,37 @@ Won’t display if the field has no label of its own.",
         ],
         "type": "object",
       },
-      "RangeRequirement": Object {
-        "additionalProperties": false,
-        "description": "A requirement used to enforce the range of available dates.",
-        "properties": Object {
-          "errorMessage": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
           },
-          "from": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The minimum date that can be picked.",
-            "format": "remapper",
+          Object {
+            "type": "boolean",
           },
-          "to": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The maximum date that can be picked.",
-            "format": "remapper",
+          Object {
+            "type": "number",
           },
-        },
-        "type": "object",
-      },
-      "RegexRequirement": Object {
-        "additionalProperties": false,
-        "description": "Requirement that matches using a given regex.",
-        "properties": Object {
-          "errorMessage": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
+          Object {
+            "type": "object",
           },
-          "flags": Object {
-            "default": "'g'",
-            "description": "The flags to use for the regex.
-
-Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
-            "pattern": "^[gimsuy]+$",
+          Object {
             "type": "string",
           },
-          "regex": Object {
-            "description": "The regex to match with. Must be a valid JavaScript regex.",
-            "type": "string",
-          },
-        },
-        "required": Array [
-          "regex",
         ],
-        "type": "object",
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
       "RequiredRequirement": Object {
         "additionalProperties": false,
         "description": "Requirement used to mark the field as required.",
         "properties": Object {
           "errorMessage": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
           },
           "required": Object {
             "description": "Whether the field is required.",
@@ -4059,65 +2268,13 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
         ],
         "type": "object",
       },
-      "StepRequirement": Object {
-        "additionalProperties": false,
-        "description": "Requirement used to indicate how big a step should be for the field.
-
-Note that for \`integer\` type fields are rounded _down_.",
-        "properties": Object {
-          "errorMessage": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
-          },
-          "step": Object {
-            "description": "The amount to increment or decrement when using the stepper buttons of the field.",
-            "type": "number",
-          },
-        },
-        "required": Array [
-          "step",
-        ],
-        "type": "object",
-      },
       "StringField": Object {
         "additionalProperties": false,
-        "description": "Fields with the type of [\`string\`](#StringField) support requirements. This is an array of
-requirements that are used to validate the value the user inputs. Each requirement can be
-provided with its own custom error message, allowing for better feedback towards users.
+        "description": "Fields with the type of [\`string\`](#StringField) support requirements. This is an array of requirements that are used to validate the value the user inputs. Each requirement can be provided with its own custom error message, allowing for better feedback towards users.
 
-For example, the [\`regex\`](#RegexRequirement) requirement type allows you to validate a field
-using [Regular Expressions](https://learnxinyminutes.com/docs/pcre/). So for example if you want
-a string field that requires a field to be an email address that ends with “@appsemble.com”,
-you could enforce this like so:
+For example, the [\`regex\`](#RegexRequirement) requirement type allows you to validate a field using [Regular Expressions](https://learnxinyminutes.com/docs/pcre/). So for example if you want a string field that requires a field to be an email address that ends with “@appsemble.com”, you could enforce this like so:
 
-\`\`\`yaml
-type: string
-requirements:
-  - regex: \\\\w+@appsemble\\\\.com
-    errorMessage: Value does not end with “@appsemble.com”
-\`\`\`",
+\`\`\`yaml type: string requirements:   - regex: \\\\w+@appsemble\\\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
         "properties": Object {
           "defaultValue": Object {
             "description": "The default value of the field.",
@@ -4132,35 +2289,13 @@ requirements:
             "type": "string",
           },
           "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label displayed next to the field.",
-            "format": "remapper",
           },
           "multiline": Object {
             "default": false,
@@ -4172,30 +2307,8 @@ the label.",
             "type": "string",
           },
           "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
           },
           "readOnly": Object {
             "description": "Whether the field should be read-only.",
@@ -4206,55 +2319,19 @@ the label.",
 
 These are evaluated in the order they are defined in.",
             "items": Object {
-              "anyOf": Array [
-                Object {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                Object {
-                  "$ref": "#/definitions/RegexRequirement",
-                },
-                Object {
-                  "$ref": "#/definitions/LengthRequirement",
-                },
-              ],
-              "description": "All requirements applicable to string fields.",
+              "$ref": "#/definitions/StringRequirement",
             },
             "type": "array",
           },
           "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label that is shown to the right of the label.
 
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
           },
           "type": Object {
+            "const": "string",
             "description": "The type of the field.",
-            "enum": Array [
-              "string",
-            ],
             "type": "string",
           },
         },
@@ -4264,137 +2341,60 @@ Won’t display if the field has no label of its own.",
         ],
         "type": "object",
       },
-      "SyncEnumField": Object {
-        "additionalProperties": false,
-        "description": "A dropdown list containing a list of predetermined values.",
-        "properties": Object {
-          "defaultValue": Object {
-            "description": "The default value of the field.",
-          },
-          "enum": Object {
-            "description": "The list of available choices.",
-            "items": Object {
-              "$ref": "#/definitions/Choice",
+      "StringRequirement": Object {
+        "anyOf": Array [
+          Object {
+            "additionalProperties": false,
+            "description": "A requirement used to enforce the length or amount of items in the input.",
+            "properties": Object {
+              "errorMessage": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The error message that is displayed when the requirement is not met.",
+              },
+              "maxLength": Object {
+                "description": "The maximum length.",
+                "minimum": 1,
+                "type": "number",
+              },
+              "minLength": Object {
+                "description": "The minimum length.",
+                "minimum": 1,
+                "type": "number",
+              },
             },
-            "type": "array",
+            "type": "object",
           },
-          "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
-the label.",
-          },
-          "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
+          Object {
+            "additionalProperties": false,
+            "description": "Requirement that matches using a given regex.",
+            "properties": Object {
+              "errorMessage": Object {
+                "$ref": "#/definitions/Remapper",
+                "description": "The error message that is displayed when the requirement is not met.",
               },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The label displayed next to the field.",
-            "format": "remapper",
-          },
-          "name": Object {
-            "description": "The name used when storing this field.",
-            "type": "string",
-          },
-          "placeholder": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
-            "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
-          },
-          "readOnly": Object {
-            "description": "Whether the field should be read-only.",
-            "type": "boolean",
-          },
-          "requirements": Object {
-            "description": "The requirements that are used to validate the field with.
+              "flags": Object {
+                "default": "g",
+                "description": "The flags to use for the regex.
 
-These are evaluated in the order they are defined in.",
-            "items": Object {
-              "$ref": "#/definitions/RequiredRequirement",
+Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
+                "pattern": "^[gimsuy]+$",
+                "type": "string",
+              },
+              "regex": Object {
+                "description": "The regex to match with. Must be a valid JavaScript regex.",
+                "type": "string",
+              },
             },
-            "type": "array",
-          },
-          "tag": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
+            "required": Array [
+              "regex",
             ],
-            "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional.
-Won’t display if the field has no label of its own.",
-            "format": "remapper",
+            "type": "object",
           },
-          "type": Object {
-            "description": "The type of the field.",
-            "enum": Array [
-              "enum",
-            ],
-            "type": "string",
+          Object {
+            "$ref": "#/definitions/RequiredRequirement",
           },
-        },
-        "required": Array [
-          "enum",
-          "name",
-          "type",
         ],
-        "type": "object",
+        "description": "All requirements applicable to string fields.",
       },
     },
     "properties": Object {
@@ -4412,7 +2412,30 @@ Won’t display if the field has no label of its own.",
       "requirements": Object {
         "description": "A list of requirements that are checked across all of the form data.",
         "items": Object {
-          "$ref": "#/definitions/FormRequirement",
+          "additionalProperties": false,
+          "properties": Object {
+            "action": Object {
+              "description": "The name of the action to trigger when the requirement is checked.",
+              "format": "action",
+              "type": "string",
+            },
+            "errorMessage": Object {
+              "$ref": "#/definitions/Remapper",
+              "description": "The error message that is displayed when the requirement is not met.",
+            },
+            "isValid": Object {
+              "description": "The list of fields that must be valid before running the requirement action.",
+              "items": Object {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "required": Array [
+            "isValid",
+            "action",
+          ],
+          "type": "object",
         },
         "type": "array",
       },
@@ -4461,73 +2484,50 @@ Compatible data that is received will be displayed. Must be a set of data.",
         "description": "An object representing how a data field should be displayed.",
         "properties": Object {
           "icon": Object {
-            "$ref": "#/definitions/IconName",
             "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
 
 Will not render if undefined.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label to display.
 
 Will not render if undefined.",
-            "format": "remapper",
           },
           "value": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The name of the field to read from to determine the value to show.
 
 No value will be rendered if undefined.",
-            "format": "remapper",
           },
         },
         "type": "object",
       },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
     },
     "properties": Object {
@@ -4545,66 +2545,23 @@ If not defined, received data will be treated as an array.",
         "type": "array",
       },
       "header": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The header text to display above the list of fields.
 
 Will not render if undefined.",
-        "format": "remapper",
       },
       "icon": Object {
-        "$ref": "#/definitions/IconName",
         "description": "The icon that displays in front of the header.
 
 Will not render if undefined.",
+        "format": "fontawesome",
+        "type": "string",
       },
       "image": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The image that is shown to the left of the list item.
 
 This can be either a full image path or an asset id.",
-        "format": "remapper",
       },
     },
     "type": "object",
@@ -4654,60 +2611,6 @@ Otherwise, it will toggle between following and not following.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": Object {
-      "AssetMarkerIcon": Object {
-        "additionalProperties": false,
-        "description": "A marker based on an existing asset.",
-        "properties": Object {
-          "activeRatio": Object {
-            "default": 1,
-            "description": "Enlarge an active marker with this ratio.
-
-This modifier is applied if a marker matches the block data which may be received by the block
-context. For example, this is applied if a marker matches the data that was passed in from a
-link action.",
-            "type": "number",
-          },
-          "anchor": Object {
-            "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may
-be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a
-height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
-treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-            "items": Array [
-              Object {
-                "type": "number",
-              },
-              Object {
-                "type": "number",
-              },
-            ],
-            "maxItems": 2,
-            "minItems": 2,
-            "type": "array",
-          },
-          "asset": Object {
-            "description": "The id of an asset to use.",
-            "type": "string",
-          },
-          "size": Object {
-            "default": 28,
-            "description": "The height of marker icons in pixels.",
-            "type": "number",
-          },
-        },
-        "required": Array [
-          "asset",
-        ],
-        "type": "object",
-      },
       "BulmaColor": Object {
         "description": "A color known to Bulma.",
         "enum": Array [
@@ -4722,65 +2625,29 @@ treated in a special way, since they are often used to represent a location:
         ],
         "type": "string",
       },
-      "FontAwesomeMarkerIcon": Object {
-        "additionalProperties": false,
-        "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
-        "properties": Object {
-          "activeRatio": Object {
-            "default": 1,
-            "description": "Enlarge an active marker with this ratio.
-
-This modifier is applied if a marker matches the block data which may be received by the block
-context. For example, this is applied if a marker matches the data that was passed in from a
-link action.",
-            "type": "number",
-          },
-          "anchor": Object {
-            "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may
-be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a
-height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
-treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-            "items": Array [
-              Object {
-                "type": "number",
-              },
-              Object {
-                "type": "number",
-              },
-            ],
-            "maxItems": 2,
-            "minItems": 2,
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
             "type": "array",
           },
-          "color": Object {
-            "$ref": "#/definitions/BulmaColor",
-            "default": "primary",
-            "description": "The color to apply to the icon.",
+          Object {
+            "type": "boolean",
           },
-          "icon": Object {
-            "$ref": "#/definitions/IconName",
-            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
-          },
-          "size": Object {
-            "default": 28,
-            "description": "The height of marker icons in pixels.",
+          Object {
             "type": "number",
           },
-        },
-        "type": "object",
-      },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
     },
     "properties": Object {
@@ -4792,14 +2659,9 @@ treated in a special way, since they are often used to represent a location:
         "description": "The location (latitude, longitude) to default to when the user’s location cannot be found.
 
 This can be used to set the location to something that is more relevant to the user.",
-        "items": Array [
-          Object {
-            "type": "number",
-          },
-          Object {
-            "type": "number",
-          },
-        ],
+        "items": Object {
+          "type": "number",
+        },
         "maxItems": 2,
         "minItems": 2,
         "type": "array",
@@ -4811,14 +2673,14 @@ By default markers are clustered if they are too close to each other.",
         "type": "boolean",
       },
       "filterLatitudeName": Object {
-        "default": "'lat'",
+        "default": "lat",
         "description": "The name of the latitude property in the resource.
 
 These are used for filtering purposes.",
         "type": "string",
       },
       "filterLongitudeName": Object {
-        "default": "'lng'",
+        "default": "lng",
         "description": "The name of the longitude property in the resource.
 
 These are used for filtering purposes.",
@@ -4827,74 +2689,114 @@ These are used for filtering purposes.",
       "icons": Object {
         "anyOf": Array [
           Object {
-            "$ref": "#/definitions/FontAwesomeMarkerIcon",
+            "additionalProperties": false,
+            "description": "A marker based on an existing asset.",
+            "properties": Object {
+              "activeRatio": Object {
+                "default": 1,
+                "description": "Enlarge an active marker with this ratio.
+
+This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
+                "type": "number",
+              },
+              "anchor": Object {
+                "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+                "items": Object {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+              },
+              "asset": Object {
+                "description": "The id of an asset to use.",
+                "type": "string",
+              },
+              "size": Object {
+                "default": 28,
+                "description": "The height of marker icons in pixels.",
+                "type": "number",
+              },
+            },
+            "required": Array [
+              "asset",
+            ],
+            "type": "object",
           },
           Object {
-            "$ref": "#/definitions/AssetMarkerIcon",
+            "additionalProperties": false,
+            "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
+            "properties": Object {
+              "activeRatio": Object {
+                "default": 1,
+                "description": "Enlarge an active marker with this ratio.
+
+This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
+                "type": "number",
+              },
+              "anchor": Object {
+                "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+                "items": Object {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+              },
+              "color": Object {
+                "$ref": "#/definitions/BulmaColor",
+                "default": "primary",
+                "description": "The color to apply to the icon.",
+              },
+              "icon": Object {
+                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "size": Object {
+                "default": 28,
+                "description": "The height of marker icons in pixels.",
+                "type": "number",
+              },
+            },
+            "type": "object",
           },
         ],
         "description": "Custom icon configuration.",
       },
       "latitude": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The remapper used to retrieve the latitude.",
-        "format": "remapper",
       },
       "longitude": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The remapper used to retrieve the longitude.",
-        "format": "remapper",
       },
       "maxClusterRadius": Object {
         "default": 80,
         "description": "The maximum radius that a cluster will cover from the central marker (in pixels).
 
-Decreasing will make more, smaller clusters. One can also use a function that accepts the
-current map zoom and returns the maximum cluster radius in pixels.",
+Decreasing will make more, smaller clusters. One can also use a function that accepts the current map zoom and returns the maximum cluster radius in pixels.",
         "minimum": 1,
-        "type": "integer",
+        "type": "number",
       },
     },
     "required": Array [
@@ -4915,37 +2817,35 @@ Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": Object {
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
-      },
-    },
-    "properties": Object {
-      "content": Object {
+      "Remapper": Object {
         "anyOf": Array [
           Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
             "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
               "type": "object",
             },
             "type": "array",
           },
           Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
           },
         ],
-        "description": "A string containing the [markdown content](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) to display.",
+        "description": "A user defined remapper function.",
         "format": "remapper",
+      },
+    },
+    "properties": Object {
+      "content": Object {
+        "$ref": "#/definitions/Remapper",
+        "description": "A string containing the [markdown content](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) to display.",
       },
     },
     "required": Array [
@@ -4977,71 +2877,48 @@ Object {
         "description": "An object describing what a stats field looks like.",
         "properties": Object {
           "icon": Object {
-            "$ref": "#/definitions/IconName",
             "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The label to render.",
-            "format": "remapper",
           },
           "value": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The value of the property to render.",
-            "format": "remapper",
           },
         },
         "required": Array [
-          "icon",
           "value",
+          "icon",
         ],
         "type": "object",
       },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
     },
     "properties": Object {
@@ -5100,34 +2977,13 @@ This does not trigger if the field has a different action specified.",
             "additionalProperties": false,
             "properties": Object {
               "icon": Object {
-                "$ref": "#/definitions/IconName",
                 "description": "The icon to show in the dropdown button.",
+                "format": "fontawesome",
+                "type": "string",
               },
               "label": Object {
-                "anyOf": Array [
-                  Object {
-                    "additionalProperties": true,
-                    "properties": Object {},
-                    "type": "object",
-                  },
-                  Object {
-                    "items": Object {
-                      "additionalProperties": true,
-                      "properties": Object {},
-                      "type": "object",
-                    },
-                    "type": "array",
-                  },
-                  Object {
-                    "type": Array [
-                      "string",
-                      "number",
-                      "boolean",
-                    ],
-                  },
-                ],
+                "$ref": "#/definitions/Remapper",
                 "description": "The text to show in the dropdown button.",
-                "format": "remapper",
               },
               "options": Object {
                 "description": "The list of options to display. Must have at least 1 option.",
@@ -5144,33 +3000,10 @@ This does not trigger if the field has a different action specified.",
             "type": "object",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "An optional label used in the header of the table.
 
-If this isn’t specified, no label will be shown. If no fields have a label, the table header
-row won’t be shown.",
-            "format": "remapper",
+If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
           },
         },
         "required": Array [
@@ -5182,34 +3015,13 @@ row won’t be shown.",
         "additionalProperties": false,
         "properties": Object {
           "icon": Object {
-            "$ref": "#/definitions/IconName",
             "description": "The icon to show in the option.",
+            "format": "fontawesome",
+            "type": "string",
           },
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The text to show in the option.",
-            "format": "remapper",
           },
           "onClick": Object {
             "description": "The action that will be called when selecting this option.",
@@ -5227,33 +3039,10 @@ row won’t be shown.",
         "description": "Represents a column that should be displayed in the table.",
         "properties": Object {
           "label": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "An optional label used in the header of the table.
 
-If this isn’t specified, no label will be shown. If no fields have a label, the table header
-row won’t be shown.",
-            "format": "remapper",
+If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
           },
           "onClick": Object {
             "description": "The name of the action to trigger when clicking on this field.",
@@ -5261,30 +3050,8 @@ row won’t be shown.",
             "type": "string",
           },
           "value": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The value of the field.",
-            "format": "remapper",
           },
         },
         "required": Array [
@@ -5292,9 +3059,29 @@ row won’t be shown.",
         ],
         "type": "object",
       },
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
       "RepeatedField": Object {
         "additionalProperties": false,
@@ -5307,42 +3094,20 @@ Only one repeated field is allowed, only the first RepeatedField is considered."
             "items": Object {
               "anyOf": Array [
                 Object {
-                  "$ref": "#/definitions/Field",
+                  "$ref": "#/definitions/Dropdown",
                 },
                 Object {
-                  "$ref": "#/definitions/Dropdown",
+                  "$ref": "#/definitions/Field",
                 },
               ],
             },
             "type": "array",
           },
           "value": Object {
-            "anyOf": Array [
-              Object {
-                "additionalProperties": true,
-                "properties": Object {},
-                "type": "object",
-              },
-              Object {
-                "items": Object {
-                  "additionalProperties": true,
-                  "properties": Object {},
-                  "type": "object",
-                },
-                "type": "array",
-              },
-              Object {
-                "type": Array [
-                  "string",
-                  "number",
-                  "boolean",
-                ],
-              },
-            ],
+            "$ref": "#/definitions/Remapper",
             "description": "The value to use as the base of the repeated field.
 
 Should be an array of data.",
-            "format": "remapper",
           },
         },
         "required": Array [
@@ -5358,10 +3123,10 @@ Should be an array of data.",
         "items": Object {
           "anyOf": Array [
             Object {
-              "$ref": "#/definitions/Field",
+              "$ref": "#/definitions/Dropdown",
             },
             Object {
-              "$ref": "#/definitions/Dropdown",
+              "$ref": "#/definitions/Field",
             },
             Object {
               "$ref": "#/definitions/RepeatedField",
@@ -5394,12 +3159,6 @@ Object {
   "parameters": Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
-    "definitions": Object {
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
-      },
-    },
     "properties": Object {
       "interval": Object {
         "description": "The time between the emitted events in seconds.",
@@ -5440,9 +3199,29 @@ The result must be either a video URL or an object containing a property \`url\`
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": Object {
-      "IconName": Object {
-        "format": "fontawesome",
-        "type": "string",
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
       },
     },
     "properties": Object {
@@ -5469,32 +3248,10 @@ Note that this does not work on every platform due to platform restrictions.",
         "type": "boolean",
       },
       "url": Object {
-        "anyOf": Array [
-          Object {
-            "additionalProperties": true,
-            "properties": Object {},
-            "type": "object",
-          },
-          Object {
-            "items": Object {
-              "additionalProperties": true,
-              "properties": Object {},
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": Array [
-              "string",
-              "number",
-              "boolean",
-            ],
-          },
-        ],
+        "$ref": "#/definitions/Remapper",
         "description": "The URL of the video.
 
 Note that this is ignored if the onVideo event listener is set.",
-        "format": "remapper",
       },
       "volume": Object {
         "description": "The volume in percentages the video should default to.",

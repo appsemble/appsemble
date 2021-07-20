@@ -50,9 +50,9 @@
     "postcss-load-config": "3.0.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^7.0.1",
+    "ts-json-schema-generator": "^0.94.1",
     "type-fest": "^1.2.2",
-    "typescript": "4.2.4",
-    "typescript-json-schema": "0.50.1",
+    "typescript": "~4.3.5",
     "yargs": "^17.0.1"
   },
   "devDependencies": {

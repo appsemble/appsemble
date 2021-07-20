@@ -10,14 +10,14 @@ interface Reply {
   /**
    * The author of the reply.
    *
-   * @default [{ prop: '$author' }, { prop: 'name' }]
+   * @default [{ "prop": "$author" }, { "prop": "name" }]
    */
   author?: Remapper;
 
   /**
    * The content of the reply.
    *
-   * @default [{ prop: 'content' }]
+   * @default [{ "prop": "content" }]
    */
   content?: Remapper;
 }
@@ -34,7 +34,7 @@ interface FontAwesomeMarkerIcon {
   /**
    * The color to apply to the icon.
    *
-   * @default primary
+   * @default "primary"
    */
   color?: BulmaColor;
 }
