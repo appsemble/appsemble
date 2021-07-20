@@ -1,4 +1,4 @@
-import { bold, cyan, green, red, white, yellow } from 'chalk';
+import { bold, cyan, green, grey, red, white, yellow } from 'chalk';
 import { ParameterizedContext } from 'koa';
 import * as compose from 'koa-compose';
 
@@ -27,7 +27,8 @@ export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
 
     function logResponse(): void {
       res.removeListener('finish', logResponse);
-      res.removeListener('close', logResponse);
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      res.removeListener('close', logCancel);
 
       const {
         message,
@@ -68,8 +69,22 @@ export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
       );
     }
 
+    function logCancel(): void {
+      res.removeListener('finish', logResponse);
+      res.removeListener('close', logCancel);
+
+      const duration = Date.now() - start;
+      const formatDuration = rangeFormat(duration, {
+        100: green,
+        1000: yellow,
+        default: red,
+      });
+
+      logger.warn(`${method} ${href} ${grey('Cancelled')} ${formatDuration(`${duration}ms`)}`);
+    }
+
     res.once('finish', logResponse);
-    res.once('close', logResponse);
+    res.once('close', logCancel);
 
     return next();
   };
