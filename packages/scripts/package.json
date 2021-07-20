@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.18.22",
+  "version": "0.18.23",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -24,8 +24,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.18.22",
-    "@appsemble/utils": "0.18.22",
+    "@appsemble/node-utils": "0.18.23",
+    "@appsemble/utils": "0.18.23",
     "@types/fs-extra": "^9.0.12",
     "@types/js-yaml": "^4.0.2",
     "@types/normalize-path": "^3.0.0",

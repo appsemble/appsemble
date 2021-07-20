@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.22
-appVersion: 0.18.22
+version: 0.18.23
+appVersion: 0.18.23
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,25 +24,8 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: added
-      description: 'App: Add Croatian translations.'
-    - kind: added
-      description: 'App: Add share action.'
-    - kind: added
-      description: 'Cli: Added --dry-run option to appsemble app create.'
-    - kind: added
-      description: 'Server: Add block synchronization with remote Appsemble instances.'
-    - kind: added
-      description: >-
-        Server: Add option to do a dry run of the app creation endpoint. By adding
-        ?dryRun=true to the query string, apps can now be validated without having
-        to create a new app or using an existing app.
-    - kind: added
-      description: 'Studio: Add Croatian translations.'
-    - kind: changed
-      description: 'Cli: Replace typescript-json-schema with ts-json-schema-generator.'
-    - kind: changed
-      description: 'Cli: The CLI now looks for app-definition.yaml instead of app.yaml.'
+    - kind: fixed
+      description: 'Server: Make remote argument optional.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.23](https://gitlab.com/appsemble/appsemble/-/releases/0.18.23)] - 2021-07-20
+
+### Fixed
+
+- Server: Make `remote` argument optional.
+
 ## \[[0.18.22](https://gitlab.com/appsemble/appsemble/-/releases/0.18.22)] - 2021-07-20
 
 ### Added
