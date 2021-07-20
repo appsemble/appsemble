@@ -193,11 +193,7 @@ async function validate(
     'package.json',
     'Author should be "Appsemble <info@appsemble.com> (https://appsemble.com)"',
   );
-  assert(
-    pkg.scripts?.test === 'jest' || dir.endsWith('e2e'),
-    'package.json',
-    'Test script should be "jest"',
-  );
+  assert(pkg.scripts?.test === 'jest', 'package.json', 'Test script should be "jest"');
   Object.entries({ ...pkg.dependencies, ...pkg.devDependencies })
     .filter(([dep]) => dep.startsWith('@appsemble/'))
     .forEach(([, version]) => {
@@ -249,10 +245,6 @@ async function validate(
       'tsconfig.build.json',
       'Only specifies "extends" and "compilerOptions" with "extends" first',
     );
-  }
-
-  if (dir.endsWith('e2e')) {
-    return;
   }
 
   /**

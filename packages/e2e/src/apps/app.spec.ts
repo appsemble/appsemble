@@ -1,4 +1,4 @@
-import { login } from '../../utils';
+import { login } from '../utils';
 
 describe('/apps/:appId', () => {
   beforeEach(() => {

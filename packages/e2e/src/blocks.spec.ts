@@ -1,4 +1,4 @@
-import { waitForAPICall } from '../utils';
+import { waitForAPICall } from './utils';
 
 describe('/blocks', () => {
   beforeEach(() => {

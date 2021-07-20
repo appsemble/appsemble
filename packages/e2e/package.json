@@ -21,7 +21,8 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "scripts": {
-    "e2e": "cypress run"
+    "e2e": "cypress run",
+    "test": "jest"
   },
   "dependencies": {
     "@appsemble/utils": "0.18.21",
