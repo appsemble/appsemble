@@ -25,6 +25,11 @@ module.exports = (rootDir) => {
     setupFilesAfterEnv.push(setup);
   }
 
+  // If the types define testing library, add it to the setup files
+  if (types.includes('@testing-library/jest-dom')) {
+    setupFilesAfterEnv.push('@testing-library/jest-dom');
+  }
+
   // Handle messages.ts files using Babel if babel-plugin-react-intl-auto is enabled.
   if (types.includes('babel-plugin-react-intl-auto')) {
     transform[/\/[A-Z]\w+\/messages\.ts$/.source] = 'babel-jest';

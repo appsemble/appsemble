@@ -20,18 +20,3 @@ export function waitForAPICall({ method = 'GET', url }: { method?: string; url: 
   cy.intercept({ url, method, times: 1 }).as('waitForAPICall');
   cy.wait('@waitForAPICall');
 }
-
-/**
- * Sleep asynchronously for an amount of time.
- *
- * This function shouldn’t be used, but it is useful when troubleshooting end to end tests.
- *
- * @param seconds - How long to sleep in seconds.
- */
-export async function sleep(seconds = 10): Promise<void> {
-  // eslint-disable-next-line no-console
-  console.log(`Sleeping for ${seconds} seconds`);
-  await new Promise((resolve) => {
-    setTimeout(resolve, seconds * 1000);
-  });
-}
