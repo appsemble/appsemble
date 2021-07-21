@@ -1,6 +1,9 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
 
+import { cypressBrowserPermissionsPlugin } from 'cypress-browser-permissions';
+import { addMatchImageSnapshotPlugin } from 'cypress-image-snapshot/plugin';
+
 /**
  * @param on - Used to hook into various events Cypress emits.
  * @param config - The resolved Cypress config.
@@ -11,7 +14,15 @@ export default function Plugin(
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions,
 ): Cypress.ConfigOptions {
-  const newConfig = { ...config };
+  on('before:browser:launch', (browser, launchOptions) => {
+    if (browser.name === 'chrome') {
+      launchOptions.args.push('--lang=en');
+      return launchOptions;
+    }
+  });
+
+  addMatchImageSnapshotPlugin(on, config);
+  const newConfig = cypressBrowserPermissionsPlugin(on, config);
   const baseUrl = `https://${process.env.CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
   const templates = readdirSync(join(__dirname, '../../../../', 'apps'));
 

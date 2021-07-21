@@ -1,3 +1,5 @@
+import { addMatchImageSnapshotCommand } from 'cypress-image-snapshot/command';
+
 // XXX: Make this cleaner
 // eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace Cypress {
@@ -7,14 +9,16 @@ declare namespace Cypress {
      *
      * @example cy.mockGeolocation(latitude = 51.476_852, longitude = 0)
      */
-    mockGeolocation: (latitude?: number, longitude?: number) => Chainable<Element>;
+    mockGeolocation: (latitude?: number, longitude?: number) => void;
   }
 }
 
 Cypress.Commands.add('mockGeolocation', (latitude = 51.476_852, longitude = 0) => {
   cy.window().then(($window) => {
-    cy.stub($window.navigator.geolocation, 'getCurrentPosition').callsFake((callback) =>
-      callback({ coords: { latitude, longitude, accuracy: 0 } }),
-    );
+    cy.stub($window.navigator.geolocation, 'getCurrentPosition').callsFake((callback) => {
+      callback({ coords: { latitude, longitude, accuracy: 100 } });
+    });
   });
 });
+
+addMatchImageSnapshotCommand();
