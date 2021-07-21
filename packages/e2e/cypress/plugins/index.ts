@@ -26,7 +26,16 @@ export default function Plugin(
   const templates = readdirSync(join(__dirname, '../../../../', 'apps'));
 
   // Cypress uses its own separate set of environment variables.
-  newConfig.env = { ...config.env, ...process.env, templates };
+  newConfig.env = {
+    ...config.env,
+    ...process.env,
+    browserPermissions: {
+      notifications: 'allow',
+      geolocation: 'allow',
+      cookies: 'allow',
+      templates,
+    },
+  };
   newConfig.baseUrl = `https://${newConfig.env.CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
 
   return newConfig;
