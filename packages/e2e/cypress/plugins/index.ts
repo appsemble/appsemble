@@ -23,12 +23,11 @@ export default function Plugin(
 
   addMatchImageSnapshotPlugin(on, config);
   const newConfig = cypressBrowserPermissionsPlugin(on, config);
-  const baseUrl = `https://${process.env.CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
   const templates = readdirSync(join(__dirname, '../../../../', 'apps'));
 
   // Cypress uses its own separate set of environment variables.
   newConfig.env = { ...config.env, ...process.env, templates };
-  newConfig.baseUrl = baseUrl;
+  newConfig.baseUrl = `https://${newConfig.env.CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
 
   return newConfig;
 }

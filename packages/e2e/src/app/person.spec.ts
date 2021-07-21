@@ -51,13 +51,13 @@ describe('Person app', () => {
     );
 
     cy.get('[data-block]').should('exist');
-    cy.get('.appsemble-loader').should('not.exist');
+    cy.get('.appsemble-loader', { includeShadowDom: true }).should('not.exist');
 
     cy.get('.navbar-burger').click();
     cy.contains('Person List').click();
 
     cy.get('[data-block]').should('exist');
-    cy.get('.appsemble-loader').should('not.exist');
+    cy.get('.appsemble-loader', { includeShadowDom: true }).should('not.exist');
 
     cy.contains('John', { includeShadowDom: true }).should('exist');
     cy.contains('Doe', { includeShadowDom: true }).should('exist');
