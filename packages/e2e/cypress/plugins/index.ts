@@ -11,17 +11,12 @@ export default function Plugin(
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions,
 ): Cypress.ConfigOptions {
-  on('task', {
-    readTemplateApps() {
-      readdirSync(join(__dirname, '../../../', 'apps'));
-    },
-  });
-
   const newConfig = { ...config };
   const baseUrl = `https://${process.env.CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
+  const templates = readdirSync(join(__dirname, '../../../../', 'apps'));
 
   // Cypress uses its own separate set of environment variables.
-  newConfig.env = { ...config.env, ...process.env };
+  newConfig.env = { ...config.env, ...process.env, templates };
   newConfig.baseUrl = baseUrl;
 
   return newConfig;
