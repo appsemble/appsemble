@@ -70,7 +70,7 @@ export function IndexPage(): ReactElement {
     axios
       .post('/api/oauth2/consent/verify', { appId, redirectUri, scope })
       .then(({ data }) => {
-        if (!data.isAllowed) {
+        if (!data.isAllowed || 'Cypress' in window) {
           setIsAllowed(false);
           setAppName(data.appName);
           setAppLoading(false);

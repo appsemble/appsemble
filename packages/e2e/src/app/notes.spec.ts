@@ -8,18 +8,18 @@ describe('Notes app', () => {
     cy.get('#email').type(Cypress.env('BOT_ACCOUNT_EMAIL'));
     cy.get('#password').type(Cypress.env('BOT_ACCOUNT_PASSWORD'));
     cy.get('button[type="submit"]').click();
-    cy.get('body').then((body) => {
-      if (body.find('.has-text-centered > .button.is-primary').length) {
-        cy.get('.button.is-primary').click();
-      }
-    });
+    cy.get('.has-text-centered > .button.is-primary').click();
     cy.get('[data-block]').should('exist');
     cy.get('.appsemble-loader', { includeShadowDom: true }).should('not.exist');
   }
 
   it('should match a screenshot in desktop mode', () => {
     cy.intercept({ url: '/api/apps/*/resources/note', method: 'GET' }, { body: [] });
-    cy.visit(url);
+    cy.visit(url, {
+      onBeforeLoad(win) {
+        win.localStorage.clear();
+      },
+    });
     login();
     cy.matchImageSnapshot();
   });
@@ -27,7 +27,11 @@ describe('Notes app', () => {
   it('should match a screenshot in mobile mode', () => {
     cy.intercept({ url: '/api/apps/*/resources/note', method: 'GET' }, { body: [] });
     cy.viewport('iphone-x');
-    cy.visit(url);
+    cy.visit(url, {
+      onBeforeLoad(win) {
+        win.localStorage.clear();
+      },
+    });
     login();
     cy.matchImageSnapshot();
   });
@@ -35,7 +39,11 @@ describe('Notes app', () => {
   it('should create a new note and view it', () => {
     const date = Date.now();
 
-    cy.visit(url);
+    cy.visit(url, {
+      onBeforeLoad(win) {
+        win.localStorage.clear();
+      },
+    });
     login();
     cy.get('.button.is-rounded', { includeShadowDom: true }).click();
     cy.get('#title', { includeShadowDom: true }).type(`Title ${date}`);

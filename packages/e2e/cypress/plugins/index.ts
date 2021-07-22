@@ -1,7 +1,6 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
 
-import { cypressBrowserPermissionsPlugin } from 'cypress-browser-permissions';
 import { addMatchImageSnapshotPlugin } from 'cypress-image-snapshot/plugin';
 
 /**
@@ -14,6 +13,18 @@ export default function Plugin(
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions,
 ): Cypress.ConfigOptions {
+  const templates = readdirSync(join(__dirname, '../../../../', 'apps'));
+
+  // Cypress uses its own separate set of environment variables.
+  Object.assign(config, {
+    env: { ...config.env, ...process.env, templates },
+    baseUrl: `https://${
+      config.env.CI_MERGE_REQUEST_IID || process.env.CI_MERGE_REQUEST_IID || 'staging'
+    }.appsemble.review`,
+  });
+
+  addMatchImageSnapshotPlugin(on, config);
+
   on('before:browser:launch', (browser, launchOptions) => {
     if (browser.name === 'chrome') {
       launchOptions.args.push('--lang=en');
@@ -21,22 +32,5 @@ export default function Plugin(
     }
   });
 
-  addMatchImageSnapshotPlugin(on, config);
-  const newConfig = cypressBrowserPermissionsPlugin(on, config);
-  const templates = readdirSync(join(__dirname, '../../../../', 'apps'));
-
-  // Cypress uses its own separate set of environment variables.
-  newConfig.env = {
-    ...config.env,
-    ...process.env,
-    browserPermissions: {
-      notifications: 'allow',
-      geolocation: 'allow',
-      cookies: 'allow',
-      templates,
-    },
-  };
-  newConfig.baseUrl = `https://${newConfig.env.CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`;
-
-  return newConfig;
+  return config;
 }
