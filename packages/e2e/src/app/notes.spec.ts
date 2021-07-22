@@ -13,13 +13,15 @@ describe('Notes app', () => {
     cy.get('.appsemble-loader', { includeShadowDom: true }).should('not.exist');
   }
 
+  const clearLocalStorage = {
+    onBeforeLoad: (window: Window) => {
+      window.localStorage.clear();
+    },
+  };
+
   it('should match a screenshot in desktop mode', () => {
     cy.intercept({ url: '/api/apps/*/resources/note', method: 'GET' }, { body: [] });
-    cy.visit(url, {
-      onBeforeLoad(win) {
-        win.localStorage.clear();
-      },
-    });
+    cy.visit(url, clearLocalStorage);
     login();
     cy.matchImageSnapshot();
   });
@@ -27,11 +29,7 @@ describe('Notes app', () => {
   it('should match a screenshot in mobile mode', () => {
     cy.intercept({ url: '/api/apps/*/resources/note', method: 'GET' }, { body: [] });
     cy.viewport('iphone-x');
-    cy.visit(url, {
-      onBeforeLoad(win) {
-        win.localStorage.clear();
-      },
-    });
+    cy.visit(url, clearLocalStorage);
     login();
     cy.matchImageSnapshot();
   });
@@ -39,11 +37,7 @@ describe('Notes app', () => {
   it('should create a new note and view it', () => {
     const date = Date.now();
 
-    cy.visit(url, {
-      onBeforeLoad(win) {
-        win.localStorage.clear();
-      },
-    });
+    cy.visit(url, clearLocalStorage);
     login();
     cy.get('.button.is-rounded', { includeShadowDom: true }).click();
     cy.get('#title', { includeShadowDom: true }).type(`Title ${date}`);
