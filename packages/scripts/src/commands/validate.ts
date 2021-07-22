@@ -130,7 +130,7 @@ async function validate(
   /**
    * Validate package.json
    */
-  const pkgNameMatch = pkg.name.match(/^(@(?<scope>[a-z-]+)\/)?(?<name>[a-z-]+)$/);
+  const pkgNameMatch = pkg.name.match(/^(@(?<scope>[a-z-]+)\/)?(?<name>[a-z-]+[\da-z-]+)$/);
   assert(
     basename(dir) === pkgNameMatch?.groups.name,
     '',

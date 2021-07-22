@@ -1,0 +1,33 @@
+{
+  "name": "@appsemble/e2e",
+  "version": "0.18.23",
+  "private": true,
+  "description": "End-to-end tests used for testing Appsemble apps in an existing environment.",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/e2e"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "e2e": "cypress run",
+    "test": "jest"
+  },
+  "dependencies": {
+    "cypress": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  }
+}
