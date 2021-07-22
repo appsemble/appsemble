@@ -8,7 +8,7 @@ export const SecurityRoleDefinition: OpenAPIV3.NonArraySchemaObject = {
       description: 'The description of the role.',
     },
     defaultPage: {
-      $ref: '#/components/schemas/App/properties/definition/properties/defaultPage',
+      type: 'string',
       description: 'The default page to redirect users with this role to.',
     },
     inherits: {
