@@ -248,8 +248,6 @@ export default function EditPage(): ReactElement {
       switch (location.hash) {
         case '#editor': {
           setAppDefinition(value);
-          const definition = load(value) as AppDefinition;
-          setApp({ ...app, yaml: value, definition });
           break;
         }
         case '#style-core':
@@ -264,14 +262,13 @@ export default function EditPage(): ReactElement {
 
       setDirty(true);
     },
-    [location.hash, app, setApp],
+    [location.hash],
   );
 
   if (appDefinition == null) {
     return <Loader />;
   }
 
-  const onValueChange = onMonacoChange;
   const src = getAppUrl(app.OrganizationId, app.path);
   let value;
   let language;
@@ -299,7 +296,7 @@ export default function EditPage(): ReactElement {
           <MonacoEditor
             className={styles.editor}
             language={language}
-            onChange={onValueChange}
+            onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
             value={value}
