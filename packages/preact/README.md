@@ -1,6 +1,11 @@
-# Appsemble Preact SDK
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.18.23/config/assets/logo.svg) Appsemble Preact SDK
 
 > Build your own blocks using Preact
+
+[![npm](https://img.shields.io/npm/v/@appsemble/preact)](https://www.npmjs.com/package/@appsemble/preact)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.18.23/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.18.23)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.18.23/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Installation
 
@@ -8,22 +13,81 @@
 npm install @appsemble/preact preact
 ```
 
-## Hello world example
+## Usage
+
+This package integrates [Preact](https://preactjs.com) with
+[`@appsemble/sdk`](https://www.npmjs.com/package/@appsemble/sdk). Please read the documentation for
+a better understanding of how to use it.
+
+### `bootstrap()`
+
+The bootstrap function takes a Preact component as an argument and renders. It takes the Appsemble
+block context as its props, extended with the `ready()` function. The `ready()` function needs to be
+called when the block is done rendering. Actions won’t be finalized for any blocks on the page,
+until all blocks are ready.
 
 ```tsx
 import { bootstrap } from '@appsemble/preact';
-import { h, VNode } from 'preact';
+import { useEffect } from 'preact/hooks';
 
-function MyBlock({ actions }): VNode {
+bootstrap(({ actions }) => {
+  useEffect(() => {
+    ready();
+  }, []);
+
   return (
-    <button onClick={actions.onClick.dispatch} type="button">
+    <button onClick={() => actions.onClick()} type="button">
       Hello world!
     </button>
   );
-}
-
-bootstrap(MyBlock);
+});
 ```
 
 **Note**: The script will be loaded only once. The component is then bootstrapped for every instance
 of your block type that is loaded by the app creator.
+
+### `useBlock()`
+
+Get the block context. This is available for components that are rendered within a subtree of a
+component rendered by [`bootstrap`](#bootstrap)
+
+```tsx
+import { useBlock } from '@appsemble/preact';
+import { VNode } from 'preact';
+
+export function MyButton(): VNode {
+  const { actions } = useBlock();
+
+  return (
+    <button onClick={() => actions.onClick()} type="button">
+      Hello world!
+    </button>
+  );
+}
+```
+
+### `<FormattedMessage />`
+
+This helper component renders a translated message ID.
+
+```tsx
+import { FormattedMessage } from '@appsemble/preact';
+import { VNode } from 'preact';
+
+interface MyButtonProps {
+  name: string;
+}
+
+export function MyButton({ name }: MyButtonProps): VNode {
+  return (
+    <button type="button">
+      <FormattedMessage id="myButtonLabel" values={{ name }} />
+    </button>
+  );
+}
+```
+
+## License
+
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.18.23/LICENSE.md) ©
+[Appsemble](https://appsemble.com)

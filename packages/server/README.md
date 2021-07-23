@@ -1,4 +1,11 @@
-# Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.18.23/config/assets/logo.svg) Appsemble Server
+
+> The official Appsemble Docker image
+
+[![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.18.23/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.18.23)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.18.23/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 The Appsemble server is distributed as a Docker image.
 
@@ -100,3 +107,8 @@ _**Authorized JavaScript origins**_. Under _**Authorized redirect URIs**_, add t
 **Example**: `https://example.com/callback`.
 
 Check the `read_user` scope, and click _Save application_.
+
+## License
+
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.18.23/LICENSE.md) ©
+[Appsemble](https://appsemble.com)
