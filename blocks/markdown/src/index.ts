@@ -7,7 +7,8 @@ import marked from 'marked';
 bootstrap(({ parameters: { content }, utils }) => {
   const markdown = document.createElement('div');
   markdown.classList.add('content', 'px-3', 'py-3');
-  markdown.innerHTML = marked(utils.remap(content, {}));
+  const value = utils.remap(content, {});
+  markdown.innerHTML = marked((value != null && String(value)) || '');
 
   return markdown;
 });
