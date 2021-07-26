@@ -6,9 +6,9 @@ import { Schema as JSONSchema } from 'jsonschema';
 import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { CodeBlock } from '../../../components/CodeBlock';
-import { HeaderControl } from '../../../components/HeaderControl';
-import { Schema } from '../../../components/Schema';
+import { CodeBlock } from '../../../../components/CodeBlock';
+import { HeaderControl } from '../../../../components/HeaderControl';
+import { Schema } from '../../../../components/Schema';
 import { messages } from './messages';
 import { Ref } from './Ref';
 
@@ -22,7 +22,7 @@ function resolveJsonReferences(schema: JSONSchema, name: string): void {
   iterJSONSchema(schema, (subSchema) => {
     if (typeof subSchema.$ref === 'string') {
       const ref = subSchema.$ref.split('/').pop();
-      if (ref in schemas) {
+      if (ref in schemas && ref !== 'ActionDefinition') {
         resolveJsonReferences(schemas[ref as keyof typeof schemas], ref);
       }
     }

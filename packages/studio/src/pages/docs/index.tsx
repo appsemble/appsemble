@@ -3,9 +3,9 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { AppPage } from './AppPage';
 import { Doc } from './Doc';
 import { messages } from './messages';
+import { ReferenceRoutes } from './reference';
 
 const context = require.context('../../../../../docs', true, /\.mdx?$/);
 const docs = context
@@ -46,11 +46,6 @@ export function DocsRoutes(): ReactElement {
             </MenuItem>,
             subRoutes.length ? (
               <MenuSection key={`${path}-section`}>
-                {getUrl(p, url).endsWith('/docs/reference') && (
-                  <MenuItem exact to={getUrl('reference/app', url)}>
-                    <FormattedMessage {...messages.app} />
-                  </MenuItem>
-                )}
                 {subRoutes.map((subRoute) => (
                   <MenuItem key={subRoute.p} to={getUrl(subRoute.p, url)}>
                     {subRoute.title}
@@ -60,13 +55,24 @@ export function DocsRoutes(): ReactElement {
             ) : null,
           ];
         })}
+      <MenuItem exact icon="book" to={`${url}/reference`}>
+        <FormattedMessage {...messages.reference} />
+      </MenuItem>
+      <MenuSection>
+        <MenuItem exact to={`${url}/reference/app`}>
+          <FormattedMessage {...messages.app} />
+        </MenuItem>
+        <MenuItem exact to={`${url}/reference/action`}>
+          <FormattedMessage {...messages.action} />
+        </MenuItem>
+      </MenuSection>
     </MenuSection>,
   );
 
   return (
     <MetaSwitch title={messages.title}>
-      <Route exact path={`${url}/reference/app`}>
-        <AppPage />
+      <Route path={`${path}/reference`}>
+        <ReferenceRoutes />
       </Route>
       {docs.map(({ Component, p, title }) => (
         <Route exact key={p} path={getUrl(p, path)} strict>

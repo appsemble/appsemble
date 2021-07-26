@@ -1,8 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Documentation',
-  reference: 'Reference',
-  app: 'App',
-  action: 'Action',
+  title: 'Reference',
+  description: 'A full reference for app definitions and related.',
 });
