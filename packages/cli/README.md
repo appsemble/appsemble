@@ -81,7 +81,7 @@ this, install the additional dependencies
 npm install webpack@webpack-4 @appsemble/webpack-config
 ```
 
-For a more in depth explanation of how to build apps, use our
+For a more in-depth explanation of how to build apps, use our
 [block development guide](https://appsemble.app/docs/development/developing-blocks).
 
 ## License
