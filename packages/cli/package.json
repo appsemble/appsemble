@@ -42,7 +42,7 @@
     "fast-glob": "^3.2.7",
     "form-data": "^4.0.0",
     "fs-extra": "^10.0.0",
-    "inquirer": "^8.1.1",
+    "inquirer": "^8.1.2",
     "jsonschema": "^1.4.0",
     "normalize-path": "^3.0.0",
     "postcss": "^7.0.36",
@@ -50,7 +50,7 @@
     "postcss-load-config": "3.0.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^7.0.1",
-    "ts-json-schema-generator": "^0.94.1",
+    "ts-json-schema-generator": "^0.95.0",
     "type-fest": "^1.2.2",
     "typescript": "~4.3.5",
     "yargs": "^17.0.1"

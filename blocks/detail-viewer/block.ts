@@ -51,7 +51,7 @@ interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
   /**
    * The color to apply to the icon.
    *
-   * @default primary
+   * @default 'primary'
    */
   color?: BulmaColor;
 }

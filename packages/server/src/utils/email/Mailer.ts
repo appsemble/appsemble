@@ -109,7 +109,7 @@ export class Mailer {
       greeting: to.name ? `Hello ${to.name}` : 'Hello',
     });
 
-    return this.sendEmail({
+    await this.sendEmail({
       to: to.name ? `${to.name} <${to.email}>` : to.email,
       subject,
       html,
