@@ -30,7 +30,7 @@ interface DropdownProps {
   /**
    * The icon used for the dropdown icon next to the label.
    *
-   * @default "angle-down"
+   * @default 'angle-down'
    */
   dropdownIcon?: IconName;
 }
