@@ -26,6 +26,16 @@ export interface RemapperContext {
   appId: number;
 
   /**
+   * The current URL.
+   */
+  url: string;
+
+  /**
+   * The base URL of the app.
+   */
+  appUrl: string;
+
+  /**
    * @see MessageGetter
    */
   getMessage: MessageGetter;
@@ -92,7 +102,13 @@ const mapperImplementations: MapperImplementations = {
     if (prop === 'id') {
       return context.appId;
     }
-    throw new Error('Unknown app property: id');
+    if (prop === 'url') {
+      return context.url;
+    }
+    if (prop === 'appUrl') {
+      return context.appUrl;
+    }
+    throw new Error(`Unknown app property: ${prop}`);
   },
 
   context: (prop, input, context) =>

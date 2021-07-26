@@ -45,8 +45,11 @@ Get an app related property.
 
 #### Parameters
 
-The parameter must be a string which describes the app data to get. The only supported value is
-`id`, which returns the app id.
+The parameter must be a string which describes the app data to get. The only supported values are:
+
+- `id`: Returns the app id.
+- `url`: The current URL of the app.
+- `appUrl`: The base URL of the app.
 
 ### `context`
 

@@ -20,6 +20,8 @@ function runTests(tests: Record<string, TestCase>): void {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
+        url: 'https://example.com',
+        appUrl: 'https://example.com/en/example',
         userInfo,
         context,
         appId: 6789,
@@ -55,6 +57,16 @@ describe('app', () => {
       input: {},
       mappers: { app: 'id' },
       expected: 6789,
+    },
+    'return the app url': {
+      input: {},
+      mappers: { app: 'appUrl' },
+      expected: 'https://example.com/en/example',
+    },
+    'return the curent url': {
+      input: {},
+      mappers: { app: 'url' },
+      expected: 'https://example.com',
     },
   });
 });
