@@ -169,6 +169,8 @@ export function createTestAction<T extends ActionDefinition['type']>(
       remap(remapper, data, {
         getMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
         appId,
+        url: 'https://example.com/en/example',
+        appUrl: 'https://example.com',
         userInfo: null,
         context,
       }),
