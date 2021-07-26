@@ -26,8 +26,24 @@ export default function Plugin(
   addMatchImageSnapshotPlugin(on, config);
 
   on('before:browser:launch', (browser, launchOptions) => {
+    if (browser.name === 'electron') {
+      // eslint-disable-next-line no-param-reassign
+      launchOptions.preferences = {
+        ...launchOptions.preferences,
+        width: 1920,
+        height: 1080,
+        fullscreen: true,
+      };
+
+      return launchOptions;
+    }
+
     if (browser.name === 'chrome') {
-      launchOptions.args.push('--lang=en');
+      launchOptions.args.push(
+        '--lang=en',
+        '--window-size=1920,1080',
+        '--force-device-scale-factor=1',
+      );
       return launchOptions;
     }
   });
