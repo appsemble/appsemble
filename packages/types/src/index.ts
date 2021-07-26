@@ -484,11 +484,6 @@ export interface ResourceDefinition {
 
 export interface BaseActionDefinition<T extends Action['type']> {
   /**
-   * The element to use as the base when returning the response data.
-   */
-  base?: string;
-
-  /**
    * The type of the action.
    */
   type: T;
@@ -737,7 +732,6 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
 export type ActionDefinition =
   | BaseActionDefinition<'dialog.error'>
   | BaseActionDefinition<'dialog.ok'>
-  | BaseActionDefinition<'email'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
@@ -750,6 +744,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'throw'>
   | ConditionActionDefinition
   | DialogActionDefinition
+  | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition
   | LinkActionDefinition
