@@ -626,5 +626,6 @@ e2e:
     paths:
       - packages/e2e/cypress/videos
       - packages/e2e/cypress/screenshots
+      - pacakges/e2e/cypress/snapshots
     reports:
       junit: packages/e2e/junit.xml
