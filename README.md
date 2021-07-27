@@ -1,4 +1,4 @@
-# Appsemble
+# ![](config/assets/logo.svg) Appsemble
 
 > The app building platform
 

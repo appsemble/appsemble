@@ -560,6 +560,7 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
               },
               "color": Object {
                 "$ref": "#/definitions/BulmaColor",
+                "default": "primary",
                 "description": "The color to apply to the icon.",
               },
               "icon": Object {
@@ -822,11 +823,9 @@ If not defined, the Asset API will be used instead.",
           },
           "content": Object {
             "$ref": "#/definitions/Remapper",
-            "default": Array [
-              Object {
-                "prop": "content",
-              },
-            ],
+            "default": Object {
+              "prop": "content",
+            },
             "description": "The content of the reply.",
           },
           "parentId": Object {

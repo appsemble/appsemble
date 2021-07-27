@@ -77,7 +77,7 @@ interface RegexRequirement extends BaseRequirement {
    * Supported values: `g`, `m`, `i`, `y`, `u`, `s`
    *
    * @pattern ^[gimsuy]+$
-   * @default "g"
+   * @default 'g'
    */
   flags?: string;
 }
@@ -413,7 +413,7 @@ export interface FileField extends AbstractField {
   /**
    * The label that is shown for empty files.
    *
-   * @default " "
+   * @default ' '
    */
   emptyFileLabel?: Remapper;
 }
@@ -439,7 +439,7 @@ export interface GeoCoordinatesField extends AbstractField {
   /**
    * The error message to display when the location couldn’t be determined.
    *
-   * @default "Couldn’t find your location. Are location services enabled?"
+   * @default 'Couldn’t find your location. Are location services enabled?'
    */
   locationError?: Remapper;
 
@@ -546,14 +546,14 @@ export interface ObjectField extends AbstractField {
   /**
    * The label to show on the button for adding a new entry for repeated fields.
    *
-   * @default "Remove"
+   * @default 'Remove'
    */
   addLabel?: Remapper;
 
   /**
    * The label to show on the button for removing an entry for repeated fields.
    *
-   * @default "Add"
+   * @default 'Add'
    */
   removeLabel?: Remapper;
 

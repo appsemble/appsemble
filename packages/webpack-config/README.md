@@ -1,6 +1,11 @@
-# Appsemble Webpack Configuration
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.18.23/config/assets/logo.svg) Appsemble Webpack Configuration
 
 > An opinionated reusable Webpack configuration for block development
+
+[![npm](https://img.shields.io/npm/v/@appsemble/webpack-config)](https://www.npmjs.com/package/@appsemble/webpack-config)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.18.23/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.18.23)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.18.23/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Installation
 
@@ -55,3 +60,8 @@ module.exports = (blockConfig, options) => {
   return config;
 };
 ```
+
+## License
+
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.18.23/LICENSE.md) ©
+[Appsemble](https://appsemble.com)

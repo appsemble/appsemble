@@ -21,6 +21,7 @@ subchart/kitten
 subcommand/kitten
 subdirectory/directory
 subpage/page
+subtree/tree
 theme/name
 URI/URL
 uncategorize/categorize
@@ -60,6 +61,7 @@ localhost
 MacOS
 MD5
 NodeJS
+npm
 npmjs
 OAuth
 OAuth2
