@@ -1,6 +1,7 @@
 describe('Notes app', () => {
   const { host, protocol } = new URL(Cypress.config().baseUrl);
   const url = `${protocol}//notes.appsemble.${host}`;
+  const cached = false;
 
   function login(): void {
     cy.get('.appsemble-loader').should('not.exist');
@@ -9,8 +10,7 @@ describe('Notes app', () => {
     cy.get('#password').type(Cypress.env('BOT_ACCOUNT_PASSWORD'));
     cy.get('button[type="submit"]').click();
     cy.get('.has-text-centered > .button.is-primary').click();
-    cy.get('[data-block]').should('exist');
-    cy.get('.appsemble-loader', { includeShadowDom: true }).should('not.exist');
+    cy.waitForAppLoaded();
   }
 
   const clearLocalStorage = {
@@ -19,9 +19,17 @@ describe('Notes app', () => {
     },
   };
 
+  function visitCached(): void {
+    if (cached) {
+      cy.visit(url, clearLocalStorage);
+    } else {
+      cy.visitAndWaitForCss(url, clearLocalStorage);
+    }
+  }
+
   it('should match a screenshot in desktop mode', () => {
     cy.intercept({ url: '/api/apps/*/resources/note', method: 'GET' }, { body: [] });
-    cy.visit(url, clearLocalStorage);
+    visitCached();
     login();
     cy.matchImageSnapshot();
   });
@@ -29,15 +37,14 @@ describe('Notes app', () => {
   it('should match a screenshot in mobile mode', () => {
     cy.intercept({ url: '/api/apps/*/resources/note', method: 'GET' }, { body: [] });
     cy.viewport('iphone-x');
-    cy.visit(url, clearLocalStorage);
+    visitCached();
     login();
     cy.matchImageSnapshot();
   });
 
   it('should create a new note and view it', () => {
     const date = Date.now();
-
-    cy.visit(url, clearLocalStorage);
+    visitCached();
     login();
     cy.get('.button.is-rounded', { includeShadowDom: true }).click();
     cy.get('#title', { includeShadowDom: true }).type(`Title ${date}`);
