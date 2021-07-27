@@ -25,7 +25,7 @@ export const paths: OpenAPIV3.PathsObject = {
               required: ['OrganizationId', 'definition'],
               properties: {
                 definition: {
-                  $ref: '#/components/schemas/App/properties/definition',
+                  $ref: '#/components/schemas/AppDefinition',
                 },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
@@ -200,7 +200,7 @@ export const paths: OpenAPIV3.PathsObject = {
               type: 'object',
               properties: {
                 definition: {
-                  $ref: '#/components/schemas/App/properties/definition',
+                  $ref: '#/components/schemas/AppDefinition',
                 },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
