@@ -5,11 +5,7 @@
  * @param config - The resolved Cypress config.
  * @returns The updated Cypress config.
  */
-// eslint-disable-next-line import/no-default-export
-export default function Plugin(
-  on: Cypress.PluginEvents,
-  config: Cypress.PluginConfigOptions,
-): Cypress.ConfigOptions {
+const Plugin: Cypress.PluginConfig = (on, config) => {
   // Tweak Cypress config
   Object.assign(config.env, process.env);
   Object.assign(config, {
@@ -17,4 +13,7 @@ export default function Plugin(
   });
 
   return config;
-}
+};
+
+// eslint-disable-next-line import/no-default-export
+export default Plugin;
