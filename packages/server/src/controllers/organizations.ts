@@ -287,9 +287,9 @@ export async function createOrganization(ctx: Context): Promise<void> {
       body: { description, email, icon, id, name, website },
     },
   } = ctx;
-  const user = ctx.user as User;
+  const { id: userId } = ctx.user as User;
 
-  await user.reload({
+  const user = await User.findOne({
     attributes: ['primaryEmail', 'name'],
     include: [
       {
@@ -301,6 +301,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
         },
       },
     ],
+    where: { id: userId },
   });
 
   if (!user.primaryEmail || !user.EmailAuthorizations[0].verified) {
