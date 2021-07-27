@@ -26,8 +26,6 @@ export default function Plugin(
   addMatchImageSnapshotPlugin(on, config);
 
   on('before:browser:launch', (browser, launchOptions) => {
-    // eslint-disable-next-line no-console
-    console.log(browser);
     if (browser.name === 'electron') {
       // eslint-disable-next-line no-param-reassign
       launchOptions.preferences = {
