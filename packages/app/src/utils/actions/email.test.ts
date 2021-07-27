@@ -22,7 +22,7 @@ describe('email', () => {
 
   it('should call the action endpoint', async () => {
     const action = createTestAction({
-      definition: { type: 'email' },
+      definition: { type: 'email', subject: [], body: [] },
       prefix: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ to: 'user@example.com' });
@@ -32,7 +32,7 @@ describe('email', () => {
 
   it('should submit an empty object if no action data is specified', async () => {
     const action = createTestAction({
-      definition: { type: 'email' },
+      definition: { type: 'email', subject: [], body: [] },
       prefix: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action();
