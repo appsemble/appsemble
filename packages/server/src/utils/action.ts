@@ -9,15 +9,17 @@ export async function handleAction(
   params: ServerActionParameters,
 ): Promise<void> {
   logger.info(`Running action: ${params.action.type}`);
-  const appUrl = params.app.domain
-    ? String(new URL(params.app.domain))
-    : `${params.app.path}.${params.app.OrganizationId}.${new URL(argv.host).hostname}`;
+  const url = new URL(argv.host);
+  url.hostname =
+    params.app.domain || `${params.app.path}.${params.app.OrganizationId}.${url.hostname}`;
+  const appUrl = String(url);
+
   let data =
     'remap' in params.action
       ? remap(params.action.remap, params.data, {
           appId: params.app.id,
           appUrl,
-          url: appUrl,
+          url: String(url),
           context: {},
           // XXX: Implement getMessage and default language selections
           getMessage() {

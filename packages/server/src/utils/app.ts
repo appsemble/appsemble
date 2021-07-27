@@ -112,9 +112,10 @@ export async function getRemapperContext(
   const cache = objectCache(
     (message) => new IntlMessageFormat(message, language, undefined, { formatters }),
   );
-  const appUrl = app.domain
-    ? String(new URL(app.domain))
-    : `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
+  const url = new URL(argv.host);
+  url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+  const appUrl = String(url);
+
   return {
     appId: app.id,
     appUrl,
