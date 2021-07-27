@@ -1,7 +1,7 @@
 import { forbidden } from '@hapi/boom';
+import { Context } from 'koa';
 
 import { App } from '../models';
-import { KoaContext } from '../types';
 
 /**
  * Check if the app is currently locked.
@@ -11,7 +11,7 @@ import { KoaContext } from '../types';
  * @param ctx - The Koa context that can contain a force flag in its body
  * @param app - The app to check against
  */
-export function checkAppLock(ctx: KoaContext, app: App): void {
+export function checkAppLock(ctx: Context, app: App): void {
   if (app.locked && !ctx.request.body?.force) {
     throw forbidden('App is currently locked.');
   }

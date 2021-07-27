@@ -3,15 +3,15 @@ import { randomBytes } from 'crypto';
 import { normalize, Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
 import { dump } from 'js-yaml';
+import { Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
-import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
-import { KoaContext } from '../types';
+import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource, User } from '../models';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
 
-export async function getAppTemplates(ctx: KoaContext): Promise<void> {
+export async function getAppTemplates(ctx: Context): Promise<void> {
   const templates = await App.findAll({
     where: { template: true },
     attributes: {
@@ -29,13 +29,13 @@ export async function getAppTemplates(ctx: KoaContext): Promise<void> {
   }));
 }
 
-export async function createTemplateApp(ctx: KoaContext): Promise<void> {
+export async function createTemplateApp(ctx: Context): Promise<void> {
   const {
     request: {
       body: { description, name, organizationId, private: isPrivate, resources, templateId },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   /**
    * XXX: This should include the existing YAML definition

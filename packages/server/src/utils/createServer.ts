@@ -7,7 +7,7 @@ import faPkg from '@fortawesome/fontawesome-free/package.json';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
 import { Readable } from 'form-data';
-import Koa from 'koa';
+import Koa, { Context, Middleware } from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
 import mount from 'koa-mount';
@@ -33,7 +33,6 @@ import { frontend } from '../middleware/frontend';
 import { tinyRouter } from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
 import { bulmaHandler } from '../routes/bulmaHandler';
-import { KoaContext, KoaMiddleware } from '../types';
 import { argv } from './argv';
 import { authentication } from './authentication';
 import { convertToCsv } from './convertToCsv';
@@ -48,7 +47,7 @@ formdataParser.skipValidation = true;
 async function xWwwFormUrlencodedParser(
   body: Readable,
   mediaTypeObject: OpenAPIV3.MediaTypeObject,
-  ctx: KoaContext,
+  ctx: Context,
 ): Promise<any> {
   const buffer = await bufferParser(body, mediaTypeObject, ctx);
   const data = parse(String(buffer));
@@ -61,7 +60,7 @@ interface CreateServerOptions {
    *
    * This is used for testing purposes.
    */
-  middleware?: KoaMiddleware;
+  middleware?: Middleware;
 
   /**
    * Webpack configurations to serve using Webpack dev server middleware.

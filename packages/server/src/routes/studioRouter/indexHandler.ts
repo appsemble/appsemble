@@ -1,7 +1,8 @@
 import { randomBytes } from 'crypto';
 import { URL } from 'url';
 
-import { KoaContext } from '../../types';
+import { Context } from 'koa';
+
 import { argv } from '../../utils/argv';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
 import { createSettings, makeCSP, render } from '../../utils/render';
@@ -13,7 +14,7 @@ import { getSentryClientSettings } from '../../utils/sentry';
  * @param ctx - The Koa context.
  * @returns void
  */
-export function indexHandler(ctx: KoaContext): Promise<void> {
+export function indexHandler(ctx: Context): Promise<void> {
   const { hostname } = ctx;
   const { disableRegistration, githubClientId, gitlabClientId, googleClientId, host } = argv;
   const logins = [];

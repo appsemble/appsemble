@@ -1,7 +1,7 @@
 import { baseTheme, normalize } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
+import { Context } from 'koa';
 
-import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 
 const iconSizes = [48, 144, 192, 512];
@@ -11,7 +11,7 @@ const iconSizes = [48, 144, 192, 512];
  *
  * @param ctx - The Koa context.
  */
-export async function manifestHandler(ctx: KoaContext): Promise<void> {
+export async function manifestHandler(ctx: Context): Promise<void> {
   const { app } = await getApp(ctx, {
     attributes: ['definition'],
     raw: true,

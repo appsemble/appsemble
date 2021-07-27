@@ -1,10 +1,10 @@
 import { logger } from '@appsemble/node-utils';
 import { serverUnavailable } from '@hapi/boom';
+import { Context } from 'koa';
 
 import { getDB } from '../models';
-import { KoaContext } from '../types';
 
-export async function checkHealth(ctx: KoaContext): Promise<void> {
+export async function checkHealth(ctx: Context): Promise<void> {
   const status = {
     database: true,
   };

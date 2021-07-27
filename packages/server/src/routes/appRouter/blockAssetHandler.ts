@@ -1,20 +1,14 @@
 import { notFound } from '@hapi/boom';
+import { Context } from 'koa';
 
 import { BlockAsset, BlockVersion } from '../../models';
-import { KoaContext } from '../../types';
-
-interface Params {
-  filename: string;
-  name: string;
-  version: string;
-}
 
 /**
  * Serve a block asset.
  *
  * @param ctx - The Koa context.
  */
-export async function blockAssetHandler(ctx: KoaContext<Params>): Promise<void> {
+export async function blockAssetHandler(ctx: Context): Promise<void> {
   const {
     params: { filename, name, version },
   } = ctx;

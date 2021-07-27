@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto';
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
+import { Context } from 'koa';
 import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import {
@@ -15,7 +16,6 @@ import {
   OrganizationInvite,
   User,
 } from '../models';
-import { KoaContext } from '../types';
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
@@ -23,15 +23,7 @@ import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
 import { organizationBlocklist } from '../utils/organizationBlocklist';
 
-interface Params {
-  blockId: string;
-  blockOrganizationId: string;
-  memberId: string;
-  organizationId: string;
-  token: string;
-}
-
-export async function getOrganizations(ctx: KoaContext): Promise<void> {
+export async function getOrganizations(ctx: Context): Promise<void> {
   const organizations = await Organization.findAll({
     order: [['id', 'ASC']],
     attributes: {
@@ -52,7 +44,7 @@ export async function getOrganizations(ctx: KoaContext): Promise<void> {
   }));
 }
 
-export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
+export async function getOrganization(ctx: Context): Promise<void> {
   const {
     params: { organizationId },
   } = ctx;
@@ -79,11 +71,11 @@ export async function getOrganization(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void> {
+export async function getOrganizationApps(ctx: Context): Promise<void> {
   const {
     params: { organizationId },
-    user,
   } = ctx;
+  const user = ctx.user as User;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const memberInclude = user
@@ -148,7 +140,7 @@ export async function getOrganizationApps(ctx: KoaContext<Params>): Promise<void
     .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
-export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<void> {
+export async function getOrganizationBlocks(ctx: Context): Promise<void> {
   const {
     params: { organizationId },
   } = ctx;
@@ -213,7 +205,7 @@ export async function getOrganizationBlocks(ctx: KoaContext<Params>): Promise<vo
   );
 }
 
-export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void> {
+export async function getOrganizationIcon(ctx: Context): Promise<void> {
   const {
     params: { organizationId },
     query: { background, maskable, raw, size = 128, updated },
@@ -241,7 +233,7 @@ export async function getOrganizationIcon(ctx: KoaContext<Params>): Promise<void
   });
 }
 
-export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> {
+export async function patchOrganization(ctx: Context): Promise<void> {
   const {
     params: { organizationId },
     request: {
@@ -289,15 +281,15 @@ export async function patchOrganization(ctx: KoaContext<Params>): Promise<void> 
   };
 }
 
-export async function createOrganization(ctx: KoaContext): Promise<void> {
+export async function createOrganization(ctx: Context): Promise<void> {
   const {
     request: {
       body: { description, email, icon, id, name, website },
     },
-    user: { id: userId },
   } = ctx;
+  const user = ctx.user as User;
 
-  const user = await User.findOne({
+  await user.reload({
     attributes: ['primaryEmail', 'name'],
     include: [
       {
@@ -309,7 +301,6 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
         },
       },
     ],
-    where: { id: userId },
   });
 
   if (!user.primaryEmail || !user.EmailAuthorizations[0].verified) {
@@ -356,7 +347,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
   }
 }
 
-export async function getMembers(ctx: KoaContext<Params>): Promise<void> {
+export async function getMembers(ctx: Context): Promise<void> {
   const {
     params: { organizationId },
   } = ctx;
@@ -377,7 +368,7 @@ export async function getMembers(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
-export async function getInvites(ctx: KoaContext<Params>): Promise<void> {
+export async function getInvites(ctx: Context): Promise<void> {
   const {
     params: { organizationId },
   } = ctx;
@@ -401,7 +392,7 @@ export async function getInvites(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
-export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
+export async function getInvitation(ctx: Context): Promise<void> {
   const {
     params: { token },
   } = ctx;
@@ -432,14 +423,14 @@ export async function getInvitation(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> {
+export async function respondInvitation(ctx: Context): Promise<void> {
   const {
     params: { organizationId },
     request: {
       body: { response, token },
     },
-    user: { id: userId },
   } = ctx;
+  const { id: userId } = ctx.user as User;
 
   const invite = await OrganizationInvite.findOne({ where: { key: token } });
 
@@ -460,7 +451,7 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
   await invite.destroy();
 }
 
-export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
+export async function inviteMembers(ctx: Context): Promise<void> {
   const {
     mailer,
     params: { organizationId },
@@ -539,7 +530,7 @@ export async function inviteMembers(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = result.map(({ email, role }) => ({ email, role }));
 }
 
-export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
+export async function resendInvitation(ctx: Context): Promise<void> {
   const {
     mailer,
     params: { organizationId },
@@ -575,7 +566,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = 204;
 }
 
-export async function removeInvite(ctx: KoaContext): Promise<void> {
+export async function removeInvite(ctx: Context): Promise<void> {
   const { request } = ctx;
 
   const email = request.body.email.toLowerCase();
@@ -589,11 +580,11 @@ export async function removeInvite(ctx: KoaContext): Promise<void> {
   await invite.destroy();
 }
 
-export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
+export async function removeMember(ctx: Context): Promise<void> {
   const {
     params: { memberId, organizationId },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
@@ -617,14 +608,14 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
   await organization.$remove('User', memberId);
 }
 
-export async function setRole(ctx: KoaContext<Params>): Promise<void> {
+export async function setRole(ctx: Context): Promise<void> {
   const {
     params: { memberId, organizationId },
     request: {
       body: { role },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {

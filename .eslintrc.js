@@ -39,16 +39,6 @@ module.exports = {
             extendDefaults: false,
             types: {
               'JSX.Element': 'Use ReactElement for React contexts and VNode for Preact contexts',
-              Context: {
-                message:
-                  'The builtin Koa Context type is too loose. Use the custom KoaContext instead.',
-                fixWith: 'KoaContext',
-              },
-              Middleware: {
-                message:
-                  'The builtin Koa Middleware type is too loose. Use the custom KoaMiddleware instead.',
-                fixWith: 'KoaMiddleware',
-              },
             },
           },
         ],

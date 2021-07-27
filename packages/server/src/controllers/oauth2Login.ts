@@ -2,16 +2,16 @@ import { randomBytes } from 'crypto';
 import { URL } from 'url';
 
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
+import { Context } from 'koa';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
-import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
 import { Recipient } from '../utils/email/Mailer';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
 import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
 
-export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
+export async function registerOAuth2Connection(ctx: Context): Promise<void> {
   const {
     request: {
       body: { authorizationUrl, code },
@@ -92,14 +92,14 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   }
 }
 
-export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void> {
+export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
   const {
     mailer,
     request: {
       body: { authorizationUrl, code },
     },
   } = ctx;
-  let { user } = ctx;
+  let user = ctx.user as User;
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
 
   if (!preset) {
@@ -169,8 +169,8 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
   ctx.body = createJWTResponse(user.id);
 }
 
-export async function getConnectedAccounts(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
+export async function getConnectedAccounts(ctx: Context): Promise<void> {
+  const user = ctx.user as User;
 
   ctx.body = await OAuthAuthorization.findAll({
     attributes: ['authorizationUrl'],
@@ -178,11 +178,11 @@ export async function getConnectedAccounts(ctx: KoaContext): Promise<void> {
   });
 }
 
-export async function unlinkConnectedAccount(ctx: KoaContext): Promise<void> {
+export async function unlinkConnectedAccount(ctx: Context): Promise<void> {
   const {
     query: { authorizationUrl },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
 

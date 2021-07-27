@@ -7,19 +7,14 @@ import {
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
+import { Context, Middleware } from 'koa';
 import { get, pick } from 'lodash';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization } from '../models';
-import { KoaContext, KoaMiddleware } from '../types';
+import { App, EmailAuthorization, User } from '../models';
 import { email } from '../utils/actions/email';
 import { getRemapperContext } from '../utils/app';
 import { readPackageJson } from '../utils/readPackageJson';
-
-interface Params {
-  appId: string;
-  path: string;
-}
 
 const { version } = readPackageJson();
 
@@ -35,17 +30,13 @@ const allowResponseHeaders = [
 
 const supportedActions = ['email', 'request'];
 
-async function handleEmail(
-  ctx: KoaContext<Params>,
-  app: App,
-  action: EmailActionDefinition,
-): Promise<void> {
+async function handleEmail(ctx: Context, app: App, action: EmailActionDefinition): Promise<void> {
   const {
     mailer,
     method,
     request: { body: data },
-    user,
   } = ctx;
+  const user = ctx.user as User;
   if (method !== 'POST') {
     throw methodNotAllowed('Method must be POST for email actions');
   }
@@ -69,7 +60,7 @@ async function handleEmail(
 }
 
 async function handleRequestProxy(
-  ctx: KoaContext<Params>,
+  ctx: Context,
   app: App,
   action: RequestLikeActionDefinition,
   useBody: boolean,
@@ -78,8 +69,8 @@ async function handleRequestProxy(
     method,
     query,
     request: { body },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   let data;
   if (useBody) {
@@ -148,7 +139,7 @@ async function handleRequestProxy(
   ctx.body = response.data;
 }
 
-function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
+function createProxyHandler(useBody: boolean): Middleware {
   return async (ctx) => {
     const {
       params: { appId, path },

@@ -1,17 +1,12 @@
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
+import { Context } from 'koa';
 import { extension } from 'mime-types';
 
-import { App, Asset } from '../models';
-import { KoaContext } from '../types';
+import { App, Asset, User } from '../models';
 import { checkRole } from '../utils/checkRole';
 
-interface Params {
-  appId: string;
-  assetId: string;
-}
-
-export async function getAssets(ctx: KoaContext<Params>): Promise<void> {
+export async function getAssets(ctx: Context): Promise<void> {
   const {
     params: { appId },
   } = ctx;
@@ -34,7 +29,7 @@ export async function getAssets(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
-export async function getAssetById(ctx: KoaContext<Params>): Promise<void> {
+export async function getAssetById(ctx: Context): Promise<void> {
   const {
     params: { appId, assetId },
   } = ctx;
@@ -68,12 +63,12 @@ export async function getAssetById(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = asset.data;
 }
 
-export async function createAsset(ctx: KoaContext<Params>): Promise<void> {
+export async function createAsset(ctx: Context): Promise<void> {
   const {
     params: { appId },
     request: { body, type },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId);
 
@@ -90,7 +85,7 @@ export async function createAsset(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = { id: asset.id, mime: asset.mime, filename: asset.filename };
 }
 
-export async function deleteAsset(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteAsset(ctx: Context): Promise<void> {
   const {
     params: { appId, assetId },
   } = ctx;
