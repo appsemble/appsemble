@@ -1,8 +1,6 @@
-import { login } from '../../utils';
-
 describe('/apps/:appId', () => {
   beforeEach(() => {
-    login('/en/apps');
+    cy.login('/en/apps');
     cy.contains('Person').click();
     cy.contains('Clone App');
   });
