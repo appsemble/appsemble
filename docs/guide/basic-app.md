@@ -77,52 +77,30 @@ table block can display data in an orderly manner in a table.
 
 Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single page, named _“People”_.
 
-```diff
-  pages:
--   - name: Example Page A
--     blocks:
--       - type: action-button
--         version: 0.18.23
--         parameters:
--           icon: arrow-right
--         actions:
--           onClick:
--             type: link
--             to: Example Page B
--
--   - name: Example Page B
--     blocks:
--       - type: action-button
--         version: 0.18.23
--         parameters:
--           icon: arrow-left
--         actions:
--           onClick:
--             type: link
--             to: Example Page A
-+   - name: People
-+     blocks:
-+       - type: table
-+         version: 0.18.23
-+         events:
-+           listen:
-+             data: people
-+         parameters:
-+           fields:
-+             - value:
-+                - prop: firstName
-+               label: First Name
-+             - value:
-+                - prop: lastName
-+               label: Surname
+```yaml copy
+pages:
+  - name: People
+    blocks:
+      - type: table
+        version: 0.18.23
+        events:
+          listen:
+            data: people
+        parameters:
+          fields:
+            - value:
+                - prop: firstName
+              label: First Name
+            - value:
+                - prop: lastName
+              label: Surname
 ```
 
 The default page must also be changed to `People`, because the `Example Page A` has just been
 removed.
 
-```diff
-- defaultPage: Example Page A
-+ defaultPage: People
+```yaml copy
+defaultPage: People
 ```
 
 Now save this app and behold, the app is… loading?
@@ -141,21 +119,21 @@ graph LR
 
 Let’s add such a `data-loader` block.
 
-```diff
-  pages:
-    - name: People
-      blocks:
-+       - type: data-loader
-+         version: 0.18.23
-+         actions:
-+           onLoad:
-+             type: resource.query
-+             resource: person
-+         events:
-+           emit:
-+             data: people
-        - type: table
-          version: 0.18.23
+```yaml copy
+pages:
+  - name: People
+    blocks:
+      - type: data-loader
+        version: 0.18.23
+        actions:
+          onLoad:
+            type: resource.query
+            resource: person
+        events:
+          emit:
+            data: people
+      - type: table
+        version: 0.18.23
 ```
 
 When the app is saved, it will start off by showing a spinner. It then quickly turns into some
@@ -223,30 +201,30 @@ The easiest way to create new data is through a form. This is exactly what we’
 
 Add a new page:
 
-```diff
-+   - name: Register
-+     blocks:
-+       - type: form
-+         version: 0.18.23
-+         actions:
-+           onSubmit:
-+             type: resource.create
-+             resource: person
-+             onSuccess:
-+               type: link
-+               to: People
-+         parameters:
-+           fields:
-+             - name: firstName
-+               label: First Name
-+             - name: lastName
-+               label: Surname
-+             - name: email
-+               label: Email Address
-+               format: email
-+             - name: description
-+               label: Description
-+               multiline: true
+```yaml copy
+- name: Register
+  blocks:
+    - type: form
+      version: 0.18.23
+      actions:
+        onSubmit:
+          type: resource.create
+          resource: person
+          onSuccess:
+            type: link
+            to: People
+      parameters:
+        fields:
+          - name: firstName
+            label: First Name
+          - name: lastName
+            label: Surname
+          - name: email
+            label: Email Address
+            format: email
+          - name: description
+            label: Description
+            multiline: true
 ```
 
 After saving, the page can be opened from the app’s side menu. When data is entered and the form is
@@ -334,39 +312,39 @@ editing the resource, but for now we’ll focus on viewing.
 
 Add a new page:
 
-```diff
-+   - name: Person details
-+     parameters:
-+       - id
-+     blocks:
-+       - type: data-loader
-+         version: 0.18.23
-+         actions:
-+           onLoad:
-+             type: resource.get
-+             resource: person
-+         events:
-+           emit:
-+             data: person
-+       - type: detail-viewer
-+         version: 0.18.23
-+         events:
-+           listen:
-+             data: person
-+         parameters:
-+           fields:
-+             - value:
-+                 - prop: firstName
-+               label: First Name
-+             - value:
-+                 - prop: lastName
-+               label: Last Name
-+             - value:
-+                 - prop: email
-+               label: Email Address
-+             - value:
-+                 - prop: description
-+               label: Description
+```yaml copy
+- name: Person details
+  parameters:
+    - id
+  blocks:
+    - type: data-loader
+      version: 0.18.23
+      actions:
+        onLoad:
+          type: resource.get
+          resource: person
+      events:
+        emit:
+          data: person
+    - type: detail-viewer
+      version: 0.18.23
+      events:
+        listen:
+          data: person
+      parameters:
+        fields:
+          - value:
+              - prop: firstName
+            label: First Name
+          - value:
+              - prop: lastName
+            label: Last Name
+          - value:
+              - prop: email
+            label: Email Address
+          - value:
+              - prop: description
+            label: Description
 ```
 
 This page loads data of a single person using the `resource.get` action. The person is then
