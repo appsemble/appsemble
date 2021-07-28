@@ -1,17 +1,12 @@
 import { Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
+import { Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, AppMember, Organization, User } from '../models';
-import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 
-interface Params {
-  appId: string;
-  memberId: string;
-}
-
-export async function getAppMembers(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppMembers(ctx: Context): Promise<void> {
   const {
     params: { appId },
   } = ctx;
@@ -52,7 +47,7 @@ export async function getAppMembers(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = appMembers;
 }
 
-export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppMember(ctx: Context): Promise<void> {
   const {
     params: { appId, memberId },
   } = ctx;
@@ -105,7 +100,7 @@ export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function setAppMember(ctx: KoaContext<Params>): Promise<void> {
+export async function setAppMember(ctx: Context): Promise<void> {
   const {
     params: { appId, memberId },
     request: {

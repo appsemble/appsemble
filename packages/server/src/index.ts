@@ -2,6 +2,7 @@
 import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { CommandModule } from 'yargs';
 
+import './types';
 import * as cleanup from './commands/cleanup';
 import * as cleanupResources from './commands/cleanupResources';
 import * as health from './commands/health';

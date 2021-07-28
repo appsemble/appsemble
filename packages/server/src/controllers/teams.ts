@@ -1,21 +1,15 @@
 import { Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
+import { Context } from 'koa';
 
 import { App, Organization, Team, TeamMember, transactional, User } from '../models';
-import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 
-interface Params {
-  memberId: string;
-  appId: string;
-  teamId: number;
-}
-
-async function checkTeamPermission(ctx: KoaContext<Params>, team: Team): Promise<void> {
+async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
   const {
     params: { teamId },
-    user,
   } = ctx;
+  const user = ctx.user as User;
   const teamMember =
     team?.Users.find((u) => u.id === user.id)?.TeamMember ??
     (await TeamMember.findOne({
@@ -27,14 +21,14 @@ async function checkTeamPermission(ctx: KoaContext<Params>, team: Team): Promise
   }
 }
 
-export async function createTeam(ctx: KoaContext<Params>): Promise<void> {
+export async function createTeam(ctx: Context): Promise<void> {
   const {
     params: { appId },
     request: {
       body: { name },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId);
   if (!app) {
@@ -59,11 +53,11 @@ export async function createTeam(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function getTeam(ctx: KoaContext<Params>): Promise<void> {
+export async function getTeam(ctx: Context): Promise<void> {
   const {
     params: { appId, teamId },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
@@ -82,11 +76,11 @@ export async function getTeam(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
+export async function getTeams(ctx: Context): Promise<void> {
   const {
     params: { appId },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     include: [
@@ -110,14 +104,14 @@ export async function getTeams(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
-export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
+export async function updateTeam(ctx: Context): Promise<void> {
   const {
     params: { appId, teamId },
     request: {
       body: { annotations, name },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
@@ -142,11 +136,11 @@ export async function updateTeam(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function deleteTeam(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteTeam(ctx: Context): Promise<void> {
   const {
     params: { appId, teamId },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
@@ -164,7 +158,7 @@ export async function deleteTeam(ctx: KoaContext<Params>): Promise<void> {
   await team.destroy();
 }
 
-export async function getTeamMembers(ctx: KoaContext<Params>): Promise<void> {
+export async function getTeamMembers(ctx: Context): Promise<void> {
   const {
     params: { appId, teamId },
   } = ctx;
@@ -186,15 +180,15 @@ export async function getTeamMembers(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
-export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
+export async function addTeamMember(ctx: Context): Promise<void> {
   const {
     clients,
     params: { appId, teamId },
     request: {
       body: { id },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
@@ -249,7 +243,7 @@ export async function addTeamMember(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
+export async function removeTeamMember(ctx: Context): Promise<void> {
   const {
     params: { appId, memberId, teamId },
   } = ctx;
@@ -279,7 +273,7 @@ export async function removeTeamMember(ctx: KoaContext<Params>): Promise<void> {
   await TeamMember.destroy({ where: { UserId: memberId, TeamId: team.id } });
 }
 
-export async function updateTeamMember(ctx: KoaContext<Params>): Promise<void> {
+export async function updateTeamMember(ctx: Context): Promise<void> {
   const {
     params: { appId, memberId, teamId },
     request: {

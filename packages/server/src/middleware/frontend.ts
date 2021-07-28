@@ -1,8 +1,7 @@
+import { Middleware } from 'koa';
 import { Configuration } from 'webpack';
 
-import { KoaMiddleware } from '../types';
-
-export async function frontend(webpackConfigs: Configuration[]): Promise<KoaMiddleware> {
+export async function frontend(webpackConfigs: Configuration[]): Promise<Middleware> {
   // eslint-disable-next-line node/no-unpublished-import
   const { default: koaWebpack } = await import('koa-webpack');
   const { default: webpack } = await import('webpack');

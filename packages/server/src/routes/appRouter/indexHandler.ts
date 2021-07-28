@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto';
 import { URLSearchParams } from 'url';
 
 import { defaultLocale, filterBlocks, getAppBlocks } from '@appsemble/utils';
+import { Context } from 'koa';
 import { Op } from 'sequelize';
 
 import {
@@ -11,7 +12,6 @@ import {
   BlockAsset,
   BlockVersion,
 } from '../../models';
-import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { argv } from '../../utils/argv';
 import { organizationBlocklist } from '../../utils/organizationBlocklist';
@@ -25,7 +25,7 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  * @param ctx - The Koa context.
  * @returns void
  */
-export async function indexHandler(ctx: KoaContext): Promise<void> {
+export async function indexHandler(ctx: Context): Promise<void> {
   const { hostname } = ctx;
   const { host } = argv;
 

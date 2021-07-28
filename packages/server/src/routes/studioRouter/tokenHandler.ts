@@ -4,10 +4,10 @@ import { URL } from 'url';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import { JwtPayload, verify } from 'jsonwebtoken';
+import { Context } from 'koa';
 import raw from 'raw-body';
 
 import { OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models';
-import { KoaContext } from '../../types';
 import { argv } from '../../utils/argv';
 import { createJWTResponse } from '../../utils/createJWTResponse';
 import { hasScope } from '../../utils/oauth2';
@@ -52,7 +52,7 @@ function checkTokenRequestParameters(
  *
  * @param ctx - The Koa context.
  */
-export async function tokenHandler(ctx: KoaContext): Promise<void> {
+export async function tokenHandler(ctx: Context): Promise<void> {
   const { header } = ctx;
   let aud: string;
   let refreshToken: boolean;

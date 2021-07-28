@@ -3,9 +3,8 @@ import { promises as fs } from 'fs';
 import { resolve } from 'path';
 
 import { compareStrings } from '@appsemble/utils';
+import { Context } from 'koa';
 import { render as renderTemplate } from 'mustache';
-
-import { KoaContext } from '../types';
 
 /**
  * Render settings as an HTML script tag.
@@ -40,7 +39,7 @@ export function makeCSP(csp: ContentSecurityPolicy): string {
 }
 
 export async function render(
-  ctx: KoaContext,
+  ctx: Context,
   filename: string,
   data: Record<string, unknown>,
 ): Promise<void> {
