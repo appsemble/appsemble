@@ -126,6 +126,7 @@
     "@types/koa-webpack": "^6.0.4",
     "@types/koa__cors": "^3.0.3",
     "@types/language-tags": "^1.0.0",
+    "@types/lodash": "^4.14.171",
     "@types/mime-types": "^2.1.0",
     "@types/mustache": "^4.1.2",
     "@types/node": "^16.4.3",
