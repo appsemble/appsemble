@@ -20,11 +20,15 @@ called.
     },
     then: {
       description: 'This action is called if the `if` remapper yields a truthy value.',
-      $ref: '#/components/schemas/ActionDefinition',
+      // XXX Replace the type with a ref once koas-core supports recursive JSON schemas.
+      type: 'object',
+      // $ref: '#/components/schemas/ActionDefinition',
     },
     else: {
       description: 'This action is called if the `if` remapper yields a falsy value.',
-      $ref: '#/components/schemas/ActionDefinition',
+      // XXX Replace the type with a ref once koas-core supports recursive JSON schemas.
+      type: 'object',
+      // $ref: '#/components/schemas/ActionDefinition',
     },
   },
 });
