@@ -10,9 +10,9 @@ bootstrap(({ data, parameters: { content }, utils }) => {
   const value = utils.remap(content, data);
 
   if (typeof value === 'string') {
-    markdown.textContent = marked(value);
+    markdown.innerHTML = marked(value);
   } else if (value != null) {
-    markdown.textContent = JSON.stringify(value);
+    markdown.innerHTML = JSON.stringify(value);
   }
 
   return markdown;
