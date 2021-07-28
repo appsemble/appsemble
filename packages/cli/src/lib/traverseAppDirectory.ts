@@ -2,7 +2,7 @@ import { createReadStream, promises as fs } from 'fs';
 import { join, resolve } from 'path';
 import { inspect } from 'util';
 
-import { AppsembleError, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
+import { AppsembleError, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import FormData from 'form-data';
 
 import { AppsembleContext, AppsembleRC } from '../types';
@@ -31,7 +31,7 @@ export async function traverseAppDirectory(
     switch (stat.name.toLowerCase()) {
       case '.appsemblerc.yaml': {
         logger.info(`Reading app settings from ${filepath}`);
-        const [rc] = await readYaml<AppsembleRC>(filepath);
+        const [rc] = await readData<AppsembleRC>(filepath);
         if ('iconBackground' in rc) {
           formData.append('iconBackground', rc.iconBackground);
         }
@@ -49,7 +49,7 @@ export async function traverseAppDirectory(
         }
         appFound = filepath;
 
-        const [app, data] = await readYaml(filepath);
+        const [app, data] = await readData(filepath);
         formData.append('yaml', data);
         formData.append('definition', JSON.stringify(app));
         return;

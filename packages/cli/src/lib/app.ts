@@ -2,10 +2,9 @@ import { existsSync, promises as fs } from 'fs';
 import { join, parse } from 'path';
 import { inspect } from 'util';
 
-import { AppsembleError, logger, opendirSafe, readYaml, writeYaml } from '@appsemble/node-utils';
+import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
 import { AppDefinition, AppsembleMessages } from '@appsemble/types';
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
-import { readJson, writeJson } from 'fs-extra';
 
 /**
  * @param path - The path to the app directory.
@@ -28,7 +27,7 @@ export async function writeAppMessages(
   await opendirSafe(path, async (filepath, stat) => {
     switch (stat.name.toLowerCase()) {
       case 'app-definition.yaml': {
-        [app] = await readYaml<AppDefinition>(filepath);
+        [app] = await readData<AppDefinition>(filepath);
         break;
       }
       case 'i18n': {
@@ -71,11 +70,7 @@ export async function writeAppMessages(
     logger.info(`Processing ${filepath}`);
     let oldMessages: AppsembleMessages;
     if (existsSync(filepath)) {
-      if (format === 'json') {
-        oldMessages = await readJson(filepath);
-      } else {
-        [oldMessages] = await readYaml<AppsembleMessages>(filepath);
-      }
+      [oldMessages] = await readData<AppsembleMessages>(filepath);
     } else if (verify) {
       throw new AppsembleError(`Missing translations file: ${filepath}`);
     } else {
@@ -183,8 +178,6 @@ This block version is not used in the app`,
       ...(Object.keys(coreMessages).length && { core: coreMessages }),
     };
 
-    await (format === 'yaml'
-      ? writeYaml(filepath, result, { sortKeys: true })
-      : writeJson(filepath, result, { spaces: 2 }));
+    await writeData(filepath, result);
   }
 }
