@@ -41,6 +41,7 @@
     "@koa/cors": "^3.1.0",
     "@odata/parser": "^0.2.9",
     "@sentry/node": "^6.10.0",
+    "@types/mdast": "^3.0.7",
     "autoprefixer": "^9.8.6",
     "axios": "^0.21.1",
     "bcrypt": "5.0.1",

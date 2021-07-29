@@ -221,7 +221,6 @@ export function processResourceBody(ctx: Context): [JsonObject, File[], Date, bo
     ({ body } = ctx.request);
     assets = [];
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { $clonable, $expires, id, ...resource } = body;
   return [resource, assets, $expires ? parseISO($expires) : null, Boolean($clonable)];
 }

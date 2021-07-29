@@ -1,5 +1,3 @@
-import { noop } from '@appsemble/utils';
-
 import { bootstrap } from '.';
 
 let event: CustomEvent;
@@ -27,9 +25,10 @@ afterEach(() => {
 
 describe('bootstrap', () => {
   it('should dispatch the AppsembleBoostrap event', () => {
-    bootstrap(noop);
+    const fn = jest.fn();
+    bootstrap(fn);
     expect(document.currentScript.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));
     expect(event.type).toBe('AppsembleBootstrap');
-    expect(event.detail).toStrictEqual({ fn: noop, document });
+    expect(event.detail).toStrictEqual({ fn, document });
   });
 });

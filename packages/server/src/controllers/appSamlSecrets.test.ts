@@ -233,7 +233,6 @@ describe('updateAppSamlSecret', () => {
       },
     });
     await secret.reload();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { updated, ...data } = response.data;
     expect(secret).toMatchObject(data);
   });

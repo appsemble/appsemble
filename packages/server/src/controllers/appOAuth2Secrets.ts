@@ -85,7 +85,6 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
     params: { appId, appOAuth2SecretId },
     request: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       body: { id, ...body },
     },
   } = ctx;
