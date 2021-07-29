@@ -9,22 +9,17 @@ import {
   validateLanguage,
 } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
+import { Context } from 'koa';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 
 import { App, AppMessages, BlockMessages, BlockVersion } from '../models';
-import { KoaContext } from '../types';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { getAppsembleMessages } from '../utils/getAppsembleMessages';
 import { mergeMessages } from '../utils/mergeMessages';
 
-interface Params {
-  appId: string;
-  language: string;
-}
-
-export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
+export async function getMessages(ctx: Context): Promise<void> {
   const {
     params: { appId, language },
     query: { merge, override = 'true' },
@@ -151,7 +146,7 @@ export async function getMessages(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
+export async function createMessages(ctx: Context): Promise<void> {
   const {
     params: { appId },
     request: {
@@ -181,7 +176,7 @@ export async function createMessages(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = { language: language.toLowerCase(), messages };
 }
 
-export async function deleteMessages(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteMessages(ctx: Context): Promise<void> {
   const {
     params: { appId, language },
   } = ctx;
@@ -206,7 +201,7 @@ export async function deleteMessages(ctx: KoaContext<Params>): Promise<void> {
   }
 }
 
-export async function getLanguages(ctx: KoaContext<Params>): Promise<void> {
+export async function getLanguages(ctx: Context): Promise<void> {
   const {
     params: { appId },
   } = ctx;

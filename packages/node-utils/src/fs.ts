@@ -1,7 +1,8 @@
 import { Dirent, promises as fs, Stats } from 'fs';
-import { join } from 'path';
+import { extname, join } from 'path';
 
-import yaml, { DumpOptions } from 'js-yaml';
+import yaml from 'js-yaml';
+import sortKeys from 'sort-keys';
 import { Promisable } from 'type-fest';
 
 import { AppsembleError } from '.';
@@ -25,41 +26,72 @@ export function isErrno(error: unknown, code?: string): error is NodeJS.ErrnoExc
 }
 
 /**
- * Read and parse a YAML file.
+ * Read the content of a JSON or YAML file.
  *
  * @param path - The path to the file to read.
- * @returns A tuple of the parsed YAML content and the YAML content as a string.
+ * @returns A tuple of the parsed content and the content as a string.
  */
-export async function readYaml<R>(path: string): Promise<[R, string]> {
+export async function readData<R>(path: string): Promise<[R, string]> {
   let content: string;
+  const ext = extname(path);
   try {
     content = await fs.readFile(path, 'utf8');
   } catch {
     throw new AppsembleError(`Error reading file ${path}`);
   }
+  if (ext !== '.yaml' && ext !== '.yml' && ext !== '.json') {
+    throw new AppsembleError(`Unknown file extension: ${path}`);
+  }
   try {
-    return [yaml.load(content) as unknown as R, content];
+    return [ext === '.json' ? JSON.parse(content) : (yaml.load(content) as unknown as R), content];
   } catch (error: unknown) {
-    if (error instanceof yaml.YAMLException) {
-      throw new AppsembleError(`Error parsing ${path}\n${error.message}`);
-    }
-    throw error;
+    throw new AppsembleError(`Error parsing ${path}\n${(error as Error).message}`);
   }
 }
 
+interface WriteDataOptions {
+  /**
+   * If false, don’t sort the object keys.
+   */
+  readonly sort?: boolean;
+}
+
 /**
- * Write data to a file serialized as YAML.
+ * Write data to a file serialized as JSON or YAML.
  *
- * @param path - The path to write to.
- * @param data - The data to serialize.
- * @param dumpOptions - YAML dump options.
+ * If `prettier` is available, the content is also formatted.
+ *
+ * @param path - The file path to write the data to.
+ * @param data - The data to write to the file.
+ * @param options - Additional options for processing the data.
+ * @returns The formatted content.
  */
-export async function writeYaml(
+export async function writeData(
   path: string,
   data: unknown,
-  dumpOptions: DumpOptions,
-): Promise<void> {
-  await fs.writeFile(path, yaml.dump(data, dumpOptions));
+  { sort = true }: WriteDataOptions = {},
+): Promise<string> {
+  const sorted = sort ? sortKeys(data, { deep: true }) : data;
+  let buffer: string;
+  try {
+    const { format, getFileInfo, resolveConfig } = await import('prettier');
+    const { inferredParser } = await getFileInfo(path, { resolveConfig: true });
+    const prettierOptions = await resolveConfig(path, { editorconfig: true });
+    prettierOptions.parser = inferredParser;
+    buffer =
+      inferredParser === 'yaml'
+        ? yaml.dump(sorted, { lineWidth: -1 })
+        : JSON.stringify(sorted, undefined, 2);
+    buffer = format(buffer, prettierOptions);
+  } catch {
+    const ext = extname(path);
+    buffer =
+      ext === '.yml' || ext === '.yaml'
+        ? yaml.dump(sorted, { lineWidth: -1 })
+        : JSON.stringify(sorted, undefined, 2);
+  }
+  await fs.writeFile(path, buffer);
+  return buffer;
 }
 
 interface OpenDirSafeOptions {

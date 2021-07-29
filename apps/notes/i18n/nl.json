@@ -1,13 +1,13 @@
 {
   "app": {
-    "name": "Notities",
-    "description": "Houd persoonlijke notities bij.",
     "app.roles.User": "Gebruiker",
     "app.roles.User.description": "Een gebruiker die notities kan bijhouden.",
+    "description": "Houd persoonlijke notities bij.",
+    "name": "Notities",
     "pages.0": "Notities"
   },
   "messageIds": {
-    "title": "Titel",
-    "body": "Inhoud"
+    "body": "Inhoud",
+    "title": "Titel"
   }
 }

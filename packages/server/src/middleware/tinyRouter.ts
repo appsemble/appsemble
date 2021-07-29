@@ -1,14 +1,13 @@
 import { methodNotAllowed } from '@hapi/boom';
-
-import { KoaMiddleware } from '../types';
+import { Middleware } from 'koa';
 
 type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
 
 type Route = {
-  [method in HttpMethod]?: KoaMiddleware;
+  [method in HttpMethod]?: Middleware;
 } & {
   route: RegExp | string;
-  any?: KoaMiddleware;
+  any?: Middleware;
 };
 
 /**
@@ -17,7 +16,7 @@ type Route = {
  * @param routes - The routes to serve.
  * @returns Middleware that serves middleware matching the route regex.
  */
-export function tinyRouter(routes: Route[]): KoaMiddleware {
+export function tinyRouter(routes: Route[]): Middleware {
   return (ctx, next) => {
     const { method, path } = ctx;
 

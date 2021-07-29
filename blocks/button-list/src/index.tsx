@@ -11,7 +11,7 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
         inverted,
         label,
         light,
-        onClick,
+        onClick = 'onClick',
         outlined,
         rounded,
         size = 'normal',

@@ -1,13 +1,13 @@
 {
   "app": {
-    "name": "Notes",
-    "description": "Keep personal notes",
     "app.roles.User": "User",
     "app.roles.User.description": "A user who keeps their own notes.",
+    "description": "Keep personal notes",
+    "name": "Notes",
     "pages.0": "Notes"
   },
   "messageIds": {
-    "title": "Title",
-    "body": "Body"
+    "body": "Body",
+    "title": "Title"
   }
 }

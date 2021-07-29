@@ -1,6 +1,6 @@
+import { Context } from 'koa';
 import sharp, { RGBA } from 'sharp';
 
-import { KoaContext } from '../types';
 import { readAsset } from './readAsset';
 
 interface ServeIconOptions {
@@ -64,7 +64,7 @@ const transparent: RGBA = { r: 0, g: 0, b: 0, alpha: 0 };
 const safeAreaDiameter = 0.8;
 
 export async function serveIcon(
-  ctx: KoaContext,
+  ctx: Context,
   {
     background,
     cache,

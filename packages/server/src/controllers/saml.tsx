@@ -6,6 +6,7 @@ import { SAMLStatus } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import axios from 'axios';
+import { Context } from 'koa';
 import { md, pki } from 'node-forge';
 import { v4 } from 'uuid';
 import toXml from 'xast-util-to-xml';
@@ -16,14 +17,8 @@ import { DOMImplementation, DOMParser } from 'xmldom';
 import { App, AppMember, AppSamlSecret, EmailAuthorization, transactional, User } from '../models';
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
 import { SamlLoginRequest } from '../models/SamlLoginRequest';
-import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
 import { createOAuth2AuthorizationCode } from '../utils/model';
-
-interface Params {
-  appId: number;
-  appSamlSecretId: number;
-}
 
 /**
  * An enum for managing known XML namespaces.
@@ -41,14 +36,14 @@ const deflate = promisify(deflateRaw);
 const dom = new DOMImplementation();
 const parser = new DOMParser();
 
-export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void> {
+export async function createAuthnRequest(ctx: Context): Promise<void> {
   const {
     params: { appId, appSamlSecretId },
     request: {
       body: { redirectUri, scope, state },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findOne({
     where: { id: appId },
@@ -120,7 +115,7 @@ export async function createAuthnRequest(ctx: KoaContext<Params>): Promise<void>
   ctx.body = { redirect: String(redirect) };
 }
 
-export async function assertConsumerService(ctx: KoaContext<Params>): Promise<void> {
+export async function assertConsumerService(ctx: Context): Promise<void> {
   const {
     params: { appId, appSamlSecretId },
     request: {
@@ -307,13 +302,13 @@ export async function assertConsumerService(ctx: KoaContext<Params>): Promise<vo
   ctx.body = `Redirecting to ${location}`;
 }
 
-export async function continueSamlLogin(ctx: KoaContext): Promise<void> {
+export async function continueSamlLogin(ctx: Context): Promise<void> {
   const {
     request: {
       body: { id },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const loginRequest = await SamlLoginRequest.findByPk(id, {
     include: [
@@ -344,7 +339,7 @@ export async function continueSamlLogin(ctx: KoaContext): Promise<void> {
   ctx.body = { redirect };
 }
 
-export async function getEntityId(ctx: KoaContext<Params>): Promise<void> {
+export async function getEntityId(ctx: Context): Promise<void> {
   const {
     params: { appId, appSamlSecretId },
     path,

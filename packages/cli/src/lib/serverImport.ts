@@ -19,9 +19,10 @@ export async function serverImport<
   T extends 'cleanupResources' | 'migrate' | 'runCronJobs' | 'setArgv' | 'start',
 >(...members: T[]): Promise<Record<T, any>> {
   try {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
     // @ts-ignore Because the the server isn’t built and published, an error is expected here at
     // build time, but while type checking.
+    // eslint-disable-next-line import/no-extraneous-dependencies
     const mod = await import('@appsemble/server');
     members.forEach((member) => {
       if (!Object.hasOwnProperty.call(mod, member)) {

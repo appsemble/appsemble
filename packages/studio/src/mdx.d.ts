@@ -26,6 +26,5 @@ declare module '*.md' {
  * A post-processed MDX document.
  */
 declare module '*.mdx' {
-  // eslint-disable-next-line import/no-unresolved
   export * from '*.md';
 }

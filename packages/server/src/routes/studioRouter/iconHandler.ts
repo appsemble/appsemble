@@ -1,11 +1,8 @@
-import { KoaContext } from '../../types';
+import { Context } from 'koa';
+
 import { serveIcon } from '../../utils/icon';
 
-interface Params {
-  size: string;
-}
-
-export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
+export async function iconHandler(ctx: Context): Promise<void> {
   const { params, request } = ctx;
   const size = Number(params.size);
 

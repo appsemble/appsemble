@@ -1,5 +1,5 @@
-import { KoaContext } from '../../types';
+import { Context } from 'koa';
 
-export function robotsHandler(ctx: KoaContext): void {
+export function robotsHandler(ctx: Context): void {
   ctx.body = 'User-agent: *\nAllow: *\n';
 }

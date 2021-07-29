@@ -2,6 +2,7 @@ import { NotificationDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { parseISO } from 'date-fns';
 import { Schema, ValidationError, Validator } from 'jsonschema';
+import { Context } from 'koa';
 import { File } from 'koas-body-parser';
 import { Op } from 'sequelize';
 import { JsonObject } from 'type-fest';
@@ -16,7 +17,6 @@ import {
   ResourceSubscription,
   User,
 } from '../models';
-import { KoaContext } from '../types';
 import { getRemapperContext } from './app';
 import { handleValidatorResult } from './jsonschema';
 import { sendNotification, SendNotificationOptions } from './sendNotification';
@@ -212,7 +212,7 @@ export async function processReferenceHooks(
   );
 }
 
-export function processResourceBody(ctx: KoaContext): [JsonObject, File[], Date, boolean] {
+export function processResourceBody(ctx: Context): [JsonObject, File[], Date, boolean] {
   let body;
   let assets: File[];
   if (ctx.is('multipart/form-data')) {
@@ -221,7 +221,6 @@ export function processResourceBody(ctx: KoaContext): [JsonObject, File[], Date,
     ({ body } = ctx.request);
     assets = [];
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { $clonable, $expires, id, ...resource } = body;
   return [resource, assets, $expires ? parseISO($expires) : null, Boolean($clonable)];
 }

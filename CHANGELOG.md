@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.24](https://gitlab.com/appsemble/appsemble/-/releases/0.18.24)] - 2021-07-29
+
+### Fixed
+
+- Block(`button-list`): Fix `onClick` not being used as the default if an action isn’t specified.
+- Block(`markdown`): Fix issue where certain data types would not display correctly.
+- App: Support remappers in page dialog titles.
+- Cli: Fix parsing error when verifying YAML messages.
+- Studio: Fix a crash caused by the editor.
+
 ## \[[0.18.23](https://gitlab.com/appsemble/appsemble/-/releases/0.18.23)] - 2021-07-20
 
 ### Fixed

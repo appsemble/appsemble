@@ -1,20 +1,15 @@
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { addYears } from 'date-fns';
+import { Context } from 'koa';
 import { pki } from 'node-forge';
 
 import { App, AppSamlSecret } from '../models';
-import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 
-interface Params {
-  appId: number;
-  appSamlSecretId: number;
-}
-
-export async function createAppSamlSecret(ctx: KoaContext<Params>): Promise<void> {
+export async function createAppSamlSecret(ctx: Context): Promise<void> {
   const {
     params: { appId },
     request: { body },
@@ -60,7 +55,7 @@ export async function createAppSamlSecret(ctx: KoaContext<Params>): Promise<void
   ctx.body = { ...secret, id };
 }
 
-export async function getAppSamlSecrets(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppSamlSecrets(ctx: Context): Promise<void> {
   const {
     params: { appId },
   } = ctx;
@@ -79,7 +74,7 @@ export async function getAppSamlSecrets(ctx: KoaContext<Params>): Promise<void> 
   ctx.body = app.AppSamlSecrets;
 }
 
-export async function updateAppSamlSecret(ctx: KoaContext<Params>): Promise<void> {
+export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   const {
     params: { appId, appSamlSecretId },
     request: {

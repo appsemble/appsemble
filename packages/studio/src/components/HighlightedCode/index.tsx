@@ -19,6 +19,7 @@ const languageMap: Record<string, string> = {
   diff: null,
   http: null,
   js: 'javascript',
+  ts: 'typescript',
   json: 'javascript',
   sh: 'shell',
 };

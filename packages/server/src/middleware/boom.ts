@@ -1,13 +1,12 @@
 import { Boom } from '@hapi/boom';
-
-import { KoaMiddleware } from '../types';
+import { Middleware } from 'koa';
 
 /**
  * Koa middleware for handling Boom errors.
  *
  * @returns Koa middleware that converts Boom errors into an HTTP response.
  */
-export function boomMiddleware(): KoaMiddleware {
+export function boomMiddleware(): Middleware {
   return async (ctx, next) => {
     try {
       await next();

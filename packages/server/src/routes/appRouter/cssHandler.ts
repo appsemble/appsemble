@@ -1,9 +1,9 @@
 import { notFound } from '@hapi/boom';
+import { Middleware } from 'koa';
 
-import { KoaMiddleware } from '../../types';
 import { getApp } from '../../utils/app';
 
-export function cssHandler(type: 'coreStyle' | 'sharedStyle'): KoaMiddleware {
+export function cssHandler(type: 'coreStyle' | 'sharedStyle'): Middleware {
   return async (ctx) => {
     const { app } = await getApp(ctx, { attributes: [type], raw: true });
 

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.18.23",
+  "version": "0.18.24",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -32,15 +32,16 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.18.23",
-    "@appsemble/types": "0.18.23",
-    "@appsemble/utils": "0.18.23",
+    "@appsemble/node-utils": "0.18.24",
+    "@appsemble/types": "0.18.24",
+    "@appsemble/utils": "0.18.24",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@hapi/boom": "^9.1.3",
     "@koa/cors": "^3.1.0",
     "@odata/parser": "^0.2.9",
     "@sentry/node": "^6.10.0",
+    "@types/mdast": "^3.0.7",
     "autoprefixer": "^9.8.6",
     "axios": "^0.21.1",
     "bcrypt": "5.0.1",
@@ -126,6 +127,7 @@
     "@types/koa-webpack": "^6.0.4",
     "@types/koa__cors": "^3.0.3",
     "@types/language-tags": "^1.0.0",
+    "@types/lodash": "^4.14.171",
     "@types/mime-types": "^2.1.0",
     "@types/mustache": "^4.1.2",
     "@types/node": "^16.4.3",
