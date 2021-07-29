@@ -19,10 +19,10 @@ description:
   en:
     localisedName: Appsemble
     genericName: Appsemble
-    shortDescription: >-
+    shortDescription:
       Appsemple is an open source low-code app building platform. The low-code editor allows users
       to build apps without the need for technical knowledge.
-    longDescription: >-
+    longDescription:
       Appsemble is an open source low-code app building platform. Appsemble enables users to build
       production grade apps in no time using blocks. Appsemble apps can also use existing data
       sources. The apps built using Appsemble are discoverable in an internal app store.
@@ -34,10 +34,10 @@ description:
   nl:
     localisedName: Appsemble
     genericName: Appsemble
-    shortDescription: >-
+    shortDescription:
       Appsemple is een open source low-code app platform. In de beschikbare low-code editor worden
       er basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen.
-    longDescription: >-
+    longDescription:
       Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er
       basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen. Ook kan er relatief
       gemakkelijk data aan de applicaties worden gekoppeld en kunnen de ontwikkelde apps in een

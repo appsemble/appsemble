@@ -2,7 +2,7 @@ import { createReadStream, promises as fs, ReadStream } from 'fs';
 import { URL } from 'url';
 import { inspect } from 'util';
 
-import { AppsembleError, logger, readYaml } from '@appsemble/node-utils';
+import { AppsembleError, logger, readData } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
 
@@ -87,7 +87,7 @@ export async function createApp({
 
   if (file.isFile()) {
     // Assuming file is App YAML
-    const [app, data] = await readYaml(path);
+    const [app, data] = await readData(path);
     formData.append('yaml', data);
     formData.append('definition', JSON.stringify(app));
   } else {

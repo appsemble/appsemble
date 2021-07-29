@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Feestdagen",
     "description": "Een eenvoudige app die feestdagen voor verschillende landen ophaalt.",
+    "name": "Feestdagen",
     "pages.0": "Feestdagen in Europa",
     "pages.0.subPages.0": "Nederland",
     "pages.0.subPages.1": "Duitsland",
