@@ -1,0 +1,1 @@
+Add `resource update` command.

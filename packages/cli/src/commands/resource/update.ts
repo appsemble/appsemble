@@ -4,7 +4,7 @@ import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
-import { createResource } from '../../lib/createResource';
+import { updateResource } from '../../lib/updateResource';
 import { BaseArguments } from '../../types';
 
 interface CreateResourceArguments extends BaseArguments {
@@ -13,8 +13,9 @@ interface CreateResourceArguments extends BaseArguments {
   appId: number;
 }
 
-export const command = 'create <resource-name> <paths...>';
-export const description = 'Create resources based on a specified JSON file or directory.';
+export const command = 'update <resource-name> <paths...>';
+export const description =
+  'Update resources based on a specified JSON file or directory. Entries without the property `id` will be skipped.';
 
 export function builder(yargs: Argv): Argv {
   return yargs
@@ -23,11 +24,11 @@ export function builder(yargs: Argv): Argv {
       describe: 'The name of the resource that should be created.',
     })
     .positional('paths', {
-      describe: 'The path to the resources to create',
+      describe: 'The path to the resources to update',
       normalize: true,
     })
     .option('app-id', {
-      describe: 'The ID of the app to create the resources for.',
+      describe: 'The ID of the app to update the resources of.',
       type: 'number',
     })
     .demandOption(
@@ -54,10 +55,10 @@ export async function handler({
     throw new AppsembleError('No JSON files found.');
   }
 
-  logger.info(`Creating resources based on ${files.length} files`);
+  logger.info(`Updating resources based on ${files.length} files`);
   for (const path of files) {
     logger.info('');
-    await createResource({
+    await updateResource({
       resourceName,
       appId,
       path,
