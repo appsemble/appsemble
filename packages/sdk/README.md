@@ -65,8 +65,8 @@ declare module '@appsemble/sdk' {
      * This is an number parameter.
      *
      * @type integer
-     * @min 42
-     * @max 1337
+     * @minimum 42
+     * @maximum 1337
      * @multipleOf 3
      * @example 123
      */

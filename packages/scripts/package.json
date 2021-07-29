@@ -25,9 +25,12 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.18.23",
+    "@appsemble/types": "0.18.23",
     "@appsemble/utils": "0.18.23",
+    "@appsemble/webpack-core": "0.18.23",
     "@types/fs-extra": "^9.0.12",
     "@types/js-yaml": "^4.0.2",
+    "@types/mdast": "^3.0.7",
     "@types/normalize-path": "^3.0.0",
     "@types/semver": "^7.3.8",
     "axios": "^0.21.1",

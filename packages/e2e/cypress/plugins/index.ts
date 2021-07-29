@@ -15,5 +15,4 @@ const Plugin: Cypress.PluginConfig = (on, config) => {
   return config;
 };
 
-// eslint-disable-next-line import/no-default-export
 export default Plugin;

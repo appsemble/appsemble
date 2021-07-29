@@ -1,3 +1,5 @@
+const { BasicAnnotationsReader } = require('ts-json-schema-generator');
+
 module.exports = {
   root: true,
   extends: ['remcohaszing', 'remcohaszing/jest'],
@@ -15,13 +17,13 @@ module.exports = {
     },
   },
   rules: {
-    // https://github.com/benmosher/eslint-plugin-import/pull/2097
-    'import/no-extraneous-dependencies': 'off',
-
     'jest/no-restricted-matchers': 'off',
 
     'jsdoc/require-jsdoc': 'off',
-    'jsdoc/check-tag-names': 'off',
+    'jsdoc/check-tag-names': [
+      'error',
+      { definedTags: [...BasicAnnotationsReader.textTags, ...BasicAnnotationsReader.jsonTags] },
+    ],
 
     'unicorn/consistent-destructuring': 'off',
     'unicorn/no-unsafe-regex': 'off',
@@ -53,6 +55,12 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-unused-vars': 'off',
 
+        'import/no-extraneous-dependencies': 'off',
+      },
+    },
+    {
+      files: ['**/__fixtures__/**'],
+      rules: {
         'import/no-extraneous-dependencies': 'off',
       },
     },

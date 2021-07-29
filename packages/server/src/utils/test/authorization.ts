@@ -1,7 +1,6 @@
 import { randomBytes } from 'crypto';
 
 import { api } from '@appsemble/utils';
-// eslint-disable-next-line node/no-unpublished-import
 import { request } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { OpenAPIV3 } from 'openapi-types';
