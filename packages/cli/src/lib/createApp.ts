@@ -1,13 +1,12 @@
-import { createReadStream, promises as fs, ReadStream } from 'fs';
-import { join } from 'path';
+import { createReadStream, existsSync, promises as fs, ReadStream } from 'fs';
+import { join, parse } from 'path';
 import { URL } from 'url';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, readData } from '@appsemble/node-utils';
 import axios from 'axios';
-import fg from 'fast-glob';
 import FormData from 'form-data';
-import normalizePath from 'normalize-path';
+import { readdir } from 'fs-extra';
 
 import { AppsembleContext } from '../types';
 import { authenticate } from './authentication';
@@ -155,31 +154,28 @@ export async function createApp({
     await traverseBlockThemes(path, data.id, remote, false);
     await uploadMessages(path, data.id, remote, false);
 
-    if (resources) {
+    if (resources && existsSync(join(path, 'resources'))) {
       const resourcePath = join(path, 'resources');
       try {
         const resourceFiles = await fs.readdir(resourcePath, { withFileTypes: true });
         for (const resource of resourceFiles) {
-          if (resource.isFile() && resource.name.endsWith('.json')) {
+          if (resource.isFile()) {
+            const { name } = parse(resource.name);
             await createResource({
               appId: data.id,
               path: join(resourcePath, resource.name),
               remote,
-              resourceName: resource.name.replace('.json', ''),
+              resourceName: name,
             });
           } else if (resource.isDirectory()) {
-            const subDirectoryResources = await fg(
-              normalizePath(join(resourcePath, resource.name, '**/*.json')),
-              {
-                absolute: true,
-                onlyFiles: true,
-              },
-            );
+            const subDirectoryResources = await readdir(join(resourcePath, resource.name), {
+              withFileTypes: true,
+            });
 
-            for (const subResource of subDirectoryResources) {
+            for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
               await createResource({
                 appId: data.id,
-                path: subResource,
+                path: join(resourcePath, resource.name, subResource.name),
                 remote,
                 resourceName: resource.name,
               });
