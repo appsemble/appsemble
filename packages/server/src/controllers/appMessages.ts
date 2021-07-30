@@ -21,7 +21,7 @@ import { mergeMessages } from '../utils/mergeMessages';
 
 export async function getMessages(ctx: Context): Promise<void> {
   const {
-    params: { appId, language },
+    pathParams: { appId, language },
     query: { merge, override = 'true' },
   } = ctx;
 
@@ -148,7 +148,7 @@ export async function getMessages(ctx: Context): Promise<void> {
 
 export async function createMessages(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { language },
     },
@@ -178,7 +178,7 @@ export async function createMessages(ctx: Context): Promise<void> {
 
 export async function deleteMessages(ctx: Context): Promise<void> {
   const {
-    params: { appId, language },
+    pathParams: { appId, language },
   } = ctx;
 
   const app = await App.findOne({
@@ -203,7 +203,7 @@ export async function deleteMessages(ctx: Context): Promise<void> {
 
 export async function getLanguages(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, {

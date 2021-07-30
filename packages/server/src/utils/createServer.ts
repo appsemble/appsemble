@@ -6,23 +6,21 @@ import { api } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
-import { Readable } from 'form-data';
-import Koa, { Context, Middleware } from 'koa';
+import Koa, { Middleware } from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
 import mount from 'koa-mount';
 import range from 'koa-range';
 import serve from 'koa-static';
-import { bodyParser, bufferParser, formdataParser } from 'koas-body-parser';
+import { bodyParser, bufferParser, Parser } from 'koas-body-parser';
 import { koas } from 'koas-core';
 import { operations } from 'koas-operations';
 import { parameters } from 'koas-parameters';
-import { security } from 'koas-security';
+import { security, SecurityOptions } from 'koas-security';
 import { serializer } from 'koas-serializer';
 import { specHandler } from 'koas-spec-handler';
 import { statusCode } from 'koas-status-code';
 import { swaggerUI } from 'koas-swagger-ui';
-import { OpenAPIV3 } from 'openapi-types';
 import { Configuration } from 'webpack';
 
 import * as controllers from '../controllers';
@@ -39,20 +37,11 @@ import { convertToCsv } from './convertToCsv';
 import { Mailer } from './email/Mailer';
 import { readPackageJson } from './readPackageJson';
 
-// @ts-expect-error This is needed due to an upstream bug in Koas
-bufferParser.skipValidation = true;
-// @ts-expect-error This is needed due to an upstream bug in Koas
-formdataParser.skipValidation = true;
-
-async function xWwwFormUrlencodedParser(
-  body: Readable,
-  mediaTypeObject: OpenAPIV3.MediaTypeObject,
-  ctx: Context,
-): Promise<any> {
-  const buffer = await bufferParser(body, mediaTypeObject, ctx);
+const xWwwFormUrlencodedParser: Parser<unknown> = async (body, mediaTypeObject, options, ctx) => {
+  const buffer = await bufferParser(body, mediaTypeObject, options, ctx);
   const data = parse(String(buffer));
   return data;
-}
+};
 
 interface CreateServerOptions {
   /**
@@ -111,10 +100,10 @@ export async function createServer({
     appMapper(
       compose([
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
-        await koas(api(readPackageJson().version, argv), [
+        koas(api(readPackageJson().version, argv), [
           specHandler(),
           swaggerUI({ url: '/api-explorer' }),
-          security(authentication() as any),
+          security(authentication() as SecurityOptions),
           parameters(),
           bodyParser({
             parsers: {

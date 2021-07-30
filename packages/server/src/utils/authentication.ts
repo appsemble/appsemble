@@ -6,15 +6,11 @@ import { Op } from 'sequelize';
 import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models';
 import { argv } from './argv';
 
-interface LoggedInUser {
-  id: number | string;
-}
-
 interface AuthenticationCheckers {
   basic: GetHttpUser<User>;
-  app: GetOAuth2User<LoggedInUser>;
-  cli: GetOAuth2User<LoggedInUser>;
-  studio: GetApiKeyUser<LoggedInUser>;
+  app: GetOAuth2User<User>;
+  cli: GetOAuth2User<User>;
+  studio: GetApiKeyUser<User>;
 }
 
 export function authentication(): AuthenticationCheckers {
@@ -30,7 +26,7 @@ export function authentication(): AuthenticationCheckers {
       return isValidPassword ? user : null;
     },
 
-    app(accessToken) {
+    app(accessToken: string) {
       const { aud, scope, sub } = verify(accessToken, secret) as JwtPayload;
       // XXX use origin check when default app domains are implemented.
       const [prefix, id] = (aud as string).split(':');

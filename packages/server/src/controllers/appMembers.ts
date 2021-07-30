@@ -8,7 +8,7 @@ import { checkRole } from '../utils/checkRole';
 
 export async function getAppMembers(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, { include: [User] });
@@ -49,7 +49,7 @@ export async function getAppMembers(ctx: Context): Promise<void> {
 
 export async function getAppMember(ctx: Context): Promise<void> {
   const {
-    params: { appId, memberId },
+    pathParams: { appId, memberId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -102,7 +102,7 @@ export async function getAppMember(ctx: Context): Promise<void> {
 
 export async function setAppMember(ctx: Context): Promise<void> {
   const {
-    params: { appId, memberId },
+    pathParams: { appId, memberId },
     request: {
       body: { role },
     },

@@ -226,7 +226,7 @@ export async function createApp(ctx: Context): Promise<void> {
 
 export async function getAppById(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
@@ -405,7 +405,7 @@ export async function queryMyApps(ctx: Context): Promise<void> {
 
 export async function patchApp(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: {
         coreStyle,
@@ -572,7 +572,7 @@ export async function patchApp(ctx: Context): Promise<void> {
 
 export async function setAppLock(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { locked },
     },
@@ -593,7 +593,7 @@ export async function setAppLock(ctx: Context): Promise<void> {
 
 export async function deleteApp(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId);
@@ -610,7 +610,7 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
 export async function getAppSnapshots(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -637,7 +637,7 @@ export async function getAppSnapshots(ctx: Context): Promise<void> {
 
 export async function getAppSnapshot(ctx: Context): Promise<void> {
   const {
-    params: { appId, snapshotId },
+    pathParams: { appId, snapshotId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -671,7 +671,7 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
 
 export async function getAppIcon(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     query: { maskable = false, raw = false, size = 128, updated },
   } = ctx;
   const app = await App.findByPk(appId, {
@@ -706,7 +706,7 @@ export async function getAppIcon(ctx: Context): Promise<void> {
 
 export async function deleteAppIcon(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: ['id', 'icon', 'OrganizationId'],
@@ -726,7 +726,7 @@ export async function deleteAppIcon(ctx: Context): Promise<void> {
 
 export async function deleteAppMaskableIcon(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: ['id', 'maskableIcon', 'OrganizationId'],
@@ -746,7 +746,7 @@ export async function deleteAppMaskableIcon(ctx: Context): Promise<void> {
 
 export async function getAppScreenshot(ctx: Context): Promise<void> {
   const {
-    params: { appId, screenshotId },
+    pathParams: { appId, screenshotId },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -777,7 +777,7 @@ export async function getAppScreenshot(ctx: Context): Promise<void> {
 
 export async function createAppScreenshot(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { screenshots },
     },
@@ -810,7 +810,7 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
 
 export async function deleteAppScreenshot(ctx: Context): Promise<void> {
   const {
-    params: { appId, screenshotId },
+    pathParams: { appId, screenshotId },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
@@ -833,7 +833,7 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
 
 export async function getAppCoreStyle(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, { raw: true });
@@ -849,7 +849,7 @@ export async function getAppCoreStyle(ctx: Context): Promise<void> {
 
 export async function getAppSharedStyle(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, { raw: true });
@@ -865,7 +865,7 @@ export async function getAppSharedStyle(ctx: Context): Promise<void> {
 
 export async function getAppBlockStyle(ctx: Context): Promise<void> {
   const {
-    params: { appId, blockId, organizationId },
+    pathParams: { appId, blockId, organizationId },
   } = ctx;
 
   const blockStyle = await AppBlockStyle.findOne({
@@ -882,7 +882,7 @@ export async function getAppBlockStyle(ctx: Context): Promise<void> {
 
 export async function setAppBlockStyle(ctx: Context): Promise<void> {
   const {
-    params: { appId, blockId, organizationId },
+    pathParams: { appId, blockId, organizationId },
     request: {
       body: { style },
     },

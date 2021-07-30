@@ -48,7 +48,7 @@
     "intl-format-cache": "^4.3.1",
     "intl-messageformat": "^9.8.1",
     "jwt-decode": "^3.1.2",
-    "openapi-types": "^7.2.3",
+    "openapi-types": "^9.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-intl": "^5.20.6",

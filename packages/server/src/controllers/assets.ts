@@ -8,7 +8,7 @@ import { checkRole } from '../utils/checkRole';
 
 export async function getAssets(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -31,7 +31,7 @@ export async function getAssets(ctx: Context): Promise<void> {
 
 export async function getAssetById(ctx: Context): Promise<void> {
   const {
-    params: { appId, assetId },
+    pathParams: { appId, assetId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -65,7 +65,7 @@ export async function getAssetById(ctx: Context): Promise<void> {
 
 export async function createAsset(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: { body, type },
   } = ctx;
   const user = ctx.user as User;
@@ -87,7 +87,7 @@ export async function createAsset(ctx: Context): Promise<void> {
 
 export async function deleteAsset(ctx: Context): Promise<void> {
   const {
-    params: { appId, assetId },
+    pathParams: { appId, assetId },
   } = ctx;
 
   const app = await App.findByPk(appId, {

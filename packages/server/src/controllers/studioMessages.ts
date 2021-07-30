@@ -7,7 +7,7 @@ import { getAppsembleMessages, getSupportedLanguages } from '../utils/getAppsemb
 
 export async function getStudioMessages(ctx: Context): Promise<void> {
   const {
-    params: { language },
+    pathParams: { language },
   } = ctx;
 
   try {

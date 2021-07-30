@@ -253,7 +253,7 @@ async function verifyPermission(
 
 export async function queryResources(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceType },
+    pathParams: { appId, resourceType },
     query: { $select, $top },
   } = ctx;
   const user = ctx.user as User;
@@ -316,7 +316,7 @@ export async function queryResources(ctx: Context): Promise<void> {
 
 export async function countResources(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceType },
+    pathParams: { appId, resourceType },
   } = ctx;
   const user = ctx.user as User;
 
@@ -358,7 +358,7 @@ export async function countResources(ctx: Context): Promise<void> {
 
 export async function getResourceById(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceId, resourceType },
+    pathParams: { appId, resourceId, resourceType },
   } = ctx;
   const user = ctx.user as User;
 
@@ -410,7 +410,7 @@ export async function getResourceById(ctx: Context): Promise<void> {
 
 export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceType },
+    pathParams: { appId, resourceType },
     query: { endpoint },
   } = ctx;
 
@@ -482,7 +482,7 @@ export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
 
 export async function getResourceSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceId, resourceType },
+    pathParams: { appId, resourceId, resourceType },
     query: { endpoint },
   } = ctx;
 
@@ -528,7 +528,7 @@ export async function getResourceSubscription(ctx: Context): Promise<void> {
 
 export async function createResource(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceType },
+    pathParams: { appId, resourceType },
   } = ctx;
   const user = ctx.user as User;
   const [resource, assets, $expires] = processResourceBody(ctx);
@@ -604,7 +604,7 @@ export async function createResource(ctx: Context): Promise<void> {
 
 export async function updateResource(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceId, resourceType },
+    pathParams: { appId, resourceId, resourceType },
   } = ctx;
   const user = ctx.user as User;
   const [updatedResource, assets, $expires, clonable] = processResourceBody(ctx);
@@ -690,7 +690,7 @@ export async function updateResource(ctx: Context): Promise<void> {
 
 export async function deleteResource(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceId, resourceType },
+    pathParams: { appId, resourceId, resourceType },
   } = ctx;
   const user = ctx.user as User;
   const action = 'delete';

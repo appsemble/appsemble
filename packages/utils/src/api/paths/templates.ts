@@ -54,10 +54,10 @@ export const paths: OpenAPIV3.PathsObject = {
                   description: 'The ID of the template.',
                 },
                 name: {
-                  $ref: '#/components/schemas/App/properties/definition/properties/name',
+                  $ref: '#/components/schemas/AppDefinition/properties/name',
                 },
                 description: {
-                  $ref: '#/components/schemas/App/properties/definition/properties/description',
+                  $ref: '#/components/schemas/AppDefinition/properties/description',
                 },
                 organizationId: {
                   $ref: '#/components/schemas/Organization/properties/id',
