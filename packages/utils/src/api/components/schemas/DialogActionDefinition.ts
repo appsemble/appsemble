@@ -27,5 +27,10 @@ should be supported by the app.
       description:
         'Whether the dialog should be displayed full screen as if it’s a new page, or as a pop-up.',
     },
+    blocks: {
+      type: 'array',
+      description: 'A list of blocks to display in the dialog.',
+      items: { $ref: '#/components/schemas/BlockDefinition' },
+    },
   },
 });
