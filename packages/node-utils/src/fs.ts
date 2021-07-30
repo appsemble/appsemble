@@ -1,5 +1,5 @@
 import { Dirent, promises as fs, Stats } from 'fs';
-import { extname, join } from 'path';
+import { dirname, extname, join } from 'path';
 
 import yaml from 'js-yaml';
 import sortKeys from 'sort-keys';
@@ -90,6 +90,7 @@ export async function writeData(
         ? yaml.dump(sorted, { lineWidth: -1 })
         : JSON.stringify(sorted, undefined, 2);
   }
+  await fs.mkdir(dirname(path), { recursive: true });
   await fs.writeFile(path, buffer);
   return buffer;
 }
