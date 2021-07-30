@@ -3,7 +3,6 @@ import { ReactElement } from 'react';
 
 import styles from './index.module.css';
 
-// eslint-disable-next-line import/no-unresolved
 import { MDXWrapperProps } from '*.md';
 
 /**
