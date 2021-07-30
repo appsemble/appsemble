@@ -451,7 +451,7 @@ pages:
                 type: flow.finish
               onPrevious:
                 type: condition
-                condition:
+                if:
                   prop: consideringAppsemble # Any value that isn’t ‘definitely not’
                 then:
                   type: flow.to
