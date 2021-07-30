@@ -1,5 +1,3 @@
-import { login, waitForAPICall } from './utils';
-
 describe('/apps', () => {
   beforeEach(() => {
     cy.visit('/en/apps');
@@ -11,15 +9,12 @@ describe('/apps', () => {
   });
 
   it('should display “My Apps” when logged in', () => {
-    login('/en/apps');
+    cy.login('/en/apps');
     cy.contains('My Apps').should('exist');
   });
 
   it('should render a list of apps', () => {
-    waitForAPICall({
-      method: 'GET',
-      url: '/api/apps*',
-    });
+    cy.waitForAPICall({ url: '/api/apps*' });
     cy.contains('Empty App').should('exist');
     cy.contains('Holidays').should('exist');
     cy.contains('Notes').should('exist');

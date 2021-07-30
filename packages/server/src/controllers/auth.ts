@@ -3,10 +3,10 @@ import { randomBytes } from 'crypto';
 import { logger } from '@appsemble/node-utils';
 import { conflict, forbidden, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
+import { Context } from 'koa';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models';
-import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
 
@@ -16,7 +16,7 @@ function mayRegister(): void {
   }
 }
 
-export async function registerEmail(ctx: KoaContext): Promise<void> {
+export async function registerEmail(ctx: Context): Promise<void> {
   mayRegister();
   const {
     mailer,
@@ -66,7 +66,7 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   ctx.body = createJWTResponse(user.id);
 }
 
-export async function verifyEmail(ctx: KoaContext): Promise<void> {
+export async function verifyEmail(ctx: Context): Promise<void> {
   const {
     request: {
       body: { token },
@@ -86,7 +86,7 @@ export async function verifyEmail(ctx: KoaContext): Promise<void> {
   ctx.status = 200;
 }
 
-export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
+export async function resendEmailVerification(ctx: Context): Promise<void> {
   const { mailer, request } = ctx;
 
   const email = request.body.email.toLowerCase();
@@ -101,7 +101,7 @@ export async function resendEmailVerification(ctx: KoaContext): Promise<void> {
   ctx.status = 204;
 }
 
-export async function requestResetPassword(ctx: KoaContext): Promise<void> {
+export async function requestResetPassword(ctx: Context): Promise<void> {
   const { mailer, request } = ctx;
 
   const email = request.body.email.toLowerCase();
@@ -121,7 +121,7 @@ export async function requestResetPassword(ctx: KoaContext): Promise<void> {
   ctx.status = 204;
 }
 
-export async function resetPassword(ctx: KoaContext): Promise<void> {
+export async function resetPassword(ctx: Context): Promise<void> {
   const {
     request: {
       body: { token },

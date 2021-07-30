@@ -16,6 +16,7 @@ import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
 import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
+import { Context } from 'koa';
 import { File } from 'koas-body-parser';
 import { isEqual, uniqWith } from 'lodash';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
@@ -34,7 +35,6 @@ import {
   transactional,
   User,
 } from '../models';
-import { KoaContext } from '../types';
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { blockVersionToJson, syncBlock } from '../utils/block';
@@ -42,14 +42,6 @@ import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
 import { getAppFromRecord } from '../utils/model';
-
-interface Params {
-  appId: number;
-  blockId: string;
-  organizationId: string;
-  screenshotId: number;
-  snapshotId: number;
-}
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
   const uniqueBlocks = uniqWith(
@@ -107,7 +99,7 @@ function handleAppValidationError(error: Error, app: Partial<App>): never {
   throw error;
 }
 
-export async function createApp(ctx: KoaContext): Promise<void> {
+export async function createApp(ctx: Context): Promise<void> {
   const {
     request: {
       body: {
@@ -232,9 +224,9 @@ export async function createApp(ctx: KoaContext): Promise<void> {
   }
 }
 
-export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppById(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
@@ -290,7 +282,7 @@ export async function getAppById(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = getAppFromRecord(app);
 }
 
-export async function queryApps(ctx: KoaContext): Promise<void> {
+export async function queryApps(ctx: Context): Promise<void> {
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const apps = await App.findAll({
@@ -347,8 +339,8 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
     .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
-export async function queryMyApps(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
+export async function queryMyApps(ctx: Context): Promise<void> {
+  const user = ctx.user as User;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const memberships = await Member.findAll({
@@ -411,9 +403,9 @@ export async function queryMyApps(ctx: KoaContext): Promise<void> {
     .map((app) => getAppFromRecord(app, ['yaml']));
 }
 
-export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
+export async function patchApp(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: {
         coreStyle,
@@ -432,8 +424,8 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
         yaml,
       },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   let result: Partial<App>;
 
@@ -578,9 +570,9 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
   }
 }
 
-export async function setAppLock(ctx: KoaContext<Params>): Promise<void> {
+export async function setAppLock(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { locked },
     },
@@ -599,9 +591,9 @@ export async function setAppLock(ctx: KoaContext<Params>): Promise<void> {
   await app.update({ locked });
 }
 
-export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteApp(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId);
@@ -616,9 +608,9 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
   await app.destroy();
 }
 
-export async function getAppSnapshots(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppSnapshots(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -643,9 +635,9 @@ export async function getAppSnapshots(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
-export async function getAppSnapshot(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppSnapshot(ctx: Context): Promise<void> {
   const {
-    params: { appId, snapshotId },
+    pathParams: { appId, snapshotId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -677,9 +669,9 @@ export async function getAppSnapshot(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppIcon(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     query: { maskable = false, raw = false, size = 128, updated },
   } = ctx;
   const app = await App.findByPk(appId, {
@@ -712,9 +704,9 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
   });
 }
 
-export async function deleteAppIcon(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteAppIcon(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: ['id', 'icon', 'OrganizationId'],
@@ -732,9 +724,9 @@ export async function deleteAppIcon(ctx: KoaContext<Params>): Promise<void> {
   await app.update({ icon: null });
 }
 
-export async function deleteAppMaskableIcon(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteAppMaskableIcon(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: ['id', 'maskableIcon', 'OrganizationId'],
@@ -752,9 +744,9 @@ export async function deleteAppMaskableIcon(ctx: KoaContext<Params>): Promise<vo
   await app.update({ maskableIcon: null });
 }
 
-export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppScreenshot(ctx: Context): Promise<void> {
   const {
-    params: { appId, screenshotId },
+    pathParams: { appId, screenshotId },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -783,9 +775,9 @@ export async function getAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
   ctx.type = mime;
 }
 
-export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+export async function createAppScreenshot(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { screenshots },
     },
@@ -816,9 +808,9 @@ export async function createAppScreenshot(ctx: KoaContext<Params>): Promise<void
   });
 }
 
-export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteAppScreenshot(ctx: Context): Promise<void> {
   const {
-    params: { appId, screenshotId },
+    pathParams: { appId, screenshotId },
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
@@ -839,9 +831,9 @@ export async function deleteAppScreenshot(ctx: KoaContext<Params>): Promise<void
   await app.AppScreenshots[0].destroy();
 }
 
-export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppCoreStyle(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, { raw: true });
@@ -855,9 +847,9 @@ export async function getAppCoreStyle(ctx: KoaContext<Params>): Promise<void> {
   ctx.status = 200;
 }
 
-export async function getAppSharedStyle(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppSharedStyle(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, { raw: true });
@@ -871,9 +863,9 @@ export async function getAppSharedStyle(ctx: KoaContext<Params>): Promise<void> 
   ctx.status = 200;
 }
 
-export async function getAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppBlockStyle(ctx: Context): Promise<void> {
   const {
-    params: { appId, blockId, organizationId },
+    pathParams: { appId, blockId, organizationId },
   } = ctx;
 
   const blockStyle = await AppBlockStyle.findOne({
@@ -888,9 +880,9 @@ export async function getAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
   ctx.status = 200;
 }
 
-export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
+export async function setAppBlockStyle(ctx: Context): Promise<void> {
   const {
-    params: { appId, blockId, organizationId },
+    pathParams: { appId, blockId, organizationId },
     request: {
       body: { style },
     },

@@ -1,18 +1,13 @@
 import { defaultLocale, validateLanguage } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
+import { Context } from 'koa';
 import tags from 'language-tags';
 
-import { KoaContext } from '../types';
 import { getAppsembleMessages, getSupportedLanguages } from '../utils/getAppsembleMessages';
 
-interface Params {
-  language: string;
-  context: 'app' | 'studio';
-}
-
-export async function getStudioMessages(ctx: KoaContext<Params>): Promise<void> {
+export async function getStudioMessages(ctx: Context): Promise<void> {
   const {
-    params: { language },
+    pathParams: { language },
   } = ctx;
 
   try {
@@ -48,7 +43,7 @@ export async function getStudioMessages(ctx: KoaContext<Params>): Promise<void> 
   };
 }
 
-export async function getAppsembleLanguages(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppsembleLanguages(ctx: Context): Promise<void> {
   const languages = await getSupportedLanguages();
   ctx.body = [...languages].sort();
 }

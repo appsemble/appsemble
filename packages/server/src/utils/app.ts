@@ -11,11 +11,11 @@ import {
 import { badRequest } from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
+import { Context } from 'koa';
 import tags from 'language-tags';
 import { FindOptions, IncludeOptions, Op } from 'sequelize';
 
 import { App, AppMessages } from '../models';
-import { KoaContext } from '../types';
 import { argv } from './argv';
 import { mergeMessages } from './mergeMessages';
 
@@ -51,7 +51,7 @@ interface GetAppValue {
  * @returns The app matching the url.
  */
 export async function getApp(
-  { origin }: Pick<KoaContext, 'origin'>,
+  { origin }: Pick<Context, 'origin'>,
   queryOptions: FindOptions,
   url = origin,
 ): Promise<GetAppValue> {
@@ -150,7 +150,7 @@ export function compareApps(a: App, b: App): number {
  * @returns An object containing the language, base language, and Sequelize filter
  * to filter AppMessages by these languages.
  */
-export function parseLanguage(ctx: KoaContext): {
+export function parseLanguage(ctx: Context): {
   language: string;
   baseLanguage: string;
   query: IncludeOptions[];

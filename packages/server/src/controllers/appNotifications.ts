@@ -2,19 +2,15 @@ import { logger } from '@appsemble/node-utils';
 import { SubscriptionResponse } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
+import { Context } from 'koa';
 
-import { App, AppSubscription, ResourceSubscription } from '../models';
-import { KoaContext } from '../types';
+import { App, AppSubscription, ResourceSubscription, User } from '../models';
 import { checkRole } from '../utils/checkRole';
 import { sendNotification } from '../utils/sendNotification';
 
-interface Params {
-  appId: number;
-}
-
-export async function getSubscription(ctx: KoaContext<Params>): Promise<void> {
+export async function getSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     query: { endpoint },
   } = ctx;
 
@@ -75,14 +71,14 @@ export async function getSubscription(ctx: KoaContext<Params>): Promise<void> {
   }, resources);
 }
 
-export async function addSubscription(ctx: KoaContext<Params>): Promise<void> {
+export async function addSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { endpoint, keys },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, { include: [AppSubscription] });
 
@@ -99,14 +95,14 @@ export async function addSubscription(ctx: KoaContext<Params>): Promise<void> {
   });
 }
 
-export async function updateSubscription(ctx: KoaContext<Params>): Promise<void> {
+export async function updateSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { action, endpoint, resource, resourceId, value },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -183,9 +179,9 @@ export async function updateSubscription(ctx: KoaContext<Params>): Promise<void>
       }));
 }
 
-export async function broadcast(ctx: KoaContext<Params>): Promise<void> {
+export async function broadcast(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { body, title },
     },

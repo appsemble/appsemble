@@ -4,6 +4,7 @@ import { URL } from 'url';
 import { Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
+import { Context } from 'koa';
 
 import {
   App,
@@ -13,20 +14,14 @@ import {
   transactional,
   User,
 } from '../models';
-import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
 
-interface Params {
-  appId: string;
-  appOAuth2SecretId: string;
-}
-
-export async function createAppOAuth2Secret(ctx: KoaContext<Params>): Promise<void> {
+export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: { body },
   } = ctx;
 
@@ -44,8 +39,8 @@ export async function createAppOAuth2Secret(ctx: KoaContext<Params>): Promise<vo
   ctx.body = await AppOAuth2Secret.create({ ...body, AppId: appId });
 }
 
-export async function getAppOAuth2Secrets(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
+  const { appId } = ctx.pathParams;
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
@@ -61,8 +56,8 @@ export async function getAppOAuth2Secrets(ctx: KoaContext<Params>): Promise<void
   ctx.body = app.AppOAuth2Secrets;
 }
 
-export async function getAppOAuth2Secret(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, appOAuth2SecretId } = ctx.params;
+export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
+  const { appId, appOAuth2SecretId } = ctx.pathParams;
 
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -86,11 +81,10 @@ export async function getAppOAuth2Secret(ctx: KoaContext<Params>): Promise<void>
   [ctx.body] = app.AppOAuth2Secrets;
 }
 
-export async function updateAppOAuth2Secret(ctx: KoaContext<Params>): Promise<void> {
+export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
-    params: { appId, appOAuth2SecretId },
+    pathParams: { appId, appOAuth2SecretId },
     request: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       body: { id, ...body },
     },
   } = ctx;
@@ -115,15 +109,15 @@ export async function updateAppOAuth2Secret(ctx: KoaContext<Params>): Promise<vo
   ctx.body = secret;
 }
 
-export async function verifyAppOAuth2SecretCode(ctx: KoaContext<Params>): Promise<void> {
+export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   const {
     headers,
-    params: { appId, appOAuth2SecretId },
+    pathParams: { appId, appOAuth2SecretId },
     request: {
       body: { code, redirectUri, scope },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
   // XXX Replace this with an imported language array when supporting more languages
   let referer: URL;
   try {

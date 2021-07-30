@@ -14,14 +14,14 @@ interface PageDialogProps
 /**
  * The dialog component to render on a page when the `dialog` action is dispatched.
  */
-export function PageDialog({ dialog = null, ...props }: PageDialogProps): ReactElement {
+export function PageDialog({ dialog = null, remap, ...props }: PageDialogProps): ReactElement {
   return (
     <ModalCard
       cardClassName={classNames({ [styles.fullscreen]: dialog?.fullscreen })}
       closable={Boolean(dialog?.closable)}
       isActive={Boolean(dialog)}
       onClose={dialog?.close}
-      title={dialog?.title}
+      title={remap(dialog?.title, {}, {})}
     >
       {dialog && (
         <BlockList
@@ -29,6 +29,7 @@ export function PageDialog({ dialog = null, ...props }: PageDialogProps): ReactE
           data={dialog.data}
           extraCreators={dialog.actionCreators}
           prefix={`${dialog.prefix}.blocks`}
+          remap={remap}
           {...props}
         />
       )}

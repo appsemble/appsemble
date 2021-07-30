@@ -1,18 +1,17 @@
 import { noop } from '@appsemble/utils';
 import { Boom } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
-import Koa from 'koa';
+import Koa, { Context } from 'koa';
 
-import { KoaContext } from '../types';
 import { tinyRouter } from './tinyRouter';
 
 let app: Koa;
-let context: KoaContext;
+let context: Context;
 
 beforeEach(async () => {
   app = new Koa();
   app.silent = true;
-  app.use((ctx: KoaContext, next) => {
+  app.use((ctx, next) => {
     context = ctx;
     return next();
   });

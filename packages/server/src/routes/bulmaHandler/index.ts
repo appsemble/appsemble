@@ -1,10 +1,9 @@
 import { Theme } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
+import { Context } from 'koa';
 import postcss from 'postcss';
 import sass from 'sass';
-
-import { KoaContext } from '../../types';
 
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');
@@ -65,7 +64,7 @@ function processStyle(theme: Partial<Theme>): string {
  *
  * @param ctx - The Koa context.
  */
-export function bulmaHandler(ctx: KoaContext): void {
+export function bulmaHandler(ctx: Context): void {
   const { css } = sass.renderSync({
     data: processStyle(ctx.query),
     outputStyle: 'compressed',

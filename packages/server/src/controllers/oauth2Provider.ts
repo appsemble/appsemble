@@ -1,17 +1,12 @@
 import { createHash } from 'crypto';
 
 import { badRequest, forbidden, notFound } from '@hapi/boom';
+import { Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
-import { KoaContext } from '../types';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 import { hasScope } from '../utils/oauth2';
-
-interface Params {
-  appId: number;
-  redirectUri: string;
-}
 
 async function checkIsAllowed(app: App, user: User): Promise<boolean> {
   const policy = app.definition?.security?.default?.policy ?? 'everyone';
@@ -32,10 +27,8 @@ async function checkIsAllowed(app: App, user: User): Promise<boolean> {
   }
 }
 
-export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
-  const {
-    user: { id },
-  } = ctx;
+export async function getUserInfo(ctx: Context): Promise<void> {
+  const { id } = ctx.user as User;
 
   const user = await User.findOne({
     attributes: ['primaryEmail', 'name', 'locale'],
@@ -73,13 +66,13 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {
+export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
   const {
     request: {
       body: { appId, redirectUri, scope },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
@@ -115,13 +108,13 @@ export async function verifyOAuth2Consent(ctx: KoaContext<Params>): Promise<void
   };
 }
 
-export async function agreeOAuth2Consent(ctx: KoaContext<Params>): Promise<void> {
+export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
   const {
     request: {
       body: { appId, redirectUri, scope },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],

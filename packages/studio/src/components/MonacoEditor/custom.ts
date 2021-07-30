@@ -6,7 +6,7 @@ import { setDiagnosticsOptions } from 'monaco-yaml';
 import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
 // Webpack loader syntax is required here, because  json.worker and yaml.worker also import this
 // file.
-// eslint-disable-next-line import/no-unresolved, import/no-webpack-loader-syntax, node/no-extraneous-import
+// eslint-disable-next-line import/no-webpack-loader-syntax, node/no-extraneous-import
 import MonacoWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
 // Cherry-picking these features makes the editor more light weight, resulting in a smaller bundle
 // size and a snappier user experience.

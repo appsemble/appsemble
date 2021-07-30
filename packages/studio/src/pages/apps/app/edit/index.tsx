@@ -45,8 +45,6 @@ const allow = [
   'usb',
 ];
 
-// `React.lazy` works with default exports.
-// eslint-disable-next-line import/no-default-export
 export default function EditPage(): ReactElement {
   useMeta(messages.title);
 
