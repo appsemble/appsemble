@@ -1,6 +1,6 @@
 {
   "app": {
-    "description": "",
+    "description": "Empty App est une application simple avec deux pages et des boutons basculant entre eux.",
     "name": "",
     "pages.0": "Exemple de page A",
     "pages.1": "Exemple de page B"
