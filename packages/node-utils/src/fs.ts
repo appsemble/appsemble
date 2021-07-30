@@ -2,6 +2,7 @@ import { Dirent, promises as fs, Stats } from 'fs';
 import { extname, join } from 'path';
 
 import yaml from 'js-yaml';
+import parseJson from 'parse-json';
 import sortKeys from 'sort-keys';
 import { Promisable } from 'type-fest';
 
@@ -43,7 +44,7 @@ export async function readData<R>(path: string): Promise<[R, string]> {
     throw new AppsembleError(`Unknown file extension: ${path}`);
   }
   try {
-    return [ext === '.json' ? JSON.parse(content) : (yaml.load(content) as unknown as R), content];
+    return [ext === '.json' ? parseJson(content) : (yaml.load(content) as unknown as R), content];
   } catch (error: unknown) {
     throw new AppsembleError(`Error parsing ${path}\n${(error as Error).message}`);
   }

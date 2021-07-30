@@ -40,6 +40,7 @@
     "koa-compose": "^4.1.0",
     "logform": "^2.2.0",
     "normalize-path": "^3.0.0",
+    "parse-json": "^5.2.0",
     "sort-keys": "^4.2.0",
     "type-fest": "^1.2.2",
     "winston": "^3.3.3",
@@ -49,6 +50,7 @@
     "@sinonjs/fake-timers": "^7.1.2",
     "@types/js-yaml": "^4.0.2",
     "@types/normalize-path": "^3.0.0",
+    "@types/parse-json": "^4.0.0",
     "axios-mock-adapter": "^1.19.0",
     "axios-test-instance": "^4.0.0"
   },
