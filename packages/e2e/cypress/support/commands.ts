@@ -42,7 +42,7 @@ Cypress.Commands.add('waitForAPICall', ({ method = 'GET', url }) => {
 
 Cypress.Commands.add('waitForAppLoaded', () => {
   cy.get('[data-block]').should('exist');
-  cy.get('.appsemble-loader', { includeShadowDom: true }).should('not.exist');
+  cy.get('.appsemble-loader', { includeShadowDom: true, timeout: 8e3 }).should('not.exist');
 });
 
 Cypress.Commands.add(
