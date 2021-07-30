@@ -41,7 +41,7 @@ export async function updateResource({
   }
 
   const resources = [].concat(file) as { id: number }[];
-  logger.info(`Creating ${resources.length} resource(s) from ${path}`);
+  logger.info(`Updating ${resources.length} resource(s) from ${path}`);
 
   for (const resource of resources) {
     if (!resource.id) {
