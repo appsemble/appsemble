@@ -46,7 +46,7 @@ export async function getOrganizations(ctx: Context): Promise<void> {
 
 export async function getOrganization(ctx: Context): Promise<void> {
   const {
-    params: { organizationId },
+    pathParams: { organizationId },
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
@@ -73,7 +73,7 @@ export async function getOrganization(ctx: Context): Promise<void> {
 
 export async function getOrganizationApps(ctx: Context): Promise<void> {
   const {
-    params: { organizationId },
+    pathParams: { organizationId },
   } = ctx;
   const user = ctx.user as User;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
@@ -142,7 +142,7 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
 
 export async function getOrganizationBlocks(ctx: Context): Promise<void> {
   const {
-    params: { organizationId },
+    pathParams: { organizationId },
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
@@ -207,7 +207,7 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
 
 export async function getOrganizationIcon(ctx: Context): Promise<void> {
   const {
-    params: { organizationId },
+    pathParams: { organizationId },
     query: { background, maskable, raw, size = 128, updated },
   } = ctx;
 
@@ -235,7 +235,7 @@ export async function getOrganizationIcon(ctx: Context): Promise<void> {
 
 export async function patchOrganization(ctx: Context): Promise<void> {
   const {
-    params: { organizationId },
+    pathParams: { organizationId },
     request: {
       body: { description, email, icon, name, website },
     },
@@ -350,7 +350,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
 
 export async function getMembers(ctx: Context): Promise<void> {
   const {
-    params: { organizationId },
+    pathParams: { organizationId },
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
@@ -371,7 +371,7 @@ export async function getMembers(ctx: Context): Promise<void> {
 
 export async function getInvites(ctx: Context): Promise<void> {
   const {
-    params: { organizationId },
+    pathParams: { organizationId },
   } = ctx;
 
   const member = await checkRole(ctx, organizationId, Permission.InviteMember, {
@@ -395,7 +395,7 @@ export async function getInvites(ctx: Context): Promise<void> {
 
 export async function getInvitation(ctx: Context): Promise<void> {
   const {
-    params: { token },
+    pathParams: { token },
   } = ctx;
 
   const invite = await OrganizationInvite.findOne({
@@ -426,7 +426,7 @@ export async function getInvitation(ctx: Context): Promise<void> {
 
 export async function respondInvitation(ctx: Context): Promise<void> {
   const {
-    params: { organizationId },
+    pathParams: { organizationId },
     request: {
       body: { response, token },
     },
@@ -455,7 +455,7 @@ export async function respondInvitation(ctx: Context): Promise<void> {
 export async function inviteMembers(ctx: Context): Promise<void> {
   const {
     mailer,
-    params: { organizationId },
+    pathParams: { organizationId },
     request: { body },
   } = ctx;
 
@@ -534,7 +534,7 @@ export async function inviteMembers(ctx: Context): Promise<void> {
 export async function resendInvitation(ctx: Context): Promise<void> {
   const {
     mailer,
-    params: { organizationId },
+    pathParams: { organizationId },
     request,
   } = ctx;
 
@@ -583,7 +583,7 @@ export async function removeInvite(ctx: Context): Promise<void> {
 
 export async function removeMember(ctx: Context): Promise<void> {
   const {
-    params: { memberId, organizationId },
+    pathParams: { memberId, organizationId },
   } = ctx;
   const user = ctx.user as User;
 
@@ -611,7 +611,7 @@ export async function removeMember(ctx: Context): Promise<void> {
 
 export async function setRole(ctx: Context): Promise<void> {
   const {
-    params: { memberId, organizationId },
+    pathParams: { memberId, organizationId },
     request: {
       body: { role },
     },

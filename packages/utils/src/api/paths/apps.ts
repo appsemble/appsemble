@@ -48,7 +48,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   description: 'The original YAML definition used to define the app.',
                 },
                 OrganizationId: {
-                  $ref: '#/components/schemas/App/properties/OrganizationId',
+                  $ref: '#/components/schemas/Organization/properties/id',
                 },
                 icon: {
                   type: 'string',
@@ -492,7 +492,7 @@ export const paths: OpenAPIV3.PathsObject = {
         in: 'path',
         description: 'The ID of the member on which to perform an operation',
         required: true,
-        schema: { $ref: '#/components/schemas/Member/properties/id' },
+        schema: { $ref: '#/components/schemas/User/properties/id' },
       },
     ],
     get: {

@@ -182,7 +182,46 @@ describe('publishBlock', () => {
 
     expect(response).toMatchObject({
       status: 400,
-      data: { message: 'JSON schema validation failed' },
+      data: {
+        errors: [
+          {
+            argument: 'en',
+            instance: {
+              nl: {
+                test: 'bar',
+              },
+            },
+            message: 'requires property "en"',
+            name: 'required',
+            path: ['messages'],
+            property: 'instance.messages',
+            schema: {
+              additionalProperties: {
+                additionalProperties: {
+                  description: 'The translated messages for this language.',
+                  type: 'string',
+                },
+                type: 'object',
+              },
+              description: 'The translated messages for the block.',
+              properties: {
+                en: {
+                  additionalProperties: {
+                    description: 'The default translations to use.',
+                    minLength: 1,
+                    type: 'string',
+                  },
+                  type: 'object',
+                },
+              },
+              required: ['en'],
+              type: 'object',
+            },
+            stack: 'instance.messages requires property "en"',
+          },
+        ],
+        message: 'Invalid content types found',
+      },
     });
   });
 
@@ -208,7 +247,25 @@ describe('publishBlock', () => {
 
     expect(response).toMatchObject({
       status: 400,
-      data: { message: 'JSON schema validation failed' },
+      data: {
+        errors: [
+          {
+            argument: 1,
+            instance: '',
+            message: 'does not meet minimum length of 1',
+            name: 'minLength',
+            path: ['messages', 'en', 'test'],
+            property: 'instance.messages.en.test',
+            schema: {
+              description: 'The default translations to use.',
+              minLength: 1,
+              type: 'string',
+            },
+            stack: 'instance.messages.en.test does not meet minimum length of 1',
+          },
+        ],
+        message: 'Invalid content types found',
+      },
     });
   });
 
@@ -310,14 +367,160 @@ describe('publishBlock', () => {
     expect(data).toStrictEqual({
       errors: [
         {
-          code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
-          description: expect.any(String),
-          message: 'Missing required property: files',
-          params: ['files'],
+          argument: 'files',
+          instance: {
+            name: '@xkcd/standing',
+            version: '1.32.9',
+          },
+          message: 'requires property "files"',
+          name: 'required',
           path: [],
+          property: 'instance',
+          schema: {
+            description: `A version of a block definition
+
+Block versions can’t be updated or deleted. This ensures apps that use a block version can never
+be broken by alterations of block definitions.
+`,
+            properties: {
+              actions: {
+                additionalProperties: true,
+                description: `An object which describes the actions a block can trigger.
+
+This will be used to validate app definitions.
+`,
+                type: 'object',
+              },
+              description: {
+                description: 'The description of the block.',
+                maxLength: 160,
+                type: 'string',
+              },
+              events: {
+                description:
+                  'An object describing the names of the events the block can listen and emit to.',
+                properties: {
+                  emit: {
+                    additionalProperties: {
+                      properties: {
+                        description: {
+                          type: 'string',
+                        },
+                      },
+                      type: 'object',
+                    },
+                    type: 'object',
+                  },
+                  listen: {
+                    additionalProperties: {
+                      properties: {
+                        description: {
+                          type: 'string',
+                        },
+                      },
+                      type: 'object',
+                    },
+                    type: 'object',
+                  },
+                },
+                type: 'object',
+              },
+              files: {
+                description: 'A list of file assets that belong to the app version.',
+                items: {
+                  format: 'binary',
+                  type: 'string',
+                },
+                minLength: 1,
+                type: 'array',
+              },
+              icon: {
+                description: 'An icon to represent the block in Appsemble studio.',
+                format: 'binary',
+                type: 'string',
+              },
+              iconUrl: {
+                description: 'The relative URL on which the icon is served',
+                format: 'uri',
+                readOnly: true,
+                type: 'string',
+              },
+              layout: {
+                default: 'grow',
+                description: `How the block will be displayed on the screen.
+
+- **\`float\`**: The block will float somewhere on the screen.
+- **\`grow\`**: The block will be positioned in the main page. It will grow to fill up remaining
+  space on the page.
+- **\`static\`**: The block will be positioned in the main page. It will take up a fixed amount of
+  space.
+- **\`hidden\`**: The block will not be rendered at all.
+`,
+                enum: ['float', 'grow', 'static', 'hidden'],
+                type: 'string',
+              },
+              longDescription: {
+                description: 'The long description of the block.',
+                type: 'string',
+              },
+              messages: {
+                additionalProperties: {
+                  additionalProperties: {
+                    description: 'The translated messages for this language.',
+                    type: 'string',
+                  },
+                  type: 'object',
+                },
+                description: 'The translated messages for the block.',
+                properties: {
+                  en: {
+                    additionalProperties: {
+                      description: 'The default translations to use.',
+                      minLength: 1,
+                      type: 'string',
+                    },
+                    type: 'object',
+                  },
+                },
+                required: ['en'],
+                type: 'object',
+              },
+              name: {
+                description: `The name of a block.
+
+This uses the same form as scoped npm packages. For example, \`@appsemble/form\`.
+`,
+                pattern:
+                  '^@([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)/([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)$',
+                readOnly: true,
+                type: 'string',
+              },
+              parameters: {
+                description: `A draft 7 JSON schema to use for block parameter validation.
+
+If the parameters of a block definition don’t conform to this schema, the app definition will be
+considered invalid.
+`,
+                type: 'object',
+              },
+              resources: {
+                additionalProperties: true,
+                description: 'deprecated',
+                type: 'object',
+              },
+              version: {
+                description: 'A [semver](https://semver.org) representation of the block version.',
+                pattern: '^\\d+\\.\\d+\\.\\d+$',
+                type: 'string',
+              },
+            },
+            required: ['name', 'version', 'files'],
+            type: 'object',
+          },
+          stack: 'instance requires property "files"',
         },
       ],
-      message: 'JSON schema validation failed',
+      message: 'Invalid content types found',
     });
     expect(status).toBe(400);
   });

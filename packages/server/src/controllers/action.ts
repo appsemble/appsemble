@@ -142,7 +142,7 @@ async function handleRequestProxy(
 function createProxyHandler(useBody: boolean): Middleware {
   return async (ctx) => {
     const {
-      params: { appId, path },
+      pathParams: { appId, path },
     } = ctx;
     const app = await App.findByPk(appId, { attributes: ['definition', 'id'] });
     if (!app) {

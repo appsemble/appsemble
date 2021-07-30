@@ -21,7 +21,7 @@ import { getAccessToken, getUserInfo } from '../utils/oauth2';
 
 export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: { body },
   } = ctx;
 
@@ -40,7 +40,7 @@ export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
 }
 
 export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
-  const { appId } = ctx.params;
+  const { appId } = ctx.pathParams;
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
@@ -57,7 +57,7 @@ export async function getAppOAuth2Secrets(ctx: Context): Promise<void> {
 }
 
 export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
-  const { appId, appOAuth2SecretId } = ctx.params;
+  const { appId, appOAuth2SecretId } = ctx.pathParams;
 
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -83,7 +83,7 @@ export async function getAppOAuth2Secret(ctx: Context): Promise<void> {
 
 export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   const {
-    params: { appId, appOAuth2SecretId },
+    pathParams: { appId, appOAuth2SecretId },
     request: {
       body: { id, ...body },
     },
@@ -112,7 +112,7 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
 export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   const {
     headers,
-    params: { appId, appOAuth2SecretId },
+    pathParams: { appId, appOAuth2SecretId },
     request: {
       body: { code, redirectUri, scope },
     },

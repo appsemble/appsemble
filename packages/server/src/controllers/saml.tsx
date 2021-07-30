@@ -1,3 +1,4 @@
+import { URL, URLSearchParams } from 'url';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 
@@ -38,7 +39,7 @@ const parser = new DOMParser();
 
 export async function createAuthnRequest(ctx: Context): Promise<void> {
   const {
-    params: { appId, appSamlSecretId },
+    pathParams: { appId, appSamlSecretId },
     request: {
       body: { redirectUri, scope, state },
     },
@@ -117,7 +118,7 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
 
 export async function assertConsumerService(ctx: Context): Promise<void> {
   const {
-    params: { appId, appSamlSecretId },
+    pathParams: { appId, appSamlSecretId },
     request: {
       body: { RelayState, SAMLResponse },
     },
@@ -341,8 +342,8 @@ export async function continueSamlLogin(ctx: Context): Promise<void> {
 
 export async function getEntityId(ctx: Context): Promise<void> {
   const {
-    params: { appId, appSamlSecretId },
     path,
+    pathParams: { appId, appSamlSecretId },
   } = ctx;
 
   const secret = await AppSamlSecret.findOne({

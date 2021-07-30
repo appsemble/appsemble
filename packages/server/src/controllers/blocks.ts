@@ -22,7 +22,7 @@ import { serveIcon } from '../utils/icon';
 
 export async function getBlock(ctx: Context): Promise<void> {
   const {
-    params: { blockId, organizationId },
+    pathParams: { blockId, organizationId },
   } = ctx;
 
   const blockVersion = await BlockVersion.findOne({
@@ -215,7 +215,7 @@ export async function publishBlock(ctx: Context): Promise<void> {
 
 export async function getBlockVersion(ctx: Context): Promise<void> {
   const {
-    params: { blockId, blockVersion, organizationId },
+    pathParams: { blockId, blockVersion, organizationId },
   } = ctx;
 
   const version = await BlockVersion.findOne({
@@ -254,7 +254,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
 
 export async function getBlockVersions(ctx: Context): Promise<void> {
   const {
-    params: { blockId, organizationId },
+    pathParams: { blockId, organizationId },
   } = ctx;
 
   const blockVersions = await BlockVersion.findAll({
@@ -294,7 +294,7 @@ export async function getBlockVersions(ctx: Context): Promise<void> {
 
 export async function getBlockAsset(ctx: Context): Promise<void> {
   const {
-    params: { blockId, blockVersion, organizationId },
+    pathParams: { blockId, blockVersion, organizationId },
     query: { filename },
   } = ctx;
 
@@ -320,7 +320,7 @@ export async function getBlockAsset(ctx: Context): Promise<void> {
 
 export async function getBlockMessages(ctx: Context): Promise<void> {
   const {
-    params: { blockId, blockVersion, language, organizationId },
+    pathParams: { blockId, blockVersion, language, organizationId },
   } = ctx;
 
   const block = await BlockVersion.findOne({
@@ -348,7 +348,7 @@ export async function getBlockMessages(ctx: Context): Promise<void> {
 
 export async function getBlockIcon(ctx: Context): Promise<void> {
   const {
-    params: { blockId, blockVersion, organizationId },
+    pathParams: { blockId, blockVersion, organizationId },
     query: { size, updated },
   } = ctx;
 
