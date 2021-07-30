@@ -1,6 +1,6 @@
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, logger, readData } from '@appsemble/node-utils';
+import { Resource } from '@appsemble/types';
 import axios from 'axios';
-import { readJson } from 'fs-extra';
 
 interface UpdateResourceParams {
   /**
@@ -30,17 +30,13 @@ export async function updateResource({
   remote,
   resourceName,
 }: UpdateResourceParams): Promise<void> {
-  const file = await readJson(path);
-
-  if (!appId) {
-    throw new AppsembleError('The app id must be passed as a command line flag');
-  }
+  const [file] = await readData<Resource>(path);
 
   if (typeof file !== 'object') {
     throw new AppsembleError(`File at ${path} does not contain an object or array of objects`);
   }
 
-  const resources = [].concat(file) as { id: number }[];
+  const resources = [].concat(file);
   logger.info(`Updating ${resources.length} resource(s) from ${path}`);
 
   for (const resource of resources) {
@@ -51,7 +47,7 @@ export async function updateResource({
 
     const {
       data: { id },
-    } = await axios.put<{ id: number }>(
+    } = await axios.put<Resource>(
       `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
       resource,
       {
@@ -61,7 +57,7 @@ export async function updateResource({
 
     logger.info(
       `Successfully updated resource ${id} at ${new URL(
-        `/api/apps/${appId}/resources/${resourceName}/${id}`,
+        `/apps/${appId}/resources/${resourceName}/${id}`,
         remote,
       )}`,
     );

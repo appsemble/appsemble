@@ -19,21 +19,19 @@ export const description = 'Create resources based on a specified JSON file or d
 export function builder(yargs: Argv): Argv {
   return yargs
     .positional('resource-name', {
-      type: 'string',
       describe: 'The name of the resource that should be created.',
+      demandOption: true,
     })
     .positional('paths', {
       describe: 'The path to the resources to create',
       normalize: true,
+      demandOption: true,
     })
     .option('app-id', {
       describe: 'The ID of the app to create the resources for.',
       type: 'number',
-    })
-    .demandOption(
-      ['app-id', 'resource-name', 'paths'],
-      'Please provide an app id, resource name and a path to at least one JSON file.',
-    );
+      demandOption: true,
+    });
 }
 
 export async function handler({
@@ -46,9 +44,7 @@ export async function handler({
   await authenticate(remote, 'resources:write', clientCredentials);
 
   const normalizedPaths = paths.map((path) => normalizePath(path));
-  const files = (await fg(normalizedPaths, { absolute: true, onlyFiles: true })).filter((file) =>
-    file.endsWith('.json'),
-  );
+  const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
 
   if (!files.length) {
     throw new AppsembleError('No JSON files found.');
