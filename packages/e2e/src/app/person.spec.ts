@@ -13,49 +13,6 @@ describe('Person app', () => {
     cy.waitForAppLoaded();
   });
 
-  it('should match a screenshot in desktop mode', () => {
-    cy.matchImageSnapshot();
-  });
-
-  it('should match a screenshot of the person list in desktop mode', () => {
-    cy.intercept(
-      { url: '/api/apps/*/resources/person', method: 'GET' },
-      { fixture: 'person-list.json' },
-    );
-
-    cy.contains('Person List').click();
-
-    cy.waitForAppLoaded();
-
-    cy.contains('John', { includeShadowDom: true }).should('exist');
-    cy.contains('Doe', { includeShadowDom: true }).should('exist');
-
-    cy.matchImageSnapshot();
-  });
-
-  it('should match a screenshot in mobile mode', () => {
-    cy.viewport('iphone-x');
-    cy.matchImageSnapshot();
-  });
-
-  it('should match a screenshot of the person list in mobile mode', () => {
-    cy.viewport('iphone-x');
-    cy.intercept(
-      { url: '/api/apps/*/resources/person', method: 'GET' },
-      { fixture: 'person-list.json' },
-    );
-
-    cy.get('.navbar-burger').click();
-    cy.contains('Person List').click();
-
-    cy.waitForAppLoaded();
-
-    cy.contains('John', { includeShadowDom: true }).should('exist');
-    cy.contains('Doe', { includeShadowDom: true }).should('exist');
-
-    cy.matchImageSnapshot();
-  });
-
   it('should submit a new person and view it', () => {
     const date = Date.now();
 

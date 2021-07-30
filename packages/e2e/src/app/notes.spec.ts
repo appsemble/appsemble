@@ -27,21 +27,6 @@ describe('Notes app', () => {
     }
   }
 
-  it('should match a screenshot in desktop mode', () => {
-    cy.intercept({ url: '/api/apps/*/resources/note', method: 'GET' }, { body: [] });
-    visitCached();
-    login();
-    cy.matchImageSnapshot();
-  });
-
-  it('should match a screenshot in mobile mode', () => {
-    cy.intercept({ url: '/api/apps/*/resources/note', method: 'GET' }, { body: [] });
-    cy.viewport('iphone-x');
-    visitCached();
-    login();
-    cy.matchImageSnapshot();
-  });
-
   it('should create a new note and view it', () => {
     const date = Date.now();
     visitCached();

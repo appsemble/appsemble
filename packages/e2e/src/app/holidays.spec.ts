@@ -27,15 +27,6 @@ describe('Holidays app', () => {
     cy.waitForAppLoaded();
   });
 
-  it('should match a screenshot in desktop mode', () => {
-    cy.matchImageSnapshot();
-  });
-
-  it('should match a screenshot in mobile mode', () => {
-    cy.viewport('iphone-x');
-    cy.matchImageSnapshot();
-  });
-
   it('should navigate to the second tab', () => {
     cy.contains('Eerste Kerstdag', { includeShadowDom: true }).should('exist');
     cy.contains('Germany').click();

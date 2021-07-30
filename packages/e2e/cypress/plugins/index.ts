@@ -1,13 +1,9 @@
-import { addMatchImageSnapshotPlugin } from 'cypress-image-snapshot/plugin';
-
 const Plugin: Cypress.PluginConfig = (on, config) => {
   // Tweak Cypress config
   Object.assign(config.env, process.env);
   Object.assign(config, {
     baseUrl: `https://${config.env.CI_MERGE_REQUEST_IID || 'staging'}.appsemble.review`,
   });
-
-  addMatchImageSnapshotPlugin(on, config);
 
   on('before:browser:launch', (browser, launchOptions) => {
     if (browser.name === 'electron') {

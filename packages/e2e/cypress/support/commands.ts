@@ -1,33 +1,29 @@
-import { addMatchImageSnapshotCommand } from 'cypress-image-snapshot/command';
+// eslint-disable-next-line @typescript-eslint/no-namespace
+namespace Cypress {
+  export interface Chainable {
+    /**
+     * Perform a login in Appsemble Studio using a user flow.
+     *
+     * @param redirect - The URL to navigate to after logging in.
+     */
+    login: (redirect: string) => void;
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Cypress {
-    export interface Chainable {
-      /**
-       * Perform a login in Appsemble Studio using a user flow.
-       *
-       * @param redirect - The URL to navigate to after logging in.
-       */
-      login: (redirect: string) => void;
+    /**
+     * Intercept and wait for an API call to have finished.
+     *
+     * @param params - Object containing the method and url of the API method.
+     */
+    waitForAPICall: (params: { method?: string; url: string }) => void;
 
-      /**
-       * Intercept and wait for an API call to have finished.
-       *
-       * @param params - Object containing the method and url of the API method.
-       */
-      waitForAPICall: (params: { method?: string; url: string }) => void;
+    /**
+     * Helper function to wait until the app is loaded.
+     */
+    waitForAppLoaded: () => void;
 
-      /**
-       * Helper function to wait until the app is loaded.
-       */
-      waitForAppLoaded: () => void;
-
-      /**
-       * Helper function to wait until an app’s styling is loaded.
-       */
-      visitAndWaitForCss: (url: string, options?: Partial<Cypress.VisitOptions>) => void;
-    }
+    /**
+     * Helper function to wait until an app’s styling is loaded.
+     */
+    visitAndWaitForCss: (url: string, options?: Partial<Cypress.VisitOptions>) => void;
   }
 }
 
@@ -58,10 +54,3 @@ Cypress.Commands.add(
     cy.wait(['@bulma', '@fa']);
   },
 );
-
-addMatchImageSnapshotCommand({
-  capture: 'viewport',
-  failureThreshold: 0,
-  failureThresholdType: 'percent',
-  customDiffConfig: { threshold: 0 },
-});
