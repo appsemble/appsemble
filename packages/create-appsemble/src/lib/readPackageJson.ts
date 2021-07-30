@@ -1,4 +1,4 @@
-import { readJson } from 'fs-extra';
+import { readData } from '@appsemble/node-utils';
 import { PackageJson } from 'type-fest';
 
 /**
@@ -8,6 +8,7 @@ import { PackageJson } from 'type-fest';
  *
  * @returns The contents of package.json
  */
-export function readPackageJson(): Promise<PackageJson> {
-  return readJson(require.resolve('../../package.json'));
+export async function readPackageJson(): Promise<PackageJson> {
+  const [pkg] = await readData<PackageJson>(require.resolve('../../package.json'));
+  return pkg;
 }

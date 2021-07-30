@@ -2,11 +2,11 @@ import { existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 import { inspect } from 'util';
 
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, logger, readData } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
 import { cyan, green, underline } from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
-import { readJSON } from 'fs-extra';
+import { PackageJson } from 'type-fest';
 
 /**
  * Get the block configuration from a block directory.
@@ -22,7 +22,7 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
   }
   const { config, filepath } = found;
   logger.info(`Found configuration file: ${filepath}`);
-  const pkg = await readJSON(join(dir, 'package.json'));
+  const [pkg] = await readData<PackageJson>(join(dir, 'package.json'));
   if (!pkg.private) {
     logger.warn(
       `It is ${underline.yellow('highly recommended')} to set “${green('"private"')}: ${cyan(

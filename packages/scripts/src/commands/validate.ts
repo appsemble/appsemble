@@ -1,6 +1,6 @@
 import { basename, dirname, join, relative } from 'path';
 
-import { getWorkspaces, logger, opendirSafe } from '@appsemble/node-utils';
+import { getWorkspaces, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import extractMessages from 'extract-react-intl-messages';
 import { existsSync, readJson } from 'fs-extra';
@@ -82,7 +82,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
     }
 
     const [language] = stat.name.split('.json');
-    const messages = await readJson(filepath);
+    const [messages] = await readData<Record<string, string>>(filepath);
     translations[language] = messages;
   });
 
