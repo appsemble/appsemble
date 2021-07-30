@@ -1,3 +1,5 @@
+import { URL } from 'url';
+
 import { AppsembleError, logger, readData } from '@appsemble/node-utils';
 import { Resource } from '@appsemble/types';
 import axios from 'axios';
