@@ -21,13 +21,11 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
         resolve(__dirname, '..', '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
         'utf8',
       )
-    : ctx.state.fs.readFileSync(filename, 'utf-8');
-
+    : ctx.fs.promises.readFile(filename, 'utf-8');
   const { app } = await getApp(ctx, {
     attributes: ['definition'],
   });
   ctx.assert(app, 404, 'App does not exist.');
-
   const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
@@ -47,7 +45,6 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
       }),
     },
   });
-
   ctx.body = `const blockAssets=${JSON.stringify(
     blockManifests.flatMap((block) =>
       block.BlockAssets.map((asset) =>

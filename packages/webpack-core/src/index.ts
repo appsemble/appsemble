@@ -3,9 +3,9 @@ import { dirname, join } from 'path';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import bulmaPkg from 'bulma/package.json';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import autolink from 'rehype-autolink-headings';
 import { rehypeMdxTitle } from 'rehype-mdx-title';
 import slug from 'rehype-slug';
@@ -15,16 +15,19 @@ import { remarkMdxCodeMeta } from 'remark-mdx-code-meta';
 import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
 import { remarkMdxImages } from 'remark-mdx-images';
 import { remarkMermaid } from 'remark-mermaidjs';
-import ServiceWorkerWebpackPlugin from 'serviceworker-webpack-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
+// Import ServiceWorkerWebpackPlugin from 'serviceworker-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
-import { CliConfigOptions, Configuration, EnvironmentPlugin } from 'webpack';
+import { Configuration, EnvironmentPlugin } from 'webpack';
 import { GenerateSW } from 'workbox-webpack-plugin';
 
 import './types';
 import studioPkg from '../package.json';
 import { remarkRewriteLinks } from './remark/rewriteLinks';
+
+interface CliConfigOptions {
+  mode: 'development' | 'production';
+}
 
 const minify: MinifyOptions = {
   collapseBooleanAttributes: true,
@@ -64,13 +67,16 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
     mode,
     entry: { [env]: [entry] },
     output: {
-      filename: production ? '[contentHash].js' : `${env}.js`,
+      filename: production ? '[contenthash].js' : `${env}-[name].js`,
       publicPath,
       path: production ? join(rootDir, 'dist', env) : `/${env}/`,
-      chunkFilename: production ? '[contentHash].js' : '[id].js',
+      chunkFilename: production ? '[contenthash].js' : '[id].js',
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
+      fallback: {
+        path: false,
+      },
       plugins: [new TsconfigPathsPlugin({ configFile })],
     },
     plugins: [
@@ -88,9 +94,8 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         APPSEMBLE_VERSION: studioPkg.version,
       }),
-      // @ts-expect-error This uses Webpack 5 types, but it’s compatible with both Webpack 4 and 5.
       new MiniCssExtractPlugin({
-        filename: production ? '[contentHash].css' : `${env}.css`,
+        filename: production ? '[contenthash].css' : `${env}.css`,
       }),
       new UnusedWebpackPlugin({
         directories: [entry],
@@ -99,20 +104,9 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       }),
     ],
     optimization: {
-      splitChunks: {
-        cacheGroups: {
-          styles: {
-            name: 'styles',
-            test: /\.css$/,
-            chunks: 'all',
-            enforce: true,
-          },
-        },
-      },
-      minimizer: [
-        new TerserPlugin({ cache: true, parallel: true, sourceMap: true }),
-        new OptimizeCSSAssetsPlugin(),
-      ],
+      // https://webpack.js.org/configuration/optimization/#optimizationminimizer
+      // '...' means it extends the Webpack defaults.
+      minimizer: ['...', new CssMinimizerPlugin()],
     },
     module: {
       rules: [
@@ -188,22 +182,16 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         },
         {
           test: /\.(gif|jpe?g|png|svg|ttf|woff2?)$/,
-          loader: 'file-loader',
-          options: {
-            name: production ? '[contentHash].[ext]' : '[path][name].[ext]',
-            publicPath,
-          },
+          type: 'asset/resource',
         },
         {
           test: /\.svg$/,
           loader: 'svgo-loader',
         },
         {
-          test: /(css|json|yaml)\.worker\.js$/,
-          loader: 'worker-loader',
-          options: {
-            filename: production ? '[contentHash].js' : '[name].js',
-          },
+          test: /\/esm\/.*\.js$/,
+          include: /node_modules/,
+          type: 'javascript/auto',
         },
       ],
     },
@@ -217,8 +205,8 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
  * @returns The Webpack configuration for Appsemble app.
  */
 export function createAppConfig(argv: CliConfigOptions): Configuration {
-  const { mode } = argv;
-  const production = mode === 'production';
+  // Const { mode } = argv;
+  // Const production = mode === 'production';
 
   const config = shared('app', argv);
   config.plugins.push(
@@ -228,13 +216,15 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
       minify,
       chunks: [],
     }),
-    new ServiceWorkerWebpackPlugin({
-      entry: require.resolve('@appsemble/service-worker/src/index.ts'),
-      filename: 'service-worker.js',
-      minimize: production,
-      publicPath: production ? '/' : '/app/',
-      transformOptions: ({ assets }) => assets,
-    }),
+    // // @ts-expect-error The types for this plugin are for Webpack 4, but this plugin is also
+    // compatible with Webpack 5.
+    // new ServiceWorkerWebpackPlugin({
+    //   entry: require.resolve('@appsemble/service-worker/src/index.ts'),
+    //   filename: 'service-worker.js',
+    //   minimize: production,
+    //   publicPath: production ? '/' : '/app/',
+    //   transformOptions: ({ assets }) => assets,
+    // }),
   );
   return config;
 }
