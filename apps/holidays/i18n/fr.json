@@ -1,18 +1,18 @@
 {
   "app": {
-    "description": "",
-    "name": "",
-    "pages.0": "",
-    "pages.0.subPages.0": "",
-    "pages.0.subPages.1": "",
-    "pages.0.subPages.2": "",
-    "pages.1": "",
-    "pages.1.subPages.0": "",
-    "pages.1.subPages.1": "",
-    "pages.1.subPages.2": ""
+    "description": "Une application simple qui récupère des informations sur les vacances pour différents pays.",
+    "name": "Vacances",
+    "pages.0": "Vacances en Europe",
+    "pages.0.subPages.0": "Pays-Bas",
+    "pages.0.subPages.1": "Allemagne",
+    "pages.0.subPages.2": "Espagne",
+    "pages.1": "Vacances en Amérique",
+    "pages.1.subPages.0": "États-Unis",
+    "pages.1.subPages.1": "Canada",
+    "pages.1.subPages.2": "Mexique"
   },
   "messageIds": {
-    "date": "",
-    "name": ""
+    "date": "Date",
+    "name": "Nom ({locale})"
   }
 }
