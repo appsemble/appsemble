@@ -1,10 +1,10 @@
 import { promises as fs } from 'fs';
 import { basename, dirname, join, parse } from 'path';
 
-import { getWorkspaces, logger, opendirSafe, readYaml } from '@appsemble/node-utils';
+import { getWorkspaces, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
 import { AppsembleMessages } from '@appsemble/types';
 import { formatISO } from 'date-fns';
-import { ensureFile, readJson, remove, writeJson } from 'fs-extra';
+import { ensureFile, remove } from 'fs-extra';
 import globby from 'globby';
 import { dump } from 'js-yaml';
 import { capitalize, mapValues } from 'lodash';
@@ -15,7 +15,6 @@ import * as semver from 'semver';
 import { PackageJson } from 'type-fest';
 import { Argv } from 'yargs';
 
-import { outputYaml } from '../lib/fs';
 import {
   createHeading,
   createLink,
@@ -51,12 +50,12 @@ interface Changes {
 async function updatePkg(dir: string, version: string): Promise<void> {
   const filepath = join(dir, 'package.json');
   logger.info(`Updating ${filepath}`);
-  const pkg: PackageJson = await readJson(filepath);
+  const [pkg] = await readData<PackageJson>(filepath);
   if (pkg.name?.startsWith('@types/')) {
     return;
   }
 
-  await writeJson(
+  await writeData(
     filepath,
     mapValues(pkg, (value, key) => {
       switch (key) {
@@ -73,7 +72,6 @@ async function updatePkg(dir: string, version: string): Promise<void> {
           return value;
       }
     }),
-    { spaces: 2 },
   );
 }
 
@@ -83,10 +81,10 @@ async function updatePkg(dir: string, version: string): Promise<void> {
  * @param version - The software version to set
  */
 async function updatePublicCodeYml(version: string): Promise<void> {
-  const [publicCode] = await readYaml<any>('publiccode.yml');
+  const [publicCode] = await readData<any>('publiccode.yml');
   const i18nFiles = await fs.readdir('i18n');
   const availableLanguages = i18nFiles.map((f) => parse(f).name).sort();
-  await outputYaml(
+  await writeData(
     'publiccode.yml',
     mapValues(publicCode, (value, key) => {
       switch (key) {
@@ -103,6 +101,7 @@ async function updatePublicCodeYml(version: string): Promise<void> {
           return value;
       }
     }),
+    { sort: false },
   );
 }
 
@@ -199,7 +198,7 @@ async function updateChangelog(changesByCategory: Changes, version: string): Pro
 }
 
 async function updateHelmChart(changes: Changes, version: string): Promise<void> {
-  const [chart] = await readYaml<any>('config/charts/appsemble/Chart.yaml');
+  const [chart] = await readData<any>('config/charts/appsemble/Chart.yaml');
   const changelog = dump(
     Object.entries(changes).flatMap(([kind, entries]) =>
       entries.map((entry: ListItem) => ({
@@ -208,7 +207,7 @@ async function updateHelmChart(changes: Changes, version: string): Promise<void>
       })),
     ),
   );
-  await outputYaml(
+  await writeData(
     'config/charts/appsemble/Chart.yaml',
     mapValues(chart, (value, key) => {
       switch (key) {
@@ -221,13 +220,14 @@ async function updateHelmChart(changes: Changes, version: string): Promise<void>
           return value;
       }
     }),
+    { sort: false },
   );
 }
 
 async function updateAppTranslations(version: string): Promise<void> {
   await opendirSafe('apps', (appDir) =>
     opendirSafe(join(appDir, 'i18n'), async (i18nFile) => {
-      const content = (await readJson(i18nFile)) as AppsembleMessages;
+      const [content] = await readData<AppsembleMessages>(i18nFile);
       if (!content.blocks) {
         return;
       }
@@ -239,7 +239,7 @@ async function updateAppTranslations(version: string): Promise<void> {
         delete versions[oldVersion];
         versions[version] = messages;
       }
-      await writeJson(i18nFile, content, { spaces: 2 });
+      await writeData(i18nFile, content);
     }),
   );
 }

@@ -11,7 +11,7 @@ import { checkRole } from '../utils/checkRole';
 
 export async function createAppSamlSecret(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: { body },
   } = ctx;
 
@@ -57,7 +57,7 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
 
 export async function getAppSamlSecrets(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -76,7 +76,7 @@ export async function getAppSamlSecrets(ctx: Context): Promise<void> {
 
 export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   const {
-    params: { appId, appSamlSecretId },
+    pathParams: { appId, appSamlSecretId },
     request: {
       body: { emailAttribute, entityId, icon, idpCertificate, name, nameAttribute, ssoUrl },
     },

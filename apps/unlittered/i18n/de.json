@@ -1,18 +1,18 @@
 {
   "app": {
-    "name": "",
     "description": "",
+    "name": "",
     "pages.0": "",
     "pages.1": "",
     "pages.2": "",
     "pages.3": ""
   },
   "messageIds": {
+    "date": "",
     "location": "",
-    "process": "",
     "notes": "",
     "notesExample": "",
     "photos": "",
-    "date": ""
+    "process": ""
   }
 }

@@ -1,8 +1,8 @@
 import { resolve } from 'path';
 
-import { logger } from '@appsemble/node-utils';
+import { logger, writeData } from '@appsemble/node-utils';
 import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
-import { rm, writeJson } from 'fs-extra';
+import { rm } from 'fs-extra';
 import webpack, { compilation, Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
@@ -67,12 +67,10 @@ export async function handler({ app, appStats, studio, studioStats }: Args): Pro
     });
   });
 
-  function writeStats(filename: string, config: Configuration): Promise<void> {
+  function writeStats(filename: string, config: Configuration): Promise<string> {
     if (filename && config) {
       logger.info(`Writing stats for ${config.name} to ${filename}`);
-      return writeJson(filename, result.stats[configurations.indexOf(config)].toJson(), {
-        spaces: 2,
-      });
+      return writeData(filename, result.stats[configurations.indexOf(config)].toJson());
     }
   }
   await writeStats(appStats, appConfig);

@@ -16,7 +16,7 @@ In an app definition this can be defined as follows, taking the `data-loader` bl
 ```yaml copy
 blocks:
   - type: data-loader
-    version: 0.18.23
+    version: 0.18.24
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -62,7 +62,7 @@ More information about which kinds of events are supported by each block can be 
 ## Event action
 
 It is possible to emit your own events based on actions triggered from a block. This can be done by
-using an [event action](../reference/action.md#event).
+using an [event action](/docs/reference/action.md#event).
 
 Any data received from the action will be passed to the event.
 
@@ -71,7 +71,7 @@ For example, let’s say we want an `action-button` to trigger the `data-loader`
 ```yaml copy
 blocks:
   - type: data-loader
-    version: 0.18.23
+    version: 0.18.24
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -82,7 +82,7 @@ blocks:
       listen:
         refresh: refreshExample
   - type: action-button
-    version: 0.18.23
+    version: 0.18.24
     parameters:
       icon: sync
     actions:

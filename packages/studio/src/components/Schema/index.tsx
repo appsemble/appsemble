@@ -71,9 +71,8 @@ export function Schema({
   );
 
   const description =
-    nested &&
-    (mergedSchema.description ||
-      (mergedSchema.items && !Array.isArray(mergedSchema.items) && mergedSchema.items.description));
+    mergedSchema.description ||
+    (mergedSchema.items && !Array.isArray(mergedSchema.items) && mergedSchema.items.description);
 
   let id = idPrefix;
   if (name) {
@@ -173,10 +172,10 @@ export function Schema({
       )}
       {mergedSchema.pattern && (
         <SchemaDescriptor label={<FormattedMessage {...messages.pattern} />}>
-          <code>{mergedSchema.pattern ?? 'foo'}</code>
+          <code>{mergedSchema.pattern}</code>
         </SchemaDescriptor>
       )}
-      {nested && description && <MarkdownContent content={description} />}
+      {description ? <MarkdownContent content={description} /> : null}
       {mergedSchema.type === 'object' && mergedSchema.properties
         ? Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
             <Schema

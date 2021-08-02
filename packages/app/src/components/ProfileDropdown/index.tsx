@@ -69,7 +69,9 @@ export function ProfileDropdown(): ReactElement {
       )}
       {showLogin && (
         <>
-          <hr className="navbar-divider" />
+          {(layout?.settings === 'navbar' || layout?.feedback === 'navbar') && (
+            <hr className="navbar-divider" />
+          )}
           <NavbarItem icon="sign-out-alt" onClick={logout}>
             <FormattedMessage {...messages.logoutButton} />
           </NavbarItem>

@@ -2,9 +2,8 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 import { URL } from 'url';
 
-import { logger } from '@appsemble/node-utils';
+import { logger, readData } from '@appsemble/node-utils';
 import axios from 'axios';
-import { readJson } from 'fs-extra';
 import { PackageJson } from 'type-fest';
 
 import { getReleaseNotes } from '../lib/changelog';
@@ -26,7 +25,12 @@ const { CI_COMMIT_TAG } = process.env;
  */
 async function readPackages(dirname: string): Promise<PackageJson[]> {
   const packageDirs = await fs.readdir(dirname);
-  return Promise.all(packageDirs.map((name) => readJson(join(dirname, name, 'package.json'))));
+  return Promise.all(
+    packageDirs.map(async (name) => {
+      const [pkg] = await readData<PackageJson>(join(dirname, name, 'package.json'));
+      return pkg;
+    }),
+  );
 }
 
 /**

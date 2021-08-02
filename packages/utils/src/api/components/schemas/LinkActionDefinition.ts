@@ -1,0 +1,28 @@
+import { BaseActionDefinition } from './BaseActionDefinition';
+import { extendJSONSchema } from './utils';
+
+export const LinkActionDefinition = extendJSONSchema(BaseActionDefinition, {
+  type: 'object',
+  additionalProperties: false,
+  required: ['type', 'to'],
+  properties: {
+    type: {
+      enum: ['link'],
+      description:
+        'The link action can be used to redirect the user to other pages or absolute URLs.',
+    },
+    to: {
+      description:
+        'The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage.',
+      oneOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'array',
+          items: { type: 'string' },
+        },
+      ],
+    },
+  },
+});
