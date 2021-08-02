@@ -26,7 +26,7 @@ Returns nothing when not in the context of \`array.map’s\`.
 `,
     },
     'array.map': {
-      // XXX $ref: '#/components/schemas/RemapperDefinition',
+      $ref: '#/components/schemas/RemapperDefinition',
       description: `Build an array based on the given data and remappers.
 
 The remappers gets applied to each item in the array.
@@ -53,7 +53,7 @@ Always returns an array, can be empty if supplied data isn’t an array.
     equals: {
       type: 'array',
       items: {
-        // XXX $ref: '#/components/schemas/RemapperDefinition',
+        $ref: '#/components/schemas/RemapperDefinition',
       },
       description: `Compare all computed remapper values against each other.
 
@@ -70,32 +70,30 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
       required: ['condition', 'then', 'else'],
       properties: {
         condition: {
-          // XXX $ref: '#/components/schemas/RemapperDefinition',
+          $ref: '#/components/schemas/RemapperDefinition',
           description: 'The condition to check.',
         },
         then: {
-          // XXX $ref: '#/components/schemas/RemapperDefinition',
+          $ref: '#/components/schemas/RemapperDefinition',
           description: 'This remapper is used if the condition returns true.',
         },
         else: {
-          // XXX $ref: '#/components/schemas/RemapperDefinition',
+          $ref: '#/components/schemas/RemapperDefinition',
           description: 'This remapper is used if the condition returns false.',
         },
       },
     },
     'object.assign': {
       description: 'Assign properties to an existing object given some predefined mapper keys.',
-      // XXX AdditionalProperties: {
-      //   $ref: '#/components/schemas/RemapperDefinition',
-      // },
-      additionalProperties: true,
+      additionalProperties: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
     },
     'object.from': {
       description: 'Create a new object given some predefined mapper keys.',
-      // XXX AdditionalProperties: {
-      //   $ref: '#/components/schemas/RemapperDefinition',
-      // },
-      additionalProperties: true,
+      additionalProperties: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
     },
     prop: {
       type: 'string',
@@ -127,10 +125,9 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
         },
         values: {
           description: 'A set of remappers to convert the input to usable values.',
-          // XXX AdditionalProperties: {
-          //   $ref: '#/components/schemas/RemapperDefinition',
-          // },
-          additionalProperties: true,
+          additionalProperties: {
+            $ref: '#/components/schemas/RemapperDefinition',
+          },
         },
       },
     },
