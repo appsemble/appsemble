@@ -10,7 +10,13 @@ export function Ref({ isArray, jsonRef }: RenderRefProps): ReactElement {
   return (
     <>
       <Link
-        to={name === 'ActionDefinition' ? './action' : `#${decamelize(name, { separator: '-' })}`}
+        to={
+          name === 'ActionDefinition'
+            ? './action'
+            : name === 'RemapperDefinition'
+            ? './remapper'
+            : `#${decamelize(name, { separator: '-' })}`
+        }
       >
         {name}
       </Link>

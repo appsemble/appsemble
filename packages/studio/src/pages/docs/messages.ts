@@ -5,4 +5,5 @@ export const messages = defineMessages({
   reference: 'Reference',
   app: 'App',
   action: 'Action',
+  remapper: 'Remapper',
 });
