@@ -43,7 +43,7 @@ Always returns an array, can be empty if supplied data isn’t an array.
       description: 'Add the specified value to a given date.',
     },
     'date.now': {
-      type: 'null',
+      enum: [null],
       description: 'Returns the current date.',
     },
     'date.parse': {
