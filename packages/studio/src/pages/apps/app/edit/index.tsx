@@ -1,4 +1,3 @@
-import RefParser from '@apidevtools/json-schema-ref-parser';
 import {
   Loader,
   useBeforeUnload,
@@ -13,7 +12,6 @@ import equal from 'fast-deep-equal';
 import { dump, load } from 'js-yaml';
 import { Validator } from 'jsonschema';
 import { editor } from 'monaco-editor';
-import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
@@ -27,7 +25,10 @@ import { messages } from './messages';
 
 const validator = new Validator();
 
-const openApiDocumentPromise = RefParser.dereference({ components: { schemas } });
+for (const [name, schema] of Object.entries(schemas)) {
+  // This is only safe, because our schema names don’t contain special characters.
+  validator.addSchema(schema, `#/components/schemas/${name}`);
+}
 
 /**
  * These properties are passed to the allow attribute of the app preview. For a full list, see
@@ -57,7 +58,6 @@ export default function EditPage(): ReactElement {
   const [path, setPath] = useState('');
   const [valid, setValid] = useState(false);
   const [dirty, setDirty] = useState(true);
-  const [openApiDocument, setOpenApiDocument] = useState<OpenAPIV3.Document>();
 
   const frame = useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -65,10 +65,6 @@ export default function EditPage(): ReactElement {
   const location = useLocation();
   const params = useParams<{ id: string }>();
   const push = useMessages();
-
-  useEffect(() => {
-    openApiDocumentPromise.then(setOpenApiDocument);
-  }, []);
 
   useEffect(() => {
     const { id } = params;
@@ -132,10 +128,7 @@ export default function EditPage(): ReactElement {
       return;
     }
 
-    const validatorResult = validator.validate(
-      definition,
-      openApiDocument.components.schemas.AppDefinition,
-    );
+    const validatorResult = validator.validate(definition, schemas.AppDefinition, { base: '#' });
     if (!validatorResult.valid) {
       push({
         body: formatMessage(messages.schemaValidationFailed, {
@@ -177,7 +170,7 @@ export default function EditPage(): ReactElement {
       setValid(false);
     }
     setDirty(false);
-  }, [app, formatMessage, openApiDocument, push, appDefinition, sharedStyle, coreStyle]);
+  }, [app, formatMessage, push, appDefinition, sharedStyle, coreStyle]);
 
   useBeforeUnload(appDefinition !== initialDefinition);
 
