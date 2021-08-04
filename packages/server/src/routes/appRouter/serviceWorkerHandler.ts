@@ -26,6 +26,7 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
     attributes: ['definition'],
   });
   ctx.assert(app, 404, 'App does not exist.');
+
   const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
@@ -45,6 +46,7 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
       }),
     },
   });
+
   ctx.body = `const blockAssets=${JSON.stringify(
     blockManifests.flatMap((block) =>
       block.BlockAssets.map((asset) =>
