@@ -71,8 +71,8 @@ export function IndexPage(): ReactElement {
       .post('/api/oauth2/consent/verify', { appId, redirectUri, scope })
       .then(({ data }) => {
         if (!data.isAllowed || 'Cypress' in window) {
-          setIsAllowed(data.isAllowed);
-          setAppName(data?.appName);
+          setIsAllowed(false);
+          setAppName(data.appName);
           setAppLoading(false);
           return;
         }
