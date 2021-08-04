@@ -19,7 +19,7 @@ import { remarkMermaid } from 'remark-mermaidjs';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { Configuration, EnvironmentPlugin } from 'webpack';
-import { GenerateSW } from 'workbox-webpack-plugin';
+import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
 import './types';
 import studioPkg from '../package.json';
@@ -216,15 +216,19 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
       minify,
       chunks: [],
     }),
-    // // @ts-expect-error The types for this plugin are for Webpack 4, but this plugin is also
-    // compatible with Webpack 5.
-    // new ServiceWorkerWebpackPlugin({
-    //   entry: require.resolve('@appsemble/service-worker/src/index.ts'),
-    //   filename: 'service-worker.js',
-    //   minimize: production,
-    //   publicPath: production ? '/' : '/app/',
-    //   transformOptions: ({ assets }) => assets,
-    // }),
+    new InjectManifest({
+      swSrc: require.resolve('@appsemble/service-worker'),
+      swDest: 'service-worker.js',
+      // @ts-expect-error The types on DefinitelyTyped are outdated.
+      injectionPoint: 'appAssets',
+      manifestTransforms: [
+        (entries) => ({
+          manifest: entries
+            .map((entry) => (entry.url === '/index.html' ? { ...entry, url: '/' } : entry))
+            .filter(({ url }) => !/\.(html|txt)$/.test(url)),
+        }),
+      ],
+    }),
   );
   return config;
 }
@@ -240,7 +244,6 @@ export function createStudioConfig(argv: CliConfigOptions): Configuration {
   if (argv.mode === 'production') {
     config.plugins.push(
       new GenerateSW({
-        ignoreURLParametersMatching: [/\.worker\.js$/],
         // Some of our JavaScript assets are still too big to fit within the default cache limit.
         maximumFileSizeToCacheInBytes: 3 * 2 ** 20,
       }),

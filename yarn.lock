@@ -2476,13 +2476,6 @@
   resolved "https://registry.yarnpkg.com/@types/service-worker-mock/-/service-worker-mock-2.0.1.tgz#4857b2024318c395294a02eda5050ac083f41e56"
   integrity sha512-LqaP0QmgppRF7YEaqx4amoazHNXaX5bIFDAu62LnWIc5ku0HbgqlPKroQstAu8WsdmWIqEfI9VGlP8Skkq+m5A==
 
-"@types/serviceworker-webpack-plugin@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@types/serviceworker-webpack-plugin/-/serviceworker-webpack-plugin-1.0.3.tgz#c083df97da57d063b73dc1ef9fac864294c27775"
-  integrity sha512-pTmJp4jcwKhMcouxIn5BMww259kO3wfaW1kfg0PzgMFC9R3//TNYK4zlSkyyrkryWXlMvTKl4crj8oBeHhM7nw==
-  dependencies:
-    "@types/webpack" "^4"
-
 "@types/sharp@^0.28.4":
   version "0.28.4"
   resolved "https://registry.yarnpkg.com/@types/sharp/-/sharp-0.28.4.tgz#7afdcf979069ddc68a915603fdaa412ada93f833"
@@ -12890,13 +12883,6 @@ service-worker-mock@^2.0.5:
     shelving-mock-indexeddb "^1.1.0"
     url-search-params "^0.10.0"
     w3c-hr-time "^1.0.1"
-
-serviceworker-webpack-plugin@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/serviceworker-webpack-plugin/-/serviceworker-webpack-plugin-1.0.1.tgz#481863288487e92da01d49745336c72ef8a6136b"
-  integrity sha512-VgDEkZ3pA0HajsRaWtl5w6bLxAXx0Y+4dm7YeTcIxVmvC9YXvstex38HOBDuYETeDS5fUlBy/47gC0QYBrG0nw==
-  dependencies:
-    minimatch "^3.0.4"
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"

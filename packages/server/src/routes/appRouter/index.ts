@@ -9,7 +9,7 @@ import { iconHandler } from './iconHandler';
 import { indexHandler } from './indexHandler';
 import { manifestHandler } from './manifestHandler';
 import { robotsHandler } from './robotsHandler';
-// Import { serviceWorkerHandler } from './serviceWorkerHandler';
+import { serviceWorkerHandler } from './serviceWorkerHandler';
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 
@@ -22,10 +22,10 @@ export const appRouter = tinyRouter([
     route: '/robots.txt',
     get: robotsHandler,
   },
-  // {
-  //   route: '/service-worker.js',
-  //   get: serviceWorkerHandler,
-  // },
+  {
+    route: '/service-worker.js',
+    get: serviceWorkerHandler,
+  },
   {
     route: /^\/icon-(?<size>\d+)\.png$/,
     get: iconHandler,
