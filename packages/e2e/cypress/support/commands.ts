@@ -45,12 +45,9 @@ Cypress.Commands.add('waitForAppLoaded', () => {
   cy.get('.appsemble-loader', { includeShadowDom: true, timeout: 8e3 }).should('not.exist');
 });
 
-Cypress.Commands.add(
-  'visitAndWaitForCss',
-  (url: string, options?: Partial<Cypress.VisitOptions>) => {
-    cy.intercept({ method: 'GET', url: '*bulma/0.9.3/bulma.min.css' }).as('bulma');
-    cy.intercept({ method: 'GET', url: '*fa/5.15.3/css/all.min.css' }).as('fa');
-    cy.visit(url, options);
-    cy.wait(['@bulma', '@fa']);
-  },
-);
+Cypress.Commands.add('visitAndWaitForCss', (url, options) => {
+  cy.intercept({ method: 'GET', url: '*bulma/0.9.3/bulma.min.css' }).as('bulma');
+  cy.intercept({ method: 'GET', url: '*fa/5.15.3/css/all.min.css' }).as('fa');
+  cy.visit(url, options);
+  cy.wait(['@bulma', '@fa']);
+});
