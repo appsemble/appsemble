@@ -1,16 +1,9 @@
-describe('Person app', () => {
-  const { host, protocol } = new URL(Cypress.config().baseUrl);
-  const url = `${protocol}//person.appsemble.${host}`;
+describe('Person', () => {
   let cached = false;
 
   beforeEach(() => {
-    if (cached) {
-      cy.visit(url);
-    } else {
-      cy.visitAndWaitForCss(url);
-      cached = true;
-    }
-    cy.waitForAppLoaded();
+    cy.visitApp(cached, 'person');
+    cached = true;
   });
 
   it('should submit a new person and view it', () => {

@@ -24,6 +24,20 @@ namespace Cypress {
      * Helper function to wait until an app’s styling is loaded.
      */
     visitAndWaitForCss: (url: string, options?: Partial<Cypress.VisitOptions>) => void;
+
+    /**
+     * Visit an app and wait for it to have been cached.
+     */
+    visitApp: (
+      cached: boolean,
+      appPath: string,
+      options?: Partial<Cypress.VisitOptions>,
+    ) => boolean;
+
+    /**
+     * Login to an Appsemble app.
+     */
+    loginApp: () => void;
   }
 }
 
@@ -50,4 +64,26 @@ Cypress.Commands.add('visitAndWaitForCss', (url, options) => {
   cy.intercept({ method: 'GET', url: '*fa/5.15.3/css/all.min.css' }).as('fa');
   cy.visit(url, options);
   cy.wait(['@bulma', '@fa']);
+});
+
+Cypress.Commands.add('visitApp', (cached, appPath) => {
+  const { host, protocol } = new URL(Cypress.config().baseUrl);
+  const url = `${protocol}//${appPath}.appsemble.${host}`;
+
+  if (cached) {
+    cy.visit(url);
+  } else {
+    cy.visitAndWaitForCss(url);
+  }
+  cy.waitForAppLoaded();
+});
+
+Cypress.Commands.add('loginApp', () => {
+  cy.get('.appsemble-loader').should('not.exist');
+  cy.get('.appsemble-login > button').click();
+  cy.get('#email').type(Cypress.env('BOT_ACCOUNT_EMAIL'));
+  cy.get('#password').type(Cypress.env('BOT_ACCOUNT_PASSWORD'));
+  cy.get('button[type="submit"]').click();
+  cy.get('.has-text-centered > .button.is-primary').click();
+  cy.waitForAppLoaded();
 });

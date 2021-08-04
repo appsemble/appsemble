@@ -1,6 +1,4 @@
-describe('Holidays app', () => {
-  const { host, protocol } = new URL(Cypress.config().baseUrl);
-  const url = `${protocol}//holidays.appsemble.${host}`;
+describe('Holidays', () => {
   let cached = false;
 
   beforeEach(() => {
@@ -17,14 +15,8 @@ describe('Holidays app', () => {
       { fixture: 'holidays-us.json' },
     );
 
-    if (cached) {
-      cy.visit(url);
-    } else {
-      cy.visitAndWaitForCss(url);
-      cached = true;
-    }
-
-    cy.waitForAppLoaded();
+    cy.visitApp(cached, 'holidays');
+    cached = true;
   });
 
   it('should navigate to the second tab', () => {
