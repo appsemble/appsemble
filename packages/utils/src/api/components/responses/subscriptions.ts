@@ -6,6 +6,7 @@ export const subscriptions: OpenAPIV3.ResponseObject = {
     'application/json': {
       schema: {
         type: 'object',
+        description: 'A mapping of resources names to resource subscriptions.',
         additionalProperties: {
           $ref: '#/components/schemas/ResourceSubscription',
         },

@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/TabsPageDefinition
+name: Test page
+type: tabs
+subPages:
+  - blocks:
+      - type: block
+        version: 1.2.3

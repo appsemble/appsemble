@@ -4,6 +4,7 @@ export const AppOAuth2Secret: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'Settings for login in apps using third party OAuth2 providers',
   required: ['authorizationUrl', 'clientId', 'clientSecret', 'icon', 'name', 'scope', 'tokenUrl'],
+  additionalProperties: false,
   properties: {
     id: {
       type: 'number',

@@ -45,11 +45,12 @@
     "type-fest": "^1.2.2"
   },
   "devDependencies": {
-    "@apidevtools/swagger-parser": "^10.0.2",
     "@sinonjs/fake-timers": "^7.1.2",
     "@types/langmap": "^0.0.1",
     "@types/language-tags": "^1.0.0",
-    "@types/lcm": "^0.0.0"
+    "@types/lcm": "^0.0.0",
+    "js-yaml": "^4.1.0",
+    "koas-core": "^0.5.2"
   },
   "engines": {
     "node": ">=12.0.0"

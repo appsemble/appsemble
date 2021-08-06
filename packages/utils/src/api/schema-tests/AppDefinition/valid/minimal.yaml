@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/AppDefinition
+name: Test App
+defaultPage: Test Page
+
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 1.2.3

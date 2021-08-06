@@ -5,6 +5,8 @@ import { defaultLocale } from '../../../constants';
 export const AppDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   required: ['name', 'defaultPage', 'pages'],
+  additionalProperties: false,
+  description: 'An app definition describes what an Appsemble app looks like.',
   properties: {
     name: {
       type: 'string',
@@ -35,18 +37,12 @@ overridden by defining them for a specific page or block. Note that these roles 
 This will be displayed on the app store.
 `,
     },
-    login: {
-      type: 'string',
-      enum: ['navigation', 'menu', 'hidden'],
-      description: 'Where the login and logout buttons should be located.',
-    },
     layout: {
       $ref: '#/components/schemas/AppLayoutDefinition',
       description: 'Properties related to the layout of the app.',
     },
     notifications: {
       enum: ['opt-in', 'startup'],
-      type: 'string',
       description: `The strategy to use for apps to subscribe to push notifications.
 
 If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the

@@ -19,10 +19,12 @@ const query: OpenAPIV3.NonArraySchemaObject = {
 
 const referenceAction: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
+  additionalProperties: false,
+  description: 'XXX',
   properties: {
     trigger: {
       type: 'array',
-      items: { type: 'string', enum: ['create', 'update', 'delete'] },
+      items: { enum: ['create', 'update', 'delete'] },
       minItems: 1,
       uniqueItems: true,
     },
@@ -31,15 +33,21 @@ const referenceAction: OpenAPIV3.NonArraySchemaObject = {
 
 export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
+  description: `Resources define how Appsemble can store data for an app.
+
+The most basic resource has a \`schema\` property and defines the minimal security rules.
+`,
   additionalProperties: {
     type: 'object',
+    additionalProperties: false,
+    description: 'A definition of how this resource works.',
     properties: {
       expires: {
         type: 'string',
         description: `A time string representing when a resource should expire.
 
-        Example: 1d 8h 30m
-        `,
+Example: 1d 8h 30m
+`,
         pattern:
           /^(\d+(y|yr|years))?\s*(\d+months)?\s*(\d+(w|wk|weeks))?\s*(\d+(d|days))?\s*(\d+(h|hr|hours))?\s*(\d+(m|min|minutes))?\s*(\d+(s|sec|seconds))?$/
             .source,
@@ -51,14 +59,15 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
       },
       references: {
         type: 'object',
-        description: `
-          References to other resources.
+        description: `References to other resources.
 
-          The key if the property that references the other resource.
-          The value is an object describing the name of the resource and how it should behave.
-        `,
+The key if the property that references the other resource.
+The value is an object describing the name of the resource and how it should behave.
+`,
         additionalProperties: {
           type: 'object',
+          description: 'XXX',
+          additionalProperties: false,
           properties: {
             resource: { type: 'string' },
             create: referenceAction,
@@ -85,6 +94,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
       query: {
         type: 'object',
         description: "Overrides for 'query' requests.",
+        additionalProperties: false,
         properties: {
           roles,
           query,
@@ -103,6 +113,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
       get: {
         type: 'object',
         description: "Overrides for 'get' requests.",
+        additionalProperties: false,
         properties: {
           roles,
           query,
@@ -121,6 +132,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
       count: {
         type: 'object',
         description: "Overrides for 'count' requests.",
+        additionalProperties: false,
         properties: {
           roles,
           query,
@@ -139,6 +151,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
       create: {
         type: 'object',
         description: "Overrides for 'create' requests.",
+        additionalProperties: false,
         properties: {
           roles,
           query,
@@ -160,6 +173,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
       update: {
         type: 'object',
         description: "Overrides for 'update' requests.",
+        additionalProperties: false,
         properties: {
           roles,
           query,
@@ -181,6 +195,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
       delete: {
         type: 'object',
         description: "Overrides for 'delete' requests.",
+        additionalProperties: false,
         properties: {
           roles,
           query,
@@ -196,28 +211,6 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
           },
           hooks: {
             $ref: '#/components/schemas/ResourceHooksDefinition',
-          },
-        },
-      },
-      blobs: {
-        type: 'object',
-        description: "Overrides for 'query' requests.",
-        properties: {
-          type: {
-            type: 'string',
-            default: 'upload',
-          },
-          method: {
-            type: 'string',
-            default: 'post',
-          },
-          url: {
-            type: 'string',
-            default: '/api/apps/{appId}/assets',
-          },
-          serialize: {
-            type: 'string',
-            enum: ['custom'],
           },
         },
       },

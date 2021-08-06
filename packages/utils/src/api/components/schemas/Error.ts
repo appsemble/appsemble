@@ -4,6 +4,7 @@ export const Error: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The generic error object returned by any expected API errors.',
   readOnly: true,
+  additionalProperties: false,
   properties: {
     statusCode: {
       type: 'number',

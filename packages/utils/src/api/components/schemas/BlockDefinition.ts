@@ -35,7 +35,6 @@ will remain the same until it is manually updated.
 `,
     },
     layout: {
-      type: 'string',
       description: 'An override of the block’s default.',
       enum: ['float', 'grow', 'static'],
     },
@@ -73,6 +72,7 @@ If a user does not have the right role, the block is not rendered.
 
 The exact meaning of the parameters depends on the block type.
 `,
+      additionalProperties: true,
     },
     actions: {
       type: 'object',

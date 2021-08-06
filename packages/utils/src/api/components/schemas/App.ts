@@ -5,6 +5,7 @@ import { normalized } from '../../../constants';
 export const App: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'An app definition defines what an app will look like.',
+  additionalProperties: false,
   properties: {
     id: {
       type: 'number',
@@ -30,7 +31,6 @@ normalized version of the app name.
 `,
     },
     domain: {
-      type: 'string',
       oneOf: [
         { type: 'string', maxLength: 0 },
         { type: 'string', format: 'hostname' },

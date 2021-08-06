@@ -4,9 +4,9 @@ export const SecurityDefaultDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   required: ['role'],
   description: 'The default role to apply to members.',
+  additionalProperties: false,
   properties: {
     policy: {
-      type: 'string',
       enum: ['everyone', 'organization', 'invite'],
       default: 'everyone',
       description: `How the \`default\` role gets applied to users.

@@ -8,6 +8,8 @@ export const oauth2Consent: OpenAPIV3.RequestBodyObject = {
       schema: {
         type: 'object',
         required: ['appId', 'redirectUri', 'scope'],
+        description: 'A representation of a user’s OAuth2 consent when logging in to an app.',
+        additionalProperties: false,
         properties: {
           appId: {
             type: 'number',

@@ -10,6 +10,7 @@ Block versions can’t be updated or deleted. This ensures apps that use a block
 be broken by alterations of block definitions.
 `,
   required: ['name', 'version', 'files'],
+  additionalProperties: false,
   properties: {
     name: {
       type: 'string',
@@ -46,7 +47,6 @@ This uses the same form as scoped npm packages. For example, \`@appsemble/form\`
       description: 'A [semver](https://semver.org) representation of the block version.',
     },
     layout: {
-      type: 'string',
       description: `How the block will be displayed on the screen.
 
 - **\`float\`**: The block will float somewhere on the screen.
@@ -74,18 +74,32 @@ This will be used to validate app definitions.
 If the parameters of a block definition don’t conform to this schema, the app definition will be
 considered invalid.
 `,
+      additionalProperties: true,
     },
     events: {
       type: 'object',
       description: 'An object describing the names of the events the block can listen and emit to.',
+      additionalProperties: false,
       properties: {
         listen: {
           type: 'object',
-          additionalProperties: { type: 'object', properties: { description: { type: 'string' } } },
+          description: 'A mapping of events this block may listen on',
+          additionalProperties: {
+            description: 'A mapping of events this block may listen on',
+            type: 'object',
+            additionalProperties: false,
+            properties: { description: { type: 'string' } },
+          },
         },
         emit: {
           type: 'object',
-          additionalProperties: { type: 'object', properties: { description: { type: 'string' } } },
+          description: 'A mapping of events this block may emit',
+          additionalProperties: {
+            description: 'A mapping of events this block may emit',
+            type: 'object',
+            additionalProperties: false,
+            properties: { description: { type: 'string' } },
+          },
         },
       },
     },
@@ -96,11 +110,15 @@ considered invalid.
     },
     messages: {
       type: 'object',
-      description: 'The translated messages for the block.',
+      description: `The translated messages for the block.
+
+English (\`en\`) messages are required.
+`,
       required: ['en'],
       properties: {
         en: {
           type: 'object',
+          description: 'A mapping of language IDs to their English translation',
           additionalProperties: {
             type: 'string',
             description: 'The default translations to use.',
@@ -110,6 +128,7 @@ considered invalid.
       },
       additionalProperties: {
         type: 'object',
+        description: 'A mapping of language IDs to their internationalized translation',
         additionalProperties: {
           type: 'string',
           description: 'The translated messages for this language.',
