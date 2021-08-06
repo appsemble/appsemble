@@ -69,6 +69,10 @@ export function extractAppMessages(
     },
     onAction(action) {
       Object.assign(messages.messageIds, findMessageIds(action.remap));
+
+      if (action.type === 'dialog') {
+        Object.assign(messages.messageIds, findMessageIds(action.title));
+      }
     },
     onPage(page, prefix) {
       messages.app[prefix.join('.')] = page.name;

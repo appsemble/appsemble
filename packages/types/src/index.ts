@@ -551,7 +551,7 @@ export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * The title to show in the dialog.
    */
-  title?: string;
+  title?: Remapper;
 }
 
 export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
