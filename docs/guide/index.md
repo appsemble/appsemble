@@ -11,6 +11,6 @@ continue on this basic app to add more advanced features.
 1. [Appsemble studio](studio.md)
 2. [Basic app](basic-app.md)
 3. [Events](events.md)
-4. [Remappers](remappers.md)
+4. [Remappers](/docs/reference/remapper)
 5. [Theming](theming.md)
 6. [Custom domain name](dns.md)

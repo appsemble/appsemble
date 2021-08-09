@@ -3,7 +3,7 @@ import { join } from 'path';
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
 import { pathExists, remove } from 'fs-extra';
-import webpack, { Stats } from 'webpack';
+import { Stats, webpack } from 'webpack';
 
 import { loadWebpackConfig } from './loadWebpackConfig';
 

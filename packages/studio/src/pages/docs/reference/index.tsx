@@ -6,6 +6,7 @@ import { ActionPage } from './action';
 import { AppPage } from './app';
 import { IndexPage } from './IndexPage';
 import { messages } from './messages';
+import { RemapperPage } from './remapper';
 
 export function ReferenceRoutes(): ReactElement {
   const { path, url } = useRouteMatch();
@@ -20,6 +21,9 @@ export function ReferenceRoutes(): ReactElement {
       </Route>
       <Route exact path={`${path}/action`}>
         <ActionPage />
+      </Route>
+      <Route exact path={`${path}/remapper`}>
+        <RemapperPage />
       </Route>
       <Redirect to={url} />
     </MetaSwitch>

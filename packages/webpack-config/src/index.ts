@@ -2,26 +2,27 @@ import { join } from 'path';
 
 import { BlockConfig } from '@appsemble/types';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
-import { CliConfigOptions, Configuration } from 'webpack';
+import { Configuration } from 'webpack';
+
+interface CliConfigOptions {
+  mode: 'development' | 'production';
+}
 
 const loaders = {
   css: require.resolve('css-loader'),
-  file: require.resolve('file-loader'),
   postcss: require.resolve('postcss-loader'),
   svgo: require.resolve('svgo-loader'),
   ts: require.resolve('ts-loader'),
 };
 
 export = function createWebpackConfig(
-  { dir, name, version }: BlockConfig,
+  { dir, name }: BlockConfig,
   { mode }: CliConfigOptions,
 ): Configuration {
   const [, blockName] = name.split('/');
-  const publicPath = `/api/blocks/${name}/versions/${version}`;
   const srcPath = join(dir, 'src');
   const production = mode === 'production';
   const configFile = join(dir, 'tsconfig.json');
@@ -41,6 +42,9 @@ export = function createWebpackConfig(
         './images/marker-icon.png$': 'leaflet/dist/images/marker-icon.png',
       },
       plugins: [new TsconfigPathsPlugin({ configFile })],
+      fallback: {
+        path: false,
+      },
     },
     devtool: 'source-map',
     mode,
@@ -74,11 +78,7 @@ export = function createWebpackConfig(
         },
         {
           test: /\.(gif|jpe?g|png|svg|woff2?)$/,
-          loader: loaders.file,
-          options: {
-            name: '[name].[ext]',
-            publicPath,
-          },
+          type: 'asset/resource',
         },
         {
           test: /\.svg$/,
@@ -88,14 +88,10 @@ export = function createWebpackConfig(
     },
     plugins: [
       new CaseSensitivePathsPlugin(),
-      // @ts-expect-error This uses Webpack 5 types, but it’s compatible with both Webpack 4 and 5.
       new MiniCssExtractPlugin({ filename: `${blockName}.css` }),
     ],
     optimization: {
-      minimizer: [
-        new TerserPlugin({ cache: true, parallel: true, sourceMap: true }),
-        new OptimizeCSSAssetsPlugin(),
-      ],
+      minimizer: ['...', new CssMinimizerPlugin()],
     },
   };
 };
