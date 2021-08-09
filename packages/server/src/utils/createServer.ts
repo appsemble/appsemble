@@ -1,17 +1,13 @@
-import { dirname } from 'path';
 import { parse } from 'querystring';
 
 import { loggerMiddleware } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
-import faPkg from '@fortawesome/fontawesome-free/package.json';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
 import Koa, { Middleware } from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
-import mount from 'koa-mount';
 import range from 'koa-range';
-import serve from 'koa-static';
 import { bodyParser, bufferParser, Parser } from 'koas-body-parser';
 import { koas } from 'koas-core';
 import { operations } from 'koas-operations';
@@ -28,9 +24,7 @@ import { appMapper } from '../middleware/appMapper';
 import { boomMiddleware } from '../middleware/boom';
 import { conditional } from '../middleware/conditional';
 import { frontend } from '../middleware/frontend';
-import { tinyRouter } from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
-import { bulmaHandler } from '../routes/bulmaHandler';
 import { argv } from './argv';
 import { authentication } from './authentication';
 import { convertToCsv } from './convertToCsv';
@@ -75,22 +69,6 @@ export async function createServer({
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
-
-  app.use(
-    mount(
-      `/fa/${faPkg.version}`,
-      serve(dirname(require.resolve('@fortawesome/fontawesome-free/package.json'))),
-    ),
-  );
-
-  app.use(
-    tinyRouter([
-      {
-        route: /^\/bulma/,
-        get: bulmaHandler,
-      },
-    ]),
-  );
 
   if (process.env.NODE_ENV !== 'test' && process.env.NODE_ENV !== 'production') {
     app.use(await frontend(webpackConfigs));

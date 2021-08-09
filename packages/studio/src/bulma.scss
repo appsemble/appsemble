@@ -1,0 +1,32 @@
+@charset "utf-8";
+@import url(https://fonts.googleapis.com/css?display=swap&family=Open+Sans);
+
+$family-sans-serif: 'Open Sans', sans-serif !default;
+$primary: #5393ff;
+$link: #0440ad;
+$info: #a7d0ff;
+$success: #1fd25b;
+$warning: #fed719;
+$danger: #ff2800;
+
+@import 'bulma/sass/utilities/functions.sass';
+
+@import 'bulma/bulma.sass';
+@import 'bulma-checkradio/src/sass/index.sass';
+@import 'bulma-switch/src/sass/index.sass';
+
+// Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
+:root {
+  --primary-color: #{$primary};
+  --link-color: #{$link};
+  --success-color: #{$success};
+  --info-color: #{$info};
+  --warning-color: #{$warning};
+  --danger-color: #{$danger};
+  --primary-color-invert: #{$primary-invert};
+  --link-color-invert: #{$link-invert};
+  --success-color-invert: #{$success-invert};
+  --info-color-invert: #{$info-invert};
+  --warning-color-invert: #{$warning-invert};
+  --danger-color-invert: #{$danger-invert};
+}
