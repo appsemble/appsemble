@@ -1545,8 +1545,15 @@ to \`startup\` will cause Appsemble to immediately request for the permission up
                 type: 'array',
               },
               resources: {
-                $ref: '#/components/schemas/ResourceDefinition',
-                description: 'Resource definitions that may be used by the app.',
+                additionalProperties: {
+                  $ref: '#/components/schemas/ResourceDefinition',
+                  description: 'A single resource definition.',
+                },
+                description: `Resources define how Appsemble can store data for an app.
+
+The most basic resource has a \`schema\` property and defines the minimal security rules.
+`,
+                type: 'object',
               },
               roles: {
                 description: `The list of roles that are allowed to view this app.
