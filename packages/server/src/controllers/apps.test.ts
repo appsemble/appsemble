@@ -1464,6 +1464,8 @@ pages:
           path: ['definition'],
           property: 'instance.definition',
           schema: {
+            additionalProperties: false,
+            description: 'An app definition describes what an Appsemble app looks like.',
             properties: {
               anchors: {
                 description: 'Helper property that can be used to store YAML anchors.',
@@ -1503,11 +1505,6 @@ This will be displayed on the app store.
                 $ref: '#/components/schemas/AppLayoutDefinition',
                 description: 'Properties related to the layout of the app.',
               },
-              login: {
-                description: 'Where the login and logout buttons should be located.',
-                enum: ['navigation', 'menu', 'hidden'],
-                type: 'string',
-              },
               name: {
                 description: `The human readable name of the app.
 
@@ -1528,7 +1525,6 @@ to \`startup\` will cause Appsemble to immediately request for the permission up
 > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
 `,
                 enum: ['opt-in', 'startup'],
-                type: 'string',
               },
               pages: {
                 description: 'The pages of the app.',
