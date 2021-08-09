@@ -67,8 +67,15 @@ This **must** match the name of a page defined for the app.
       description: 'The default language for the app.',
     },
     resources: {
-      $ref: '#/components/schemas/ResourceDefinition',
-      description: 'Resource definitions that may be used by the app.',
+      type: 'object',
+      description: `Resources define how Appsemble can store data for an app.
+
+The most basic resource has a \`schema\` property and defines the minimal security rules.
+`,
+      additionalProperties: {
+        description: 'A single resource definition.',
+        $ref: '#/components/schemas/ResourceDefinition',
+      },
     },
     security: {
       $ref: '#/components/schemas/SecurityDefinition',
