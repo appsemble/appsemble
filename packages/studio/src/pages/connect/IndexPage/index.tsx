@@ -72,7 +72,7 @@ export function IndexPage(): ReactElement {
       .then(({ data }) => {
         if (!data.isAllowed || 'Cypress' in window) {
           setIsAllowed(data.isAllowed);
-          setAppName(data.appName);
+          setAppName(data?.appName);
           setAppLoading(false);
           return;
         }
