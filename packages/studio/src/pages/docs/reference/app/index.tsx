@@ -22,7 +22,7 @@ function resolveJsonReferences(schema: JSONSchema, name: string): void {
   iterJSONSchema(schema, (subSchema) => {
     if (typeof subSchema.$ref === 'string') {
       const ref = subSchema.$ref.split('/').pop();
-      if (ref in schemas && ref !== 'ActionDefinition') {
+      if (ref in schemas && ref !== 'ActionDefinition' && ref !== 'RemapperDefinition') {
         resolveJsonReferences(schemas[ref as keyof typeof schemas], ref);
       }
     }

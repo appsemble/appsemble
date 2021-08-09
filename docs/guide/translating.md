@@ -31,10 +31,11 @@ worth considering contributing these for other users to use via
 ## Custom messages
 
 It is possible to provide custom messages within an app. This can be done by using the
-[`translate`](./remappers.md#translate) or [`string.format`](./remappers.md#stringformat) remappers.
-The former is typically used for simple translations that don’t use any arguments, whereas the
-latter can be used for more control over arguments that get passed in (for usage with the [ICU
-syntax][icu]) as well as optionally defining a default or fallback translation.
+[`translate`](/docs/reference/remapper#translate) or
+[`string.format`](/docs/reference/remapper#stringformat) remappers. The former is typically used for
+simple translations that don’t use any arguments, whereas the latter can be used for more control
+over arguments that get passed in (for usage with the [ICU syntax][icu]) as well as optionally
+defining a default or fallback translation.
 
 Let’s look at a simple example of what this looks like in an app.
 
@@ -82,7 +83,8 @@ message as well as the name of the user assuming they are logged in:
 ![Translated message](../../config/assets/translated-message.png)
 
 With the above example if the user is not logged in it will display a blank spot in the spot where
-the `{name}` value is set. This could be solved by using an [if remapper](./remappers.md#if).
+the `{name}` value is set. This could be solved by using an
+[if remapper](/docs/reference/remapper#if).
 
 ## Using the translations page
 
