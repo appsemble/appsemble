@@ -10,12 +10,22 @@ Object based remappers may only define 1 key. The allowed value depends on the r
   maxProperties: 1,
   properties: {
     app: {
-      enum: ['id'],
+      enum: ['id', 'url'],
       description: `Get app metadata.
 
 Supported properties:
 
 - \`id\`: Get the app id.
+- \`url\`: Get the base URL of the app.
+`,
+    },
+    page: {
+      enum: ['url'],
+      description: `Get page metadata.
+
+Supported properties:
+
+- \`url\`: Get the URL of the current page.
 `,
     },
     array: {
