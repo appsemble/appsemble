@@ -22,7 +22,7 @@ export function extendJSONSchema(
 
   const required = Array.isArray(schema.required) ? [...schema.required] : [];
   if (Array.isArray(base.required)) {
-    for (const name of required) {
+    for (const name of base.required) {
       if (!required.includes(name) && !omit.includes(name)) {
         required.push(name);
       }

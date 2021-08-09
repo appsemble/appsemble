@@ -7,5 +7,5 @@ export const $team: OpenAPIV3.ParameterObject = {
   in: 'query',
   description:
     'A custom filter for filtering the query by teams the requesting user is a member of.',
-  schema: { type: 'string', enum: Object.values(TeamRole) },
+  schema: { enum: Object.values(TeamRole) },
 };

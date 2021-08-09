@@ -203,7 +203,10 @@ describe('publishBlock', () => {
                 },
                 type: 'object',
               },
-              description: 'The translated messages for the block.',
+              description: `The translated messages for the block.
+
+English (\`en\`) messages are required.
+`,
               properties: {
                 en: {
                   additionalProperties: {
@@ -377,6 +380,7 @@ describe('publishBlock', () => {
           path: [],
           property: 'instance',
           schema: {
+            additionalProperties: false,
             description: `A version of a block definition
 
 Block versions can’t be updated or deleted. This ensures apps that use a block version can never
@@ -397,11 +401,14 @@ This will be used to validate app definitions.
                 type: 'string',
               },
               events: {
+                additionalProperties: false,
                 description:
                   'An object describing the names of the events the block can listen and emit to.',
                 properties: {
                   emit: {
                     additionalProperties: {
+                      additionalProperties: false,
+                      description: 'A mapping of events this block may emit',
                       properties: {
                         description: {
                           type: 'string',
@@ -409,10 +416,13 @@ This will be used to validate app definitions.
                       },
                       type: 'object',
                     },
+                    description: 'A mapping of events this block may emit',
                     type: 'object',
                   },
                   listen: {
                     additionalProperties: {
+                      additionalProperties: false,
+                      description: 'A mapping of events this block may listen on',
                       properties: {
                         description: {
                           type: 'string',
@@ -420,6 +430,7 @@ This will be used to validate app definitions.
                       },
                       type: 'object',
                     },
+                    description: 'A mapping of events this block may listen on',
                     type: 'object',
                   },
                 },
@@ -457,7 +468,6 @@ This will be used to validate app definitions.
 - **\`hidden\`**: The block will not be rendered at all.
 `,
                 enum: ['float', 'grow', 'static', 'hidden'],
-                type: 'string',
               },
               longDescription: {
                 description: 'The long description of the block.',
@@ -469,9 +479,13 @@ This will be used to validate app definitions.
                     description: 'The translated messages for this language.',
                     type: 'string',
                   },
+                  description: 'A mapping of language IDs to their internationalized translation',
                   type: 'object',
                 },
-                description: 'The translated messages for the block.',
+                description: `The translated messages for the block.
+
+English (\`en\`) messages are required.
+`,
                 properties: {
                   en: {
                     additionalProperties: {
@@ -479,6 +493,7 @@ This will be used to validate app definitions.
                       minLength: 1,
                       type: 'string',
                     },
+                    description: 'A mapping of language IDs to their English translation',
                     type: 'object',
                   },
                 },
@@ -496,6 +511,7 @@ This uses the same form as scoped npm packages. For example, \`@appsemble/form\`
                 type: 'string',
               },
               parameters: {
+                additionalProperties: true,
                 description: `A draft 7 JSON schema to use for block parameter validation.
 
 If the parameters of a block definition don’t conform to this schema, the app definition will be

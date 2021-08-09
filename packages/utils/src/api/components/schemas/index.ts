@@ -6,8 +6,6 @@ export * from './AppMessages';
 export * from './AppOAuth2Secret';
 export * from './AppsembleMessages';
 export * from './Asset';
-export * from './BaseActionDefinition';
-export * from './BasePageDefinition';
 export * from './BlockDefinition';
 export * from './BlockVersion';
 export * from './ConditionActionDefinition';

@@ -8,7 +8,6 @@ export const TabsPageDefinition = extendJSONSchema(BasePageDefinition, {
   additionalProperties: true,
   properties: {
     type: {
-      type: 'string',
       enum: ['tabs'],
     },
     subPages: {

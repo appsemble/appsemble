@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/FlowPageDefinition
+name: Test page
+type: flow
+actions:
+  onFlowCancel:
+    type: noop
+  onFlowFinish:
+    type: noop
+subPages:
+  - blocks:
+      - type: block
+        version: 1.2.3

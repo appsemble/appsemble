@@ -1,0 +1,5 @@
+name: Test page
+invalid: Additional properties are not allowed
+blocks:
+  - type: block
+    version: 1.2.3

@@ -6,6 +6,7 @@ export const Member: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A member of an organization.',
   required: ['id'],
+  additionalProperties: false,
   properties: {
     id: {
       $ref: '#/components/schemas/User/properties/id',
@@ -19,7 +20,6 @@ export const Member: OpenAPIV3.NonArraySchemaObject = {
       description: 'The primary email address of the user.',
     },
     role: {
-      type: 'string',
       enum: Object.keys(roles),
     },
   },

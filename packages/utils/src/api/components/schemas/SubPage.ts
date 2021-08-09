@@ -4,6 +4,7 @@ export const SubPage: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'This describes what a sub page will look like in the app.',
   required: ['blocks'],
+  additionalProperties: false,
   properties: {
     name: {
       type: 'string',

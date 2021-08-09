@@ -1,5 +1,5 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { defaultLocale, schemas } from '@appsemble/utils';
+import { BaseActionDefinition, defaultLocale, schemas } from '@appsemble/utils';
 import decamelize from 'decamelize';
 import { Schema as JSONSchema } from 'jsonschema';
 import { Fragment, ReactElement } from 'react';
@@ -41,7 +41,7 @@ export function ActionPage(): ReactElement {
       </Title>
       <div className="pl-6">
         <Introduction main={false} />
-        <Schema anchors renderRef={Ref} schema={schemas.BaseActionDefinition} />
+        <Schema anchors renderRef={Ref} schema={BaseActionDefinition} />
       </div>
       {entries.map(([name, schema]) => {
         const id = decamelize(name, { separator: '-' });

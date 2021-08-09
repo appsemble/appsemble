@@ -55,6 +55,8 @@ disabled by setting this to \`false\`
     schema: {
       type: 'object',
       description: 'The name of the schema to validate against before submitting data.',
+      // XXX Define a JSON schema for JSON schemas.
+      additionalProperties: true,
     },
   },
 });

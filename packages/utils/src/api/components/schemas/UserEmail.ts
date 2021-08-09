@@ -8,6 +8,7 @@ export const UserEmail: OpenAPIV3.NonArraySchemaObject = {
     Users may use any of their email addresses to login.
   `,
   required: ['email'],
+  additionalProperties: false,
   properties: {
     email: {
       type: 'string',

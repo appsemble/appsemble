@@ -6,6 +6,7 @@ export const Organization: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'An organization groups a set of users, apps, themes, and permissions together',
   required: ['id'],
+  additionalProperties: false,
   properties: {
     id: {
       type: 'string',

@@ -5,6 +5,7 @@ import { partialNormalized, semver } from '../../../constants';
 export const AppsembleMessages: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A mapping of the messages for this language',
+  additionalProperties: false,
   properties: {
     core: {
       type: 'object',

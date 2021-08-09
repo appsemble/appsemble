@@ -4,6 +4,7 @@ export const Health: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A health check status',
   readOnly: true,
+  additionalProperties: false,
   properties: {
     database: {
       type: 'boolean',
