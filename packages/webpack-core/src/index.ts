@@ -15,7 +15,6 @@ import { remarkMdxCodeMeta } from 'remark-mdx-code-meta';
 import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
 import { remarkMdxImages } from 'remark-mdx-images';
 import { remarkMermaid } from 'remark-mermaidjs';
-// Import ServiceWorkerWebpackPlugin from 'serviceworker-webpack-plugin';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { Configuration, EnvironmentPlugin } from 'webpack';
