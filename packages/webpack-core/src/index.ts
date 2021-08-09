@@ -205,8 +205,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
  * @returns The Webpack configuration for Appsemble app.
  */
 export function createAppConfig(argv: CliConfigOptions): Configuration {
-  // Const { mode } = argv;
-  // Const production = mode === 'production';
 
   const config = shared('app', argv);
   config.plugins.push(
