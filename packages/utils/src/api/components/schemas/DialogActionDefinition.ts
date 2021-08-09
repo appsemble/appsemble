@@ -15,6 +15,10 @@ Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) 
 should be supported by the app.
 `,
     },
+    title: {
+      description: 'An optional title to set in the dialog header.',
+      $ref: '#/components/schemas/RemapperDefinition',
+    },
     closable: {
       type: 'boolean',
       default: true,
