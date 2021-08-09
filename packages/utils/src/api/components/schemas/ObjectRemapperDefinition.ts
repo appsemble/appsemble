@@ -8,6 +8,7 @@ Object based remappers may only define 1 key. The allowed value depends on the r
 `,
   minProperties: 1,
   maxProperties: 1,
+  additionalProperties: false,
   properties: {
     app: {
       enum: ['id'],
