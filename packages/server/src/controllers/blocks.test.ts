@@ -511,13 +511,12 @@ This uses the same form as scoped npm packages. For example, \`@appsemble/form\`
                 type: 'string',
               },
               parameters: {
-                additionalProperties: true,
+                $ref: '#/components/schemas/JSONSchemaObject',
                 description: `A draft 7 JSON schema to use for block parameter validation.
 
 If the parameters of a block definition don’t conform to this schema, the app definition will be
 considered invalid.
 `,
-                type: 'object',
               },
               resources: {
                 additionalProperties: true,
