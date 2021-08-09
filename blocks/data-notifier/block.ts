@@ -5,7 +5,7 @@ declare module '@appsemble/sdk' {
     /**
      * The label to display on the refresh button of the notification.
      *
-     * @default "Refresh"
+     * @default 'Refresh'
      */
     buttonLabel: never;
 
@@ -28,14 +28,14 @@ declare module '@appsemble/sdk' {
     /**
      * The property used to identify resources when comparing them in case of array data.
      *
-     * @default "id"
+     * @default 'id'
      */
     id?: string;
 
     /**
      * The Bulma color to use for the message and the refresh button.
      *
-     * @default "dark"
+     * @default 'dark'
      */
     color?: BulmaColor;
   }

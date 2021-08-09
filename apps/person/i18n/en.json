@@ -1,15 +1,15 @@
 {
   "app": {
-    "name": "Person",
     "description": "A simple form and data viewing app using the resource API",
+    "name": "Person",
     "pages.0": "Person List",
     "pages.1": "Person Registration Form",
     "pages.2": "Person Details"
   },
   "messageIds": {
-    "firstName": "First name",
-    "lastName": "Last name",
+    "description": "Description",
     "email": "Email",
-    "description": "Description"
+    "firstName": "First name",
+    "lastName": "Last name"
   }
 }

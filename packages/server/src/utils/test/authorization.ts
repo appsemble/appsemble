@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 
+import { TokenResponse } from '@appsemble/types';
 import { api } from '@appsemble/utils';
-// eslint-disable-next-line node/no-unpublished-import
 import { request } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { OpenAPIV3 } from 'openapi-types';
@@ -96,10 +96,12 @@ export async function authorizeClientCredentials(
  * Authorize the default axios test instance as if its logged in using an Appsemble studio user.
  *
  * @param user - The user to login as
+ * @returns The access token response.
  */
-export function authorizeStudio(user = testUser): void {
+export function authorizeStudio(user = testUser): TokenResponse {
   const tokens = createJWTResponse(user.id, { refreshToken: true });
   request.defaults.headers.authorization = bearer(tokens);
+  return tokens;
 }
 
 /**

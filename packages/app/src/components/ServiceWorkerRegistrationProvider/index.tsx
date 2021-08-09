@@ -33,9 +33,9 @@ export function ServiceWorkerRegistrationProvider({
   const [subscription, setSubscription] = useState<PushSubscription>();
 
   useEffect(() => {
-    serviceWorkerRegistrationPromise.then((registration) =>
-      registration?.pushManager.getSubscription().then(setSubscription),
-    );
+    serviceWorkerRegistrationPromise
+      .then((registration) => registration?.pushManager?.getSubscription())
+      .then(setSubscription);
   }, [serviceWorkerRegistrationPromise]);
 
   const requestPermission = useCallback(async () => {

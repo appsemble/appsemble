@@ -1,15 +1,11 @@
 import { notFound } from '@hapi/boom';
+import { Context } from 'koa';
 
 import { App, AppRating, User } from '../models';
-import { KoaContext } from '../types';
 
-interface Params {
-  appId: number;
-}
-
-export async function getAppRatings(ctx: KoaContext<Params>): Promise<void> {
+export async function getAppRatings(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
 
   const ratings = await AppRating.findAll({ where: { AppId: appId }, include: [User] });
@@ -23,14 +19,14 @@ export async function getAppRatings(ctx: KoaContext<Params>): Promise<void> {
   }));
 }
 
-export async function submitAppRating(ctx: KoaContext<Params>): Promise<void> {
+export async function submitAppRating(ctx: Context): Promise<void> {
   const {
-    params: { appId: AppId },
+    pathParams: { appId: AppId },
     request: {
       body: { description, rating },
     },
-    user: { id: UserId },
   } = ctx;
+  const { id: UserId } = ctx.user as User;
 
   const app = await App.findByPk(AppId);
   const user = await User.findByPk(UserId);

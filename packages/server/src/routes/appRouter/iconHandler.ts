@@ -1,16 +1,11 @@
 import { isEqual, parseISO } from 'date-fns';
+import { Context } from 'koa';
 
 import { Organization } from '../../models';
-import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 import { serveIcon } from '../../utils/icon';
 
-interface Params {
-  format: 'png' | 'tiff' | 'webp';
-  size: string;
-}
-
-export async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
+export async function iconHandler(ctx: Context): Promise<void> {
   const {
     params: { size = 128 },
     query: { maskable = false, updated },

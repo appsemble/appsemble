@@ -1,18 +1,18 @@
 {
   "app": {
+    "description": "Une application dans laquelle les déchets peuvent être signalés et affichés sur une carte interactive.",
     "name": "",
-    "description": "",
-    "pages.0": "",
-    "pages.1": "",
-    "pages.2": "",
-    "pages.3": ""
+    "pages.0": "Signaler des déchets",
+    "pages.1": "Aperçu des déchets",
+    "pages.2": "Détails des déchets",
+    "pages.3": "Liste des déchets"
   },
   "messageIds": {
-    "location": "",
-    "process": "",
-    "notes": "",
-    "notesExample": "",
-    "photos": "",
-    "date": ""
+    "date": "Date",
+    "location": "Localisation",
+    "notes": "Notes",
+    "notesExample": "Exemple : il y a un vélo dans les buissons",
+    "photos": "Photos",
+    "process": "Traitement"
   }
 }

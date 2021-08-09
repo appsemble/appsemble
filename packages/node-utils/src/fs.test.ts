@@ -1,4 +1,4 @@
-import { AppsembleError, isErrno, opendirSafe, readYaml, resolveFixture } from '.';
+import { AppsembleError, isErrno, opendirSafe, readData, resolveFixture } from '.';
 
 describe('isErrno', () => {
   it('should return false for null', () => {
@@ -23,28 +23,33 @@ describe('isErrno', () => {
   });
 });
 
-describe('readYaml', () => {
+describe('readData', () => {
+  it('should read and parse a JSON file', async () => {
+    const content = await readData(resolveFixture('json.json'));
+    expect(content).toStrictEqual([{ json: 'json' }, '{ "json": "json" }\n']);
+  });
+
   it('should read and parse a YAML file', async () => {
-    const content = await readYaml(resolveFixture('yaml.yaml'));
+    const content = await readData(resolveFixture('yaml.yaml'));
     expect(content).toStrictEqual([{ yaml: 'yaml' }, 'yaml: yaml\n']);
   });
 
+  it('should throw an Appsemble error if file extension is unknown', async () => {
+    const path = resolveFixture('hello.txt');
+    await expect(readData(path)).rejects.toThrow(
+      new AppsembleError(`Unknown file extension: ${path}`),
+    );
+  });
+
   it('should throw an Appsemble error if the file can’t be read', async () => {
-    await expect(readYaml('non-existent.yaml')).rejects.toThrow(
+    await expect(readData('non-existent.yaml')).rejects.toThrow(
       new AppsembleError('Error reading file non-existent.yaml'),
     );
   });
 
   it('should throw an Appsemble error if the file can’t be parsed', async () => {
-    const path = resolveFixture('invalid-yaml.txt');
-    await expect(readYaml(path)).rejects.toThrow(
-      new AppsembleError(`Error parsing ${path}
-end of the stream or a document separator is expected (2:1)
-
- 1 |   - bad
- 2 | - indentation
------^`),
-    );
+    const path = resolveFixture('invalid-json.json');
+    await expect(readData(path)).rejects.toThrow(AppsembleError);
   });
 });
 

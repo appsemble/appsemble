@@ -3,6 +3,7 @@ import { BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
+import { Context } from 'koa';
 import { File } from 'koas-body-parser';
 import semver from 'semver';
 import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';
@@ -15,21 +16,13 @@ import {
   Organization,
   transactional,
 } from '../models';
-import { KoaContext } from '../types';
 import { blockVersionToJson } from '../utils/block';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
 
-interface Params {
-  blockId: string;
-  blockVersion: string;
-  language: string;
-  organizationId: string;
-}
-
-export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
+export async function getBlock(ctx: Context): Promise<void> {
   const {
-    params: { blockId, organizationId },
+    pathParams: { blockId, organizationId },
   } = ctx;
 
   const blockVersion = await BlockVersion.findOne({
@@ -68,7 +61,7 @@ export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = blockVersionToJson(blockVersion);
 }
 
-export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
+export async function queryBlocks(ctx: Context): Promise<void> {
   // Sequelize does not support subqueries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
@@ -126,7 +119,7 @@ interface PublishBlockBody extends Omit<BlockManifest, 'files'> {
   icon: File;
 }
 
-export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
+export async function publishBlock(ctx: Context): Promise<void> {
   const { files, icon, messages, ...data }: PublishBlockBody = ctx.request.body;
   const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
@@ -220,9 +213,9 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
   }
 }
 
-export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
+export async function getBlockVersion(ctx: Context): Promise<void> {
   const {
-    params: { blockId, blockVersion, organizationId },
+    pathParams: { blockId, blockVersion, organizationId },
   } = ctx;
 
   const version = await BlockVersion.findOne({
@@ -259,9 +252,9 @@ export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = blockVersionToJson(version);
 }
 
-export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
+export async function getBlockVersions(ctx: Context): Promise<void> {
   const {
-    params: { blockId, organizationId },
+    pathParams: { blockId, organizationId },
   } = ctx;
 
   const blockVersions = await BlockVersion.findAll({
@@ -299,9 +292,9 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = blockVersions.map(blockVersionToJson);
 }
 
-export async function getBlockAsset(ctx: KoaContext<Params>): Promise<void> {
+export async function getBlockAsset(ctx: Context): Promise<void> {
   const {
-    params: { blockId, blockVersion, organizationId },
+    pathParams: { blockId, blockVersion, organizationId },
     query: { filename },
   } = ctx;
 
@@ -325,9 +318,9 @@ export async function getBlockAsset(ctx: KoaContext<Params>): Promise<void> {
   ctx.type = block.BlockAssets[0].mime;
 }
 
-export async function getBlockMessages(ctx: KoaContext<Params>): Promise<void> {
+export async function getBlockMessages(ctx: Context): Promise<void> {
   const {
-    params: { blockId, blockVersion, language, organizationId },
+    pathParams: { blockId, blockVersion, language, organizationId },
   } = ctx;
 
   const block = await BlockVersion.findOne({
@@ -353,9 +346,9 @@ export async function getBlockMessages(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = block.BlockMessages[0].messages;
 }
 
-export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
+export async function getBlockIcon(ctx: Context): Promise<void> {
   const {
-    params: { blockId, blockVersion, organizationId },
+    pathParams: { blockId, blockVersion, organizationId },
     query: { size, updated },
   } = ctx;
 

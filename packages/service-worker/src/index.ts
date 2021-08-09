@@ -1,7 +1,7 @@
 import { onFetch } from './onFetch';
 
 declare const self: ServiceWorkerGlobalScope;
-declare const serviceWorkerOption: string[];
+declare const appAssets: { url: string }[];
 declare const blockAssets: string[];
 
 self.addEventListener('fetch', onFetch);
@@ -20,6 +20,6 @@ self.addEventListener('install', (event) =>
   event.waitUntil(
     caches
       .open('appsemble')
-      .then((cache) => cache.addAll([...serviceWorkerOption, ...blockAssets])),
+      .then((cache) => cache.addAll([...appAssets.map((entry) => entry.url), ...blockAssets])),
   ),
 );

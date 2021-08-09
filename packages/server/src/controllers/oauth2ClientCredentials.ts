@@ -3,20 +3,16 @@ import { randomBytes } from 'crypto';
 import { badRequest, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
 import { isPast, parseISO } from 'date-fns';
+import { Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { OAuth2ClientCredentials } from '../models';
-import { KoaContext } from '../types';
+import { OAuth2ClientCredentials, User } from '../models';
 
-interface Params {
-  clientId: string;
-}
-
-export async function registerOAuth2ClientCredentials(ctx: KoaContext): Promise<void> {
+export async function registerOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {
     request: { body },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   let expires;
   if (body.expires) {
@@ -48,8 +44,8 @@ export async function registerOAuth2ClientCredentials(ctx: KoaContext): Promise<
   };
 }
 
-export async function listOAuth2ClientCredentials(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
+export async function listOAuth2ClientCredentials(ctx: Context): Promise<void> {
+  const user = ctx.user as User;
 
   const credentials = await OAuth2ClientCredentials.findAll({
     attributes: ['created', 'description', 'id', 'expires', 'scopes'],
@@ -66,11 +62,11 @@ export async function listOAuth2ClientCredentials(ctx: KoaContext): Promise<void
   }));
 }
 
-export async function deleteOAuth2ClientCredentials(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {
-    params: { clientId },
-    user,
+    pathParams: { clientId },
   } = ctx;
+  const user = ctx.user as User;
 
   const affectedRows = await OAuth2ClientCredentials.destroy({
     where: {

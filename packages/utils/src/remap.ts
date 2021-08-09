@@ -103,12 +103,16 @@ const mapperImplementations: MapperImplementations = {
       return context.appId;
     }
     if (prop === 'url') {
-      return context.url;
-    }
-    if (prop === 'appUrl') {
       return context.appUrl;
     }
     throw new Error(`Unknown app property: ${prop}`);
+  },
+
+  page: (prop, input, context) => {
+    if (prop === 'url') {
+      return context.url;
+    }
+    throw new Error(`Unknown page property: ${prop}`);
   },
 
   context: (prop, input, context) =>

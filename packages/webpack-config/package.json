@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-config",
-  "version": "0.18.23",
+  "version": "0.18.24",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -30,28 +30,25 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.18.23",
+    "@appsemble/types": "0.18.24",
+    "@types/css-minimizer-webpack-plugin": "^3.0.2",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
-    "css-loader": "^5.2.6",
-    "file-loader": "^6.2.0",
-    "mini-css-extract-plugin": "^1.6.1",
-    "optimize-css-assets-webpack-plugin": "^6.0.1",
+    "css-loader": "^6.2.0",
+    "css-minimizer-webpack-plugin": "^3.0.2",
+    "mini-css-extract-plugin": "^2.1.0",
     "postcss": "^7.0.36",
-    "postcss-loader": "^4.3.0",
+    "postcss-loader": "^6.1.1",
     "svgo-loader": "^3.0.0",
-    "terser-webpack-plugin": "4.1.0",
-    "ts-loader": "^8.3.0",
+    "ts-loader": "^9.2.4",
     "tsconfig-paths-webpack-plugin": "^3.5.1"
   },
   "devDependencies": {
     "@types/case-sensitive-paths-webpack-plugin": "^2.1.6",
-    "@types/mini-css-extract-plugin": "^1.4.3",
-    "@types/optimize-css-assets-webpack-plugin": "^5.0.4",
-    "@types/terser-webpack-plugin": "^4.1.0"
+    "@types/mini-css-extract-plugin": "^2.0.1"
   },
   "peerDependencies": {
     "typescript": "^4",
-    "webpack": "^4"
+    "webpack": "^5"
   },
   "engines": {
     "node": ">=12.0.0"

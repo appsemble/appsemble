@@ -3,9 +3,8 @@ import { promises as fs } from 'fs';
 import { resolve } from 'path';
 
 import { compareStrings } from '@appsemble/utils';
+import { Context } from 'koa';
 import { render as renderTemplate } from 'mustache';
-
-import { KoaContext } from '../types';
 
 /**
  * Render settings as an HTML script tag.
@@ -40,14 +39,13 @@ export function makeCSP(csp: ContentSecurityPolicy): string {
 }
 
 export async function render(
-  ctx: KoaContext,
+  ctx: Context,
   filename: string,
   data: Record<string, unknown>,
 ): Promise<void> {
-  const template =
-    process.env.NODE_ENV === 'production'
-      ? await fs.readFile(resolve(__dirname, '..', '..', '..', '..', 'dist', filename), 'utf8')
-      : ctx.state.fs.readFileSync(`/${filename}`, 'utf8');
+  const template = await (process.env.NODE_ENV === 'production'
+    ? fs.readFile(resolve(__dirname, '..', '..', '..', '..', 'dist', filename), 'utf8')
+    : ctx.fs.promises.readFile(`/${filename}`, 'utf8'));
   ctx.body = renderTemplate(template, data);
   ctx.type = 'html';
 }

@@ -1,16 +1,16 @@
 import { randomBytes } from 'crypto';
 
-import { conflict, notAcceptable, notFound } from '@hapi/boom';
+import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
 import { JwtPayload, verify } from 'jsonwebtoken';
+import { Context } from 'koa';
 import { literal } from 'sequelize';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
-import { KoaContext } from '../types';
 import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
 
-export async function getUser(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
+export async function getUser(ctx: Context): Promise<void> {
+  const user = ctx.user as User;
 
   const dbUser = await User.findOne({
     where: { id: user.id },
@@ -48,8 +48,8 @@ export async function getUser(ctx: KoaContext): Promise<void> {
   };
 }
 
-export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
+export async function getUserOrganizations(ctx: Context): Promise<void> {
+  const user = ctx.user as User;
 
   const organizations = await Organization.findAll({
     attributes: [
@@ -77,13 +77,13 @@ export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
   }));
 }
 
-export async function updateUser(ctx: KoaContext): Promise<void> {
+export async function updateUser(ctx: Context): Promise<void> {
   const {
     request: {
       body: { locale, name },
     },
-    user,
   } = ctx;
+  const user = ctx.user as User;
   const email = ctx.request.body.email?.toLowerCase();
 
   const dbUser = await User.findOne({
@@ -120,8 +120,8 @@ export async function updateUser(ctx: KoaContext): Promise<void> {
   };
 }
 
-export async function listEmails(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
+export async function listEmails(ctx: Context): Promise<void> {
+  const user = ctx.user as User;
 
   ctx.body = await EmailAuthorization.findAll({
     attributes: ['email', 'verified'],
@@ -131,8 +131,9 @@ export async function listEmails(ctx: KoaContext): Promise<void> {
   });
 }
 
-export async function addEmail(ctx: KoaContext): Promise<void> {
-  const { mailer, request, user } = ctx;
+export async function addEmail(ctx: Context): Promise<void> {
+  const { mailer, request } = ctx;
+  const user = ctx.user as User;
 
   const email = request.body.email.toLowerCase();
   const dbEmail = await EmailAuthorization.findOne({
@@ -166,8 +167,9 @@ export async function addEmail(ctx: KoaContext): Promise<void> {
   };
 }
 
-export async function removeEmail(ctx: KoaContext): Promise<void> {
-  const { request, user } = ctx;
+export async function removeEmail(ctx: Context): Promise<void> {
+  const { request } = ctx;
+  const user = ctx.user as User;
 
   const email = request.body.email.toLowerCase();
   const dbUser = await User.findOne({
@@ -197,17 +199,22 @@ export async function removeEmail(ctx: KoaContext): Promise<void> {
   ctx.status = 204;
 }
 
-export function emailLogin(ctx: KoaContext): void {
-  const { user } = ctx;
+export function emailLogin(ctx: Context): void {
+  const user = ctx.user as User;
 
   ctx.body = createJWTResponse(user.id);
 }
 
-export function refreshToken(ctx: KoaContext): void {
+export function refreshToken(ctx: Context): void {
   const {
     request: { body },
   } = ctx;
-  const { sub } = verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload;
+  let sub: string;
+  try {
+    ({ sub } = verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload);
+  } catch {
+    throw unauthorized('Invalid refresh token');
+  }
 
   ctx.body = createJWTResponse(sub);
 }

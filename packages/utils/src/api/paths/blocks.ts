@@ -86,37 +86,6 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
-    post: {
-      tags: ['block version'],
-      description: 'Publish a version of a block definition',
-      operationId: 'createBlockVersion',
-      requestBody: {
-        description: 'The new block version to publish.',
-        content: {
-          'multipart/form-data': {
-            schema: {
-              type: 'object',
-              required: ['data'],
-              properties: {
-                data: {
-                  $ref: '#/components/schemas/BlockVersion',
-                },
-              },
-              additionalProperties: {
-                type: 'string',
-                format: 'binary',
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        201: {
-          $ref: '#/components/responses/blockVersion',
-        },
-      },
-      security: [{ cli: ['blocks:write'] }],
-    },
   },
   '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
     parameters: [

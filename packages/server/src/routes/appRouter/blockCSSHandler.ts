@@ -1,14 +1,10 @@
 import { notFound } from '@hapi/boom';
+import { Context } from 'koa';
 
 import { AppBlockStyle } from '../../models';
-import { KoaContext } from '../../types';
 import { getApp } from '../../utils/app';
 
-interface Params {
-  name: string;
-}
-
-export async function blockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
+export async function blockCSSHandler(ctx: Context): Promise<void> {
   const {
     params: { name },
   } = ctx;

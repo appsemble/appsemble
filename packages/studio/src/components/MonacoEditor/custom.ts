@@ -1,15 +1,6 @@
 import { schemas } from '@appsemble/utils';
 import { Environment } from 'monaco-editor/esm/vs/editor/editor.api';
-import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker';
-import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker';
 import { setDiagnosticsOptions } from 'monaco-yaml';
-import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
-// Webpack loader syntax is required here, because  json.worker and yaml.worker also import this
-// file.
-// eslint-disable-next-line import/no-unresolved, import/no-webpack-loader-syntax, node/no-extraneous-import
-import MonacoWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
-// Cherry-picking these features makes the editor more light weight, resulting in a smaller bundle
-// size and a snappier user experience.
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
 import 'monaco-editor/esm/vs/editor/contrib/comment/comment';
 import 'monaco-editor/esm/vs/editor/contrib/contextmenu/contextmenu';
@@ -30,13 +21,15 @@ window.MonacoEnvironment = {
   getWorker(workerId, label) {
     switch (label) {
       case 'css':
-        return new CssWorker();
+        return new Worker(new URL('monaco-editor/esm/vs/language/css/css.worker', import.meta.url));
       case 'editorWorkerService':
-        return new MonacoWorker();
+        return new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url));
       case 'json':
-        return new JsonWorker();
+        return new Worker(
+          new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url),
+        );
       case 'yaml':
-        return new YamlWorker();
+        return new Worker(new URL('monaco-yaml/lib/esm/yaml.worker', import.meta.url));
       default:
         throw new Error(`Unknown label ${label}`);
     }

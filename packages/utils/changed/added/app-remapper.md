@@ -1,1 +1,1 @@
-Add `url` and `appUrl` to `app` remapper.
+Add `url` to `app` remapper.

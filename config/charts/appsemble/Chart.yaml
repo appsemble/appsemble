@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.23
-appVersion: 0.18.23
+version: 0.18.24
+appVersion: 0.18.24
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,7 +25,19 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: fixed
-      description: 'Server: Make remote argument optional.'
+      description: >-
+        Block(button-list): Fix onClick not being used as the default if an action
+        isn’t specified.
+    - kind: fixed
+      description: >-
+        Block(markdown): Fix issue where certain data types would not display
+        correctly.
+    - kind: fixed
+      description: 'App: Support remappers in page dialog titles.'
+    - kind: fixed
+      description: 'Cli: Fix parsing error when verifying YAML messages.'
+    - kind: fixed
+      description: 'Studio: Fix a crash caused by the editor.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

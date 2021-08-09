@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.18.23",
+  "version": "0.18.24",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -29,17 +29,17 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.18.23",
+    "@appsemble/types": "0.18.24",
     "axios": "^0.21.1",
     "cron-parser": "^3.5.0",
-    "date-fns": "^2.22.1",
+    "date-fns": "^2.23.0",
     "fast-deep-equal": "^3.1.3",
-    "intl-messageformat": "^9.7.1",
+    "intl-messageformat": "^9.8.1",
     "jsonschema": "^1.4.0",
     "langmap": "^0.0.16",
     "language-tags": "^1.0.5",
     "lcm": "^0.0.3",
-    "openapi-types": "^7.2.3",
+    "openapi-types": "^9.1.0",
     "parse-duration": "^1.0.0",
     "postcss": "^7.0.36",
     "type-fest": "^1.2.2"

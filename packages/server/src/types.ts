@@ -1,6 +1,3 @@
-import { DefaultState, ParameterizedContext } from 'koa';
-import * as compose from 'koa-compose';
-
 import { User } from './models';
 import { Mailer } from './utils/email/Mailer';
 
@@ -8,50 +5,51 @@ declare module 'koa' {
   interface Request {
     body: any;
   }
+
+  interface DefaultContext {
+    mailer: Mailer;
+
+    /**
+     * URL parameters from tinyRouter.
+     */
+    params?: Record<string, string>;
+  }
 }
 
-export interface AppsembleContext<P = unknown> {
-  /**
-   * The client the request is from including its scopes
-   */
-  clients?: {
-    app?: { scope: string };
-    cli?: { scope: string };
-  };
+declare module 'koas-security' {
+  interface Clients {
+    app: { scope: string };
+    basic: {};
+    cli: { scope: string };
+    studio: {};
+  }
 
-  mailer: Mailer;
-
-  /**
-   * URL parameters either from Koas or tinyRouter.
-   */
-  params: P;
-
-  /**
-   * The user that is logged in.
-   */
-  user: User;
-
-  /**
-   * The user that is logged in.
-   */
-  users: {
-    /**
-     * The user that is logged in using an app.
-     */
+  interface Users {
     app: User;
-
-    /**
-     * The user that is logged in using client credentials.
-     */
+    basic: User;
     cli: User;
-
-    /**
-     * The user that is logged in using Appsemble studio.
-     */
     studio: User;
-  };
+  }
 }
 
-export type KoaContext<P = unknown> = ParameterizedContext<DefaultState, AppsembleContext<P>>;
-
-export type KoaMiddleware<P = unknown> = compose.Middleware<KoaContext<P>>;
+declare module 'koas-parameters' {
+  interface PathParams {
+    appId: number;
+    appOAuth2SecretId: number;
+    appSamlSecretId: number;
+    assetId: string;
+    blockId: string;
+    blockVersion: string;
+    clientId: string;
+    language: string;
+    memberId: string;
+    organizationId: string;
+    path: string;
+    resourceId: number;
+    resourceType: string;
+    screenshotId: number;
+    snapshotId: number;
+    teamId: string;
+    token: string;
+  }
+}

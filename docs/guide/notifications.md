@@ -100,7 +100,7 @@ pages:
     roles: []
     blocks:
       - type: data-loader
-        version: 0.18.23
+        version: 0.18.24
         actions:
           onLoad:
             type: resource.query
@@ -109,7 +109,7 @@ pages:
           emit:
             data: data
       - type: table
-        version: 0.18.23
+        version: 0.18.24
         parameters:
           fields:
             - name:
@@ -139,7 +139,7 @@ content: Updated person 123
 
 This can be customized by defining an object called `data` with the properties `title` and `content`
 in the notification hook object. The values can be either regular strings if they don’t have to be
-dynamic, or a valid [remapper definition](remappers.md).
+dynamic, or a valid [remapper definition](/docs/reference/remapper).
 
 For example:
 

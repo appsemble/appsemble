@@ -2,6 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { addMilliseconds, isPast } from 'date-fns';
+import { Context } from 'koa';
 import { pick } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
@@ -19,7 +20,6 @@ import {
   transactional,
   User,
 } from '../models';
-import { KoaContext } from '../types';
 import { checkRole } from '../utils/checkRole';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
 import {
@@ -29,12 +29,6 @@ import {
   renameOData,
   verifyResourceBody,
 } from '../utils/resource';
-
-interface Params {
-  appId: number;
-  resourceType: string;
-  resourceId: number;
-}
 
 const specialRoles = new Set([
   '$author',
@@ -65,10 +59,10 @@ function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.Sch
 /**
  * Generate Sequelize filter objects based on ODATA filters present in the request.
  *
- * @param ctx - The KoaContext to extract the parameters from.
+ * @param ctx - The Context to extract the parameters from.
  * @returns An object containing the generated order and query options.
  */
-function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOptions } {
+function generateQuery(ctx: Context): { order: Order; query: WhereOptions } {
   const {
     query: { $filter, $orderby },
   } = ctx;
@@ -115,7 +109,7 @@ function generateQuery(ctx: KoaContext<Params>): { order: Order; query: WhereOpt
  * @returns Query options to filter the resource for the user context.
  */
 async function verifyPermission(
-  ctx: KoaContext,
+  ctx: Context,
   app: App,
   resourceType: string,
   action: 'count' | 'create' | 'delete' | 'get' | 'query' | 'update',
@@ -126,9 +120,9 @@ async function verifyPermission(
 
   const {
     query: { $team },
-    user,
     users,
   } = ctx;
+  const user = ctx.user as User;
 
   if ('studio' in users || 'cli' in users) {
     await (action === 'count' || action === 'get' || action === 'query'
@@ -257,12 +251,12 @@ async function verifyPermission(
   return result.length === 1 ? result[0] : { [Op.or]: result };
 }
 
-export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
+export async function queryResources(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceType },
+    pathParams: { appId, resourceType },
     query: { $select, $top },
-    user,
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -320,11 +314,11 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = response;
 }
 
-export async function countResources(ctx: KoaContext<Params>): Promise<void> {
+export async function countResources(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceType },
-    user,
+    pathParams: { appId, resourceType },
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -362,11 +356,11 @@ export async function countResources(ctx: KoaContext<Params>): Promise<void> {
   ctx.body = count;
 }
 
-export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
+export async function getResourceById(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceId, resourceType },
-    user,
+    pathParams: { appId, resourceId, resourceType },
   } = ctx;
+  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -414,9 +408,9 @@ export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
   };
 }
 
-export async function getResourceTypeSubscription(ctx: KoaContext<Params>): Promise<void> {
+export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceType },
+    pathParams: { appId, resourceType },
     query: { endpoint },
   } = ctx;
 
@@ -486,9 +480,9 @@ export async function getResourceTypeSubscription(ctx: KoaContext<Params>): Prom
   );
 }
 
-export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<void> {
+export async function getResourceSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceId, resourceType },
+    pathParams: { appId, resourceId, resourceType },
     query: { endpoint },
   } = ctx;
 
@@ -532,11 +526,11 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
   ctx.body = result;
 }
 
-export async function createResource(ctx: KoaContext<Params>): Promise<void> {
+export async function createResource(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceType },
-    user,
+    pathParams: { appId, resourceType },
   } = ctx;
+  const user = ctx.user as User;
   const [resource, assets, $expires] = processResourceBody(ctx);
   const action = 'create';
 
@@ -608,11 +602,11 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   processHooks(user, app, createdResource, action);
 }
 
-export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
+export async function updateResource(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceId, resourceType },
-    user,
+    pathParams: { appId, resourceId, resourceType },
   } = ctx;
+  const user = ctx.user as User;
   const [updatedResource, assets, $expires, clonable] = processResourceBody(ctx);
   const action = 'update';
 
@@ -694,11 +688,11 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   processHooks(user, app, resource, action);
 }
 
-export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
+export async function deleteResource(ctx: Context): Promise<void> {
   const {
-    params: { appId, resourceId, resourceType },
-    user,
+    pathParams: { appId, resourceId, resourceType },
   } = ctx;
+  const user = ctx.user as User;
   const action = 'delete';
 
   const app = await App.findByPk(appId, {

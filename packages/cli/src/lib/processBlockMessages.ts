@@ -1,9 +1,9 @@
+import { promises as fs } from 'fs';
 import { basename, join } from 'path';
 
-import { logger } from '@appsemble/node-utils';
+import { logger, readData, writeData } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
-import { ensureDir, readdir, readJSON, writeJSON } from 'fs-extra';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
 
@@ -12,8 +12,8 @@ export async function processBlockMessages(
   languages: string[],
 ): Promise<void> {
   const path = join(config.dir, 'i18n');
-  await ensureDir(path);
-  const dir = await readdir(path);
+  await fs.mkdir(path, { recursive: true });
+  const dir = await fs.readdir(path);
   const { messages } = getBlockConfigFromTypeScript(config);
 
   if (!messages) {
@@ -33,7 +33,7 @@ export async function processBlockMessages(
     const langPath = join(path, name);
 
     if (dir.includes(name)) {
-      const m = await readJSON(langPath);
+      const [m] = await readData<Record<string, string>>(langPath);
       Object.assign(existingMessages, m);
     }
 
@@ -43,7 +43,7 @@ export async function processBlockMessages(
       extraKeys.forEach((key) => delete existingMessages[key]);
     }
 
-    await writeJSON(langPath, existingMessages, { spaces: 2 });
+    await writeData(langPath, existingMessages);
     logger.info(`Wrote to file ‘${langPath}’`);
   }
   logger.info(`Finished extracting messages for ${config.name}.`);

@@ -109,11 +109,10 @@ contains two pages that link to each other by clicking the button created by the
 
 Now lets make the text of the button configurable using the app definition.
 
-```diff
-  button.type = 'button';
-- button.innerText = 'Click me!';
-+ button.innerText = parameters.text || 'Click me!';
-  button.classList.add('button');
+```js copy
+button.type = 'button';
+button.textContent = parameters.text || 'Click me!';
+button.classList.add('button');
 ```
 
 In the app definition, specify the value of the parameter.
@@ -150,32 +149,31 @@ data to dispatched actions. This data is then available ad the `data` object in 
 
 Let’s to a little rewrite of our block.
 
-```diff
-  import { attach } from '@appsemble/sdk';
+```js copy
+import { bootstrap } from '@appsemble/sdk';
 
-  attach(({ actions, data, events, pageParameters, parameters, shadowRoot, utils }) => {
-+   const wrapper = document.createElement('div');
-+   const text = document.createElement('p');
-    const button = document.createElement('button');
-+   text.innerText = data ? `I was linked from ${data.text}` : 'I was loaded without data';
-    button.type = 'button';
-    button.innerText = 'Click me!';
-    button.innerText = parameters.text;
-    button.classList.add('button');
-    button.addEventListener(
-      'click',
-      event => {
-        event.preventDefault();
--       actions.onClick.dispatch();
-+       actions.onClick.dispatch(parameters);
-      },
-      true,
-    );
--   return button;
-+   wrapper.appendChild(text);
-+   wrapper.appendChild(button);
-+   return wrapper;
-  });
+bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, utils }) => {
+  const wrapper = document.createElement('div');
+  const text = document.createElement('p');
+  const button = document.createElement('button');
+  text.textContent = data ? `I was linked from ${data.text}` : 'I was loaded without data';
+  button.type = 'button';
+  button.textContent = 'Click me!';
+  button.textContent = parameters.text;
+  button.classList.add('button');
+  button.addEventListener(
+    'click',
+    (event) => {
+      event.preventDefault();
+      actions.onClick.dispatch(parameters);
+    },
+    true,
+  );
+
+  wrapper.append(text);
+  wrapper.append(button);
+  return wrapper;
+});
 ```
 
 As you can see, the button is now wrapped by a wrapper element. There is also a new text element. If
@@ -188,17 +186,16 @@ between pages.
 Appsemble also injects some utility functions. For example, it is possible to show a message. Let’s
 add a delay and a message when the user is navigating to the other page.
 
-```diff
-  button.addEventListener(
-    'click',
-    event => {
-      event.preventDefault();
--     actions.onClick.dispatch(parameters);
-+     utils.showMessage('Handling click actions in 5 seconds…');
-+     setTimeout(() => actions.onClick.dispatch(parameters), 5000);
-    },
-    true,
-  );
+```ts copy
+button.addEventListener(
+  'click',
+  (event) => {
+    event.preventDefault();
+    utils.showMessage('Handling click actions in 5 seconds…');
+    setTimeout(() => actions.onClick.dispatch(parameters), 5000);
+  },
+  true,
+);
 ```
 
 Blocks may communicate with each other by emitting and listening on events. Let’s modify the event
@@ -210,51 +207,49 @@ app definition.
 
 in `block.ts`:
 
-```diff
-  declare module '@appsemble/sdk' {
-+   interface EventEmitters {
-+     click: {}
-+   }
-+
-+   interface EventListeners {
-+     data: {}
-+   }
+```ts copy
+declare module '@appsemble/sdk' {
+  interface EventEmitters {
+    click: {};
   }
+
+  interface EventListeners {
+    data: {};
+  }
+}
 ```
 
 We’ll also add a listener using `events.on.data()`. This will log the block’s own parameters and the
 data received from the event.
 
-```diff
-  import { attach } from '@appsemble/sdk';
+```js copy filename="index.ts"
+import { bootstrap } from '@appsemble/sdk';
 
-  attach(({ actions, data, events, pageParameters, parameters, shadowRoot, utils }) => {
-    const wrapper = document.createElement('div');
-    const text = document.createElement('p');
-    const button = document.createElement('button');
-    text.innerText = data ? `I was linked from ${data.text}` : 'I was loaded without data';
-    button.type = 'button';
-    button.innerText = 'Click me!';
-    button.innerText = block.parameters.text;
-    button.classList.add('button');
-+   events.on.data(data => {
-+     console.log('My parameters:', parameters);
-+     console.log('Event data:', data);
-+   });
-    button.addEventListener(
-      'click',
-      event => {
-        event.preventDefault();
-+       events.emit.click(parameters);
--       utils.showMessage('Handling click actions in 5 seconds…');
--       setTimeout(() => actions.onClick.dispatch(parameters), 5000);
-      },
-      true,
-    );
-    wrapper.appendChild(text);
-    wrapper.appendChild(button);
-    return wrapper;
+bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, utils }) => {
+  const wrapper = document.createElement('div');
+  const text = document.createElement('p');
+  const button = document.createElement('button');
+  text.textContent = data ? `I was linked from ${data.text}` : 'I was loaded without data';
+  button.type = 'button';
+  button.textContent = 'Click me!';
+  button.textContent = block.parameters.text;
+  button.classList.add('button');
+  events.on.data((d) => {
+    console.log('My parameters:', parameters);
+    console.log('Event data:', d);
   });
+  button.addEventListener(
+    'click',
+    (event) => {
+      event.preventDefault();
+      events.emit.click(parameters);
+    },
+    true,
+  );
+  wrapper.append(text);
+  wrapper.append(button);
+  return wrapper;
+});
 ```
 
 The event will be emitted to all blocks on the page. Go on and add a second `@org/test` block the

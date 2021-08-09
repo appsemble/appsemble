@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs';
 import { join, resolve } from 'path';
 
-import { copy, outputJson, readJson } from 'fs-extra';
+import { readData, writeData } from '@appsemble/node-utils';
+import { copy } from 'fs-extra';
 import { prompt } from 'inquirer';
 import { PackageJson } from 'type-fest';
 
@@ -27,12 +28,12 @@ export async function handler(): Promise<void> {
   const outputPath = join(process.cwd(), 'blocks', answers.name);
   const inputPath = join(templateDir, answers.type);
   const pkgPath = join(inputPath, 'package.json');
-  const inputPkg: PackageJson = await readJson(pkgPath);
+  const [inputPkg] = await readData<PackageJson>(pkgPath);
   const outputPkg = {
     name: `@${answers.organization}/${answers.name}`,
     version,
     ...inputPkg,
   };
   await copy(inputPath, outputPath, { filter: (src) => src !== pkgPath });
-  await outputJson(join(outputPath, 'package.json'), outputPkg, { spaces: 2 });
+  await writeData(join(outputPath, 'package.json'), outputPkg);
 }

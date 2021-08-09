@@ -1,25 +1,52 @@
+import { Context, Middleware } from 'koa';
+import compose from 'koa-compose';
 import { Configuration } from 'webpack';
 
-import { KoaMiddleware } from '../types';
-
-export async function frontend(webpackConfigs: Configuration[]): Promise<KoaMiddleware> {
-  // eslint-disable-next-line node/no-unpublished-import
-  const { default: koaWebpack } = await import('koa-webpack');
-  const { default: webpack } = await import('webpack');
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+export async function frontend(webpackConfigs: Configuration[]): Promise<Middleware> {
+  const { default: webpackDevMiddleware } = await import('webpack-dev-middleware');
+  // eslint-disable-next-line import/no-extraneous-dependencies, node/no-unpublished-import
+  const { default: webpackHotMiddleware } = await import('webpack-hot-middleware');
+  const { HotModuleReplacementPlugin, webpack } = await import('webpack');
+  // eslint-disable-next-line import/no-extraneous-dependencies, node/no-unpublished-import
+  const { default: expressToKoa } = await import('express-to-koa');
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
   // @ts-ignore Because the webpack core config isn’t built when building the server, an error is
   // expected here at build time, but while type checking.
+  // eslint-disable-next-line import/no-extraneous-dependencies
   const { createAppConfig, createStudioConfig } = await import('@appsemble/webpack-core');
   const configApp = createAppConfig({ mode: 'development' });
   const configStudio = createStudioConfig({ mode: 'development' });
-  const compiler = webpack([configApp, configStudio, ...webpackConfigs]);
-  return koaWebpack({
-    compiler,
-    config: null,
-    devMiddleware: {
-      logLevel: 'warn',
-      publicPath: '/',
-      serverSideRender: true,
+  const configs = [configApp, configStudio, ...webpackConfigs];
+  for (const config of configs) {
+    config.plugins.push(new HotModuleReplacementPlugin());
+    const hotName = 'webpack-hot-middleware/client?reload=true';
+    let { entry } = config;
+    if (typeof entry === 'function') {
+      entry = await entry();
+    }
+    if (Array.isArray(entry)) {
+      entry.push(hotName);
+    } else if (typeof entry === 'string') {
+      entry = [entry, hotName];
+    } else if (typeof entry === 'object') {
+      entry['hot-client'] = hotName;
+    }
+    config.entry = entry;
+  }
+  const compiler = webpack(configs);
+  const middleware = webpackDevMiddleware(compiler, { serverSideRender: true });
+  // @ts-expect-error outputFileSystem exists despite what the types say.
+  const fs: import('memfs').IFs = middleware.context.outputFileSystem;
+  const koaDevMiddleware = expressToKoa(middleware);
+  const koaHotMiddleware = expressToKoa(webpackHotMiddleware(compiler));
+
+  return compose<Context>([
+    (ctx, next) => {
+      ctx.fs = fs;
+      return next();
     },
-  });
+    // Bypass the dev server for API requests to speed them up.
+    (ctx, next) => (ctx.path.startsWith('/api') ? next() : koaDevMiddleware(ctx, next)),
+    (ctx, next) => (ctx.path.startsWith('/api') ? next() : koaHotMiddleware(ctx, next)),
+  ]);
 }

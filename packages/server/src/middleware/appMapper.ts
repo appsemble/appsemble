@@ -1,14 +1,11 @@
 import { URL } from 'url';
 
 import isIp from 'is-ip';
+import { Middleware } from 'koa';
 
-import { KoaMiddleware } from '../types';
 import { argv } from '../utils/argv';
 
-export function appMapper(
-  platformMiddleware: KoaMiddleware,
-  appMiddleware: KoaMiddleware,
-): KoaMiddleware {
+export function appMapper(platformMiddleware: Middleware, appMiddleware: Middleware): Middleware {
   return (ctx, next) => {
     const { hostname } = ctx;
 

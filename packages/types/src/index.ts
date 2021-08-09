@@ -198,10 +198,18 @@ export interface Remappers {
    * Supported properties:
    *
    * - `id`: Get the app id.
-   * - `url`: Get the current URL.
-   * - `appUrl`: Get the base URL of the app.
+   * - `url`: Get the base URL of the app.
    */
-  app: 'appUrl' | 'id' | 'url';
+  app: 'id' | 'url';
+
+  /**
+   * Get page metadata.
+   *
+   * Supported properties:
+   *
+   * - `url`: Get the URL of the current page.
+   */
+  page: 'url';
 
   /**
    * Get a property from the context.
@@ -486,11 +494,6 @@ export interface ResourceDefinition {
 
 export interface BaseActionDefinition<T extends Action['type']> {
   /**
-   * The element to use as the base when returning the response data.
-   */
-  base?: string;
-
-  /**
    * The type of the action.
    */
   type: T;
@@ -739,7 +742,6 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
 export type ActionDefinition =
   | BaseActionDefinition<'dialog.error'>
   | BaseActionDefinition<'dialog.ok'>
-  | BaseActionDefinition<'email'>
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
   | BaseActionDefinition<'flow.finish'>
@@ -752,6 +754,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'throw'>
   | ConditionActionDefinition
   | DialogActionDefinition
+  | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition
   | LinkActionDefinition

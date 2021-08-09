@@ -598,7 +598,161 @@ pages:
     expect(response).toMatchObject({
       status: 400,
       data: {
-        message: 'JSON schema validation failed',
+        errors: [
+          {
+            argument: 'OrganizationId',
+            instance: {
+              coreStyle: '',
+            },
+            message: 'requires property "OrganizationId"',
+            name: 'required',
+            path: [],
+            property: 'instance',
+            schema: {
+              properties: {
+                OrganizationId: {
+                  $ref: '#/components/schemas/Organization/properties/id',
+                },
+                coreStyle: {
+                  description: 'The custom style to apply to the core app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                definition: {
+                  $ref: '#/components/schemas/AppDefinition',
+                },
+                domain: {
+                  $ref: '#/components/schemas/App/properties/domain',
+                },
+                icon: {
+                  description: 'The app icon.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                iconBackground: {
+                  description: 'The background color to use for the maskable icon.',
+                  pattern: '^#[\\dA-Fa-f]{6}$',
+                  type: 'string',
+                },
+                longDescription: {
+                  $ref: '#/components/schemas/App/properties/longDescription',
+                },
+                maskableIcon: {
+                  description: 'The app icon.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                path: {
+                  $ref: '#/components/schemas/App/properties/path',
+                },
+                private: {
+                  $ref: '#/components/schemas/App/properties/private',
+                },
+                screenshots: {
+                  description: 'Screenshots to showcase in the store',
+                  items: {
+                    format: 'binary',
+                    type: 'string',
+                  },
+                  type: 'array',
+                },
+                sharedStyle: {
+                  description: 'The custom style to apply to all parts of app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
+                },
+                yaml: {
+                  description: 'The original YAML definition used to define the app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+              },
+              required: ['OrganizationId', 'definition'],
+              type: 'object',
+            },
+            stack: 'instance requires property "OrganizationId"',
+          },
+          {
+            argument: 'definition',
+            instance: {
+              coreStyle: '',
+            },
+            message: 'requires property "definition"',
+            name: 'required',
+            path: [],
+            property: 'instance',
+            schema: {
+              properties: {
+                OrganizationId: {
+                  $ref: '#/components/schemas/Organization/properties/id',
+                },
+                coreStyle: {
+                  description: 'The custom style to apply to the core app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                definition: {
+                  $ref: '#/components/schemas/AppDefinition',
+                },
+                domain: {
+                  $ref: '#/components/schemas/App/properties/domain',
+                },
+                icon: {
+                  description: 'The app icon.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                iconBackground: {
+                  description: 'The background color to use for the maskable icon.',
+                  pattern: '^#[\\dA-Fa-f]{6}$',
+                  type: 'string',
+                },
+                longDescription: {
+                  $ref: '#/components/schemas/App/properties/longDescription',
+                },
+                maskableIcon: {
+                  description: 'The app icon.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                path: {
+                  $ref: '#/components/schemas/App/properties/path',
+                },
+                private: {
+                  $ref: '#/components/schemas/App/properties/private',
+                },
+                screenshots: {
+                  description: 'Screenshots to showcase in the store',
+                  items: {
+                    format: 'binary',
+                    type: 'string',
+                  },
+                  type: 'array',
+                },
+                sharedStyle: {
+                  description: 'The custom style to apply to all parts of app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
+                },
+                yaml: {
+                  description: 'The original YAML definition used to define the app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+              },
+              required: ['OrganizationId', 'definition'],
+              type: 'object',
+            },
+            stack: 'instance requires property "definition"',
+          },
+        ],
+        message: 'Invalid content types found',
       },
     });
   });
@@ -631,13 +785,97 @@ pages:
       data: {
         errors: [
           {
-            code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
-            message: 'Missing required property: OrganizationId',
-            params: ['OrganizationId'],
+            argument: 'OrganizationId',
+            instance: {
+              definition: {
+                defaultPage: 'Test Page',
+                name: 'Test App',
+                pages: [
+                  {
+                    blocks: [
+                      {
+                        type: 'test',
+                        version: '0.0.1',
+                      },
+                    ],
+                    name: 'Test Page',
+                  },
+                ],
+              },
+            },
+            message: 'requires property "OrganizationId"',
+            name: 'required',
             path: [],
+            property: 'instance',
+            schema: {
+              properties: {
+                OrganizationId: {
+                  $ref: '#/components/schemas/Organization/properties/id',
+                },
+                coreStyle: {
+                  description: 'The custom style to apply to the core app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                definition: {
+                  $ref: '#/components/schemas/AppDefinition',
+                },
+                domain: {
+                  $ref: '#/components/schemas/App/properties/domain',
+                },
+                icon: {
+                  description: 'The app icon.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                iconBackground: {
+                  description: 'The background color to use for the maskable icon.',
+                  pattern: '^#[\\dA-Fa-f]{6}$',
+                  type: 'string',
+                },
+                longDescription: {
+                  $ref: '#/components/schemas/App/properties/longDescription',
+                },
+                maskableIcon: {
+                  description: 'The app icon.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                path: {
+                  $ref: '#/components/schemas/App/properties/path',
+                },
+                private: {
+                  $ref: '#/components/schemas/App/properties/private',
+                },
+                screenshots: {
+                  description: 'Screenshots to showcase in the store',
+                  items: {
+                    format: 'binary',
+                    type: 'string',
+                  },
+                  type: 'array',
+                },
+                sharedStyle: {
+                  description: 'The custom style to apply to all parts of app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
+                },
+                yaml: {
+                  description: 'The original YAML definition used to define the app.',
+                  format: 'binary',
+                  type: 'string',
+                },
+              },
+              required: ['OrganizationId', 'definition'],
+              type: 'object',
+            },
+            stack: 'instance requires property "OrganizationId"',
           },
         ],
-        message: 'JSON schema validation failed',
+        message: 'Invalid content types found',
       },
     });
   });
@@ -1203,16 +1441,144 @@ pages:
 
     const appCount = await App.count();
     expect(createdResponse.status).toStrictEqual(400);
-    expect(createdResponse.data).toMatchObject({
-      message: 'JSON schema validation failed',
+    expect(createdResponse.data).toStrictEqual({
       errors: [
         {
-          code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
-          params: ['name'],
-          message: 'Missing required property: name',
+          argument: 'name',
+          instance: {
+            defaultPage: 'Test Page',
+            pages: [
+              {
+                blocks: [
+                  {
+                    type: 'test',
+                    version: '0.0.0',
+                  },
+                ],
+                name: 'Test Page',
+              },
+            ],
+          },
+          message: 'requires property "name"',
+          name: 'required',
           path: ['definition'],
+          property: 'instance.definition',
+          schema: {
+            properties: {
+              anchors: {
+                description: 'Helper property that can be used to store YAML anchors.',
+                items: {},
+                minItems: 1,
+                type: 'array',
+              },
+              cron: {
+                additionalProperties: {
+                  $ref: '#/components/schemas/CronDefinition',
+                },
+                description: 'A list of cron jobs that are associated with this app.',
+                type: 'object',
+              },
+              defaultLanguage: {
+                default: 'en',
+                description: 'The default language for the app.',
+                minLength: 2,
+                type: 'string',
+              },
+              defaultPage: {
+                description: `The name of the page that should be displayed when the app is initially loaded.
+
+This **must** match the name of a page defined for the app.
+`,
+                type: 'string',
+              },
+              description: {
+                description: `A short description describing the app.
+
+This will be displayed on the app store.
+`,
+                maxLength: 80,
+                type: 'string',
+              },
+              layout: {
+                $ref: '#/components/schemas/AppLayoutDefinition',
+                description: 'Properties related to the layout of the app.',
+              },
+              login: {
+                description: 'Where the login and logout buttons should be located.',
+                enum: ['navigation', 'menu', 'hidden'],
+                type: 'string',
+              },
+              name: {
+                description: `The human readable name of the app.
+
+This will be displayed for example on the home screen or in the browser tab.
+`,
+                maxLength: 30,
+                minLength: 1,
+                type: 'string',
+              },
+              notifications: {
+                description: `The strategy to use for apps to subscribe to push notifications.
+
+If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
+app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
+receiving push notifications by pressing the subscribe button in the App settings page. Setting this
+to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+
+> **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
+`,
+                enum: ['opt-in', 'startup'],
+                type: 'string',
+              },
+              pages: {
+                description: 'The pages of the app.',
+                items: {
+                  oneOf: [
+                    {
+                      $ref: '#/components/schemas/PageDefinition',
+                    },
+                    {
+                      $ref: '#/components/schemas/TabsPageDefinition',
+                    },
+                    {
+                      $ref: '#/components/schemas/FlowPageDefinition',
+                    },
+                  ],
+                },
+                minItems: 1,
+                type: 'array',
+              },
+              resources: {
+                $ref: '#/components/schemas/ResourceDefinition',
+                description: 'Resource definitions that may be used by the app.',
+              },
+              roles: {
+                description: `The list of roles that are allowed to view this app.
+
+This list is used as the default roles for the roles property on pages and blocks, which can be
+overridden by defining them for a specific page or block. Note that these roles must be defined in
+\`security.roles\`.
+`,
+                items: {
+                  type: 'string',
+                },
+                type: 'array',
+              },
+              security: {
+                $ref: '#/components/schemas/SecurityDefinition',
+                description: 'Role definitions that may be used by the app.',
+              },
+              theme: {
+                $ref: '#/components/schemas/Theme',
+              },
+            },
+            required: ['name', 'defaultPage', 'pages'],
+            type: 'object',
+          },
+          stack: 'instance.definition requires property "name"',
         },
       ],
+      message: 'Invalid content types found',
     });
     expect(appCount).toStrictEqual(0);
   });
