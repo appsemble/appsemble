@@ -20,7 +20,8 @@ const query: OpenAPIV3.NonArraySchemaObject = {
 const referenceAction: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   additionalProperties: false,
-  description: 'XXX',
+  // XXX
+  description: 'To be documented.',
   properties: {
     trigger: {
       type: 'array',
@@ -61,12 +62,12 @@ Example: 1d 8h 30m
         type: 'object',
         description: `References to other resources.
 
-The key if the property that references the other resource.
-The value is an object describing the name of the resource and how it should behave.
+The key is the property that references the other resource. The value is an object describing the
+name of the resource and how it should behave.
 `,
         additionalProperties: {
           type: 'object',
-          description: 'XXX',
+          description: 'A reference to between two resource types.',
           additionalProperties: false,
           properties: {
             resource: { type: 'string' },
