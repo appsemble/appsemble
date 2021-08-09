@@ -24,7 +24,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^9.0.9",
     "@appsemble/react-components": "0.18.24",
     "@appsemble/sdk": "0.18.24",
     "@appsemble/types": "0.18.24",
