@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { logger, writeData } from '@appsemble/node-utils';
 import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
 import { rm } from 'fs-extra';
-import webpack, { compilation, Configuration } from 'webpack';
+import { Configuration, MultiStats, webpack } from 'webpack';
 import { Argv } from 'yargs';
 
 export const command = 'build';
@@ -54,7 +54,7 @@ export async function handler({ app, appStats, studio, studioStats }: Args): Pro
     configurations.push(studioConfig);
   }
   const compiler = webpack(configurations);
-  const result = await new Promise<compilation.MultiStats>((resolvePromise, reject) => {
+  const result = await new Promise<MultiStats>((resolvePromise, reject) => {
     compiler.run((error, stats) => {
       if (error) {
         reject(error);

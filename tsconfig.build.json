@@ -10,6 +10,8 @@
     "module": "es2020",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    // Don’t fail on type errors inside third party libraries.
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "strictFunctionTypes": false,

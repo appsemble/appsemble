@@ -9,7 +9,7 @@ import { getBlockConfig } from '../../lib/getBlockConfig';
 import { publishBlock } from '../../lib/publishBlock';
 import { BaseArguments } from '../../types';
 
-interface BuildBlockArguments extends BaseArguments {
+interface PublishBlockArguments extends BaseArguments {
   paths: string[];
   build: boolean;
   ignoreConflict: boolean;
@@ -41,7 +41,7 @@ export async function handler({
   ignoreConflict,
   paths,
   remote,
-}: BuildBlockArguments): Promise<void> {
+}: PublishBlockArguments): Promise<void> {
   await authenticate(remote, 'blocks:write', clientCredentials);
 
   const normalizedPaths = paths.map((path) => normalizePath(path));

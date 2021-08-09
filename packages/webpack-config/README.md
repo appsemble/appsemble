@@ -54,8 +54,11 @@ const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 module.exports = (blockConfig, options) => {
   const config = createConfig(blockConfig, options);
 
-  // Example modification
+  // Add a plugin for example
   config.plugins.push(new ImageMinimizerPlugin());
+
+  // Or configure a fallback
+  config.resolve.alias.fallback.fs = false;
 
   return config;
 };

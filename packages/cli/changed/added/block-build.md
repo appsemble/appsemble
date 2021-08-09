@@ -1,0 +1,1 @@
+Add `block build` command.
