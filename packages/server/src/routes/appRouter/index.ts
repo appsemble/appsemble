@@ -1,9 +1,15 @@
+import { dirname } from 'path';
+
 import { noop, partialNormalized, partialSemver } from '@appsemble/utils';
+import faPkg from '@fortawesome/fontawesome-free/package.json';
+import mount from 'koa-mount';
+import serve from 'koa-static';
 
 import { tinyRouter } from '../../middleware/tinyRouter';
 import { staticHandler } from '../static';
 import { blockAssetHandler } from './blockAssetHandler';
 import { blockCSSHandler } from './blockCSSHandler';
+import { bulmaHandler } from './bulmaHandler';
 import { cssHandler } from './cssHandler';
 import { iconHandler } from './iconHandler';
 import { indexHandler } from './indexHandler';
@@ -35,6 +41,17 @@ export const appRouter = tinyRouter([
       `^/api/blocks/${blockName}/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
     ),
     get: blockAssetHandler,
+  },
+  {
+    route: /^\/bulma/,
+    get: bulmaHandler,
+  },
+  {
+    route: /^\/fa\//,
+    get: mount(
+      `/fa/${faPkg.version}`,
+      serve(dirname(require.resolve('@fortawesome/fontawesome-free/package.json'))),
+    ),
   },
   {
     route: '/core.css',

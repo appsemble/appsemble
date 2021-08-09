@@ -127,6 +127,14 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           ],
         },
         {
+          test: /\.s[ac]ss/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            { loader: 'css-loader', options: { importLoaders: 1 } },
+            'sass-loader',
+          ],
+        },
+        {
           test: /\.mdx?$/,
           use: [
             {
