@@ -48,7 +48,7 @@ Example: 1d 8h 30m
           .source,
     },
     schema: {
-      $ref: '#/components/schemas/JSONSchemaObject',
+      $ref: '#/components/schemas/JSONSchemaRoot',
       description: 'JSON schema definitions that may be used by the app.',
     },
     references: {

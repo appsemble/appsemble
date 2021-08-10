@@ -67,12 +67,5 @@ If true, the object may have **any** type of additional properties. This is **no
         },
       ],
     },
-    definitions: {
-      description:
-        'This property may be used to store JSON schemas that may be referenced from other places.',
-      additionalProperties: {
-        $ref: '#/components/schemas/JSONSchema',
-      },
-    },
   },
 });

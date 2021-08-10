@@ -35,6 +35,7 @@ export * from './JSONSchemaNull';
 export * from './JSONSchemaNumber';
 export * from './JSONSchemaObject';
 export * from './JSONSchemaOneOf';
+export * from './JSONSchemaRoot';
 export * from './JSONSchemaString';
 export * from './JSONSchema';
 export * from './LinkActionDefinition';
