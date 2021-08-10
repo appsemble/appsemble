@@ -3,6 +3,7 @@ import { OpenAPIV3 } from 'openapi-types';
 export const NotificationHookDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The strategy used to notify users.',
+  additionalProperties: false,
   properties: {
     to: {
       type: 'array',
@@ -16,7 +17,6 @@ Aside from roles, \`$author\` can also be used to notify the author of the resou
       },
     },
     subscribe: {
-      type: 'string',
       description: `If set, allows users to manually subscribe for notifications for this resource regardless of roles.
 
 The following values are allowed:

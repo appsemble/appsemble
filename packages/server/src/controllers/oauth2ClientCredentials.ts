@@ -64,7 +64,7 @@ export async function listOAuth2ClientCredentials(ctx: Context): Promise<void> {
 
 export async function deleteOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {
-    params: { clientId },
+    pathParams: { clientId },
   } = ctx;
   const user = ctx.user as User;
 

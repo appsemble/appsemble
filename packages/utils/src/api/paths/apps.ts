@@ -25,7 +25,7 @@ export const paths: OpenAPIV3.PathsObject = {
               required: ['OrganizationId', 'definition'],
               properties: {
                 definition: {
-                  $ref: '#/components/schemas/App/properties/definition',
+                  $ref: '#/components/schemas/AppDefinition',
                 },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
@@ -48,7 +48,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   description: 'The original YAML definition used to define the app.',
                 },
                 OrganizationId: {
-                  $ref: '#/components/schemas/App/properties/OrganizationId',
+                  $ref: '#/components/schemas/Organization/properties/id',
                 },
                 icon: {
                   type: 'string',
@@ -200,7 +200,7 @@ export const paths: OpenAPIV3.PathsObject = {
               type: 'object',
               properties: {
                 definition: {
-                  $ref: '#/components/schemas/App/properties/definition',
+                  $ref: '#/components/schemas/AppDefinition',
                 },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
@@ -492,7 +492,7 @@ export const paths: OpenAPIV3.PathsObject = {
         in: 'path',
         description: 'The ID of the member on which to perform an operation',
         required: true,
-        schema: { $ref: '#/components/schemas/Member/properties/id' },
+        schema: { $ref: '#/components/schemas/User/properties/id' },
       },
     ],
     get: {
@@ -727,6 +727,7 @@ export const paths: OpenAPIV3.PathsObject = {
     },
   },
   '/api/apps/{appId}/screenshots': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['app'],
       description: 'Add one or multiple screenshots of an app.',

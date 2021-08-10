@@ -67,7 +67,12 @@
     "concat-stream": "^2.0.0"
   },
   "peerDependencies": {
-    "webpack": "^4"
+    "webpack": "^5"
+  },
+  "peerDependenciesMeta": {
+    "webpack": {
+      "optional": true
+    }
   },
   "optionalDependencies": {
     "keytar": "^7.7.0"

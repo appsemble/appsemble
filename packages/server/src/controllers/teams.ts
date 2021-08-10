@@ -7,7 +7,7 @@ import { checkRole } from '../utils/checkRole';
 
 async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
   const {
-    params: { teamId },
+    pathParams: { teamId },
   } = ctx;
   const user = ctx.user as User;
   const teamMember =
@@ -23,7 +23,7 @@ async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
 
 export async function createTeam(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { name },
     },
@@ -55,7 +55,7 @@ export async function createTeam(ctx: Context): Promise<void> {
 
 export async function getTeam(ctx: Context): Promise<void> {
   const {
-    params: { appId, teamId },
+    pathParams: { appId, teamId },
   } = ctx;
   const user = ctx.user as User;
 
@@ -78,7 +78,7 @@ export async function getTeam(ctx: Context): Promise<void> {
 
 export async function getTeams(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
   } = ctx;
   const user = ctx.user as User;
 
@@ -106,7 +106,7 @@ export async function getTeams(ctx: Context): Promise<void> {
 
 export async function updateTeam(ctx: Context): Promise<void> {
   const {
-    params: { appId, teamId },
+    pathParams: { appId, teamId },
     request: {
       body: { annotations, name },
     },
@@ -138,7 +138,7 @@ export async function updateTeam(ctx: Context): Promise<void> {
 
 export async function deleteTeam(ctx: Context): Promise<void> {
   const {
-    params: { appId, teamId },
+    pathParams: { appId, teamId },
   } = ctx;
   const user = ctx.user as User;
 
@@ -160,7 +160,7 @@ export async function deleteTeam(ctx: Context): Promise<void> {
 
 export async function getTeamMembers(ctx: Context): Promise<void> {
   const {
-    params: { appId, teamId },
+    pathParams: { appId, teamId },
   } = ctx;
 
   const team = await Team.findOne({
@@ -183,7 +183,7 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
 export async function addTeamMember(ctx: Context): Promise<void> {
   const {
     clients,
-    params: { appId, teamId },
+    pathParams: { appId, teamId },
     request: {
       body: { id },
     },
@@ -245,7 +245,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
 
 export async function removeTeamMember(ctx: Context): Promise<void> {
   const {
-    params: { appId, memberId, teamId },
+    pathParams: { appId, memberId, teamId },
   } = ctx;
 
   const team = await Team.findOne({
@@ -275,7 +275,7 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
 
 export async function updateTeamMember(ctx: Context): Promise<void> {
   const {
-    params: { appId, memberId, teamId },
+    pathParams: { appId, memberId, teamId },
     request: {
       body: { role },
     },

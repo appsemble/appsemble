@@ -49,10 +49,7 @@ describe('readData', () => {
 
   it('should throw an Appsemble error if the file can’t be parsed', async () => {
     const path = resolveFixture('invalid-json.json');
-    await expect(readData(path)).rejects.toThrow(
-      new AppsembleError(`Error parsing ${path}
-Unexpected token / in JSON at position 4`),
-    );
+    await expect(readData(path)).rejects.toThrow(AppsembleError);
   });
 });
 

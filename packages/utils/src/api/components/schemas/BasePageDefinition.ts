@@ -2,7 +2,8 @@ import { OpenAPIV3 } from 'openapi-types';
 
 export const BasePageDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
-  additionalProperties: true,
+  additionalProperties: false,
+  required: ['name'],
   properties: {
     name: {
       type: 'string',

@@ -6,6 +6,7 @@ export const OAuth2ClientCredentials: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'OAuth2 client credentials',
   required: ['description', 'scopes'],
+  additionalProperties: false,
   properties: {
     id: {
       type: 'string',

@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 
-import { conflict, notAcceptable, notFound } from '@hapi/boom';
+import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import { Context } from 'koa';
 import { literal } from 'sequelize';
@@ -209,7 +209,12 @@ export function refreshToken(ctx: Context): void {
   const {
     request: { body },
   } = ctx;
-  const { sub } = verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload;
+  let sub: string;
+  try {
+    ({ sub } = verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload);
+  } catch {
+    throw unauthorized('Invalid refresh token');
+  }
 
   ctx.body = createJWTResponse(sub);
 }

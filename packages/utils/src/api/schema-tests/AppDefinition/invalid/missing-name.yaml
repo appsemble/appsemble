@@ -1,0 +1,7 @@
+defaultPage: Test Page
+
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 1.2.3

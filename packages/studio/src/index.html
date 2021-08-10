@@ -5,8 +5,6 @@
     <meta name="viewport" content="initial-scale=1,minimum-scale=1,width=device-width" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <title>Appsemble</title>
-    <link rel="stylesheet" href="<%= faURL %>" />
-    <link rel="stylesheet" href="<%= bulmaURL %>" />
     <script nonce="{{{ nonce }}}">
       window.addEventListener('load', function () {
         if (!window.appsembleHasLoaded) {
@@ -39,9 +37,10 @@
           </header>
         </div>
         <div class="content section">
-          <h3>Your browser is not supported.</h3>
-          <p>Appsemble is built using the latest web technology. This requires a modern browser.</p>
-          <p>Please upgrade your browser to use Appsemble.</p>
+          <h3>Error loading Appsemble</h3>
+          <p>There was a problem loading Appsemble. This is most likely caused by an unstable internet connection. Please try again later.</p>
+          <p>Another cause can be that your browser is unsupported. Appsemble is built using the latest web technology. This requires a modern browser.</p>
+          <p>Please make sure you’re using the latest version of one of the following browsers to use Appsemble.</p>
           <div class="browsers">
             <div class="browser-logo">
               <a href="https://www.google.com/chrome" rel="noopener noreferrer" target="_blank">

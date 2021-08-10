@@ -1,0 +1,111 @@
+# yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/AppDefinition
+name: Test App
+defaultPage: Test Page
+defaultLanguage: en
+description: A description of the app
+notifications: opt-in
+
+layout:
+  login: navbar
+  settings: navbar
+  feedback: navigation
+  navigation: left-menu
+
+theme:
+  dangerColor: '#ff0000'
+  primaryColor: '#fe87f0'
+  successColor: '#dfd48a'
+  infoColor: '#b21a98'
+  linkColor: '#ba30f8'
+  splashColor: '#aedbfe'
+  themeColor: '#324809'
+  warningColor: '#ffff00'
+  tileLayer: 'https://example.com'
+
+resources:
+  test:
+    id: id
+    expires: 1d
+    count:
+      method: GET
+      url: /api/apps/{appId}/{resource}
+      query:
+        foo: bar
+      roles:
+        - User
+    create:
+      method: POST
+      url: /api/apps/{appId/{resource}/{id}}
+      query:
+        foo: bar
+      roles:
+        - Admin
+    delete:
+      method: DELETE
+      url: /api/apps/{appId/{resource}/{id}}
+      query:
+        foo: bar
+      roles:
+        - Admin
+    get:
+      method: GET
+      url: /api/apps/{appId}/{resource}/{id}
+      query:
+        foo: bar
+      roles:
+        - User
+    query:
+      method: GET
+      url: /api/apps/{appId}/{resource}
+      query:
+        foo: bar
+      roles:
+        - User
+    update:
+      method: PUT
+      url: /api/apps/{appId}/{resource}/{id}
+      query:
+        foo: bar
+      roles:
+        - Admin
+    references:
+      foo:
+        create:
+          trigger:
+            - create
+        update:
+          trigger:
+            - update
+        delete:
+          trigger:
+            - delete
+
+security:
+  default:
+    policy: everyone
+    role: User
+  roles:
+    User:
+      defaultPage: Test Page
+      description: A normal user
+    Admin:
+      inherits:
+        - User
+
+anchors:
+  - test
+
+roles:
+  - User
+
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 1.2.3
+
+cron:
+  foo:
+    schedule: '5 4 * * *'
+    action:
+      type: log

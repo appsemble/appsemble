@@ -474,8 +474,8 @@ complex apps require more features than creating and viewing resources. The foll
 continue on the result of the app created in this guide:
 
 - [Resources](resources.md)
-- [Remappers](remappers.md)
 - [Security](security.md)
 - [Notifications](notifications.md)
 - [Theming](theming.md)
 - [DNS](dns.md)
+- [Reference documentation](/docs/reference)

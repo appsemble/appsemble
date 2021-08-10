@@ -19,6 +19,7 @@ interface CreateAppArguments extends BaseArguments {
   private: boolean;
   template: boolean;
   dryRun: boolean;
+  resources: boolean;
 }
 
 export const command = 'create <paths...>';
@@ -62,6 +63,12 @@ export function builder(yargs: Argv): Argv {
       describe: 'Whether the API should be called to run without actually creating the app.',
       default: false,
       type: 'boolean',
+    })
+    .option('resources', {
+      describe:
+        'Whether the resources from the `resources` directory should be created after creating the app. The names of subdirectories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
+      default: false,
+      type: 'boolean',
     });
 }
 
@@ -76,6 +83,7 @@ export async function handler({
   paths,
   private: isPrivate,
   remote,
+  resources,
   template,
 }: CreateAppArguments): Promise<void> {
   const normalizedPaths = paths.map((path) => normalizePath(path));
@@ -96,6 +104,7 @@ export async function handler({
       remote,
       template,
       dryRun,
+      resources,
     });
   }
 }

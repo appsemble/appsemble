@@ -10,7 +10,7 @@ import { sendNotification } from '../utils/sendNotification';
 
 export async function getSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     query: { endpoint },
   } = ctx;
 
@@ -73,7 +73,7 @@ export async function getSubscription(ctx: Context): Promise<void> {
 
 export async function addSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { endpoint, keys },
     },
@@ -97,7 +97,7 @@ export async function addSubscription(ctx: Context): Promise<void> {
 
 export async function updateSubscription(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { action, endpoint, resource, resourceId, value },
     },
@@ -181,7 +181,7 @@ export async function updateSubscription(ctx: Context): Promise<void> {
 
 export async function broadcast(ctx: Context): Promise<void> {
   const {
-    params: { appId },
+    pathParams: { appId },
     request: {
       body: { body, title },
     },

@@ -224,3 +224,31 @@ describe('removeEmail', () => {
     });
   });
 });
+
+describe('refreshToken', () => {
+  it('should generate a new access token', async () => {
+    const tokens = authorizeStudio();
+    const response = await request.post('/api/refresh', { refresh_token: tokens.refresh_token });
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        access_token: expect.any(String),
+        expires_in: 3600,
+        refresh_token: expect.any(String),
+        token_type: 'bearer',
+      },
+    });
+  });
+
+  it('should return unauthorized if the refresh token can’t be verified', async () => {
+    const response = await request.post('/api/refresh', { refresh_token: 'invalid' });
+    expect(response).toMatchObject({
+      status: 401,
+      data: {
+        error: 'Unauthorized',
+        message: 'Invalid refresh token',
+        statusCode: 401,
+      },
+    });
+  });
+});

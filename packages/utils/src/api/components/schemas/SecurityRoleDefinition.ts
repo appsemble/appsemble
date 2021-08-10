@@ -2,6 +2,8 @@ import { OpenAPIV3 } from 'openapi-types';
 
 export const SecurityRoleDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
+  description: 'This describes a security role.',
+  additionalProperties: false,
   properties: {
     description: {
       type: 'string',

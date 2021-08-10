@@ -1,13 +1,16 @@
-import { createReadStream, promises as fs, ReadStream } from 'fs';
+import { createReadStream, existsSync, promises as fs, ReadStream } from 'fs';
+import { join, parse } from 'path';
 import { URL } from 'url';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, readData } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
+import { readdir } from 'fs-extra';
 
 import { AppsembleContext } from '../types';
 import { authenticate } from './authentication';
+import { createResource } from './createResource';
 import { traverseAppDirectory } from './traverseAppDirectory';
 import { traverseBlockThemes } from './traverseBlockThemes';
 import { uploadMessages } from './uploadMessages';
@@ -67,6 +70,11 @@ interface CreateAppParams {
    * Whether the API should be called with a dry run.
    */
   dryRun: boolean;
+
+  /**
+   * Whether resources from the `resources` directory should be created after creating the app.
+   */
+  resources: boolean;
 }
 
 /**
@@ -79,6 +87,7 @@ export async function createApp({
   context,
   dryRun,
   path,
+  resources,
   ...options
 }: CreateAppParams): Promise<void> {
   const file = await fs.stat(path);
@@ -127,7 +136,11 @@ export async function createApp({
     formData.append('icon', realIcon);
   }
 
-  await authenticate(remote, 'apps:write', clientCredentials);
+  await authenticate(
+    remote,
+    resources ? 'apps:write resources:write' : 'apps:write',
+    clientCredentials,
+  );
   const { data } = await axios.post('/api/apps', formData, { baseURL: remote, params: { dryRun } });
 
   if (dryRun) {
@@ -140,6 +153,40 @@ export async function createApp({
     // After uploading the app, upload block styles and messages if they are available
     await traverseBlockThemes(path, data.id, remote, false);
     await uploadMessages(path, data.id, remote, false);
+
+    if (resources && existsSync(join(path, 'resources'))) {
+      const resourcePath = join(path, 'resources');
+      try {
+        const resourceFiles = await fs.readdir(resourcePath, { withFileTypes: true });
+        for (const resource of resourceFiles) {
+          if (resource.isFile()) {
+            const { name } = parse(resource.name);
+            await createResource({
+              appId: data.id,
+              path: join(resourcePath, resource.name),
+              remote,
+              resourceName: name,
+            });
+          } else if (resource.isDirectory()) {
+            const subDirectoryResources = await readdir(join(resourcePath, resource.name), {
+              withFileTypes: true,
+            });
+
+            for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
+              await createResource({
+                appId: data.id,
+                path: join(resourcePath, resource.name, subResource.name),
+                remote,
+                resourceName: resource.name,
+              });
+            }
+          }
+        }
+      } catch (error: unknown) {
+        logger.error('Something went wrong when creating resources:');
+        logger.error(error);
+      }
+    }
   }
 
   const { host, protocol } = new URL(remote);

@@ -87,12 +87,10 @@
       </noscript>
       <script id="legacy-browser-support" type="text/x-template">
         <div class="content section">
-          <h3>Your browser is not supported.</h3>
-          <p>
-            {{ app.definition.name }} is built using the latest web technology. This requires a
-            modern browser.
-          </p>
-          <p>Please upgrade your browser to use {{ app.definition.name }}.</p>
+          <h3>Error loading {{ app.definition.name }}</h3>
+          <p>There was a problem loading {{ app.definition.name }}. This is most likely caused by an unstable internet connection. Please try again later.</p>
+          <p>Another cause can be that your browser is unsupported. {{ app.definition.name }} is built using the latest web technology. This requires a modern browser.</p>
+          <p>Please make sure you’re using the latest version of one of the following browsers to use {{ app.definition.name }}.</p>
           <div class="browsers">
             <div class="browser-logo">
               <a href="https://www.google.com/chrome" rel="noopener noreferrer" target="_blank">

@@ -12,6 +12,8 @@ export const resource: OpenAPIV3.RequestBodyObject = {
       schema: {
         type: 'object',
         required: ['resource'],
+        description: 'A `multipart/form-data` representation of a resource.',
+        additionalProperties: false,
         properties: {
           resource: { $ref: '#/components/schemas/Resource' },
           assets: {

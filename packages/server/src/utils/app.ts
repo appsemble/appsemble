@@ -112,8 +112,14 @@ export async function getRemapperContext(
   const cache = objectCache(
     (message) => new IntlMessageFormat(message, language, undefined, { formatters }),
   );
+  const url = new URL(argv.host);
+  url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+  const appUrl = String(url);
+
   return {
     appId: app.id,
+    appUrl,
+    url: appUrl,
     getMessage({ defaultMessage, id }) {
       const msg = appMessages.find(({ messages }) => has(messages.messageIds, id));
       const message = msg ? msg.messages.messageIds[id] : defaultMessage;

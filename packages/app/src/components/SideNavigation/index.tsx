@@ -36,7 +36,14 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
             defaultMessage: page.name,
           }).format() as string;
           const navName = page.navTitle
-            ? remap(page.navTitle, null, { appId, getMessage, userInfo, context: { name } })
+            ? remap(page.navTitle, null, {
+                appId,
+                appUrl: window.location.origin,
+                url: window.location.href,
+                getMessage,
+                userInfo,
+                context: { name },
+              })
             : name;
 
           return (
