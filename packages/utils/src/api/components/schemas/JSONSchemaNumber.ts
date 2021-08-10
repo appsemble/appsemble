@@ -12,6 +12,13 @@ export const JSONSchemaNumber = extendJSONSchema(BaseJSONSchema, {
       description:
         'The type of the JSON schema. A number represents a number which has fractions. For fractionless numbers, use `integer` instead.',
     },
+    enum: {
+      type: 'array',
+      description: 'If an enum is specified, the type can be safely removed.',
+      items: {
+        type: 'number',
+      },
+    },
     example: {
       type: 'number',
       description: 'An example number which is valid according to this schema.',
