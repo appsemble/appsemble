@@ -25,6 +25,7 @@ export * from './FlowPageDefinition';
 export * from './FlowToActionDefinition';
 export * from './Health';
 export * from './JSONPointer';
+export * from './JSONSchemaAnyOf';
 export * from './JSONSchemaArray';
 export * from './JSONSchemaBoolean';
 export * from './JSONSchemaConst';

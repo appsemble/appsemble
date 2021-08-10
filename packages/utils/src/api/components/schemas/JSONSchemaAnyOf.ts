@@ -1,16 +1,16 @@
 import { BaseJSONSchema } from './BaseJSONSchema';
 import { extendJSONSchema } from './utils';
 
-export const JSONSchemaOneOf = extendJSONSchema(BaseJSONSchema, {
+export const JSONSchemaAnyOf = extendJSONSchema(BaseJSONSchema, {
   type: 'object',
   description:
-    'A JSON schema which determines the value must match exactly one of the given schemas.',
+    'A JSON schema which determines the value must match one or more of the given schemas.',
   additionalProperties: false,
   required: ['oneOf'],
   properties: {
-    oneOf: {
+    anyOf: {
       type: 'array',
-      description: 'The JSON schema must match exactly one of the given schemas.',
+      description: 'The JSON schema must match one or more of the given schemas.',
       items: {
         $ref: '#/components/schemas/JSONSchema',
       },
@@ -20,6 +20,11 @@ export const JSONSchemaOneOf = extendJSONSchema(BaseJSONSchema, {
     },
     default: {
       description: 'The default value which is used if no value is supplied.',
+    },
+    format: {
+      type: 'string',
+      description: 'This property is allowed because of the way we support JSON schemas in the CLI',
+      deprecated: true,
     },
   },
 });
