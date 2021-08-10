@@ -51,6 +51,7 @@
   "react-components.src.MessagesProvider.dismiss": "Nachricht schließen",
   "react-components.src.SentryForm.commentsHelp": "Bitte helfen Sie uns, indem sie beschreiben was schief gelaufen ist",
   "react-components.src.SentryForm.commentsLabel": "Kommentare",
+  "react-components.src.SentryForm.disclaimer": "",
   "react-components.src.SentryForm.emailHelp": "Wir können Sie per E-Mail zu diesem Problem kontaktieren",
   "react-components.src.SentryForm.emailLabel": "E-Mail",
   "react-components.src.SentryForm.nameHelp": "Ihr Name wird für die persönliche Kommunikation verwendet",
