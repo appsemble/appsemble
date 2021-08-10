@@ -1,18 +1,19 @@
 describe('Notes', () => {
-  let cached = false;
-
   beforeEach(() => {
-    cy.visitApp(cached, 'notes', {
+    const { host, protocol } = new URL(Cypress.config().baseUrl);
+    const url = `${protocol}//notes.appsemble.${host}`;
+
+    cy.visit(url, {
       onBeforeLoad: (window) => {
         window.localStorage.clear();
       },
     });
-    cached = true;
   });
 
   it('should create a new note and view it', () => {
     const date = Date.now();
     cy.loginApp();
+    cy.waitForAppLoaded();
     cy.get('.button.is-rounded', { includeShadowDom: true }).click();
     cy.get('#title', { includeShadowDom: true }).type(`Title ${date}`);
     cy.get('#body', { includeShadowDom: true }).type(`Body ${date}`, { force: true });
