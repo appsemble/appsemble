@@ -198,8 +198,18 @@ export interface Remappers {
    * Supported properties:
    *
    * - `id`: Get the app id.
+   * - `url`: Get the base URL of the app.
    */
-  app: 'id';
+  app: 'id' | 'url';
+
+  /**
+   * Get page metadata.
+   *
+   * Supported properties:
+   *
+   * - `url`: Get the URL of the current page.
+   */
+  page: 'url';
 
   /**
    * Get a property from the context.
