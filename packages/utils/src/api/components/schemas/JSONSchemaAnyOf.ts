@@ -6,7 +6,7 @@ export const JSONSchemaAnyOf = extendJSONSchema(BaseJSONSchema, {
   description:
     'A JSON schema which determines the value must match one or more of the given schemas.',
   additionalProperties: false,
-  required: ['oneOf'],
+  required: ['anyOf'],
   properties: {
     anyOf: {
       type: 'array',
