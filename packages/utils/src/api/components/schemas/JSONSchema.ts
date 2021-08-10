@@ -14,6 +14,7 @@ export const JSONSchema: OpenAPIV3.NonArraySchemaObject = {
     { $ref: '#/components/schemas/JSONSchemaNumber' },
     { $ref: '#/components/schemas/JSONSchemaObject' },
     { $ref: '#/components/schemas/JSONSchemaOneOf' },
+    { $ref: '#/components/schemas/JSONSchemaRemapper' },
     { $ref: '#/components/schemas/JSONSchemaString' },
   ],
 };

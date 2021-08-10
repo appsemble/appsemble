@@ -19,6 +19,17 @@ export const JSONSchemaInteger = extendJSONSchema(BaseJSONSchema, {
       type: 'integer',
       description: 'The default value which is used if no value is supplied.',
     },
+    enum: {
+      type: 'array',
+      description: 'If an enum is specified, the type can be safely removed.',
+      items: {
+        type: 'integer',
+      },
+    },
+    const: {
+      type: 'integer',
+      description: 'If const is specified, the type can be safely removed.',
+    },
     minimum: {
       type: 'integer',
       description: 'The minimum value of the number.',

@@ -13,5 +13,8 @@ export const JSONPointer = extendJSONSchema(BaseJSONSchema, {
       pattern: /^#\/definitions\//.source,
       example: '#/definitions/MyReusableSchema',
     },
+    default: {
+      description: 'The default value that will be used.',
+    },
   },
 });

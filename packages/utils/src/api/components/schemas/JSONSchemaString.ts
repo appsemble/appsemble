@@ -12,12 +12,24 @@ export const JSONSchemaString = extendJSONSchema(BaseJSONSchema, {
       description:
         'The type of the JSON schema. A string is the technical term for a piece of text.',
     },
+    example: {
+      type: 'string',
+      description: 'An example string which is valid according to this schema.',
+    },
+    default: {
+      type: 'string',
+      description: 'The default value which is used if no value is supplied.',
+    },
     enum: {
       type: 'array',
       description: 'If an enum is specified, the type can be safely removed.',
       items: {
         type: 'string',
       },
+    },
+    const: {
+      type: 'string',
+      description: 'If const is specified, the type can be safely removed.',
     },
     format: {
       // https://json-schema.org/understanding-json-schema/reference/string.html#built-in-formats
@@ -58,6 +70,9 @@ export const JSONSchemaString = extendJSONSchema(BaseJSONSchema, {
         'regex',
 
         // Custom
+        'action',
+        'event-emitter',
+        'event-listener',
         'fontawesome',
       ],
       description: 'The format values should adhere to.',

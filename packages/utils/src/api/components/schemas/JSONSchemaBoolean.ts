@@ -19,5 +19,16 @@ export const JSONSchemaBoolean = extendJSONSchema(BaseJSONSchema, {
       type: 'boolean',
       description: 'The default value which is used if no value is supplied.',
     },
+    enum: {
+      type: 'array',
+      description: 'If an enum is specified, the type can be safely removed.',
+      items: {
+        type: 'boolean',
+      },
+    },
+    const: {
+      type: 'boolean',
+      description: 'If const is specified, the type can be safely removed.',
+    },
   },
 });

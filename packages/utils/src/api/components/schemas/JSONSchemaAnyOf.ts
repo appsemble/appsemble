@@ -21,10 +21,5 @@ export const JSONSchemaAnyOf = extendJSONSchema(BaseJSONSchema, {
     default: {
       description: 'The default value which is used if no value is supplied.',
     },
-    format: {
-      type: 'string',
-      description: 'This property is allowed because of the way we support JSON schemas in the CLI',
-      deprecated: true,
-    },
   },
 });

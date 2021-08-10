@@ -49,7 +49,7 @@ export interface Dropdown {
     /**
      * The list of options to display. Must have at least 1 option.
      *
-     * @minimum 1
+     * @minItems 1
      */
     options: DropdownOption[];
   };
