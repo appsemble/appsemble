@@ -166,6 +166,37 @@ describe('checkBlocks', () => {
     });
   });
 
+  it('should validate wildcard actions in @appsemble/html', () => {
+    expect(() =>
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'html',
+            version: '1.2.3',
+            actions: { onClick: { type: 'noop' }, onTap: { type: 'noop' } },
+            parameters: {
+              content:
+                '<button data-click="onClick">Test button</button><a data-click="onTap">Test link</a>',
+            },
+          },
+        },
+        [
+          {
+            name: '@appsemble/html',
+            version: '1.2.3',
+            files: [],
+            actions: { $any: {} },
+            languages: null,
+            parameters: {
+              type: 'object',
+              properties: { customAction: { type: 'string', format: 'action' } },
+            },
+          },
+        ],
+      ),
+    ).not.toThrow();
+  });
+
   it('should throw if a block doesn’t support actions', () => {
     let error: AppsembleValidationError;
     try {

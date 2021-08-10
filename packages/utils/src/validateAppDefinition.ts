@@ -82,6 +82,13 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
         }
 
         if (!Object.keys(version.actions).includes(key)) {
+          if (
+            type === '@appsemble/html' &&
+            String(block.parameters.content).includes(`data-click="${key}"`)
+          ) {
+            return;
+          }
+
           acc[`${loc}.actions.${key}`] = `Custom action “${key}” is unused`;
         }
       } else if (!Object.hasOwnProperty.call(version.actions, key)) {
