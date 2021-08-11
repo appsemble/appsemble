@@ -1,5 +1,7 @@
 import { OpenAPIV3 } from 'openapi-types';
 
+import { normalized } from '../../../constants';
+
 export const Asset: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The response object of an asset create call.',
@@ -19,6 +21,11 @@ export const Asset: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       readOnly: true,
       description: 'The filename of the asset.',
+    },
+    name: {
+      type: 'string',
+      pattern: normalized.source,
+      description: 'The given name of the asset.',
     },
   },
 };

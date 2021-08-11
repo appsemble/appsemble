@@ -4,8 +4,6 @@ import {
   Checkbox,
   Content,
   FileUpload,
-  Loader,
-  Message,
   ModalCard,
   Table,
   Title,
@@ -20,6 +18,7 @@ import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '..';
+import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { AssetPreview } from './AssetPreview';
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -37,12 +36,7 @@ export function AssetsPage(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
 
-  const {
-    data: assets,
-    error,
-    loading,
-    setData: setAssets,
-  } = useData<Asset[]>(`/api/apps/${app.id}/assets`);
+  const assetsResult = useData<Asset[]>(`/api/apps/${app.id}/assets`);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const [dialog, setDialog] = useState<'preview' | 'upload'>(null);
   const [previewedAsset, setPreviewedAsset] = useState<Asset>(null);
@@ -57,6 +51,8 @@ export function AssetsPage(): ReactElement {
     setDialog('upload');
   }, []);
 
+  const { setData } = assetsResult;
+
   const onUpload = useCallback(async () => {
     const formData = new FormData();
     formData.append('file', file, file.name);
@@ -66,10 +62,10 @@ export function AssetsPage(): ReactElement {
 
     push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
-    setAssets([...assets, data]);
+    setData((assets) => [...assets, data]);
     setFile(null);
     onClose();
-  }, [app, assets, file, formatMessage, onClose, push, setAssets]);
+  }, [app.id, setData, file, formatMessage, onClose, push]);
 
   const onFileChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setFile(e.currentTarget.files[0]);
@@ -99,7 +95,7 @@ export function AssetsPage(): ReactElement {
         }),
         color: 'info',
       });
-      setAssets(assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
+      setData((assets) => assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
       setSelectedAssets([]);
     },
   });
@@ -122,18 +118,6 @@ export function AssetsPage(): ReactElement {
     [selectedAssets],
   );
 
-  if (error) {
-    return (
-      <Message color="danger">
-        <FormattedMessage {...messages.error} />
-      </Message>
-    );
-  }
-
-  if (loading) {
-    return <Loader />;
-  }
-
   return (
     <>
       <Title>
@@ -152,56 +136,65 @@ export function AssetsPage(): ReactElement {
           <FormattedMessage {...messages.deleteButton} values={{ amount: selectedAssets.length }} />
         </Button>
       </div>
-      <Table>
-        <thead>
-          <tr>
-            <th>
-              <FormattedMessage {...messages.actions} />
-            </th>
-            <th>
-              <FormattedMessage {...messages.id} />
-            </th>
-            <th>
-              <FormattedMessage {...messages.mime} />
-            </th>
-            <th>
-              <FormattedMessage {...messages.filename} />
-            </th>
-            <th>
-              <FormattedMessage {...messages.preview} />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {assets.map((asset) => (
-            <tr key={asset.id}>
-              <td>
-                <Checkbox
-                  checked={selectedAssets.includes(asset.id)}
-                  className="is-inline-block mt-2"
-                  name={`asset${asset.id}`}
-                  onChange={onAssetCheckboxClick}
-                />
-                <Button
-                  color="primary"
-                  component="a"
-                  download
-                  href={`/api/apps/${app.id}/assets/${asset.id}`}
-                  icon="download"
-                />
-              </td>
-              <td>{asset.id}</td>
-              <td>{asset.mime}</td>
-              <td>{asset.filename}</td>
-              <td>
-                <Button onClick={() => onPreviewClick(asset)}>
+      <AsyncDataView
+        emptyMessage={<FormattedMessage {...messages.empty} />}
+        errorMessage={<FormattedMessage {...messages.error} />}
+        loadingMessage={<FormattedMessage {...messages.loading} />}
+        result={assetsResult}
+      >
+        {(assets) => (
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.actions} />
+                </th>
+                <th>
+                  <FormattedMessage {...messages.id} />
+                </th>
+                <th>
+                  <FormattedMessage {...messages.mime} />
+                </th>
+                <th>
+                  <FormattedMessage {...messages.filename} />
+                </th>
+                <th>
                   <FormattedMessage {...messages.preview} />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {assets.map((asset) => (
+                <tr key={asset.id}>
+                  <td>
+                    <Checkbox
+                      checked={selectedAssets.includes(asset.id)}
+                      className="is-inline-block mt-2"
+                      name={`asset${asset.id}`}
+                      onChange={onAssetCheckboxClick}
+                    />
+                    <Button
+                      color="primary"
+                      component="a"
+                      download
+                      href={`/api/apps/${app.id}/assets/${asset.id}`}
+                      icon="download"
+                    />
+                  </td>
+                  <td>{asset.id}</td>
+                  <td>{asset.mime}</td>
+                  <td>{asset.filename}</td>
+                  <td>
+                    <Button onClick={() => onPreviewClick(asset)}>
+                      <FormattedMessage {...messages.preview} />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </AsyncDataView>
       <ModalCard
         footer={
           <>

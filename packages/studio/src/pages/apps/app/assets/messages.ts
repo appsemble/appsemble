@@ -22,4 +22,6 @@ export const messages = defineMessages({
   noFile: 'No file chosen',
   uploadSuccess: 'Successfully uploaded asset {id}',
   error: 'Something went wrong when fetching this app’s assets.',
+  loading: 'Assets are being loaded…',
+  empty: 'This app currently has no assets.',
 });
