@@ -1,5 +1,6 @@
 import { Remapper } from '@appsemble/sdk';
 import { IconName } from '@fortawesome/fontawesome-common-types';
+import { JsonValue } from 'type-fest';
 
 /**
  * Properties that are shared between all requirements.
@@ -160,7 +161,7 @@ export interface Choice {
   /**
    * The value to use when selecting the option.
    */
-  value: any;
+  value: JsonValue;
 }
 
 interface AbstractField {
@@ -277,7 +278,7 @@ export interface RadioField extends AbstractField {
   /**
    * The default value of the field.
    */
-  defaultValue?: any;
+  defaultValue?: JsonValue;
 
   /**
    * The list of options the user can select from.
@@ -299,11 +300,6 @@ interface AbstractEnumField extends AbstractField {
    * The type of the field.
    */
   type: 'enum';
-
-  /**
-   * The default value of the field.
-   */
-  defaultValue?: any;
 
   /**
    * The requirements that are used to validate the field with.
@@ -374,7 +370,7 @@ export interface FileField extends AbstractField {
   /**
    * The default value for the field.
    */
-  defaultValue?: any;
+  defaultValue?: string;
 
   /**
    * The maximum height of uploaded images.
@@ -425,7 +421,7 @@ export interface GeoCoordinatesField extends AbstractField {
   /**
    * The default value of the field.
    */
-  defaultValue?: object;
+  defaultValue?: Record<string, number>;
 
   /**
    * The location (latitude, longitude) to default to when the user’s location cannot be found.
@@ -453,10 +449,6 @@ export interface GeoCoordinatesField extends AbstractField {
  * A hidden field. This is useful for submitting default values the user may not change.
  */
 export interface HiddenField extends AbstractField {
-  /**
-   * The default value of the field.
-   */
-  defaultValue?: any;
   /**
    * The type of the field.
    */

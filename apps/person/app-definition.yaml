@@ -8,6 +8,7 @@ resources:
       - $public # Allow anyone to access the resource’s actions
     schema:
       type: object
+      additionalProperties: false
       required:
         - firstName
         - lastName

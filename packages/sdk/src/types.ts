@@ -6,8 +6,6 @@
 
 /**
  * A user defined remapper function.
- *
- * @format remapper
  */
 export type Remapper = object[] | boolean | number | object | string;
 

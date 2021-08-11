@@ -13,6 +13,7 @@ resources:
       - $public # Allow anyone to access the resource’s actions
     schema:
       type: object
+      additionalProperties: false
       required:
         - notes
         - process
@@ -36,6 +37,7 @@ resources:
         location:
           type: object
           title: GeoCoordinates
+          additionalProperties: false
           required:
             - latitude
             - longitude
@@ -52,6 +54,7 @@ resources:
         resource: litter
     schema:
       type: object
+      additionalProperties: false
       required:
         - content
       properties:

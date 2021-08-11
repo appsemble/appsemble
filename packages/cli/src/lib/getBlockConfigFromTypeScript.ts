@@ -165,6 +165,11 @@ function processParameters(program: Program, iface: InterfaceDeclaration): Schem
       getDefinition: () => ({ type: 'string', format: 'fontawesome' }),
       getChildren: () => [],
     });
+    fmt.addTypeFormatter({
+      supportsType: (type) => type.getName() === 'Remapper',
+      getDefinition: () => ({ format: 'remapper' }),
+      getChildren: () => [],
+    });
   });
   const parser = createParser(program, { topRef: false });
   const generator = new SchemaGenerator(program, parser, formatter);

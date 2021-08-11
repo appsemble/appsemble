@@ -68,13 +68,12 @@ This will be used to validate app definitions.
       additionalProperties: true,
     },
     parameters: {
-      type: 'object',
+      $ref: '#/components/schemas/JSONSchemaRoot',
       description: `A draft 7 JSON schema to use for block parameter validation.
 
 If the parameters of a block definition don’t conform to this schema, the app definition will be
 considered invalid.
 `,
-      additionalProperties: true,
     },
     events: {
       type: 'object',
