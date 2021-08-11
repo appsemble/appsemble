@@ -15,6 +15,7 @@ import { iconHandler } from './iconHandler';
 import { indexHandler } from './indexHandler';
 import { manifestHandler } from './manifestHandler';
 import { robotsHandler } from './robotsHandler';
+import { screenshotHandler } from './screenshotHandler';
 import { serviceWorkerHandler } from './serviceWorkerHandler';
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
@@ -35,6 +36,10 @@ export const appRouter = tinyRouter([
   {
     route: /^\/icon-(?<size>\d+)\.png$/,
     get: iconHandler,
+  },
+  {
+    route: /^\/screenshots\/(?<id>\d+)\.(?<ext>[a-z]+)$/,
+    get: screenshotHandler,
   },
   {
     route: new RegExp(
