@@ -1,7 +1,6 @@
 import {
   Button,
   CardFooterButton,
-  Checkbox,
   Content,
   FileUpload,
   ModalCard,
@@ -20,7 +19,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '..';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { AssetPreview } from './AssetPreview';
+import { AssetRow } from './AssetRow';
 import styles from './index.module.css';
 import { messages } from './messages';
 
@@ -33,13 +32,11 @@ export function AssetsPage(): ReactElement {
 
   const assetsResult = useData<Asset[]>(`/api/apps/${app.id}/assets`);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
-  const [dialog, setDialog] = useState<'preview' | 'upload'>(null);
-  const [previewedAsset, setPreviewedAsset] = useState<Asset>(null);
+  const [dialog, setDialog] = useState<'upload'>(null);
   const [file, setFile] = useState<File>();
 
   const onClose = useCallback(() => {
     setDialog(null);
-    setPreviewedAsset(null);
   }, []);
 
   const onUploadClick = useCallback(() => {
@@ -95,22 +92,13 @@ export function AssetsPage(): ReactElement {
     },
   });
 
-  const onPreviewClick = useCallback((asset: Asset) => {
-    setPreviewedAsset(asset);
-    setDialog('preview');
-  }, []);
-
   const onAssetCheckboxClick = useCallback(
     (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
       const id = event.currentTarget.name.replace(/^asset/, '');
 
-      if (checked) {
-        setSelectedAssets([...selectedAssets, id]);
-      } else {
-        setSelectedAssets(selectedAssets.filter((a) => a !== id));
-      }
+      setSelectedAssets((assets) => (checked ? [...assets, id] : assets.filter((a) => a !== id)));
     },
-    [selectedAssets],
+    [],
   );
 
   return (
@@ -160,31 +148,12 @@ export function AssetsPage(): ReactElement {
             </thead>
             <tbody>
               {assets.map((asset) => (
-                <tr key={asset.id}>
-                  <td>
-                    <Checkbox
-                      checked={selectedAssets.includes(asset.id)}
-                      className="is-inline-block mt-2"
-                      name={`asset${asset.id}`}
-                      onChange={onAssetCheckboxClick}
-                    />
-                    <Button
-                      color="primary"
-                      component="a"
-                      download
-                      href={`/api/apps/${app.id}/assets/${asset.id}`}
-                      icon="download"
-                    />
-                  </td>
-                  <td>{asset.id}</td>
-                  <td>{asset.mime}</td>
-                  <td>{asset.filename}</td>
-                  <td>
-                    <Button onClick={() => onPreviewClick(asset)}>
-                      <FormattedMessage {...messages.preview} />
-                    </Button>
-                  </td>
-                </tr>
+                <AssetRow
+                  asset={asset}
+                  isSelected={selectedAssets.includes(asset.id)}
+                  key={asset.id}
+                  onSelect={onAssetCheckboxClick}
+                />
               ))}
             </tbody>
           </Table>
@@ -217,13 +186,6 @@ export function AssetsPage(): ReactElement {
             required
           />
         </Content>
-      </ModalCard>
-      <ModalCard
-        isActive={dialog === 'preview'}
-        onClose={onClose}
-        title={<FormattedMessage {...messages.preview} />}
-      >
-        <AssetPreview asset={previewedAsset} />
       </ModalCard>
     </>
   );
