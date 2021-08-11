@@ -10,6 +10,7 @@ import {
   useData,
   useMessages,
   useMeta,
+  useToggle,
 } from '@appsemble/react-components';
 import { Asset } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
@@ -32,16 +33,8 @@ export function AssetsPage(): ReactElement {
 
   const assetsResult = useData<Asset[]>(`/api/apps/${app.id}/assets`);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
-  const [dialog, setDialog] = useState<'upload'>(null);
+  const dialog = useToggle();
   const [file, setFile] = useState<File>();
-
-  const onClose = useCallback(() => {
-    setDialog(null);
-  }, []);
-
-  const onUploadClick = useCallback(() => {
-    setDialog('upload');
-  }, []);
 
   const { setData } = assetsResult;
 
@@ -56,8 +49,8 @@ export function AssetsPage(): ReactElement {
 
     setData((assets) => [...assets, data]);
     setFile(null);
-    onClose();
-  }, [app.id, setData, file, formatMessage, onClose, push]);
+    dialog.disable();
+  }, [app.id, dialog, file, formatMessage, push, setData]);
 
   const onFileChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setFile(e.currentTarget.files[0]);
@@ -107,7 +100,7 @@ export function AssetsPage(): ReactElement {
         <FormattedMessage {...messages.title} />
       </Title>
       <div className="buttons">
-        <Button color="primary" icon="upload" onClick={onUploadClick}>
+        <Button color="primary" icon="upload" onClick={dialog.enable}>
           <FormattedMessage {...messages.uploadButton} />
         </Button>
         <Button
@@ -162,7 +155,7 @@ export function AssetsPage(): ReactElement {
       <ModalCard
         footer={
           <>
-            <CardFooterButton onClick={onClose}>
+            <CardFooterButton onClick={dialog.disable}>
               <FormattedMessage {...messages.cancel} />
             </CardFooterButton>
             <CardFooterButton color="primary" onClick={onUpload}>
@@ -170,8 +163,8 @@ export function AssetsPage(): ReactElement {
             </CardFooterButton>
           </>
         }
-        isActive={dialog === 'upload'}
-        onClose={onClose}
+        isActive={dialog.enabled}
+        onClose={dialog.disable}
         title={<FormattedMessage {...messages.uploadTitle} />}
       >
         <Content>
