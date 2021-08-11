@@ -14,12 +14,13 @@ import {
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
-import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
 import { isEqual, uniqWith } from 'lodash';
+import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
+import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
 
 import {
@@ -187,10 +188,26 @@ export async function createApp(ctx: Context): Promise<void> {
         logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
         record.AppScreenshots = screenshots?.length
           ? await AppScreenshot.bulkCreate(
-              screenshots.map((screenshot: File) => ({
-                screenshot: screenshot.contents,
-                AppId: record.id,
-              })),
+              await Promise.all(
+                screenshots.map(async ({ contents }: File) => {
+                  const img = sharp(contents);
+
+                  const { format, height, width } = await img.metadata();
+                  const mime = lookup(format);
+
+                  if (!mime) {
+                    throw badRequest(`Unknown screenshot mime type: ${mime}`);
+                  }
+
+                  return {
+                    screenshot: contents,
+                    AppId: record.id,
+                    mime,
+                    width,
+                    height,
+                  };
+                }),
+              ),
               // These queries provide huge logs.
               { transaction, logging: false },
             )
@@ -554,10 +571,26 @@ export async function patchApp(ctx: Context): Promise<void> {
         await AppScreenshot.destroy({ where: { AppId: appId }, transaction });
         logger.verbose(`Saving ${screenshots.length} screenshots`);
         dbApp.AppScreenshots = await AppScreenshot.bulkCreate(
-          screenshots.map((screenshot: File) => ({
-            screenshot: screenshot.contents,
-            AppId: dbApp.id,
-          })),
+          await Promise.all(
+            screenshots.map(async ({ contents }: File) => {
+              const img = sharp(contents);
+
+              const { format, height, width } = await img.metadata();
+              const mime = lookup(format);
+
+              if (!mime) {
+                throw badRequest(`Unknown screenshot mime type: ${mime}`);
+              }
+
+              return {
+                screenshot: contents,
+                AppId: dbApp.id,
+                mime,
+                width,
+                height,
+              };
+            }),
+          ),
           // These queries provide huge logs.
           { transaction, logging: false },
         );
@@ -752,7 +785,7 @@ export async function getAppScreenshot(ctx: Context): Promise<void> {
     attributes: [],
     include: [
       {
-        attributes: ['screenshot'],
+        attributes: ['screenshot', 'mime'],
         model: AppScreenshot,
         required: false,
         where: { id: screenshotId },
@@ -768,9 +801,8 @@ export async function getAppScreenshot(ctx: Context): Promise<void> {
     throw notFound('Screenshot not found');
   }
 
-  const [{ screenshot }] = app.AppScreenshots;
+  const [{ mime, screenshot }] = app.AppScreenshots;
 
-  const { mime } = await fromBuffer(screenshot);
   ctx.body = screenshot;
   ctx.type = mime;
 }
@@ -796,10 +828,26 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
   await transactional(async (transaction) => {
     logger.verbose(`Saving ${screenshots.length} screenshots`);
     const result = await AppScreenshot.bulkCreate(
-      screenshots.map((screenshot: File) => ({
-        screenshot: screenshot.contents,
-        AppId: app.id,
-      })),
+      await Promise.all(
+        screenshots.map(async ({ contents }: File) => {
+          const img = sharp(contents);
+
+          const { format, height, width } = await img.metadata();
+          const mime = lookup(format);
+
+          if (!mime) {
+            throw badRequest(`Unknown screenshot mime type: ${mime}`);
+          }
+
+          return {
+            screenshot: contents,
+            AppId: app.id,
+            mime,
+            width,
+            height,
+          };
+        }),
+      ),
       // These queries provide huge logs.
       { transaction, logging: false },
     );
