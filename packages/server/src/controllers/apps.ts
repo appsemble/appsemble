@@ -14,7 +14,6 @@ import {
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
-import { fromBuffer } from 'file-type';
 import jsYaml from 'js-yaml';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
