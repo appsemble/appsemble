@@ -71,6 +71,7 @@ export const JSONSchemaString = extendJSONSchema(BaseJSONSchema, {
 
         // Custom
         'action',
+        'binary',
         'event-emitter',
         'event-listener',
         'fontawesome',
