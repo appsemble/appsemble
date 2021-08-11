@@ -17,6 +17,7 @@ resources:
   note:
     schema:
       type: object
+      additionalProperties: false
       required:
         - title
       properties:

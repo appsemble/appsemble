@@ -11,6 +11,7 @@ resources:
       roles: [$public]
     schema:
       type: object
+      additionalProperties: false
       properties:
         triedAppsemble:
           type: boolean
