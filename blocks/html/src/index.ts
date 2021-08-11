@@ -14,9 +14,7 @@ bootstrap(
     const { body, head } = parser.parseFromString(content, 'text/html');
 
     const contentNodes = body.querySelectorAll<HTMLElement>('[data-content]');
-    const assetNodes = body.querySelectorAll<HTMLElement>(
-      '[data-asset], source[data-asset], video[data-asset], audio[data-asset]',
-    );
+    const assetNodes = body.querySelectorAll<HTMLElement>('[data-asset]');
     const clickNodes = body.querySelectorAll<HTMLElement>('[data-click]');
 
     for (const contentNode of contentNodes) {
