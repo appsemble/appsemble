@@ -12,6 +12,7 @@ type FileUploadProps = Omit<
     preview?: ReactNode;
     onChange: (event: ChangeEvent<HTMLInputElement>, value: File) => void;
     formComponentClassName?: string;
+    value?: File;
   };
 
 export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
@@ -30,6 +31,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       onChange,
       preview = null,
       required = false,
+      value,
     },
     ref,
   ) => {
@@ -37,6 +39,8 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
       (event: ChangeEvent<HTMLInputElement>) => onChange(event, event.currentTarget.files[0]),
       [onChange],
     );
+
+    const fileName = value?.name || fileLabel;
 
     return (
       <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
@@ -56,7 +60,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
               <Icon icon={icon} />
               {fileButtonLabel && <span className="file-label">{fileButtonLabel}</span>}
             </span>
-            {fileLabel && <span className="file-name">{fileLabel}</span>}
+            {fileName ? <span className="file-name">{fileName}</span> : null}
           </label>
         </div>
         {help && <p className="help">{help}</p>}

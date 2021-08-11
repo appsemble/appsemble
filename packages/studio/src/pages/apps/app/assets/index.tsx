@@ -1,9 +1,12 @@
 import {
   Button,
-  CardFooterButton,
   Content,
   FileUpload,
   ModalCard,
+  SimpleForm,
+  SimpleFormError,
+  SimpleFormField,
+  SimpleModalFooter,
   Table,
   Title,
   useConfirmation,
@@ -24,6 +27,14 @@ import { AssetRow } from './AssetRow';
 import styles from './index.module.css';
 import { messages } from './messages';
 
+interface FormValues {
+  file: File;
+}
+
+const defaultFormValues: FormValues = {
+  file: undefined,
+};
+
 export function AssetsPage(): ReactElement {
   useMeta(messages.title);
 
@@ -34,27 +45,24 @@ export function AssetsPage(): ReactElement {
   const assetsResult = useData<Asset[]>(`/api/apps/${app.id}/assets`);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const dialog = useToggle();
-  const [file, setFile] = useState<File>();
 
   const { setData } = assetsResult;
 
-  const onUpload = useCallback(async () => {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    const { data } = await axios.post(`/api/apps/${app.id}/assets`, file, {
-      headers: { 'content-type': file.type },
-    });
+  const submitAsset = useCallback(
+    async ({ file }: FormValues) => {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      const { data } = await axios.post(`/api/apps/${app.id}/assets`, file, {
+        headers: { 'content-type': file.type },
+      });
 
-    push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
+      push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
-    setData((assets) => [...assets, data]);
-    setFile(null);
-    dialog.disable();
-  }, [app.id, dialog, file, formatMessage, push, setData]);
-
-  const onFileChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
-    setFile(e.currentTarget.files[0]);
-  }, []);
+      setData((assets) => [...assets, data]);
+      dialog.disable();
+    },
+    [app.id, dialog, formatMessage, push, setData],
+  );
 
   const onDelete = useConfirmation({
     title: (
@@ -153,29 +161,31 @@ export function AssetsPage(): ReactElement {
         )}
       </AsyncDataView>
       <ModalCard
+        component={SimpleForm}
+        defaultValues={defaultFormValues}
         footer={
-          <>
-            <CardFooterButton onClick={dialog.disable}>
-              <FormattedMessage {...messages.cancel} />
-            </CardFooterButton>
-            <CardFooterButton color="primary" onClick={onUpload}>
-              <FormattedMessage {...messages.upload} />
-            </CardFooterButton>
-          </>
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancel} />}
+            onClose={dialog.disable}
+            submitLabel={<FormattedMessage {...messages.upload} />}
+          />
         }
         isActive={dialog.enabled}
         onClose={dialog.disable}
+        onSubmit={submitAsset}
+        resetOnSuccess
         title={<FormattedMessage {...messages.uploadTitle} />}
       >
         <Content>
-          <FileUpload
+          <SimpleFormError>{() => <FormattedMessage {...messages.uploadError} />}</SimpleFormError>
+          <SimpleFormField
             className={`${styles.filePicker} has-text-centered`}
+            component={FileUpload}
             fileButtonLabel={<FormattedMessage {...messages.chooseFile} />}
-            fileLabel={file?.name || <FormattedMessage {...messages.noFile} />}
+            fileLabel={<FormattedMessage {...messages.noFile} />}
             formComponentClassName="has-text-centered"
             label={<FormattedMessage {...messages.file} />}
             name="file"
-            onChange={onFileChange}
             required
           />
         </Content>
