@@ -86,7 +86,7 @@ export interface ShowDialogParams {
   close: () => void;
   fullscreen: boolean;
   prefix: string;
-  title?: string;
+  title?: Remapper;
 }
 
 export type ShowDialogAction = (params: ShowDialogParams) => () => void;

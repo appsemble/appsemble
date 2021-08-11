@@ -129,6 +129,34 @@ describe('extractAppMessages', () => {
     });
   });
 
+  it('should extract dialog titles', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: 'Page',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              actions: {
+                onClick: {
+                  type: 'dialog',
+                  title: { translate: 'dialogTitle' },
+                  blocks: [],
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      messageIds: { dialogTitle: '' },
+      app: { 'pages.0': 'Page' },
+    });
+  });
+
   it('should extract names from tabs pages', () => {
     const result = extractAppMessages({
       defaultPage: '',
