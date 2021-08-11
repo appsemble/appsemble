@@ -79,11 +79,11 @@ export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
   logger.warn('Removing column mime from AppScreenshot');
-  await queryInterface.addColumn('AppScreenshot', 'mime', { type: DataTypes.STRING });
+  await queryInterface.removeColumn('AppScreenshot', 'mime');
 
   logger.warn('Removing column height from AppScreenshot');
-  await queryInterface.addColumn('AppScreenshot', 'height', { type: DataTypes.INTEGER });
+  await queryInterface.removeColumn('AppScreenshot', 'height');
 
   logger.warn('Removing column width from AppScreenshot');
-  await queryInterface.addColumn('AppScreenshot', 'width', { type: DataTypes.INTEGER });
+  await queryInterface.removeColumn('AppScreenshot', 'width');
 }
