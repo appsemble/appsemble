@@ -12,6 +12,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
+import { Asset } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
@@ -22,12 +23,6 @@ import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { AssetPreview } from './AssetPreview';
 import styles from './index.module.css';
 import { messages } from './messages';
-
-export interface Asset {
-  id: string;
-  mime: string;
-  filename: string;
-}
 
 export function AssetsPage(): ReactElement {
   useMeta(messages.title);
