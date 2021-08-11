@@ -17,46 +17,46 @@ resources:
           type: boolean
         rating:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         ratingFeedback:
           type: string
         notTriedReason:
           type: string
         graphicalEditorRating:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         graphicalEditorExplanation:
           type: string
         commonGroundRating:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         commonGroundExplanation:
           type: string
         videoTutorialsRating:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         videoTutorialsExplanation:
           type: string
         moreBlocksRating:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         moreBlocksExplanation:
           type: string
         moreExamplesRating:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         moreExamplesExplanation:
           type: string
         consideringAppsemble:
           type: number
-          min: 0
-          max: 4
+          minimum: 0
+          maximum: 4
         buildYourself:
           type: boolean
         whyNot:
@@ -65,32 +65,32 @@ resources:
           type: string
         featureImportanceBuildingBlocks:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         featureImportanceConstructing:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         featureImportanceCommunitySupport:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         propertyImportanceBuildCosts:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         propertyImportanceMaintenanceCosts:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         propertyImportanceHostCosts:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
         propertyImportancePaidSupport:
           type: number
-          min: 1
-          max: 5
+          minimum: 1
+          maximum: 5
 
 pages:
   - name: Survey
