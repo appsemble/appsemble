@@ -51,6 +51,7 @@
   "react-components.src.MessagesProvider.dismiss": "",
   "react-components.src.SentryForm.commentsHelp": "Tolong bantu kami dengan menjelaskan apa yang salah",
   "react-components.src.SentryForm.commentsLabel": "Komentar-komentar",
+  "react-components.src.SentryForm.disclaimer": "",
   "react-components.src.SentryForm.emailHelp": "Kami mungkin menggunakan alamat surel Anda untuk menghubungi Anda tentang masalah ini",
   "react-components.src.SentryForm.emailLabel": "Surel",
   "react-components.src.SentryForm.nameHelp": "Nama Anda akan digunakan untuk mempersonalisasi komunikasi",

@@ -51,6 +51,7 @@
   "react-components.src.MessagesProvider.dismiss": "Odbaci poruku",
   "react-components.src.SentryForm.commentsHelp": "Opiši što se dogodilo",
   "react-components.src.SentryForm.commentsLabel": "Komentari",
+  "react-components.src.SentryForm.disclaimer": "",
   "react-components.src.SentryForm.emailHelp": "Koristit ćemo tvoju e-mail adresu u slučaju da te želimo kontaktirali u vezi s ovim problemom",
   "react-components.src.SentryForm.emailLabel": "E-mail",
   "react-components.src.SentryForm.nameHelp": "Tvoje ime će se koristiti za personaliziranu komunikaciju",

@@ -51,6 +51,7 @@
   "react-components.src.MessagesProvider.dismiss": "Ignorer le message",
   "react-components.src.SentryForm.commentsHelp": "Veuillez nous aider en décrivant ce qui n'a pas fonctionné",
   "react-components.src.SentryForm.commentsLabel": "Commentaires",
+  "react-components.src.SentryForm.disclaimer": "",
   "react-components.src.SentryForm.emailHelp": "Nous pouvons utiliser votre adresse électronique pour vous contacter à propos de ce problème",
   "react-components.src.SentryForm.emailLabel": "E-mail",
   "react-components.src.SentryForm.nameHelp": "Votre nom sera utilisé pour personnaliser la communication",

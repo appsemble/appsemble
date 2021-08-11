@@ -51,6 +51,7 @@
   "react-components.src.MessagesProvider.dismiss": "Закрыть сообщение",
   "react-components.src.SentryForm.commentsHelp": "Пожалуйста, помогите нам, описав, что пошло не так",
   "react-components.src.SentryForm.commentsLabel": "Комментарии",
+  "react-components.src.SentryForm.disclaimer": "",
   "react-components.src.SentryForm.emailHelp": "Мы можем использовать ваш адрес электронной почты, чтобы связаться с вами по этому поводу",
   "react-components.src.SentryForm.emailLabel": "Эл. почта",
   "react-components.src.SentryForm.nameHelp": "Ваше имя будет использоваться для персонализации общения",
