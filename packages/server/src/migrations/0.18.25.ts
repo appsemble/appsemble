@@ -82,6 +82,7 @@ export async function up(db: Sequelize): Promise<void> {
   logger.info('Making column mime on AppScreenshot non nullable');
   await queryInterface.changeColumn('AppScreenshot', 'mime', {
     type: DataTypes.STRING,
+    allowNull: false,
   });
 }
 
