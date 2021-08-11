@@ -19,6 +19,7 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
     name,
     parameters,
     version,
+    wildcardActions,
   } = blockVersion;
   const blockName = `@${OrganizationId || Organization.id}/${name}`;
   let iconUrl = null;
@@ -40,6 +41,7 @@ export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
     name: blockName,
     parameters,
     version,
+    wildcardActions,
     languages: blockVersion.BlockMessages?.length
       ? blockVersion.BlockMessages.map((m) => m.language).sort(compareStrings)
       : null,

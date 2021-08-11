@@ -865,6 +865,11 @@ export interface BlockManifest {
    * If the block has no messages, this property is `null`.
    */
   languages: string[] | null;
+
+  /**
+   * Whether action validation for wildcard action is skipped.
+   */
+  wildcardActions?: boolean;
 }
 
 /**
@@ -1537,6 +1542,7 @@ export interface BlockConfig
     | 'name'
     | 'parameters'
     | 'version'
+    | 'wildcardActions'
   > {
   /**
    * The path to the webpack configuration file relative to the block project directory.
