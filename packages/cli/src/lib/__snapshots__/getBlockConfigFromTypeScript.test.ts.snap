@@ -2447,6 +2447,66 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks html 1`] = `
+Object {
+  "actions": Object {
+    "$any": Object {
+      "description": undefined,
+    },
+  },
+  "events": undefined,
+  "messages": undefined,
+  "parameters": Object {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": Object {
+      "Remapper": Object {
+        "anyOf": Array [
+          Object {
+            "items": Object {
+              "type": "object",
+            },
+            "type": "array",
+          },
+          Object {
+            "type": "boolean",
+          },
+          Object {
+            "type": "number",
+          },
+          Object {
+            "type": "object",
+          },
+          Object {
+            "type": "string",
+          },
+        ],
+        "description": "A user defined remapper function.",
+        "format": "remapper",
+      },
+    },
+    "properties": Object {
+      "content": Object {
+        "description": "The HTML to render.",
+        "type": "string",
+      },
+      "placeholders": Object {
+        "additionalProperties": Object {
+          "$ref": "#/definitions/Remapper",
+        },
+        "description": "The placeholders that are injected on elements with the \`data-content\` property.",
+        "type": "object",
+      },
+    },
+    "required": Array [
+      "content",
+      "placeholders",
+    ],
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks list 1`] = `
 Object {
   "actions": Object {

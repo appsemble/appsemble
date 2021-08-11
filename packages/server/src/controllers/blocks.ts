@@ -36,6 +36,7 @@ export async function getBlock(ctx: Context): Promise<void> {
       'events',
       'layout',
       'parameters',
+      'wildcardActions',
       [literal('"BlockVersion".icon IS NOT NULL'), 'hasIcon'],
     ],
     where: { name: blockId, OrganizationId: organizationId },
@@ -69,7 +70,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
     BlockVersion & { hasIcon: boolean; hasOrganizationIcon: boolean; organizationUpdated: Date }
   >(
     `SELECT bv."OrganizationId", bv.name, bv.description, "longDescription",
-    version, actions, events, layout, parameters,
+    version, actions, events, layout, parameters, "wildcardActions",
     bv.icon IS NOT NULL as "hasIcon", o.icon IS NOT NULL as "hasOrganizationIcon", o.updated AS "organizationUpdated"
     FROM "BlockVersion" bv
     INNER JOIN "Organization" o ON o.id = bv."OrganizationId"
@@ -93,6 +94,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
       organizationUpdated,
       parameters,
       version,
+      wildcardActions,
     } = blockVersion;
     let iconUrl = null;
     if (hasIcon) {
@@ -110,6 +112,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
       iconUrl,
       layout,
       parameters,
+      wildcardActions,
     };
   });
 }

@@ -166,7 +166,7 @@ describe('checkBlocks', () => {
     });
   });
 
-  it('should validate wildcard actions in @appsemble/html', () => {
+  it('should not validate wildcard actions if wildcardActions is set to true', () => {
     expect(() =>
       checkBlocks(
         {
@@ -191,6 +191,7 @@ describe('checkBlocks', () => {
               type: 'object',
               properties: { customAction: { type: 'string', format: 'action' } },
             },
+            wildcardActions: true,
           },
         ],
       ),
