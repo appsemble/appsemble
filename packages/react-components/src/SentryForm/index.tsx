@@ -97,6 +97,9 @@ export function SentryForm({
 
   return (
     <SimpleForm defaultValues={defaultValues} onSubmit={submit}>
+      <p className="content">
+        <FormattedMessage {...messages.disclaimer} />
+      </p>
       <SimpleFormError>{() => <FormattedMessage {...messages.submitError} />}</SimpleFormError>
       <SimpleFormField
         help={<FormattedMessage {...messages.nameHelp} />}

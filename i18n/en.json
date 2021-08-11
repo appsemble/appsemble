@@ -51,6 +51,7 @@
   "react-components.src.MessagesProvider.dismiss": "Dismiss message",
   "react-components.src.SentryForm.commentsHelp": "Please help us by describing what went wrong",
   "react-components.src.SentryForm.commentsLabel": "Comments",
+  "react-components.src.SentryForm.disclaimer": "Your feedback will be shared with the Appsemble team using Sentry",
   "react-components.src.SentryForm.emailHelp": "We may use your email address to contact you about this issue",
   "react-components.src.SentryForm.emailLabel": "Email",
   "react-components.src.SentryForm.nameHelp": "Your name will be used to personalize communication",

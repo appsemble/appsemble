@@ -584,6 +584,18 @@ pages:
         screenshotUrls: ['/api/apps/1/screenshots/1'],
       },
     });
+
+    const screenshot = await AppScreenshot.findOne();
+    expect(screenshot.toJSON()).toStrictEqual({
+      AppId: 1,
+      created: new Date(),
+      height: 247,
+      id: 1,
+      mime: 'image/png',
+      screenshot: expect.any(Buffer),
+      updated: new Date(),
+      width: 474,
+    });
   });
 
   it('should not allow an upload without an app when creating an app', async () => {
@@ -2611,6 +2623,9 @@ describe('getAppScreenshots', () => {
     const screenshot = await AppScreenshot.create({
       AppId: app.id,
       screenshot: buffer,
+      width: 427,
+      height: 247,
+      mime: 'image/png',
     });
     const response = await request.get(`/api/apps/${app.id}/screenshots/${screenshot.id}`, {
       responseType: 'arraybuffer',
@@ -2706,6 +2721,9 @@ describe('deleteAppScreenshot', () => {
     const screenshot = await AppScreenshot.create({
       AppId: app.id,
       screenshot: buffer,
+      width: 427,
+      height: 247,
+      mime: 'image/png',
     });
 
     authorizeStudio();

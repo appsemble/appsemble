@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
+  disclaimer: 'Your feedback will be shared with the Appsemble team using Sentry',
   submitError: 'There was a problem submitting your feedback',
   submitSuccess: 'Your feedback has been submitted succesfully. Thank you!',
   nameLabel: 'Name',

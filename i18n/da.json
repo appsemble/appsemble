@@ -51,6 +51,7 @@
   "react-components.src.MessagesProvider.dismiss": "Afvis meddelelse",
   "react-components.src.SentryForm.commentsHelp": "Hjælp os venligst ved at beskrive, hvad der gik galt",
   "react-components.src.SentryForm.commentsLabel": "Kommentarer",
+  "react-components.src.SentryForm.disclaimer": "",
   "react-components.src.SentryForm.emailHelp": "Vi bruger muligvis din e-mail-adresse til at kontakte dig om dette problem",
   "react-components.src.SentryForm.emailLabel": "E-post",
   "react-components.src.SentryForm.nameHelp": "Dit navn vil blive brugt til at personalisere kommunikationen",

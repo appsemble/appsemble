@@ -1,7 +1,9 @@
 import { baseTheme, normalize } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
+import { extension } from 'mime-types';
 
+import { AppScreenshot } from '../../models';
 import { getApp } from '../../utils/app';
 
 const iconSizes = [48, 144, 192, 512];
@@ -14,7 +16,7 @@ const iconSizes = [48, 144, 192, 512];
 export async function manifestHandler(ctx: Context): Promise<void> {
   const { app } = await getApp(ctx, {
     attributes: ['definition'],
-    raw: true,
+    include: [{ model: AppScreenshot, attributes: ['width', 'height', 'id', 'mime'] }],
   });
 
   if (!app) {
@@ -45,6 +47,11 @@ export async function manifestHandler(ctx: Context): Promise<void> {
     name,
     orientation: 'any',
     scope: '/',
+    screenshots: app.AppScreenshots?.map(({ height, id, mime, width }) => ({
+      sizes: `${width}x${height}`,
+      src: `/screenshots/${id}.${extension(mime)}`,
+      type: mime,
+    })),
     short_name: name,
     start_url: `/${normalize(defaultPage)}`,
     theme_color: themeColor,
