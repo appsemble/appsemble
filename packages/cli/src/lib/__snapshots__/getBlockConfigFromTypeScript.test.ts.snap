@@ -2372,32 +2372,6 @@ Object {
   "parameters": Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
-    "definitions": Object {
-      "Remapper": Object {
-        "anyOf": Array [
-          Object {
-            "items": Object {
-              "type": "object",
-            },
-            "type": "array",
-          },
-          Object {
-            "type": "boolean",
-          },
-          Object {
-            "type": "number",
-          },
-          Object {
-            "type": "object",
-          },
-          Object {
-            "type": "string",
-          },
-        ],
-        "description": "A user defined remapper function.",
-        "format": "remapper",
-      },
-    },
     "properties": Object {
       "content": Object {
         "description": "The HTML to render.",
@@ -2405,7 +2379,7 @@ Object {
       },
       "placeholders": Object {
         "additionalProperties": Object {
-          "$ref": "#/definitions/Remapper",
+          "format": "remapper",
         },
         "description": "The placeholders that are injected on elements with the \`data-content\` property.",
         "type": "object",
