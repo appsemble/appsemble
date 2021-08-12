@@ -1,24 +1,24 @@
 import { Argv } from 'yargs';
 
-import { createTeam } from '../../../lib/team';
+import { deleteTeam } from '../../../lib/team';
 import { BaseArguments } from '../../../types';
 
 interface CreateTeamArguments extends BaseArguments {
   appId: number;
-  name: string;
+  id: number;
 }
 
-export const command = 'create <name>';
-export const description = 'Create a new team for an app.';
+export const command = 'delete';
+export const description = 'Delete an existing team from an app.';
 
 export function builder(yargs: Argv): Argv {
   return yargs
-    .positional('name', {
-      describe: 'The name of the team.',
+    .option('id', {
+      describe: 'The ID of the team to delete.',
       demandOption: true,
     })
     .option('app-id', {
-      describe: 'The ID of the app to create the team for.',
+      describe: 'The ID of the app to delete the team from.',
       type: 'number',
       demandOption: true,
     });
@@ -27,13 +27,13 @@ export function builder(yargs: Argv): Argv {
 export async function handler({
   appId,
   clientCredentials,
-  name,
+  id,
   remote,
 }: CreateTeamArguments): Promise<void> {
-  await createTeam({
+  await deleteTeam({
     clientCredentials,
     remote,
-    name,
+    id,
     appId,
   });
 }
