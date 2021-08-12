@@ -33,4 +33,6 @@ export const messages = defineMessages({
   'apps:write': 'Create and modify apps',
   'resources:read': 'Read app resources',
   'resources:write': 'Create, update, and delete app resources',
+  'teams:read': 'Read app teams',
+  'teams:write': 'Create and manage app teams',
 });

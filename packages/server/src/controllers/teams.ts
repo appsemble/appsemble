@@ -35,6 +35,10 @@ export async function createTeam(ctx: Context): Promise<void> {
     throw notFound('App not found.');
   }
 
+  if (!app.definition.security) {
+    throw badRequest('App does not have a security definition.');
+  }
+
   await checkRole(ctx, app.OrganizationId, Permission.ManageTeams);
 
   let team: Team;

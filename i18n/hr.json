@@ -835,6 +835,8 @@
   "studio.src.pages.settings.client-credentials.revoke": "Opozovi",
   "studio.src.pages.settings.client-credentials.scope": "Opseg",
   "studio.src.pages.settings.client-credentials.submit": "Stvori",
+  "studio.src.pages.settings.client-credentials.teams:read": "",
+  "studio.src.pages.settings.client-credentials.teams:write": "",
   "studio.src.pages.settings.client-credentials.title": "OAuth2 prijavni podaci klijenta",
   "studio.src.pages.settings.client-credentials.unknownScope": "Ovaj opseg trenutačno nije poznat. Možda će opozivanje ovog klijenta pomoći.",
   "studio.src.pages.settings.clientCredentials": "Prijavni podaci klijenta",

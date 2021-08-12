@@ -835,6 +835,8 @@
   "studio.src.pages.settings.client-credentials.revoke": "Tilbagekald",
   "studio.src.pages.settings.client-credentials.scope": "Område",
   "studio.src.pages.settings.client-credentials.submit": "Opret",
+  "studio.src.pages.settings.client-credentials.teams:read": "",
+  "studio.src.pages.settings.client-credentials.teams:write": "",
   "studio.src.pages.settings.client-credentials.title": "OAuth2-klientoplysninger",
   "studio.src.pages.settings.client-credentials.unknownScope": "Dette område kendes ikke i øjeblikket. Det kan være en god ide at tilbagekalde denne klient.",
   "studio.src.pages.settings.clientCredentials": "Klientlegitimationsoplysninger",

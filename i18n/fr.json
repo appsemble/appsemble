@@ -835,6 +835,8 @@
   "studio.src.pages.settings.client-credentials.revoke": "Révoquer",
   "studio.src.pages.settings.client-credentials.scope": "Portée",
   "studio.src.pages.settings.client-credentials.submit": "Créer",
+  "studio.src.pages.settings.client-credentials.teams:read": "",
+  "studio.src.pages.settings.client-credentials.teams:write": "",
   "studio.src.pages.settings.client-credentials.title": "Références des clients OAuth2",
   "studio.src.pages.settings.client-credentials.unknownScope": "Cette portée n’est pas connue à l’heure actuelle. Vous pourriez vouloir révoquer ce client.",
   "studio.src.pages.settings.clientCredentials": "Références des clients",

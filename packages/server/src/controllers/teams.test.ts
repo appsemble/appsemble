@@ -169,6 +169,27 @@ describe('createTeam', () => {
     });
   });
 
+  it('should not create a team if teams are not used or usable', async () => {
+    const noSecurity = await App.create({
+      definition: {
+        name: 'No Security App',
+        defaultPage: 'Test Page',
+      },
+      path: 'no-security-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${noSecurity.id}/teams`, { name: 'Test Team' });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'App does not have a security definition.' },
+    });
+  });
+
   it('should not create a team if user is not an Owner', async () => {
     await Member.update(
       { role: 'AppEditor' },
