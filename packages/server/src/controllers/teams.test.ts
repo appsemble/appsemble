@@ -248,11 +248,11 @@ describe('createTeam', () => {
   });
 });
 
-describe('updateTeam', () => {
+describe('patchTeam', () => {
   it('should update the name of the team', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
     const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({ status: 200, data: { id: team.id, name: 'B' } });
@@ -262,7 +262,7 @@ describe('updateTeam', () => {
   it('should update annotations', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, {
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, {
       name: 'B',
       annotations: { testKey: 'foo' },
     });
@@ -286,7 +286,7 @@ describe('updateTeam', () => {
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
 
     expect(response).toMatchObject({
       status: 403,
@@ -296,7 +296,7 @@ describe('updateTeam', () => {
 
   it('should not update a non-existent team', async () => {
     authorizeStudio();
-    const response = await request.put(`/api/apps/${app.id}/teams/80000`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${app.id}/teams/80000`, { name: 'B' });
 
     expect(response).toMatchObject({ status: 404, data: { message: 'Team not found.' } });
   });
@@ -327,7 +327,7 @@ describe('updateTeam', () => {
     });
     const team = await Team.create({ name: 'A', AppId: appB.id });
     authorizeStudio();
-    const response = await request.put(`/api/apps/${appB.id}/teams/${team.id}`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${appB.id}/teams/${team.id}`, { name: 'B' });
 
     expect(response).toMatchObject({
       status: 403,
