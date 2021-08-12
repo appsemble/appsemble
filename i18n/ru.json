@@ -264,6 +264,8 @@
   "studio.src.pages.apps.app.assets.id": "",
   "studio.src.pages.apps.app.assets.loading": "",
   "studio.src.pages.apps.app.assets.mime": "Тип файла",
+  "studio.src.pages.apps.app.assets.name": "",
+  "studio.src.pages.apps.app.assets.nameDescription": "",
   "studio.src.pages.apps.app.assets.noFile": "Файл не выбран",
   "studio.src.pages.apps.app.assets.preview": "",
   "studio.src.pages.apps.app.assets.title": "Активы",

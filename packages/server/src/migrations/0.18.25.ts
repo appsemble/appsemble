@@ -13,6 +13,7 @@ interface QueryResult {
 /**
  * Summary:
  * - Add column `wildcardActions` to table `BlockVersion`.
+ * - Add column `name` to table `Asset`.
  * - Add column `width` to table `AppScreenshot`.
  * - Add column `height` to table `AppScreenshot`.
  * - Add column `mime` to table `AppScreenshot`.
@@ -39,6 +40,16 @@ export async function up(db: Sequelize): Promise<void> {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
     allowNull: false,
+  });
+
+  logger.info('Adding column name to Asset');
+  await queryInterface.addColumn('AppScreenshot', 'name', { type: DataTypes.STRING });
+
+  logger.info('Adding unique constraint UniqueAssetNameIndex to Asset');
+  await queryInterface.addConstraint('AppScreenshot', {
+    type: 'unique',
+    fields: ['AppId', 'name'],
+    name: 'UniqueAssetNameIndex',
   });
 
   logger.info('Adding column width to AppScreenshot');
@@ -92,14 +103,12 @@ export async function up(db: Sequelize): Promise<void> {
  * - Remove column `mime` from table `AppScreenshot`.
  * - Remove column `height` from table `AppScreenshot`.
  * - Remove column `width` from table `AppScreenshot`.
+ * - Remove column `name` from table `Asset`.
  *
  * @param db - The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-
-  logger.warn('Removing column wildcardActions from BlockVersion');
-  await queryInterface.removeColumn('BlockVersion', 'wildcardActions');
 
   logger.warn('Removing column mime from AppScreenshot');
   await queryInterface.removeColumn('AppScreenshot', 'mime');
@@ -109,4 +118,13 @@ export async function down(db: Sequelize): Promise<void> {
 
   logger.warn('Removing column width from AppScreenshot');
   await queryInterface.removeColumn('AppScreenshot', 'width');
+
+  logger.info('Removing unique constraint UniqueAssetNameIndex from Asset');
+  await queryInterface.removeConstraint('Asset', 'UniqueAssetNameIndex');
+
+  logger.warn('Removing column name from Asset');
+  await queryInterface.removeColumn('Asset', 'name');
+
+  logger.warn('Removing column wildcardActions from BlockVersion');
+  await queryInterface.removeColumn('BlockVersion', 'wildcardActions');
 }

@@ -6,11 +6,13 @@ export const Asset: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The response object of an asset create call.',
   additionalProperties: false,
+  required: ['file'],
   properties: {
     id: {
       type: 'string',
       readOnly: true,
       description: 'The unique identifier for the asset.',
+      pattern: normalized.source,
     },
     mime: {
       type: 'string',
@@ -25,7 +27,8 @@ export const Asset: OpenAPIV3.NonArraySchemaObject = {
     name: {
       type: 'string',
       pattern: normalized.source,
-      description: 'The given name of the asset.',
+      description:
+        'The given name of the asset. Assets may be referenced by their name or ID in the API.',
     },
   },
 };

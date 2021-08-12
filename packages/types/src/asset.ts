@@ -12,5 +12,10 @@ export interface Asset {
   /**
    * The filename of the asset as it was uploaded.
    */
-  filename: string;
+  filename?: string;
+
+  /**
+   * A custom name that was given to the asset.
+   */
+  name?: string;
 }

@@ -16,7 +16,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { Asset } from '@appsemble/types';
-import { compareStrings } from '@appsemble/utils';
+import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -29,10 +29,12 @@ import { messages } from './messages';
 
 interface FormValues {
   file: File;
+  name: string;
 }
 
 const defaultFormValues: FormValues = {
   file: undefined,
+  name: '',
 };
 
 export function AssetsPage(): ReactElement {
@@ -49,12 +51,13 @@ export function AssetsPage(): ReactElement {
   const { setData } = assetsResult;
 
   const submitAsset = useCallback(
-    async ({ file }: FormValues) => {
+    async ({ file, name }: FormValues) => {
       const formData = new FormData();
-      formData.append('file', file, file.name);
-      const { data } = await axios.post(`/api/apps/${app.id}/assets`, file, {
-        headers: { 'content-type': file.type },
-      });
+      formData.append('file', file);
+      if (name) {
+        formData.append('name', normalize(name));
+      }
+      const { data } = await axios.post(`/api/apps/${app.id}/assets`, formData);
 
       push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
@@ -187,6 +190,17 @@ export function AssetsPage(): ReactElement {
             label={<FormattedMessage {...messages.file} />}
             name="file"
             required
+          />
+          <SimpleFormField
+            addonLeft={
+              <label className="button is-static" htmlFor="name">
+                /api/apps/{app.id}/assets/
+              </label>
+            }
+            help={<FormattedMessage {...messages.nameDescription} />}
+            label={<FormattedMessage {...messages.name} />}
+            name="name"
+            preprocess={(value) => normalize(value, false)}
           />
         </Content>
       </ModalCard>

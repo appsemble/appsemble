@@ -7,6 +7,9 @@ export const messages = defineMessages({
   id: 'Id',
   mime: 'File type',
   filename: 'Filename',
+  name: 'Name',
+  nameDescription:
+    'If a name is set, the asset may be referenced by this name in addition to its ID.',
   actions: 'Actions',
   preview: 'Preview',
   cancel: 'Cancel',

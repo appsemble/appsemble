@@ -1,7 +1,8 @@
 import { Permission } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
+import { conflict, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { extension } from 'mime-types';
+import { Op, UniqueConstraintError } from 'sequelize';
 
 import { App, Asset } from '../models';
 import { checkRole } from '../utils/checkRole';
@@ -13,7 +14,7 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [{ model: Asset, attributes: ['id', 'mime', 'filename'], required: false }],
+    include: [{ model: Asset, attributes: ['id', 'mime', 'filename', 'name'], required: false }],
   });
 
   if (!app) {
@@ -26,6 +27,7 @@ export async function getAssets(ctx: Context): Promise<void> {
     id: asset.id,
     mime: asset.mime,
     filename: asset.filename,
+    name: asset.name || undefined,
   }));
 }
 
@@ -35,14 +37,18 @@ export async function getAssetById(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    include: [{ model: Asset, where: { id: assetId }, required: false }],
+    include: [
+      { model: Asset, where: { [Op.or]: [{ id: assetId }, { name: assetId }] }, required: false },
+    ],
   });
 
   if (!app) {
     throw notFound('App not found');
   }
 
-  const [asset] = app.Assets;
+  // Pick asset id over asset name.
+  const asset =
+    app.Assets.find((a) => a.id === assetId) || app.Assets.find((a) => a.name === assetId);
 
   if (!asset) {
     throw notFound('Asset not found');
@@ -59,14 +65,21 @@ export async function getAssetById(ctx: Context): Promise<void> {
     }
   }
   ctx.set('content-type', mime || 'application/octet-stream');
-  ctx.set('content-disposition', `attachment; filename=${JSON.stringify(filename)}`);
+  if (filename) {
+    ctx.set('content-disposition', `attachment; filename=${JSON.stringify(filename)}`);
+  }
   ctx.body = asset.data;
 }
 
 export async function createAsset(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    request: { body, type },
+    request: {
+      body: {
+        file: { contents, filename, mime },
+        name,
+      },
+    },
     user,
   } = ctx;
 
@@ -76,13 +89,25 @@ export async function createAsset(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
-  const asset = await Asset.create(
-    { AppId: app.id, mime: type, data: body, ...(user && { UserId: user.id }) },
-    { raw: true },
-  );
+  let asset: Asset;
+  try {
+    asset = await Asset.create({
+      AppId: app.id,
+      data: contents,
+      filename,
+      mime,
+      name,
+      UserId: user?.id,
+    });
+  } catch (error: unknown) {
+    if (error instanceof UniqueConstraintError) {
+      throw conflict(`An asset named ${name} already exists`);
+    }
+    throw error;
+  }
 
   ctx.status = 201;
-  ctx.body = { id: asset.id, mime: asset.mime, filename: asset.filename };
+  ctx.body = { id: asset.id, mime, filename, name };
 }
 
 export async function deleteAsset(ctx: Context): Promise<void> {

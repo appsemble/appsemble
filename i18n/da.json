@@ -264,6 +264,8 @@
   "studio.src.pages.apps.app.assets.id": "Id",
   "studio.src.pages.apps.app.assets.loading": "",
   "studio.src.pages.apps.app.assets.mime": "Filtype",
+  "studio.src.pages.apps.app.assets.name": "",
+  "studio.src.pages.apps.app.assets.nameDescription": "",
   "studio.src.pages.apps.app.assets.noFile": "Ingen fil valgt",
   "studio.src.pages.apps.app.assets.preview": "Forhåndsvisning",
   "studio.src.pages.apps.app.assets.title": "{name} · Aktiver",

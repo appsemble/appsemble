@@ -264,6 +264,8 @@
   "studio.src.pages.apps.app.assets.id": "ID",
   "studio.src.pages.apps.app.assets.loading": "",
   "studio.src.pages.apps.app.assets.mime": "Type de fichier",
+  "studio.src.pages.apps.app.assets.name": "",
+  "studio.src.pages.apps.app.assets.nameDescription": "",
   "studio.src.pages.apps.app.assets.noFile": "Aucun fichier choisi",
   "studio.src.pages.apps.app.assets.preview": "Aperçu",
   "studio.src.pages.apps.app.assets.title": "{name} - Actifs",

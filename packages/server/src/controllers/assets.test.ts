@@ -1,3 +1,4 @@
+import { createFixtureStream, createFormData } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, Asset, Member, Organization, User } from '../models';
@@ -67,6 +68,7 @@ describe('getAssets', () => {
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
+      name: 'a',
     });
 
     const assetB = await Asset.create({
@@ -81,7 +83,7 @@ describe('getAssets', () => {
     expect(response).toMatchObject({
       status: 200,
       data: [
-        { id: assetA.id, mime: assetA.mime, filename: assetA.filename },
+        { id: assetA.id, mime: assetA.mime, filename: assetA.filename, name: 'a' },
         { id: assetB.id, mime: assetB.mime, filename: assetB.filename },
       ],
     });
@@ -151,6 +153,30 @@ describe('getAssetById', () => {
     });
 
     const response = await request.get(`/api/apps/${app.id}/assets/${asset.id}`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      headers: expect.objectContaining({
+        'content-type': 'application/octet-stream',
+        'content-disposition': 'attachment; filename="test.bin"',
+      }),
+      data,
+    });
+  });
+
+  it('should be able to fetch an by name', async () => {
+    const data = Buffer.from('buffer');
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data,
+      name: 'test-asset',
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`, {
       responseType: 'arraybuffer',
     });
 
@@ -256,38 +282,83 @@ describe('getAssetById', () => {
 describe('createAsset', () => {
   it('should be able to create an asset', async () => {
     const data = Buffer.from([0xc0, 0xff, 0xee, 0xba, 0xbe]);
-    const createResponse = await request.post(`/api/apps/${app.id}/assets`, data, {
-      headers: { 'content-type': 'application/octet-stream' },
-    });
-    expect(createResponse).toMatchObject({
+    const response = await request.post<Asset>(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: data, name: 'test-asset' }),
+    );
+    expect(response).toMatchObject({
       status: 201,
-      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
+      data: {
+        id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i),
+        mime: 'application/octet-stream',
+        name: 'test-asset',
+      },
     });
 
-    const getResponse = await request.get(`/api/apps/${app.id}/assets/${createResponse.data.id}`, {
-      responseType: 'arraybuffer',
-    });
-    expect(getResponse).toMatchObject({
-      status: 200,
-      headers: {
-        'content-type': 'application/octet-stream',
-      },
+    const asset = await Asset.findByPk(response.data.id);
+    expect(asset).toMatchObject({
+      AppId: app.id,
       data,
+      filename: null,
+      mime: 'application/octet-stream',
+      name: 'test-asset',
+      UserId: null,
+    });
+  });
+
+  it('should not allow using conflicting names', async () => {
+    await request.post(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.alloc(0), name: 'conflict' }),
+    );
+    const response = await request.post(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.alloc(0), name: 'conflict' }),
+    );
+    expect(response).toMatchObject({
+      status: 409,
+      data: {
+        error: 'Conflict',
+        message: 'An asset named conflict already exists',
+        statusCode: 409,
+      },
     });
   });
 
   it('should accept empty files', async () => {
-    const response = await request.post(`/api/apps/${app.id}/assets`, Buffer.alloc(0), {
-      headers: { 'content-type': 'application/octet-stream' },
-    });
+    const response = await request.post(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.alloc(0) }),
+    );
     expect(response).toMatchObject({
       status: 201,
-      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
+      data: {
+        id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i),
+        mime: 'application/octet-stream',
+      },
+    });
+  });
+
+  it('should support filenames', async () => {
+    const response = await request.post(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: createFixtureStream('10x50.png') }),
+    );
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i),
+        filename: '10x50.png',
+        mime: 'image/png',
+      },
     });
   });
 
   it('should not create assets for apps that don’t exist', async () => {
-    const response = await request.post('/api/apps/0/assets', Buffer.alloc(0));
+    const response = await request.post(
+      '/api/apps/0/assets',
+      createFormData({ file: Buffer.alloc(0) }),
+    );
     expect(response).toMatchObject({
       status: 404,
       data: { message: 'App not found', statusCode: 404, error: 'Not Found' },
@@ -296,15 +367,19 @@ describe('createAsset', () => {
 
   it('should associate the user if the user is authenticated', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/assets`, Buffer.alloc(0), {
-      headers: { 'content-type': 'application/octet-stream' },
-    });
+    const response = await request.post(
+      `/api/apps/${app.id}/assets`,
+      createFormData({ file: Buffer.alloc(0) }),
+    );
     const asset = await Asset.findByPk(response.data.id);
 
     expect(asset.UserId).toStrictEqual(user.id);
     expect(response).toMatchObject({
       status: 201,
-      data: { id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i) },
+      data: {
+        id: expect.stringMatching(/^[0-F]{8}(?:-[0-F]{4}){3}-[0-F]{12}$/i),
+        mime: 'application/octet-stream',
+      },
     });
   });
 });
