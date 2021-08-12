@@ -11,7 +11,7 @@ import { Context, Middleware } from 'koa';
 import { get, pick } from 'lodash';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization, User } from '../models';
+import { App, EmailAuthorization } from '../models';
 import { email } from '../utils/actions/email';
 import { getRemapperContext } from '../utils/app';
 import { readPackageJson } from '../utils/readPackageJson';
@@ -35,8 +35,8 @@ async function handleEmail(ctx: Context, app: App, action: EmailActionDefinition
     mailer,
     method,
     request: { body: data },
+    user,
   } = ctx;
-  const user = ctx.user as User;
   if (method !== 'POST') {
     throw methodNotAllowed('Method must be POST for email actions');
   }
@@ -69,8 +69,8 @@ async function handleRequestProxy(
     method,
     query,
     request: { body },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   let data;
   if (useBody) {

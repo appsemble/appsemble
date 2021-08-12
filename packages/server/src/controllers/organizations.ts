@@ -74,8 +74,8 @@ export async function getOrganization(ctx: Context): Promise<void> {
 export async function getOrganizationApps(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
+    user,
   } = ctx;
-  const user = ctx.user as User;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const memberInclude = user
@@ -286,10 +286,10 @@ export async function createOrganization(ctx: Context): Promise<void> {
     request: {
       body: { description, email, icon, id, name, website },
     },
+    user,
   } = ctx;
-  const { id: userId } = ctx.user as User;
 
-  const user = await User.findOne({
+  await user.reload({
     attributes: ['primaryEmail', 'name'],
     include: [
       {
@@ -301,7 +301,6 @@ export async function createOrganization(ctx: Context): Promise<void> {
         },
       },
     ],
-    where: { id: userId },
   });
 
   if (!user.primaryEmail || !user.EmailAuthorizations[0].verified) {
@@ -319,7 +318,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
     );
 
     // @ts-expect-error XXX Convert to a type safe expression.
-    await organization.addUser(userId, { through: { role: 'Owner' } });
+    await organization.addUser(user.id, { through: { role: 'Owner' } });
     await organization.reload();
 
     ctx.body = {
@@ -430,8 +429,8 @@ export async function respondInvitation(ctx: Context): Promise<void> {
     request: {
       body: { response, token },
     },
+    user: { id: userId },
   } = ctx;
-  const { id: userId } = ctx.user as User;
 
   const invite = await OrganizationInvite.findOne({ where: { key: token } });
 
@@ -584,8 +583,8 @@ export async function removeInvite(ctx: Context): Promise<void> {
 export async function removeMember(ctx: Context): Promise<void> {
   const {
     pathParams: { memberId, organizationId },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
@@ -615,8 +614,8 @@ export async function setRole(ctx: Context): Promise<void> {
     request: {
       body: { role },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {

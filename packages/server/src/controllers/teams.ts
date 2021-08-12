@@ -8,8 +8,8 @@ import { checkRole } from '../utils/checkRole';
 async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
   const {
     pathParams: { teamId },
+    user,
   } = ctx;
-  const user = ctx.user as User;
   const teamMember =
     team?.Users.find((u) => u.id === user.id)?.TeamMember ??
     (await TeamMember.findOne({
@@ -27,8 +27,8 @@ export async function createTeam(ctx: Context): Promise<void> {
     request: {
       body: { name },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId);
   if (!app) {
@@ -56,8 +56,8 @@ export async function createTeam(ctx: Context): Promise<void> {
 export async function getTeam(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, teamId },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
@@ -79,8 +79,8 @@ export async function getTeam(ctx: Context): Promise<void> {
 export async function getTeams(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     include: [
@@ -110,8 +110,8 @@ export async function updateTeam(ctx: Context): Promise<void> {
     request: {
       body: { annotations, name },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
@@ -139,8 +139,8 @@ export async function updateTeam(ctx: Context): Promise<void> {
 export async function deleteTeam(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, teamId },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
@@ -187,8 +187,8 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     request: {
       body: { id },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },

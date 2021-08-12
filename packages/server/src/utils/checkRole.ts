@@ -3,7 +3,7 @@ import { forbidden, unauthorized } from '@hapi/boom';
 import { Context } from 'koa';
 import { FindOptions } from 'sequelize';
 
-import { Member, User } from '../models';
+import { Member } from '../models';
 
 /**
  * Check if the authenticated user has permission to perform an action within an organization.
@@ -21,7 +21,7 @@ export async function checkRole(
   permissions: Permission | Permission[],
   { attributes = [], ...queryOptions }: FindOptions = {},
 ): Promise<Member> {
-  const user = ctx.user as User;
+  const { user } = ctx;
   if (!user) {
     throw unauthorized();
   }

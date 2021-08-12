@@ -10,10 +10,9 @@ import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
 
 export async function getUser(ctx: Context): Promise<void> {
-  const user = ctx.user as User;
+  const { user } = ctx;
 
-  const dbUser = await User.findOne({
-    where: { id: user.id },
+  await user.reload({
     include: [
       {
         model: Organization,
@@ -29,27 +28,27 @@ export async function getUser(ctx: Context): Promise<void> {
   });
 
   ctx.body = {
-    id: dbUser.id,
-    name: dbUser.name,
-    primaryEmail: dbUser.primaryEmail,
-    organizations: dbUser.Organizations.map((org) => ({
+    id: user.id,
+    name: user.name,
+    primaryEmail: user.primaryEmail,
+    organizations: user.Organizations.map((org) => ({
       id: org.id,
       name: org.name,
       iconUrl: org.get('hasIcon')
         ? `/api/organizations/${org.id}/icon?updated=${org.updated.toISOString()}`
         : null,
     })),
-    emails: dbUser.EmailAuthorizations.map(({ email, verified }) => ({
+    emails: user.EmailAuthorizations.map(({ email, verified }) => ({
       email,
       verified,
-      primary: dbUser.primaryEmail === email,
+      primary: user.primaryEmail === email,
     })),
-    locale: dbUser.locale,
+    locale: user.locale,
   };
 }
 
 export async function getUserOrganizations(ctx: Context): Promise<void> {
-  const user = ctx.user as User;
+  const { user } = ctx;
 
   const organizations = await Organization.findAll({
     attributes: [
@@ -82,8 +81,8 @@ export async function updateUser(ctx: Context): Promise<void> {
     request: {
       body: { locale, name },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
   const email = ctx.request.body.email?.toLowerCase();
 
   const dbUser = await User.findOne({
@@ -121,7 +120,7 @@ export async function updateUser(ctx: Context): Promise<void> {
 }
 
 export async function listEmails(ctx: Context): Promise<void> {
-  const user = ctx.user as User;
+  const { user } = ctx;
 
   ctx.body = await EmailAuthorization.findAll({
     attributes: ['email', 'verified'],
@@ -132,8 +131,7 @@ export async function listEmails(ctx: Context): Promise<void> {
 }
 
 export async function addEmail(ctx: Context): Promise<void> {
-  const { mailer, request } = ctx;
-  const user = ctx.user as User;
+  const { mailer, request, user } = ctx;
 
   const email = request.body.email.toLowerCase();
   const dbEmail = await EmailAuthorization.findOne({
@@ -144,8 +142,7 @@ export async function addEmail(ctx: Context): Promise<void> {
     throw conflict('This email has already been registered.');
   }
 
-  const dbUser = await User.findOne({
-    where: { id: user.id },
+  await user.reload({
     include: [
       {
         model: EmailAuthorization,
@@ -156,7 +153,7 @@ export async function addEmail(ctx: Context): Promise<void> {
   const key = randomBytes(40).toString('hex');
   await EmailAuthorization.create({ UserId: user.id, email, key });
 
-  await mailer.sendTemplateEmail({ email, name: dbUser.name }, 'emailAdded', {
+  await mailer.sendTemplateEmail({ email, name: user.name }, 'emailAdded', {
     url: `${argv.host}/verify?token=${key}`,
   });
 
@@ -168,12 +165,10 @@ export async function addEmail(ctx: Context): Promise<void> {
 }
 
 export async function removeEmail(ctx: Context): Promise<void> {
-  const { request } = ctx;
-  const user = ctx.user as User;
+  const { request, user } = ctx;
 
   const email = request.body.email.toLowerCase();
-  const dbUser = await User.findOne({
-    where: { id: user.id },
+  await user.reload({
     include: [
       {
         model: EmailAuthorization,
@@ -190,7 +185,7 @@ export async function removeEmail(ctx: Context): Promise<void> {
     throw notFound('This email address is not associated with your account.');
   }
 
-  if (dbUser.EmailAuthorizations.length === 1 && !dbUser.OAuthAuthorizations.length) {
+  if (user.EmailAuthorizations.length === 1 && !user.OAuthAuthorizations.length) {
     throw notAcceptable('Deleting this email results in the inability to access this account.');
   }
 
@@ -200,7 +195,7 @@ export async function removeEmail(ctx: Context): Promise<void> {
 }
 
 export function emailLogin(ctx: Context): void {
-  const user = ctx.user as User;
+  const { user } = ctx;
 
   ctx.body = createJWTResponse(user.id);
 }

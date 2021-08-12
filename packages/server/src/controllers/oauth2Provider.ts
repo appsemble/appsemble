@@ -28,9 +28,9 @@ async function checkIsAllowed(app: App, user: User): Promise<boolean> {
 }
 
 export async function getUserInfo(ctx: Context): Promise<void> {
-  const { id } = ctx.user as User;
+  const { user } = ctx;
 
-  const user = await User.findOne({
+  await user.reload({
     attributes: ['primaryEmail', 'name', 'locale'],
     include: [
       {
@@ -42,7 +42,6 @@ export async function getUserInfo(ctx: Context): Promise<void> {
         },
       },
     ],
-    where: { id },
   });
 
   if (!user) {
@@ -61,7 +60,7 @@ export async function getUserInfo(ctx: Context): Promise<void> {
     email_verified: user.primaryEmail ? user.EmailAuthorizations[0].verified : false,
     name: user.name,
     picture,
-    sub: id,
+    sub: user.id,
     locale: user.locale,
   };
 }
@@ -71,8 +70,8 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
     request: {
       body: { appId, redirectUri, scope },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
@@ -113,8 +112,8 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
     request: {
       body: { appId, redirectUri, scope },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],

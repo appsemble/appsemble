@@ -3,7 +3,7 @@ import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { extension } from 'mime-types';
 
-import { App, Asset, User } from '../models';
+import { App, Asset } from '../models';
 import { checkRole } from '../utils/checkRole';
 
 export async function getAssets(ctx: Context): Promise<void> {
@@ -67,8 +67,8 @@ export async function createAsset(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: { body, type },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId);
 
