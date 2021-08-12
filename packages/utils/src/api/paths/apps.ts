@@ -1004,10 +1004,10 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       security: [{ studio: [] }],
     },
-    put: {
+    patch: {
       tags: ['app'],
       description: 'Update an existing team.',
-      operationId: 'updateTeam',
+      operationId: 'patchTeam',
       requestBody: {
         description: 'The team to update.',
         required: true,

@@ -27,6 +27,18 @@ interface SharedExistingTeamParams extends SharedTeamParams {
   id: number;
 }
 
+interface UpdateTeamParams extends SharedExistingTeamParams {
+  /**
+   * The new name of the team.
+   */
+  name?: string;
+
+  /**
+   * The list of annotations to apply in key=value format.
+   */
+  annotations?: string[];
+}
+
 interface CreateTeamParams extends SharedTeamParams {
   /**
    * The name of the team.
@@ -60,4 +72,28 @@ export async function deleteTeam({
   logger.info(`Deleting team ${id}`);
   await axios.delete(`/api/apps/${appId}/teams/${id}`);
   logger.info(`Successfully deleted team ${id}`);
+}
+
+export async function updateTeam({
+  appId,
+  clientCredentials,
+  id,
+  remote,
+  name,
+  annotations = [],
+}: UpdateTeamParams): Promise<void> {
+  await authenticate(remote, 'apps:write teams:write', clientCredentials);
+  logger.info(`Updating team ${id}`);
+  await axios.put(`/api/apps/${appId}/teams/${id}`, {
+    name,
+    ...(annotations.length && {
+      annotations: Object.fromEntries(
+        annotations.map((annotation) => {
+          const [key, ...value] = annotation.split('=');
+          return [key, value.join('=')];
+        }),
+      ),
+    }),
+  });
+  logger.info(`Successfully updated team ${id}`);
 }

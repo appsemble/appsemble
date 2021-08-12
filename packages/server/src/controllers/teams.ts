@@ -108,7 +108,7 @@ export async function getTeams(ctx: Context): Promise<void> {
   }));
 }
 
-export async function updateTeam(ctx: Context): Promise<void> {
+export async function patchTeam(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, teamId },
     request: {
@@ -131,7 +131,7 @@ export async function updateTeam(ctx: Context): Promise<void> {
 
   await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
-  await team.update({ name, ...(annotations && { annotations }) });
+  await team.update({ ...(name && { name }), ...(annotations && { annotations }) });
   ctx.body = {
     id: team.id,
     name,

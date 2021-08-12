@@ -3,7 +3,7 @@ import { Argv } from 'yargs';
 import { deleteTeam } from '../../../lib/team';
 import { BaseArguments } from '../../../types';
 
-interface CreateTeamArguments extends BaseArguments {
+interface DeleteTeamArguments extends BaseArguments {
   appId: number;
   id: number;
 }
@@ -29,7 +29,7 @@ export async function handler({
   clientCredentials,
   id,
   remote,
-}: CreateTeamArguments): Promise<void> {
+}: DeleteTeamArguments): Promise<void> {
   await deleteTeam({
     clientCredentials,
     remote,
