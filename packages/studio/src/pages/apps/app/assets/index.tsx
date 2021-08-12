@@ -1,34 +1,39 @@
 import {
   Button,
-  CardFooterButton,
-  Checkbox,
   Content,
   FileUpload,
-  Loader,
-  Message,
   ModalCard,
+  SimpleForm,
+  SimpleFormError,
+  SimpleFormField,
+  SimpleModalFooter,
   Table,
   Title,
   useConfirmation,
   useData,
   useMessages,
   useMeta,
+  useToggle,
 } from '@appsemble/react-components';
+import { Asset } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '..';
-import { AssetPreview } from './AssetPreview';
+import { AsyncDataView } from '../../../../components/AsyncDataView';
+import { AssetRow } from './AssetRow';
 import styles from './index.module.css';
 import { messages } from './messages';
 
-export interface Asset {
-  id: string;
-  mime: string;
-  filename: string;
+interface FormValues {
+  file: File;
 }
+
+const defaultFormValues: FormValues = {
+  file: undefined,
+};
 
 export function AssetsPage(): ReactElement {
   useMeta(messages.title);
@@ -37,43 +42,27 @@ export function AssetsPage(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
 
-  const {
-    data: assets,
-    error,
-    loading,
-    setData: setAssets,
-  } = useData<Asset[]>(`/api/apps/${app.id}/assets`);
+  const assetsResult = useData<Asset[]>(`/api/apps/${app.id}/assets`);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
-  const [dialog, setDialog] = useState<'preview' | 'upload'>(null);
-  const [previewedAsset, setPreviewedAsset] = useState<Asset>(null);
-  const [file, setFile] = useState<File>();
+  const dialog = useToggle();
 
-  const onClose = useCallback(() => {
-    setDialog(null);
-    setPreviewedAsset(null);
-  }, []);
+  const { setData } = assetsResult;
 
-  const onUploadClick = useCallback(() => {
-    setDialog('upload');
-  }, []);
+  const submitAsset = useCallback(
+    async ({ file }: FormValues) => {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      const { data } = await axios.post(`/api/apps/${app.id}/assets`, file, {
+        headers: { 'content-type': file.type },
+      });
 
-  const onUpload = useCallback(async () => {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    const { data } = await axios.post(`/api/apps/${app.id}/assets`, file, {
-      headers: { 'content-type': file.type },
-    });
+      push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
-    push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
-
-    setAssets([...assets, data]);
-    setFile(null);
-    onClose();
-  }, [app, assets, file, formatMessage, onClose, push, setAssets]);
-
-  const onFileChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
-    setFile(e.currentTarget.files[0]);
-  }, []);
+      setData((assets) => [...assets, data]);
+      dialog.disable();
+    },
+    [app.id, dialog, formatMessage, push, setData],
+  );
 
   const onDelete = useConfirmation({
     title: (
@@ -99,40 +88,19 @@ export function AssetsPage(): ReactElement {
         }),
         color: 'info',
       });
-      setAssets(assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
+      setData((assets) => assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
       setSelectedAssets([]);
     },
   });
-
-  const onPreviewClick = useCallback((asset: Asset) => {
-    setPreviewedAsset(asset);
-    setDialog('preview');
-  }, []);
 
   const onAssetCheckboxClick = useCallback(
     (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
       const id = event.currentTarget.name.replace(/^asset/, '');
 
-      if (checked) {
-        setSelectedAssets([...selectedAssets, id]);
-      } else {
-        setSelectedAssets(selectedAssets.filter((a) => a !== id));
-      }
+      setSelectedAssets((assets) => (checked ? [...assets, id] : assets.filter((a) => a !== id)));
     },
-    [selectedAssets],
+    [],
   );
-
-  if (error) {
-    return (
-      <Message color="danger">
-        <FormattedMessage {...messages.error} />
-      </Message>
-    );
-  }
-
-  if (loading) {
-    return <Loader />;
-  }
 
   return (
     <>
@@ -140,7 +108,7 @@ export function AssetsPage(): ReactElement {
         <FormattedMessage {...messages.title} />
       </Title>
       <div className="buttons">
-        <Button color="primary" icon="upload" onClick={onUploadClick}>
+        <Button color="primary" icon="upload" onClick={dialog.enable}>
           <FormattedMessage {...messages.uploadButton} />
         </Button>
         <Button
@@ -152,90 +120,75 @@ export function AssetsPage(): ReactElement {
           <FormattedMessage {...messages.deleteButton} values={{ amount: selectedAssets.length }} />
         </Button>
       </div>
-      <Table>
-        <thead>
-          <tr>
-            <th>
-              <FormattedMessage {...messages.actions} />
-            </th>
-            <th>
-              <FormattedMessage {...messages.id} />
-            </th>
-            <th>
-              <FormattedMessage {...messages.mime} />
-            </th>
-            <th>
-              <FormattedMessage {...messages.filename} />
-            </th>
-            <th>
-              <FormattedMessage {...messages.preview} />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {assets.map((asset) => (
-            <tr key={asset.id}>
-              <td>
-                <Checkbox
-                  checked={selectedAssets.includes(asset.id)}
-                  className="is-inline-block mt-2"
-                  name={`asset${asset.id}`}
-                  onChange={onAssetCheckboxClick}
-                />
-                <Button
-                  color="primary"
-                  component="a"
-                  download
-                  href={`/api/apps/${app.id}/assets/${asset.id}`}
-                  icon="download"
-                />
-              </td>
-              <td>{asset.id}</td>
-              <td>{asset.mime}</td>
-              <td>{asset.filename}</td>
-              <td>
-                <Button onClick={() => onPreviewClick(asset)}>
+      <AsyncDataView
+        emptyMessage={<FormattedMessage {...messages.empty} />}
+        errorMessage={<FormattedMessage {...messages.error} />}
+        loadingMessage={<FormattedMessage {...messages.loading} />}
+        result={assetsResult}
+      >
+        {(assets) => (
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.actions} />
+                </th>
+                <th>
+                  <FormattedMessage {...messages.id} />
+                </th>
+                <th>
+                  <FormattedMessage {...messages.mime} />
+                </th>
+                <th>
+                  <FormattedMessage {...messages.filename} />
+                </th>
+                <th>
                   <FormattedMessage {...messages.preview} />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {assets.map((asset) => (
+                <AssetRow
+                  asset={asset}
+                  isSelected={selectedAssets.includes(asset.id)}
+                  key={asset.id}
+                  onSelect={onAssetCheckboxClick}
+                />
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </AsyncDataView>
       <ModalCard
+        component={SimpleForm}
+        defaultValues={defaultFormValues}
         footer={
-          <>
-            <CardFooterButton onClick={onClose}>
-              <FormattedMessage {...messages.cancel} />
-            </CardFooterButton>
-            <CardFooterButton color="primary" onClick={onUpload}>
-              <FormattedMessage {...messages.upload} />
-            </CardFooterButton>
-          </>
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancel} />}
+            onClose={dialog.disable}
+            submitLabel={<FormattedMessage {...messages.upload} />}
+          />
         }
-        isActive={dialog === 'upload'}
-        onClose={onClose}
+        isActive={dialog.enabled}
+        onClose={dialog.disable}
+        onSubmit={submitAsset}
+        resetOnSuccess
         title={<FormattedMessage {...messages.uploadTitle} />}
       >
         <Content>
-          <FileUpload
+          <SimpleFormError>{() => <FormattedMessage {...messages.uploadError} />}</SimpleFormError>
+          <SimpleFormField
             className={`${styles.filePicker} has-text-centered`}
+            component={FileUpload}
             fileButtonLabel={<FormattedMessage {...messages.chooseFile} />}
-            fileLabel={file?.name || <FormattedMessage {...messages.noFile} />}
+            fileLabel={<FormattedMessage {...messages.noFile} />}
             formComponentClassName="has-text-centered"
             label={<FormattedMessage {...messages.file} />}
             name="file"
-            onChange={onFileChange}
             required
           />
         </Content>
-      </ModalCard>
-      <ModalCard
-        isActive={dialog === 'preview'}
-        onClose={onClose}
-        title={<FormattedMessage {...messages.preview} />}
-      >
-        <AssetPreview asset={previewedAsset} />
       </ModalCard>
     </>
   );

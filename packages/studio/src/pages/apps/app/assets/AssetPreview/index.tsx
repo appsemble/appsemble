@@ -1,8 +1,8 @@
 import { Button, Content } from '@appsemble/react-components';
+import { Asset } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Asset } from '..';
 import { useApp } from '../..';
 import styles from './index.module.css';
 import { messages } from './messages';
