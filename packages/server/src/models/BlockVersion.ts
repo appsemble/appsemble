@@ -62,6 +62,11 @@ export class BlockVersion extends Model {
     emit?: Record<string, EventType>;
   };
 
+  @Default(false)
+  @AllowNull(false)
+  @Column(DataType.BOOLEAN)
+  wildcardActions: boolean;
+
   @BelongsTo(() => Organization)
   Organization: Organization;
 

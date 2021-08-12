@@ -12,6 +12,7 @@ interface QueryResult {
 
 /**
  * Summary:
+ * - Add column `wildcardActions` to table `BlockVersion`.
  * - Add column `width` to table `AppScreenshot`.
  * - Add column `height` to table `AppScreenshot`.
  * - Add column `mime` to table `AppScreenshot`.
@@ -21,6 +22,24 @@ interface QueryResult {
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.info('Adding column wildcardActions to BlockVersion');
+  await queryInterface.addColumn('BlockVersion', 'wildcardActions', {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  });
+
+  logger.info('Updating existing block versions to have `wildcardActions` set to `false`');
+  await db.query('UPDATE "BlockVersion" SET "wildcardActions" = false;', {
+    type: QueryTypes.UPDATE,
+  });
+
+  logger.info('Updating `wildcardActions` in `BlockVersion` to not be nullable');
+  await queryInterface.changeColumn('BlockVersion', 'wildcardActions', {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+  });
 
   logger.info('Adding column width to AppScreenshot');
   await queryInterface.addColumn('AppScreenshot', 'width', { type: DataTypes.INTEGER });
@@ -69,6 +88,7 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
+ * - Remove column `wildcardActions` from table `BlockVersion`.
  * - Remove column `mime` from table `AppScreenshot`.
  * - Remove column `height` from table `AppScreenshot`.
  * - Remove column `width` from table `AppScreenshot`.
@@ -77,6 +97,9 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.warn('Removing column wildcardActions from BlockVersion');
+  await queryInterface.removeColumn('BlockVersion', 'wildcardActions');
 
   logger.warn('Removing column mime from AppScreenshot');
   await queryInterface.removeColumn('AppScreenshot', 'mime');

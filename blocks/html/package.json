@@ -1,0 +1,22 @@
+{
+  "name": "@appsemble/html",
+  "version": "0.18.24",
+  "private": true,
+  "description": "A block that can render HTML with basic templating.",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/html"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.18.24",
+    "@appsemble/utils": "0.18.24"
+  }
+}

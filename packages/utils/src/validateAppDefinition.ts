@@ -81,7 +81,7 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
           return;
         }
 
-        if (!Object.keys(version.actions).includes(key)) {
+        if (!Object.keys(version.actions).includes(key) && !version.wildcardActions) {
           acc[`${loc}.actions.${key}`] = `Custom action “${key}” is unused`;
         }
       } else if (!Object.hasOwnProperty.call(version.actions, key)) {

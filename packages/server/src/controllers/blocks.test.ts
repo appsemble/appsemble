@@ -117,6 +117,7 @@ describe('publishBlock', () => {
       version: '1.32.9',
       description: null,
       longDescription: null,
+      wildcardActions: false,
     });
 
     expect(status).toBe(201);
@@ -659,6 +660,7 @@ describe('getBlockVersions', () => {
         layout: null,
         parameters: null,
         version: '1.32.9',
+        wildcardActions: false,
       },
     ]);
   });
@@ -708,6 +710,7 @@ describe('getBlockVersions', () => {
         layout: null,
         parameters: null,
         version: '1.32.9',
+        wildcardActions: false,
       },
       {
         name: '@xkcd/standing',
@@ -721,6 +724,7 @@ describe('getBlockVersions', () => {
         layout: null,
         parameters: null,
         version: '1.4.0',
+        wildcardActions: false,
       },
     ]);
   });
