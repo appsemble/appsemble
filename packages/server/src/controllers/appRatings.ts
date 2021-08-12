@@ -25,25 +25,25 @@ export async function submitAppRating(ctx: Context): Promise<void> {
     request: {
       body: { description, rating },
     },
+    user,
   } = ctx;
-  const { id: UserId } = ctx.user as User;
 
   const app = await App.findByPk(AppId);
-  const user = await User.findByPk(UserId);
+  await user.reload({ attributes: ['name'] });
 
   if (!app) {
     throw notFound('App not found');
   }
 
   const [result] = await AppRating.upsert(
-    { rating, description, UserId, AppId },
+    { rating, description, UserId: user.id, AppId },
     { returning: true },
   );
 
   ctx.body = {
     rating,
     description,
-    UserId,
+    UserId: user.id,
     name: user.name,
     $created: result.created,
     $updated: result.updated,

@@ -6,13 +6,13 @@ import { isPast, parseISO } from 'date-fns';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { OAuth2ClientCredentials, User } from '../models';
+import { OAuth2ClientCredentials } from '../models';
 
 export async function registerOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {
     request: { body },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   let expires;
   if (body.expires) {
@@ -45,7 +45,7 @@ export async function registerOAuth2ClientCredentials(ctx: Context): Promise<voi
 }
 
 export async function listOAuth2ClientCredentials(ctx: Context): Promise<void> {
-  const user = ctx.user as User;
+  const { user } = ctx;
 
   const credentials = await OAuth2ClientCredentials.findAll({
     attributes: ['created', 'description', 'id', 'expires', 'scopes'],
@@ -65,8 +65,8 @@ export async function listOAuth2ClientCredentials(ctx: Context): Promise<void> {
 export async function deleteOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {
     pathParams: { clientId },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const affectedRows = await OAuth2ClientCredentials.destroy({
     where: {

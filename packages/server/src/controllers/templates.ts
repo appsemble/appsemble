@@ -7,7 +7,7 @@ import { Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
-import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource, User } from '../models';
+import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
 import { checkRole } from '../utils/checkRole';
 import { getAppFromRecord } from '../utils/model';
 
@@ -34,8 +34,8 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     request: {
       body: { description, name, organizationId, private: isPrivate, resources, templateId },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   /**
    * XXX: This should include the existing YAML definition

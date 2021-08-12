@@ -4,7 +4,7 @@ import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { App, AppSubscription, ResourceSubscription, User } from '../models';
+import { App, AppSubscription, ResourceSubscription } from '../models';
 import { checkRole } from '../utils/checkRole';
 import { sendNotification } from '../utils/sendNotification';
 
@@ -77,8 +77,8 @@ export async function addSubscription(ctx: Context): Promise<void> {
     request: {
       body: { endpoint, keys },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, { include: [AppSubscription] });
 
@@ -101,8 +101,8 @@ export async function updateSubscription(ctx: Context): Promise<void> {
     request: {
       body: { action, endpoint, resource, resourceId, value },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     attributes: [],

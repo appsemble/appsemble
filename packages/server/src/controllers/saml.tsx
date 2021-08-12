@@ -43,8 +43,8 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
     request: {
       body: { redirectUri, scope, state },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findOne({
     where: { id: appId },
@@ -308,8 +308,8 @@ export async function continueSamlLogin(ctx: Context): Promise<void> {
     request: {
       body: { id },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const loginRequest = await SamlLoginRequest.findByPk(id, {
     include: [

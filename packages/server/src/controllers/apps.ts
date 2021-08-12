@@ -357,7 +357,7 @@ export async function queryApps(ctx: Context): Promise<void> {
 }
 
 export async function queryMyApps(ctx: Context): Promise<void> {
-  const user = ctx.user as User;
+  const { user } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
 
   const memberships = await Member.findAll({
@@ -441,8 +441,8 @@ export async function patchApp(ctx: Context): Promise<void> {
         yaml,
       },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   let result: Partial<App>;
 
