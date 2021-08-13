@@ -1,0 +1,211 @@
+[
+  {
+    "date": "2021-08-15",
+    "localName": "Mariä Himmelfahrt",
+    "name": "Assumption Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": false,
+    "counties": ["DE-SL"],
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2021-09-20",
+    "localName": "Weltkindertag",
+    "name": "World Children's Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": false,
+    "counties": ["DE-TH"],
+    "launchYear": 2019,
+    "types": ["Public"]
+  },
+  {
+    "date": "2021-10-03",
+    "localName": "Tag der Deutschen Einheit",
+    "name": "German Unity Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": true,
+    "counties": null,
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2021-10-31",
+    "localName": "Reformationstag",
+    "name": "Reformation Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": false,
+    "counties": ["DE-BB", "DE-MV", "DE-SN", "DE-ST", "DE-TH", "DE-HB", "DE-HH", "DE-NI", "DE-SH"],
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2021-11-01",
+    "localName": "Allerheiligen",
+    "name": "All Saints' Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": false,
+    "counties": ["DE-BW", "DE-BY", "DE-NW", "DE-RP", "DE-SL"],
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2021-11-17",
+    "localName": "Buß- und Bettag",
+    "name": "Repentance and Prayer Day",
+    "countryCode": "DE",
+    "fixed": false,
+    "global": false,
+    "counties": ["DE-SN"],
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2021-12-25",
+    "localName": "Erster Weihnachtstag",
+    "name": "Christmas Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": true,
+    "counties": null,
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2021-12-26",
+    "localName": "Zweiter Weihnachtstag",
+    "name": "St. Stephen's Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": true,
+    "counties": null,
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-01-01",
+    "localName": "Neujahr",
+    "name": "New Year's Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": true,
+    "counties": null,
+    "launchYear": 1967,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-01-06",
+    "localName": "Heilige Drei Könige",
+    "name": "Epiphany",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": false,
+    "counties": ["DE-BW", "DE-BY", "DE-ST"],
+    "launchYear": 1967,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-03-08",
+    "localName": "Internationaler Frauentag",
+    "name": "International Women's Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": false,
+    "counties": ["DE-BE"],
+    "launchYear": 2019,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-04-15",
+    "localName": "Karfreitag",
+    "name": "Good Friday",
+    "countryCode": "DE",
+    "fixed": false,
+    "global": true,
+    "counties": null,
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-04-17",
+    "localName": "Ostersonntag",
+    "name": "Easter Sunday",
+    "countryCode": "DE",
+    "fixed": false,
+    "global": false,
+    "counties": ["DE-BB", "DE-HE"],
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-04-18",
+    "localName": "Ostermontag",
+    "name": "Easter Monday",
+    "countryCode": "DE",
+    "fixed": false,
+    "global": true,
+    "counties": null,
+    "launchYear": 1642,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-05-01",
+    "localName": "Tag der Arbeit",
+    "name": "Labour Day",
+    "countryCode": "DE",
+    "fixed": true,
+    "global": true,
+    "counties": null,
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-05-26",
+    "localName": "Christi Himmelfahrt",
+    "name": "Ascension Day",
+    "countryCode": "DE",
+    "fixed": false,
+    "global": true,
+    "counties": null,
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-06-05",
+    "localName": "Pfingstsonntag",
+    "name": "Pentecost",
+    "countryCode": "DE",
+    "fixed": false,
+    "global": false,
+    "counties": ["DE-BB", "DE-HE"],
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-06-06",
+    "localName": "Pfingstmontag",
+    "name": "Whit Monday",
+    "countryCode": "DE",
+    "fixed": false,
+    "global": true,
+    "counties": null,
+    "launchYear": null,
+    "types": ["Public"]
+  },
+  {
+    "date": "2022-06-16",
+    "localName": "Fronleichnam",
+    "name": "Corpus Christi",
+    "countryCode": "DE",
+    "fixed": false,
+    "global": false,
+    "counties": ["DE-BW", "DE-BY", "DE-HE", "DE-NW", "DE-RP", "DE-SL"],
+    "launchYear": null,
+    "types": ["Public"]
+  }
+]

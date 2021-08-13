@@ -1,0 +1,9 @@
+[
+  {
+    "id": 0,
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john@example.com",
+    "description": "This is a stubbed person."
+  }
+]
