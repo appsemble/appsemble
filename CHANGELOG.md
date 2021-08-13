@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.26](https://gitlab.com/appsemble/appsemble/-/releases/0.18.26)] - 2021-08-13
+
+### Fixed
+
+- Block(`html`): Fix issue with data-context usage.
+- Server: Fix migration for version 0.18.25.
+
 ## \[[0.18.25](https://gitlab.com/appsemble/appsemble/-/releases/0.18.25)] - 2021-08-13
 
 ### Added
