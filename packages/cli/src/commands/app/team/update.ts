@@ -1,6 +1,7 @@
-import { AppsembleError } from 'node-utils/src/AppsembleError';
+import { AppsembleError } from '@appsemble/node-utils';
 import { Argv } from 'yargs';
 
+import { authenticate } from '../../../lib/authentication';
 import { updateTeam } from '../../../lib/team';
 import { BaseArguments } from '../../../types';
 
@@ -48,9 +49,9 @@ export async function handler({
     throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
   }
 
+  await authenticate(remote, 'apps:write teams:write', clientCredentials);
+
   await updateTeam({
-    clientCredentials,
-    remote,
     id,
     appId,
     name,
