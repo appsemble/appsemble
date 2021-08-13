@@ -1,7 +1,11 @@
 {
-  "name": "@appsemble/preact",
-  "version": "0.18.24",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "description": "Build your own blocks using Preact",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://appsemble.app",
   "keywords": [
     "app",
     "apps",
@@ -14,26 +18,22 @@
     "preact",
     "sdk"
   ],
-  "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "packages/preact"
-  },
   "license": "LGPL-3.0-only",
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "sideEffects": false,
   "main": "dist",
-  "files": [
-    "dist"
-  ],
+  "name": "@appsemble/preact",
+  "peerDependencies": {
+    "@appsemble/sdk": "0.18.25",
+    "preact": "^10"
+  },
+  "repository": {
+    "directory": "packages/preact",
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git"
+  },
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",
     "test": "jest"
   },
-  "peerDependencies": {
-    "@appsemble/sdk": "0.18.24",
-    "preact": "^10"
-  }
+  "sideEffects": false,
+  "version": "0.18.25"
 }

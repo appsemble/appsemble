@@ -1,34 +1,12 @@
 {
-  "name": "@appsemble/studio",
-  "version": "0.18.24",
-  "private": true,
-  "description": "The frontend for managing Appsemble apps and organizations",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "packages/studio"
-  },
-  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "scripts": {
-    "test": "jest"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "dependencies": {
-    "@appsemble/react-components": "0.18.24",
-    "@appsemble/sdk": "0.18.24",
-    "@appsemble/types": "0.18.24",
-    "@appsemble/utils": "0.18.24",
-    "@appsemble/web-utils": "0.18.24",
+    "@appsemble/react-components": "0.18.25",
+    "@appsemble/sdk": "0.18.25",
+    "@appsemble/types": "0.18.25",
+    "@appsemble/utils": "0.18.25",
+    "@appsemble/web-utils": "0.18.25",
     "@browser-logos/chrome": "^1.0.18",
     "@browser-logos/edge": "^2.0.5",
     "@browser-logos/firefox": "^3.0.9",
@@ -60,5 +38,27 @@
     "react-dom": "^17.0.2",
     "react-intl": "^5.20.6",
     "react-router-dom": "^5.2.0"
-  }
+  },
+  "description": "The frontend for managing Appsemble apps and organizations",
+  "homepage": "https://appsemble.app",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "license": "LGPL-3.0-only",
+  "name": "@appsemble/studio",
+  "private": true,
+  "repository": {
+    "directory": "packages/studio",
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "version": "0.18.25"
 }

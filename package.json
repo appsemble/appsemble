@@ -1,35 +1,17 @@
 {
-  "private": true,
-  "workspaces": [
-    "blocks/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "appsemble": "ts-node -r tsconfig-paths/register -T packages/cli/src",
-    "build:app": "webpack --config config/webpack/app.js --mode production",
-    "build:studio": "webpack --config config/webpack/studio.js --mode production",
-    "create-appsemble": "ts-node -r tsconfig-paths/register -T packages/create-appsemble/src",
-    "e2e": "yarn workspace @appsemble/e2e e2e",
-    "prepare": "husky install",
-    "prettier": "prettier --check",
-    "scripts": "ts-node -r tsconfig-paths/register -T packages/scripts/src",
-    "start": "ts-node -r tsconfig-paths/register -T packages/cli/src start",
-    "stylelint": "stylelint --report-needless-disables",
-    "test": "jest"
-  },
-  "lint-staged": {
-    "*.css": [
-      "stylelint --report-needless-disables"
-    ],
-    "*.md": [
-      "remark --frail --no-stdout"
-    ],
-    "*.{html,json,md,scss,yaml,yml}": [
-      "prettier --check"
-    ],
-    "*.{js,md,ts,tsx}": [
-      "eslint"
-    ]
+  "appsembleServer": {
+    "database-host": "localhost",
+    "database-name": "appsemble",
+    "database-password": "password",
+    "database-user": "admin",
+    "github-client-id": "e526099c0f82f180b06a",
+    "github-client-secret": "52b46994b2cba62163a0719a0969043109d8953e",
+    "gitlab-client-id": "743e32d7c7e38172fe6630123fe82be1f3d8c383e02e33a2a711a5e9ed5a2d88",
+    "gitlab-client-secret": "d2d8ce5f59cea983f51d2ce496d5cdcdf19d1de4104422c565acdc11b3f2358d",
+    "host": "http://localhost:9999",
+    "migrate-to": "next",
+    "remote": "http://localhost:9999",
+    "secret": "Local Appsemble development secret"
   },
   "devDependencies": {
     "@babel/core": "^7.14.8",
@@ -114,18 +96,36 @@
   "engines": {
     "node": ">=12.0.0"
   },
-  "appsembleServer": {
-    "database-host": "localhost",
-    "database-name": "appsemble",
-    "database-user": "admin",
-    "database-password": "password",
-    "github-client-id": "e526099c0f82f180b06a",
-    "github-client-secret": "52b46994b2cba62163a0719a0969043109d8953e",
-    "gitlab-client-id": "743e32d7c7e38172fe6630123fe82be1f3d8c383e02e33a2a711a5e9ed5a2d88",
-    "gitlab-client-secret": "d2d8ce5f59cea983f51d2ce496d5cdcdf19d1de4104422c565acdc11b3f2358d",
-    "host": "http://localhost:9999",
-    "migrate-to": "next",
-    "remote": "http://localhost:9999",
-    "secret": "Local Appsemble development secret"
-  }
+  "lint-staged": {
+    "*.css": [
+      "stylelint --report-needless-disables"
+    ],
+    "*.md": [
+      "remark --frail --no-stdout"
+    ],
+    "*.{html,json,md,scss,yaml,yml}": [
+      "prettier --check"
+    ],
+    "*.{js,md,ts,tsx}": [
+      "eslint"
+    ]
+  },
+  "private": true,
+  "scripts": {
+    "appsemble": "ts-node -r tsconfig-paths/register -T packages/cli/src",
+    "build:app": "webpack --config config/webpack/app.js --mode production",
+    "build:studio": "webpack --config config/webpack/studio.js --mode production",
+    "create-appsemble": "ts-node -r tsconfig-paths/register -T packages/create-appsemble/src",
+    "e2e": "yarn workspace @appsemble/e2e e2e",
+    "prepare": "husky install",
+    "prettier": "prettier --check",
+    "scripts": "ts-node -r tsconfig-paths/register -T packages/scripts/src",
+    "start": "ts-node -r tsconfig-paths/register -T packages/cli/src start",
+    "stylelint": "stylelint --report-needless-disables",
+    "test": "jest"
+  },
+  "workspaces": [
+    "blocks/*",
+    "packages/*"
+  ]
 }

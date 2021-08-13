@@ -1,21 +1,21 @@
 {
-  "name": "@appsemble/data-loader",
-  "version": "0.18.24",
-  "private": true,
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "dependencies": {
+    "@appsemble/sdk": "0.18.25"
+  },
   "description": "A block that fetches data and emits it using the events API.",
   "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "blocks/data-loader"
-  },
   "license": "LGPL-3.0-only",
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "name": "@appsemble/data-loader",
+  "private": true,
+  "repository": {
+    "directory": "blocks/data-loader",
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git"
+  },
   "scripts": {
     "test": "jest"
   },
-  "dependencies": {
-    "@appsemble/sdk": "0.18.24"
-  }
+  "version": "0.18.25"
 }

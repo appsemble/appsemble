@@ -1,31 +1,8 @@
 {
-  "name": "@appsemble/webpack-core",
-  "version": "0.18.24",
-  "private": true,
-  "description": "The Webpack configuration for the Appsemble core",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "packages/webpack-core"
-  },
-  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "scripts": {
-    "prepack": "tsc -p tsconfig.build.json",
-    "test": "jest"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "dependencies": {
-    "@appsemble/utils": "0.18.24",
+    "@appsemble/utils": "0.18.25",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@types/case-sensitive-paths-webpack-plugin": "^2.1.6",
     "@types/css-minimizer-webpack-plugin": "^3.0.2",
@@ -62,7 +39,30 @@
     "workbox-webpack-plugin": "^6.1.5",
     "xdm": "^1.12.1"
   },
+  "description": "The Webpack configuration for the Appsemble core",
   "engines": {
     "node": ">=12.0.0"
-  }
+  },
+  "homepage": "https://appsemble.app",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "license": "LGPL-3.0-only",
+  "name": "@appsemble/webpack-core",
+  "private": true,
+  "repository": {
+    "directory": "packages/webpack-core",
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git"
+  },
+  "scripts": {
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
+  },
+  "version": "0.18.25"
 }

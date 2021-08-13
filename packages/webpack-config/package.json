@@ -1,36 +1,8 @@
 {
-  "name": "@appsemble/webpack-config",
-  "version": "0.18.24",
-  "description": "NodeJS utilities used by Appsemble internally.",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "packages/webpack-config"
-  },
-  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "sideEffects": false,
-  "main": "dist",
-  "files": [
-    "dist",
-    "types.d.ts"
-  ],
-  "scripts": {
-    "prepack": "tsc -p tsconfig.build.json",
-    "test": "jest"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "dependencies": {
-    "@appsemble/types": "0.18.24",
+    "@appsemble/types": "0.18.25",
     "@types/css-minimizer-webpack-plugin": "^3.0.2",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "css-loader": "^6.2.0",
@@ -42,15 +14,43 @@
     "ts-loader": "^9.2.4",
     "tsconfig-paths-webpack-plugin": "^3.5.1"
   },
+  "description": "NodeJS utilities used by Appsemble internally.",
   "devDependencies": {
     "@types/case-sensitive-paths-webpack-plugin": "^2.1.6",
     "@types/mini-css-extract-plugin": "^2.0.1"
   },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "files": [
+    "dist",
+    "types.d.ts"
+  ],
+  "homepage": "https://appsemble.app",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "license": "LGPL-3.0-only",
+  "main": "dist",
+  "name": "@appsemble/webpack-config",
   "peerDependencies": {
     "typescript": "^4",
     "webpack": "^5"
   },
-  "engines": {
-    "node": ">=12.0.0"
-  }
+  "repository": {
+    "directory": "packages/webpack-config",
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git"
+  },
+  "scripts": {
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
+  },
+  "sideEffects": false,
+  "version": "0.18.25"
 }

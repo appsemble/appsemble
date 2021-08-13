@@ -1,25 +1,25 @@
 {
-  "name": "@appsemble/map",
-  "version": "0.18.24",
-  "private": true,
-  "description": "A block that displays a map powered by OpenStreetMap that can be used to display and interact with markers.",
-  "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "blocks/map"
-  },
-  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "scripts": {
-    "test": "jest"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "dependencies": {
-    "@appsemble/sdk": "0.18.24",
+    "@appsemble/sdk": "0.18.25",
     "@fortawesome/fontawesome-common-types": "^0.2.35",
     "@types/leaflet": "^1.7.4",
     "@wesselkuipers/leaflet.markercluster": "^1.4.4",
     "leaflet": "~1.5.1"
-  }
+  },
+  "description": "A block that displays a map powered by OpenStreetMap that can be used to display and interact with markers.",
+  "homepage": "https://appsemble.app",
+  "license": "LGPL-3.0-only",
+  "name": "@appsemble/map",
+  "private": true,
+  "repository": {
+    "directory": "blocks/map",
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "version": "0.18.25"
 }

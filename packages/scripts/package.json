@@ -1,33 +1,11 @@
 {
-  "name": "@appsemble/scripts",
-  "version": "0.18.24",
-  "private": true,
-  "description": "Internal scripts for managing the Appsemble repository",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "homepage": "https://appsemble.app",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "packages/scripts"
-  },
-  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "scripts": {
-    "test": "jest"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "dependencies": {
-    "@appsemble/node-utils": "0.18.24",
-    "@appsemble/types": "0.18.24",
-    "@appsemble/utils": "0.18.24",
-    "@appsemble/webpack-core": "0.18.24",
+    "@appsemble/node-utils": "0.18.25",
+    "@appsemble/types": "0.18.25",
+    "@appsemble/utils": "0.18.25",
+    "@appsemble/webpack-core": "0.18.25",
     "@types/fs-extra": "^9.0.12",
     "@types/js-yaml": "^4.0.2",
     "@types/mdast": "^3.0.7",
@@ -51,7 +29,29 @@
     "webpack": "^5.48.0",
     "yargs": "^17.0.1"
   },
+  "description": "Internal scripts for managing the Appsemble repository",
   "engines": {
     "node": ">=12.0.0"
-  }
+  },
+  "homepage": "https://appsemble.app",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "license": "LGPL-3.0-only",
+  "name": "@appsemble/scripts",
+  "private": true,
+  "repository": {
+    "directory": "packages/scripts",
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "version": "0.18.25"
 }

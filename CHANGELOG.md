@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.25](https://gitlab.com/appsemble/appsemble/-/releases/0.18.25)] - 2021-08-13
+
+### Added
+
+- Block(`html`): Add `html` block.
+- App: App screenshots are now available in the PWA manifest.
+- Cli: Add `--resources` flag to `app create`.
+- Cli: Add `block build` command.
+- Cli: Add `resource create` command.
+- Cli: Add `resource update` command.
+- Server: Assets now support a name which can be used to reference them as an alternative to their
+  ID.
+- Utils: Add `page` remapper. This currently only supports the `url` property.
+- Utils: Add `url` to `app` remapper.
+
+### Changed
+
+- Server: Uploading assets now supports `multipart/form-data` instead of raw data.
+
 ## \[[0.18.24](https://gitlab.com/appsemble/appsemble/-/releases/0.18.24)] - 2021-07-29
 
 ### Fixed
