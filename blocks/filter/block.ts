@@ -1,5 +1,4 @@
-import { Remapper } from '@appsemble/sdk';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName, Remapper } from '@appsemble/sdk';
 import { JSX } from 'preact/jsx-runtime';
 
 export interface EnumOption {

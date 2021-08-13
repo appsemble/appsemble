@@ -4,6 +4,7 @@ import { Promisable } from 'type-fest';
 import { Action, Message, Remapper, Theme } from './types';
 
 export * from './types';
+export { IconName };
 
 /**
  * Actions defined on a block.

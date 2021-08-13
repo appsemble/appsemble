@@ -16,7 +16,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.18.25",
-    "@fortawesome/fontawesome-common-types": "^0.2.35"
+    "@appsemble/sdk": "0.18.25"
   }
 }

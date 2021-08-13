@@ -1,5 +1,4 @@
-import { Remapper } from '@appsemble/sdk';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName, Remapper } from '@appsemble/sdk';
 
 /**
  * An object describing what a stats field looks like.

@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.18.25",
-    "@fortawesome/fontawesome-common-types": "^0.2.35",
     "classnames": "2.3.1",
     "mini-jsx": "^3.0.1"
   }
