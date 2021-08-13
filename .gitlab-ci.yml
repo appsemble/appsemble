@@ -326,6 +326,7 @@ publish npm:
 
 # Perform various post release actions.
 sentry release:
+  needs: []
   image:
     name: getsentry/sentry-cli:1
     entrypoint: [/bin/sh, -c]
