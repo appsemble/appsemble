@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
+import { TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import { TeamRole } from 'utils/src/constants';
 
 interface SharedTeamParams {
   /**
