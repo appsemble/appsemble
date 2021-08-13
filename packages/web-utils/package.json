@@ -1,16 +1,8 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "dependencies": {
-    "@appsemble/types": "0.18.25",
-    "@fortawesome/fontawesome-common-types": "^0.2.35",
-    "@sentry/browser": "^6.10.0",
-    "@types/mdast": "^3.0.7",
-    "@types/webpack-env": "^1.16.2",
-    "axios": "^0.21.1"
-  },
+  "name": "@appsemble/web-utils",
+  "version": "0.18.25",
+  "private": true,
   "description": "Browser specific utility functions used in Appsemble internally",
-  "homepage": "https://appsemble.app",
   "keywords": [
     "app",
     "apps",
@@ -19,17 +11,25 @@
     "low-code",
     "lowcode"
   ],
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/web-utils",
-  "private": true,
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
-    "directory": "packages/web-utils",
     "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/web-utils"
   },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
   "scripts": {
     "test": "jest"
   },
-  "sideEffects": false,
-  "version": "0.18.25"
+  "dependencies": {
+    "@appsemble/types": "0.18.25",
+    "@fortawesome/fontawesome-common-types": "^0.2.35",
+    "@sentry/browser": "^6.10.0",
+    "@types/mdast": "^3.0.7",
+    "@types/webpack-env": "^1.16.2",
+    "axios": "^0.21.1"
+  }
 }

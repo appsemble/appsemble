@@ -1,6 +1,28 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "name": "@appsemble/app",
+  "version": "0.18.25",
+  "private": true,
+  "description": "The base for Appsemble apps",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/app"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "@appsemble/react-components": "0.18.25",
     "@appsemble/sdk": "0.18.25",
@@ -34,27 +56,5 @@
     "type-fest": "^1.2.2",
     "xast-util-to-xml": "^2.0.1",
     "xastscript": "^2.1.1"
-  },
-  "description": "The base for Appsemble apps",
-  "homepage": "https://appsemble.app",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/app",
-  "private": true,
-  "repository": {
-    "directory": "packages/app",
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
-  },
-  "scripts": {
-    "test": "jest"
-  },
-  "version": "0.18.25"
+  }
 }

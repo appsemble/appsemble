@@ -1,6 +1,29 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "name": "@appsemble/react-components",
+  "version": "0.18.25",
+  "private": true,
+  "description": "Reusable React components for internal use",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/react-components"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "@appsemble/sdk": "0.18.25",
     "@appsemble/types": "0.18.25",
@@ -30,31 +53,8 @@
     "react-transition-group": "^4.4.2",
     "type-fest": "^1.2.2"
   },
-  "description": "Reusable React components for internal use",
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0"
-  },
-  "homepage": "https://appsemble.app",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/react-components",
-  "private": true,
-  "repository": {
-    "directory": "packages/react-components",
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
-  },
-  "scripts": {
-    "test": "jest"
-  },
-  "sideEffects": false,
-  "version": "0.18.25"
+  }
 }

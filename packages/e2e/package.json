@@ -1,14 +1,8 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "dependencies": {
-    "cypress": "^8.0.0"
-  },
+  "name": "@appsemble/e2e",
+  "version": "0.18.25",
+  "private": true,
   "description": "End-to-end tests used for testing Appsemble apps in an existing environment.",
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "homepage": "https://appsemble.app",
   "keywords": [
     "app",
     "apps",
@@ -17,17 +11,23 @@
     "low-code",
     "lowcode"
   ],
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/e2e",
-  "private": true,
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
-    "directory": "packages/e2e",
     "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/e2e"
   },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "scripts": {
     "e2e": "cypress run",
     "test": "jest"
   },
-  "version": "0.18.25"
+  "dependencies": {
+    "cypress": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  }
 }

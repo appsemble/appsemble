@@ -1,6 +1,28 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "name": "@appsemble/studio",
+  "version": "0.18.25",
+  "private": true,
+  "description": "The frontend for managing Appsemble apps and organizations",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/studio"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "@appsemble/react-components": "0.18.25",
     "@appsemble/sdk": "0.18.25",
@@ -38,27 +60,5 @@
     "react-dom": "^17.0.2",
     "react-intl": "^5.20.6",
     "react-router-dom": "^5.2.0"
-  },
-  "description": "The frontend for managing Appsemble apps and organizations",
-  "homepage": "https://appsemble.app",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/studio",
-  "private": true,
-  "repository": {
-    "directory": "packages/studio",
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
-  },
-  "scripts": {
-    "test": "jest"
-  },
-  "version": "0.18.25"
+  }
 }
