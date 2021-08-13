@@ -264,6 +264,8 @@
   "studio.src.pages.apps.app.assets.id": "Id",
   "studio.src.pages.apps.app.assets.loading": "De assets worden ingeladen…",
   "studio.src.pages.apps.app.assets.mime": "Type",
+  "studio.src.pages.apps.app.assets.name": "Naam",
+  "studio.src.pages.apps.app.assets.nameDescription": "Als een naam is ingevuld, kan de asset worden gerefereerd aan zowel het ID als de naam.",
   "studio.src.pages.apps.app.assets.noFile": "Geen bestand gekozen",
   "studio.src.pages.apps.app.assets.preview": "Voorbeeld",
   "studio.src.pages.apps.app.assets.title": "Assets",

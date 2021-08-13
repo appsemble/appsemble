@@ -1,5 +1,7 @@
 import { OpenAPIV3 } from 'openapi-types';
 
+import { normalized } from '../../constants';
+
 export const paths: OpenAPIV3.PathsObject = {
   '/api/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
@@ -26,7 +28,28 @@ export const paths: OpenAPIV3.PathsObject = {
       requestBody: {
         description: 'The asset to upload.',
         content: {
-          '*/*': {},
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              description: 'The request body for creating an asset.',
+              additionalProperties: false,
+              required: ['file'],
+              properties: {
+                file: {
+                  type: 'string',
+                  format: 'binary',
+                  writeOnly: true,
+                  description: 'The binary data of the asset. This may include a filename.',
+                },
+                name: {
+                  type: 'string',
+                  pattern: normalized.source,
+                  description:
+                    'The given name of the asset. Assets may be referenced by their name or ID in the API.',
+                },
+              },
+            },
+          },
         },
       },
       responses: {

@@ -264,6 +264,8 @@
   "studio.src.pages.apps.app.assets.id": "Id",
   "studio.src.pages.apps.app.assets.loading": "",
   "studio.src.pages.apps.app.assets.mime": "Dateityp",
+  "studio.src.pages.apps.app.assets.name": "",
+  "studio.src.pages.apps.app.assets.nameDescription": "",
   "studio.src.pages.apps.app.assets.noFile": "Keine Datei ausgewählt",
   "studio.src.pages.apps.app.assets.preview": "Vorschau",
   "studio.src.pages.apps.app.assets.title": "{name} - Vermögenswerte",

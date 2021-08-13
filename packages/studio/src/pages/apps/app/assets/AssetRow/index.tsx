@@ -42,7 +42,7 @@ export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactE
           icon="download"
         />
       </td>
-      <td>{asset.id}</td>
+      <td>{asset.name || asset.id}</td>
       <td>{asset.mime}</td>
       <td>{asset.filename}</td>
       <td>
