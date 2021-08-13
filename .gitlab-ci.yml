@@ -234,6 +234,30 @@ helm package:
 #  Publish Stage                                                                                  #
 ###################################################################################################
 
+# Create a GitHub release
+github release:
+  extends: .yarn
+  stage: publish
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - yarn scripts github-release
+
+# Perform various post release actions.
+post release:
+  extends: .yarn
+  stage: publish
+  # This is new and mainly used to update nice-to-have metadata.
+  # Allow failure to prevent blocking of important jobs.
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - yarn scripts post-release
+
 # Publish the Docker image that was built to Docker Hub.
 publish docker:
   extends: .docker
@@ -484,30 +508,6 @@ production:
       --set "sentryEnvironment=production"
       --set "sentrySecret=sentry"
       --wait
-
-# Perform various post release actions.
-post release:
-  extends: .yarn
-  stage: deploy
-  # This is new and mainly used to update nice-to-have metadata.
-  # Allow failure to prevent blocking of important jobs.
-  allow_failure: true
-  rules:
-    - if: $CI_COMMIT_TAG
-  script:
-    - yarn scripts post-release
-
-# Create a GitHub release
-github release:
-  extends: .yarn
-  stage: deploy
-  # This is new and mainly used to update nice-to-have metadata.
-  # Allow failure to prevent blocking of important jobs.
-  allow_failure: true
-  rules:
-    - if: $CI_COMMIT_TAG
-  script:
-    - yarn scripts github-release
 
 ###################################################################################################
 #  Provision Stage                                                                                #
