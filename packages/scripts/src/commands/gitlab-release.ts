@@ -1,20 +1,15 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
-import { URL } from 'url';
 
 import { logger, readData } from '@appsemble/node-utils';
-import axios from 'axios';
 import { PackageJson } from 'type-fest';
 
 import { getReleaseNotes } from '../lib/changelog';
 import { AssetLink, gitlab, Release } from '../lib/gitlab';
 
-export const command = 'post-release';
-export const description = 'Perform various post release actions.';
+export const command = 'gitlab-release';
+export const description = 'Create a GitLab release.';
 
-const DOCKER_HUB_URL = 'https://hub.docker.com';
-
-const { DOCKER_HUB_PASSWORD, DOCKER_HUB_USERNAME } = process.env;
 const { CI_COMMIT_TAG } = process.env;
 
 /**
@@ -35,10 +30,12 @@ async function readPackages(dirname: string): Promise<PackageJson[]> {
 
 /**
  * Create a GitLab release.
- *
- * @param releaseNotes - The release notes to include
  */
-async function createGitlabRelease(releaseNotes: string): Promise<void> {
+export async function handler(): Promise<void> {
+  const releaseNotes = await getReleaseNotes();
+  logger.info('## Release notes');
+  logger.info('');
+  logger.info(releaseNotes);
   const packages = (await readPackages('packages'))
     .filter((pkg) => !pkg.private)
     .map<AssetLink>(({ name, version }) => ({
@@ -73,36 +70,4 @@ async function createGitlabRelease(releaseNotes: string): Promise<void> {
     },
   } as Release);
   logger.info('Successfully created GitLab release');
-}
-
-/**
- * Update the release on Docker Hub.
- */
-async function updateDockerHub(): Promise<void> {
-  const readme = await fs.readFile(require.resolve('@appsemble/server/README.md'), 'utf-8');
-  const docker = axios.create({ baseURL: String(new URL('/v2', DOCKER_HUB_URL)) });
-
-  logger.info(`Logging in to ${DOCKER_HUB_URL}`);
-  const {
-    data: { token },
-  } = await docker.post('users/login', {
-    username: DOCKER_HUB_USERNAME,
-    password: DOCKER_HUB_PASSWORD,
-  });
-  docker.defaults.headers.authorization = `JWT ${token}`;
-  logger.info(`Successfully logged in to ${DOCKER_HUB_URL}`);
-
-  logger.info(`Updating full description on ${DOCKER_HUB_URL}`);
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  await docker.patch('repositories/appsemble/appsemble', { full_description: readme });
-  logger.info(`Successfully updated full description on ${DOCKER_HUB_URL}`);
-}
-
-export async function handler(): Promise<void> {
-  const releaseNotes = await getReleaseNotes();
-  logger.info('## Release notes');
-  logger.info('');
-  logger.info(releaseNotes);
-  await updateDockerHub();
-  await createGitlabRelease(releaseNotes);
 }
