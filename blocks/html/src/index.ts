@@ -18,7 +18,7 @@ bootstrap(
     const clickNodes = body.querySelectorAll<HTMLElement>('[data-click]');
 
     for (const contentNode of contentNodes) {
-      const placeholderName = contentNode.dataset.asset;
+      const placeholderName = contentNode.dataset.content;
       if (has(placeholders, placeholderName)) {
         contentNode.textContent = remap(placeholders[placeholderName], data);
       }
