@@ -1,15 +1,7 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "bin": "dist/index.js",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "dependencies": {
-    "@appsemble/cli": "0.18.25"
-  },
+  "name": "appsemble",
+  "version": "0.18.25",
   "description": "A simple wrapper for @appsemble/cli",
-  "files": [
-    "dist"
-  ],
-  "homepage": "https://appsemble.app",
   "keywords": [
     "app",
     "apps",
@@ -19,17 +11,25 @@
     "low-code",
     "lowcode"
   ],
-  "license": "LGPL-3.0-only",
-  "main": "dist",
-  "name": "appsemble",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
-    "directory": "packages/appsemble",
     "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/appsemble"
   },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "main": "dist",
+  "bin": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",
     "test": "jest"
   },
-  "version": "0.18.25"
+  "dependencies": {
+    "@appsemble/cli": "0.18.25"
+  }
 }

@@ -1,6 +1,29 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "name": "@appsemble/preact-components",
+  "version": "0.18.25",
+  "private": true,
+  "description": "Reusable Preact components for internal use",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/preact-components"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "@appsemble/preact": "0.18.25",
     "@appsemble/sdk": "0.18.25",
@@ -12,28 +35,5 @@
     "flatpickr": "^4.6.9",
     "leaflet": "~1.5.1",
     "preact": "^10.5.14"
-  },
-  "description": "Reusable Preact components for internal use",
-  "homepage": "https://appsemble.app",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/preact-components",
-  "private": true,
-  "repository": {
-    "directory": "packages/preact-components",
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
-  },
-  "scripts": {
-    "test": "jest"
-  },
-  "sideEffects": false,
-  "version": "0.18.25"
+  }
 }

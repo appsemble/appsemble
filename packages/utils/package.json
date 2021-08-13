@@ -1,6 +1,33 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "name": "@appsemble/utils",
+  "version": "0.18.25",
+  "description": "Utility functions used in Appsemble internally",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/utils"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "main": "dist",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
+  },
   "dependencies": {
     "@appsemble/types": "0.18.25",
     "axios": "^0.21.1",
@@ -17,7 +44,6 @@
     "postcss": "^7.0.36",
     "type-fest": "^1.2.2"
   },
-  "description": "Utility functions used in Appsemble internally",
   "devDependencies": {
     "@sinonjs/fake-timers": "^7.1.2",
     "@types/langmap": "^0.0.1",
@@ -28,31 +54,5 @@
   },
   "engines": {
     "node": ">=12.0.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "homepage": "https://appsemble.app",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "license": "LGPL-3.0-only",
-  "main": "dist",
-  "name": "@appsemble/utils",
-  "repository": {
-    "directory": "packages/utils",
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
-  },
-  "scripts": {
-    "prepack": "tsc -p tsconfig.build.json",
-    "test": "jest"
-  },
-  "sideEffects": false,
-  "version": "0.18.25"
+  }
 }

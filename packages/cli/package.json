@@ -1,9 +1,36 @@
 {
+  "name": "@appsemble/cli",
+  "version": "0.18.25",
+  "description": "The CLI for developing with Appsemble apps and blocks",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "cli",
+    "framework",
+    "low-code",
+    "lowcode"
+  ],
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/cli"
+  },
+  "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "main": "dist",
   "bin": {
     "appsemble": "dist/index.js"
   },
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
+  },
   "dependencies": {
     "@appsemble/node-utils": "0.18.25",
     "@appsemble/types": "0.18.25",
@@ -28,7 +55,6 @@
     "typescript": "~4.3.5",
     "yargs": "^17.0.1"
   },
-  "description": "The CLI for developing with Appsemble apps and blocks",
   "devDependencies": {
     "@appsemble/types": "0.18.25",
     "@types/concat-stream": "^1.6.1",
@@ -40,28 +66,6 @@
     "@types/postcss-url": "^8.0.2",
     "concat-stream": "^2.0.0"
   },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "homepage": "https://appsemble.app",
-  "keywords": [
-    "app",
-    "apps",
-    "appsemble",
-    "cli",
-    "framework",
-    "low-code",
-    "lowcode"
-  ],
-  "license": "LGPL-3.0-only",
-  "main": "dist",
-  "name": "@appsemble/cli",
-  "optionalDependencies": {
-    "keytar": "^7.7.0"
-  },
   "peerDependencies": {
     "webpack": "^5"
   },
@@ -70,14 +74,10 @@
       "optional": true
     }
   },
-  "repository": {
-    "directory": "packages/cli",
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
+  "optionalDependencies": {
+    "keytar": "^7.7.0"
   },
-  "scripts": {
-    "prepack": "tsc -p tsconfig.build.json",
-    "test": "jest"
-  },
-  "version": "0.18.25"
+  "engines": {
+    "node": ">=12.0.0"
+  }
 }

@@ -1,6 +1,20 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "name": "@appsemble/form",
+  "version": "0.18.25",
+  "private": true,
+  "description": "A block used for inputting and submitting sets of data.",
+  "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/form"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "@appsemble/preact": "0.18.25",
     "@appsemble/preact-components": "0.18.25",
@@ -14,19 +28,5 @@
     "leaflet": "~1.5.1",
     "preact": "^10.5.14",
     "type-fest": "^1.2.2"
-  },
-  "description": "A block used for inputting and submitting sets of data.",
-  "homepage": "https://appsemble.app",
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/form",
-  "private": true,
-  "repository": {
-    "directory": "blocks/form",
-    "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
-  },
-  "scripts": {
-    "test": "jest"
-  },
-  "version": "0.18.25"
+  }
 }

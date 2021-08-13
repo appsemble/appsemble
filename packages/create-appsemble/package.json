@@ -1,27 +1,8 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "bin": "dist/index.js",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "dependencies": {
-    "@appsemble/node-utils": "0.18.25",
-    "fs-extra": "^10.0.0",
-    "inquirer": "^8.1.2",
-    "type-fest": "^1.2.2",
-    "yargs": "^17.0.1"
-  },
+  "name": "create-appsemble",
+  "version": "0.18.25",
+  "private": true,
   "description": "Bootstrap an Appsemble project",
-  "devDependencies": {
-    "@types/fs-extra": "^9.0.12",
-    "@types/inquirer": "^7.3.3"
-  },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "files": [
-    "dist",
-    "templates"
-  ],
-  "homepage": "https://appsemble.app",
   "keywords": [
     "app",
     "apps",
@@ -31,18 +12,37 @@
     "low-code",
     "lowcode"
   ],
-  "license": "LGPL-3.0-only",
-  "main": "dist",
-  "name": "create-appsemble",
-  "private": true,
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
-    "directory": "packages/create-appsemble",
     "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/create-appsemble"
   },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "main": "dist",
+  "bin": "dist/index.js",
+  "files": [
+    "dist",
+    "templates"
+  ],
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",
     "test": "jest"
   },
-  "version": "0.18.25"
+  "dependencies": {
+    "@appsemble/node-utils": "0.18.25",
+    "fs-extra": "^10.0.0",
+    "inquirer": "^8.1.2",
+    "type-fest": "^1.2.2",
+    "yargs": "^17.0.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.12",
+    "@types/inquirer": "^7.3.3"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  }
 }

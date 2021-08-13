@@ -1,22 +1,22 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "dependencies": {
-    "@appsemble/sdk": "0.18.25",
-    "@appsemble/utils": "0.18.25"
-  },
+  "name": "@appsemble/html",
+  "version": "0.18.25",
+  "private": true,
   "description": "A block that can render HTML with basic templating.",
   "homepage": "https://appsemble.app",
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/html",
-  "private": true,
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
-    "directory": "blocks/html",
     "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/html"
   },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "scripts": {
     "test": "jest"
   },
-  "version": "0.18.25"
+  "dependencies": {
+    "@appsemble/sdk": "0.18.25",
+    "@appsemble/utils": "0.18.25"
+  }
 }

@@ -1,21 +1,21 @@
 {
-  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
-  "dependencies": {
-    "@appsemble/sdk": "0.18.25"
-  },
+  "name": "@appsemble/timer",
+  "version": "0.18.25",
+  "private": true,
   "description": "A block that emits an event on an interval",
   "homepage": "https://appsemble.app",
-  "license": "LGPL-3.0-only",
-  "name": "@appsemble/timer",
-  "private": true,
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
-    "directory": "blocks/timer",
     "type": "git",
-    "url": "https://gitlab.com/appsemble/appsemble.git"
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/timer"
   },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "scripts": {
     "test": "jest"
   },
-  "version": "0.18.25"
+  "dependencies": {
+    "@appsemble/sdk": "0.18.25"
+  }
 }
