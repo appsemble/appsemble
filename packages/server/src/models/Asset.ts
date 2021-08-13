@@ -9,6 +9,7 @@ import {
   Model,
   PrimaryKey,
   Table,
+  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 
@@ -31,6 +32,10 @@ export class Asset extends Model {
   @Column
   data: Buffer;
 
+  @Unique('UniqueAssetNameIndex')
+  @Column
+  name: string;
+
   @CreatedAt
   created: Date;
 
@@ -38,6 +43,7 @@ export class Asset extends Model {
   updated: Date;
 
   @ForeignKey(() => App)
+  @Unique('UniqueAssetNameIndex')
   @Column
   AppId: number;
 

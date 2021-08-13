@@ -93,13 +93,13 @@ export async function registerOAuth2Connection(ctx: Context): Promise<void> {
 }
 
 export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
-  const {
+  let {
     mailer,
     request: {
       body: { authorizationUrl, code },
     },
+    user,
   } = ctx;
-  let user = ctx.user as User;
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
 
   if (!preset) {
@@ -170,7 +170,7 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
 }
 
 export async function getConnectedAccounts(ctx: Context): Promise<void> {
-  const user = ctx.user as User;
+  const { user } = ctx;
 
   ctx.body = await OAuthAuthorization.findAll({
     attributes: ['authorizationUrl'],
@@ -181,8 +181,8 @@ export async function getConnectedAccounts(ctx: Context): Promise<void> {
 export async function unlinkConnectedAccount(ctx: Context): Promise<void> {
   const {
     query: { authorizationUrl },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
 

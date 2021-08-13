@@ -120,9 +120,9 @@ async function verifyPermission(
 
   const {
     query: { $team },
+    user,
     users,
   } = ctx;
-  const user = ctx.user as User;
 
   if ('studio' in users || 'cli' in users) {
     await (action === 'count' || action === 'get' || action === 'query'
@@ -255,8 +255,8 @@ export async function queryResources(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
     query: { $select, $top },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -317,8 +317,8 @@ export async function queryResources(ctx: Context): Promise<void> {
 export async function countResources(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -359,8 +359,8 @@ export async function countResources(ctx: Context): Promise<void> {
 export async function getResourceById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
+    user,
   } = ctx;
-  const user = ctx.user as User;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -529,8 +529,8 @@ export async function getResourceSubscription(ctx: Context): Promise<void> {
 export async function createResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
+    user,
   } = ctx;
-  const user = ctx.user as User;
   const [resource, assets, $expires] = processResourceBody(ctx);
   const action = 'create';
 
@@ -605,8 +605,8 @@ export async function createResource(ctx: Context): Promise<void> {
 export async function updateResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
+    user,
   } = ctx;
-  const user = ctx.user as User;
   const [updatedResource, assets, $expires, clonable] = processResourceBody(ctx);
   const action = 'update';
 
@@ -691,8 +691,8 @@ export async function updateResource(ctx: Context): Promise<void> {
 export async function deleteResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
+    user,
   } = ctx;
-  const user = ctx.user as User;
   const action = 'delete';
 
   const app = await App.findByPk(appId, {

@@ -7,6 +7,9 @@ export const messages = defineMessages({
   id: 'Id',
   mime: 'File type',
   filename: 'Filename',
+  name: 'Name',
+  nameDescription:
+    'If a name is set, the asset may be referenced by this name in addition to its ID.',
   actions: 'Actions',
   preview: 'Preview',
   cancel: 'Cancel',
@@ -21,5 +24,8 @@ export const messages = defineMessages({
   chooseFile: 'Choose file…',
   noFile: 'No file chosen',
   uploadSuccess: 'Successfully uploaded asset {id}',
+  uploadError: 'There as a problem uploading the asset. Please try again.',
   error: 'Something went wrong when fetching this app’s assets.',
+  loading: 'Assets are being loaded…',
+  empty: 'This app currently has no assets.',
 });

@@ -72,6 +72,7 @@ async function updatePkg(dir: string, version: string): Promise<void> {
           return value;
       }
     }),
+    { sort: false },
   );
 }
 

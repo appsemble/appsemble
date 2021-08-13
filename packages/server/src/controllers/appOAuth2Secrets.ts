@@ -116,8 +116,8 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     request: {
       body: { code, redirectUri, scope },
     },
+    user,
   } = ctx;
-  const user = ctx.user as User;
   // XXX Replace this with an imported language array when supporting more languages
   let referer: URL;
   try {

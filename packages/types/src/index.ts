@@ -4,6 +4,7 @@ import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
 
+export * from './asset';
 export * from './author';
 export * from './snapshot';
 export * from './resource';

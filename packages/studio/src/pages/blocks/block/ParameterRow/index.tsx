@@ -58,18 +58,20 @@ export function ParameterRow({
           required={required}
           value={value}
         />
-        {Object.entries(value.items)
-          .filter(([childName, child]) => typeof child === 'object' && childName !== 'anyOf')
-          .map(([childName, child]) => (
-            <ParameterRow
-              key={childName}
-              name={`${name}[].${childName}`}
-              parent={value}
-              recurse
-              required={required}
-              value={child}
-            />
-          ))}
+        {value.items
+          ? Object.entries(value.items)
+              .filter(([childName, child]) => typeof child === 'object' && childName !== 'anyOf')
+              .map(([childName, child]) => (
+                <ParameterRow
+                  key={childName}
+                  name={`${name}[].${childName}`}
+                  parent={value}
+                  recurse
+                  required={required}
+                  value={child}
+                />
+              ))
+          : null}
       </>
     );
   }
@@ -84,18 +86,20 @@ export function ParameterRow({
           required={required}
           value={value}
         />
-        {Object.entries(value.properties)
-          .filter(([childName, child]) => typeof child === 'object' && childName !== 'anyOf')
-          .map(([childName, child]) => (
-            <ParameterRow
-              key={childName}
-              name={`${name}.${childName}`}
-              parent={value}
-              recurse
-              required={required}
-              value={child}
-            />
-          ))}
+        {value.properties
+          ? Object.entries(value.properties)
+              .filter(([childName, child]) => typeof child === 'object' && childName !== 'anyOf')
+              .map(([childName, child]) => (
+                <ParameterRow
+                  key={childName}
+                  name={`${name}.${childName}`}
+                  parent={value}
+                  recurse
+                  required={required}
+                  value={child}
+                />
+              ))
+          : null}
       </>
     );
   }

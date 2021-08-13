@@ -117,8 +117,8 @@
   "appsembleServer": {
     "database-host": "localhost",
     "database-name": "appsemble",
-    "database-user": "admin",
     "database-password": "password",
+    "database-user": "admin",
     "github-client-id": "e526099c0f82f180b06a",
     "github-client-secret": "52b46994b2cba62163a0719a0969043109d8953e",
     "gitlab-client-id": "743e32d7c7e38172fe6630123fe82be1f3d8c383e02e33a2a711a5e9ed5a2d88",
