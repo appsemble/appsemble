@@ -1,6 +1,5 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { BaseActionDefinition, defaultLocale, schemas } from '@appsemble/utils';
-import decamelize from 'decamelize';
+import { BaseActionDefinition, camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
 import { Schema as JSONSchema } from 'jsonschema';
 import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -44,7 +43,7 @@ export function ActionPage(): ReactElement {
         <Schema anchors renderRef={Ref} schema={BaseActionDefinition} />
       </div>
       {entries.map(([name, schema]) => {
-        const id = decamelize(name, { separator: '-' });
+        const id = camelToHyphen(name);
 
         return (
           <Fragment key={name}>

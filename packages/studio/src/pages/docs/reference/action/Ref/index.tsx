@@ -1,4 +1,4 @@
-import decamelize from 'decamelize';
+import { camelToHyphen } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -12,13 +12,7 @@ export function Ref({ isArray, jsonRef }: RenderRefProps): ReactElement {
       {name === 'ActionDefinition' ? (
         'ActionDefinition'
       ) : (
-        <Link
-          to={
-            name === 'RemapperDefinition'
-              ? './remapper'
-              : `./app#${decamelize(name, { separator: '-' })}`
-          }
-        >
+        <Link to={name === 'RemapperDefinition' ? './remapper' : `./app#${camelToHyphen(name)}`}>
           {name}
         </Link>
       )}

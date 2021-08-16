@@ -20,6 +20,7 @@ export * from './mapValues';
 export * from './objectCache';
 export * from './pem';
 export * from './remap';
+export * from './string';
 export * from './validateAppDefinition';
 export * from './langmap';
 export * from './i18n';
