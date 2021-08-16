@@ -1,6 +1,7 @@
 import { ReadStream } from 'fs';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { authenticate } from 'cli/src/lib/authentication';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
@@ -86,6 +87,8 @@ export async function handler({
 
   const normalizedPaths = paths.map((path) => normalizePath(path));
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
+
+  await authenticate(remote, 'apps:write', clientCredentials);
 
   logger.info(`Updating ${directories.length} apps`);
   for (const dir of directories) {

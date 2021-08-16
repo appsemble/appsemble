@@ -9,7 +9,6 @@ import FormData from 'form-data';
 import { readdir } from 'fs-extra';
 
 import { AppsembleContext, AppsembleRC } from '../types';
-import { authenticate } from './authentication';
 import { createResource } from './createResource';
 import { traverseAppDirectory } from './traverseAppDirectory';
 import { traverseBlockThemes } from './traverseBlockThemes';
@@ -144,11 +143,6 @@ export async function createApp({
     formData.append('icon', realIcon);
   }
 
-  await authenticate(
-    remote,
-    resources ? 'apps:write resources:write' : 'apps:write',
-    clientCredentials,
-  );
   const { data } = await axios.post('/api/apps', formData, { baseURL: remote, params: { dryRun } });
 
   if (dryRun) {

@@ -7,7 +7,6 @@ import axios from 'axios';
 import FormData from 'form-data';
 
 import { AppsembleContext } from '../types';
-import { authenticate } from './authentication';
 import { traverseAppDirectory } from './traverseAppDirectory';
 import { traverseBlockThemes } from './traverseBlockThemes';
 import { uploadMessages } from './uploadMessages';
@@ -125,7 +124,6 @@ export async function updateApp({
     formData.append('icon', realIcon);
   }
 
-  await authenticate(remote, 'apps:write', clientCredentials);
   const { data } = await axios.patch(`/api/apps/${id}`, formData, { baseURL: remote });
 
   if (file.isDirectory()) {
