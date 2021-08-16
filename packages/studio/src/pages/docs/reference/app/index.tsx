@@ -1,6 +1,5 @@
 import { Checkbox, Title, useMeta, useToggle } from '@appsemble/react-components';
-import { defaultLocale, iterJSONSchema, schemas } from '@appsemble/utils';
-import decamelize from 'decamelize';
+import { camelToHyphen, defaultLocale, iterJSONSchema, schemas } from '@appsemble/utils';
 import { dump } from 'js-yaml';
 import { Schema as JSONSchema } from 'jsonschema';
 import { Fragment, ReactElement } from 'react';
@@ -57,7 +56,7 @@ export function AppPage(): ReactElement {
         <FormattedMessage {...messages.title} />
       </HeaderControl>
       {entries.map(([name, schema]) => {
-        const id = decamelize(name, { separator: '-' });
+        const id = camelToHyphen(name);
 
         return (
           <Fragment key={name}>

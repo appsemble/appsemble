@@ -1,6 +1,5 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { defaultLocale, schemas } from '@appsemble/utils';
-import decamelize from 'decamelize';
+import { camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
 import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -23,7 +22,7 @@ export function RemapperPage(): ReactElement {
         <Introduction main={false} />
       </div>
       {entries.map(([name, schema]) => {
-        const id = decamelize(name, { separator: '-' });
+        const id = camelToHyphen(name);
 
         return (
           <Fragment key={name}>
