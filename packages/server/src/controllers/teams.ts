@@ -204,12 +204,11 @@ export async function addTeamMember(ctx: Context): Promise<void> {
       {
         model: App,
         include: [
-          { model: User, where: isUuid ? { id } : { primaryEmail: id }, required: false },
+          { model: User, where: userQuery, required: false },
           {
             model: Organization,
-            include: [
-              { model: User, where: isUuid ? { id } : { primaryEmail: id }, required: false },
-            ],
+            include: [{ model: User, where: userQuery, required: false }],
+          },
           { model: User, where: userQuery, required: false },
           { model: Organization, include: [{ model: User, where: userQuery, required: false }] },
         ],
