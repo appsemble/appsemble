@@ -1,6 +1,7 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { BaseActionDefinition, camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
+import { camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
 import { Schema as JSONSchema } from 'jsonschema';
+import { OpenAPIV3 } from 'openapi-types';
 import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -9,8 +10,10 @@ import Introduction from './introduction.md';
 import { messages } from './messages';
 import { Ref } from './Ref';
 
-const entries = schemas.ActionDefinition.oneOf
-  .map<[string, JSONSchema]>(({ $ref }: JSONSchema) => {
+const [base, definitions] = schemas.ActionDefinition.allOf;
+
+const entries = (definitions as OpenAPIV3.NonArraySchemaObject).oneOf
+  .map(({ $ref }: JSONSchema) => {
     const ref = $ref.split('/').pop();
     const schema = schemas[ref as keyof typeof schemas] as JSONSchema;
 
@@ -40,7 +43,7 @@ export function ActionPage(): ReactElement {
       </Title>
       <div className="pl-6">
         <Introduction main={false} />
-        <Schema anchors renderRef={Ref} schema={BaseActionDefinition} />
+        <Schema anchors renderRef={Ref} schema={base} />
       </div>
       {entries.map(([name, schema]) => {
         const id = camelToHyphen(name);

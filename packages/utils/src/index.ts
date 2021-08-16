@@ -1,5 +1,4 @@
 export * from './api';
-export * from './api/components/schemas/BaseActionDefinition';
 export * from './appMessages';
 export * from './appSecurity';
 export * from './blockUtils';
