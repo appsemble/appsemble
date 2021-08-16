@@ -5,9 +5,9 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { createApp } from '../../lib/app';
 import { authenticate } from '../../lib/authentication';
 import { coerceFile } from '../../lib/coercers';
-import { createApp } from '../../lib/createApp';
 import { BaseArguments } from '../../types';
 
 interface CreateAppArguments extends BaseArguments {

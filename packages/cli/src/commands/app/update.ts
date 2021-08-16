@@ -1,13 +1,13 @@
 import { ReadStream } from 'fs';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { authenticate } from 'cli/src/lib/authentication';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { updateApp } from '../../lib/app';
+import { authenticate } from '../../lib/authentication';
 import { coerceFile } from '../../lib/coercers';
-import { updateApp } from '../../lib/updateApp';
 import { BaseArguments } from '../../types';
 
 interface UpdateAppArguments extends BaseArguments {
