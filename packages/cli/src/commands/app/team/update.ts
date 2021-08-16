@@ -49,7 +49,7 @@ export async function handler({
     throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
   }
 
-  await authenticate(remote, 'apps:write teams:write', clientCredentials);
+  await authenticate(remote, 'teams:write', clientCredentials);
 
   await updateTeam({
     id,

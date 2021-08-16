@@ -31,7 +31,7 @@ export async function handler({
   id,
   remote,
 }: DeleteTeamArguments): Promise<void> {
-  await authenticate(remote, 'apps:write teams:write', clientCredentials);
+  await authenticate(remote, 'teams:write', clientCredentials);
 
   await deleteTeam({
     id,

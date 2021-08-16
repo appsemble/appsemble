@@ -132,7 +132,7 @@ export async function patchTeam(ctx: Context): Promise<void> {
 
   await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
-  await team.update({ ...(name && { name }), ...(annotations && { annotations }) });
+  await team.update({ name: name || undefined, annotations: annotations || undefined });
   ctx.body = {
     id: team.id,
     name,
@@ -194,11 +194,13 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     },
     user,
   } = ctx;
-  const isUuid = validate(id);
+  const userQuery = {
+    [validate(id) ? 'id' : 'primaryEmail']: id,
+  };
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
-      { model: User, where: isUuid ? { id } : { primaryEmail: id }, required: false },
+      { model: User, where: userQuery, required: false },
       {
         model: App,
         include: [
@@ -208,7 +210,8 @@ export async function addTeamMember(ctx: Context): Promise<void> {
             include: [
               { model: User, where: isUuid ? { id } : { primaryEmail: id }, required: false },
             ],
-          },
+          { model: User, where: userQuery, required: false },
+          { model: Organization, include: [{ model: User, where: userQuery, required: false }] },
         ],
       },
     ],

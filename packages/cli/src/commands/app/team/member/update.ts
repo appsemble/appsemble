@@ -45,7 +45,7 @@ export async function handler({
   role,
   user,
 }: InviteTeamArguments): Promise<void> {
-  await authenticate(remote, 'apps:write teams:write', clientCredentials);
+  await authenticate(remote, 'teams:write', clientCredentials);
 
   await updateMember({
     id,

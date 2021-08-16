@@ -81,7 +81,14 @@ export async function updateTeam({
           return [key, value.join('=')];
         }),
       ),
-    }),
+    annotations: annotations.length ? (
+      Object.fromEntries(
+        annotations.map((annotation) => {
+          const [key, ...value] = annotation.split('=');
+          return [key, value.join('=')];
+        }),
+      ) : undefined)
+    ),
   });
   logger.info(`Successfully updated team ${id}`);
 }
