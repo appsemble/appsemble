@@ -1,6 +1,7 @@
 import { Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
+import { validate } from 'uuid';
 
 import { App, Organization, Team, TeamMember, transactional, User } from '../models';
 import { checkRole } from '../utils/checkRole';
@@ -33,6 +34,10 @@ export async function createTeam(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId);
   if (!app) {
     throw notFound('App not found.');
+  }
+
+  if (!app.definition.security) {
+    throw badRequest('App does not have a security definition.');
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageTeams);
@@ -104,7 +109,7 @@ export async function getTeams(ctx: Context): Promise<void> {
   }));
 }
 
-export async function updateTeam(ctx: Context): Promise<void> {
+export async function patchTeam(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, teamId },
     request: {
@@ -127,7 +132,7 @@ export async function updateTeam(ctx: Context): Promise<void> {
 
   await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
-  await team.update({ name, ...(annotations && { annotations }) });
+  await team.update({ name: name || undefined, annotations: annotations || undefined });
   ctx.body = {
     id: team.id,
     name,
@@ -189,16 +194,23 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     },
     user,
   } = ctx;
-
+  const userQuery = {
+    [validate(id) ? 'id' : 'primaryEmail']: id,
+  };
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
-      { model: User, where: { id }, required: false },
+      { model: User, where: userQuery, required: false },
       {
         model: App,
         include: [
-          { model: User, where: { id }, required: false },
-          { model: Organization, include: [{ model: User, where: { id }, required: false }] },
+          { model: User, where: userQuery, required: false },
+          {
+            model: Organization,
+            include: [{ model: User, where: userQuery, required: false }],
+          },
+          { model: User, where: userQuery, required: false },
+          { model: Organization, include: [{ model: User, where: userQuery, required: false }] },
         ],
       },
     ],
@@ -210,7 +222,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
 
   // Allow app users to add themselves to a team.
   if ('app' in clients) {
-    if (id !== user.id) {
+    if (id !== user.id && id !== user.primaryEmail) {
       throw forbidden('App users may only modify add themselves as team member');
     }
   } else {
@@ -234,7 +246,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
   }
 
   const [member] = team.App.Users.length ? team.App.Users : team.App.Organization.Users;
-  await TeamMember.create({ UserId: id, TeamId: team.id, role: TeamRole.Member });
+  await TeamMember.create({ UserId: member.id, TeamId: team.id, role: TeamRole.Member });
   ctx.body = {
     id: member.id,
     name: member.name,
@@ -248,10 +260,15 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     pathParams: { appId, memberId, teamId },
   } = ctx;
 
+  const isUuid = validate(memberId);
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
-      { model: User, where: { id: memberId }, required: false },
+      {
+        model: User,
+        where: isUuid ? { id: memberId } : { primaryEmail: memberId },
+        required: false,
+      },
       { model: App, attributes: ['OrganizationId'] },
     ],
   });
@@ -270,7 +287,7 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     throw badRequest('This user is not a member of this team.');
   }
 
-  await TeamMember.destroy({ where: { UserId: memberId, TeamId: team.id } });
+  await TeamMember.destroy({ where: { UserId: team.Users[0].id, TeamId: team.id } });
 }
 
 export async function updateTeamMember(ctx: Context): Promise<void> {
@@ -280,11 +297,15 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
       body: { role },
     },
   } = ctx;
-
+  const isUuid = validate(memberId);
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
-      { model: User, where: { id: memberId }, required: false },
+      {
+        model: User,
+        where: isUuid ? { id: memberId } : { primaryEmail: memberId },
+        required: false,
+      },
       { model: App, attributes: ['OrganizationId'] },
     ],
   });
@@ -303,9 +324,8 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
     throw badRequest('This user is not a member of this team.');
   }
 
-  await TeamMember.update({ role }, { where: { UserId: memberId, TeamId: team.id } });
-
   const [user] = team.Users;
+  await TeamMember.update({ role }, { where: { UserId: user.id, TeamId: team.id } });
 
   ctx.body = {
     id: user.id,

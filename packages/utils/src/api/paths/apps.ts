@@ -963,7 +963,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['teams:write'] }],
     },
   },
   '/api/apps/{appId}/teams/{teamId}': {
@@ -1004,10 +1004,10 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       security: [{ studio: [] }],
     },
-    put: {
+    patch: {
       tags: ['app'],
       description: 'Update an existing team.',
-      operationId: 'updateTeam',
+      operationId: 'patchTeam',
       requestBody: {
         description: 'The team to update.',
         required: true,
@@ -1050,7 +1050,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['teams:write'] }],
     },
     delete: {
       tags: ['app'],
@@ -1059,7 +1059,7 @@ export const paths: OpenAPIV3.PathsObject = {
       responses: {
         204: { description: 'The team has successfully been deleted.' },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['teams:write'] }],
     },
   },
   '/api/apps/{appId}/teams/{teamId}/members': {
@@ -1125,7 +1125,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }, { app: ['teams:write'] }],
+      security: [{ studio: [] }, { app: ['teams:write'] }, { cli: ['teams:write'] }],
     },
   },
   '/api/apps/{appId}/teams/{teamId}/members/{memberId}': {
@@ -1180,7 +1180,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['teams:write'] }],
     },
     delete: {
       tags: ['app'],
@@ -1191,7 +1191,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The team member has been removed successfully.',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['teams:write'] }],
     },
   },
 };

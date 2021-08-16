@@ -44,7 +44,7 @@ export function TeamPage(): ReactElement {
 
   const submitTeam = useCallback(
     async ({ annotations, name }: typeof defaultValues) => {
-      const { data } = await axios.put<Team>(`/api/apps/${app.id}/teams/${teamId}`, {
+      const { data } = await axios.patch<Team>(`/api/apps/${app.id}/teams/${teamId}`, {
         name,
         annotations: Object.fromEntries(annotations),
       });
