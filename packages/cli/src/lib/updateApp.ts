@@ -90,7 +90,7 @@ export async function updateApp({
     formData.append('yaml', data);
     formData.append('definition', JSON.stringify(app));
   } else {
-    appsembleContext = await traverseAppDirectory(path, context, formData);
+    [appsembleContext] = await traverseAppDirectory(path, context, formData);
   }
 
   const remote = appsembleContext.remote ?? options.remote;

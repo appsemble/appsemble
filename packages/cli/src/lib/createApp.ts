@@ -3,12 +3,12 @@ import { join, parse } from 'path';
 import { URL } from 'url';
 import { inspect } from 'util';
 
-import { AppsembleError, logger, readData } from '@appsemble/node-utils';
+import { AppsembleError, logger, readData, writeData } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
 import { readdir } from 'fs-extra';
 
-import { AppsembleContext } from '../types';
+import { AppsembleContext, AppsembleRC } from '../types';
 import { authenticate } from './authentication';
 import { createResource } from './createResource';
 import { traverseAppDirectory } from './traverseAppDirectory';
@@ -75,6 +75,12 @@ interface CreateAppParams {
    * Whether resources from the `resources` directory should be created after creating the app.
    */
   resources: boolean;
+
+  /**
+   * If the app context is specified,
+   * modify it for the current context to include the id of the created app.
+   */
+  modifyContext: boolean;
 }
 
 /**
@@ -86,6 +92,7 @@ export async function createApp({
   clientCredentials,
   context,
   dryRun,
+  modifyContext,
   path,
   resources,
   ...options
@@ -93,6 +100,7 @@ export async function createApp({
   const file = await fs.stat(path);
   const formData = new FormData();
   let appsembleContext: AppsembleContext;
+  let rc: AppsembleRC;
 
   if (file.isFile()) {
     // Assuming file is App YAML
@@ -100,7 +108,7 @@ export async function createApp({
     formData.append('yaml', data);
     formData.append('definition', JSON.stringify(app));
   } else {
-    appsembleContext = await traverseAppDirectory(path, context, formData);
+    [appsembleContext, rc] = await traverseAppDirectory(path, context, formData);
   }
 
   const remote = appsembleContext.remote ?? options.remote;
@@ -187,6 +195,21 @@ export async function createApp({
         logger.error(error);
       }
     }
+  }
+
+  if (modifyContext && appsembleContext && context && !dryRun) {
+    await writeData(join(path, '.appsemblerc.yaml'), {
+      ...rc,
+      context: {
+        ...rc.context,
+        [context]: {
+          ...rc.context[context],
+          id: data.id,
+        },
+      },
+    });
+
+    logger.info(`Updated .appsemblerc: Set context.${context}.id to ${data.id}`);
   }
 
   const { host, protocol } = new URL(remote);

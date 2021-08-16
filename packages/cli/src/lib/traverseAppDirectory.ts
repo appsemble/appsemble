@@ -20,9 +20,10 @@ export async function traverseAppDirectory(
   path: string,
   context: string,
   formData: FormData,
-): Promise<AppsembleContext> {
+): Promise<[AppsembleContext, AppsembleRC]> {
   let appFound: string;
   let discoveredContext: AppsembleContext;
+  let rc: AppsembleRC;
   let iconPath: string;
   let maskableIconPath: string;
 
@@ -31,7 +32,7 @@ export async function traverseAppDirectory(
     switch (stat.name.toLowerCase()) {
       case '.appsemblerc.yaml': {
         logger.info(`Reading app settings from ${filepath}`);
-        const [rc] = await readData<AppsembleRC>(filepath);
+        [rc] = await readData<AppsembleRC>(filepath);
         if ('iconBackground' in rc) {
           formData.append('iconBackground', rc.iconBackground);
         }
@@ -107,5 +108,5 @@ export async function traverseAppDirectory(
     ? resolve(path, discoveredContext.icon)
     : iconPath;
   discoveredContext.maskableIcon ||= maskableIconPath;
-  return discoveredContext;
+  return [discoveredContext, rc];
 }
