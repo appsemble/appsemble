@@ -86,7 +86,7 @@ The most basic resource has a \`schema\` property and defines the minimal securi
       minItems: 1,
       description: 'The pages of the app.',
       items: {
-        oneOf: [
+        anyOf: [
           { $ref: '#/components/schemas/PageDefinition' },
           { $ref: '#/components/schemas/TabsPageDefinition' },
           { $ref: '#/components/schemas/FlowPageDefinition' },

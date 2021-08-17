@@ -9,7 +9,7 @@ export const JSONSchemaConst = extendJSONSchema(BaseJSONSchema, {
   required: ['const'],
   properties: {
     const: {
-      oneOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
+      anyOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
       description: 'The given value must exactly match one the value specified here.',
     },
   },

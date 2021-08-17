@@ -1,7 +1,7 @@
 import { OpenAPIV3 } from 'openapi-types';
 
 export const RemapperDefinition: OpenAPIV3.NonArraySchemaObject = {
-  oneOf: [
+  anyOf: [
     {
       type: 'boolean',
       description: 'A boolean remapper is always returned directly.',

@@ -1,7 +1,7 @@
 import { OpenAPIV3 } from 'openapi-types';
 
 export const JSONSchema: OpenAPIV3.NonArraySchemaObject = {
-  oneOf: [
+  anyOf: [
     { $ref: '#/components/schemas/JSONPointer' },
     { $ref: '#/components/schemas/JSONSchemaAnyOf' },
     { $ref: '#/components/schemas/JSONSchemaArray' },
