@@ -12,7 +12,7 @@ import { Ref } from './Ref';
 
 const [base, definitions] = schemas.ActionDefinition.allOf;
 
-const entries = (definitions as OpenAPIV3.NonArraySchemaObject).oneOf
+const entries = (definitions as OpenAPIV3.NonArraySchemaObject).anyOf
   .map(({ $ref }: JSONSchema) => {
     const ref = $ref.split('/').pop();
     const schema = schemas[ref as keyof typeof schemas] as JSONSchema;
