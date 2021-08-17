@@ -1,17 +1,17 @@
 import { Argv } from 'yargs';
 
-import { authenticate } from '../../../../lib/authentication';
-import { deleteMember } from '../../../../lib/team';
-import { BaseArguments } from '../../../../types';
+import { authenticate } from '../../../lib/authentication';
+import { inviteMember } from '../../../lib/team';
+import { BaseArguments } from '../../../types';
 
-interface DeleteTeamArguments extends BaseArguments {
+interface InviteTeamArguments extends BaseArguments {
   appId: number;
   id: number;
   user: string;
 }
 
-export const command = 'delete <user>';
-export const description = 'Delete a new member to an existing team from an app.';
+export const command = 'invite <user>';
+export const description = 'Invite a new member to an existing team from an app.';
 
 export function builder(yargs: Argv): Argv {
   return yargs
@@ -25,7 +25,7 @@ export function builder(yargs: Argv): Argv {
       demandOption: true,
     })
     .positional('user', {
-      describe: 'The ID or email address of the user you want to delete.',
+      describe: 'The ID or email address of the user you want to invite.',
       demandOption: true,
     });
 }
@@ -36,10 +36,10 @@ export async function handler({
   id,
   remote,
   user,
-}: DeleteTeamArguments): Promise<void> {
+}: InviteTeamArguments): Promise<void> {
   await authenticate(remote, 'teams:write', clientCredentials);
 
-  await deleteMember({
+  await inviteMember({
     id,
     appId,
     user,

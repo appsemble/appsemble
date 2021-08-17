@@ -1,9 +1,9 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import { Argv } from 'yargs';
 
-import { authenticate } from '../../../lib/authentication';
-import { updateTeam } from '../../../lib/team';
-import { BaseArguments } from '../../../types';
+import { authenticate } from '../../lib/authentication';
+import { updateTeam } from '../../lib/team';
+import { BaseArguments } from '../../types';
 
 interface UpdateTeamArguments extends BaseArguments {
   appId: number;
