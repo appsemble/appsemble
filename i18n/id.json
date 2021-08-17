@@ -841,6 +841,8 @@
   "studio.src.pages.settings.client-credentials.revoke": "",
   "studio.src.pages.settings.client-credentials.scope": "",
   "studio.src.pages.settings.client-credentials.submit": "Bikin",
+  "studio.src.pages.settings.client-credentials.teams:read": "",
+  "studio.src.pages.settings.client-credentials.teams:write": "",
   "studio.src.pages.settings.client-credentials.title": "",
   "studio.src.pages.settings.client-credentials.unknownScope": "",
   "studio.src.pages.settings.clientCredentials": "",

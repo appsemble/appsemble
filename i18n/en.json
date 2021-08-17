@@ -841,6 +841,8 @@
   "studio.src.pages.settings.client-credentials.revoke": "Revoke",
   "studio.src.pages.settings.client-credentials.scope": "Scope",
   "studio.src.pages.settings.client-credentials.submit": "Create",
+  "studio.src.pages.settings.client-credentials.teams:read": "Read app teams",
+  "studio.src.pages.settings.client-credentials.teams:write": "Create and manage app teams",
   "studio.src.pages.settings.client-credentials.title": "OAuth2 client credentials",
   "studio.src.pages.settings.client-credentials.unknownScope": "This scope is not currently known. You may want to revoke this client.",
   "studio.src.pages.settings.clientCredentials": "Client credentials",

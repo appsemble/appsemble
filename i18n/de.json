@@ -841,6 +841,8 @@
   "studio.src.pages.settings.client-credentials.revoke": "Entfernen",
   "studio.src.pages.settings.client-credentials.scope": "Zielgruppe",
   "studio.src.pages.settings.client-credentials.submit": "Erstellen",
+  "studio.src.pages.settings.client-credentials.teams:read": "",
+  "studio.src.pages.settings.client-credentials.teams:write": "",
   "studio.src.pages.settings.client-credentials.title": "OAuth2-Client-Anmeldeinformationen",
   "studio.src.pages.settings.client-credentials.unknownScope": "Dieser Bereich ist derzeit nicht bekannt. Möglicherweise möchten Sie diesen Client widerrufen.",
   "studio.src.pages.settings.clientCredentials": "Client-Anmeldeinformationen",

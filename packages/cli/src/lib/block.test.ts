@@ -1,24 +1,25 @@
 import { resolveFixture } from '@appsemble/node-utils';
 import concat from 'concat-stream';
 
-import { makePayload } from './makePayload';
+import { makePayload } from './block';
 
-it('should create a form-data payload', async () => {
-  const payload = await makePayload({
-    webpack: 'webpack.config',
-    name: '@org/block',
-    output: 'output',
-    version: '1.2.3',
-    dir: resolveFixture('makePayload/no-icon'),
-    parameters: { type: 'object' },
-    actions: { onClick: {} },
-    events: { listen: { test: {} } },
-  });
-  const boundary = payload.getBoundary();
-  const buffer = await new Promise((resolve) => {
-    payload.pipe(concat(resolve));
-  });
-  expect(String(buffer)).toStrictEqual(`--${boundary}\r
+describe('makePayload', () => {
+  it('should create a form-data payload', async () => {
+    const payload = await makePayload({
+      webpack: 'webpack.config',
+      name: '@org/block',
+      output: 'output',
+      version: '1.2.3',
+      dir: resolveFixture('makePayload/no-icon'),
+      parameters: { type: 'object' },
+      actions: { onClick: {} },
+      events: { listen: { test: {} } },
+    });
+    const boundary = payload.getBoundary();
+    const buffer = await new Promise((resolve) => {
+      payload.pipe(concat(resolve));
+    });
+    expect(String(buffer)).toStrictEqual(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r
 \r
 {"onClick":{}}\r
@@ -46,24 +47,24 @@ export const string = 'no-icon';
 \r
 --${boundary}--\r
 `);
-});
+  });
 
-it('should include an icon if one is present', async () => {
-  const payload = await makePayload({
-    webpack: 'webpack.config',
-    name: '@org/block',
-    output: 'output',
-    version: '1.2.3',
-    dir: resolveFixture('makePayload/with-icon'),
-    parameters: {},
-    actions: {},
-    events: {},
-  });
-  const boundary = payload.getBoundary();
-  const buffer = await new Promise((resolve) => {
-    payload.pipe(concat(resolve));
-  });
-  expect(String(buffer)).toStrictEqual(`--${boundary}\r
+  it('should include an icon if one is present', async () => {
+    const payload = await makePayload({
+      webpack: 'webpack.config',
+      name: '@org/block',
+      output: 'output',
+      version: '1.2.3',
+      dir: resolveFixture('makePayload/with-icon'),
+      parameters: {},
+      actions: {},
+      events: {},
+    });
+    const boundary = payload.getBoundary();
+    const buffer = await new Promise((resolve) => {
+      payload.pipe(concat(resolve));
+    });
+    expect(String(buffer)).toStrictEqual(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r
 \r
 {}\r
@@ -98,4 +99,5 @@ export const string = 'with-icon';
 \r
 --${boundary}--\r
 `);
+  });
 });

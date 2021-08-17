@@ -1,6 +1,6 @@
 import { Argv } from 'yargs';
 
-import { discoverBlocks } from '../lib/discoverBlocks';
+import { discoverBlocks } from '../lib/block';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig';
 import { serverImport } from '../lib/serverImport';
 import { BaseArguments } from '../types';

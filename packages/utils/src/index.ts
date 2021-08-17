@@ -1,5 +1,4 @@
 export * from './api';
-export * from './api/components/schemas/BaseActionDefinition';
 export * from './appMessages';
 export * from './appSecurity';
 export * from './blockUtils';
@@ -20,6 +19,7 @@ export * from './mapValues';
 export * from './objectCache';
 export * from './pem';
 export * from './remap';
+export * from './string';
 export * from './validateAppDefinition';
 export * from './langmap';
 export * from './i18n';

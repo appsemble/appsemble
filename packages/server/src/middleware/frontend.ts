@@ -2,6 +2,11 @@ import { Context, Middleware } from 'koa';
 import compose from 'koa-compose';
 import { Configuration } from 'webpack';
 
+/**
+ * Bypass the dev server for API requests to speed them up.
+ */
+const skipRoute = /^\/(api|oauth2\/token)/;
+
 export async function frontend(webpackConfigs: Configuration[]): Promise<Middleware> {
   const { default: webpackDevMiddleware } = await import('webpack-dev-middleware');
   // eslint-disable-next-line import/no-extraneous-dependencies, node/no-unpublished-import
@@ -45,8 +50,7 @@ export async function frontend(webpackConfigs: Configuration[]): Promise<Middlew
       ctx.fs = fs;
       return next();
     },
-    // Bypass the dev server for API requests to speed them up.
-    (ctx, next) => (ctx.path.startsWith('/api') ? next() : koaDevMiddleware(ctx, next)),
-    (ctx, next) => (ctx.path.startsWith('/api') ? next() : koaHotMiddleware(ctx, next)),
+    (ctx, next) => (skipRoute.test(ctx.path) ? next() : koaDevMiddleware(ctx, next)),
+    (ctx, next) => (skipRoute.test(ctx.path) ? next() : koaHotMiddleware(ctx, next)),
   ]);
 }
