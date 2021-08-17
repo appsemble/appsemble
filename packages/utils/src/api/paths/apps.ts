@@ -136,37 +136,6 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/apps/me': {
-    get: {
-      tags: ['app'],
-      parameters: [
-        {
-          name: 'language',
-          schema: { type: 'string' },
-          description: 'The language to include the translations of, if available',
-          in: 'query',
-        },
-      ],
-      description: 'Get all apps that are editable by the user.',
-      operationId: 'queryMyApps',
-      responses: {
-        200: {
-          description: 'The list of all editable apps.',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/App',
-                },
-              },
-            },
-          },
-        },
-      },
-      security: [{ studio: [] }],
-    },
-  },
   '/api/apps/{appId}': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
