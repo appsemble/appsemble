@@ -1490,6 +1490,7 @@ pages:
                   $ref: '#/components/schemas/CronDefinition',
                 },
                 description: 'A list of cron jobs that are associated with this app.',
+                minProperties: 1,
                 type: 'object',
               },
               defaultLanguage: {
@@ -1541,7 +1542,7 @@ to \`startup\` will cause Appsemble to immediately request for the permission up
               pages: {
                 description: 'The pages of the app.',
                 items: {
-                  oneOf: [
+                  anyOf: [
                     {
                       $ref: '#/components/schemas/PageDefinition',
                     },
