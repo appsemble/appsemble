@@ -5,8 +5,9 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { updateApp } from '../../lib/app';
+import { authenticate } from '../../lib/authentication';
 import { coerceFile } from '../../lib/coercers';
-import { updateApp } from '../../lib/updateApp';
 import { BaseArguments } from '../../types';
 
 interface UpdateAppArguments extends BaseArguments {
@@ -86,6 +87,8 @@ export async function handler({
 
   const normalizedPaths = paths.map((path) => normalizePath(path));
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
+
+  await authenticate(remote, 'apps:write', clientCredentials);
 
   logger.info(`Updating ${directories.length} apps`);
   for (const dir of directories) {

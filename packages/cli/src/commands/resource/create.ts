@@ -4,7 +4,7 @@ import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
-import { createResource } from '../../lib/createResource';
+import { createResource } from '../../lib/resource';
 import { BaseArguments } from '../../types';
 
 interface CreateResourceArguments extends BaseArguments {

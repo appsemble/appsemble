@@ -5,8 +5,9 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { createApp } from '../../lib/app';
+import { authenticate } from '../../lib/authentication';
 import { coerceFile } from '../../lib/coercers';
-import { createApp } from '../../lib/createApp';
 import { BaseArguments } from '../../types';
 
 interface CreateAppArguments extends BaseArguments {
@@ -20,6 +21,7 @@ interface CreateAppArguments extends BaseArguments {
   template: boolean;
   dryRun: boolean;
   resources: boolean;
+  modifyContext: boolean;
 }
 
 export const command = 'create <paths...>';
@@ -69,6 +71,12 @@ export function builder(yargs: Argv): Argv {
         'Whether the resources from the `resources` directory should be created after creating the app. The names of subdirectories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
       default: false,
       type: 'boolean',
+    })
+    .option('modify-context', {
+      describe:
+        'If the app context is specified, modify it for the current context to include the id of the created app.',
+      default: false,
+      type: 'boolean',
     });
 }
 
@@ -79,6 +87,7 @@ export async function handler({
   icon,
   iconBackground,
   maskableIcon,
+  modifyContext,
   organization,
   paths,
   private: isPrivate,
@@ -90,6 +99,12 @@ export async function handler({
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
 
   logger.info(`Creating ${directories.length} apps`);
+  await authenticate(
+    remote,
+    resources ? 'apps:write resources:write' : 'apps:write',
+    clientCredentials,
+  );
+
   for (const dir of directories) {
     logger.info('');
     await createApp({
@@ -105,6 +120,7 @@ export async function handler({
       template,
       dryRun,
       resources,
+      modifyContext,
     });
   }
 }
