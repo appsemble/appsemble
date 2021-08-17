@@ -1,8 +1,8 @@
 import { Argv } from 'yargs';
 
-import { authenticate } from '../../../lib/authentication';
-import { createTeam } from '../../../lib/team';
-import { BaseArguments } from '../../../types';
+import { authenticate } from '../../lib/authentication';
+import { createTeam } from '../../lib/team';
+import { BaseArguments } from '../../types';
 
 interface CreateTeamArguments extends BaseArguments {
   appId: number;
