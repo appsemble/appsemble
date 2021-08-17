@@ -98,6 +98,7 @@ The most basic resource has a \`schema\` property and defines the minimal securi
     },
     cron: {
       type: 'object',
+      minProperties: 1,
       description: 'A list of cron jobs that are associated with this app.',
       additionalProperties: { $ref: '#/components/schemas/CronDefinition' },
     },

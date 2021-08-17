@@ -36,6 +36,7 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   additionalProperties: false,
   description: 'A definition of how this resource works.',
+  minProperties: 1,
   properties: {
     expires: {
       type: 'string',
@@ -58,6 +59,7 @@ Example: 1d 8h 30m
 The key is the property that references the other resource. The value is an object describing the
 name of the resource and how it should behave.
 `,
+      minProperties: 1,
       additionalProperties: {
         type: 'object',
         description: 'A reference to between two resource types.',

@@ -4,6 +4,7 @@ export const EventsDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'An object describing the names of the events the block can listen and emit to.',
   additionalProperties: false,
+  minProperties: 1,
   properties: {
     listen: {
       type: 'object',
@@ -12,6 +13,7 @@ export const EventsDefinition: OpenAPIV3.NonArraySchemaObject = {
 The key is the name of the event will listen on. The value is a user defined event name which should
 match the name of an emitted event on the same page.
 `,
+      minProperties: 1,
       additionalProperties: { type: 'string' },
     },
     emit: {
@@ -21,6 +23,7 @@ match the name of an emitted event on the same page.
 The key is the name of the event will emit. The value is a user defined event name which should
 match the name of a event on the same page that’s being listened on.
 `,
+      minProperties: 1,
       additionalProperties: { type: 'string' },
     },
   },

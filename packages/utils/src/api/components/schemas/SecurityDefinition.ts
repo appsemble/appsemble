@@ -10,6 +10,7 @@ export const SecurityDefinition: OpenAPIV3.NonArraySchemaObject = {
     roles: {
       type: 'object',
       description: 'This property defines the user roles that are available within the app.',
+      minProperties: 1,
       additionalProperties: { $ref: '#/components/schemas/SecurityRoleDefinition' },
     },
   },

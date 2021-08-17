@@ -7,6 +7,7 @@ export const Theme: OpenAPIV3.NonArraySchemaObject = {
   description: 'A generic theme definition.',
   additionalProperties: false,
   default: baseTheme,
+  minProperties: 1,
   properties: {
     themeColor: {
       type: 'string',

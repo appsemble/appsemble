@@ -4,6 +4,7 @@ export const NotificationHookDataDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The data used to display the content of the notification.',
   additionalProperties: true,
+  minProperties: 1,
   properties: {
     title: {
       $ref: '#/components/schemas/RemapperDefinition',
