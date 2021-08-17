@@ -644,16 +644,8 @@ export async function createApp({
   }
 
   if (modifyContext && appsembleContext && context && !dryRun) {
-    await writeData(join(path, '.appsemblerc.yaml'), {
-      ...rc,
-      context: {
-        ...rc.context,
-        [context]: {
-          ...rc.context[context],
-          id: data.id,
-        },
-      },
-    });
+    rc.context[context].id = data.id;
+    await writeData(join(path, '.appsemblerc.yaml'), rc);
 
     logger.info(`Updated .appsemblerc: Set context.${context}.id to ${data.id}`);
   }

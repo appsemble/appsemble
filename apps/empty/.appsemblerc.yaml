@@ -1,6 +1,5 @@
 context:
   development:
-    id: 33
     organization: appsemble
     private: false
     remote: http://localhost:9999
