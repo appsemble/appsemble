@@ -94,7 +94,7 @@ describe('extractAppMessages', () => {
     expect(result).toMatchObject({ messageIds: { foo: '' }, app: { 'pages.0': 'Page' } });
   });
 
-  it('should extract remappers from actions', () => {
+  it('should extract action remap', () => {
     const result = extractAppMessages({
       defaultPage: '',
       pages: [
@@ -129,7 +129,36 @@ describe('extractAppMessages', () => {
     });
   });
 
-  it('should extract dialog titles', () => {
+  it('should extract condition action if', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: 'Page',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              actions: {
+                onClick: {
+                  type: 'condition',
+                  if: { translate: 'ifCondition' },
+                  then: { type: 'noop' },
+                  else: { type: 'noop' },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      messageIds: { ifCondition: '' },
+      app: { 'pages.0': 'Page' },
+    });
+  });
+
+  it('should extract dialog action title', () => {
     const result = extractAppMessages({
       defaultPage: '',
       pages: [
@@ -153,6 +182,214 @@ describe('extractAppMessages', () => {
     });
     expect(result).toMatchObject({
       messageIds: { dialogTitle: '' },
+      app: { 'pages.0': 'Page' },
+    });
+  });
+
+  it('should extract email action remappers', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: 'Page',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              actions: {
+                onClick: {
+                  type: 'email',
+                  attachments: { translate: 'attachments' },
+                  bcc: { translate: 'bcc' },
+                  body: { translate: 'body' },
+                  cc: { translate: 'cc' },
+                  subject: { translate: 'subject' },
+                  to: { translate: 'to' },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      messageIds: { attachments: '', bcc: '', body: '', cc: '', subject: '', to: '' },
+      app: { 'pages.0': 'Page' },
+    });
+  });
+
+  it('should extract flow.to action step', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: 'Page',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              actions: {
+                onClick: {
+                  type: 'flow.to',
+                  step: { translate: 'toPage' },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      messageIds: { toPage: '' },
+      app: { 'pages.0': 'Page' },
+    });
+  });
+
+  it('should extract message action body', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: 'Page',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              actions: {
+                onClick: {
+                  type: 'message',
+                  body: { translate: 'messageBody' },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      messageIds: { messageBody: '' },
+      app: { 'pages.0': 'Page' },
+    });
+  });
+
+  it('should extract request action remappers', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: 'Page',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              actions: {
+                onRequest: {
+                  type: 'request',
+                  body: { translate: 'requestBody' },
+                  query: { translate: 'requestQuery' },
+                  url: { translate: 'requestUrl' },
+                },
+                onResourceCount: {
+                  type: 'resource.count',
+                  resource: 'test',
+                  body: { translate: 'resourceCountBody' },
+                  query: { translate: 'resourceCountQuery' },
+                  url: { translate: 'resourceCountUrl' },
+                },
+                onResourceCreate: {
+                  type: 'resource.create',
+                  resource: 'test',
+                  body: { translate: 'resourceCreateBody' },
+                  query: { translate: 'resourceCreateQuery' },
+                  url: { translate: 'resourceCreateUrl' },
+                },
+                onResourceDelete: {
+                  type: 'resource.delete',
+                  resource: 'test',
+                  body: { translate: 'resourceDeleteBody' },
+                  query: { translate: 'resourceDeleteQuery' },
+                  url: { translate: 'resourceDeleteUrl' },
+                },
+                onResourceGet: {
+                  type: 'resource.get',
+                  resource: 'test',
+                  body: { translate: 'resourceGetBody' },
+                  query: { translate: 'resourceGetQuery' },
+                  url: { translate: 'resourceGetUrl' },
+                },
+                onResourceQuery: {
+                  type: 'resource.query',
+                  resource: 'test',
+                  body: { translate: 'resourceQueryBody' },
+                  query: { translate: 'resourceQueryQuery' },
+                  url: { translate: 'resourceQueryUrl' },
+                },
+                onResourceUpdate: {
+                  type: 'resource.update',
+                  resource: 'test',
+                  body: { translate: 'resourceUpdateBody' },
+                  query: { translate: 'resourceUpdateQuery' },
+                  url: { translate: 'resourceUpdateUrl' },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      messageIds: {
+        requestBody: '',
+        requestQuery: '',
+        requestUrl: '',
+        resourceCountBody: '',
+        resourceCountQuery: '',
+        resourceCountUrl: '',
+        resourceCreateBody: '',
+        resourceCreateQuery: '',
+        resourceCreateUrl: '',
+        resourceDeleteBody: '',
+        resourceDeleteQuery: '',
+        resourceDeleteUrl: '',
+        resourceGetBody: '',
+        resourceGetQuery: '',
+        resourceGetUrl: '',
+        resourceQueryBody: '',
+        resourceQueryQuery: '',
+        resourceQueryUrl: '',
+        resourceUpdateBody: '',
+        resourceUpdateQuery: '',
+        resourceUpdateUrl: '',
+      },
+      app: { 'pages.0': 'Page' },
+    });
+  });
+
+  it('should extract share action remappers', () => {
+    const result = extractAppMessages({
+      defaultPage: '',
+      pages: [
+        {
+          name: 'Page',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              actions: {
+                onClick: {
+                  type: 'share',
+                  text: { translate: 'shareText' },
+                  title: { translate: 'shareTitle' },
+                  url: { translate: 'shareUrl' },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(result).toMatchObject({
+      messageIds: { shareText: '', shareTitle: '', shareUrl: '' },
       app: { 'pages.0': 'Page' },
     });
   });

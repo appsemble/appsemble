@@ -70,8 +70,53 @@ export function extractAppMessages(
     onAction(action) {
       Object.assign(messages.messageIds, findMessageIds(action.remap));
 
-      if (action.type === 'dialog') {
-        Object.assign(messages.messageIds, findMessageIds(action.title));
+      switch (action.type) {
+        case 'condition':
+          Object.assign(messages.messageIds, findMessageIds(action.if));
+          break;
+        case 'dialog':
+          Object.assign(messages.messageIds, findMessageIds(action.title));
+          break;
+        case 'email':
+          Object.assign(
+            messages.messageIds,
+            findMessageIds(action.attachments),
+            findMessageIds(action.bcc),
+            findMessageIds(action.body),
+            findMessageIds(action.cc),
+            findMessageIds(action.subject),
+            findMessageIds(action.to),
+          );
+          break;
+        case 'flow.to':
+          Object.assign(messages.messageIds, findMessageIds(action.step));
+          break;
+        case 'message':
+          Object.assign(messages.messageIds, findMessageIds(action.body));
+          break;
+        case 'request':
+        case 'resource.count':
+        case 'resource.create':
+        case 'resource.delete':
+        case 'resource.get':
+        case 'resource.query':
+        case 'resource.update':
+          Object.assign(
+            messages.messageIds,
+            findMessageIds(action.body),
+            findMessageIds(action.query),
+            findMessageIds(action.url),
+          );
+          break;
+        case 'share':
+          Object.assign(
+            messages.messageIds,
+            findMessageIds(action.text),
+            findMessageIds(action.title),
+            findMessageIds(action.url),
+          );
+          break;
+        default:
       }
     },
     onPage(page, prefix) {
