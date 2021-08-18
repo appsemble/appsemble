@@ -6,7 +6,6 @@ import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
 import { createApp } from '../../lib/app';
-import { authenticate } from '../../lib/authentication';
 import { coerceFile } from '../../lib/coercers';
 import { BaseArguments } from '../../types';
 
@@ -99,12 +98,6 @@ export async function handler({
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
 
   logger.info(`Creating ${directories.length} apps`);
-  await authenticate(
-    remote,
-    resources ? 'apps:write resources:write' : 'apps:write',
-    clientCredentials,
-  );
-
   for (const dir of directories) {
     logger.info('');
     await createApp({

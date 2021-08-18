@@ -11,10 +11,78 @@ import FormData from 'form-data';
 import { readdir } from 'fs-extra';
 
 import { AppsembleContext, AppsembleRC } from '../types';
+import { authenticate } from './authentication';
 import { traverseBlockThemes } from './block';
 import { processCss } from './processCss';
 import { createResource } from './resource';
 
+interface CreateAppParams {
+  /**
+   * The OAuth2 client credentials to use.
+   */
+  clientCredentials: string;
+
+  /**
+   * If specified, the context matching this name is used, overriding command line flags.
+   */
+  context?: string;
+
+  /**
+   * The ID of the organization to upload for.
+   */
+  organization: string;
+
+  /**
+   * The path in which the App YAML is located.
+   */
+  path: string;
+
+  /**
+   * Whether the App should be marked as private.
+   */
+  private: boolean;
+
+  /**
+   * The remote server to create the app on.
+   */
+  remote: string;
+
+  /**
+   * Whether the App should be marked as a template.
+   */
+  template: boolean;
+
+  /**
+   * The icon to upload.
+   */
+  icon: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * The background color to use for the icon in opaque contexts.
+   */
+  iconBackground: string;
+
+  /**
+   * The maskable icon to upload.
+   */
+  maskableIcon: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * Whether the API should be called with a dry run.
+   */
+  dryRun: boolean;
+
+  /**
+   * Whether resources from the `resources` directory should be created after creating the app.
+   */
+  resources: boolean;
+
+  /**
+   * If the app context is specified,
+   * modify it for the current context to include the id of the created app.
+   */
+  modifyContext: boolean;
+}
 interface UpdateAppParams {
   /**
    * The OAuth2 client credentials to use.
@@ -185,7 +253,7 @@ export async function traverseAppDirectory(
  */
 export async function uploadMessages(
   path: string,
-  appId: string,
+  appId: number,
   remote: string,
   force: boolean,
 ): Promise<void> {
@@ -452,6 +520,7 @@ export async function updateApp({
     formData.append('icon', realIcon);
   }
 
+  await authenticate(remote, 'apps:write', clientCredentials);
   const { data } = await axios.patch(`/api/apps/${id}`, formData, { baseURL: remote });
 
   if (file.isDirectory()) {
@@ -464,74 +533,6 @@ export async function updateApp({
   logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
-}
-
-interface CreateAppParams {
-  /**
-   * The OAuth2 client credentials to use.
-   */
-  clientCredentials: string;
-
-  /**
-   * If specified, the context matching this name is used, overriding command line flags.
-   */
-  context?: string;
-
-  /**
-   * The ID of the organization to upload for.
-   */
-  organization: string;
-
-  /**
-   * The path in which the App YAML is located.
-   */
-  path: string;
-
-  /**
-   * Whether the App should be marked as private.
-   */
-  private: boolean;
-
-  /**
-   * The remote server to create the app on.
-   */
-  remote: string;
-
-  /**
-   * Whether the App should be marked as a template.
-   */
-  template: boolean;
-
-  /**
-   * The icon to upload.
-   */
-  icon: NodeJS.ReadStream | ReadStream;
-
-  /**
-   * The background color to use for the icon in opaque contexts.
-   */
-  iconBackground: string;
-
-  /**
-   * The maskable icon to upload.
-   */
-  maskableIcon: NodeJS.ReadStream | ReadStream;
-
-  /**
-   * Whether the API should be called with a dry run.
-   */
-  dryRun: boolean;
-
-  /**
-   * Whether resources from the `resources` directory should be created after creating the app.
-   */
-  resources: boolean;
-
-  /**
-   * If the app context is specified,
-   * modify it for the current context to include the id of the created app.
-   */
-  modifyContext: boolean;
 }
 
 /**
@@ -595,6 +596,11 @@ export async function createApp({
     formData.append('icon', realIcon);
   }
 
+  await authenticate(
+    remote,
+    resources ? 'apps:write resources:write' : 'apps:write',
+    clientCredentials,
+  );
   const { data } = await axios.post('/api/apps', formData, { baseURL: remote, params: { dryRun } });
 
   if (dryRun) {
@@ -654,4 +660,40 @@ export async function createApp({
   logger.info(`Successfully created app ${data.definition.name}! 🙌`);
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
+}
+
+/**
+ * Resolve the app’s ID and remote based on the app context.
+ *
+ * @param appPath - The path to the app.
+ * @param name - Which context to use in the AppsembleRC file.
+ * @param defaultRemote - The remote to fall back to.
+ * @param defaultAppId - The app ID to fall back to.
+ * @returns The resolved app ID and remote.
+ */
+export async function resolveAppIdAndRemote(
+  appPath: string,
+  name: string,
+  defaultRemote: string,
+  defaultAppId: number,
+): Promise<[number, string]> {
+  let id: number;
+  let resolvedRemote = defaultRemote;
+
+  if (appPath) {
+    const rcPath = join(appPath, '.appsemblerc.yaml');
+    const [rc] = await readData<AppsembleRC>(rcPath);
+    const context = rc.context?.[name];
+    id = context?.id;
+
+    if (id == null) {
+      throw new AppsembleError(`App ID was not found in ${rcPath} context.${name}.id`);
+    }
+
+    if (context.remote) {
+      resolvedRemote = context.remote;
+    }
+  }
+
+  return [id ?? defaultAppId, resolvedRemote];
 }

@@ -1,6 +1,7 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import { Argv } from 'yargs';
 
+import { resolveAppIdAndRemote } from '../../lib/app';
 import { authenticate } from '../../lib/authentication';
 import { updateTeam } from '../../lib/team';
 import { BaseArguments } from '../../types';
@@ -10,6 +11,8 @@ interface UpdateTeamArguments extends BaseArguments {
   id: number;
   name: string;
   annotation: string[];
+  context: string;
+  app: string;
 }
 
 export const command = 'update';
@@ -39,8 +42,10 @@ const annotationRegex = /^\w+=.+$/;
 
 export async function handler({
   annotation,
+  app,
   appId,
   clientCredentials,
+  context,
   id,
   name,
   remote,
@@ -49,11 +54,12 @@ export async function handler({
     throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
   }
 
-  await authenticate(remote, 'teams:write', clientCredentials);
+  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
 
+  await authenticate(resolvedRemote, 'teams:write', clientCredentials);
   await updateTeam({
     id,
-    appId,
+    appId: resolvedAppId,
     name,
     annotations: annotation,
   });

@@ -3,6 +3,7 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { resolveAppIdAndRemote } from '../../lib/app';
 import { authenticate } from '../../lib/authentication';
 import { updateResource } from '../../lib/resource';
 import { BaseArguments } from '../../types';
@@ -11,6 +12,8 @@ interface CreateResourceArguments extends BaseArguments {
   resourceName: string;
   paths: string[];
   appId: number;
+  context: string;
+  app: string;
 }
 
 export const command = 'update <resource-name> <paths...>';
@@ -29,20 +32,31 @@ export function builder(yargs: Argv): Argv {
       demandOption: true,
     })
     .option('app-id', {
-      describe: 'The ID of the app to update the resources of.',
+      describe: 'The ID of the app to create the resources for.',
       type: 'number',
-      demandOption: true,
+      conflicts: 'app',
+    })
+    .option('app', {
+      describe: 'The path to the app.',
+      demandOption: 'context',
+    })
+    .option('context', {
+      describe: 'If specified, use the specified context from .appsemblerc.yaml',
+      demandOption: 'app',
     });
 }
 
 export async function handler({
+  app,
   appId,
   clientCredentials,
+  context,
   paths,
   remote,
   resourceName,
 }: CreateResourceArguments): Promise<void> {
-  await authenticate(remote, 'resources:write', clientCredentials);
+  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
+  await authenticate(resolvedRemote, 'resources:write', clientCredentials);
 
   const normalizedPaths = paths.map((path) => normalizePath(path));
   const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
@@ -56,9 +70,9 @@ export async function handler({
     logger.info('');
     await updateResource({
       resourceName,
-      appId,
+      appId: resolvedAppId,
       path,
-      remote,
+      remote: resolvedRemote,
     });
   }
 }

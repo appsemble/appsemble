@@ -68,10 +68,10 @@ export interface AppsembleContext {
   maskableIcon?: string;
 
   /**
-   * If `id` is specified, this will override `--organization-id` passed by the command line when
+   * If `id` is specified, this will override `--id` passed by the command line when
    * updating an app.
    */
-  id?: string;
+  id?: number;
 
   /**
    * If `private` is specified, this will override `--private` passed on the command line.
