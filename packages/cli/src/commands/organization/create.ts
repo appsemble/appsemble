@@ -1,12 +1,10 @@
 import { ReadStream } from 'fs';
 
-import { logger } from '@appsemble/node-utils';
-import axios from 'axios';
-import FormData from 'form-data';
 import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
 import { coerceFile } from '../../lib/coercers';
+import { createOrganization } from '../../lib/organization';
 import { BaseArguments } from '../../types';
 
 interface CreateOrganizationArguments extends BaseArguments {
@@ -56,36 +54,12 @@ export async function handler({
   website,
 }: CreateOrganizationArguments): Promise<void> {
   await authenticate(remote, 'organizations:write', clientCredentials);
-
-  const formData = new FormData();
-  formData.append('id', id);
-
-  if (desc) {
-    logger.info(`Setting description to ${desc}`);
-    formData.append('description', desc);
-  }
-
-  if (email) {
-    logger.info(`Setting email to ${email}`);
-    formData.append('email', email);
-  }
-
-  if (icon) {
-    logger.info(`Including icon ${icon.path || 'from stdin'}`);
-    formData.append('icon', icon);
-  }
-
-  if (name) {
-    logger.info(`Setting name to ${name}`);
-    formData.append('name', name);
-  }
-
-  if (website) {
-    logger.info(`Setting website to ${website}`);
-    formData.append('website', website);
-  }
-
-  logger.info(`Creating organization ${id}${name ? ` (${name})` : ''}`);
-  await axios.post('/api/organizations', formData);
-  logger.info(`Successfully created organization ${id}${name ? ` (${name})` : ''}`);
+  await createOrganization({
+    description: desc,
+    email,
+    icon,
+    id,
+    name,
+    website,
+  });
 }

@@ -18,7 +18,7 @@ To replace the text content of an element, apply the `data-content` attribute:
 ```yaml
 blocks:
   - type: html
-    version: 0.18.25
+    version: 0.18.27
     parameters:
       placeholders:
         myTestContent: Hello this is replaced content using a remapper!
@@ -29,18 +29,29 @@ blocks:
 To add a click handler to a button, apply the `data-click` attribute:
 
 ```html
-<button data-click="onTestClick">This is a test button</button>
+<button data-click="onTestClick" type="button">This is a test button</button>
 ```
 
 ```yaml
 blocks:
   - type: html
-    version: 0.18.25
+    version: 0.18.27
     actions:
       onTestClick:
         type: link
         to: Some other page
     parameters:
       content: |
-        <button data-click="onTestClick">This is a test button</button>
+        <button data-click="onTestClick" type="button">This is a test button</button>
+```
+
+As with every Appsemble block, all [Bulma](https://bulma.io) classes and the free
+[Font Awesome](https://fontawesome.com/icons?m=free) icon set is available.
+
+```html
+<button class="button" type="button">
+  <span class="icon">
+    <i class="fas fa-smile"></i>
+  </span>
+</button>
 ```

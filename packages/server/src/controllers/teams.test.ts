@@ -169,6 +169,27 @@ describe('createTeam', () => {
     });
   });
 
+  it('should not create a team if teams are not used or usable', async () => {
+    const noSecurity = await App.create({
+      definition: {
+        name: 'No Security App',
+        defaultPage: 'Test Page',
+      },
+      path: 'no-security-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${noSecurity.id}/teams`, { name: 'Test Team' });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'App does not have a security definition.' },
+    });
+  });
+
   it('should not create a team if user is not an Owner', async () => {
     await Member.update(
       { role: 'AppEditor' },
@@ -227,11 +248,11 @@ describe('createTeam', () => {
   });
 });
 
-describe('updateTeam', () => {
+describe('patchTeam', () => {
   it('should update the name of the team', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
     const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({ status: 200, data: { id: team.id, name: 'B' } });
@@ -241,7 +262,7 @@ describe('updateTeam', () => {
   it('should update annotations', async () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, {
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, {
       name: 'B',
       annotations: { testKey: 'foo' },
     });
@@ -265,7 +286,7 @@ describe('updateTeam', () => {
     );
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
-    const response = await request.put(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
 
     expect(response).toMatchObject({
       status: 403,
@@ -275,7 +296,7 @@ describe('updateTeam', () => {
 
   it('should not update a non-existent team', async () => {
     authorizeStudio();
-    const response = await request.put(`/api/apps/${app.id}/teams/80000`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${app.id}/teams/80000`, { name: 'B' });
 
     expect(response).toMatchObject({ status: 404, data: { message: 'Team not found.' } });
   });
@@ -306,7 +327,7 @@ describe('updateTeam', () => {
     });
     const team = await Team.create({ name: 'A', AppId: appB.id });
     authorizeStudio();
-    const response = await request.put(`/api/apps/${appB.id}/teams/${team.id}`, { name: 'B' });
+    const response = await request.patch(`/api/apps/${appB.id}/teams/${team.id}`, { name: 'B' });
 
     expect(response).toMatchObject({
       status: 403,
@@ -442,6 +463,31 @@ describe('addTeamMember', () => {
     });
   });
 
+  it('should add an app member to a team by their primary email', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', AppId: app.id });
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+      id: userB.primaryEmail,
+    });
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: userB.id,
+        name: userB.name,
+        primaryEmail: userB.primaryEmail,
+        role: TeamRole.Member,
+      },
+    });
+  });
+
   it('should add an app member to a team if user has manager role', async () => {
     const userB = await User.create({
       password: user.password,
@@ -557,6 +603,23 @@ describe('removeTeamMember', () => {
     expect(response.status).toStrictEqual(204);
   });
 
+  it('should remove a team member from a team by their primary email', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', AppId: app.id });
+    await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
+
+    authorizeStudio();
+    const response = await request.delete(
+      `/api/apps/${app.id}/teams/${team.id}/members/${userB.primaryEmail}`,
+    );
+    expect(response.status).toStrictEqual(204);
+  });
+
   it('should remove a team member from a team if the user has the manager role', async () => {
     const userB = await User.create({
       password: user.password,
@@ -636,6 +699,35 @@ describe('updateTeamMember', () => {
     const response = await request.put(`/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`, {
       role: TeamRole.Manager,
     });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: userB.id,
+        name: userB.name,
+        primaryEmail: userB.primaryEmail,
+        role: TeamRole.Manager,
+      },
+    });
+  });
+
+  it('should update the role of a team member by their primary email', async () => {
+    const userB = await User.create({
+      password: user.password,
+      name: 'Test User',
+      primaryEmail: 'testuser@example.com',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+    const team = await Team.create({ name: 'A', AppId: app.id });
+    await TeamMember.create({ UserId: userB.id, TeamId: team.id, role: TeamRole.Member });
+
+    authorizeStudio();
+    const response = await request.put(
+      `/api/apps/${app.id}/teams/${team.id}/members/${userB.primaryEmail}`,
+      {
+        role: TeamRole.Manager,
+      },
+    );
 
     expect(response).toMatchObject({
       status: 200,

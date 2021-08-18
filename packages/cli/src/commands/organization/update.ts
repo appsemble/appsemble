@@ -1,12 +1,10 @@
 import { ReadStream } from 'fs';
 
-import { logger } from '@appsemble/node-utils';
-import axios from 'axios';
-import FormData from 'form-data';
 import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
 import { coerceFile } from '../../lib/coercers';
+import { updateOrganization } from '../../lib/organization';
 import { BaseArguments } from '../../types';
 
 interface UpdateOrganizationArguments extends BaseArguments {
@@ -56,36 +54,12 @@ export async function handler({
   website,
 }: UpdateOrganizationArguments): Promise<void> {
   await authenticate(remote, 'organizations:write', clientCredentials);
-
-  logger.info(`Updating organization ${id}${name ? ` (${name})` : ''}`);
-
-  const formData = new FormData();
-
-  if (desc) {
-    logger.info(`Setting description to ${desc}`);
-    formData.append('description', desc);
-  }
-
-  if (email) {
-    logger.info(`Setting email to ${email}`);
-    formData.append('email', email);
-  }
-
-  if (icon) {
-    logger.info(`Including icon ${icon.path || 'from stdin'}`);
-    formData.append('icon', icon);
-  }
-
-  if (name) {
-    logger.info(`Setting name to ${name}`);
-    formData.append('name', name);
-  }
-
-  if (website) {
-    logger.info(`Setting website to ${website}`);
-    formData.append('website', website);
-  }
-
-  await axios.patch(`/api/organizations/${id}`, formData);
-  logger.info(`Successfully updated organization ${id}${name ? ` (${name})` : ''}`);
+  await updateOrganization({
+    description: desc,
+    email,
+    icon,
+    id,
+    name,
+    website,
+  });
 }

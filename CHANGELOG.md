@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.27](https://gitlab.com/appsemble/appsemble/-/releases/0.18.27)] - 2021-08-16
+
+### Added
+
+- Cli: Add `team` subcommand to `app` command. The team subcommand can be used to create, update,
+  and delete teams and team members.
+
+### Changed
+
+- Server: Replaced `PUT` with `PATCH` when updating a team.
+
+### Fixed
+
+- Studio: Fix crash in Safari.
+
+## \[[0.18.26](https://gitlab.com/appsemble/appsemble/-/releases/0.18.26)] - 2021-08-13
+
+### Fixed
+
+- Block(`html`): Fix issue with data-context usage.
+- Server: Fix migration for version 0.18.25.
+
 ## \[[0.18.25](https://gitlab.com/appsemble/appsemble/-/releases/0.18.25)] - 2021-08-13
 
 ### Added

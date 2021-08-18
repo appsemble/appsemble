@@ -1,7 +1,6 @@
 import { Join, MarkdownContent, Title } from '@appsemble/react-components';
-import { combineSchemas } from '@appsemble/utils';
+import { camelToHyphen, combineSchemas } from '@appsemble/utils';
 import classNames from 'classnames';
-import decamelize from 'decamelize';
 import { Schema as SchemaType } from 'jsonschema';
 import { FC, ReactElement, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -76,7 +75,7 @@ export function Schema({
 
   let id = idPrefix;
   if (name) {
-    id = decamelize(name, { separator: '-' });
+    id = camelToHyphen(name);
     if (idPrefix) {
       id = `${idPrefix}-${id}`;
     }

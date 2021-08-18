@@ -4,9 +4,7 @@ import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
-import { buildBlock } from '../../lib/buildBlock';
-import { getBlockConfig } from '../../lib/getBlockConfig';
-import { publishBlock } from '../../lib/publishBlock';
+import { buildBlock, getBlockConfig, publishBlock } from '../../lib/block';
 import { BaseArguments } from '../../types';
 
 interface PublishBlockArguments extends BaseArguments {

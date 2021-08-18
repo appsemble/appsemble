@@ -3,8 +3,7 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { getBlockConfig } from '../../lib/getBlockConfig';
-import { processBlockMessages } from '../../lib/processBlockMessages';
+import { getBlockConfig, processBlockMessages } from '../../lib/block';
 import { BaseArguments } from '../../types';
 
 interface BuildBlockArguments extends BaseArguments {

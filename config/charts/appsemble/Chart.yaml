@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.25
-appVersion: 0.18.25
+version: 0.18.27
+appVersion: 0.18.27
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,29 +25,13 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: 'Block(html): Add html block.'
-    - kind: added
-      description: 'App: App screenshots are now available in the PWA manifest.'
-    - kind: added
-      description: 'Cli: Add --resources flag to app create.'
-    - kind: added
-      description: 'Cli: Add block build command.'
-    - kind: added
-      description: 'Cli: Add resource create command.'
-    - kind: added
-      description: 'Cli: Add resource update command.'
-    - kind: added
       description: >-
-        Server: Assets now support a name which can be used to reference them as an
-        alternative to their ID.
-    - kind: added
-      description: 'Utils: Add page remapper. This currently only supports the url property.'
-    - kind: added
-      description: 'Utils: Add url to app remapper.'
+        Cli: Add team subcommand to app command. The team subcommand can be used to
+        create, update, and delete teams and team members.
     - kind: changed
-      description: >-
-        Server: Uploading assets now supports multipart/form-data instead of raw
-        data.
+      description: 'Server: Replaced PUT with PATCH when updating a team.'
+    - kind: fixed
+      description: 'Studio: Fix crash in Safari.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -43,10 +43,10 @@ export async function up(db: Sequelize): Promise<void> {
   });
 
   logger.info('Adding column name to Asset');
-  await queryInterface.addColumn('AppScreenshot', 'name', { type: DataTypes.STRING });
+  await queryInterface.addColumn('Asset', 'name', { type: DataTypes.STRING });
 
   logger.info('Adding unique constraint UniqueAssetNameIndex to Asset');
-  await queryInterface.addConstraint('AppScreenshot', {
+  await queryInterface.addConstraint('Asset', {
     type: 'unique',
     fields: ['AppId', 'name'],
     name: 'UniqueAssetNameIndex',

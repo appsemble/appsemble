@@ -7,6 +7,10 @@ export const RemapperDefinition: OpenAPIV3.NonArraySchemaObject = {
       description: 'A boolean remapper is always returned directly.',
     },
     {
+      enum: [null],
+      description: 'A null remapper is always returned directly.',
+    },
+    {
       type: 'number',
       description: 'A numeric remapper is always returned directly.',
     },
