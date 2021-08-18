@@ -11,11 +11,17 @@ import FormData from 'form-data';
 import { readdir } from 'fs-extra';
 
 import { AppsembleContext, AppsembleRC } from '../types';
+import { authenticate } from './authentication';
 import { traverseBlockThemes } from './block';
 import { processCss } from './processCss';
 import { createResource } from './resource';
 
 interface CreateAppParams {
+  /**
+   * The OAuth2 client credentials to use.
+   */
+  clientCredentials: string;
+
   /**
    * If specified, the context matching this name is used, overriding command line flags.
    */
@@ -78,6 +84,11 @@ interface CreateAppParams {
   modifyContext: boolean;
 }
 interface UpdateAppParams {
+  /**
+   * The OAuth2 client credentials to use.
+   */
+  clientCredentials: string;
+
   /**
    * If specified, the context matching this name is used, overriding command line flags.
    */
@@ -459,6 +470,7 @@ This block version is not used in the app`,
  * @param argv - The command line options used for updating the app.
  */
 export async function updateApp({
+  clientCredentials,
   context,
   force,
   path,
@@ -508,6 +520,7 @@ export async function updateApp({
     formData.append('icon', realIcon);
   }
 
+  await authenticate(remote, 'apps:write', clientCredentials);
   const { data } = await axios.patch(`/api/apps/${id}`, formData, { baseURL: remote });
 
   if (file.isDirectory()) {
@@ -528,6 +541,7 @@ export async function updateApp({
  * @param options - The options to use for creating an app.
  */
 export async function createApp({
+  clientCredentials,
   context,
   dryRun,
   modifyContext,
@@ -582,6 +596,11 @@ export async function createApp({
     formData.append('icon', realIcon);
   }
 
+  await authenticate(
+    remote,
+    resources ? 'apps:write resources:write' : 'apps:write',
+    clientCredentials,
+  );
   const { data } = await axios.post('/api/apps', formData, { baseURL: remote, params: { dryRun } });
 
   if (dryRun) {

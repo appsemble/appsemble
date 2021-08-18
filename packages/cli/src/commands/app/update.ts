@@ -93,6 +93,7 @@ export async function handler({
   logger.info(`Updating ${directories.length} apps`);
   for (const dir of directories) {
     await updateApp({
+      clientCredentials,
       context,
       id,
       path: dir,
