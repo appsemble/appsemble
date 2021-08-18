@@ -15,12 +15,69 @@ import { traverseBlockThemes } from './block';
 import { processCss } from './processCss';
 import { createResource } from './resource';
 
-interface UpdateAppParams {
+interface CreateAppParams {
   /**
-   * The OAuth2 client credentials to use.
+   * If specified, the context matching this name is used, overriding command line flags.
    */
-  clientCredentials: string;
+  context?: string;
 
+  /**
+   * The ID of the organization to upload for.
+   */
+  organization: string;
+
+  /**
+   * The path in which the App YAML is located.
+   */
+  path: string;
+
+  /**
+   * Whether the App should be marked as private.
+   */
+  private: boolean;
+
+  /**
+   * The remote server to create the app on.
+   */
+  remote: string;
+
+  /**
+   * Whether the App should be marked as a template.
+   */
+  template: boolean;
+
+  /**
+   * The icon to upload.
+   */
+  icon: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * The background color to use for the icon in opaque contexts.
+   */
+  iconBackground: string;
+
+  /**
+   * The maskable icon to upload.
+   */
+  maskableIcon: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * Whether the API should be called with a dry run.
+   */
+  dryRun: boolean;
+
+  /**
+   * Whether resources from the `resources` directory should be created after creating the app.
+   */
+  resources: boolean;
+
+  /**
+   * If the app context is specified,
+   * modify it for the current context to include the id of the created app.
+   */
+  modifyContext: boolean;
+}
+interface UpdateAppParams {
   /**
    * If specified, the context matching this name is used, overriding command line flags.
    */
@@ -402,7 +459,6 @@ This block version is not used in the app`,
  * @param argv - The command line options used for updating the app.
  */
 export async function updateApp({
-  clientCredentials,
   context,
   force,
   path,
@@ -466,81 +522,12 @@ export async function updateApp({
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 }
 
-interface CreateAppParams {
-  /**
-   * The OAuth2 client credentials to use.
-   */
-  clientCredentials: string;
-
-  /**
-   * If specified, the context matching this name is used, overriding command line flags.
-   */
-  context?: string;
-
-  /**
-   * The ID of the organization to upload for.
-   */
-  organization: string;
-
-  /**
-   * The path in which the App YAML is located.
-   */
-  path: string;
-
-  /**
-   * Whether the App should be marked as private.
-   */
-  private: boolean;
-
-  /**
-   * The remote server to create the app on.
-   */
-  remote: string;
-
-  /**
-   * Whether the App should be marked as a template.
-   */
-  template: boolean;
-
-  /**
-   * The icon to upload.
-   */
-  icon: NodeJS.ReadStream | ReadStream;
-
-  /**
-   * The background color to use for the icon in opaque contexts.
-   */
-  iconBackground: string;
-
-  /**
-   * The maskable icon to upload.
-   */
-  maskableIcon: NodeJS.ReadStream | ReadStream;
-
-  /**
-   * Whether the API should be called with a dry run.
-   */
-  dryRun: boolean;
-
-  /**
-   * Whether resources from the `resources` directory should be created after creating the app.
-   */
-  resources: boolean;
-
-  /**
-   * If the app context is specified,
-   * modify it for the current context to include the id of the created app.
-   */
-  modifyContext: boolean;
-}
-
 /**
  * Create a new App.
  *
  * @param options - The options to use for creating an app.
  */
 export async function createApp({
-  clientCredentials,
   context,
   dryRun,
   modifyContext,

@@ -108,7 +108,6 @@ export async function handler({
   for (const dir of directories) {
     logger.info('');
     await createApp({
-      clientCredentials,
       context,
       organization,
       path: dir,
