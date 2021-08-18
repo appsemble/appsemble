@@ -1,12 +1,10 @@
-import { join } from 'path';
-
-import { AppsembleError, readData } from '@appsemble/node-utils';
 import { TeamRole } from '@appsemble/utils';
 import { Argv } from 'yargs';
 
+import { resolveAppIdAndRemote } from '../../../lib/app';
 import { authenticate } from '../../../lib/authentication';
 import { updateMember } from '../../../lib/team';
-import { AppsembleRC, BaseArguments } from '../../../types';
+import { BaseArguments } from '../../../types';
 
 interface InviteTeamArguments extends BaseArguments {
   appId: number;
@@ -60,25 +58,7 @@ export async function handler({
   role,
   user,
 }: InviteTeamArguments): Promise<void> {
-  let resolvedAppId: number;
-  let resolvedRemote = remote;
-
-  if (app) {
-    const [rc] = await readData<AppsembleRC>(join(app, '.appsemblerc.yaml'));
-    if (rc.context?.[context]?.id) {
-      resolvedAppId = Number(rc?.context?.[context]?.id);
-    } else {
-      throw new AppsembleError(
-        `App ID was not found in ${join(app, '.appsemblerc.yaml')} context.${context}.id`,
-      );
-    }
-
-    if (rc.context?.[context]?.remote) {
-      resolvedRemote = rc.context?.[context]?.remote;
-    }
-  } else {
-    resolvedAppId = appId;
-  }
+  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
 
   await authenticate(resolvedRemote, 'teams:write', clientCredentials);
   await updateMember({

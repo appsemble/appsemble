@@ -1,11 +1,9 @@
-import { join } from 'path';
-
-import { AppsembleError, readData } from '@appsemble/node-utils';
 import { Argv } from 'yargs';
 
+import { resolveAppIdAndRemote } from '../../lib/app';
 import { authenticate } from '../../lib/authentication';
 import { createTeam } from '../../lib/team';
-import { AppsembleRC, BaseArguments } from '../../types';
+import { BaseArguments } from '../../types';
 
 interface CreateTeamArguments extends BaseArguments {
   appId: number;
@@ -46,29 +44,11 @@ export async function handler({
   name,
   remote,
 }: CreateTeamArguments): Promise<void> {
-  let id: number;
-  let resolvedRemote = remote;
-
-  if (app) {
-    const [rc] = await readData<AppsembleRC>(join(app, '.appsemblerc.yaml'));
-    if (rc.context?.[context]?.id) {
-      id = Number(rc?.context?.[context]?.id);
-    } else {
-      throw new AppsembleError(
-        `App ID was not found in ${join(app, '.appsemblerc.yaml')} context.${context}.id`,
-      );
-    }
-
-    if (rc.context?.[context]?.remote) {
-      resolvedRemote = rc.context?.[context]?.remote;
-    }
-  } else {
-    id = appId;
-  }
+  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
 
   await authenticate(resolvedRemote, 'teams:write', clientCredentials);
   await createTeam({
     name,
-    appId: id,
+    appId: resolvedAppId,
   });
 }

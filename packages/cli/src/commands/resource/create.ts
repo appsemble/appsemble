@@ -1,13 +1,12 @@
-import { join } from 'path';
-
-import { AppsembleError, logger, readData } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
+import { resolveAppIdAndRemote } from '../../lib/app';
 import { authenticate } from '../../lib/authentication';
 import { createResource } from '../../lib/resource';
-import { AppsembleRC, BaseArguments } from '../../types';
+import { BaseArguments } from '../../types';
 
 interface CreateResourceArguments extends BaseArguments {
   resourceName: string;
@@ -55,26 +54,7 @@ export async function handler({
   remote,
   resourceName,
 }: CreateResourceArguments): Promise<void> {
-  let id: number;
-  let resolvedRemote = remote;
-
-  if (app) {
-    const [rc] = await readData<AppsembleRC>(join(app, '.appsemblerc.yaml'));
-    if (rc.context?.[context]?.id) {
-      id = Number(rc?.context?.[context]?.id);
-    } else {
-      throw new AppsembleError(
-        `App ID was not found in ${join(app, '.appsemblerc.yaml')} context.${context}.id`,
-      );
-    }
-
-    if (rc.context?.[context]?.remote) {
-      resolvedRemote = rc.context?.[context]?.remote;
-    }
-  } else {
-    id = appId;
-  }
-
+  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
   await authenticate(resolvedRemote, 'resources:write', clientCredentials);
 
   const normalizedPaths = paths.map((path) => normalizePath(path));
@@ -89,7 +69,7 @@ export async function handler({
     logger.info('');
     await createResource({
       resourceName,
-      appId: id,
+      appId: resolvedAppId,
       path,
       remote: resolvedRemote,
     });

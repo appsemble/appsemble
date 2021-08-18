@@ -650,3 +650,41 @@ export async function createApp({
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 }
+
+/**
+ * Helper function to normalize resolving the app’s ID and remote based on the app context.
+ *
+ * @param appPath - The path to the app.
+ * @param context - Which context to use in the AppsembleRC file.
+ * @param defaultRemote - The remote to fall back to.
+ * @param defaultAppId - The app ID to fall back to.
+ * @returns The resolved app ID and remote.
+ */
+export async function resolveAppIdAndRemote(
+  appPath: string,
+  context: string,
+  defaultRemote: string,
+  defaultAppId: number,
+): Promise<[number, string]> {
+  let id: number;
+  let resolvedRemote = defaultRemote;
+
+  if (appPath) {
+    const [rc] = await readData<AppsembleRC>(join(appPath, '.appsemblerc.yaml'));
+    if (rc.context?.[context]?.id) {
+      id = Number(rc?.context?.[context]?.id);
+    } else {
+      throw new AppsembleError(
+        `App ID was not found in ${join(appPath, '.appsemblerc.yaml')} context.${context}.id`,
+      );
+    }
+
+    if (rc.context?.[context]?.remote) {
+      resolvedRemote = rc.context?.[context]?.remote;
+    }
+  } else {
+    id = defaultAppId;
+  }
+
+  return [id, resolvedRemote];
+}

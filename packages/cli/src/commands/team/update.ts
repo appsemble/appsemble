@@ -1,11 +1,10 @@
-import { join } from 'path';
-
-import { AppsembleError, readData } from '@appsemble/node-utils';
+import { AppsembleError } from '@appsemble/node-utils';
 import { Argv } from 'yargs';
 
+import { resolveAppIdAndRemote } from '../../lib/app';
 import { authenticate } from '../../lib/authentication';
 import { updateTeam } from '../../lib/team';
-import { AppsembleRC, BaseArguments } from '../../types';
+import { BaseArguments } from '../../types';
 
 interface UpdateTeamArguments extends BaseArguments {
   appId: number;
@@ -55,25 +54,7 @@ export async function handler({
     throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
   }
 
-  let resolvedAppId: number;
-  let resolvedRemote = remote;
-
-  if (app) {
-    const [rc] = await readData<AppsembleRC>(join(app, '.appsemblerc.yaml'));
-    if (rc.context?.[context]?.id) {
-      resolvedAppId = Number(rc?.context?.[context]?.id);
-    } else {
-      throw new AppsembleError(
-        `App ID was not found in ${join(app, '.appsemblerc.yaml')} context.${context}.id`,
-      );
-    }
-
-    if (rc.context?.[context]?.remote) {
-      resolvedRemote = rc.context?.[context]?.remote;
-    }
-  } else {
-    resolvedAppId = appId;
-  }
+  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
 
   await authenticate(resolvedRemote, 'teams:write', clientCredentials);
   await updateTeam({
