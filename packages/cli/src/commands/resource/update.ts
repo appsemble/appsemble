@@ -55,7 +55,12 @@ export async function handler({
   remote,
   resourceName,
 }: CreateResourceArguments): Promise<void> {
-  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
+  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(
+    app,
+    context,
+    remote,
+    String(appId),
+  );
   await authenticate(resolvedRemote, 'resources:write', clientCredentials);
 
   const normalizedPaths = paths.map((path) => normalizePath(path));

@@ -22,7 +22,7 @@ export interface UpdateAppArguments extends BaseArguments {
   /**
    * The ID of the app to update.
    */
-  appId: number;
+  appId: string;
 
   /**
    * The path in which the app YAML is located.

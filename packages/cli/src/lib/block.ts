@@ -254,7 +254,7 @@ export async function publishBlock(config: BlockConfig, ignoreConflict: boolean)
 export async function uploadAppBlockTheme(
   filePath: string,
   organization: string,
-  appId: number,
+  appId: string,
   block: string,
   remote: string,
   force: boolean,
@@ -283,7 +283,7 @@ export async function uploadAppBlockTheme(
  */
 export async function traverseBlockThemes(
   path: string,
-  appId: number,
+  appId: string,
   remote: string,
   force: boolean,
 ): Promise<void> {

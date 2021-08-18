@@ -18,7 +18,7 @@ interface UpdateResourceParams {
   /**
    * The ID of the app to create a resource entry for.
    */
-  appId: number;
+  appId: string;
 
   /**
    * The remote server to create the app on.
@@ -40,7 +40,7 @@ interface CreateResourceParams {
   /**
    * The ID of the app to create a resource entry for.
    */
-  appId: number;
+  appId: string;
 
   /**
    * The remote server to create the app on.

@@ -54,7 +54,12 @@ export async function handler({
     throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
   }
 
-  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
+  const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(
+    app,
+    context,
+    remote,
+    String(appId),
+  );
 
   await authenticate(resolvedRemote, 'teams:write', clientCredentials);
   await updateTeam({
