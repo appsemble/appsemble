@@ -253,7 +253,7 @@ export async function traverseAppDirectory(
  */
 export async function uploadMessages(
   path: string,
-  appId: string,
+  appId: number,
   remote: string,
   force: boolean,
 ): Promise<void> {
@@ -671,7 +671,7 @@ export async function createApp({
 }
 
 /**
- * Helper function to normalize resolving the app’s ID and remote based on the app context.
+ * Resolve the app’s ID and remote based on the app context.
  *
  * @param appPath - The path to the app.
  * @param name - Which context to use in the AppsembleRC file.
@@ -683,9 +683,9 @@ export async function resolveAppIdAndRemote(
   appPath: string,
   name: string,
   defaultRemote: string,
-  defaultAppId: string,
-): Promise<[string, string]> {
-  let id: string;
+  defaultAppId: number,
+): Promise<[number, string]> {
+  let id: number;
   let resolvedRemote = defaultRemote;
 
   if (appPath) {

@@ -6,7 +6,7 @@ interface SharedTeamParams {
   /**
    * The ID of the app to create the team for.
    */
-  appId: string;
+  appId: number;
 }
 
 interface SharedExistingTeamParams extends SharedTeamParams {
