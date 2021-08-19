@@ -161,11 +161,31 @@ describe('getTeam', () => {
 describe('createTeam', () => {
   it('should create a team if user is Owner', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams`, { name: 'Test Team' });
+    const response = await request.post(`/api/apps/${app.id}/teams`, {
+      name: 'Test Team',
+    });
 
     expect(response).toMatchObject({
       status: 201,
       data: { id: expect.any(Number), name: 'Test Team', role: TeamRole.Manager },
+    });
+  });
+
+  it('should create a team with annotations', async () => {
+    authorizeStudio();
+    const response = await request.post(`/api/apps/${app.id}/teams`, {
+      name: 'Test Team',
+      annotations: { testKey: 'foo' },
+    });
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: expect.any(Number),
+        name: 'Test Team',
+        role: TeamRole.Manager,
+        annotations: { testKey: 'foo' },
+      },
     });
   });
 
