@@ -26,7 +26,7 @@ export async function createTeam(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: {
-      body: { name },
+      body: { annotations, name },
     },
     user,
   } = ctx;
@@ -44,7 +44,10 @@ export async function createTeam(ctx: Context): Promise<void> {
 
   let team: Team;
   await transactional(async (transaction) => {
-    team = await Team.create({ name, AppId: appId }, { transaction });
+    team = await Team.create(
+      { name, AppId: appId, annotations: annotations || undefined },
+      { transaction },
+    );
     await TeamMember.create(
       { TeamId: team.id, UserId: user.id, role: TeamRole.Manager },
       { transaction },
@@ -55,6 +58,7 @@ export async function createTeam(ctx: Context): Promise<void> {
     id: team.id,
     name: team.name,
     role: TeamRole.Manager,
+    annotations: team.annotations ?? {},
   };
 }
 
