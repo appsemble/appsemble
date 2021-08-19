@@ -30,7 +30,7 @@ export function coerceRemote(value: string): string {
   remote.hash = '';
   remote.search = '';
   remote.pathname = '';
-  return remote.origin;
+  return String(remote);
 }
 
 /**
