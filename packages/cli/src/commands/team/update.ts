@@ -1,4 +1,3 @@
-import { AppsembleError } from '@appsemble/node-utils';
 import { Argv } from 'yargs';
 
 import { resolveAppIdAndRemote } from '../../lib/app';
@@ -38,8 +37,6 @@ export function builder(yargs: Argv): Argv {
     });
 }
 
-const annotationRegex = /^\w+=.+$/;
-
 export async function handler({
   annotation,
   app,
@@ -50,10 +47,6 @@ export async function handler({
   name,
   remote,
 }: UpdateTeamArguments): Promise<void> {
-  if (annotation.some((a) => !annotationRegex.test(a))) {
-    throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
-  }
-
   const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
 
   await authenticate(resolvedRemote, 'teams:write', clientCredentials);
