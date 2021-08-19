@@ -13,6 +13,7 @@ import { readdir } from 'fs-extra';
 import { AppsembleContext, AppsembleRC } from '../types';
 import { authenticate } from './authentication';
 import { traverseBlockThemes } from './block';
+import { coerceRemote } from './coercers';
 import { processCss } from './processCss';
 import { createResource } from './resource';
 
@@ -695,5 +696,5 @@ export async function resolveAppIdAndRemote(
     }
   }
 
-  return [id ?? defaultAppId, resolvedRemote];
+  return [id ?? defaultAppId, coerceRemote(resolvedRemote)];
 }
