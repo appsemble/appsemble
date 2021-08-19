@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import { TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 
@@ -47,14 +47,41 @@ interface CreateTeamParams extends SharedTeamParams {
    * The name of the team.
    */
   name: string;
+
+  /**
+   * The list of annotations to apply in key=value format.
+   */
+  annotations?: string[];
 }
 
-export async function createTeam({ appId, name }: CreateTeamParams): Promise<void> {
+export function resolveAnnotations(annotations: string[]): Record<string, string> {
+  const annotationRegex = /^\w+=.+$/;
+
+  if (annotations.some((a) => !annotationRegex.test(a))) {
+    throw new AppsembleError('One of the annotations did not follow the pattern of key=value');
+  }
+
+  return annotations.length
+    ? Object.fromEntries(
+        annotations.map((annotation) => {
+          const [key, ...value] = annotation.split('=');
+          return [key, value.join('=')];
+        }),
+      )
+    : undefined;
+}
+
+export async function createTeam({
+  appId,
+  name,
+  annotations = [],
+}: CreateTeamParams): Promise<void> {
   logger.info(`Creating team ${name}`);
   const {
     data: { id },
   } = await axios.post(`/api/apps/${appId}/teams`, {
     name,
+    annotations: resolveAnnotations(annotations),
   });
   logger.info(`Successfully created team ${name} with ID ${id}`);
 }
@@ -74,14 +101,7 @@ export async function updateTeam({
   logger.info(`Updating team ${id}`);
   await axios.put(`/api/apps/${appId}/teams/${id}`, {
     name,
-    annotations: annotations.length
-      ? Object.fromEntries(
-          annotations.map((annotation) => {
-            const [key, ...value] = annotation.split('=');
-            return [key, value.join('=')];
-          }),
-        )
-      : undefined,
+    annotations: resolveAnnotations(annotations),
   });
   logger.info(`Successfully updated team ${id}`);
 }
