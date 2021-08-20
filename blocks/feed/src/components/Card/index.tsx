@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, Input, Location } from '@appsemble/preact-components';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@appsemble/sdk';
 import { DivIcon, Icon } from 'leaflet';
 import { JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';

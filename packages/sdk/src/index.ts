@@ -1,9 +1,11 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 import { Promisable } from 'type-fest';
 
 import { Action, Message, Remapper, Theme } from './types';
 
 export * from './types';
+export { IconName };
 
 /**
  * Actions defined on a block.

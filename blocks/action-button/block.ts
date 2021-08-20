@@ -1,4 +1,4 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { IconName } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Actions {
