@@ -407,11 +407,11 @@ describe('queryMyApps', () => {
     );
 
     authorizeStudio();
-    const responseA = await request.get('/api/apps/me');
+    const responseA = await request.get('/api/user/apps');
 
     await Member.create({ OrganizationId: organizationB.id, UserId: user.id, role: 'Member' });
 
-    const responseB = await request.get('/api/apps/me');
+    const responseB = await request.get('/api/user/apps');
 
     expect(responseA).toMatchObject({
       status: 200,

@@ -104,7 +104,7 @@ export function IndexPage(): ReactElement {
           filter={filter}
           reverse={sort?.reverse}
           sortFunction={sortFunctions[sort?.name]}
-          target={`/api/apps/me?language=${lang}`}
+          target={`/api/user/apps?language=${lang}`}
           title={<FormattedMessage {...messages.myApps} />}
         />
       )}
