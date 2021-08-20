@@ -1,0 +1,22 @@
+{
+  "name": "@appsemble/tiles",
+  "version": "0.18.27",
+  "private": true,
+  "description": "Render data in the form of colorful tiles.",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/tiles"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.18.27",
+    "mini-jsx": "^3.0.1"
+  }
+}
