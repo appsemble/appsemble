@@ -1,3 +1,5 @@
+Cypress.config('includeShadowDom', true);
+
 describe('Empty', () => {
   let cached = false;
 
@@ -7,9 +9,9 @@ describe('Empty', () => {
   });
 
   it('should navigate to the second page and back', () => {
-    cy.get('a.button', { includeShadowDom: true }).click();
+    cy.get('a.button').click();
     cy.get('h2.navbar-item.title').should('contain.text', 'Example Page B');
-    cy.get('a.button', { includeShadowDom: true }).click();
+    cy.get('a.button').click();
     cy.get('h2.navbar-item.title').should('contain.text', 'Example Page A');
   });
 });

@@ -1,3 +1,5 @@
+Cypress.config('includeShadowDom', true);
+
 describe('Person', () => {
   let cached = false;
 
@@ -15,28 +17,28 @@ describe('Person', () => {
     const description = `Description ${date}`;
 
     // XXX:  Cypress appears to think these elements are disabled if force is not set to true.
-    cy.get('[placeholder="First name"]', { includeShadowDom: true }).type(firstName, {
+    cy.get('[placeholder="First name"]').type(firstName, {
       force: true,
     });
-    cy.get('[placeholder="Last name"]', { includeShadowDom: true }).type(lastName, {
+    cy.get('[placeholder="Last name"]').type(lastName, {
       force: true,
     });
-    cy.get('[placeholder="Email"]', { includeShadowDom: true }).type(email, {
+    cy.get('[placeholder="Email"]').type(email, {
       force: true,
     });
-    cy.get('[placeholder="Description"]', { includeShadowDom: true }).type(description, {
+    cy.get('[placeholder="Description"]').type(description, {
       force: true,
     });
 
-    cy.get('button[type="submit"]', { includeShadowDom: true }).click();
+    cy.get('button[type="submit"]').click();
 
-    cy.contains(firstName, { includeShadowDom: true }).as('td').should('exist');
-    cy.contains(lastName, { includeShadowDom: true }).should('exist');
+    cy.contains(firstName).as('td').should('exist');
+    cy.contains(lastName).should('exist');
     cy.get('@td').click();
 
-    cy.contains(firstName, { includeShadowDom: true }).should('exist');
-    cy.contains(lastName, { includeShadowDom: true }).should('exist');
-    cy.contains(email, { includeShadowDom: true }).should('exist');
-    cy.contains(description, { includeShadowDom: true }).should('exist');
+    cy.contains(firstName).should('exist');
+    cy.contains(lastName).should('exist');
+    cy.contains(email).should('exist');
+    cy.contains(description).should('exist');
   });
 });
