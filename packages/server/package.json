@@ -147,8 +147,7 @@
     "axios-test-instance": "^4.0.0",
     "express-to-koa": "^2.0.0",
     "jest-image-snapshot": "^4.5.1",
-    "memfs": "^3.2.2",
-    "webpack-hot-middleware": "^2.25.0"
+    "memfs": "^3.2.2"
   },
   "peerDependencies": {
     "webpack": "^4"
