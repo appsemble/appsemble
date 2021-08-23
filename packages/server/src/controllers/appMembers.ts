@@ -1,4 +1,4 @@
-import { Permission } from '@appsemble/utils';
+import { has, Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
@@ -120,7 +120,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
     throw notFound('User with this ID doesn’t exist.');
   }
 
-  if (!Object.hasOwnProperty.call(app.definition.security.roles, role)) {
+  if (!has(app.definition.security.roles, role)) {
     throw badRequest(`Role ‘${role}’ is not defined.`);
   }
 

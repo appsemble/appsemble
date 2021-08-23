@@ -1,4 +1,5 @@
 import { AppsembleError } from '@appsemble/node-utils';
+import { has } from '@appsemble/utils';
 
 const PROMPT = process.platform === 'win32' ? '>' : '$';
 const COMMAND = /yarn/.test(process.env.npm_execpath)
@@ -25,7 +26,7 @@ export async function serverImport<
     // eslint-disable-next-line import/no-extraneous-dependencies
     const mod = await import('@appsemble/server');
     for (const member of members) {
-      if (!Object.hasOwnProperty.call(mod, member)) {
+      if (!has(mod, member)) {
         throw new Error(`@appsemble/server does not export ${member}`);
       }
     }

@@ -5,6 +5,7 @@ import languageTags from 'language-tags';
 import { Promisable } from 'type-fest';
 
 import { BlockMap, getAppBlocks } from './getAppBlocks';
+import { has } from './has';
 
 /**
  * Used for throwing known Appsemble validation errors.
@@ -53,12 +54,10 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
       validator.customFormats.remapper = () => true;
       validator.customFormats.action = (property) => {
         actionParameters.add(property);
-        return block.actions && Object.hasOwnProperty.call(block.actions, property);
+        return has(block.actions, property);
       };
-      validator.customFormats['event-listener'] = (property) =>
-        block.events?.listen && Object.hasOwnProperty.call(block.events.listen, property);
-      validator.customFormats['event-emitter'] = (property) =>
-        block.events?.emit && Object.hasOwnProperty.call(block.events.emit, property);
+      validator.customFormats['event-listener'] = (property) => has(block.events?.listen, property);
+      validator.customFormats['event-emitter'] = (property) => has(block.events?.emit, property);
       const result = validator.validate(block.parameters || {}, version.parameters);
       if (!result.valid) {
         for (const error of result.errors) {
@@ -79,28 +78,22 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
           continue;
         }
 
-        if (!Object.keys(version.actions).includes(key) && !version.wildcardActions) {
+        if (!has(version.actions, key) && !version.wildcardActions) {
           errors[`${loc}.actions.${key}`] = `Custom action “${key}” is unused`;
         }
-      } else if (!Object.hasOwnProperty.call(version.actions, key)) {
+      } else if (!has(version.actions, key)) {
         errors[`${loc}.actions.${key}`] = 'Unknown action type';
       }
     }
 
     for (const key of Object.keys(block.events?.emit || {})) {
-      if (
-        !version.events?.emit?.$any &&
-        !Object.hasOwnProperty.call(version.events?.emit || {}, key)
-      ) {
+      if (!version.events?.emit?.$any && !has(version.events?.emit, key)) {
         errors[`${loc}.events.emit.${key}`] = 'Unknown event emitter';
       }
     }
 
     for (const key of Object.keys(block.events?.listen || {})) {
-      if (
-        !version.events?.listen?.$any &&
-        !Object.hasOwnProperty.call(version.events?.listen || {}, key)
-      ) {
+      if (!version.events?.listen?.$any && !has(version.events?.listen, key)) {
         errors[`${loc}.events.listen.${key}`] = 'Unknown event listener';
       }
     }
@@ -148,7 +141,7 @@ function validateSecurityRoles(
 export function validateSecurity(definition: AppDefinition): void {
   const { pages, roles, security } = definition;
 
-  if (!Object.keys(security.roles).includes(security.default.role)) {
+  if (!has(security.roles, security.default.role)) {
     throw new AppsembleValidationError(
       `Default role ‘${security.default.role}’ does not exist in list of roles.`,
     );
@@ -160,7 +153,7 @@ export function validateSecurity(definition: AppDefinition): void {
 
   if (roles) {
     for (const role of roles) {
-      if (!Object.keys(security.roles).includes(role)) {
+      if (!has(security.roles, role)) {
         throw new AppsembleValidationError(`Role ‘${role}’ in App roles does not exist.`);
       }
     }
@@ -169,11 +162,7 @@ export function validateSecurity(definition: AppDefinition): void {
   for (const page of pages) {
     if (page.roles?.length) {
       for (const role of page.roles) {
-        if (
-          !Object.keys(security.roles).includes(role) &&
-          role !== '$team:member' &&
-          role !== '$team:manager'
-        ) {
+        if (!has(security.roles, role) && role !== '$team:member' && role !== '$team:manager') {
           throw new AppsembleValidationError(
             `Role ‘${role}’ in page ‘${page.name}’ roles does not exist.`,
           );
@@ -187,7 +176,7 @@ export function validateSecurity(definition: AppDefinition): void {
   for (const [key, block] of Object.entries(blocks)) {
     if (block.roles?.length) {
       for (const role of block.roles) {
-        if (!Object.keys(security.roles).includes(role)) {
+        if (!has(security.roles, role)) {
           throw new AppsembleValidationError(`Role ‘${role}’ in ${key} roles does not exist.`);
         }
       }
@@ -206,7 +195,7 @@ export function validateHooks(definition: AppDefinition): void {
     for (const [actionKey, { hooks }] of Object.entries(resource)) {
       if (filter.has(actionKey) && hooks?.notification?.to) {
         for (const to of hooks.notification.to) {
-          if (to !== '$author' && !Object.hasOwnProperty.call(definition.security.roles, to)) {
+          if (to !== '$author' && !has(definition.security.roles, to)) {
             throw new AppsembleValidationError(
               `Role ‘${to}’ in resources.${resourceKey}.${actionKey}.hooks.notification.to does not exist.`,
             );
