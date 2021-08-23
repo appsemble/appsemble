@@ -20,14 +20,14 @@ describe('Holidays', () => {
   });
 
   it('should navigate to the second tab', () => {
-    cy.contains('Eerste Kerstdag', { includeShadowDom: true }).should('exist');
+    cy.contains('Eerste Kerstdag').should('exist');
     cy.contains('Germany').click();
-    cy.contains('Mariä Himmelfahrt', { includeShadowDom: true }).should('exist');
+    cy.contains('Mariä Himmelfahrt').should('exist');
   });
 
   it('should navigate to the American holidays page', () => {
-    cy.contains('Eerste Kerstdag', { includeShadowDom: true }).should('exist');
+    cy.contains('Eerste Kerstdag').should('exist');
     cy.contains('Holidays in America').click();
-    cy.contains('Independence Day', { includeShadowDom: true }).should('exist');
+    cy.contains('Independence Day').should('exist');
   });
 });

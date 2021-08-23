@@ -2,6 +2,7 @@
   "integrationFolder": "src",
   "viewportWidth": 1280,
   "viewportHeight": 720,
+  "includeShadowDom": true,
   "reporter": "junit",
   "reporterOptions": {
     "mochaFile": "junit.xml"
