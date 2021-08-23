@@ -2,6 +2,6 @@
 !*/
 !*.css
 coverage/
-/dist/
+dist/
 /public/
 /.lighthouseci/
