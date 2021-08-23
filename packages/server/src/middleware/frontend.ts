@@ -9,8 +9,6 @@ const skipRoute = /^\/(api|oauth2\/token)/;
 
 export async function frontend(webpackConfigs: Configuration[]): Promise<Middleware> {
   const { default: webpackDevMiddleware } = await import('webpack-dev-middleware');
-  // eslint-disable-next-line import/no-extraneous-dependencies, node/no-unpublished-import
-  const { default: webpackHotMiddleware } = await import('webpack-hot-middleware');
   const { HotModuleReplacementPlugin, webpack } = await import('webpack');
   // eslint-disable-next-line import/no-extraneous-dependencies, node/no-unpublished-import
   const { default: expressToKoa } = await import('express-to-koa');
@@ -43,7 +41,6 @@ export async function frontend(webpackConfigs: Configuration[]): Promise<Middlew
   // @ts-expect-error outputFileSystem exists despite what the types say.
   const fs: import('memfs').IFs = middleware.context.outputFileSystem;
   const koaDevMiddleware = expressToKoa(middleware);
-  const koaHotMiddleware = expressToKoa(webpackHotMiddleware(compiler));
 
   return compose<Context>([
     (ctx, next) => {
@@ -51,6 +48,5 @@ export async function frontend(webpackConfigs: Configuration[]): Promise<Middlew
       return next();
     },
     (ctx, next) => (skipRoute.test(ctx.path) ? next() : koaDevMiddleware(ctx, next)),
-    (ctx, next) => (skipRoute.test(ctx.path) ? next() : koaHotMiddleware(ctx, next)),
   ]);
 }
