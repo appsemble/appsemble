@@ -1,5 +1,3 @@
-Cypress.config('includeShadowDom', true);
-
 describe('Holidays', () => {
   let cached = false;
 

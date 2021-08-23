@@ -1,5 +1,3 @@
-Cypress.config('includeShadowDom', true);
-
 describe('Notes', () => {
   beforeEach(() => {
     const { host, protocol } = new URL(Cypress.config().baseUrl);

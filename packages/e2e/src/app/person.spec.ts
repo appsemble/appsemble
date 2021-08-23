@@ -1,5 +1,3 @@
-Cypress.config('includeShadowDom', true);
-
 describe('Person', () => {
   let cached = false;
 
