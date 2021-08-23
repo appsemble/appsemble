@@ -4,6 +4,7 @@ export const NotificationHookDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The strategy used to notify users.',
   additionalProperties: false,
+  minProperties: 1,
   properties: {
     to: {
       type: 'array',

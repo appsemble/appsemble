@@ -53,7 +53,7 @@ export const JSONSchemaObject = extendJSONSchema(BaseJSONSchema, {
 It’s recommended to set this to \`false\`.
 `,
       example: false,
-      oneOf: [
+      anyOf: [
         {
           type: 'boolean',
           description: `If false, the object may not have any additional properties.

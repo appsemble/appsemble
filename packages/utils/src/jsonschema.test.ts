@@ -276,6 +276,20 @@ describe('iterJSONSchema', () => {
     expect(onSchema).toHaveBeenCalledWith(schema.additionalItems);
   });
 
+  it('should handle anyOf', () => {
+    const onSchema = jest.fn();
+    const schema = {
+      type: 'array',
+      anyOf: [{ description: 'foo' }],
+    };
+
+    iterJSONSchema(schema, onSchema);
+
+    expect(onSchema).toHaveBeenCalledTimes(2);
+    expect(onSchema).toHaveBeenCalledWith(schema);
+    expect(onSchema).toHaveBeenCalledWith(schema.anyOf[0]);
+  });
+
   it('should handle oneOf', () => {
     const onSchema = jest.fn();
     const schema = {

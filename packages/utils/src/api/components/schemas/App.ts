@@ -31,7 +31,7 @@ normalized version of the app name.
 `,
     },
     domain: {
-      oneOf: [
+      anyOf: [
         { type: 'string', maxLength: 0 },
         { type: 'string', format: 'hostname' },
       ],

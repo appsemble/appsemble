@@ -182,6 +182,12 @@ export function iterJSONSchema(schema: Schema, onSchema: (schema: Schema) => voi
     iterJSONSchema(schema.additionalItems, onSchema);
   }
 
+  if (schema.anyOf) {
+    for (const anyOf of schema.anyOf) {
+      iterJSONSchema(anyOf, onSchema);
+    }
+  }
+
   if (schema.oneOf) {
     for (const oneOf of schema.oneOf) {
       iterJSONSchema(oneOf, onSchema);

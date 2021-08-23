@@ -4,6 +4,7 @@ export const AppLayoutDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'The layout definition allows you to tweak several layout elements of the app.',
   additionalProperties: false,
+  minProperties: 1,
   properties: {
     login: {
       enum: ['navbar', 'navigation', 'hidden'],

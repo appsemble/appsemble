@@ -14,7 +14,7 @@ export const LinkActionDefinition = extendJSONSchema(BaseActionDefinition, {
     to: {
       description:
         'The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage.',
-      oneOf: [
+      anyOf: [
         {
           type: 'string',
         },

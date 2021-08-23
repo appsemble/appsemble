@@ -11,15 +11,15 @@ export const JSONSchemaEnum = extendJSONSchema(BaseJSONSchema, {
       type: 'array',
       description: 'A specific set of values this property is allowed to have.',
       items: {
-        oneOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
+        anyOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
       },
     },
     example: {
-      oneOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
+      anyOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
       description: 'An example which is valid according to this schema.',
     },
     default: {
-      oneOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
+      anyOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
       description: 'The default value which is used if no value is supplied.',
     },
   },
