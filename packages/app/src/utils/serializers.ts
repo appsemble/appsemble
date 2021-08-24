@@ -24,6 +24,8 @@ export function serializeResource(data: any): FormData | JsonValue {
   }
   const form = new FormData();
   form.set('resource', JSON.stringify(resource));
-  assets.forEach((asset) => form.append('assets', asset));
+  for (const asset of assets) {
+    form.append('assets', asset);
+  }
   return form;
 }

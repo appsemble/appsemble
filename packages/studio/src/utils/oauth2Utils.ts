@@ -6,9 +6,9 @@ export function oauth2Redirect(qs: URLSearchParams, params: Record<string, strin
 
   redirectUri.hash = '';
   redirectUri.search = '';
-  Object.entries(params).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(params)) {
     redirectUri.searchParams.set(key, value);
-  });
+  }
   if (state) {
     redirectUri.searchParams.set('state', state);
   }

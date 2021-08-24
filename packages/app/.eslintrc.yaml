@@ -5,10 +5,4 @@ overrides:
       - remcohaszing/react
       - remcohaszing/web
     rules:
-      react/jsx-no-bind:
-        - error
-        - allowArrowFunctions: true
-      react/no-multi-comp:
-        - error
-        - ignoreStateless: true
       react/prop-types: off

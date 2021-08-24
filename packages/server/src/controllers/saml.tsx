@@ -180,9 +180,9 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   sig.loadSignature(signature);
   const res = sig.checkSignature(xml);
   if (!res) {
-    sig.validationErrors.forEach((error) => {
+    for (const error of sig.validationErrors) {
       logger.warn(error);
-    });
+    }
     return prompt('badsignature');
   }
 

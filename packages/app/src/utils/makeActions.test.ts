@@ -116,10 +116,11 @@ describe('makeActions', () => {
       context: { actions: { onClick: { type: 'dialog.ok' } } },
       extraCreators: { 'dialog.ok': () => [dialogOk] },
     });
-    const result = actions.onClick('input', {});
+    const promise = actions.onClick('input', {});
     expect(dialogOk).not.toHaveBeenCalled();
     pageReady();
-    await expect(result).resolves.toBe('dialog.ok return value');
+    const result = await promise;
+    expect(result).toBe('dialog.ok return value');
     expect(dialogOk).toHaveBeenCalledWith('input', {});
   });
 

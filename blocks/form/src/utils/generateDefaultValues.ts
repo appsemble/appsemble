@@ -32,8 +32,9 @@ function generateDefaultValue(field: Field): unknown {
 }
 
 export function generateDefaultValues(fields: Field[]): Values {
-  return fields.reduce<Values>((acc, field) => {
-    acc[field.name] = generateDefaultValue(field);
-    return acc;
-  }, {});
+  const values: Values = {};
+  for (const field of fields) {
+    values[field.name] = generateDefaultValue(field);
+  }
+  return values;
 }

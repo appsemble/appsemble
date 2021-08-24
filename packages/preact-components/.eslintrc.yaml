@@ -4,8 +4,5 @@ overrides:
     extends:
       - remcohaszing/preact
     rules:
-      react/jsx-no-bind:
-        - error
-        - allowArrowFunctions: true
       react/prop-types: off
       react/sort-comp: off

@@ -27,7 +27,7 @@ export function loadMarkers(
   if (!Array.isArray(markers)) {
     return;
   }
-  markers.forEach(async (marker) => {
+  for (const marker of markers) {
     if (fetched.has(marker.id)) {
       return;
     }
@@ -37,8 +37,10 @@ export function loadMarkers(
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }
-    new Marker([lat, lng], { icon: await createIcon(params, data && data.id === marker.id) })
-      .on('click', () => params.actions.onMarkerClick(marker))
-      .addTo(target);
-  });
+    createIcon(params, data && data.id === marker.id).then((icon) =>
+      new Marker([lat, lng], { icon })
+        .on('click', () => params.actions.onMarkerClick(marker))
+        .addTo(target),
+    );
+  }
 }

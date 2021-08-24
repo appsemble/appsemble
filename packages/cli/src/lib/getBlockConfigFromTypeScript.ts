@@ -270,14 +270,15 @@ export function getBlockConfigFromTypeScript(
   let messagesInterface: InterfaceDeclaration;
   let patametersInterface: InterfaceDeclaration;
 
-  program.getSourceFiles().forEach((sourceFile) => {
+  for (const sourceFile of program.getSourceFiles()) {
     const fileName = relative(process.cwd(), sourceFile.fileName);
     // Filter TypeScript default libs
     if (program.isSourceFileDefaultLibrary(sourceFile)) {
       logger.silly(`Skipping metadata extraction from: ${fileName}`);
-      return;
+      continue;
     }
     logger.verbose(`Searching metadata in: ${fileName}`);
+    // eslint-disable-next-line @typescript-eslint/no-loop-func
     forEachChild(sourceFile, (mod) => {
       // This node doesn’t override SDK types
       if (!isModuleDeclaration(mod)) {
@@ -334,7 +335,7 @@ export function getBlockConfigFromTypeScript(
         }
       });
     });
-  });
+  }
 
   return {
     actions:

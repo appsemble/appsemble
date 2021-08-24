@@ -519,9 +519,9 @@ export async function getResourceSubscription(ctx: Context): Promise<void> {
   const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
   const result: any = { id: resourceId, update: false, delete: false };
 
-  subscriptions.forEach(({ action }) => {
+  for (const { action } of subscriptions) {
     result[action] = true;
-  });
+  }
 
   ctx.body = result;
 }
