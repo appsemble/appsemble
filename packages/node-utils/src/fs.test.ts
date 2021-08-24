@@ -112,8 +112,9 @@ describe('opendirSafe', () => {
     );
   });
 
-  it('should not throw if the path doesn’t exist and allwoMissing is true', async () => {
+  it('should not throw if the path doesn’t exist and allowMissing is true', async () => {
     const path = resolveFixture('non-existent');
-    await expect(opendirSafe(path, jest.fn(), { allowMissing: true })).resolves.toBeUndefined();
+    const result = await opendirSafe(path, jest.fn(), { allowMissing: true });
+    expect(result).toBeUndefined();
   });
 });

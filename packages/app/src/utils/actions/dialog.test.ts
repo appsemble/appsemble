@@ -86,7 +86,8 @@ describe('dialog', () => {
       prefix: 'pages.0.blocks.0.actions.onClick',
     });
     await options.actionCreators['dialog.ok'](null)[0]({ value: 'success' }, null);
-    await expect(promise).resolves.toStrictEqual({ value: 'success' });
+    const result = await promise;
+    expect(result).toStrictEqual({ value: 'success' });
   });
 
   it('should resolve if dialog.error is called', async () => {

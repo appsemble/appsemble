@@ -20,10 +20,10 @@ describe('makeCSP', () => {
     },
   };
 
-  Object.entries(fixtures).forEach(([expected, input]) => {
+  for (const [expected, input] of Object.entries(fixtures)) {
     it(`should be able to process “${expected}”`, () => {
       const csp = makeCSP(input);
       expect(csp).toBe(expected);
     });
-  });
+  }
 });

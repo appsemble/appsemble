@@ -24,11 +24,11 @@ export async function serverImport<
     // build time, but while type checking.
     // eslint-disable-next-line import/no-extraneous-dependencies
     const mod = await import('@appsemble/server');
-    members.forEach((member) => {
+    for (const member of members) {
       if (!Object.hasOwnProperty.call(mod, member)) {
         throw new Error(`@appsemble/server does not export ${member}`);
       }
-    });
+    }
     return mod;
   } catch (error: unknown) {
     if (

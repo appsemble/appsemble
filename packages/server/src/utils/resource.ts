@@ -110,9 +110,9 @@ async function sendSubscriptionNotifications(
     subscriptions.push(...resourceSubscribers);
   }
 
-  subscriptions.forEach((subscription) => {
+  for (const subscription of subscriptions) {
     sendNotification(app, subscription, options);
-  });
+  }
 }
 
 export async function processHooks(
@@ -268,7 +268,7 @@ export function verifyResourceBody(
     },
   });
 
-  assetUsedMap.forEach((used, assetId) => {
+  for (const [assetId, used] of assetUsedMap.entries()) {
     if (!used) {
       result.errors.push(
         new ValidationError(
@@ -281,7 +281,7 @@ export function verifyResourceBody(
         ),
       );
     }
-  });
+  }
 
   handleValidatorResult(result, `Validation failed for resource type ${type}`);
 

@@ -34,14 +34,14 @@ function checkTokenRequestParameters(
   query: Record<string, string[] | string>,
   allowed: string[],
 ): Record<string, string> {
-  Object.entries(query).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(query)) {
     if (allowed.includes(key)) {
-      return;
+      continue;
     }
     if (Array.isArray(value)) {
       throw new GrantError('invalid_request');
     }
-  });
+  }
   return query as Record<string, string>;
 }
 

@@ -101,7 +101,7 @@ export async function getMessages(ctx: Context): Promise<void> {
     override === 'true' && app.AppMessages.find((m) => m.language === baseLang);
   const languageMessages = override === 'true' && app.AppMessages.find((m) => m.language === lang);
 
-  blockMessages.forEach((version) => {
+  for (const version of blockMessages) {
     const name = `@${version.OrganizationId}/${version.name}`;
     const defaultMessages = version.BlockMessages.find((m) => m.language === defaultLocale);
     const blockBaseLanguageMessages =
@@ -134,7 +134,7 @@ export async function getMessages(ctx: Context): Promise<void> {
         }
       }
     }
-  });
+  }
 
   ctx.body = {
     language: lang,

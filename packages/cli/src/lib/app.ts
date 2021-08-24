@@ -412,13 +412,15 @@ export async function writeAppMessages(
     }
 
     const blockMessages: AppsembleMessages['blocks'] = {};
-    Object.keys(oldMessages.blocks ?? {}).forEach((key) => {
-      if (!Object.keys(blockMessageKeys).includes(key)) {
-        throw new AppsembleError(
-          `Invalid translation key: blocks.${key}\nThis block is not used in the app`,
-        );
+    if (oldMessages.blocks) {
+      for (const key of Object.keys(oldMessages.blocks)) {
+        if (!Object.keys(blockMessageKeys).includes(key)) {
+          throw new AppsembleError(
+            `Invalid translation key: blocks.${key}\nThis block is not used in the app`,
+          );
+        }
       }
-    });
+    }
 
     for (const [blockName] of Object.entries(blockMessageKeys)) {
       if (oldMessages.blocks?.[blockName]) {

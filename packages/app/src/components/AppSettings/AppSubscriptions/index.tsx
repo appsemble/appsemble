@@ -30,23 +30,22 @@ export function AppSubscriptions(): ReactElement {
     useServiceWorkerRegistration();
 
   useEffect(() => {
-    const subs = Object.entries(definition.resources || {}).reduce<ResourceState>(
-      (acc, [resourceType, resource]) => {
-        Object.keys(resource)
-          .filter((key) => ['create', 'update', 'delete'].includes(key))
-          .forEach((key: keyof SubscriptionState) => {
-            if (resource[key].hooks?.notification?.subscribe) {
-              if (!Object.hasOwnProperty.call(acc, resourceType)) {
-                acc[resourceType] = {};
-              }
-              acc[resourceType][key] = { ...resource[key].hooks, subscribed: false };
+    const subs: ResourceState = {};
+    if (definition.resources) {
+      for (const [resourceType, resource] of Object.entries(definition.resources)) {
+        for (const key of Object.keys(resource)) {
+          if (
+            (key === 'create' || key === 'update' || key === 'delete') &&
+            resource[key].hooks?.notification?.subscribe
+          ) {
+            if (!Object.hasOwnProperty.call(subs, resourceType)) {
+              subs[resourceType] = {};
             }
-          });
-
-        return acc;
-      },
-      {},
-    );
+            subs[resourceType][key] = { ...resource[key].hooks, subscribed: false };
+          }
+        }
+      }
+    }
 
     if (subscription) {
       setLoadingSubscriptions(true);
@@ -56,19 +55,19 @@ export function AppSubscriptions(): ReactElement {
           params: { endpoint },
         })
         .then(({ data }) => {
-          Object.entries(data).forEach(([key, resource]) => {
+          for (const [key, resource] of Object.entries(data)) {
             if (!Object.hasOwnProperty.call(subs, key)) {
-              return;
+              continue;
             }
 
-            Object.entries(resource).forEach(([action, value]) => {
+            for (const [action, value] of Object.entries(resource)) {
               if (!Object.hasOwnProperty.call(subs[key], action)) {
-                return;
+                continue;
               }
 
               subs[key][action as keyof SubscriptionState].subscribed = value;
-            });
-          });
+            }
+          }
           setSubscriptions(subs);
         })
         .catch(() => {

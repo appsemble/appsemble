@@ -143,13 +143,13 @@ async function validate(
     'Name should use the @appsemble scope',
   );
   if (basename(dirname(dir)) !== 'blocks') {
-    ['app', 'apps', 'framework', 'low-code', 'lowcode'].forEach((keyword) => {
+    for (const keyword of ['app', 'apps', 'framework', 'low-code', 'lowcode']) {
       assert(
         pkg.keywords.includes(keyword),
         'package.json',
         `Keywords should at least contain ${keyword}`,
       );
-    });
+    }
     assert(
       pkg.keywords.every((keyword, i) => !i || pkg.keywords[i - 1].localeCompare(keyword) < 0),
       'package.json',
@@ -194,15 +194,15 @@ async function validate(
     'Author should be "Appsemble <info@appsemble.com> (https://appsemble.com)"',
   );
   assert(pkg.scripts?.test === 'jest', 'package.json', 'Test script should be "jest"');
-  Object.entries({ ...pkg.dependencies, ...pkg.devDependencies })
-    .filter(([dep]) => dep.startsWith('@appsemble/'))
-    .forEach(([, version]) => {
+  for (const version of Object.values({ ...pkg.dependencies, ...pkg.devDependencies })) {
+    if (version.startsWith('@appsemnle/')) {
       assert(
         version === latestVersion,
         'package.json',
         `Dependencies on Appsemble packages should depend on exactly "${latestVersion}"`,
       );
-    });
+    }
+  }
 
   /**
    * Validate tsconfig.json
@@ -296,11 +296,11 @@ export async function handler(): Promise<void> {
   const valid = results.filter(({ pass }) => pass);
   const invalid = results.filter(({ pass }) => !pass);
 
-  valid.forEach(({ filename, message, workspace: { dir } }) => {
-    logger.info(`✔️  ${relative(process.cwd(), join(dir, filename))}: ${message}`);
-  });
-  invalid.forEach(({ filename, message, workspace: { dir } }) => {
-    logger.error(`❌ ${relative(process.cwd(), join(dir, filename))}: ${message}`);
+  for (const { filename, message, workspace } of valid) {
+    logger.info(`✔️  ${relative(process.cwd(), join(workspace.dir, filename))}: ${message}`);
+  }
+  for (const { filename, message, workspace } of invalid) {
+    logger.error(`❌ ${relative(process.cwd(), join(workspace.dir, filename))}: ${message}`);
     process.exitCode = 1;
-  });
+  }
 }

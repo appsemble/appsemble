@@ -17,8 +17,6 @@ module.exports = {
     },
   },
   rules: {
-    'jest/no-restricted-matchers': 'off',
-
     'jsdoc/require-jsdoc': 'off',
     'jsdoc/check-tag-names': [
       'error',
