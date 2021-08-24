@@ -10,6 +10,7 @@ import { Op, Order, WhereOptions } from 'sequelize';
 
 import {
   App,
+  AppMember,
   AppSubscription,
   Asset,
   Organization,
@@ -206,12 +207,12 @@ async function verifyPermission(
   }
 
   if (app.definition.security && !isPublic) {
-    const member = app.Users?.find((u) => u.id === user?.id);
+    const member = app.AppMembers?.find((m) => m.UserId === user?.id);
     const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
     let role: string;
 
     if (member) {
-      ({ role } = member.AppMember);
+      ({ role } = member);
     } else {
       switch (policy) {
         case 'everyone':
@@ -263,11 +264,10 @@ export async function queryResources(ctx: Context): Promise<void> {
       include: [
         { model: Organization, attributes: ['id'] },
         {
-          model: User,
-          attributes: ['id'],
+          model: AppMember,
+          attributes: ['role', 'UserId'],
           required: false,
-          where: { id: user.id },
-          through: { attributes: ['role'] },
+          where: { UserId: user.id },
         },
       ],
     }),
@@ -325,11 +325,10 @@ export async function countResources(ctx: Context): Promise<void> {
       include: [
         { model: Organization, attributes: ['id'] },
         {
-          model: User,
-          attributes: ['id'],
+          model: AppMember,
+          attributes: ['role', 'UserId'],
           required: false,
-          where: { id: user.id },
-          through: { attributes: ['role'] },
+          where: { UserId: user.id },
         },
       ],
     }),
@@ -367,11 +366,10 @@ export async function getResourceById(ctx: Context): Promise<void> {
       include: [
         { model: Organization, attributes: ['id'] },
         {
-          model: User,
-          attributes: ['id'],
+          model: AppMember,
+          attributes: ['role', 'UserId'],
           required: false,
-          where: { id: user.id },
-          through: { attributes: ['role'] },
+          where: { UserId: user.id },
         },
       ],
     }),
@@ -540,11 +538,10 @@ export async function createResource(ctx: Context): Promise<void> {
       include: [
         { model: Organization, attributes: ['id'] },
         {
-          model: User,
-          attributes: ['id'],
+          model: AppMember,
+          attributes: ['role', 'UserId'],
           required: false,
-          where: { id: user.id },
-          through: { attributes: ['role'] },
+          where: { UserId: user.id },
         },
       ],
     },
@@ -616,11 +613,10 @@ export async function updateResource(ctx: Context): Promise<void> {
       include: [
         { model: Organization, attributes: ['id'] },
         {
-          model: User,
-          attributes: ['id'],
+          model: AppMember,
+          attributes: ['role', 'UserId'],
           required: false,
-          where: { id: user.id },
-          through: { attributes: ['role'] },
+          where: { UserId: user.id },
         },
       ],
     },
@@ -700,11 +696,10 @@ export async function deleteResource(ctx: Context): Promise<void> {
       include: [
         { model: Organization, attributes: ['id'] },
         {
-          model: User,
-          attributes: ['id'],
+          model: AppMember,
+          attributes: ['role', 'UserId'],
           required: false,
-          where: { id: user.id },
-          through: { attributes: ['role'] },
+          where: { UserId: user.id },
         },
       ],
     }),

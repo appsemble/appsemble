@@ -1318,7 +1318,7 @@ export interface OrganizationInvite {
  * A member of an app.
  */
 export interface AppMember {
-  id: number;
+  id: string;
   name: string;
   primaryEmail: string;
   role: string;
