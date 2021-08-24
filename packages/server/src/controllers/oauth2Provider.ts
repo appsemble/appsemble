@@ -4,7 +4,7 @@ import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
+import { App, AppMember, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 import { hasScope } from '../utils/oauth2';
 
@@ -14,7 +14,7 @@ async function checkIsAllowed(app: App, user: User): Promise<boolean> {
     return true;
   }
 
-  if (policy === 'invite' && !app.Users.length) {
+  if (policy === 'invite' && !app.AppMembers.length) {
     return false;
   }
 
@@ -77,7 +77,7 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
     include: [
       { model: OAuth2Consent, where: { UserId: user.id }, required: false },
-      { model: User, where: { id: user.id }, required: false },
+      { model: AppMember, where: { UserId: user.id }, required: false },
     ],
   });
 
@@ -117,7 +117,7 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],
-    include: [OAuth2Consent, { model: User, where: { id: user.id }, required: false }],
+    include: [OAuth2Consent, { model: AppMember, where: { UserId: user.id }, required: false }],
   });
 
   if (!app) {

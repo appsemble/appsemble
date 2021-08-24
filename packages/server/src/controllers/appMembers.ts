@@ -1,3 +1,4 @@
+import { AppMember as AppMemberType } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import { Context } from 'koa';
@@ -11,37 +12,37 @@ export async function getAppMembers(ctx: Context): Promise<void> {
     pathParams: { appId },
   } = ctx;
 
-  const app = await App.findByPk(appId, { include: [User] });
+  const app = await App.findByPk(appId, { include: [{ model: AppMember, include: [User] }] });
   if (!app) {
     throw notFound('App not found');
   }
 
-  let appMembers: { id: string; name: string; primaryEmail: string; role: string }[] = [];
+  const appMembers: AppMemberType[] = app.AppMembers.map((member) => ({
+    id: member.UserId,
+    name: member.User.name,
+    primaryEmail: member.User.primaryEmail,
+    role: member.role,
+  }));
 
-  if (app.definition.security?.default?.policy === 'invite') {
-    appMembers = app.Users.map((user) => ({
-      id: user.id,
-      name: user.name,
-      primaryEmail: user.primaryEmail,
-      role: user.AppMember.role,
-    }));
-  } else {
+  if (app.definition.security?.default?.policy !== 'invite') {
     const organization = await Organization.findByPk(app.OrganizationId, {
       include: [
         {
           model: User,
-          where: { id: { [Op.not]: app.Users.map((user) => user.id) } },
+          where: { id: { [Op.not]: app.AppMembers.map((member) => member.UserId) } },
           required: false,
         },
       ],
     });
 
-    appMembers = [...app.Users, ...organization.Users].map((user) => ({
-      id: user.id,
-      name: user.name,
-      primaryEmail: user.primaryEmail,
-      role: user?.AppMember?.role ?? app.definition.security.default.role,
-    }));
+    for (const user of organization.Users) {
+      appMembers.push({
+        id: user.id,
+        name: user.name,
+        primaryEmail: user.primaryEmail,
+        role: user?.AppMember?.role ?? app.definition.security.default.role,
+      });
+    }
   }
 
   ctx.body = appMembers;
@@ -53,7 +54,7 @@ export async function getAppMember(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    include: [{ model: User, where: { id: memberId }, required: false }, Organization],
+    include: [{ model: AppMember, where: { UserId: memberId }, required: false }, Organization],
   });
   if (!app) {
     throw notFound('App not found');
@@ -71,8 +72,8 @@ export async function getAppMember(ctx: Context): Promise<void> {
     throw notFound('User does not exist.');
   }
 
-  const member = app.Users.find((u) => u.id === memberId);
-  let role = member ? member.AppMember.role : null;
+  const member = app.AppMembers.find((m) => m.id === memberId);
+  let role = member?.role ?? null;
 
   if (!member && policy === 'everyone') {
     role = defaultRole;
@@ -108,7 +109,9 @@ export async function setAppMember(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const app = await App.findByPk(appId, { include: [User] });
+  const app = await App.findByPk(appId, {
+    include: [{ model: AppMember, required: false, where: { UserId: memberId } }],
+  });
   if (!app) {
     throw notFound('App not found');
   }
@@ -124,20 +127,15 @@ export async function setAppMember(ctx: Context): Promise<void> {
     throw badRequest(`Role ‘${role}’ is not defined.`);
   }
 
-  const [member] = await app.$get('Users', { where: { id: memberId } });
+  const member = app.AppMembers?.[0];
 
-  if (member) {
-    await (role === app.definition.security.default.role &&
-    app.definition.security.default.policy !== 'invite'
-      ? app.$remove('User', member)
-      : member.AppMember.update({ role }));
-  } else {
-    await AppMember.create({
-      UserId: user.id,
-      AppId: app.id,
-      role,
-    });
-  }
+  await (member
+    ? member.update({ role })
+    : AppMember.create({
+        UserId: user.id,
+        AppId: app.id,
+        role,
+      }));
 
   ctx.body = {
     id: user.id,
