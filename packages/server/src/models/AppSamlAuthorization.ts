@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { AppSamlSecret, User } from '.';
+import { User as AppMember, AppSamlSecret } from '.';
 
 @Table({ tableName: 'AppSamlAuthorization' })
 export class AppSamlAuthorization extends Model {
@@ -37,18 +37,18 @@ export class AppSamlAuthorization extends Model {
   AppSamlSecret: AppSamlSecret;
 
   /**
-   * The id of the linked Appsemble user.
+   * The id of the linked app user.
    */
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @AllowNull(false)
   @Column(DataType.UUID)
-  UserId: string;
+  AppMemberId: string;
 
   /**
-   * The Appsemble user.
+   * The app user.
    */
-  @BelongsTo(() => User)
-  User: User;
+  @BelongsTo(() => AppMember, 'UserId')
+  User: AppMember;
 
   @CreatedAt
   created: Date;

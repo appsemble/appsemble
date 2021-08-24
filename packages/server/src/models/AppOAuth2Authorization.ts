@@ -11,7 +11,8 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { AppOAuth2Secret, User } from '.';
+import { AppOAuth2Secret } from '.';
+import { AppMember } from './AppMember';
 
 @Table({ tableName: 'AppOAuth2Authorization' })
 export class AppOAuth2Authorization extends Model {
@@ -58,14 +59,14 @@ export class AppOAuth2Authorization extends Model {
   /**
    * The id of the linked Appsemble user.
    */
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @AllowNull(false)
   @Column(DataType.UUID)
-  UserId: string;
+  AppMemberId: string;
 
   /**
-   * The Appsemble user.
+   * The App user.
    */
-  @BelongsTo(() => User)
-  User: User;
+  @BelongsTo(() => AppMember, 'UserId')
+  AppMember: AppMember;
 }
