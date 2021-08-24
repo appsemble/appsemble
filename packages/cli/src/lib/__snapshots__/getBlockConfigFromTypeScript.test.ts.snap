@@ -2968,6 +2968,56 @@ Should be an array of data.",
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks tiles 1`] = `
+Object {
+  "actions": Object {
+    "onClick": Object {
+      "description": "This action is triggered when a tile is clicked.",
+    },
+  },
+  "events": Object {
+    "emit": undefined,
+    "listen": Object {
+      "data": Object {
+        "description": "On what event to listen for incoming data to display.",
+      },
+    },
+  },
+  "messages": Object {
+    "loadError": Object {
+      "description": "This message is displayed if there was a problem loading the message.",
+    },
+  },
+  "parameters": Object {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": Object {
+      "asset": Object {
+        "description": "This asset will be used to render an image.
+
+This takes precedence over an icon.",
+        "format": "remapper",
+      },
+      "color": Object {
+        "description": "This color is used to fill the background of the tile.",
+        "format": "remapper",
+      },
+      "icon": Object {
+        "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.
+
+This is ignored if an asset can be resolved.",
+        "format": "remapper",
+      },
+      "text": Object {
+        "description": "The label to render.",
+        "format": "remapper",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks timer 1`] = `
 Object {
   "actions": undefined,
