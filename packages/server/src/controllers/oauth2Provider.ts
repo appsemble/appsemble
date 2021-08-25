@@ -1,10 +1,9 @@
-import { createHash } from 'crypto';
-
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, AppMember, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
+import { getGravatarUrl } from '../utils/gravatar';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 import { hasScope } from '../utils/oauth2';
 
@@ -28,41 +27,56 @@ async function checkIsAllowed(app: App, user: User): Promise<boolean> {
 }
 
 export async function getUserInfo(ctx: Context): Promise<void> {
-  const { user } = ctx;
+  const { client, user } = ctx;
 
-  await user.reload({
-    attributes: ['primaryEmail', 'name', 'locale'],
-    include: [
-      {
-        required: false,
-        model: EmailAuthorization,
-        attributes: ['verified'],
-        where: {
-          email: { [Op.col]: 'User.primaryEmail' },
+  if (client && 'app' in client) {
+    const appMember = await AppMember.findOne({
+      where: { UserId: user.id, AppId: client.app.id },
+      include: [User],
+    });
+
+    if (!appMember) {
+      // The authenticated user may have been deleted.
+      throw forbidden();
+    }
+
+    ctx.body = {
+      email: appMember.email,
+      email_verified: appMember.emailVerified,
+      name: appMember.name,
+      picture: getGravatarUrl(appMember.email),
+      sub: user.id,
+      locale: user.locale,
+    };
+  } else {
+    await user.reload({
+      attributes: ['primaryEmail', 'name', 'locale'],
+      include: [
+        {
+          required: false,
+          model: EmailAuthorization,
+          attributes: ['verified'],
+          where: {
+            email: { [Op.col]: 'User.primaryEmail' },
+          },
         },
-      },
-    ],
-  });
+      ],
+    });
 
-  if (!user) {
-    // The authenticated user may have been deleted.
-    throw forbidden();
+    if (!user) {
+      // The authenticated user may have been deleted.
+      throw forbidden();
+    }
+
+    ctx.body = {
+      email: user.primaryEmail,
+      email_verified: user.primaryEmail ? user.EmailAuthorizations[0].verified : false,
+      name: user.name,
+      picture: getGravatarUrl(user.primaryEmail),
+      sub: user.id,
+      locale: user.locale,
+    };
   }
-
-  const picture = user.primaryEmail
-    ? `https://www.gravatar.com/avatar/${createHash('md5')
-        .update(user.primaryEmail)
-        .digest('hex')}?s=128&d=mp`
-    : null;
-
-  ctx.body = {
-    email: user.primaryEmail,
-    email_verified: user.primaryEmail ? user.EmailAuthorizations[0].verified : false,
-    name: user.name,
-    picture,
-    sub: user.id,
-    locale: user.locale,
-  };
 }
 
 export async function verifyOAuth2Consent(ctx: Context): Promise<void> {

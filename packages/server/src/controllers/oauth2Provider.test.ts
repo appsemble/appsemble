@@ -59,7 +59,6 @@ describe('getUserInfo', () => {
         email: null,
         email_verified: false,
         name: 'Test User',
-        picture: null,
         sub: user.id,
       },
     });

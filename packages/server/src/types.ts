@@ -1,4 +1,4 @@
-import { User } from './models';
+import { App, User } from './models';
 import { Mailer } from './utils/email/Mailer';
 
 declare module 'koa' {
@@ -18,7 +18,7 @@ declare module 'koa' {
 
 declare module 'koas-security' {
   interface Clients {
-    app: { scope: string };
+    app: { scope: string; app: App };
     basic: {};
     cli: { scope: string };
     studio: {};

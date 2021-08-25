@@ -241,45 +241,27 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
     // If the user is already linked to a known SAML authorization, use that account.
     member = authorization.AppMember;
     user = member.User;
-
-    if (role) {
-      const appMember = await AppMember.findOne({ where: { UserId: member.id, AppId: appId } });
-      if (!appMember) {
-        member = await AppMember.create({
-          UserId: member.id,
-          AppId: appId,
-          role,
-          email,
-          name,
-          emailVerified: true,
-        });
-      }
-    }
   } else {
     try {
       await transactional(async (transaction) => {
         // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
         // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
         // account.
-        user =
-          loginRequest.User ||
-          (await User.create({ name: name || nameId, primaryEmail: email }, { transaction }));
+        user = loginRequest.User || (await User.create({ name: name || nameId }, { transaction }));
+
+        member = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
+        if (!member) {
+          member = await AppMember.create(
+            { UserId: user.id, AppId: appId, role, email, name, emailVerified: true },
+            { transaction },
+          );
+        }
 
         // The logged in account is linked to a new SAML authorization for next time.
         await AppSamlAuthorization.create(
           { nameId, AppSamlSecretId: appSamlSecretId, AppMemberId: member.id },
           { transaction },
         );
-
-        if (role) {
-          const appMember = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
-          if (!appMember) {
-            member = await AppMember.create(
-              { UserId: user.id, AppId: appId, role, email, name, emailVerified: true },
-              { transaction },
-            );
-          }
-        }
       });
     } catch {
       await loginRequest.update({ email, nameId });
