@@ -163,7 +163,12 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     secret.clientSecret,
   );
 
-  const { sub } = await getUserInfo(accessToken, idToken, secret.userInfoUrl, secret.remapper);
+  const {
+    email,
+    email_verified: emailVerified,
+    name,
+    sub,
+  } = await getUserInfo(accessToken, idToken, secret.userInfoUrl, secret.remapper);
   const authorization = await AppOAuth2Authorization.findOne({
     where: { sub, AppOAuth2SecretId: secret.id },
   });
@@ -172,11 +177,14 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     const { id: UserId } = user ?? (await User.create({ transaction }));
     const role = app.definition.security?.default?.role;
     let appMember = await AppMember.findOne({
-      where: { UserId: user.id, AppId: appId },
+      where: { UserId, AppId: appId },
       transaction,
     });
     if (!appMember) {
-      appMember = await AppMember.create({ UserId: user.id, AppId: appId, role }, { transaction });
+      appMember = await AppMember.create(
+        { UserId, AppId: appId, role, name, email, emailVerified },
+        { transaction },
+      );
     }
 
     await (authorization
