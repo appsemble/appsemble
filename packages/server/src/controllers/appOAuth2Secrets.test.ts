@@ -31,7 +31,15 @@ beforeEach(async () => {
     OrganizationId: organization.id,
     vapidPublicKey: '',
     vapidPrivateKey: '',
-    definition: {},
+    definition: {
+      security: {
+        default: {
+          role: 'Test',
+          policy: 'everyone',
+        },
+        roles: { Test: {} },
+      },
+    },
   });
   member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 });

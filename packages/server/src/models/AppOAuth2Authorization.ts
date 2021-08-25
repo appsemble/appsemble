@@ -57,7 +57,7 @@ export class AppOAuth2Authorization extends Model {
   updated: Date;
 
   /**
-   * The id of the linked Appsemble user.
+   * The id of the linked app user.
    */
   @ForeignKey(() => AppMember)
   @AllowNull(false)
@@ -67,6 +67,6 @@ export class AppOAuth2Authorization extends Model {
   /**
    * The App user.
    */
-  @BelongsTo(() => AppMember, 'UserId')
+  @BelongsTo(() => AppMember)
   AppMember: AppMember;
 }
