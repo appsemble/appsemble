@@ -33,7 +33,11 @@ export function resolveRoleInheritance(
     const roleDefinition = rolesDefinition[r];
     roleNames.push(r);
     roles.push(roleDefinition);
-    roleDefinition.inherits?.forEach(resolveRoles);
+    if (roleDefinition.inherits) {
+      for (const inherits of roleDefinition.inherits) {
+        resolveRoles(inherits);
+      }
+    }
   };
 
   if (rolesDefinition) {

@@ -1,6 +1,7 @@
 import { inspect } from 'util';
 
 import { logger, writeData } from '@appsemble/node-utils';
+import { has } from '@appsemble/utils';
 import readPkgUp from 'read-pkg-up';
 import { Argv } from 'yargs';
 
@@ -26,7 +27,7 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler({ key, value }: ConfigSetArguments): Promise<void> {
   const { packageJson, path } = await readPkgUp({ normalize: false });
-  if (!Object.hasOwnProperty.call(packageJson, 'appsembleServer')) {
+  if (!has(packageJson, 'appsembleServer')) {
     packageJson.appsembleServer = {};
   }
   let parsed;

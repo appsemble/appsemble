@@ -4,7 +4,6 @@ import {
   AllowNull,
   AutoIncrement,
   BelongsTo,
-  BelongsToMany,
   Column,
   CreatedAt,
   DataType,
@@ -34,7 +33,6 @@ import {
   Organization,
   Resource,
   Team,
-  User,
 } from '.';
 
 @Table({ tableName: 'App', paranoid: true })
@@ -140,8 +138,8 @@ export class App extends Model {
   @HasMany(() => Asset)
   Assets: Asset[];
 
-  @BelongsToMany(() => User, () => AppMember)
-  Users: User[];
+  @HasMany(() => AppMember)
+  AppMembers: AppMember[];
 
   @HasMany(() => OAuth2Consent)
   OAuth2Consents: OAuth2Consent[];

@@ -16,7 +16,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { Resource } from '@appsemble/types';
-import { generateDataFromSchema } from '@appsemble/utils';
+import { generateDataFromSchema, has } from '@appsemble/utils';
 import { download } from '@appsemble/web-utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
@@ -243,7 +243,7 @@ export function IndexPage(): ReactElement {
   }
 
   if (!loading && resources === undefined) {
-    if (!Object.hasOwnProperty.call(app.definition.resources, resourceName)) {
+    if (!has(app.definition.resources, resourceName)) {
       return <FormattedMessage {...messages.notFound} />;
     }
 
@@ -328,7 +328,7 @@ export function IndexPage(): ReactElement {
                 <FormattedMessage {...messages.updated} />
               </th>
             )}
-            {Object.hasOwnProperty.call(app, 'resources') && !hiddenProperties.has('$clonable') && (
+            {has(app, 'resources') && !hiddenProperties.has('$clonable') && (
               <th>
                 <FormattedMessage {...messages.clonable} />
               </th>
@@ -435,7 +435,7 @@ export function IndexPage(): ReactElement {
             label={<FormattedMessage {...messages.updated} />}
             name="$updated"
           />
-          {Object.hasOwnProperty.call(app, 'resources') && (
+          {has(app, 'resources') && (
             <SimpleFormField
               component={Checkbox}
               label={<FormattedMessage {...messages.clonable} />}

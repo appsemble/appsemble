@@ -131,23 +131,21 @@ export async function publishBlock(ctx: Context): Promise<void> {
   const OrganizationId = org.slice(1);
 
   if (data.actions) {
-    Object.keys(data.actions).forEach((key) => {
+    for (const key of Object.keys(data.actions)) {
       if (!actionKeyRegex.test(key) && key !== '$any') {
         throw badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
       }
-    });
+    }
   }
 
   if (messages) {
     const messageKeys = Object.keys(messages.en);
-    Object.entries(messages as Record<string, Record<string, string>>).forEach(
-      ([language, record]) => {
-        const keys = Object.keys(record);
-        if (keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key))) {
-          throw badRequest(`Language ‘${language}’ contains mismatched keys compared to ‘en’.`);
-        }
-      },
-    );
+    for (const [language, record] of Object.entries(messages)) {
+      const keys = Object.keys(record);
+      if (keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key))) {
+        throw badRequest(`Language ‘${language}’ contains mismatched keys compared to ‘en’.`);
+      }
+    }
   }
 
   await checkRole(ctx, OrganizationId, Permission.PublishBlocks);
@@ -172,11 +170,11 @@ export async function publishBlock(ctx: Context): Promise<void> {
         { transaction },
       );
 
-      files.forEach((file) => {
+      for (const file of files) {
         logger.verbose(
           `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.filename)}`,
         );
-      });
+      }
       createdBlock.BlockAssets = await BlockAsset.bulkCreate(
         files.map((file) => ({
           name: blockId,

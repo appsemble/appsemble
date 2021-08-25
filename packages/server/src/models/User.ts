@@ -15,7 +15,6 @@ import {
 } from 'sequelize-typescript';
 
 import {
-  App,
   AppMember,
   Asset,
   EmailAuthorization,
@@ -70,8 +69,8 @@ export class User extends Model {
   @HasMany(() => OAuth2Consent)
   OAuth2Consents: OAuth2Consent[];
 
-  @BelongsToMany(() => App, () => AppMember)
-  Apps: App[];
+  @HasMany(() => AppMember)
+  AppMembers: AppMember[];
 
   @CreatedAt
   created: Date;

@@ -1,15 +1,12 @@
 import { Theme } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
-import autoprefixer from 'autoprefixer';
 import { Context } from 'koa';
-import postcss from 'postcss';
 import sass from 'sass';
 
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');
 const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass').replace(/\\/g, '/');
 const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').replace(/\\/g, '/');
-const postCss = postcss([autoprefixer]);
 
 /**
  * Process SASS styles based on given parameters.
@@ -70,7 +67,7 @@ export function bulmaHandler(ctx: Context): void {
     outputStyle: 'compressed',
   });
 
-  ctx.body = postCss.process(css).css;
+  ctx.body = css;
   ctx.type = 'text/css';
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
 }

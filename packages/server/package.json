@@ -42,7 +42,6 @@
     "@odata/parser": "^0.2.9",
     "@sentry/node": "^6.10.0",
     "@types/mdast": "^3.0.7",
-    "autoprefixer": "^9.8.6",
     "axios": "^0.21.1",
     "bcrypt": "5.0.1",
     "bulma": "0.9.3",
@@ -114,7 +113,6 @@
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^7.1.2",
-    "@types/autoprefixer": "^9.7.2",
     "@types/bcrypt": "^5.0.0",
     "@types/express-to-koa": "^1.0.0",
     "@types/jest-image-snapshot": "^4.3.1",

@@ -93,7 +93,9 @@ export function Block({
 
   useEffect(
     () => () => {
-      cleanups.current.forEach((fn) => fn());
+      for (const fn of cleanups.current) {
+        fn();
+      }
     },
     [],
   );

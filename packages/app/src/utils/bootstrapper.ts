@@ -42,7 +42,9 @@ export function register(
   if (!callbacks) {
     throw new Error('This block shouldn’t have been loaded. What’s going on?');
   }
-  callbacks.forEach((resolve) => resolve(fn));
+  for (const resolve of callbacks) {
+    resolve(fn);
+  }
 }
 
 function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
@@ -69,9 +71,8 @@ export async function callBootstrap(
   params: BootstrapParams,
 ): Promise<void> {
   if (!loadedBlocks.has(manifest.name)) {
-    manifest.files
-      .filter((url) => url.endsWith('.js'))
-      .forEach((url) => {
+    for (const url of manifest.files) {
+      if (url.endsWith('.js')) {
         const script = document.createElement('script');
         script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, url);
         script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
@@ -80,7 +81,8 @@ export async function callBootstrap(
           register(script, event, manifest.name);
         });
         document.head.append(script);
-      });
+      }
+    }
     loadedBlocks.add(manifest.name);
   }
   const bootstrap = await getBootstrap(manifest.name);

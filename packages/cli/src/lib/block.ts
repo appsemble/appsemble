@@ -342,7 +342,7 @@ export async function processBlockMessages(
   const existingLanguages = dir
     .filter((filename) => filename.endsWith('.json'))
     .map((filename) => basename(filename, '.json'));
-  for (const language of [...new Set([...languages, ...existingLanguages])]) {
+  for (const language of new Set([...languages, ...existingLanguages])) {
     const existingMessages = { ...base };
     const name = `${language}.json`;
     const langPath = join(path, name);
@@ -355,7 +355,9 @@ export async function processBlockMessages(
     const extraKeys = Object.keys(existingMessages).filter((key) => !keys.includes(key));
     if (extraKeys.length) {
       logger.info(`Found ${extraKeys.length} keys too many. Removing: ${extraKeys.join(', ')}`);
-      extraKeys.forEach((key) => delete existingMessages[key]);
+      for (const key of extraKeys) {
+        delete existingMessages[key];
+      }
     }
 
     await writeData(langPath, existingMessages);

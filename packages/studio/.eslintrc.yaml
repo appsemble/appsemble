@@ -5,13 +5,4 @@ overrides:
       - remcohaszing/react
       - remcohaszing/web
     rules:
-      react/jsx-pascal-case:
-        - error
-        - allowAllCaps: true
-      react/jsx-no-bind:
-        - error
-        - allowArrowFunctions: true
-      react/no-multi-comp:
-        - error
-        - ignoreStateless: true
       react/prop-types: off

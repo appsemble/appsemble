@@ -76,7 +76,7 @@ function toString(info: TransformableInfo): string {
  */
 export const logger = winston.createLogger({
   level: levels[DEFAULT_LEVEL],
-  levels: levels.reduce((acc, level, index) => ({ ...acc, [level]: index }), {}),
+  levels: Object.fromEntries(levels.map((level, index) => [level, index])),
   format: winston.format.combine(
     winston.format((info) => ({
       ...info,

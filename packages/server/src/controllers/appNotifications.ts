@@ -39,9 +39,9 @@ export async function getSubscription(ctx: Context): Promise<void> {
 
   const resources: SubscriptionResponse = {};
   if (app.definition.resources) {
-    Object.keys(app.definition.resources).forEach((resource) => {
+    for (const resource of Object.keys(app.definition.resources)) {
       resources[resource] = { create: false, update: false, delete: false };
-    });
+    }
   }
 
   ctx.body = appSubscription.ResourceSubscriptions.reduce((acc, { ResourceId, action, type }) => {
@@ -200,7 +200,7 @@ export async function broadcast(ctx: Context): Promise<void> {
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
 
-  app.AppSubscriptions.forEach((subscription) => {
+  for (const subscription of app.AppSubscriptions) {
     sendNotification(app, subscription, { title, body });
-  });
+  }
 }

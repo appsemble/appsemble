@@ -3,7 +3,7 @@ import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { validate } from 'uuid';
 
-import { App, Organization, Team, TeamMember, transactional, User } from '../models';
+import { App, AppMember, Organization, Team, TeamMember, transactional, User } from '../models';
 import { checkRole } from '../utils/checkRole';
 
 async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
@@ -208,12 +208,20 @@ export async function addTeamMember(ctx: Context): Promise<void> {
       {
         model: App,
         include: [
-          { model: User, where: userQuery, required: false },
+          {
+            model: AppMember,
+            required: false,
+            include: [{ model: User, where: userQuery, required: true }],
+          },
           {
             model: Organization,
             include: [{ model: User, where: userQuery, required: false }],
           },
-          { model: User, where: userQuery, required: false },
+          {
+            model: AppMember,
+            required: false,
+            include: [{ model: User, where: userQuery, required: true }],
+          },
           { model: Organization, include: [{ model: User, where: userQuery, required: false }] },
         ],
       },
@@ -238,7 +246,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
   }
 
   if (
-    !team.App.Users.length &&
+    !team.App.AppMembers.length &&
     (team.App.definition.security.default.policy === 'invite' ||
       !team.App.Organization.Users.length)
   ) {
@@ -249,7 +257,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     throw badRequest('This user is already a member of this team.');
   }
 
-  const [member] = team.App.Users.length ? team.App.Users : team.App.Organization.Users;
+  const member = team.App.AppMembers[0].User ?? team.App.Organization.Users[0];
   await TeamMember.create({ UserId: member.id, TeamId: team.id, role: TeamRole.Member });
   ctx.body = {
     id: member.id,

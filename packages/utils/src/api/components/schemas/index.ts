@@ -31,6 +31,7 @@ export * from './JSONSchemaBoolean';
 export * from './JSONSchemaConst';
 export * from './JSONSchemaEnum';
 export * from './JSONSchemaInteger';
+export * from './JSONSchemaMultiType';
 export * from './JSONSchemaNot';
 export * from './JSONSchemaNull';
 export * from './JSONSchemaNumber';

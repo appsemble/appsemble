@@ -49,6 +49,9 @@ export class AppMember extends Model {
   @Column
   AppId: number;
 
+  @BelongsTo(() => App)
+  App: App;
+
   @ForeignKey(() => User)
   @Unique('UniqueAppMemberIndex')
   @Column(DataType.UUID)

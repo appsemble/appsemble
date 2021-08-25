@@ -1,3 +1,4 @@
+import { has } from '@appsemble/utils';
 import yaml from 'js-yaml';
 import { InlineCode, Link, Parent } from 'mdast';
 import rehypeDocument from 'rehype-document';
@@ -41,7 +42,7 @@ export async function renderEmail(
   const mdast = remark.parse(template);
 
   function replace(match: string, key: string): string {
-    if (Object.hasOwnProperty.call(values, key)) {
+    if (has(values, key)) {
       return values[key];
     }
     throw new Error(`Unknown template value: ${key}`);

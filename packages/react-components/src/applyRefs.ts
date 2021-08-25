@@ -9,12 +9,11 @@ type MutableRef<T> = MutableRefObject<T> | RefCallback<T>;
  * @param refs - Any number of ref callbacks or ref objects.
  */
 export function applyRefs<T>(value: T, ...refs: MutableRef<T>[]): void {
-  refs.forEach((ref) => {
+  for (const ref of refs) {
     if (ref instanceof Function) {
       ref(value);
     } else if (ref) {
-      // eslint-disable-next-line no-param-reassign
       ref.current = value;
     }
-  });
+  }
 }

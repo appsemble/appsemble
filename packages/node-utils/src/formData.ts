@@ -7,9 +7,9 @@ function appendFormData(key: string, value: any, form: FormData): void {
     return;
   }
   if (Array.isArray(value)) {
-    value.forEach((val) => {
+    for (const val of value) {
       appendFormData(key, val, form);
-    });
+    }
   } else {
     form.append(
       key,
@@ -30,8 +30,8 @@ function appendFormData(key: string, value: any, form: FormData): void {
  */
 export function createFormData(data: Record<string, any>): FormData {
   const form = new FormData();
-  Object.entries(data).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(data)) {
     appendFormData(key, value, form);
-  });
+  }
   return form;
 }

@@ -1,4 +1,5 @@
 import { Remapper, Utils } from '@appsemble/sdk';
+import { has } from '@appsemble/utils';
 
 import { BaseRequirement, Field } from '../../../block';
 import { validateDateTime } from './validateDateTime';
@@ -32,7 +33,7 @@ export function validate(
   utils: Utils,
   defaultError: Remapper,
 ): boolean | string {
-  if (!Object.hasOwnProperty.call(validators, field.type)) {
+  if (!has(validators, field.type)) {
     return;
   }
   const requirement = validators[field.type](field, value, utils.remap);

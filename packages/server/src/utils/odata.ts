@@ -1,3 +1,4 @@
+import { has } from '@appsemble/utils';
 import { defaultParser, Token, TokenType } from '@odata/parser';
 import { col, fn, json, Model, Op, Order, where, WhereOptions, WhereValue } from 'sequelize';
 import { Col, Fn, Json, Where } from 'sequelize/types/lib/utils';
@@ -126,7 +127,7 @@ function processName(token: Token, model: PartialModel, rename: Rename): Col | J
 function processMethod(token: Token, model: PartialModel, rename: Rename): Fn | Where {
   const { method, parameters } = token.value as { method: string; parameters: Token[] };
 
-  if (!Object.hasOwnProperty.call(functions, method)) {
+  if (!has(functions, method)) {
     throw new TypeError(`${token.position}: Filter function not implemented: ${method}`);
   }
   const [parameterTypes, implementation] = functions[token.value.method];

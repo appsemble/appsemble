@@ -1,10 +1,11 @@
-import { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
+import { AppDefinition, BlockManifest, Security } from '@appsemble/types';
 import { parseExpression } from 'cron-parser';
 import { Validator } from 'jsonschema';
 import languageTags from 'language-tags';
 import { Promisable } from 'type-fest';
 
 import { BlockMap, getAppBlocks } from './getAppBlocks';
+import { has } from './has';
 
 /**
  * Used for throwing known Appsemble validation errors.
@@ -25,20 +26,23 @@ export class AppsembleValidationError extends Error {
 
 export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): void {
   const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
-  blockVersions.forEach((version) => {
+  for (const version of blockVersions) {
     if (!blockVersionMap.has(version.name)) {
       blockVersionMap.set(version.name, new Map());
     }
     blockVersionMap.get(version.name).set(version.version, version);
-  });
-  const errors = Object.entries(blocks).reduce<Record<string, string>>((acc, [loc, block]) => {
+  }
+  const errors: Record<string, string> = {};
+  for (const [loc, block] of Object.entries(blocks)) {
     const type = block.type.startsWith('@') ? block.type : `@appsemble/${block.type}`;
     const versions = blockVersionMap.get(type);
     if (!versions) {
-      return { ...acc, [loc]: `Unknown block type “${type}”` };
+      errors[loc] = `Unknown block type “${type}”`;
+      continue;
     }
     if (!versions.has(block.version)) {
-      return { ...acc, [loc]: `Unknown block version “${type}@${block.version}”` };
+      errors[loc] = `Unknown block version “${type}@${block.version}”`;
+      continue;
     }
 
     const actionParameters = new Set<string>();
@@ -50,65 +54,50 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
       validator.customFormats.remapper = () => true;
       validator.customFormats.action = (property) => {
         actionParameters.add(property);
-        return block.actions && Object.hasOwnProperty.call(block.actions, property);
+        return has(block.actions, property);
       };
-      validator.customFormats['event-listener'] = (property) =>
-        block.events?.listen && Object.hasOwnProperty.call(block.events.listen, property);
-      validator.customFormats['event-emitter'] = (property) =>
-        block.events?.emit && Object.hasOwnProperty.call(block.events.emit, property);
+      validator.customFormats['event-listener'] = (property) => has(block.events?.listen, property);
+      validator.customFormats['event-emitter'] = (property) => has(block.events?.emit, property);
       const result = validator.validate(block.parameters || {}, version.parameters);
       if (!result.valid) {
-        return result.errors.reduce(
-          (accumulator, error) => ({
-            ...accumulator,
-            [`${loc}.parameters.${error.property.replace(/^instance\./, '')}`]: error.message,
-          }),
-          acc,
-        );
+        for (const error of result.errors) {
+          errors[`${loc}.parameters.${error.property.replace(/^instance\./, '')}`] = error.message;
+        }
+        continue;
       }
     }
 
-    if (!version.actions) {
-      if (block.actions) {
-        return { ...acc, [`${loc}.actions`]: 'This block doesn’t support any actions' };
-      }
-      return acc;
+    if (!version.actions && block.actions) {
+      errors[`${loc}.actions`] = 'This block doesn’t support any actions';
+      continue;
     }
 
-    Object.keys(block.actions || {}).forEach((key) => {
+    for (const key of Object.keys(block.actions || {})) {
       if (version.actions.$any) {
         if (actionParameters.has(key)) {
-          return;
+          continue;
         }
 
-        if (!Object.keys(version.actions).includes(key) && !version.wildcardActions) {
-          acc[`${loc}.actions.${key}`] = `Custom action “${key}” is unused`;
+        if (!has(version.actions, key) && !version.wildcardActions) {
+          errors[`${loc}.actions.${key}`] = `Custom action “${key}” is unused`;
         }
-      } else if (!Object.hasOwnProperty.call(version.actions, key)) {
-        acc[`${loc}.actions.${key}`] = 'Unknown action type';
+      } else if (!has(version.actions, key)) {
+        errors[`${loc}.actions.${key}`] = 'Unknown action type';
       }
-    });
+    }
 
-    Object.keys(block.events?.emit || {}).forEach((key) => {
-      if (
-        !version.events?.emit?.$any &&
-        !Object.hasOwnProperty.call(version.events?.emit || {}, key)
-      ) {
-        acc[`${loc}.events.emit.${key}`] = 'Unknown event emitter';
+    for (const key of Object.keys(block.events?.emit || {})) {
+      if (!version.events?.emit?.$any && !has(version.events?.emit, key)) {
+        errors[`${loc}.events.emit.${key}`] = 'Unknown event emitter';
       }
-    });
+    }
 
-    Object.keys(block.events?.listen || {}).forEach((key) => {
-      if (
-        !version.events?.listen?.$any &&
-        !Object.hasOwnProperty.call(version.events?.listen || {}, key)
-      ) {
-        acc[`${loc}.events.listen.${key}`] = 'Unknown event listener';
+    for (const key of Object.keys(block.events?.listen || {})) {
+      if (!version.events?.listen?.$any && !has(version.events?.listen, key)) {
+        errors[`${loc}.events.listen.${key}`] = 'Unknown event listener';
       }
-    });
-
-    return acc;
-  }, {});
+    }
+  }
   if (Object.keys(errors).length) {
     throw new AppsembleValidationError('Block validation failed', errors);
   }
@@ -138,9 +127,9 @@ function validateSecurityRoles(
 
   if (securityRole.inherits) {
     checkedRoles.push(role);
-    securityRole.inherits.forEach((inheritedRole) =>
-      validateSecurityRoles(securityDefinition, inheritedRole, checkedRoles),
-    );
+    for (const inheritedRole of securityRole.inherits) {
+      validateSecurityRoles(securityDefinition, inheritedRole, checkedRoles);
+    }
   }
 }
 
@@ -152,49 +141,47 @@ function validateSecurityRoles(
 export function validateSecurity(definition: AppDefinition): void {
   const { pages, roles, security } = definition;
 
-  if (!Object.keys(security.roles).includes(security.default.role)) {
+  if (!has(security.roles, security.default.role)) {
     throw new AppsembleValidationError(
       `Default role ‘${security.default.role}’ does not exist in list of roles.`,
     );
   }
 
-  Object.keys(security.roles).forEach((role) => validateSecurityRoles(security, role, []));
-
-  if (roles) {
-    roles.forEach((role) => {
-      if (!Object.keys(security.roles).includes(role)) {
-        throw new AppsembleValidationError(`Role ‘${role}’ in App roles does not exist.`);
-      }
-    });
+  for (const role of Object.keys(security.roles)) {
+    validateSecurityRoles(security, role, []);
   }
 
-  pages.forEach((page) => {
+  if (roles) {
+    for (const role of roles) {
+      if (!has(security.roles, role)) {
+        throw new AppsembleValidationError(`Role ‘${role}’ in App roles does not exist.`);
+      }
+    }
+  }
+
+  for (const page of pages) {
     if (page.roles?.length) {
-      page.roles.forEach((role) => {
-        if (
-          !Object.keys(security.roles).includes(role) &&
-          role !== '$team:member' &&
-          role !== '$team:manager'
-        ) {
+      for (const role of page.roles) {
+        if (!has(security.roles, role) && role !== '$team:member' && role !== '$team:manager') {
           throw new AppsembleValidationError(
             `Role ‘${role}’ in page ‘${page.name}’ roles does not exist.`,
           );
         }
-      });
+      }
     }
-  });
+  }
 
   const blocks = getAppBlocks(definition);
 
-  Object.entries(blocks).forEach(([key, block]) => {
+  for (const [key, block] of Object.entries(blocks)) {
     if (block.roles?.length) {
-      block.roles.forEach((role) => {
-        if (!Object.keys(security.roles).includes(role)) {
+      for (const role of block.roles) {
+        if (!has(security.roles, role)) {
           throw new AppsembleValidationError(`Role ‘${role}’ in ${key} roles does not exist.`);
         }
-      });
+      }
     }
-  });
+  }
 }
 
 /**
@@ -204,28 +191,25 @@ export function validateSecurity(definition: AppDefinition): void {
  */
 export function validateHooks(definition: AppDefinition): void {
   const filter = new Set(['create', 'update', 'delete']);
-  Object.entries(definition.resources).forEach(([resourceKey, resource]) => {
-    Object.entries(resource)
-      .filter(([key]) => filter.has(key))
-      .forEach(([actionKey, action]: [string, ResourceCall]) => {
-        const { hooks } = action;
-        if (hooks?.notification?.to) {
-          hooks.notification.to.forEach((to) => {
-            if (to !== '$author' && !Object.hasOwnProperty.call(definition.security.roles, to)) {
-              throw new AppsembleValidationError(
-                `Role ‘${to}’ in resources.${resourceKey}.${actionKey}.hooks.notification.to does not exist.`,
-              );
-            }
-          });
+  for (const [resourceKey, resource] of Object.entries(definition.resources)) {
+    for (const [actionKey, { hooks }] of Object.entries(resource)) {
+      if (filter.has(actionKey) && hooks?.notification?.to) {
+        for (const to of hooks.notification.to) {
+          if (to !== '$author' && !has(definition.security.roles, to)) {
+            throw new AppsembleValidationError(
+              `Role ‘${to}’ in resources.${resourceKey}.${actionKey}.hooks.notification.to does not exist.`,
+            );
+          }
         }
-      });
-  });
+      }
+    }
+  }
 }
 
 export function validateReferences(definition: AppDefinition): void {
-  Object.entries(definition.resources).forEach(([resourceType, resource]) => {
+  for (const [resourceType, resource] of Object.entries(definition.resources)) {
     if (resource.references) {
-      Object.entries(resource.references).forEach(([field, reference]) => {
+      for (const [field, reference] of Object.entries(resource.references)) {
         if (!definition.resources[reference.resource]) {
           throw new AppsembleValidationError(
             `Resource “${reference.resource}” referenced by “${resourceType}” does not exist.`,
@@ -237,9 +221,9 @@ export function validateReferences(definition: AppDefinition): void {
             `Property “${field}” referencing “${reference.resource}” does not exist in resource “${resourceType}”`,
           );
         }
-      });
+      }
     }
-  });
+  }
 }
 
 export function validateLanguage(language: string): void {
@@ -265,7 +249,7 @@ export function validateDefaultPage({ defaultPage, pages }: AppDefinition): void
 }
 
 export function validateCronJobs({ cron }: AppDefinition): void {
-  Object.entries(cron).forEach(([id, job]) => {
+  for (const [id, job] of Object.entries(cron)) {
     try {
       parseExpression(job.schedule);
     } catch {
@@ -273,7 +257,7 @@ export function validateCronJobs({ cron }: AppDefinition): void {
         `Cronjob ${id} contains an invalid expression: ${job.schedule}`,
       );
     }
-  });
+  }
 }
 
 export async function validateAppDefinition(

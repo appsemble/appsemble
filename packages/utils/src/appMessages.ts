@@ -123,9 +123,9 @@ export function extractAppMessages(
       messages.app[prefix.join('.')] = page.name;
 
       if (page.type === 'tabs') {
-        page.subPages.forEach((subPage, index) => {
+        for (const [index, subPage] of page.subPages.entries()) {
           messages.app[`${prefix.join('.')}.subPages.${index}`] = subPage.name ?? '';
-        });
+        }
       }
     },
   });

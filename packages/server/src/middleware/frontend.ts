@@ -9,7 +9,7 @@ const skipRoute = /^\/(api|oauth2\/token)/;
 
 export async function frontend(webpackConfigs: Configuration[]): Promise<Middleware> {
   const { default: webpackDevMiddleware } = await import('webpack-dev-middleware');
-  const { HotModuleReplacementPlugin, webpack } = await import('webpack');
+  const { webpack } = await import('webpack');
   // eslint-disable-next-line import/no-extraneous-dependencies, node/no-unpublished-import
   const { default: expressToKoa } = await import('express-to-koa');
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
@@ -20,22 +20,6 @@ export async function frontend(webpackConfigs: Configuration[]): Promise<Middlew
   const configApp = createAppConfig({ mode: 'development' });
   const configStudio = createStudioConfig({ mode: 'development' });
   const configs = [configApp, configStudio, ...webpackConfigs];
-  for (const config of configs) {
-    config.plugins.push(new HotModuleReplacementPlugin());
-    const hotName = 'webpack-hot-middleware/client?reload=true';
-    let { entry } = config;
-    if (typeof entry === 'function') {
-      entry = await entry();
-    }
-    if (Array.isArray(entry)) {
-      entry.push(hotName);
-    } else if (typeof entry === 'string') {
-      entry = [entry, hotName];
-    } else if (typeof entry === 'object') {
-      entry['hot-client'] = hotName;
-    }
-    config.entry = entry;
-  }
   const compiler = webpack(configs);
   const middleware = webpackDevMiddleware(compiler, { serverSideRender: true });
   // @ts-expect-error outputFileSystem exists despite what the types say.
