@@ -3,6 +3,7 @@ import { AppMessages } from '@appsemble/types';
 import {
   defaultLocale,
   detectLocale,
+  has,
   IntlMessage,
   MessageGetter,
   normalize,
@@ -101,9 +102,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   const getMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
-      const message = Object.hasOwnProperty.call(messages.messageIds, id)
-        ? messages.messageIds[id]
-        : defaultMessage;
+      const message = has(messages.messageIds, id) ? messages.messageIds[id] : defaultMessage;
       return messageCache(message || `'{${id}}'`);
     },
     [messageCache, messages],
@@ -111,9 +110,7 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
 
   const getAppMessage = useCallback(
     ({ defaultMessage, id }: IntlMessage) => {
-      const message = Object.hasOwnProperty.call(messages.app, id)
-        ? messages.app[id]
-        : defaultMessage;
+      const message = has(messages.app, id) ? messages.app[id] : defaultMessage;
       return messageCache(message || `'{${id}}'`);
     },
     [messageCache, messages],

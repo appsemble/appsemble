@@ -82,9 +82,7 @@ export function createAction<T extends ActionDefinition['type']>({
 
     try {
       result = await dispatch(
-        Object.hasOwnProperty.call(definition, 'remap')
-          ? localRemap(definition.remap, args, context)
-          : args,
+        has(definition, 'remap') ? localRemap(definition.remap, args, context) : args,
         context,
       );
       addBreadcrumb({

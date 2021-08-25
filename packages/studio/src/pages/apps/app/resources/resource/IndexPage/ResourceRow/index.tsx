@@ -10,6 +10,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { Resource } from '@appsemble/types';
+import { has } from '@appsemble/utils';
 import { NamedEvent } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -261,7 +262,7 @@ export function ResourceRow({
         </td>
       )}
 
-      {Object.hasOwnProperty.call(app, 'resources') && !filter.has('$clonable') && (
+      {has(app, 'resources') && !filter.has('$clonable') && (
         <td>
           <ClonableCheckbox
             checked={resource.$clonable}

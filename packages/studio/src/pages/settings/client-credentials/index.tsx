@@ -19,7 +19,7 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { scopes as knownScopes } from '@appsemble/utils';
+import { has, scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
@@ -251,7 +251,7 @@ export function ClientCredentialsPage(): ReactElement {
                         className={styles.scope}
                         key={scope}
                         title={formatMessage(
-                          Object.hasOwnProperty.call(messages, scope)
+                          has(messages, scope)
                             ? messages[scope as keyof typeof messages]
                             : messages.unknownScope,
                         )}

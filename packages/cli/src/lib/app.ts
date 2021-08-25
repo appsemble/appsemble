@@ -169,7 +169,7 @@ export async function traverseAppDirectory(
         if ('iconBackground' in rc) {
           formData.append('iconBackground', rc.iconBackground);
         }
-        if (context && 'context' in rc && Object.hasOwnProperty.call(rc.context, context)) {
+        if (context && has(rc?.context, context)) {
           discoveredContext = rc.context[context];
           logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
         }
@@ -414,7 +414,7 @@ export async function writeAppMessages(
     const blockMessages: AppsembleMessages['blocks'] = {};
     if (oldMessages.blocks) {
       for (const key of Object.keys(oldMessages.blocks)) {
-        if (!Object.keys(blockMessageKeys).includes(key)) {
+        if (!has(blockMessageKeys, key)) {
           throw new AppsembleError(
             `Invalid translation key: blocks.${key}\nThis block is not used in the app`,
           );
@@ -424,11 +424,10 @@ export async function writeAppMessages(
 
     for (const [blockName] of Object.entries(blockMessageKeys)) {
       if (oldMessages.blocks?.[blockName]) {
-        const currentVersionKeys = Object.keys(blockMessageKeys[blockName]);
         blockMessages[blockName] = {};
 
         for (const [version, oldValues] of Object.entries(oldMessages.blocks[blockName])) {
-          if (!currentVersionKeys.includes(version)) {
+          if (!has(blockMessageKeys[blockName], version)) {
             throw new AppsembleError(
               `Invalid translation key: blocks.${blockName}.${version}
 This block version is not used in the app`,

@@ -1,5 +1,6 @@
 import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/react-components';
 import { ResourceHooks, SubscriptionResponse } from '@appsemble/types';
+import { has } from '@appsemble/utils';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -38,7 +39,7 @@ export function AppSubscriptions(): ReactElement {
             (key === 'create' || key === 'update' || key === 'delete') &&
             resource[key].hooks?.notification?.subscribe
           ) {
-            if (!Object.hasOwnProperty.call(subs, resourceType)) {
+            if (!has(subs, resourceType)) {
               subs[resourceType] = {};
             }
             subs[resourceType][key] = { ...resource[key].hooks, subscribed: false };
@@ -56,12 +57,12 @@ export function AppSubscriptions(): ReactElement {
         })
         .then(({ data }) => {
           for (const [key, resource] of Object.entries(data)) {
-            if (!Object.hasOwnProperty.call(subs, key)) {
+            if (!has(subs, key)) {
               continue;
             }
 
             for (const [action, value] of Object.entries(resource)) {
-              if (!Object.hasOwnProperty.call(subs[key], action)) {
+              if (!has(subs[key], action)) {
                 continue;
               }
 

@@ -1,3 +1,4 @@
+import { has } from '@appsemble/utils';
 import { methodNotAllowed } from '@hapi/boom';
 import { Middleware } from 'koa';
 
@@ -32,8 +33,8 @@ export function tinyRouter(routes: Route[]): Middleware {
       return next();
     }
     let m = method.toLowerCase();
-    if (!Object.hasOwnProperty.call(result, m)) {
-      if (!Object.hasOwnProperty.call(result, 'any')) {
+    if (!has(result, m)) {
+      if (!has(result, 'any')) {
         throw methodNotAllowed();
       }
       m = 'any';
