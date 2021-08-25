@@ -1,5 +1,6 @@
 import {
   AllowNull,
+  BelongsTo,
   Column,
   CreatedAt,
   DataType,
@@ -27,7 +28,13 @@ export class AppMember extends Model {
   @Column
   AppId: number;
 
+  @BelongsTo(() => App)
+  App: App;
+
   @ForeignKey(() => User)
   @Column(DataType.UUID)
   UserId: string;
+
+  @BelongsTo(() => User)
+  User: User;
 }
