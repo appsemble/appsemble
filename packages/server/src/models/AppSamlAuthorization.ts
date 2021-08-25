@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { User as AppMember, AppSamlSecret } from '.';
+import { AppMember, AppSamlSecret } from '.';
 
 @Table({ tableName: 'AppSamlAuthorization' })
 export class AppSamlAuthorization extends Model {
@@ -47,8 +47,8 @@ export class AppSamlAuthorization extends Model {
   /**
    * The app user.
    */
-  @BelongsTo(() => AppMember, 'UserId')
-  User: AppMember;
+  @BelongsTo(() => AppMember)
+  AppMember: AppMember;
 
   @CreatedAt
   created: Date;

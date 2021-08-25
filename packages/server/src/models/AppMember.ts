@@ -1,5 +1,6 @@
 import {
   AllowNull,
+  BelongsTo,
   Column,
   CreatedAt,
   DataType,
@@ -52,4 +53,7 @@ export class AppMember extends Model {
   @Unique('UniqueAppMemberIndex')
   @Column(DataType.UUID)
   UserId: string;
+
+  @BelongsTo(() => User)
+  User: User;
 }
