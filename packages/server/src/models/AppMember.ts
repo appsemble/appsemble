@@ -6,6 +6,7 @@ import {
   DataType,
   ForeignKey,
   Model,
+  PrimaryKey,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
@@ -25,6 +26,7 @@ export class AppMember extends Model {
   updated: Date;
 
   @ForeignKey(() => App)
+  @PrimaryKey
   @Column
   AppId: number;
 
@@ -32,6 +34,7 @@ export class AppMember extends Model {
   App: App;
 
   @ForeignKey(() => User)
+  @PrimaryKey
   @Column(DataType.UUID)
   UserId: string;
 
