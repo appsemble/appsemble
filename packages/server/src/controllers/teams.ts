@@ -208,21 +208,12 @@ export async function addTeamMember(ctx: Context): Promise<void> {
       {
         model: App,
         include: [
-          {
-            model: AppMember,
-            required: false,
-            include: [{ model: User, where: userQuery, required: true }],
-          },
-          {
-            model: Organization,
-            include: [{ model: User, where: userQuery, required: false }],
-          },
-          {
-            model: AppMember,
-            required: false,
-            include: [{ model: User, where: userQuery, required: true }],
-          },
           { model: Organization, include: [{ model: User, where: userQuery, required: false }] },
+          {
+            model: AppMember,
+            required: false,
+            include: [{ model: User, where: userQuery, required: true }],
+          },
         ],
       },
     ],
@@ -257,7 +248,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     throw badRequest('This user is already a member of this team.');
   }
 
-  const member = team.App.AppMembers[0].User ?? team.App.Organization.Users[0];
+  const member = team.App.AppMembers[0]?.User ?? team.App.Organization.Users[0];
   await TeamMember.create({ UserId: member.id, TeamId: team.id, role: TeamRole.Member });
   ctx.body = {
     id: member.id,
