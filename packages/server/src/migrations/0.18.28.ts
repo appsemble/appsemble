@@ -35,17 +35,23 @@ export async function up(db: Sequelize): Promise<void> {
   logger.info('Removing foreign key constraints from table `AppSamlAuthorization`');
   await queryInterface.removeConstraint('AppSamlAuthorization', 'AppSamlAuthorization_UserId_fkey');
 
-  logger.info('Renaming column `UserId` to `AppMemberId` for table `AppSamlAuthorization`');
-  await queryInterface.renameColumn('AppSamlAuthorization', 'UserId', 'AppMemberId');
-
   logger.info('Removing foreign key constraints from table `AppOAuth2Authorization`');
   await queryInterface.removeConstraint(
     'AppOAuth2Authorization',
     'AppOAuth2Authorization_UserId_fkey',
   );
 
-  logger.info('Renaming column `UserId` to `AppMemberId` for table `AppOAuth2Authorization`');
-  await queryInterface.renameColumn('AppOAuth2Authorization', 'UserId', 'AppMemberId');
+  logger.info('Adding column `AppMemberId` to table `AppSamlAuthorization`');
+  await queryInterface.addColumn('AppSamlAuthorization', 'AppMemberId', {
+    type: DataTypes.UUID,
+    allowNull: true,
+  });
+
+  logger.info('Adding column `AppMemberId` to table `AppOAuth2Authorization`');
+  await queryInterface.addColumn('AppOAuth2Authorization', 'AppMemberId', {
+    type: DataTypes.UUID,
+    allowNull: true,
+  });
 
   logger.info(
     'Adding unique constraint `UniqueAppMemberIndex` to fields `AppId` and `UserId` in table `AppMember`',
@@ -63,10 +69,10 @@ export async function up(db: Sequelize): Promise<void> {
   });
 
   const [samlUsers, oauthUsers, existingAppMembers] = await Promise.all([
-    db.query<{ AppMemberId: string }>('SELECT "AppMemberId" FROM "AppSamlAuthorization"', {
+    db.query<{ UserId: string }>('SELECT "UserId" FROM "AppSamlAuthorization"', {
       type: QueryTypes.SELECT,
     }),
-    db.query<{ AppMemberId: string }>('SELECT "AppMemberId" FROM "AppOAuth2Authorization"', {
+    db.query<{ UserId: string }>('SELECT "UserId" FROM "AppOAuth2Authorization"', {
       type: QueryTypes.SELECT,
     }),
     db.query<{ UserId: string }>('SELECT "UserId" FROM "AppMember"', {
@@ -86,8 +92,8 @@ export async function up(db: Sequelize): Promise<void> {
       type: QueryTypes.SELECT,
       replacements: [
         [
-          ...samlUsers.map((user) => user.AppMemberId),
-          ...oauthUsers.map((user) => user.AppMemberId),
+          ...samlUsers.map((user) => user.UserId),
+          ...oauthUsers.map((user) => user.UserId),
           ...existingAppMembers.map((user) => user.UserId),
         ],
       ],
@@ -122,6 +128,36 @@ export async function up(db: Sequelize): Promise<void> {
     ),
   );
 
+  logger.info('Updating `AppMemberId` in `AppSamlAuthorization` to newly generated AppMember IDs');
+  await db.query(
+    `WITH t AS (
+    SELECT s."id" AS "AppSamlSecretId", m.id AS "AppMemberId", m."UserId"
+    FROM "AppSamlAuthorization" a
+    JOIN "AppSamlSecret" s ON a."AppSamlSecretId" = s.id
+    JOIN "AppMember" m ON m."UserId" = a."UserId"
+  )
+  UPDATE "AppSamlAuthorization" a SET "AppMemberId" = t."AppMemberId"
+  FROM t
+  WHERE t."AppSamlSecretId" = a."AppSamlSecretId" AND t."UserId" = a."UserId";`,
+    { type: QueryTypes.UPDATE },
+  );
+
+  logger.info(
+    'Updating `AppMemberId` in `AppOAuth2Authorization` to newly generated AppMember IDs',
+  );
+  await db.query(
+    `WITH t AS (
+    SELECT s."id" AS "AppOAuth2SecretId", m.id AS "AppMemberId", m."UserId"
+    FROM "AppOAuth2Authorization" a
+    JOIN "AppOAuth2Secret" s ON a."AppOAuth2SecretId" = s.id
+    JOIN "AppMember" m ON m."UserId" = a."UserId"
+  )
+  UPDATE "AppOAuth2Authorization" a SET "AppMemberId" = t."AppMemberId"
+  FROM t
+  WHERE t."AppOAuth2SecretId" = a."AppOAuth2SecretId" AND t."UserId" = a."UserId";`,
+    { type: QueryTypes.UPDATE },
+  );
+
   logger.info('Removing `AppMember` primary key');
   await queryInterface.removeConstraint('AppMember', 'AppMember_pkey');
 
@@ -139,7 +175,7 @@ export async function up(db: Sequelize): Promise<void> {
   });
 
   logger.info(
-    'Adding constraint `AppSamlAuthorization_UserId_fkey` to table `AppSamlAuthorization`',
+    'Adding constraint `AppSamlAuthorization_AppMemberId_fkey` to table `AppSamlAuthorization`',
   );
   await queryInterface.addConstraint('AppSamlAuthorization', {
     name: 'AppSamlAuthorization_AppMemberId_fkey',
@@ -154,7 +190,7 @@ export async function up(db: Sequelize): Promise<void> {
   });
 
   logger.info(
-    'Adding constraint `AppOAuth2Authorization_UserId_fkey` to table `AppOAuth2Authorization`',
+    'Adding constraint `AppOAuth2Authorization_AppMemberId_fkey` to table `AppOAuth2Authorization`',
   );
   await queryInterface.addConstraint('AppOAuth2Authorization', {
     type: 'foreign key',
@@ -166,6 +202,12 @@ export async function up(db: Sequelize): Promise<void> {
       field: 'id',
     },
   });
+
+  logger.info('Removing column `UserId` from table `AppOAuth2Authorization`');
+  await queryInterface.removeColumn('AppOAuth2Authorization', 'UserId');
+
+  logger.info('Removing column `UserId` from table `AppSamlAuthorization`');
+  await queryInterface.removeColumn('AppSamlAuthorization', 'UserId');
 }
 
 /**
