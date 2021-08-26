@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@types/case-sensitive-paths-webpack-plugin": "^2.1.6",
-    "@types/mini-css-extract-plugin": "^2.0.1"
+    "@types/mini-css-extract-plugin": "^2.2.0"
   },
   "peerDependencies": {
     "typescript": "^4",

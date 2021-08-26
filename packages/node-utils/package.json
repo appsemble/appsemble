@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^7.1.2",
-    "@types/js-yaml": "^4.0.2",
+    "@types/js-yaml": "^4.0.3",
     "@types/normalize-path": "^3.0.0",
     "@types/parse-json": "^4.0.0",
     "axios-mock-adapter": "^1.19.0",
