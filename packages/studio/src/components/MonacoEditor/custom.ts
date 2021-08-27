@@ -1,4 +1,3 @@
-import { schemas } from '@appsemble/utils';
 import { Environment } from 'monaco-editor/esm/vs/editor/editor.api';
 import { setDiagnosticsOptions } from 'monaco-yaml';
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
@@ -45,11 +44,7 @@ setDiagnosticsOptions({
     {
       fileMatch: ['*'],
       // Not sure why this is needed, but it’s required and its value may not match the ref.
-      uri: String(new URL('/notapi.json', window.location.origin)),
-      schema: {
-        ...schemas.AppDefinition,
-        components: { schemas },
-      },
+      uri: String(new URL('/api.json#/components/schemas/AppDefinition', window.location.origin)),
     },
   ],
 });
