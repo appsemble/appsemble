@@ -208,6 +208,9 @@ export async function up(db: Sequelize): Promise<void> {
 
   logger.info('Removing column `UserId` from table `AppSamlAuthorization`');
   await queryInterface.removeColumn('AppSamlAuthorization', 'UserId');
+
+  logger.info('Removing existing entries from table `OAuth2Consent`');
+  await db.query('DELETE FROM "OAuth2Consent";');
 }
 
 /**
