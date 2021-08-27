@@ -6,6 +6,7 @@ import { logger } from '@appsemble/node-utils';
 import { SAMLStatus } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
+import { DOMImplementation, DOMParser } from '@xmldom/xmldom';
 import axios from 'axios';
 import { Context } from 'koa';
 import { md, pki } from 'node-forge';
@@ -13,7 +14,6 @@ import { v4 } from 'uuid';
 import toXml from 'xast-util-to-xml';
 import h from 'xastscript';
 import { SignedXml, xpath } from 'xml-crypto';
-import { DOMImplementation, DOMParser } from 'xmldom';
 
 import { App, AppMember, AppSamlSecret, transactional, User } from '../models';
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
