@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
 import { v4 } from 'uuid';
 
@@ -213,8 +213,6 @@ export async function up(db: Sequelize): Promise<void> {
   await db.query('DELETE FROM "OAuth2Consent";');
 }
 
-/**
- */
 export function down(): void {
-  logger.info('Not implemented yet');
+  throw new AppsembleError('Due to complexity, down migrations from 0.18.28 are not supported.');
 }
