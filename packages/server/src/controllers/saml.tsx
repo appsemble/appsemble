@@ -15,7 +15,7 @@ import toXml from 'xast-util-to-xml';
 import h from 'xastscript';
 import { SignedXml, xpath } from 'xml-crypto';
 
-import { App, AppMember, AppSamlSecret, EmailAuthorization, transactional, User } from '../models';
+import { App, AppMember, AppSamlSecret, transactional, User } from '../models';
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
 import { SamlLoginRequest } from '../models/SamlLoginRequest';
 import { argv } from '../utils/argv';
@@ -223,7 +223,7 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   const app = loginRequest.AppSamlSecret.App;
   const authorization = await AppSamlAuthorization.findOne({
     where: { nameId, AppSamlSecretId: appSamlSecretId },
-    include: [{ model: User, include: [{ model: EmailAuthorization }] }],
+    include: [{ model: AppMember, include: [User] }],
   });
 
   const attributes = new Map(
@@ -235,54 +235,33 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   const email = secret.emailAttribute && attributes.get(secret.emailAttribute)?.toLowerCase();
   const name = secret.nameAttribute && attributes.get(secret.nameAttribute);
   const role = app.definition.security?.default?.role;
+  let member: AppMember;
   let user: User;
   if (authorization) {
     // If the user is already linked to a known SAML authorization, use that account.
-    user = authorization.User;
-    if (email && !user.EmailAuthorizations?.some((auth) => auth.email === email)) {
-      try {
-        await EmailAuthorization.create({ email, UserId: user.id });
-      } catch {
-        // The SAML login is already linked to an account, but the email address is registered to
-        // another account. In this case ignore the email address.
-      }
-    }
-
-    if (role) {
-      const appMember = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
-      if (!appMember) {
-        await AppMember.create({ UserId: user.id, AppId: appId, role });
-      }
-    }
+    member = authorization.AppMember;
+    user = member.User;
   } else {
     try {
       await transactional(async (transaction) => {
         // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
         // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
         // account.
-        user =
-          loginRequest.User ||
-          (await User.create({ name: name || nameId, primaryEmail: email }, { transaction }));
+        user = loginRequest.User || (await User.create({ name: name || nameId }, { transaction }));
 
-        if (email && !user.EmailAuthorizations?.some((auth) => auth.email === email)) {
-          if (!user.primaryEmail) {
-            await user.update({ primaryEmail: email });
-          }
-          await EmailAuthorization.create({ email, UserId: user.id }, { transaction });
+        member = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
+        if (!member) {
+          member = await AppMember.create(
+            { UserId: user.id, AppId: appId, role, email, name, emailVerified: true },
+            { transaction },
+          );
         }
 
         // The logged in account is linked to a new SAML authorization for next time.
         await AppSamlAuthorization.create(
-          { nameId, AppSamlSecretId: appSamlSecretId, UserId: user.id },
+          { nameId, AppSamlSecretId: appSamlSecretId, AppMemberId: member.id },
           { transaction },
         );
-
-        if (role) {
-          const appMember = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
-          if (!appMember) {
-            await AppMember.create({ UserId: user.id, AppId: appId, role }, { transaction });
-          }
-        }
       });
     } catch {
       await loginRequest.update({ email, nameId });

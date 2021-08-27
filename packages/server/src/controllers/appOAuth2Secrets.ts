@@ -8,6 +8,7 @@ import { Context } from 'koa';
 
 import {
   App,
+  AppMember,
   AppOAuth2Authorization,
   AppOAuth2Secret,
   OAuth2AuthorizationCode,
@@ -130,7 +131,7 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   }
 
   const app = await App.findByPk(appId, {
-    attributes: ['id'],
+    attributes: ['id', 'definition'],
     include: [
       {
         attributes: ['id', 'tokenUrl', 'clientId', 'clientSecret', 'remapper', 'userInfoUrl'],
@@ -162,18 +163,40 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     secret.clientSecret,
   );
 
-  const { sub } = await getUserInfo(accessToken, idToken, secret.userInfoUrl, secret.remapper);
+  const {
+    email,
+    email_verified: emailVerified,
+    name,
+    sub,
+  } = await getUserInfo(accessToken, idToken, secret.userInfoUrl, secret.remapper);
   const authorization = await AppOAuth2Authorization.findOne({
     where: { sub, AppOAuth2SecretId: secret.id },
   });
 
   const authorizationCode = await transactional(async (transaction) => {
     const { id: UserId } = user ?? (await User.create({ transaction }));
+    const role = app.definition.security?.default?.role;
+    let appMember = await AppMember.findOne({
+      where: { UserId, AppId: appId },
+      transaction,
+    });
+    if (!appMember) {
+      appMember = await AppMember.create(
+        { UserId, AppId: appId, role, name, email, emailVerified },
+        { transaction },
+      );
+    }
 
     await (authorization
       ? authorization.update({ accessToken, refreshToken }, { transaction })
       : AppOAuth2Authorization.create(
-          { accessToken, AppOAuth2SecretId: secret.id, refreshToken, sub, UserId },
+          {
+            accessToken,
+            AppOAuth2SecretId: secret.id,
+            refreshToken,
+            sub,
+            AppMemberId: appMember.id,
+          },
           { transaction },
         ));
     return OAuth2AuthorizationCode.create(

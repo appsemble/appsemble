@@ -3,10 +3,9 @@ import { defaultLocale, remap } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
 import { extension } from 'mime-types';
 import { SendMailOptions } from 'nodemailer';
-import { Op } from 'sequelize';
 
 import { ServerActionParameters } from '.';
-import { Asset, EmailAuthorization } from '../../models';
+import { AppMember, Asset } from '../../models';
 import { getRemapperContext } from '../app';
 import { renderEmail } from '../email/renderEmail';
 
@@ -23,28 +22,17 @@ export async function email({
   mailer,
   user,
 }: ServerActionParameters<EmailActionDefinition>): Promise<any> {
-  await user?.reload({
-    attributes: ['primaryEmail', 'name'],
-    include: [
-      {
-        required: false,
-        model: EmailAuthorization,
-        attributes: ['verified'],
-        where: {
-          email: { [Op.col]: 'User.primaryEmail' },
-        },
-      },
-    ],
-  });
+  const appMember =
+    user && (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
 
   const context = await getRemapperContext(
     app,
     app.definition.defaultLanguage || defaultLocale,
-    user && {
+    appMember && {
       sub: user.id,
-      name: user.name,
-      email: user.primaryEmail,
-      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+      name: appMember.name,
+      email: appMember.email,
+      email_verified: appMember.emailVerified,
     },
   );
 

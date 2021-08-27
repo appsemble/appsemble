@@ -59,7 +59,6 @@ describe('getUserInfo', () => {
         email: null,
         email_verified: false,
         name: 'Test User',
-        picture: null,
         sub: user.id,
       },
     });
@@ -81,7 +80,15 @@ describe('verifyOAuth2Consent', () => {
     const app = await App.create({
       OrganizationId: organization.id,
       path: 'app',
-      definition: {},
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'everyone',
+          },
+          roles: { User: {} },
+        },
+      },
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
@@ -116,7 +123,15 @@ describe('verifyOAuth2Consent', () => {
       OrganizationId: organization.id,
       path: 'app',
       domain: 'app.example',
-      definition: {},
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'everyone',
+          },
+          roles: { User: {} },
+        },
+      },
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
@@ -284,7 +299,15 @@ describe('agreeOAuth2Consent', () => {
     const app = await App.create({
       OrganizationId: organization.id,
       path: 'app',
-      definition: {},
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'everyone',
+          },
+          roles: { User: {} },
+        },
+      },
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
@@ -318,7 +341,15 @@ describe('agreeOAuth2Consent', () => {
       OrganizationId: organization.id,
       path: 'app',
       domain: 'app.example',
-      definition: {},
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'everyone',
+          },
+          roles: { User: {} },
+        },
+      },
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
@@ -352,7 +383,15 @@ describe('agreeOAuth2Consent', () => {
       OrganizationId: organization.id,
       path: 'app',
       domain: 'app.example',
-      definition: {},
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'everyone',
+          },
+          roles: { User: {} },
+        },
+      },
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
@@ -377,7 +416,15 @@ describe('agreeOAuth2Consent', () => {
       OrganizationId: organization.id,
       path: 'app',
       domain: 'app.example',
-      definition: { security: { default: { policy: 'invite' } } },
+      definition: {
+        security: {
+          default: {
+            role: 'User',
+            policy: 'invite',
+          },
+          roles: { User: {} },
+        },
+      },
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
