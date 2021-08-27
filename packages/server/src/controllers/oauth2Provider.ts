@@ -115,26 +115,6 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
     });
   }
 
-  if (!app.AppMembers.length) {
-    await user.reload({
-      include: [
-        {
-          model: EmailAuthorization,
-          where: { email: { [Op.col]: 'User.primaryEmail' } },
-          required: false,
-        },
-      ],
-    });
-    await AppMember.create({
-      AppId: app.id,
-      UserId: user.id,
-      name: user.name,
-      email: user.primaryEmail,
-      emailVerified: user.EmailAuthorizations?.[0]?.verified ?? false,
-      role: app.definition.security.default.role,
-    });
-  }
-
   ctx.body = {
     ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user)),
     isAllowed: true,
@@ -166,5 +146,24 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
   }
 
   await OAuth2Consent.upsert({ AppId: appId, UserId: user.id, scope });
+  if (!app.AppMembers.length) {
+    await user.reload({
+      include: [
+        {
+          model: EmailAuthorization,
+          where: { email: { [Op.col]: 'User.primaryEmail' } },
+          required: false,
+        },
+      ],
+    });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      email: user.primaryEmail,
+      emailVerified: user.EmailAuthorizations?.[0]?.verified ?? false,
+      role: app.definition.security.default.role,
+    });
+  }
   ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user);
 }
