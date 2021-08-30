@@ -38,6 +38,10 @@ export class AppMember extends Model {
   @Column
   name: string;
 
+  @AllowNull(true)
+  @Column
+  consent: Date;
+
   @CreatedAt
   created: Date;
 

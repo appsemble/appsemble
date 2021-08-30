@@ -1,7 +1,7 @@
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Member, OAuth2AuthorizationCode, OAuth2Consent, Organization, User } from '../models';
+import { App, AppMember, Member, OAuth2AuthorizationCode, Organization, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
@@ -92,7 +92,12 @@ describe('verifyOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      consent: new Date(),
+      role: 'User',
+    });
     authorizeStudio();
     const response = await request.post('/api/oauth2/consent/verify', {
       appId: app.id,
@@ -135,7 +140,12 @@ describe('verifyOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    await OAuth2Consent.create({ scope: 'email', AppId: app.id, UserId: user.id });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      consent: new Date(),
+      role: 'User',
+    });
     authorizeStudio();
     const response = await request.post('/api/oauth2/consent/verify', {
       appId: app.id,
@@ -170,37 +180,11 @@ describe('verifyOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
     authorizeStudio();
     const response = await request.post('/api/oauth2/consent/verify', {
       appId: app.id,
       redirectUri: 'http://invalid.example:9999',
       scope: 'email openid',
-    });
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        error: 'Bad Request',
-        message: 'User has not agreed to the requested scopes',
-        statusCode: 400,
-      },
-    });
-  });
-
-  it('should block if the previously agreed scope doesn’t match the current scope', async () => {
-    const app = await App.create({
-      OrganizationId: organization.id,
-      path: 'app',
-      domain: 'app.example',
-      definition: {},
-      vapidPublicKey: '',
-      vapidPrivateKey: '',
-    });
-    authorizeStudio();
-    const response = await request.post('/api/oauth2/consent/verify', {
-      appId: app.id,
-      redirectUri: 'http://invalid.example:9999',
-      scope: 'openid',
     });
     expect(response).toMatchObject({
       status: 400,
@@ -221,7 +205,6 @@ describe('verifyOAuth2Consent', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
-    await OAuth2Consent.create({ scope: 'openid', AppId: app.id, UserId: user.id });
 
     authorizeStudio();
     const response = await request.post('/api/oauth2/consent/verify', {
@@ -260,7 +243,7 @@ describe('verifyOAuth2Consent', () => {
       data: {
         error: 'Bad Request',
         data: { isAllowed: false },
-        message: 'User has not agreed to the requested scopes',
+        message: 'User is not allowed to login due to the app’s security policy',
         statusCode: 400,
       },
     });
