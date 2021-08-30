@@ -1,0 +1,25 @@
+import { defineMessages } from 'react-intl';
+
+export const messages = defineMessages({
+  empty: 'You haven’t logged in to this app yet.',
+  error: 'There was a problem loading the app details.',
+  loading: 'Loading app account…',
+  storePage: 'Store page',
+  deleteBody: 'By deleting your app account, ',
+  deleteTitle: 'Confirm account deletion',
+  deleteError: 'There was a problem deleting your app account. Please try again.',
+  cancel: 'Cancel',
+  delete: 'Delete account',
+  roleLabel: 'Role',
+  roleHelp: 'The app doesn’t provide a description for this role',
+  nameLabel: 'Display name',
+  nameHelp: 'The display name which is exposed to the app',
+  nameRequired: 'A display name is required',
+  emailLabel: 'Email',
+  emailHelp: 'The email address which is exposed to the app',
+  emailInvalid: 'This needs to be a valid email address',
+  emailRequired: 'An email address is required',
+  submit: 'Save',
+  submitError: 'There was a problem',
+  ssoTitle: 'Single sign on accounts',
+});

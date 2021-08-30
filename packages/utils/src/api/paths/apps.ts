@@ -516,6 +516,17 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       security: [{ studio: [] }],
     },
+    delete: {
+      tags: ['app'],
+      description: 'Delete an app member.',
+      operationId: 'deleteAppMember',
+      responses: {
+        204: {
+          description: 'The app member was deleted succesfully.',
+        },
+      },
+      security: [{ studio: [] }],
+    },
   },
   '/api/apps/{appId}/ratings': {
     parameters: [{ $ref: '#/components/parameters/appId' }],

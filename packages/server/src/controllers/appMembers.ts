@@ -144,3 +144,30 @@ export async function setAppMember(ctx: Context): Promise<void> {
     role,
   };
 }
+
+export async function deleteAppMember(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, memberId },
+    user,
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: [{ model: AppMember, required: false, where: { UserId: memberId } }],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (user.id !== memberId) {
+    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+  }
+
+  const member = app.AppMembers?.[0];
+
+  if (!member) {
+    throw notFound('App member not found');
+  }
+
+  await member.destroy();
+}

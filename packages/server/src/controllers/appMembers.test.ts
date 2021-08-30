@@ -1,7 +1,18 @@
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppMember, BlockVersion, Member, Organization, User } from '../models';
+import {
+  App,
+  AppMember,
+  AppOAuth2Authorization,
+  AppOAuth2Secret,
+  AppSamlAuthorization,
+  AppSamlSecret,
+  BlockVersion,
+  Member,
+  Organization,
+  User,
+} from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
@@ -9,6 +20,7 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 
 let organization: Organization;
 let clock: Clock;
+let member: Member;
 let user: User;
 
 beforeAll(createTestSchema('appmembers'));
@@ -27,7 +39,7 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
   await BlockVersion.create({
@@ -321,5 +333,243 @@ describe('setAppMember', () => {
         role: 'Admin',
       },
     });
+  });
+});
+
+describe('deleteAppMember', () => {
+  it('should throw 404 if the app doesn’t exist', async () => {
+    authorizeStudio();
+    const response = await request.delete(
+      '/api/apps/253/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624',
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should throw 404 if the app member doesn’t exist', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const response = await request.delete(
+      `/api/apps/${app.id}/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624`,
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App member not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should verify the app role if the user id and member id don’t match', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await member.update({ role: 'Member' });
+    const userB = await User.create();
+    await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should allow app owners to delete an app member', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const userB = await User.create();
+    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
+    await expect(() => appMember.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+  });
+
+  it('should allow app users to delete their own account', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const userB = await User.create();
+    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    authorizeStudio(userB);
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
+    await expect(() => appMember.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+  });
+
+  it('should cascade correctly', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const userB = await User.create();
+    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const samlSecret = await AppSamlSecret.create({
+      AppId: app.id,
+      entityId: '',
+      ssoUrl: '',
+      name: '',
+      icon: '',
+      idpCertificate: '',
+      spPrivateKey: '',
+      spPublicKey: '',
+      spCertificate: '',
+    });
+    const oauth2Secret = await AppOAuth2Secret.create({
+      AppId: app.id,
+      authorizationUrl: '',
+      tokenUrl: '',
+      clientId: '',
+      clientSecret: '',
+      icon: '',
+      name: '',
+      scope: '',
+    });
+    const samlAuthorization = await AppSamlAuthorization.create({
+      AppSamlSecretId: samlSecret.id,
+      AppMemberId: appMember.id,
+      nameId: 'foo',
+    });
+    const oauth2Authorization = await AppOAuth2Authorization.create({
+      AppOAuth2SecretId: oauth2Secret.id,
+      AppMemberId: appMember.id,
+      accessToken: 'foo.bar.baz',
+      sub: '42',
+      refreshToken: 'refresh',
+      expiresAt: new Date(),
+    });
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
+    await expect(() => appMember.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+    await expect(() => samlAuthorization.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+    await expect(() => oauth2Authorization.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+    await samlSecret.reload();
+    await oauth2Secret.reload();
   });
 });

@@ -9,13 +9,23 @@ import { StarRating } from '../StarRating';
 import styles from './index.module.css';
 
 interface AppCardProps {
+  /**
+   * The app to render a card for.
+   */
   app: App;
+
+  /**
+   * An alternative place to link to.
+   *
+   * By default a link is generated towards the app’s store page.
+   */
+  href?: string;
 }
 
 /**
  * Display the basic information of an app and a link for more details.
  */
-export function AppCard({ app }: AppCardProps): ReactElement {
+export function AppCard({ app, href }: AppCardProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const appLang = app.definition.defaultLanguage || defaultLocale;
 
@@ -23,7 +33,7 @@ export function AppCard({ app }: AppCardProps): ReactElement {
     <Link
       className="card"
       title={app.messages?.app?.description || app.definition.description}
-      to={`/${lang}/apps/${app.id}`}
+      to={href ?? `/${lang}/apps/${app.id}`}
     >
       <div className="card-content">
         <div className="media">
