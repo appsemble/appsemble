@@ -89,7 +89,7 @@ export function ResourceRow({
     url,
   } = useRouteMatch<RouteParams>();
   const { app } = useApp();
-  const [editingResource, setEditingResource] = useState<Resource>();
+  const [editingResource, setEditingResource] = useState<Record<string, unknown>>();
   const modal = useToggle();
   const push = useMessages();
   const { formatMessage } = useIntl();
@@ -107,7 +107,8 @@ export function ResourceRow({
 
   const openEditModal = useCallback(() => {
     modal.enable();
-    setEditingResource(resource);
+    const { $author, $clonable, $created, $updated, id, ...rest } = resource;
+    setEditingResource(rest);
   }, [modal, resource]);
 
   const closeEditModal = useCallback(() => {
