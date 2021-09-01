@@ -29,7 +29,7 @@ services:
     image: dpage/pgadmin4
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin
+      PGADMIN_DEFAULT_EMAIL: info@appsemble.com
       PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - '2345:80'
