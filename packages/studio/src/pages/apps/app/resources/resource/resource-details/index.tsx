@@ -31,10 +31,18 @@ export function ResourceDetailsPage(): ReactElement {
   const history = useHistory();
   const result = useData<Resource>(`/api/apps/${id}/resources/${resourceName}/${resourceId}`);
   const [submitting, setSubmitting] = useState(false);
-  const [editingResource, setEditingResource] = useState<Resource>();
+  const [editingResource, setEditingResource] = useState<Record<string, unknown>>();
   const [editingResourceJson, setEditingResourceJson] = useState<string>();
 
   useMeta(resourceId);
+
+  const setResource = useCallback(
+    ({ $author, $clonable, $created, $updated, id: unused, ...rest }: Resource) => {
+      setEditingResource(rest);
+      setEditingResourceJson(`${JSON.stringify(rest, null, 2)}\n`);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!tabOptions.has(hash)) {
@@ -44,10 +52,9 @@ export function ResourceDetailsPage(): ReactElement {
 
   useEffect(() => {
     if (!editingResource && !result.loading && result.data) {
-      setEditingResource(result.data);
-      setEditingResourceJson(`${JSON.stringify(result.data, null, 2)}\n`);
+      setResource(result.data);
     }
-  }, [editingResource, result]);
+  }, [editingResource, result, setResource]);
 
   const onClickTab = useCallback((unused, tab: string) => history.push({ hash: tab }), [history]);
   const onCopyResource = useCallback(() => {
@@ -87,8 +94,7 @@ export function ResourceDetailsPage(): ReactElement {
         color: 'primary',
       });
       result.setData(data);
-      setEditingResourceJson(`${JSON.stringify(data, null, 2)}\n`);
-      setEditingResource(data);
+      setResource(data);
       setSubmitting(false);
     } catch {
       push(formatMessage(messages.updateError));
@@ -103,6 +109,7 @@ export function ResourceDetailsPage(): ReactElement {
     resourceId,
     resourceName,
     result,
+    setResource,
   ]);
 
   const schema = app.definition.resources?.[resourceName]?.schema;

@@ -343,7 +343,7 @@ export function IndexPage(): ReactElement {
                     className={sortable ? styles.clickable : ''}
                     data-property={property}
                     key={property}
-                    onClick={sortable && onSortProperty}
+                    onClick={sortable ? onSortProperty : null}
                   >
                     <span>{propSchema?.title || property}</span>
                     {sortedProperty === property && (
