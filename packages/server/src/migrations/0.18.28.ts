@@ -129,33 +129,89 @@ export async function up(db: Sequelize): Promise<void> {
   );
 
   logger.info('Updating `AppMemberId` in `AppSamlAuthorization` to newly generated AppMember IDs');
-  await db.query(
-    `WITH t AS (
-    SELECT s."id" AS "AppSamlSecretId", m.id AS "AppMemberId", m."UserId"
-    FROM "AppSamlAuthorization" a
-    JOIN "AppSamlSecret" s ON a."AppSamlSecretId" = s.id
-    JOIN "AppMember" m ON m."UserId" = a."UserId"
-  )
-  UPDATE "AppSamlAuthorization" a SET "AppMemberId" = t."AppMemberId"
-  FROM t
-  WHERE t."AppSamlSecretId" = a."AppSamlSecretId" AND t."UserId" = a."UserId";`,
-    { type: QueryTypes.UPDATE },
+  const samlResult = await db.query<{
+    AppSamlSecretId: string;
+    AppMemberId: string | null;
+    UserId: string;
+    AppId: string;
+    role: string;
+  }>(
+    `
+      SELECT s."id" AS "AppSamlSecretId", m.id AS "AppMemberId", a."UserId", s."AppId", p.definition -> 'security' -> 'default' ->> 'role' as role
+      FROM "AppSamlAuthorization" a
+      LEFT JOIN "AppSamlSecret" s ON a."AppSamlSecretId" = s.id
+      LEFT JOIN "AppMember" m ON m."UserId" = a."UserId" AND m."AppId" = s."AppId"
+      LEFT JOIN "App" p ON p.id = s."AppId"
+    `,
+    { type: QueryTypes.SELECT },
+  );
+  await Promise.all(
+    samlResult.map(async (result) => {
+      let memberId = result.AppMemberId;
+      if (result.AppMemberId) {
+        memberId = result.AppMemberId;
+      } else {
+        memberId = v4();
+        await db.query(
+          'INSERT INTO "AppMember" (id, role, "AppId", "UserId", created, updated) VALUES (?, ?, ?, ?, NOW(), NOW())',
+          {
+            type: QueryTypes.INSERT,
+            replacements: [memberId, result.role, result.AppId, result.UserId],
+          },
+        );
+      }
+      await db.query(
+        'UPDATE "AppSamlAuthorization" SET "AppMemberId" = ? WHERE "AppSamlSecretId" = ? AND "UserId" = ?',
+        {
+          type: QueryTypes.UPDATE,
+          replacements: [memberId, result.AppSamlSecretId, result.UserId],
+        },
+      );
+    }),
   );
 
   logger.info(
     'Updating `AppMemberId` in `AppOAuth2Authorization` to newly generated AppMember IDs',
   );
-  await db.query(
-    `WITH t AS (
-    SELECT s."id" AS "AppOAuth2SecretId", m.id AS "AppMemberId", m."UserId"
-    FROM "AppOAuth2Authorization" a
-    JOIN "AppOAuth2Secret" s ON a."AppOAuth2SecretId" = s.id
-    JOIN "AppMember" m ON m."UserId" = a."UserId"
-  )
-  UPDATE "AppOAuth2Authorization" a SET "AppMemberId" = t."AppMemberId"
-  FROM t
-  WHERE t."AppOAuth2SecretId" = a."AppOAuth2SecretId" AND t."UserId" = a."UserId";`,
-    { type: QueryTypes.UPDATE },
+  const oauth2Result = await db.query<{
+    AppOAuth2SecretId: string;
+    AppMemberId: string | null;
+    UserId: string;
+    AppId: string;
+    role: string;
+  }>(
+    `
+      SELECT s."id" AS "AppOAuth2SecretId", m.id AS "AppMemberId", a."UserId", s."AppId", p.definition -> 'security' -> 'default' ->> 'role' as role
+      FROM "AppOAuth2Authorization" a
+      LEFT JOIN "AppOAuth2Secret" s ON a."AppOAuth2SecretId" = s.id
+      LEFT JOIN "AppMember" m ON m."UserId" = a."UserId" AND m."AppId" = s."AppId"
+      LEFT JOIN "App" p ON p.id = s."AppId"
+    `,
+    { type: QueryTypes.SELECT },
+  );
+  await Promise.all(
+    oauth2Result.map(async (result) => {
+      let memberId = result.AppMemberId;
+      if (result.AppMemberId) {
+        memberId = result.AppMemberId;
+      } else {
+        memberId = v4();
+        await db.query(
+          'INSERT INTO "AppMember" (id, role, "AppId", "UserId", created, updated) VALUES (?, ?, ?, ?, NOW(), NOW())',
+          {
+            type: QueryTypes.INSERT,
+            replacements: [memberId, result.role, result.AppId, result.UserId],
+          },
+        );
+      }
+      await db.query(
+        'UPDATE "AppOAuth2Authorization" SET "AppMemberId" = ? WHERE "AppOAuth2SecretId" = ? AND "UserId" = ?',
+        {
+          type: QueryTypes.UPDATE,
+          replacements: [memberId, result.AppOAuth2SecretId, result.UserId],
+        },
+      );
+    }),
   );
 
   logger.info('Removing `AppMember` primary key');
