@@ -29,19 +29,21 @@ export function ParameterTable({ parameters }: ParameterTableProps): ReactElemen
         </tr>
       </thead>
       <tbody lang={defaultLocale}>
-        {Object.entries(parameters.properties).map(([key, value]) => (
-          <ParameterRow
-            key={key}
-            name={key}
-            parent={parameters}
-            recurse
-            required={
-              (Array.isArray(parameters.required) && parameters.required.includes(key)) ||
-              value.required === true
-            }
-            value={value}
-          />
-        ))}
+        {parameters.properties
+          ? Object.entries(parameters.properties).map(([key, value]) => (
+              <ParameterRow
+                key={key}
+                name={key}
+                parent={parameters}
+                recurse
+                required={
+                  (Array.isArray(parameters.required) && parameters.required.includes(key)) ||
+                  value.required === true
+                }
+                value={value}
+              />
+            ))
+          : null}
       </tbody>
     </Table>
   );
