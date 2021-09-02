@@ -813,6 +813,7 @@
   "studio.src.pages.saml.missingNameID": "Het name ID ontbreekt in het SAML antwoord.",
   "studio.src.pages.saml.missingSubject": "Het subject ontbreekt in het SAML antwoord.",
   "studio.src.pages.settings.client-credentials.apps:write": "Apps aanmaken en aanpassen",
+  "studio.src.pages.settings.client-credentials.assets:write": "App assets aanmaken",
   "studio.src.pages.settings.client-credentials.blocks:write": "Blokken en blokversies uploaden",
   "studio.src.pages.settings.client-credentials.cancel": "Annuleren",
   "studio.src.pages.settings.client-credentials.close": "Sluiten",
