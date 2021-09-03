@@ -5,10 +5,13 @@ import { FormattedMessage } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
-import { apiUrl, appId, logins, showAppsembleLogin } from '../../utils/settings';
+import { apiUrl, appId, appUpdated, logins, showAppsembleLogin } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
+import { Main } from '../Main';
 import { OpenIDLogin } from '../OpenIDLogin';
+import { TitleBar } from '../TitleBar';
 import { useUser } from '../UserProvider';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export function Login(): ReactElement {
@@ -41,5 +44,15 @@ export function Login(): ReactElement {
     );
   }
 
-  return <OpenIDLogin />;
+  return (
+    <Main className={styles.root}>
+      <TitleBar />
+      <Content className={`is-flex appsemble-login ${styles.wrapper}`} padding>
+        <figure className="my-4">
+          <img alt={definition.name} src={`/icon-256.png?updated=${appUpdated}`} />
+        </figure>
+        <OpenIDLogin />
+      </Content>
+    </Main>
+  );
 }
