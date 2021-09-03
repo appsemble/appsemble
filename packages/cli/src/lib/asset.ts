@@ -1,5 +1,4 @@
 import { createReadStream } from 'fs';
-import { basename } from 'path';
 
 import { logger } from '@appsemble/node-utils';
 import { normalize } from '@appsemble/utils';
@@ -32,7 +31,7 @@ interface CreateAssetParams {
 export async function createAsset({ appId, name, path, remote }: CreateAssetParams): Promise<void> {
   const formData = new FormData();
   const file = createReadStream(path);
-  formData.append('file', file, { filename: basename(path) });
+  formData.append('file', file);
   if (name) {
     formData.append('name', normalize(name));
   }
