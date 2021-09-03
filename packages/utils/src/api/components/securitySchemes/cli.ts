@@ -17,6 +17,7 @@ export const cli: OpenAPIV3.OAuth2SecurityScheme = {
         'organizations:write': 'Create and manage organizations.',
         'resources:read': 'Read app resources on behalf of a user.',
         'resources:write': 'Modify app resources on behalf of a user.',
+        'assets:write': 'Create app assets on behalf of a user.',
         'teams:read': 'Read information about the user’s teams.',
         'teams:write': 'Read information about the user’s teams.',
       },

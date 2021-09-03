@@ -813,6 +813,7 @@
   "studio.src.pages.saml.missingNameID": "Navnet ID mangler i SAML-svaret.",
   "studio.src.pages.saml.missingSubject": "Emnet mangler i SAML-svaret.",
   "studio.src.pages.settings.client-credentials.apps:write": "Opret og rediger apps",
+  "studio.src.pages.settings.client-credentials.assets:write": "",
   "studio.src.pages.settings.client-credentials.blocks:write": "Offentliggør blokke og blokversioner",
   "studio.src.pages.settings.client-credentials.cancel": "Annuller",
   "studio.src.pages.settings.client-credentials.close": "Luk",

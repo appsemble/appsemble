@@ -813,6 +813,7 @@
   "studio.src.pages.saml.missingNameID": "ID oznaka imena SAML odgovora nedostaje.",
   "studio.src.pages.saml.missingSubject": "U SAML odgovoru nedostaje predmet.",
   "studio.src.pages.settings.client-credentials.apps:write": "Stvori i promijeni programe",
+  "studio.src.pages.settings.client-credentials.assets:write": "",
   "studio.src.pages.settings.client-credentials.blocks:write": "Objavi blokove i verzije blokova",
   "studio.src.pages.settings.client-credentials.cancel": "Odustani",
   "studio.src.pages.settings.client-credentials.close": "Zatvori",

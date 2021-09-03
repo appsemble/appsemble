@@ -813,6 +813,7 @@
   "studio.src.pages.saml.missingNameID": "",
   "studio.src.pages.saml.missingSubject": "",
   "studio.src.pages.settings.client-credentials.apps:write": "",
+  "studio.src.pages.settings.client-credentials.assets:write": "",
   "studio.src.pages.settings.client-credentials.blocks:write": "",
   "studio.src.pages.settings.client-credentials.cancel": "",
   "studio.src.pages.settings.client-credentials.close": "",

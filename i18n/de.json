@@ -813,6 +813,7 @@
   "studio.src.pages.saml.missingNameID": "Die Namens-ID fehlt in der SAML-Antwort.",
   "studio.src.pages.saml.missingSubject": "Der Betreff fehlt in der SAML-Antwort.",
   "studio.src.pages.settings.client-credentials.apps:write": "Erstellen und Ändern von Apps",
+  "studio.src.pages.settings.client-credentials.assets:write": "",
   "studio.src.pages.settings.client-credentials.blocks:write": "Blöcke und Blockversionen veröffentlichen",
   "studio.src.pages.settings.client-credentials.cancel": "Abbrechen",
   "studio.src.pages.settings.client-credentials.close": "Schließen",

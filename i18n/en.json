@@ -813,6 +813,7 @@
   "studio.src.pages.saml.missingNameID": "The name ID is missing from the SAML response.",
   "studio.src.pages.saml.missingSubject": "The subject is missing from the SAML response.",
   "studio.src.pages.settings.client-credentials.apps:write": "Create and modify apps",
+  "studio.src.pages.settings.client-credentials.assets:write": "Create app assets",
   "studio.src.pages.settings.client-credentials.blocks:write": "Publish blocks and block versions",
   "studio.src.pages.settings.client-credentials.cancel": "Cancel",
   "studio.src.pages.settings.client-credentials.close": "Close",
