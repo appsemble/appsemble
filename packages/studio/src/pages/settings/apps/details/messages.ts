@@ -5,7 +5,7 @@ export const messages = defineMessages({
   error: 'There was a problem loading the app details.',
   loading: 'Loading app account…',
   storePage: 'Store page',
-  deleteBody: 'By deleting your app account, ',
+  deleteBody: 'Are you sure you want to delete this app account?',
   deleteTitle: 'Confirm account deletion',
   deleteError: 'There was a problem deleting your app account. Please try again.',
   cancel: 'Cancel',
