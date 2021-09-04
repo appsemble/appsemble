@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.28](https://gitlab.com/appsemble/appsemble/-/releases/0.18.28)] - 2021-09-04
+
+### Added
+
+- Block(`tiles`): Add `tiles` block.
+- Cli: Add `--modify-context` flag for `app create` command. This will modify the context in
+  `.appsemblerc` to include the ID of the newly created app.
+- Cli: Add `asset create` command.
+- Cli: Add support for `.appsemblerc.yaml` context usage for `resource` and `team` commands using
+  `--app <path>` and `--context <environment>` flags.
+- Sdk: The `IconName` type from `@fortawesome/fontawesome-common-types` is now re-exported by the
+  SDK.
+- Server: Add option to define annotations when creating a team.
+
 ## \[[0.18.27](https://gitlab.com/appsemble/appsemble/-/releases/0.18.27)] - 2021-08-16
 
 ### Added
