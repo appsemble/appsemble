@@ -20,7 +20,6 @@ import {
   EmailAuthorization,
   Member,
   OAuth2AuthorizationCode,
-  OAuth2Consent,
   OAuthAuthorization,
   Organization,
   ResetPasswordToken,
@@ -65,9 +64,6 @@ export class User extends Model {
 
   @HasMany(() => Asset)
   Asset: Asset[];
-
-  @HasMany(() => OAuth2Consent)
-  OAuth2Consents: OAuth2Consent[];
 
   @HasMany(() => AppMember)
   AppMembers: AppMember[];
