@@ -7,14 +7,18 @@ import { apiUrl, appId, logins, showAppsembleLogin } from '../../utils/settings'
 import styles from './index.module.css';
 import { messages } from './messages';
 
-export function OpenIDLogin(): ReactElement {
+interface OpenIDLoginProps {
+  disabled: boolean;
+}
+
+export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactElement {
   const qs = useQuery();
   const busy = useToggle();
 
   const buttonProps = {
     className: `is-fullwidth my-2 ${styles.button}`,
     clientId: `app:${appId}`,
-    disabled: busy.enabled,
+    disabled: disabled || busy.enabled,
     onClick: busy.enable,
     redirectUrl: '/Callback',
     scope: oauth2Scope,

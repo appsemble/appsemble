@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
 import { useUser } from '../../components/UserProvider';
 import { enableRegistration, logins } from '../../utils/settings';
@@ -21,6 +22,7 @@ export function LoginPage(): ReactElement {
   const { login } = useUser();
   const qs = useQuery();
   const busy = useToggle();
+  const { lang } = useParams<{ lang: string }>();
 
   const onPasswordLogin = useCallback(
     async ({ email, password }: LoginFormValues) => {
@@ -40,7 +42,12 @@ export function LoginPage(): ReactElement {
 
   return (
     <Content>
-      <Login enableRegistration={enableRegistration} onPasswordLogin={onPasswordLogin} />
+      <Login
+        enableRegistration={enableRegistration}
+        onPasswordLogin={onPasswordLogin}
+        registerLink={`/${lang}/register`}
+        resetPasswordLink={`/${lang}/reset-password`}
+      />
       <div className={`${styles.socialLogins} mt-5`}>
         {logins.map((provider) => (
           <OAuth2LoginButton

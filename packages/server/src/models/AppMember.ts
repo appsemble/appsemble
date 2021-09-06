@@ -36,6 +36,9 @@ export class AppMember extends Model {
   emailVerified: boolean;
 
   @Column
+  password: string;
+
+  @Column
   name: string;
 
   @CreatedAt

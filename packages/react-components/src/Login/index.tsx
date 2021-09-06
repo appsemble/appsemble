@@ -1,6 +1,6 @@
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import {
   FormButtons,
@@ -11,6 +11,7 @@ import {
   SimpleSubmit,
   useToggle,
 } from '..';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export interface LoginFormValues {
@@ -21,11 +22,17 @@ export interface LoginFormValues {
 interface LoginProps {
   enableRegistration: boolean;
   onPasswordLogin: (credentials: LoginFormValues) => Promise<void>;
+  registerLink: string;
+  resetPasswordLink: string;
 }
 
-export function Login({ enableRegistration, onPasswordLogin }: LoginProps): ReactElement {
+export function Login({
+  enableRegistration,
+  onPasswordLogin,
+  registerLink,
+  resetPasswordLink,
+}: LoginProps): ReactElement {
   const busy = useToggle();
-  const { lang } = useParams<{ lang: string }>();
   const location = useLocation();
 
   const handleLogin = useCallback(
@@ -34,6 +41,7 @@ export function Login({ enableRegistration, onPasswordLogin }: LoginProps): Reac
 
       try {
         await onPasswordLogin(credentials);
+        busy.disable();
       } catch (error: unknown) {
         busy.disable();
         throw error;
@@ -43,7 +51,11 @@ export function Login({ enableRegistration, onPasswordLogin }: LoginProps): Reac
   );
 
   return (
-    <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={handleLogin}>
+    <SimpleForm
+      className={styles.root}
+      defaultValues={{ email: '', password: '' }}
+      onSubmit={handleLogin}
+    >
       <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
       <SimpleFormField
         autoComplete="email"
@@ -74,12 +86,12 @@ export function Login({ enableRegistration, onPasswordLogin }: LoginProps): Reac
           {enableRegistration && (
             <Link
               className="is-block"
-              to={{ pathname: `/${lang}/register`, search: location.search, hash: location.hash }}
+              to={{ pathname: registerLink, search: location.search, hash: location.hash }}
             >
               <FormattedMessage {...messages.registerLink} />
             </Link>
           )}
-          <Link className="is-block" to={`/${lang}/reset-password`}>
+          <Link className="is-block" to={resetPasswordLink}>
             <FormattedMessage {...messages.forgotPasswordLink} />
           </Link>
         </div>
