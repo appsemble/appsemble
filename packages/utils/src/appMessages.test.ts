@@ -46,6 +46,13 @@ describe('findMessageIds', () => {
     });
     expect(result).toStrictEqual({ fooz: '', baz: '' });
   });
+
+  it('should extract string.format remapper values', () => {
+    const result = findMessageIds({
+      'string.format': { messageId: 'foo', values: { translate: 'bar' } },
+    });
+    expect(result).toStrictEqual({ foo: '', bar: '' });
+  });
 });
 
 describe('extractAppMessages', () => {
