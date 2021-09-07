@@ -8,6 +8,7 @@ export const messages = defineMessages({
   deleteBody: 'Are you sure you want to delete this app account?',
   deleteTitle: 'Confirm account deletion',
   deleteError: 'There was a problem deleting your app account. Please try again.',
+  deleteSuccess: 'App account deleted succesfully',
   cancel: 'Cancel',
   delete: 'Delete account',
   roleLabel: 'Role',

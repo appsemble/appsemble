@@ -821,6 +821,7 @@
   "studio.src.pages.settings.apps.details.delete": "Verwijder account",
   "studio.src.pages.settings.apps.details.deleteBody": "Weet je zeker dat je dit app account wil verdijeren?",
   "studio.src.pages.settings.apps.details.deleteError": "Er was een probleem met het verwijderen van je app account. Probeer het later opnieuw.",
+  "studio.src.pages.settings.apps.details.deleteSuccess": "App account succesvol verwijderd",
   "studio.src.pages.settings.apps.details.deleteTitle": "Verdijder app account",
   "studio.src.pages.settings.apps.details.emailHelp": "Dit e-mailadres is beschikbaar binnen de app.",
   "studio.src.pages.settings.apps.details.emailInvalid": "Dit moet een valide e-mailadres zijn.",

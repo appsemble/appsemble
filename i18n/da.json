@@ -821,6 +821,7 @@
   "studio.src.pages.settings.apps.details.delete": "",
   "studio.src.pages.settings.apps.details.deleteBody": "",
   "studio.src.pages.settings.apps.details.deleteError": "",
+  "studio.src.pages.settings.apps.details.deleteSuccess": "",
   "studio.src.pages.settings.apps.details.deleteTitle": "",
   "studio.src.pages.settings.apps.details.emailHelp": "",
   "studio.src.pages.settings.apps.details.emailInvalid": "",

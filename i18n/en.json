@@ -821,6 +821,7 @@
   "studio.src.pages.settings.apps.details.delete": "Delete account",
   "studio.src.pages.settings.apps.details.deleteBody": "Are you sure you want to delete this app account?",
   "studio.src.pages.settings.apps.details.deleteError": "There was a problem deleting your app account. Please try again.",
+  "studio.src.pages.settings.apps.details.deleteSuccess": "App account deleted succesfully",
   "studio.src.pages.settings.apps.details.deleteTitle": "Confirm account deletion",
   "studio.src.pages.settings.apps.details.emailHelp": "The email address which is exposed to the app",
   "studio.src.pages.settings.apps.details.emailInvalid": "This needs to be a valid email address",

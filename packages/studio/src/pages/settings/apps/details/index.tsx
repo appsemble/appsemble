@@ -18,7 +18,7 @@ import { AppAccount } from '@appsemble/types';
 import axios from 'axios';
 import { Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { useUser } from 'studio/src/components/UserProvider';
 
 import { AppIcon } from '../../../../components/AppIcon';
@@ -28,6 +28,7 @@ import { messages } from './messages';
 
 export function DetailsPage(): ReactElement {
   const { appId, lang } = useParams<{ appId: string; lang: string }>();
+  const history = useHistory();
   const result = useData<AppAccount>(`/api/user/apps/${appId}/account`);
   const { userInfo } = useUser();
   const push = useMessages();
@@ -43,6 +44,8 @@ export function DetailsPage(): ReactElement {
     async action() {
       try {
         await axios.delete(`/api/apps/${appId}/members/${userInfo.sub}`);
+        push({ body: formatMessage(messages.deleteSuccess), color: 'success' });
+        history.replace('.');
       } catch {
         push(formatMessage(messages.deleteError));
       }
