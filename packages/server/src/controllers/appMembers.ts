@@ -19,8 +19,8 @@ export async function getAppMembers(ctx: Context): Promise<void> {
 
   const appMembers: AppMemberType[] = app.AppMembers.map((member) => ({
     id: member.UserId,
-    name: member.User.name,
-    primaryEmail: member.User.primaryEmail,
+    name: member.name,
+    primaryEmail: member.email,
     role: member.role,
   }));
 
@@ -54,50 +54,27 @@ export async function getAppMember(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    include: [{ model: AppMember, where: { UserId: memberId }, required: false }, Organization],
+    include: [{ model: AppMember, where: { UserId: memberId }, required: false }],
   });
   if (!app) {
     throw notFound('App not found');
   }
 
   if (app.definition.security === undefined) {
-    throw notFound('App does not have a security definition.');
+    throw notFound('App does not have a security definition');
   }
 
-  const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
-
-  const user = await User.findByPk(memberId);
-
-  if (!user) {
-    throw notFound('User does not exist.');
+  if (app.AppMembers.length !== 1) {
+    throw notFound('App member not found');
   }
 
-  const member = app.AppMembers.find((m) => m.id === memberId);
-  let role = member?.role ?? null;
-
-  if (!member && policy === 'everyone') {
-    role = defaultRole;
-  }
-
-  if (!member && policy === 'organization') {
-    const isOrganizationMember = await app.Organization.$has('User', memberId);
-
-    if (!isOrganizationMember) {
-      throw notFound('User is not a member of the organization.');
-    }
-
-    role = defaultRole;
-  }
-
-  if (!member && policy === 'invite') {
-    throw notFound('User is not a member of the app.');
-  }
+  const [member] = app.AppMembers;
 
   ctx.body = {
-    id: user.id,
-    name: user.name,
-    primaryEmail: user.primaryEmail,
-    role,
+    id: member.UserId,
+    name: member.name,
+    primaryEmail: member.email,
+    role: member.role,
   };
 }
 
@@ -127,20 +104,22 @@ export async function setAppMember(ctx: Context): Promise<void> {
     throw badRequest(`Role ‘${role}’ is not defined.`);
   }
 
-  const member = app.AppMembers?.[0];
+  let member = app.AppMembers?.[0];
 
-  await (member
-    ? member.update({ role })
-    : AppMember.create({
-        UserId: user.id,
-        AppId: app.id,
-        role,
-      }));
+  if (member) {
+    await member.update({ role });
+  } else {
+    member = await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      role,
+    });
+  }
 
   ctx.body = {
     id: user.id,
-    name: user.name,
-    primaryEmail: user.primaryEmail,
+    name: member.name,
+    primaryEmail: member.email,
     role,
   };
 }
