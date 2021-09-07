@@ -301,6 +301,11 @@ interface AbstractEnumField extends AbstractField {
   type: 'enum';
 
   /**
+   * The default value of the field.
+   */
+  defaultValue?: JsonValue;
+
+  /**
    * The requirements that are used to validate the field with.
    *
    * These are evaluated in the order they are defined in.
@@ -452,6 +457,11 @@ export interface HiddenField extends AbstractField {
    * The type of the field.
    */
   type: 'hidden';
+
+  /**
+   * The default value of the field.
+   */
+  defaultValue?: JsonValue;
 }
 
 /**
