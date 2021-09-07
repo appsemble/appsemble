@@ -1405,6 +1405,10 @@ The action should return an array of objects that contain the \`label\` and \`va
                 "format": "action",
                 "type": "string",
               },
+              "defaultValue": Object {
+                "$ref": "#/definitions/JsonValue",
+                "description": "The default value of the field.",
+              },
               "icon": Object {
                 "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
                 "format": "fontawesome",
@@ -1463,6 +1467,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "additionalProperties": false,
             "description": "A dropdown list containing a list of values based on the output of an event.",
             "properties": Object {
+              "defaultValue": Object {
+                "$ref": "#/definitions/JsonValue",
+                "description": "The default value of the field.",
+              },
               "event": Object {
                 "description": "Wait until an event has been fired containing the list of options.
 
@@ -1528,6 +1536,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "additionalProperties": false,
             "description": "A dropdown list containing a list of predetermined values.",
             "properties": Object {
+              "defaultValue": Object {
+                "$ref": "#/definitions/JsonValue",
+                "description": "The default value of the field.",
+              },
               "enum": Object {
                 "description": "The list of available choices.",
                 "items": Object {
@@ -1824,6 +1836,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A hidden field. This is useful for submitting default values the user may not change.",
         "properties": Object {
+          "defaultValue": Object {
+            "$ref": "#/definitions/JsonValue",
+            "description": "The default value of the field.",
+          },
           "icon": Object {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",

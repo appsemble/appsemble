@@ -840,6 +840,7 @@
   "studio.src.pages.settings.apps.details.submitError": "",
   "studio.src.pages.settings.apps.title": "",
   "studio.src.pages.settings.client-credentials.apps:write": "Erstellen und Ändern von Apps",
+  "studio.src.pages.settings.client-credentials.assets:write": "",
   "studio.src.pages.settings.client-credentials.blocks:write": "Blöcke und Blockversionen veröffentlichen",
   "studio.src.pages.settings.client-credentials.cancel": "Abbrechen",
   "studio.src.pages.settings.client-credentials.close": "Schließen",

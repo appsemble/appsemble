@@ -62,7 +62,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ studio: [] }, {}, { cli: ['assets:write'] }],
     },
   },
   '/api/apps/{appId}/assets/{assetId}': {

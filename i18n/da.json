@@ -840,6 +840,7 @@
   "studio.src.pages.settings.apps.details.submitError": "",
   "studio.src.pages.settings.apps.title": "",
   "studio.src.pages.settings.client-credentials.apps:write": "Opret og rediger apps",
+  "studio.src.pages.settings.client-credentials.assets:write": "",
   "studio.src.pages.settings.client-credentials.blocks:write": "Offentliggør blokke og blokversioner",
   "studio.src.pages.settings.client-credentials.cancel": "Annuller",
   "studio.src.pages.settings.client-credentials.close": "Luk",

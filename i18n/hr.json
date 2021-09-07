@@ -840,6 +840,7 @@
   "studio.src.pages.settings.apps.details.submitError": "",
   "studio.src.pages.settings.apps.title": "",
   "studio.src.pages.settings.client-credentials.apps:write": "Stvori i promijeni programe",
+  "studio.src.pages.settings.client-credentials.assets:write": "",
   "studio.src.pages.settings.client-credentials.blocks:write": "Objavi blokove i verzije blokova",
   "studio.src.pages.settings.client-credentials.cancel": "Odustani",
   "studio.src.pages.settings.client-credentials.close": "Zatvori",

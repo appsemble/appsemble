@@ -44,7 +44,7 @@ spec:
                   {{ $clientCredentials._0 | squote }},
                   {{ ($clientCredentials._1 | htpasswd "" | split ":")._1 | squote }},
                   'Used for provisioning the review environment',
-                  'apps:write resources:write blocks:write organizations:write teams:write',
+                  'apps:write resources:write assets:write blocks:write organizations:write teams:write',
                   NOW(),
                   {{ $userId | squote }}
                 );

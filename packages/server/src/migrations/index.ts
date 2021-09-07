@@ -34,6 +34,7 @@ import * as m36 from './0.18.19';
 import * as m34 from './0.18.2';
 import * as m37 from './0.18.25';
 import * as m38 from './0.18.28';
+import * as m39 from './0.18.29';
 import * as m1 from './0.9.0';
 import * as m2 from './0.9.3';
 import * as m3 from './0.9.4';
@@ -77,4 +78,5 @@ export const migrations: Migration[] = [
   m36,
   m37,
   m38,
+  m39,
 ];

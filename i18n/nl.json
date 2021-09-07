@@ -840,6 +840,7 @@
   "studio.src.pages.settings.apps.details.submitError": "Er was een probleem met het opslaan",
   "studio.src.pages.settings.apps.title": "Gekoppelde accounts",
   "studio.src.pages.settings.client-credentials.apps:write": "Apps aanmaken en aanpassen",
+  "studio.src.pages.settings.client-credentials.assets:write": "App assets aanmaken",
   "studio.src.pages.settings.client-credentials.blocks:write": "Blokken en blokversies uploaden",
   "studio.src.pages.settings.client-credentials.cancel": "Annuleren",
   "studio.src.pages.settings.client-credentials.close": "Sluiten",

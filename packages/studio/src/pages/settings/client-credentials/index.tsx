@@ -117,6 +117,7 @@ export function ClientCredentialsPage(): ReactElement {
           'apps:write': false,
           'teams:read': false,
           'teams:write': false,
+          'assets:write': false,
         }}
         footer={
           newClientCredentials ? (
@@ -204,6 +205,12 @@ export function ClientCredentialsPage(): ReactElement {
               label="teams:write"
               name="teams:write"
               title={<FormattedMessage {...messages['teams:write']} />}
+            />
+            <SimpleFormField
+              component={CheckboxField}
+              label="assets:write"
+              name="assets:write"
+              title={<FormattedMessage {...messages['assets:write']} />}
             />
           </>
         )}

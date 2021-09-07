@@ -840,6 +840,7 @@
   "studio.src.pages.settings.apps.details.submitError": "There was a problem",
   "studio.src.pages.settings.apps.title": "Connected apps",
   "studio.src.pages.settings.client-credentials.apps:write": "Create and modify apps",
+  "studio.src.pages.settings.client-credentials.assets:write": "Create app assets",
   "studio.src.pages.settings.client-credentials.blocks:write": "Publish blocks and block versions",
   "studio.src.pages.settings.client-credentials.cancel": "Cancel",
   "studio.src.pages.settings.client-credentials.close": "Close",
