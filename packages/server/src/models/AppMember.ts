@@ -36,10 +36,16 @@ export class AppMember extends Model {
   emailVerified: boolean;
 
   @Column
+  name: string;
+
+  @Column
   password: string;
 
   @Column
-  name: string;
+  emailKey: string;
+
+  @Column
+  resetKey: string;
 
   @CreatedAt
   created: Date;

@@ -3,6 +3,7 @@ import {
   FormButtons,
   Message,
   PasswordField,
+  PasswordStrengthIndicator,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
@@ -15,7 +16,6 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { PasswordStrengthIndicator } from '../../components/PasswordStrengthIndicator';
 import { messages } from './messages';
 
 export function EditPasswordPage(): ReactElement {
