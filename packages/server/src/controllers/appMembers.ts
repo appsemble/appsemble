@@ -242,7 +242,7 @@ export async function verifyMemberEmail(ctx: Context): Promise<void> {
         model: AppMember,
         required: false,
         where: {
-          key: token,
+          emailKey: token,
         },
       },
     ],
@@ -273,7 +273,7 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
   const email = request.body.email.toLowerCase();
 
   const app = await App.findByPk(appId, {
-    attributes: ['definition'],
+    attributes: ['definition', 'domain', 'path', 'OrganizationId'],
     include: [{ model: AppMember, where: { email }, required: false }],
   });
 
@@ -283,7 +283,7 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
     const appUrl = String(url);
 
     await mailer.sendTemplateEmail(app.AppMembers[0], 'resend', {
-      url: `${appUrl}/Verify?token=${app.AppMembers[0].emailKey}`,
+      url: `${appUrl}Verify?token=${app.AppMembers[0].emailKey}`,
       name: app.definition.name,
     });
   }
@@ -299,22 +299,24 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
 
   const email = request.body.email.toLowerCase();
   const app = await App.findByPk(appId, {
-    attributes: ['definition'],
+    attributes: ['definition', 'domain', 'path', 'OrganizationId'],
     include: [{ model: AppMember, where: { email }, required: false }],
   });
 
   if (app?.AppMembers.length) {
     const [member] = app.AppMembers;
-    const resetToken = randomBytes(40).toString('hex');
+    const resetKey = randomBytes(40).toString('hex');
 
     const url = new URL(argv.host);
     url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
     const appUrl = String(url);
 
-    await member.update({ resetToken });
+    await member.update({ resetKey });
     await mailer.sendTemplateEmail(member, 'reset', {
-      url: `${appUrl}/Edit-Password?token=${resetToken}`,
-      name: app.definition.name,
+      url: `${appUrl}Edit-Password?token=${resetKey}`,
+      name: app.definition.name.endsWith('App')
+        ? app.definition.name
+        : `${app.definition.name} App`,
     });
   }
 

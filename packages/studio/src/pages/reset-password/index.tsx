@@ -5,7 +5,7 @@ import { ReactElement, useCallback } from 'react';
 import { messages } from './messages';
 
 export function ResetPasswordPage(): ReactElement {
-  useMeta(messages.title);
+  useMeta(messages.title, messages.description);
 
   const onSubmit = useCallback(async (email: string): Promise<void> => {
     await axios.post('/api/email/reset/request', { email });

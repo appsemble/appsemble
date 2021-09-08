@@ -49,16 +49,12 @@ export function AppRoutes(): ReactElement {
           <Register />
         </Route>
       )}
-      {!isLoggedIn && (
-        <Route exact path="/:lang/Reset-Password" sensitive>
-          <ResetPassword />
-        </Route>
-      )}
-      {!isLoggedIn && (
-        <Route exact path="/:lang/Edit-Password" sensitive>
-          <EditPassword />
-        </Route>
-      )}
+      <Route exact path="/:lang/Reset-Password" sensitive>
+        <ResetPassword />
+      </Route>
+      <Route exact path="/:lang/Edit-Password" sensitive>
+        <EditPassword />
+      </Route>
       <Route exact path="/:lang/Verify" sensitive>
         <Verify />
       </Route>

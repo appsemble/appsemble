@@ -21,7 +21,7 @@ export function Register(): ReactElement {
   );
 
   return (
-    <Content>
+    <Content padding>
       <RegisterForm onRegister={onRegister} />
     </Content>
   );

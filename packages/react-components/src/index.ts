@@ -11,6 +11,7 @@ export * from './Content';
 export * from './Confirmation';
 export * from './DateTimeField';
 export * from './Dropdown';
+export * from './EditPassword';
 export * from './ErrorHandler';
 export * from './FileUpload';
 export * from './Form';
