@@ -88,7 +88,13 @@ describe('getAppMembers', () => {
       OrganizationId: organization.id,
     });
 
-    await AppMember.create({ UserId: user.id, AppId: app.id, role: 'Admin' });
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'member@example.com',
+      role: 'Admin',
+    });
 
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members`);
@@ -97,8 +103,8 @@ describe('getAppMembers', () => {
       data: [
         {
           id: user.id,
-          name: 'Test User',
-          primaryEmail: 'test@example.com',
+          name: 'Test Member',
+          primaryEmail: 'member@example.com',
           role: 'Admin',
         },
       ],
@@ -173,7 +179,73 @@ describe('getAppMembers', () => {
 });
 
 describe('getAppMember', () => {
-  it('should return default app member role if policy is set to everyone', async () => {
+  it('should return 404 if no app was found', async () => {
+    authorizeStudio();
+    const response = await request.get(
+      '/api/apps/123/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37',
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should return 404 if the app doesn’t have a security definition', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.get(
+      `/api/apps/${app.id}/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37`,
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App does not have a security definition',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should return 404 if no app member was found', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: { definition: {} },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.get(
+      `/api/apps/${app.id}/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37`,
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App member not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should return an app member if it is found', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
@@ -194,103 +266,18 @@ describe('getAppMember', () => {
       OrganizationId: organization.id,
     });
 
-    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: 'Foo',
+      email: 'foo@example.com',
+      role: 'Reader',
+    });
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
-    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`);
     expect(response).toMatchObject({
       status: 200,
-      data: {
-        id: user.id,
-        name: 'Test User',
-        primaryEmail: 'test@example.com',
-        role: 'Reader',
-      },
-    });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: { id: userB.id, name: 'Foo', primaryEmail: 'foo@example.com', role: 'Reader' },
-    });
-  });
-
-  it('should return a 404 on uninvited members if policy is set to organization', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'organization',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    const userB = await User.create();
-
-    authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
-    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`);
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: user.id,
-        name: user.name,
-        primaryEmail: user.primaryEmail,
-        role: 'Reader',
-      },
-    });
-
-    expect(responseB).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        statusCode: 404,
-        message: 'User is not a member of the organization.',
-      },
-    });
-  });
-
-  it('should return a 404 on uninvited organization members if policy is set to invite', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'invite',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
-
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        statusCode: 404,
-        message: 'User is not a member of the app.',
-      },
+      data: { id: user.id, name: 'Foo', primaryEmail: 'foo@example.com', role: 'Reader' },
     });
   });
 });
@@ -328,8 +315,8 @@ describe('setAppMember', () => {
       status: 200,
       data: {
         id: userB.id,
-        name: 'Foo',
-        primaryEmail: 'foo@example.com',
+        name: null,
+        primaryEmail: null,
         role: 'Admin',
       },
     });
