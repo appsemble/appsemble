@@ -44,6 +44,12 @@ export function AppRoutes(): ReactElement {
       <Route exact path="/:lang/Reset" sensitive>
         <Login />
       </Route>
+      <Route exact path="/:lang/Edit-Password" sensitive>
+        <Login />
+      </Route>
+      <Route exact path="/:lang/Verify" sensitive>
+        <Login />
+      </Route>
       <Route exact path="/:lang/Callback" sensitive>
         <OpenIDCallback />
       </Route>

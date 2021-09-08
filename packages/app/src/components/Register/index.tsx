@@ -14,7 +14,7 @@ export function Register(): ReactElement {
 
   const onRegister = useCallback(
     async (values: RegistrationFormValues): Promise<void> => {
-      await axios.post(`/api/apps/${appId}/email`, values);
+      await axios.post(`/api/apps/${appId}/member`, values);
       await passwordLogin({ username: values.email, password: values.password });
     },
     [passwordLogin],
