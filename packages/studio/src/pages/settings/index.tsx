@@ -9,6 +9,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
+import { AppsRoutes } from './apps';
 import { ClientCredentialsPage } from './client-credentials';
 import { messages } from './messages';
 import { SocialPage } from './social';
@@ -25,6 +26,9 @@ export function SettingsRoutes(): ReactElement {
       <MenuSection>
         <MenuItem to={`${url}/social`}>
           <FormattedMessage {...messages.socialLogin} />
+        </MenuItem>
+        <MenuItem to={`${url}/apps`}>
+          <FormattedMessage {...messages.connectedApps} />
         </MenuItem>
       </MenuSection>
       <MenuItem icon="key" to={`${url}/client-credentials`}>
@@ -44,6 +48,9 @@ export function SettingsRoutes(): ReactElement {
         </Route>
         <Route exact path={`${path}/client-credentials`}>
           <ClientCredentialsPage />
+        </Route>
+        <Route path={`${path}/apps`}>
+          <AppsRoutes />
         </Route>
         <Redirect to={`${url}/user`} />
       </MetaSwitch>

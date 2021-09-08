@@ -1,11 +1,13 @@
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { EmailAuthorization, Member, Organization, User } from '../models';
+import { App, AppMember, EmailAuthorization, Member, Organization, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
+let clock: Clock;
 let user: User;
 
 beforeAll(createTestSchema('user'));
@@ -17,6 +19,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  clock = install();
   user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
@@ -26,6 +29,10 @@ beforeEach(async () => {
 });
 
 afterEach(truncate);
+
+afterEach(() => {
+  clock.uninstall();
+});
 
 afterAll(closeTestSchema);
 
@@ -248,6 +255,251 @@ describe('refreshToken', () => {
         error: 'Unauthorized',
         message: 'Invalid refresh token',
         statusCode: 401,
+      },
+    });
+  });
+});
+
+describe('getAppAccounts', () => {
+  it('should return all of the user’s app accounts', async () => {
+    authorizeStudio();
+
+    const appA = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appB = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    await AppMember.create({ AppId: appA.id, UserId: user.id, role: 'Admin' });
+    await AppMember.create({ AppId: appB.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.get('/api/user/apps/accounts');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          app: {
+            $created: '1970-01-01T00:00:00.000Z',
+            $updated: '1970-01-01T00:00:00.000Z',
+            OrganizationId: 'testorganization',
+            OrganizationName: 'Test Organization',
+            definition: {},
+            domain: null,
+            hasIcon: false,
+            hasMaskableIcon: false,
+            iconBackground: '#ffffff',
+            iconUrl: null,
+            id: 1,
+            locked: false,
+            longDescription: null,
+            path: null,
+            private: false,
+            showAppsembleLogin: true,
+            yaml: '{}\n',
+          },
+          role: 'Admin',
+        },
+        {
+          app: {
+            $created: '1970-01-01T00:00:00.000Z',
+            $updated: '1970-01-01T00:00:00.000Z',
+            OrganizationId: 'testorganization',
+            OrganizationName: 'Test Organization',
+            definition: {},
+            domain: null,
+            hasIcon: false,
+            hasMaskableIcon: false,
+            iconBackground: '#ffffff',
+            iconUrl: null,
+            id: 2,
+            locked: false,
+            longDescription: null,
+            path: null,
+            private: false,
+            showAppsembleLogin: true,
+            yaml: '{}\n',
+          },
+          role: 'Member',
+        },
+      ],
+    });
+  });
+});
+
+describe('getAppAccount', () => {
+  it('should return the user’s app account', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.get(`/api/user/apps/${app.id}/account`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        app: {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          OrganizationId: 'testorganization',
+          OrganizationName: 'Test Organization',
+          definition: {},
+          domain: null,
+          hasIcon: false,
+          hasMaskableIcon: false,
+          iconBackground: '#ffffff',
+          iconUrl: null,
+          id: 1,
+          locked: false,
+          longDescription: null,
+          path: null,
+          private: false,
+          showAppsembleLogin: true,
+          yaml: '{}\n',
+        },
+        role: 'Member',
+      },
+    });
+  });
+
+  it('should throw 404 if the app account doesn’t exist', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+
+    const response = await request.get(`/api/user/apps/${app.id}/account`);
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should throw 404 if the app doesn’t exist', async () => {
+    authorizeStudio();
+
+    const response = await request.get('/api/user/apps/404/account');
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+});
+
+describe('updateAppAccount', () => {
+  it('should return the user’s app account', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.put(`/api/user/apps/${app.id}/account`, {
+      name: 'Me',
+      email: 'user@example.com',
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        app: {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          OrganizationId: 'testorganization',
+          OrganizationName: 'Test Organization',
+          definition: {},
+          domain: null,
+          hasIcon: false,
+          hasMaskableIcon: false,
+          iconBackground: '#ffffff',
+          iconUrl: null,
+          id: 1,
+          locked: false,
+          longDescription: null,
+          path: null,
+          private: false,
+          showAppsembleLogin: true,
+          yaml: '{}\n',
+        },
+        name: 'Me',
+        email: 'user@example.com',
+        role: 'Member',
+      },
+    });
+    await appMember.reload();
+    expect(appMember.name).toBe('Me');
+    expect(appMember.email).toBe('user@example.com');
+  });
+
+  it('should throw 404 if the app account doesn’t exist', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+
+    const response = await request.put(`/api/user/apps/${app.id}/account`, {
+      name: '',
+      email: 'user@example.com',
+    });
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should throw 404 if the app doesn’t exist', async () => {
+    authorizeStudio();
+
+    const response = await request.put('/api/user/apps/404/account', {
+      name: '',
+      email: 'user@example.com',
+    });
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
       },
     });
   });
