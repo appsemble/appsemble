@@ -1,1 +1,0 @@
-Add `asset create` command.

@@ -107,7 +107,7 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
       },
     },
     prop: {
-      type: 'string',
+      anyOf: [{ type: 'string' }, { type: 'integer' }],
       description: 'Get a property from an object.',
     },
     root: {

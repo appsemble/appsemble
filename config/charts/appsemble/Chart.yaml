@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.27
-appVersion: 0.18.27
+version: 0.18.28
+appVersion: 0.18.28
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,13 +25,23 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
+      description: 'Block(tiles): Add tiles block.'
+    - kind: added
       description: >-
-        Cli: Add team subcommand to app command. The team subcommand can be used to
-        create, update, and delete teams and team members.
-    - kind: changed
-      description: 'Server: Replaced PUT with PATCH when updating a team.'
-    - kind: fixed
-      description: 'Studio: Fix crash in Safari.'
+        Cli: Add --modify-context flag for app create command. This will modify the
+        context in .appsemblerc to include the ID of the newly created app.
+    - kind: added
+      description: 'Cli: Add asset create command.'
+    - kind: added
+      description: >-
+        Cli: Add support for .appsemblerc.yaml context usage for resource and team
+        commands using --app <path> and --context <environment> flags.
+    - kind: added
+      description: >-
+        Sdk: The IconName type from @fortawesome/fontawesome-common-types is now
+        re-exported by the SDK.
+    - kind: added
+      description: 'Server: Add option to define annotations when creating a team.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

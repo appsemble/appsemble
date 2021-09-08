@@ -47,6 +47,10 @@ export class AppMember extends Model {
   @Column
   resetKey: string;
 
+  @AllowNull(true)
+  @Column
+  consent: Date;
+
   @CreatedAt
   created: Date;
 

@@ -20,7 +20,7 @@ export function findMessageIds(obj: unknown): Record<string, string> {
   if (entries.length === 1) {
     const [[key, value]] = entries;
     if (key === 'string.format' && typeof value?.messageId === 'string') {
-      return { [value.messageId]: value.template ?? '' };
+      return { [value.messageId]: value.template ?? '', ...findMessageIds(value.values) };
     }
     if (key === 'translate') {
       return { [value]: '' };

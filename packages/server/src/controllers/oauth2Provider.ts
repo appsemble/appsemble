@@ -2,10 +2,9 @@ import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppMember, EmailAuthorization, Member, OAuth2Consent, User } from '../models';
+import { App, AppMember, EmailAuthorization, Member, User } from '../models';
 import { getGravatarUrl } from '../utils/gravatar';
 import { createOAuth2AuthorizationCode } from '../utils/model';
-import { hasScope } from '../utils/oauth2';
 
 async function checkIsAllowed(app: App, user: User): Promise<boolean> {
   const policy = app.definition?.security?.default?.policy ?? 'everyone';
@@ -89,10 +88,7 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'],
-    include: [
-      { model: OAuth2Consent, where: { UserId: user.id }, required: false },
-      { model: AppMember, where: { UserId: user.id }, required: false },
-    ],
+    include: [{ model: AppMember, where: { UserId: user.id }, required: false }],
   });
 
   if (!app) {
@@ -101,15 +97,15 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
 
   const isAllowed = await checkIsAllowed(app, user);
 
-  if (!app.OAuth2Consents?.length || !hasScope(app.OAuth2Consents[0].scope, scope)) {
-    throw badRequest('User has not agreed to the requested scopes', {
+  if (!isAllowed) {
+    throw badRequest('User is not allowed to login due to the app’s security policy', {
       appName: app.definition.name,
       isAllowed,
     });
   }
 
-  if (!isAllowed) {
-    throw badRequest('User is not allowed to login due to the app’s security policy', {
+  if (!app.AppMembers?.length || app.AppMembers[0].consent == null) {
+    throw badRequest('User has not agreed to the requested scopes', {
       appName: app.definition.name,
       isAllowed,
     });
@@ -131,7 +127,7 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['domain', 'definition', 'id', 'path', 'OrganizationId'],
-    include: [OAuth2Consent, { model: AppMember, where: { UserId: user.id }, required: false }],
+    include: [{ model: AppMember, where: { UserId: user.id }, required: false }],
   });
 
   if (!app) {
@@ -145,8 +141,9 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
     });
   }
 
-  await OAuth2Consent.upsert({ AppId: appId, UserId: user.id, scope });
-  if (!app.AppMembers.length) {
+  if (app.AppMembers.length) {
+    await AppMember.update({ consent: new Date() }, { where: { id: app.AppMembers[0].id } });
+  } else {
     await user.reload({
       include: [
         {
@@ -163,6 +160,7 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
       email: user.primaryEmail,
       emailVerified: user.EmailAuthorizations?.[0]?.verified ?? false,
       role: app.definition.security.default.role,
+      consent: new Date(),
     });
   }
   ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user);
