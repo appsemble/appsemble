@@ -43,6 +43,7 @@ export * from './Portal';
 export * from './RadioButton';
 export * from './RadioGroup';
 export * from './Register';
+export * from './ResetPassword';
 export * from './Select';
 export * from './SelectField';
 export * from './SentryForm';

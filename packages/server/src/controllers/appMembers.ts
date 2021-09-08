@@ -188,7 +188,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
           UserId: user.id,
           AppId: appId,
           name,
-          hashedPassword,
+          password: hashedPassword,
           email,
           role: app.definition.security.default.role,
           emailKey: key,

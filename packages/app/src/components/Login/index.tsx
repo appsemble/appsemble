@@ -78,7 +78,7 @@ export function Login(): ReactElement {
           enableRegistration
           onPasswordLogin={onPasswordLogin}
           registerLink={`/${lang}/Register`}
-          resetPasswordLink={`/${lang}/Reset`}
+          resetPasswordLink={`/${lang}/Reset-Password`}
         />
         <OpenIDLogin disabled={busy.enabled} />
       </Content>

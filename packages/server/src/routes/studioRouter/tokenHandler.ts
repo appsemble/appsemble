@@ -174,6 +174,7 @@ export async function tokenHandler(ctx: Context): Promise<void> {
           throw new GrantError('invalid_client');
         }
 
+        aud = clientId;
         sub = member.UserId;
         scope = requestedScope;
         refreshToken = true;
