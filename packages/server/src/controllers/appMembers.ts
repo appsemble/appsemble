@@ -165,7 +165,14 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
   const key = randomBytes(40).toString('hex');
   let user: User;
 
-  const app = await App.findByPk(appId, { attributes: ['definition'] });
+  const app = await App.findByPk(appId, {
+    attributes: ['definition'],
+    include: {
+      model: AppMember,
+      where: { email },
+      required: false,
+    },
+  });
 
   if (!app) {
     throw notFound('App could not be found.');
@@ -173,6 +180,13 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
 
   if (!app.definition?.security?.default?.role) {
     throw badRequest('This app has no security definition');
+  }
+
+  // XXX: This could introduce a race condition.
+  // If this is not manually checked here, Sequelize never returns on
+  // the AppMember.create() call if there is a conflict on the email index.
+  if (app.AppMembers.length) {
+    throw conflict('User with this email address already exists.');
   }
 
   try {

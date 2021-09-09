@@ -6,6 +6,7 @@ import {
   DataType,
   Default,
   ForeignKey,
+  Index,
   IsUUID,
   Model,
   PrimaryKey,
@@ -28,6 +29,7 @@ export class AppMember extends Model {
   @Column
   role: string;
 
+  @Index({ name: 'UniqueAppMemberEmailIndex', type: 'UNIQUE' })
   @Column
   email: string;
 
@@ -47,7 +49,6 @@ export class AppMember extends Model {
   @Column
   resetKey: string;
 
-  @AllowNull(true)
   @Column
   consent: Date;
 
@@ -59,6 +60,7 @@ export class AppMember extends Model {
 
   @ForeignKey(() => App)
   @Unique('UniqueAppMemberIndex')
+  @Index({ name: 'UniqueAppMemberEmailIndex', type: 'UNIQUE' })
   @Column
   AppId: number;
 

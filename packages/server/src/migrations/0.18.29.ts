@@ -41,6 +41,13 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.addColumn('AppMember', 'resetKey', {
     type: DataTypes.STRING,
   });
+
+  logger.info('Adding unique index between columns `AppId` and `email` for `AppMember`');
+  await queryInterface.addConstraint('AppMember', {
+    name: 'UniqueAppMemberEmailIndex',
+    fields: ['AppId', 'email'],
+    type: 'unique',
+  });
 }
 
 /**

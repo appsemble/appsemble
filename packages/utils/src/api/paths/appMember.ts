@@ -97,7 +97,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The verification email was sent if an account was found in the database.',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['email'] }],
     },
   },
   '/api/apps/{appId}/member/reset/request': {
