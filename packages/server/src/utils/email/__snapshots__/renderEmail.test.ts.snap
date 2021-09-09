@@ -373,3 +373,69 @@ Kind regards,
 _The Appsemble Team_
 "
 `;
+
+exports[`welcomeMember should render welcomeMember %#: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello User,</p>
+<p>Thank you for registering your account for Example App. Before you can use your account, we need to
+verify your email address.</p>
+<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Kind regards,</p>
+<p><em>Example App</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`welcomeMember should render welcomeMember %#: html 2`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello,</p>
+<p>Thank you for registering your account for Example App. Before you can use your account, we need to
+verify your email address.</p>
+<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Kind regards,</p>
+<p><em>Example App</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`welcomeMember should render welcomeMember %#: text 1`] = `
+"Hello User,
+
+Thank you for registering your account for Example App. Before you can use your account, we need to
+verify your email address.
+
+Please click [here](https://example.com) to verify your email address.
+
+Kind regards,
+
+_Example App_
+"
+`;
+
+exports[`welcomeMember should render welcomeMember %#: text 2`] = `
+"Hello,
+
+Thank you for registering your account for Example App. Before you can use your account, we need to
+verify your email address.
+
+Please click [here](https://example.com) to verify your email address.
+
+Kind regards,
+
+_Example App_
+"
+`;

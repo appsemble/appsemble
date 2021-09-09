@@ -16,4 +16,4 @@ nothing will happen to your account.
 
 Kind regards,
 
-_{{name}}_
+_`{{name}}`_
