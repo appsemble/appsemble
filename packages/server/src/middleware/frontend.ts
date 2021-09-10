@@ -1,6 +1,11 @@
+import { URL } from 'url';
+
+import isIp from 'is-ip';
 import { Context, Middleware } from 'koa';
 import compose from 'koa-compose';
 import { Configuration } from 'webpack';
+
+import { argv } from '../utils/argv';
 
 /**
  * Bypass the dev server for API requests to speed them up.
@@ -31,6 +36,16 @@ export async function frontend(webpackConfigs: Configuration[]): Promise<Middlew
       ctx.fs = fs;
       return next();
     },
-    (ctx, next) => (skipRoute.test(ctx.path) ? next() : koaDevMiddleware(ctx, next)),
+    (ctx, next) => {
+      const { hostname } = ctx;
+
+      if (!skipRoute.test(ctx.path)) {
+        return koaDevMiddleware(ctx, next);
+      }
+      if (new URL(argv.host).hostname === hostname || isIp(hostname)) {
+        return next();
+      }
+      return koaDevMiddleware(ctx, next);
+    },
   ]);
 }
