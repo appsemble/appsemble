@@ -79,6 +79,8 @@ export * from './SecurityRoleDefinition';
 export * from './ShareActionDefinition';
 export * from './SSOConfiguration';
 export * from './StaticActionDefinition';
+export * from './StorageReadActionDefinition';
+export * from './StorageWriteActionDefinition';
 export * from './SubPage';
 export * from './TabsPageDefinition';
 export * from './TeamJoinActionDefinition';

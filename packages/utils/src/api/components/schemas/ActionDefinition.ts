@@ -56,6 +56,8 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/ResourceSubscriptionToggleActionDefinition' },
         { $ref: '#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition' },
         { $ref: '#/components/schemas/ResourceUpdateActionDefinition' },
+        { $ref: '#/components/schemas/StorageReadActionDefinition' },
+        { $ref: '#/components/schemas/StorageWriteActionDefinition' },
         { $ref: '#/components/schemas/ShareActionDefinition' },
         { $ref: '#/components/schemas/StaticActionDefinition' },
       ],
