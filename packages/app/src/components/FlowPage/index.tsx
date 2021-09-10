@@ -14,28 +14,31 @@ import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvid
 import { useUser } from '../UserProvider';
 
 interface FlowPageProps {
+  data: unknown;
   definition: AppDefinition;
   ee: EventEmitter;
   page: FlowPageDefinition;
   prefix: string;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
+  setData: (data: unknown) => void;
   showDialog: ShowDialogAction;
   showShareDialog: ShowShareDialog;
 }
 
 export function FlowPage({
+  data,
   definition,
   ee,
   page,
   prefix,
   remap,
+  setData,
   showDialog,
   showShareDialog,
 }: FlowPageProps): ReactElement {
   const history = useHistory();
   const route = useRouteMatch<{ lang: string }>();
   const [currentPage, setCurrentPage] = useState(0);
-  const [data, setData] = useState({});
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
   const { teams, updateTeam, userInfo } = useUser();
@@ -50,7 +53,7 @@ export function FlowPage({
       setData(d);
       return d;
     },
-    [actions],
+    [actions, setData],
   );
 
   const next = useCallback(
@@ -67,7 +70,7 @@ export function FlowPage({
 
       return d;
     },
-    [currentPage, finish, page],
+    [currentPage, finish, page, setData],
   );
 
   const back = useCallback(
@@ -83,7 +86,7 @@ export function FlowPage({
 
       return d;
     },
-    [currentPage],
+    [currentPage, setData],
   );
 
   const cancel = useCallback(
@@ -91,7 +94,7 @@ export function FlowPage({
       await actions.onFlowCancel(d);
       setData(d);
     },
-    [actions],
+    [actions, setData],
   );
 
   const to = useCallback(
@@ -109,7 +112,7 @@ export function FlowPage({
 
       return d;
     },
-    [page],
+    [page.subPages, setData],
   );
 
   const flowActions = useMemo(

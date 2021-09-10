@@ -20,15 +20,6 @@ Supported properties:
 - \`url\`: Get the base URL of the app.
 `,
     },
-    page: {
-      enum: ['url'],
-      description: `Get page metadata.
-
-Supported properties:
-
-- \`url\`: Get the URL of the current page.
-`,
-    },
     array: {
       enum: ['index', 'length'],
       description: `Get the current array.map’s index or length.
@@ -105,6 +96,16 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
       additionalProperties: {
         $ref: '#/components/schemas/RemapperDefinition',
       },
+    },
+    page: {
+      enum: ['data', 'url'],
+      description: `Get page metadata.
+
+Supported properties:
+
+- \`data\`: Get the current page data.
+- \`url\`: Get the URL of the current page.
+`,
     },
     prop: {
       anyOf: [{ type: 'string' }, { type: 'integer' }],
