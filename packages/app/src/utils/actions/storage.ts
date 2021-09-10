@@ -1,16 +1,30 @@
-import { get, set } from 'idb-keyval';
+import { IDBPDatabase, openDB } from 'idb';
 
 import { ActionCreator } from '.';
 import { appId } from '../settings';
 
+let db: IDBPDatabase;
+
+async function getDB(): Promise<IDBPDatabase> {
+  if (!db) {
+    db = await openDB(`app-${appId}`, 1, {
+      upgrade(d) {
+        d.createObjectStore('storage');
+      },
+    });
+  }
+
+  return db;
+}
+
 export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
-  (data) => {
+  async (data) => {
     const key = remap(definition.key, data);
     if (!key) {
       return;
     }
 
-    return get(`app-${appId}-storage-${key}`);
+    return (await getDB()).get('storage', key);
   },
 ];
 
@@ -21,7 +35,7 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
       return data;
     }
 
-    await set(`app-${appId}-storage-${key}`, remap(definition.value, data));
+    await (await getDB()).put('storage', remap(definition.value, data), key);
     return data;
   },
 ];
