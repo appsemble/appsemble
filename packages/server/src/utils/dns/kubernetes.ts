@@ -4,8 +4,10 @@ import { join } from 'path';
 import { URL } from 'url';
 
 import { logger } from '@appsemble/node-utils';
+import { SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import matcher from 'matcher';
 import { Op } from 'sequelize';
 
 import { App, Organization } from '../../models';
@@ -56,6 +58,13 @@ interface AbstractKubernetesResource {
    * Metadata to describe the Kubernetes resource.
    */
   metadata: KubernetesMetadata;
+}
+
+interface KubernetesListResult<T extends AbstractKubernetesResource> {
+  /**
+   * The items that match a query.
+   */
+  items: T[];
 }
 
 interface IngressPath {
@@ -145,6 +154,37 @@ interface Ingress extends AbstractKubernetesResource {
      * Configuration for applying SSL certificates.
      */
     tls: IngressTLS[];
+  };
+}
+
+interface CertificateCondition {
+  status: 'False' | 'True' | 'Unknown';
+  type: 'Issuing' | 'Ready';
+}
+
+interface Certificate extends AbstractKubernetesResource {
+  /**
+   * @inheritdoc
+   */
+  kind?: 'Certificate';
+
+  /**
+   * The specification of the certificate.
+   */
+  spec: {
+    /**
+     * A list of names the certificate may be applied to.
+     *
+     * Wildcards are supported.
+     */
+    dnsNames: string[];
+  };
+
+  /**
+   * The validity status of the certificate.
+   */
+  status: {
+    conditions: CertificateCondition[];
   };
 }
 
@@ -302,4 +342,61 @@ export async function restoreDNS(): Promise<void> {
   })) {
     await createIngress(domain);
   }
+}
+
+/**
+ * Get the SSL status for all given domain names based on Kubernetes cert-manager certificates.
+ *
+ * @param domains - The domain names to get a status for.
+ * @returns A mapping of domain names to the status of the SSL certificate.
+ */
+export async function getSSLStatus(domains: string[]): Promise<SSLStatusMap> {
+  const pending = new Set(domains);
+  const config = await getAxiosConfig();
+  const namespace = await readK8sSecret('namespace');
+  const { data } = await axios.get<KubernetesListResult<Certificate>>(
+    `/apis/cert-manager.io/v1/namespaces/${namespace}/certificates`,
+    config,
+  );
+  const statuses: SSLStatusMap = {};
+  for (const { spec, status } of data.items) {
+    const matches = matcher([...pending], spec.dnsNames);
+    for (const match of matches) {
+      pending.delete(match);
+      if (!status.conditions.length) {
+        statuses[match] = 'unknown';
+        continue;
+      }
+      const ready = status.conditions.find((condition) => condition.type === 'Ready');
+      const issuing = status.conditions.find((condition) => condition.type === 'Issuing');
+      if (!ready) {
+        statuses[match] = 'error';
+        continue;
+      }
+      if (ready.status === 'True') {
+        statuses[match] = 'ready';
+        continue;
+      }
+      if (ready.status === 'Unknown') {
+        statuses[match] = 'unknown';
+        continue;
+      }
+      if (!issuing) {
+        statuses[match] = 'error';
+        continue;
+      }
+      if (issuing.status === 'True') {
+        statuses[match] = 'pending';
+        continue;
+      }
+      statuses[match] = 'unknown';
+    }
+    if (!pending.size) {
+      break;
+    }
+  }
+  for (const domain of pending) {
+    statuses[domain] = 'missing';
+  }
+  return statuses;
 }

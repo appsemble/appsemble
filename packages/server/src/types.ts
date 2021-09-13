@@ -52,4 +52,8 @@ declare module 'koas-parameters' {
     teamId: string;
     token: string;
   }
+
+  interface QueryParams {
+    domains: string[];
+  }
 }

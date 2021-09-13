@@ -9,6 +9,7 @@ export * from './asset';
 export * from './author';
 export * from './snapshot';
 export * from './resource';
+export * from './ssl';
 export * from './template';
 
 export { Theme };

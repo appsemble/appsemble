@@ -26,3 +26,13 @@
 .editor {
   height: 100%;
 }
+
+.sslLoader {
+  height: initial;
+  text-align: center;
+
+  &::after {
+    height: 6em;
+    width: 6em;
+  }
+}
