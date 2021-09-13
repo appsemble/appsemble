@@ -2383,7 +2383,17 @@ Object {
       "description": undefined,
     },
   },
-  "events": undefined,
+  "events": Object {
+    "emit": undefined,
+    "listen": Object {
+      "data": Object {
+        "description": "Data that can be used in the placeholder remappers.
+
+All \`data-content\` elements will have their
+updated each time this event is received.",
+      },
+    },
+  },
   "messages": undefined,
   "parameters": Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2725,7 +2735,16 @@ Decreasing will make more, smaller clusters. One can also use a function that ac
 exports[`getBlockConfigFromTypeScript official blocks markdown 1`] = `
 Object {
   "actions": undefined,
-  "events": undefined,
+  "events": Object {
+    "emit": undefined,
+    "listen": Object {
+      "data": Object {
+        "description": "Data that can be used to populate \`content\` with dynamic content.
+
+If defined, a loader will be shown until this event is triggered.",
+      },
+    },
+  },
   "messages": undefined,
   "parameters": Object {
     "$schema": "http://json-schema.org/draft-07/schema#",
