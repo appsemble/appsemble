@@ -13,6 +13,16 @@ declare module '@appsemble/sdk' {
     [any: string]: never;
   }
 
+  interface EventListeners {
+    /**
+     * Data that can be used in the placeholder remappers.
+     *
+     * All `data-content` elements will have their
+     * updated each time this event is received.
+     */
+    data: never;
+  }
+
   interface Parameters {
     /**
      * The HTML to render.
