@@ -1,19 +1,40 @@
-import { bootstrap } from '@appsemble/sdk';
+import { bootstrap, Remapper } from '@appsemble/sdk';
 import marked from 'marked';
+
+import style from './index.module.css';
+
+function populateNode(
+  node: HTMLDivElement,
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
+  data: any,
+  content: Remapper,
+): void {
+  // eslint-disable-next-line no-param-reassign
+  node.className = 'content px-3 py-3';
+  const value = remap(content, data);
+  if (typeof value === 'string') {
+    // eslint-disable-next-line no-param-reassign
+    node.innerHTML = marked(value);
+  } else if (value != null) {
+    // eslint-disable-next-line no-param-reassign
+    node.innerHTML = JSON.stringify(value);
+  }
+}
 
 /**
  * @param {Object} block - The block as it was specified by the app creator.
  */
-bootstrap(({ data, parameters: { content }, utils }) => {
-  const markdown = document.createElement('div');
-  markdown.classList.add('content', 'px-3', 'py-3');
-  const value = utils.remap(content, data);
+bootstrap(({ data, events, parameters: { content }, utils }) => {
+  const node = document.createElement('div');
+  const shouldWait = events.on.data((d) => {
+    populateNode(node, utils.remap, d, content);
+  });
 
-  if (typeof value === 'string') {
-    markdown.innerHTML = marked(value);
-  } else if (value != null) {
-    markdown.innerHTML = JSON.stringify(value);
+  if (shouldWait) {
+    node.classList.add(style.loader, 'appsemble-loader');
+  } else {
+    populateNode(node, utils.remap, data, content);
   }
 
-  return markdown;
+  return node;
 });
