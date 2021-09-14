@@ -25,6 +25,7 @@ function runTests(tests: Record<string, TestCase>): void {
         userInfo,
         context,
         appId: 6789,
+        pageData: { hello: 'Page data' },
       });
       expect(result).toStrictEqual(expected);
     },
@@ -72,6 +73,14 @@ describe('page', () => {
       input: {},
       mappers: { page: 'url' },
       expected: 'https://example.com/en/example',
+    },
+  });
+
+  runTests({
+    'return page data': {
+      input: {},
+      mappers: { page: 'data' },
+      expected: { hello: 'Page data' },
     },
   });
 });
