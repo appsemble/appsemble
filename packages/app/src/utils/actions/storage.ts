@@ -3,18 +3,19 @@ import { IDBPDatabase, openDB } from 'idb';
 import { ActionCreator } from '.';
 import { appId } from '../settings';
 
-let db: Promise<IDBPDatabase>;
+
+let dbPromise: Promise<IDBPDatabase>;
 
 function getDB(): Promise<IDBPDatabase> {
-  if (!db) {
-    db = openDB(`appsemble-${appId}`, 1, {
+  if (!dbPromise) {
+    dbPromise = openDB(`appsemble-${appId}`, 1, {
       upgrade(d) {
         d.createObjectStore('storage');
       },
     });
   }
 
-  return db;
+  return dbPromise;
 }
 
 export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
