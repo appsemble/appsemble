@@ -111,7 +111,7 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
       description: 'Get a property from an object.',
     },
     root: {
-      type: 'string',
+      enum: [null],
       description: 'Get the input data as it was initially passed to the remap function.',
     },
     static: {

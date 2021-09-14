@@ -286,7 +286,7 @@ export interface Remappers {
   /**
    * Get the input data as it was initially passed to the remap function.
    */
-  root: unknown;
+  root: null;
 
   /**
    * Convert an input to lower or upper case.
