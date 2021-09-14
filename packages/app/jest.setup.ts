@@ -1,3 +1,5 @@
+import 'fake-indexeddb/auto';
+
 window.settings = {
   apiUrl: 'https://appsemble.dev',
   blockManifests: [],
