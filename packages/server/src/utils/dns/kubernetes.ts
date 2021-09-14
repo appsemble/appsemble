@@ -13,6 +13,141 @@ import { argv } from '../argv';
 import { iterTable } from '../database';
 import { readPackageJson } from '../readPackageJson';
 
+interface KubernetesMetadata {
+  /**
+   * The name of the Kubernetes resource
+   */
+  name?: string;
+
+  /**
+   * The namespace of the Kubernetes resource.
+   */
+  namespace?: string;
+
+  /**
+   * Annotations of the Kubernetes resource.
+   */
+  annotations: Record<string, string>;
+
+  /**
+   * Labels of the Kubernetes resource.
+   *
+   * For example Helm metadata.
+   */
+  labels: Record<string, string>;
+}
+
+interface AbstractKubernetesResource {
+  /**
+   * The API version of the Kubernetes resource.
+   *
+   * @example 'v1'
+   */
+  apiVersion?: string;
+
+  /**
+   * The kind of the Kubernetes resource.
+   *
+   * @example 'Pod'
+   */
+  kind?: string;
+
+  /**
+   * Metadata to describe the Kubernetes resource.
+   */
+  metadata: KubernetesMetadata;
+}
+
+interface IngressPath {
+  /**
+   * The URL path prefix which should be matched.
+   */
+  path: string;
+
+  /**
+   * The type of matching to use for the ingress rule.
+   */
+  pathType: 'Prefix';
+
+  /**
+   * The backend configuration to match.
+   */
+  backend: {
+    /**
+     * A matcher for the service to redirect traffic to.
+     */
+    service: {
+      /**
+       * The name of the service to redirect traffic to.
+       */
+      name: string;
+
+      /**
+       * A service port configuration.
+       */
+      port: {
+        /**
+         * The name of the port to redirect traffic to.
+         */
+        name: string;
+      };
+    };
+  };
+}
+
+interface IngressRule {
+  /**
+   * The host that should be matched.
+   */
+  host: string;
+
+  /**
+   * How to handle HTTP traffic.
+   */
+  http: {
+    /**
+     * Path rules used for redirecting traffic.
+     */
+    paths: IngressPath[];
+  };
+}
+
+interface IngressTLS {
+  /**
+   * The matching hosts to apply the SSL certificate to.
+   *
+   * Globs are supported.
+   */
+  hosts: string[];
+
+  /**
+   * The name of the secret containing the SSL certificate.
+   */
+  secretName: string;
+}
+
+interface Ingress extends AbstractKubernetesResource {
+  /**
+   * @inheritdoc
+   */
+  kind?: 'Ingress';
+
+  /**
+   * The specification of the ingress.
+   */
+  spec: {
+    /**
+     * Ingress rules used to match incoming traffic.
+     */
+    rules: IngressRule[];
+
+    /**
+     * Configuration for applying SSL certificates.
+     */
+    tls: IngressTLS[];
+  };
+}
+
 function readK8sSecret(filename: string): Promise<string> {
   return fs.readFile(join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf-8');
 }
@@ -25,12 +160,11 @@ function readK8sSecret(filename: string): Promise<string> {
 async function getAxiosConfig(): Promise<AxiosRequestConfig> {
   const K8S_HOST = `https://${argv.kubernetesServiceHost}:${argv.kubernetesServicePort}`;
   const ca = await readK8sSecret('ca.crt');
-  const namespace = await readK8sSecret('namespace');
   const token = await readK8sSecret('token');
   return {
     headers: { authorization: `Bearer ${token}` },
     httpsAgent: new Agent({ ca }),
-    url: `${K8S_HOST}/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`,
+    baseURL: K8S_HOST,
   };
 }
 
@@ -45,6 +179,7 @@ async function getAxiosConfig(): Promise<AxiosRequestConfig> {
 async function createIngressFunction(): Promise<(domain: string) => Promise<void>> {
   const { ingressAnnotations, serviceName, servicePort } = argv;
   const { version } = readPackageJson();
+  const namespace = await readK8sSecret('namespace');
   const config = await getAxiosConfig();
   const annotations = ingressAnnotations ? JSON.parse(ingressAnnotations) : undefined;
 
@@ -52,10 +187,9 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
     const name = normalize(domain);
     logger.info(`Registering ingress ${name} for ${domain}`);
     try {
-      await axios({
-        ...config,
-        method: 'POST',
-        data: {
+      await axios.post(
+        `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`,
+        {
           metadata: {
             annotations,
             // https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels
@@ -91,8 +225,9 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
               },
             ],
           },
-        },
-      });
+        } as Ingress,
+        config,
+      );
     } catch (error: unknown) {
       if ((error as AxiosError).response?.status !== 409) {
         throw error;
@@ -139,10 +274,10 @@ export async function configureDNS(): Promise<void> {
 export async function cleanupDNS(): Promise<void> {
   const { serviceName } = argv;
   const config = await getAxiosConfig();
+  const namespace = await readK8sSecret('namespace');
   logger.warn(`Deleting all ingresses for ${serviceName}`);
-  await axios({
+  await axios.delete(`/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`, {
     ...config,
-    method: 'DELETE',
     params: {
       labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
     },

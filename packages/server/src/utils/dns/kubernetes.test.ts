@@ -47,9 +47,8 @@ describe('configureDNS', () => {
     await configureDNS();
     await Organization.create({ id: 'testorg' });
 
-    expect(config.url).toBe(
-      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1/namespaces/test/ingresses',
-    );
+    expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+    expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
@@ -109,9 +108,8 @@ describe('configureDNS', () => {
       OrganizationId: 'org',
     });
 
-    expect(config.url).toBe(
-      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1/namespaces/test/ingresses',
-    );
+    expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+    expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
@@ -187,9 +185,8 @@ describe('configureDNS', () => {
     await configureDNS();
     await Organization.create({ id: 'foo' });
 
-    expect(config.url).toBe(
-      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1/namespaces/test/ingresses',
-    );
+    expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+    expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
@@ -246,9 +243,8 @@ describe('cleanupDNS', () => {
     });
     await cleanupDNS();
 
-    expect(config.url).toBe(
-      'https://kubernetes.default.svc:443/apis/networking.k8s.io/v1/namespaces/test/ingresses',
-    );
+    expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+    expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
     expect(config.params).toStrictEqual({
       labelSelector: 'app.kubernetes.io/managed-by=review-service',
     });
