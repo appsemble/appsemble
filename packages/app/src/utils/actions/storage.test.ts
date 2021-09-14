@@ -1,7 +1,7 @@
 import { IDBPDatabase } from 'idb';
 
-import { getDB } from './storage';
 import { createTestAction } from '../makeActions';
+import { getDB } from './storage';
 
 let db: IDBPDatabase;
 
