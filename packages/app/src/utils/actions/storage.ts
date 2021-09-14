@@ -3,11 +3,11 @@ import { IDBPDatabase, openDB } from 'idb';
 import { ActionCreator } from '.';
 import { appId } from '../settings';
 
-let db: IDBPDatabase;
+let db: Promise<IDBPDatabase>;
 
-async function getDB(): Promise<IDBPDatabase> {
+function getDB(): Promise<IDBPDatabase> {
   if (!db) {
-    db = await openDB(`app-${appId}`, 1, {
+    db = openDB(`appsemble-${appId}`, 1, {
       upgrade(d) {
         d.createObjectStore('storage');
       },
@@ -24,7 +24,8 @@ export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
       return;
     }
 
-    return (await getDB()).get('storage', key);
+    const db = await getDB();
+    return db.get('storage', key);
   },
 ];
 
@@ -35,7 +36,8 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
       return data;
     }
 
-    await (await getDB()).put('storage', remap(definition.value, data), key);
+    const db = await getDB();
+    await db.put('storage', remap(definition.value, data), key);
     return data;
   },
 ];

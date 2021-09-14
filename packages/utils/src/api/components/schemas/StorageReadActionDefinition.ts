@@ -8,9 +8,10 @@ export const StorageReadActionDefinition = extendJSONSchema(BaseActionDefinition
   properties: {
     type: {
       enum: ['storage.read'],
-      description: 'Read from the app’s storage.',
+      description: 'Read data from the app’s local storage.',
     },
     key: {
+      $ref: '#/components/schemas/RemapperDefinition',
       description: 'The key of the storage entry.',
     },
   },
