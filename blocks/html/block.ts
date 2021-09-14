@@ -17,8 +17,7 @@ declare module '@appsemble/sdk' {
     /**
      * Data that can be used in the placeholder remappers.
      *
-     * All `data-content` elements will have their
-     * updated each time this event is received.
+     * All elements specifying `data-content` will be updated each time this event is received.
      */
     data: never;
   }
