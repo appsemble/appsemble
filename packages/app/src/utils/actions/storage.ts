@@ -5,7 +5,7 @@ import { appId } from '../settings';
 
 let dbPromise: Promise<IDBPDatabase>;
 
-function getDB(): Promise<IDBPDatabase> {
+export function getDB(): Promise<IDBPDatabase> {
   if (!dbPromise) {
     dbPromise = openDB(`appsemble-${appId}`, 1, {
       upgrade(d) {

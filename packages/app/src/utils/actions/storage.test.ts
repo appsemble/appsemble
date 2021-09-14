@@ -1,54 +1,49 @@
-import { IDBPDatabase, openDB } from 'idb';
+import { IDBPDatabase } from 'idb';
 
+import { getDB } from './storage';
 import { createTestAction } from '../makeActions';
 
-describe('storage', () => {
-  let db: IDBPDatabase;
+let db: IDBPDatabase;
 
-  beforeEach(async () => {
-    db = await openDB('appsemble-42', 1, {
-      upgrade(d) {
-        d.createObjectStore('storage');
-      },
+beforeEach(async () => {
+  db = await getDB();
+
+  db.put('storage', 'This is default test data!', 'data');
+});
+
+describe('storage.read', () => {
+  it('should read from the store', async () => {
+    const action = createTestAction({
+      definition: { type: 'storage.read', key: { prop: 'test' } },
     });
-
-    db.put('storage', 'This is default test data!', 'data');
+    const result = await action({ test: 'data' });
+    expect(result).toStrictEqual('This is default test data!');
   });
 
-  describe('storage.read', () => {
-    it('should read from the store', async () => {
-      const action = createTestAction({
-        definition: { type: 'storage.read', key: { prop: 'test' } },
-      });
-      const result = await action({ test: 'data' });
-      expect(result).toStrictEqual('This is default test data!');
+  it('should return undefined for unknown keys in the store', async () => {
+    const action = createTestAction({
+      definition: { type: 'storage.read', key: { prop: 'test' } },
     });
-
-    it('should return undefined for unknown keys in the store', async () => {
-      const action = createTestAction({
-        definition: { type: 'storage.read', key: { prop: 'test' } },
-      });
-      const result = await action({ test: 'bla' });
-      expect(result).toBeUndefined();
-    });
+    const result = await action({ test: 'bla' });
+    expect(result).toBeUndefined();
   });
+});
 
-  describe('storage.write', () => {
-    it('should store data', async () => {
-      const action = createTestAction({
-        definition: { type: 'storage.write', key: { prop: 'key' }, value: { prop: 'data' } },
-      });
-      const data = {
-        key: 'key',
-        data: { this: 'is', 0: 'some', arbitrary: { data: 'storage' } },
-        date: new Date(),
-      };
-      const result = await action({
-        key: 'key',
-        data,
-      });
-      expect(result).toStrictEqual({ key: 'key', data });
-      expect(await db.get('storage', 'key')).toStrictEqual(data);
+describe('storage.write', () => {
+  it('should store data', async () => {
+    const action = createTestAction({
+      definition: { type: 'storage.write', key: { prop: 'key' }, value: { prop: 'data' } },
     });
+    const data = {
+      key: 'key',
+      data: { this: 'is', 0: 'some', arbitrary: { data: 'storage' } },
+      date: new Date(),
+    };
+    const result = await action({
+      key: 'key',
+      data,
+    });
+    expect(result).toStrictEqual({ key: 'key', data });
+    expect(await db.get('storage', 'key')).toStrictEqual(data);
   });
 });
