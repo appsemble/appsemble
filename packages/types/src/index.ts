@@ -632,6 +632,25 @@ export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
   title?: Remapper;
 }
 
+export interface StorageReadActionDefinition extends BaseActionDefinition<'storage.read'> {
+  /**
+   * The key of the entry to read from the app’s storage.
+   */
+  key: Remapper;
+}
+
+export interface StorageWriteActionDefinition extends BaseActionDefinition<'storage.write'> {
+  /**
+   * The key of the entry to write to the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The data to write to the app’s storage.
+   */
+  value: Remapper;
+}
+
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
   extends BaseActionDefinition<T> {
   /**
@@ -774,7 +793,9 @@ export type ActionDefinition =
   | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
   | ShareActionDefinition
-  | StaticActionDefinition;
+  | StaticActionDefinition
+  | StorageReadActionDefinition
+  | StorageWriteActionDefinition;
 
 export interface ActionType {
   /**

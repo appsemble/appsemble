@@ -15,6 +15,7 @@ import { request } from './request';
 import * as resource from './resource';
 import { share } from './share';
 import { staticAction } from './static';
+import { read, write } from './storage';
 import { teamJoin, teamList } from './team';
 import { throwAction } from './throw';
 
@@ -73,6 +74,8 @@ export const actionCreators: ActionCreators = {
   'resource.subscription.status': resource.status,
   share,
   static: staticAction,
+  'storage.read': read,
+  'storage.write': write,
   'team.join': teamJoin,
   'team.list': teamList,
 };
