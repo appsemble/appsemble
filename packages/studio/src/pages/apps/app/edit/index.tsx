@@ -311,7 +311,7 @@ export default function EditPage(): ReactElement {
       </div>
 
       <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
-        {window.location.protocol === 'https:' && sslStatus?.[appDomain] === 'ready' ? (
+        {window.location.protocol === 'http:' || sslStatus?.[appDomain] === 'ready' ? (
           <iframe
             allow={allow.map((feature) => `${feature} ${src}`).join('; ')}
             className={styles.appFrame}
