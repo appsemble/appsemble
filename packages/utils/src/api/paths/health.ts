@@ -20,4 +20,34 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
+  '/api/ssl': {
+    get: {
+      tags: ['health'],
+      description: 'Check the SSL certificate status for the given domain names.',
+      operationId: 'getSSLStatus',
+      parameters: [
+        {
+          in: 'query',
+          name: 'domains',
+          required: true,
+          schema: { type: 'array', items: { type: 'string', format: 'hostname' } },
+        },
+      ],
+      responses: {
+        200: {
+          description: 'A mapping of domain name to their SSL status',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                additionalProperties: {
+                  enum: ['error', 'missing', 'pending', 'ready', 'unknown'],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };

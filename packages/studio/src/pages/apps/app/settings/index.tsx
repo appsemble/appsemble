@@ -10,14 +10,15 @@ import {
   SimpleSubmit,
   TextAreaField,
   useConfirmation,
+  useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { App, SSLStatus, SSLStatusMap } from '@appsemble/types';
 import { domainPattern, normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useMemo } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { ReactElement, useEffect, useMemo } from 'react';
+import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { useApp } from '..';
@@ -35,6 +36,21 @@ function preprocessDomain(domain: string): string {
     .join('.');
 }
 
+function getSSLMessage(status: SSLStatus): MessageDescriptor {
+  switch (status) {
+    case 'error':
+      return messages.sslError;
+    case 'missing':
+      return messages.sslMissing;
+    case 'pending':
+      return messages.sslPending;
+    case 'ready':
+      return messages.sslReady;
+    default:
+      return messages.sslUnknown;
+  }
+}
+
 /**
  * Render the app settings view.
  */
@@ -47,6 +63,16 @@ export function SettingsPage(): ReactElement {
   const push = useMessages();
   const history = useHistory();
   const { lang } = useParams<{ lang: string }>();
+
+  const pathDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
+  const sslParams = new URLSearchParams({ domains: pathDomain });
+  if (app.domain) {
+    sslParams.append('domains', app.domain);
+  }
+
+  const { data: sslStatus, refresh: refreshSSLStatus } = useData<SSLStatusMap>(
+    `/api/ssl?${sslParams}`,
+  );
 
   // This is needed, because the app domain may be null.
   const defaultValues = useMemo<FormValues>(
@@ -130,6 +156,18 @@ export function SettingsPage(): ReactElement {
     },
   });
 
+  useEffect(() => {
+    if (sslStatus) {
+      for (const status of Object.values(sslStatus)) {
+        if (status !== 'ready') {
+          const timeout = setTimeout(refreshSSLStatus, 30_000);
+
+          return () => clearTimeout(timeout);
+        }
+      }
+    }
+  }, [refreshSSLStatus, sslStatus]);
+
   return (
     <>
       <Content fullwidth>
@@ -152,8 +190,24 @@ export function SettingsPage(): ReactElement {
             title={<FormattedMessage {...messages.private} />}
           />
           <SimpleFormField
+            addonLeft={
+              <Button
+                className={`is-light ${
+                  sslStatus
+                    ? sslStatus[pathDomain] === 'ready'
+                      ? 'is-success'
+                      : 'is-danger'
+                    : 'is-loading'
+                }`}
+                component="label"
+                htmlFor="path"
+                title={formatMessage(getSSLMessage(sslStatus?.[pathDomain]))}
+              >
+                {`${window.location.protocol}//`}
+              </Button>
+            }
             addonRight={
-              <Button className="is-static" component="span">
+              <Button className="is-light" component="label" htmlFor="path">
                 {`.${app.OrganizationId}.${window.location.host}`}
               </Button>
             }
@@ -167,6 +221,22 @@ export function SettingsPage(): ReactElement {
             required
           />
           <SimpleFormField
+            addonLeft={
+              <Button
+                className={`is-light ${
+                  sslStatus
+                    ? sslStatus[app.domain] === 'ready'
+                      ? 'is-success'
+                      : 'is-danger'
+                    : 'is-loading'
+                }`}
+                component="label"
+                htmlFor="domain"
+                title={formatMessage(getSSLMessage(sslStatus?.[app.domain]))}
+              >
+                {`${window.location.protocol}//`}
+              </Button>
+            }
             disabled={app.locked}
             help={
               <FormattedMessage

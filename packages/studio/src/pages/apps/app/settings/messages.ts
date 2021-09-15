@@ -40,4 +40,11 @@ export const messages = defineMessages({
   longDescription: 'Long description',
   longDescriptionDescription:
     'This field can be used to describe the app in more detail than the app’s description. Supports Markdown syntax.',
+  sslError: 'There was a problem generating an SSL certificate for this domain',
+  sslUnknown: 'The current status of the SSL certificate is unknown',
+  sslMissing:
+    'The SSL certificate is missing. If this persists, try updating this field an changing it back.',
+  sslReady: 'Your app is secured using SSL',
+  sslPending:
+    'Your SSL certificate is being generated. This may take up to 24 hours, but it’s usually faster.',
 });
