@@ -198,7 +198,6 @@ export function Page(): ReactElement {
           </Switch>
         )}
         <PageDialog
-          data={data}
           dialog={dialog}
           ee={ee.current}
           page={page}
