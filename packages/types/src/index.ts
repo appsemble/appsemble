@@ -210,9 +210,10 @@ export interface Remappers {
    *
    * Supported properties:
    *
+   * - `data`: Get the current page data.
    * - `url`: Get the URL of the current page.
    */
-  page: 'url';
+  page: 'data' | 'url';
 
   /**
    * Get a property from the context.

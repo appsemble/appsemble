@@ -41,6 +41,11 @@ export interface RemapperContext {
   getMessage: MessageGetter;
 
   /**
+   * Custom data that is available in the page.
+   */
+  pageData?: unknown;
+
+  /**
    * The OpenID compatible userinfo object for the current user.
    */
   userInfo: UserInfo;
@@ -109,6 +114,9 @@ const mapperImplementations: MapperImplementations = {
   },
 
   page: (prop, input, context) => {
+    if (prop === 'data') {
+      return context.pageData;
+    }
     if (prop === 'url') {
       return context.url;
     }
