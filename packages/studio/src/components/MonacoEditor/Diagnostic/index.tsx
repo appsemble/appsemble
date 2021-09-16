@@ -39,6 +39,9 @@ export function Diagnostic({ marker, monaco }: DiagnosticProps): ReactElement {
     >
       <Icon className="has-text-warning mx-1" icon="exclamation-triangle" size="small" />
       {marker.message}
+      <span className="has-text-grey-light pl-1">
+        [{marker.startLineNumber}, {marker.startColumn}]
+      </span>
     </div>
   );
 }
