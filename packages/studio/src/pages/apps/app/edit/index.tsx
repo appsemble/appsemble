@@ -305,6 +305,7 @@ export default function EditPage(): ReactElement {
             onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
+            showDiagnostics
             value={value}
           />
         </div>
