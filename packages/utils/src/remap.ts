@@ -182,6 +182,9 @@ const mapperImplementations: MapperImplementations = {
     return addMilliseconds(input, expireDuration);
   },
 
+  'random.choice': (args, input: any[]) =>
+    Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,
+
   root: (args, input, context) => context.root,
 
   'string.case': (stringCase, input) => {
