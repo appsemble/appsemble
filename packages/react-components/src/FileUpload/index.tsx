@@ -4,7 +4,7 @@ import { FormComponent, Icon, Input, SharedFormComponentProps } from '..';
 
 type FileUploadProps = Omit<
   ComponentPropsWithoutRef<typeof Input>,
-  keyof SharedFormComponentProps
+  keyof SharedFormComponentProps | 'onChange' | 'value'
 > &
   SharedFormComponentProps & {
     fileButtonLabel?: ReactNode;
