@@ -160,7 +160,7 @@ export default function EditPage(): ReactElement {
 
       // YAML and schema appear to be valid, send it to the app preview iframe
       delete definition.anchors;
-      frame.current.contentWindow.postMessage(
+      frame.current?.contentWindow.postMessage(
         { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
         getAppUrl(app.OrganizationId, app.path),
       );
