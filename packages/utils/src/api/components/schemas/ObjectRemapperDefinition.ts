@@ -111,6 +111,11 @@ Supported properties:
       anyOf: [{ type: 'string' }, { type: 'integer' }],
       description: 'Get a property from an object.',
     },
+    'random.choice': {
+      enum: [null],
+      description:
+        'Pick and return a random entry from an array. If the input is not an array, the input is returned as-is.',
+    },
     root: {
       enum: [null],
       description: 'Get the input data as it was initially passed to the remap function.',

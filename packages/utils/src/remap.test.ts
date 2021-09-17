@@ -385,6 +385,22 @@ describe('prop', () => {
   });
 });
 
+describe('random.choice', () => {
+  it('should return random entries from a list', () => {
+    const input = [1, 2, 3, 4];
+    const result = remap({ 'random.choice': null }, input, null);
+    expect(input).toContain(result);
+  });
+
+  runTests({
+    'return the input if the input is not an array': {
+      input: { input: [1, 2, 3, 4] },
+      mappers: [{ 'random.choice': null }],
+      expected: { input: [1, 2, 3, 4] },
+    },
+  });
+});
+
 describe('root', () => {
   runTests({
     'return the root input data': {

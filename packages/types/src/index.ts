@@ -286,6 +286,13 @@ export interface Remappers {
   prop: string;
 
   /**
+   * Pick and return a random entry from an array.
+   *
+   * If the input is not an array, the input is returned as-is.
+   */
+  'random.choice': null;
+
+  /**
    * Get the input data as it was initially passed to the remap function.
    */
   root: null;
