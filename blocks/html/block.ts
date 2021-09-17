@@ -31,6 +31,6 @@ declare module '@appsemble/sdk' {
     /**
      * The placeholders that are injected on elements with the `data-content` property.
      */
-    placeholders: Record<string, Remapper>;
+    placeholders?: Record<string, Remapper>;
   }
 }
