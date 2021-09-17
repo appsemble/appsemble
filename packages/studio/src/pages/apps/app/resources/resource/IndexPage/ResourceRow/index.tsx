@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { Resource } from '@appsemble/types';
 import { has } from '@appsemble/utils';
-import { NamedEvent } from '@appsemble/web-utils';
+import { NamedEvent, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { OpenAPIV3 } from 'openapi-types';
@@ -124,7 +124,7 @@ export function ResourceRow({
     try {
       const { data } = await axios.put<Resource>(
         `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
-        editingResource,
+        serializeResource(editingResource),
       );
       push({
         body: formatMessage(messages.updateSuccess, { id: resource.id }),

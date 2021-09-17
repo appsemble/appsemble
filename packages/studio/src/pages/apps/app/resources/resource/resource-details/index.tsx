@@ -1,6 +1,6 @@
 import { Button, Tab, Tabs, useData, useMessages, useMeta } from '@appsemble/react-components';
 import { Resource } from '@appsemble/types';
-import { download } from '@appsemble/web-utils';
+import { download, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 import { lazy, ReactElement, Suspense, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -87,7 +87,7 @@ export function ResourceDetailsPage(): ReactElement {
       setSubmitting(true);
       const { data } = await axios.put<Resource>(
         `/api/apps/${id}/resources/${resourceName}/${resourceId}`,
-        hash === '#json' ? JSON.parse(editingResourceJson) : editingResource,
+        hash === '#json' ? JSON.parse(editingResourceJson) : serializeResource(editingResource),
       );
       push({
         body: formatMessage(messages.updateSuccess, { id: resourceId }),

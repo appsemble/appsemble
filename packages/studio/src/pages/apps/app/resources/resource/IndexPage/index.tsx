@@ -17,7 +17,7 @@ import {
 } from '@appsemble/react-components';
 import { Resource } from '@appsemble/types';
 import { generateDataFromSchema, has } from '@appsemble/utils';
-import { download } from '@appsemble/web-utils';
+import { download, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
 import {
@@ -192,7 +192,7 @@ export function IndexPage(): ReactElement {
       try {
         const { data } = await axios.post<Resource>(
           `/api/apps/${appId}/resources/${resourceName}`,
-          creatingResource,
+          serializeResource(creatingResource),
         );
 
         setResources([...resources, data]);
