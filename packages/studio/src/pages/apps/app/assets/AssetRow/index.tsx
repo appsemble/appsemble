@@ -2,6 +2,7 @@ import { Button, Checkbox, ModalCard, useToggle } from '@appsemble/react-compone
 import { Asset } from '@appsemble/types';
 import { ChangeEvent, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import { useApp } from '../..';
 import { AssetPreview } from '../AssetPreview';
@@ -43,6 +44,13 @@ export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactE
         />
       </td>
       <td>{asset.name || asset.id}</td>
+      <td>
+        {asset.resourceId == null ? null : (
+          <Link to={`./resources/${asset.resourceType}/${asset.resourceId}`}>
+            {asset.resourceId}
+          </Link>
+        )}
+      </td>
       <td>{asset.mime}</td>
       <td>{asset.filename}</td>
       <td>

@@ -4,7 +4,7 @@ import { Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op, UniqueConstraintError } from 'sequelize';
 
-import { App, Asset } from '../models';
+import { App, Asset, Resource } from '../models';
 import { checkRole } from '../utils/checkRole';
 
 export async function getAssets(ctx: Context): Promise<void> {
@@ -14,7 +14,20 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [{ model: Asset, attributes: ['id', 'mime', 'filename', 'name'], required: false }],
+    include: [
+      {
+        model: Asset,
+        attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
+        required: false,
+        include: [
+          {
+            model: Resource,
+            attributes: ['type'],
+            required: false,
+          },
+        ],
+      },
+    ],
   });
 
   if (!app) {
@@ -25,6 +38,8 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   ctx.body = app.Assets.map((asset) => ({
     id: asset.id,
+    resourceId: asset.ResourceId ?? undefined,
+    resourceType: asset.Resource?.type,
     mime: asset.mime,
     filename: asset.filename,
     name: asset.name || undefined,
