@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.29
-appVersion: 0.18.29
+version: 0.18.30
+appVersion: 0.18.30
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,15 +25,19 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: 'Cli: Support translating values from string.format remappers.'
+      description: 'Block(html): Add data event listener.'
     - kind: added
-      description: 'Studio: Support translating values from string.format remappers.'
-    - kind: changed
+      description: 'Block(markdown): Add data event listener.'
+    - kind: added
+      description: 'App: Add data option to page remapper.'
+    - kind: added
       description: >-
-        Server: Represent app members user app member information, not user
-        information.
-    - kind: fixed
-      description: 'Server: Return the correct role when getting a single app member.'
+        App: Add random.choice remapper. It returns a random entry from an array of
+        items, or the input if the input is not an array.
+    - kind: added
+      description: 'App: Add storage.read and storage.write actions.'
+    - kind: added
+      description: 'Studio: Render Monaco editor diagnostics below the editor pane.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
