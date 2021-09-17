@@ -2412,7 +2412,6 @@ All elements specifying \`data-content\` will be updated each time this event is
     },
     "required": Array [
       "content",
-      "placeholders",
     ],
     "type": "object",
   },
