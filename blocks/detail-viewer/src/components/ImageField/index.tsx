@@ -17,7 +17,7 @@ export function ImageField({ label, name, src }: ImageFieldProps): VNode {
   const url = useObjectURL(obj);
   const modal = useToggle();
 
-  const alt = utils.remap(label, src) || name;
+  const alt = (utils.remap(label, src) || utils.remap(name, src)) as string;
 
   return (
     <>

@@ -32,8 +32,8 @@ export function loadMarkers(
       return;
     }
     fetched.add(marker.id);
-    const lat = params.utils.remap(params.parameters.latitude, marker);
-    const lng = params.utils.remap(params.parameters.longitude, marker);
+    const lat = params.utils.remap(params.parameters.latitude, marker) as number;
+    const lng = params.utils.remap(params.parameters.longitude, marker) as number;
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }

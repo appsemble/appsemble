@@ -87,7 +87,7 @@ export function GeoCoordinatesInput({
       .once('locationerror', (error) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
         if (error?.code === 1) {
-          utils.showMessage({ body: utils.remap(locationError, {}) });
+          utils.showMessage({ body: utils.remap(locationError, {}) as string });
         }
         // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
       })

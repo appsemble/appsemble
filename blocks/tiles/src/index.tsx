@@ -1,4 +1,4 @@
-import { bootstrap } from '@appsemble/sdk';
+import { bootstrap, IconName } from '@appsemble/sdk';
 
 import styles from './index.module.css';
 
@@ -24,10 +24,10 @@ bootstrap(
 
       wrapper.append(
         ...results.map((result) => {
-          const assetId = remap(parameters.asset, result);
-          const color = remap(parameters.color, result);
-          const text = remap(parameters.text, result);
-          const icon = remap(parameters.icon, result);
+          const assetId = remap(parameters.asset, result) as string;
+          const color = remap(parameters.color, result) as string;
+          const text = remap(parameters.text, result) as string;
+          const icon = remap(parameters.icon, result) as IconName;
 
           const className = `${styles.tile} px-3 py-3 has-background-${color}`;
           const children = [

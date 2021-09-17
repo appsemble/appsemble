@@ -54,7 +54,7 @@ export function ObjectInput({
 
   return (
     <fieldset className="appsemble-object">
-      <legend className="title is-5">{utils.remap(field.label, value)}</legend>
+      <legend className="title is-5">{utils.remap(field.label, value) as string}</legend>
       {field.repeated ? (
         <>
           {(values || []).map((val, index) => (
@@ -72,7 +72,7 @@ export function ObjectInput({
               {(!minLength || values.length > minLength) && (
                 <FormButtons>
                   <Button icon="minus" name={String(index)} onClick={removeEntry}>
-                    {utils.remap(field.removeLabel ?? 'Remove', val)}
+                    {utils.remap(field.removeLabel ?? 'Remove', val) as string}
                   </Button>
                 </FormButtons>
               )}
@@ -81,7 +81,7 @@ export function ObjectInput({
           {(!maxLength || values.length < maxLength) && (
             <FormButtons className="mt-2">
               <Button icon="plus" onClick={addEntry}>
-                {utils.remap(field.addLabel ?? 'Add', value)}
+                {utils.remap(field.addLabel ?? 'Add', value) as string}
               </Button>
             </FormButtons>
           )}

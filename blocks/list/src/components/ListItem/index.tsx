@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Icon } from '@appsemble/preact-components';
+import { Icon, isPreactChild } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
@@ -28,7 +28,7 @@ export function ListItem({ item }: ListItemProps): VNode {
   );
 
   const headerValue = remap(header, item);
-  const img: string = remap(image, item);
+  const img = remap(image, item) as string;
 
   return (
     <ListItemWrapper
@@ -43,10 +43,10 @@ export function ListItem({ item }: ListItemProps): VNode {
         </figure>
       )}
       <div className="is-inline-block">
-        {(icon || headerValue) && (
+        {(isPreactChild(icon) || isPreactChild(headerValue)) && (
           <div className={classNames({ [styles.header]: fields?.length })}>
-            {icon && <Icon icon={icon} />}
-            {headerValue && <h4>{headerValue}</h4>}
+            {isPreactChild(icon) ? <Icon icon={icon} /> : null}
+            {isPreactChild(headerValue) ? <h4>{headerValue}</h4> : null}
           </div>
         )}
         {fields?.map((field) => {

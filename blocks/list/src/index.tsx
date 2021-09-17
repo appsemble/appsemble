@@ -12,7 +12,7 @@ bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
 
   useEffect(() => {
     if (blockData != null) {
-      const newData = base == null ? blockData : blockData[base];
+      const newData = base == null ? blockData : (blockData as any)[base];
 
       if (Array.isArray(newData)) {
         setData(newData);

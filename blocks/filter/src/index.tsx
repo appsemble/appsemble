@@ -141,7 +141,9 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
               (field) =>
                 field === highlightedField || (
                   <div className="field">
-                    {field.label && <label className="label">{utils.remap(field.label, {})}</label>}
+                    {field.label && (
+                      <label className="label">{utils.remap(field.label, {}) as string}</label>
+                    )}
                     <div className="control">
                       <FieldComponent
                         field={field}

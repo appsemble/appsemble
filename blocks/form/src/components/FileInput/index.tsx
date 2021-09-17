@@ -43,10 +43,10 @@ export function FileInput({
     <FormComponent
       className="appsemble-file"
       icon={icon}
-      label={remappedLabel}
+      label={remappedLabel as string}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       required={required}
-      tag={utils.remap(tag, {})}
+      tag={utils.remap(tag, {}) as string}
     >
       {repeated ? (
         <div

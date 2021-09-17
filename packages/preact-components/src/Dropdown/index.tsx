@@ -1,6 +1,6 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { ComponentChildren, VNode } from 'preact';
+import { ComponentChild, ComponentChildren, VNode } from 'preact';
 import { useCallback, useRef } from 'preact/hooks';
 
 import { Button, useClickOutside, useToggle } from '..';
@@ -21,7 +21,7 @@ interface DropdownProps {
   /**
    * The label to render on the menu toggle button.
    */
-  label: VNode;
+  label: ComponentChild;
 
   /**
    * The icon to display next to the label.

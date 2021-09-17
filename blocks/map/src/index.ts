@@ -22,8 +22,8 @@ bootstrap((params) => {
   shadowRoot.append(node);
   const fetched = new Set<number>();
 
-  const latitude = data && remap(parameters.latitude, data);
-  const longitude = data && remap(parameters.longitude, data);
+  const latitude = data && (remap(parameters.latitude, data) as number);
+  const longitude = data && (remap(parameters.longitude, data) as number);
   const hasExplicitCenter = Number.isFinite(latitude) && Number.isFinite(longitude);
   const locationMarker = new CircleMarker(null, {
     color: primaryColor,
@@ -105,7 +105,7 @@ bootstrap((params) => {
   }
 
   events.on.data((d) => {
-    loadMarkers(d, fetched, data, params, cluster || map);
+    loadMarkers(d as any, fetched, data, params, cluster || map);
   });
 
   events.on.center(() => {

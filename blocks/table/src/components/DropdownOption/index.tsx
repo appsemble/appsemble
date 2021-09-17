@@ -52,7 +52,7 @@ export function DropdownOption({
     actions[option.onClick](record, { index, repeatedIndex });
   }, [actions, index, option.onClick, record, repeatedIndex]);
 
-  const label = remap(option.label, item, { index, repeatedIndex });
+  const label = remap(option.label, item, { index, repeatedIndex }) as string;
   return (
     <Button
       className={`dropdown-item pl-5 ${styles.noBorder}`}

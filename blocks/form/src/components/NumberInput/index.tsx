@@ -34,11 +34,15 @@ export function NumberInput({
       name={name}
       onChange={onChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
-      placeholder={utils.remap(placeholder, value) || utils.remap(label, value) || field.name}
+      placeholder={
+        (utils.remap(placeholder, value) as string) ||
+        (utils.remap(label, value) as string) ||
+        field.name
+      }
       readOnly={readOnly}
       required={isRequired(field)}
       step={getStep(field)}
-      tag={utils.remap(tag, value)}
+      tag={utils.remap(tag, value) as string}
       type="number"
       value={value}
     />

@@ -1,4 +1,5 @@
 import { useBlock } from '@appsemble/preact';
+import { isPreactChild } from '@appsemble/preact-components';
 import { VNode } from 'preact';
 
 import { FieldGroup as FieldGroupType, RendererProps } from '../../../block';
@@ -15,7 +16,7 @@ export function FieldGroup({ data, field }: RendererProps<FieldGroupType>): VNod
 
   return (
     <div className="appsemble-group">
-      {label ? <h5 className="title is-5">{label}</h5> : null}
+      {isPreactChild(label) ? <h5 className="title is-5">{label}</h5> : null}
       {Array.isArray(value)
         ? value.flatMap((val) =>
             field.fields.map((subField, index) => (

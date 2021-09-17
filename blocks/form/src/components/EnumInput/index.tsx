@@ -45,7 +45,7 @@ export function EnumInput({
     };
 
     const handleError = (): void => {
-      setError(utils.remap(field.loadError ?? 'Error loading options', {}));
+      setError(utils.remap(field.loadError ?? 'Error loading options', {}) as string);
       setLoading(false);
     };
 
@@ -72,20 +72,20 @@ export function EnumInput({
       disabled={disabled || loading || options.length === 0}
       error={dirty && error}
       icon={icon}
-      label={utils.remap(label, value)}
+      label={utils.remap(label, value) as string}
       loading={loading}
       name={name}
       onChange={onChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
-      placeholder={utils.remap(placeholder, {})}
+      placeholder={utils.remap(placeholder, {}) as string}
       required={required}
-      tag={utils.remap(tag, value)}
+      tag={utils.remap(tag, value) as string}
       value={value}
     >
       {loading ||
         options.map((choice) => (
           <Option key={choice.value} value={choice.value}>
-            {utils.remap(choice.label, value) ?? choice.value}
+            {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
           </Option>
         ))}
     </SelectField>
