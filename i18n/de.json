@@ -268,6 +268,7 @@
   "studio.src.pages.apps.app.assets.nameDescription": "",
   "studio.src.pages.apps.app.assets.noFile": "Keine Datei ausgewählt",
   "studio.src.pages.apps.app.assets.preview": "Vorschau",
+  "studio.src.pages.apps.app.assets.resource": "",
   "studio.src.pages.apps.app.assets.title": "{name} - Vermögenswerte",
   "studio.src.pages.apps.app.assets.upload": "Hochladen",
   "studio.src.pages.apps.app.assets.uploadButton": "Neues Asset hochladen",

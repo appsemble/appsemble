@@ -268,6 +268,7 @@
   "studio.src.pages.apps.app.assets.nameDescription": "If a name is set, the asset may be referenced by this name in addition to its ID.",
   "studio.src.pages.apps.app.assets.noFile": "No file chosen",
   "studio.src.pages.apps.app.assets.preview": "Preview",
+  "studio.src.pages.apps.app.assets.resource": "Resource",
   "studio.src.pages.apps.app.assets.title": "Assets",
   "studio.src.pages.apps.app.assets.upload": "Upload",
   "studio.src.pages.apps.app.assets.uploadButton": "Upload new asset",
