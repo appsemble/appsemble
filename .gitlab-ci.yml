@@ -611,6 +611,7 @@ lighthouse:
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies
+    - yarn scripts wait-for-ssl
     - yarn lhci collect
     - yarn lhci assert
   artifacts:
@@ -632,6 +633,7 @@ e2e:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
     - yarn --frozen-lockfile
+    - yarn scripts wait-for-ssl
     - yarn workspace @appsemble/e2e run e2e
   artifacts:
     expose_as: Cypress videos and screenshots
