@@ -29,12 +29,12 @@ export function RadioInput({
       className="appsemble-radio"
       disabled={disabled}
       error={dirty && error}
-      label={utils.remap(label, value)}
+      label={utils.remap(label, value) as string}
       name={name}
       onChange={onChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       required={required}
-      tag={utils.remap(tag, value)}
+      tag={utils.remap(tag, value) as string}
       value={value}
     >
       {options.map((option, index) => {
@@ -48,7 +48,7 @@ export function RadioInput({
             value={option.value}
             wrapperClassName={styles.choice}
           >
-            {utils.remap(option.label, {}) ?? option.value}
+            {(utils.remap(option.label, {}) as string) ?? option.value}
           </RadioButton>
         );
       })}

@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { Button, Input, Location } from '@appsemble/preact-components';
+import { Button, Input, isPreactChild, Location } from '@appsemble/preact-components';
 import { IconName } from '@appsemble/sdk';
 import { DivIcon, Icon } from 'leaflet';
 import { JSX, VNode } from 'preact';
@@ -162,24 +162,26 @@ export function Card({ content, onUpdate }: CardProps): VNode {
             </figure>
           </AvatarWrapper>
           <header className="media-content">
-            {title && <h4 className="title is-4 is-marginless">{title}</h4>}
-            {subtitle && <h5 className="subtitle is-5 is-marginless">{subtitle}</h5>}
-            {heading && <p className="subtitle is-6">{heading}</p>}
+            {isPreactChild(title) ? <h4 className="title is-4 is-marginless">{title}</h4> : null}
+            {isPreactChild(subtitle) ? (
+              <h5 className="subtitle is-5 is-marginless">{subtitle}</h5>
+            ) : null}
+            {isPreactChild(heading) ? <p className="subtitle is-6">{heading}</p> : null}
           </header>
         </div>
       </div>
       <div className="card-image">
-        {picture && (
+        {picture && typeof picture === 'string' && (
           <CardImage
-            alt={title || subtitle || heading || description}
-            src={picture ? utils.asset(picture) : ''}
+            alt={(title || subtitle || heading || description) as string}
+            src={utils.asset(picture)}
           />
         )}
         {pictures && Array.isArray(pictures) && pictures.length > 1 && (
           <div className={`${styles.images} px-1 py-1`}>
             {pictures.map((p) => (
               <CardImage
-                alt={title || subtitle || heading || description}
+                alt={(title || subtitle || heading || description) as string}
                 className="image is-64x64 mx-1 my-1"
                 key={p}
                 src={p ? utils.asset(p) : ''}
@@ -190,8 +192,8 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         {(latitude && longitude) != null && marker && (
           <Location
             className={styles.location}
-            latitude={latitude}
-            longitude={longitude}
+            latitude={latitude as number}
+            longitude={longitude as number}
             mapOptions={{
               dragging: false,
               zoomControl: false,
@@ -202,7 +204,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         )}
       </div>
       <div className="card-content px-4 py-4">
-        {description && <p className="content">{description}</p>}
+        {isPreactChild(description) ? <p className="content">{description}</p> : null}
         {actions.onButtonClick.type !== 'noop' && (
           <Button className={`${styles.button} mb-4`} onClick={onButtonClick}>
             {parameters.buttonLabel ?? 'Click'}
@@ -224,8 +226,8 @@ export function Card({ content, onUpdate }: CardProps): VNode {
 
                 return (
                   <div className="content" key={reply.id}>
-                    <h6 className="is-marginless">{author}</h6>
-                    <p>{replyContent}</p>
+                    <h6 className="is-marginless">{author as string}</h6>
+                    <p>{replyContent as string}</p>
                   </div>
                 );
               })}

@@ -45,7 +45,7 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
         <Modal isActive={modal.enabled} onClose={modal.disable}>
           <figure className="image">
             <img
-              alt={utils.remap(field.label, value) ?? field.name}
+              alt={(utils.remap(field.label, value) as string) ?? field.name}
               className={styles.image}
               src={url}
             />
@@ -67,7 +67,7 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
             <button className={styles.button} onClick={modal.enable} type="button">
               <figure className="image is-relative">
                 <img
-                  alt={utils.remap(field.label, value) ?? field.name}
+                  alt={(utils.remap(field.label, value) as string) ?? field.name}
                   className={`${styles.image} ${styles.rounded}`}
                   src={url}
                 />
@@ -87,7 +87,9 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
           <span
             className={`image is-128x128 px-2 py-2 has-text-centered ${styles.rounded} ${styles.empty}`}
           >
-            <span className="file-label">{utils.remap(field.emptyFileLabel ?? ' ', field)}</span>
+            <span className="file-label">
+              {utils.remap(field.emptyFileLabel ?? ' ', field) as string}
+            </span>
           </span>
         )}
       </label>

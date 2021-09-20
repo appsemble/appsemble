@@ -75,7 +75,7 @@ export function ItemCell({
         <Dropdown
           className="is-right"
           icon={field.dropdown.icon}
-          label={remap(field.dropdown.label, item, { index, repeatedIndex })}
+          label={remap(field.dropdown.label, item, { index, repeatedIndex }) as string}
         >
           {field.dropdown.options.map((option, i) => {
             const label = remap(option.label, item, { index, repeatedIndex });

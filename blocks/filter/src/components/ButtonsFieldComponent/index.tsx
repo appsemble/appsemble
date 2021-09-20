@@ -33,7 +33,7 @@ export function ButtonsFieldComponent({
           multiple
           value={val}
         >
-          {utils.remap(label, {}) || value}
+          {(utils.remap(label, {}) as string) || value}
         </ButtonOption>
       ))}
     </ButtonGroup>

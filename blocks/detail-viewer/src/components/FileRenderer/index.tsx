@@ -24,12 +24,12 @@ export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
               key={index}
               label={field.label}
               name={field.value}
-              src={field.repeatedName ? utils.remap(field.repeatedName, v) : v}
+              src={field.repeatedName ? (utils.remap(field.repeatedName, v) as string) : v}
             />
           ))}
         </div>
       ) : (
-        value && <ImageField label={field.label} name={field.value} src={value} />
+        value && <ImageField label={field.label} name={field.value} src={value as string} />
       )}
     </div>
   );

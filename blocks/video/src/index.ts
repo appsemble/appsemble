@@ -100,7 +100,7 @@ bootstrap(
     });
 
     if (!hasEvent) {
-      const id = utils.remap(url, data);
+      const id = utils.remap(url, data) as string;
       setupPlayer(id);
     }
   },

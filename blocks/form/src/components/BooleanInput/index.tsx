@@ -31,14 +31,14 @@ export function BooleanInput({
       className={classNames('appsemble-boolean', { 'is-danger': error })}
       disabled={disabled}
       error={dirty && error}
-      label={checkboxLabel}
+      label={checkboxLabel as string}
       name={name}
       onChange={onChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       readOnly={readOnly}
       required={required}
-      tag={utils.remap(tag, value)}
-      title={utils.remap(labelText, value) ?? checkboxLabel ?? null}
+      tag={utils.remap(tag, value) as string}
+      title={(utils.remap(labelText, value) as string) ?? (checkboxLabel as string) ?? null}
       value={Boolean(value)}
     />
   );

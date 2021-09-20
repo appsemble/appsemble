@@ -24,7 +24,7 @@ export function EnumFieldComponent({
     >
       {field.enum.map(({ label, value: val }) => (
         <Option key={val} value={val}>
-          {utils.remap(label, {}) || val}
+          {(utils.remap(label, {}) as string) || val}
         </Option>
       ))}
     </Select>

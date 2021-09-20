@@ -24,8 +24,10 @@ bootstrap(({ events, parameters: { fields }, utils: { fa, remap } }) => {
           return (
             <div className={`${styles.field} is-inline has-text-centered`}>
               <i className={`${fa(icon)} ${styles.icon}`} />
-              <div className="has-text-weight-bold mx-0 mt-2 mb-1">{remap(value, data)}</div>
-              {remappedLabel && <div>{remappedLabel}</div>}
+              <div className="has-text-weight-bold mx-0 mt-2 mb-1">
+                {remap(value, data) as string}
+              </div>
+              {remappedLabel && <div>{remappedLabel as string}</div>}
             </div>
           );
         }),
