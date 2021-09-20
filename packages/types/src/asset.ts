@@ -18,4 +18,14 @@ export interface Asset {
    * A custom name that was given to the asset.
    */
   name?: string;
+
+  /**
+   * The ID of the resource the asset is linked to.
+   */
+  resourceId?: number;
+
+  /**
+   * The type of the resource the asset is linked to.
+   */
+  resourceType?: number;
 }

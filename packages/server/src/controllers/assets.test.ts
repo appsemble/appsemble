@@ -1,7 +1,7 @@
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Asset, Member, Organization, User } from '../models';
+import { App, Asset, Member, Organization, Resource, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
@@ -63,6 +63,12 @@ describe('getAssets', () => {
   });
 
   it('should fetch all of the app’s assets', async () => {
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: {},
+    });
+
     const assetA = await Asset.create({
       AppId: app.id,
       mime: 'application/octet-stream',
@@ -73,6 +79,7 @@ describe('getAssets', () => {
 
     const assetB = await Asset.create({
       AppId: app.id,
+      ResourceId: resource.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -84,7 +91,13 @@ describe('getAssets', () => {
       status: 200,
       data: [
         { id: assetA.id, mime: assetA.mime, filename: assetA.filename, name: 'a' },
-        { id: assetB.id, mime: assetB.mime, filename: assetB.filename },
+        {
+          id: assetB.id,
+          mime: assetB.mime,
+          filename: assetB.filename,
+          resourceId: resource.id,
+          resourceType: 'testResource',
+        },
       ],
     });
   });
