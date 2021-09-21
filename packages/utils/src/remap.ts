@@ -163,17 +163,12 @@ const mapperImplementations: MapperImplementations = {
       return input;
     }
 
-    return input.filter((value, index, values) => {
-      const valueX =
-        mapper == null
-          ? value
-          : remap(mapper, value, { ...context, array: { index, length: values.length } });
+    const remapped = input.map((value, index) => 
+      mapper == null ? value : remap(mapper, value, { ...context, array: { index, length: input.length } })
+    );
+    return input.filter((value, index) => {
       for (let i = 0; i < index; i += 1) {
-        const valueY =
-          mapper == null
-            ? values[i]
-            : remap(mapper, values[i], { ...context, array: { index: i, length: values.length } });
-        if (equal(valueX, valueY)) {
+        if (equal(remapped[index], remapped[i])) {
           return false;
         }
       }
