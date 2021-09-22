@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.28
-appVersion: 0.18.28
+version: 0.18.30
+appVersion: 0.18.30
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,23 +25,19 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: 'Block(tiles): Add tiles block.'
+      description: 'Block(html): Add data event listener.'
+    - kind: added
+      description: 'Block(markdown): Add data event listener.'
+    - kind: added
+      description: 'App: Add data option to page remapper.'
     - kind: added
       description: >-
-        Cli: Add --modify-context flag for app create command. This will modify the
-        context in .appsemblerc to include the ID of the newly created app.
+        App: Add random.choice remapper. It returns a random entry from an array of
+        items, or the input if the input is not an array.
     - kind: added
-      description: 'Cli: Add asset create command.'
+      description: 'App: Add storage.read and storage.write actions.'
     - kind: added
-      description: >-
-        Cli: Add support for .appsemblerc.yaml context usage for resource and team
-        commands using --app <path> and --context <environment> flags.
-    - kind: added
-      description: >-
-        Sdk: The IconName type from @fortawesome/fontawesome-common-types is now
-        re-exported by the SDK.
-    - kind: added
-      description: 'Server: Add option to define annotations when creating a team.'
+      description: 'Studio: Render Monaco editor diagnostics below the editor pane.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

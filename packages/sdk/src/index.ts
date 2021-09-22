@@ -115,7 +115,7 @@ export interface Utils {
    * @param context - The context to retrieve contextual data from.
    * @returns The result of the remapped data.
    */
-  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
+  remap: (remapper: Remapper, data: unknown, context?: Record<string, unknown>) => unknown;
 
   /**
    * Show a bulma style message.
@@ -155,7 +155,7 @@ export interface Events {
    * @param data - Data to emit with the event.
    * @returns Boolean indicating whether an emitter is implemented or not.
    */
-  emit: { [K in keyof EventEmitters]: (data: any, error?: string) => Promise<boolean> };
+  emit: { [K in keyof EventEmitters]: (data: unknown, error?: string) => Promise<boolean> };
 
   /**
    * Remove an event listener for an Appsemble event.
@@ -164,7 +164,9 @@ export interface Events {
    * @param callback - The callback to remove.
    * @returns Boolean indicating whether a listener is implemented or not.
    */
-  off: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => boolean };
+  off: {
+    [K in keyof EventListeners]: (callback: (data: unknown, error?: string) => void) => boolean;
+  };
 
   /**
    * Add an event listener for an Appsemble event.
@@ -173,7 +175,9 @@ export interface Events {
    * @param callback - A callback to register for the event.
    * @returns Boolean indicating whether a listener is implemented or not.
    */
-  on: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => boolean };
+  on: {
+    [K in keyof EventListeners]: (callback: (data: unknown, error?: string) => void) => boolean;
+  };
 }
 
 /**
@@ -193,7 +197,7 @@ export interface BootstrapParams {
   /**
    * Any kind of data that has been passed in by some context.
    */
-  data: any;
+  data: unknown;
 
   /**
    * Event related functions and constants.

@@ -20,15 +20,6 @@ Supported properties:
 - \`url\`: Get the base URL of the app.
 `,
     },
-    page: {
-      enum: ['url'],
-      description: `Get page metadata.
-
-Supported properties:
-
-- \`url\`: Get the URL of the current page.
-`,
-    },
     array: {
       enum: ['index', 'length'],
       description: `Get the current array.map’s index or length.
@@ -44,6 +35,17 @@ The remappers gets applied to each item in the array.
 
 Always returns an array, can be empty if supplied data isn’t an array.
 `,
+    },
+    'array.unique': {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: `Filters out unique entries from an array.
+
+The value Remapper is applied to each entry in the array,
+using its result to determine uniqueness.
+
+If the value Remapper result in \`undefined\` or \`null\`, the entire entry is used for uniqueness.
+
+If the input is not an array, the input is returned without any modifications.`,
     },
     context: {
       type: 'string',
@@ -106,12 +108,27 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
         $ref: '#/components/schemas/RemapperDefinition',
       },
     },
+    page: {
+      enum: ['data', 'url'],
+      description: `Get page metadata.
+
+Supported properties:
+
+- \`data\`: Get the current page data.
+- \`url\`: Get the URL of the current page.
+`,
+    },
     prop: {
       anyOf: [{ type: 'string' }, { type: 'integer' }],
       description: 'Get a property from an object.',
     },
+    'random.choice': {
+      enum: [null],
+      description:
+        'Pick and return a random entry from an array. If the input is not an array, the input is returned as-is.',
+    },
     root: {
-      type: 'string',
+      enum: [null],
       description: 'Get the input data as it was initially passed to the remap function.',
     },
     static: {

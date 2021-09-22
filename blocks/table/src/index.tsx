@@ -44,7 +44,7 @@ bootstrap(({ events, parameters: { fields }, ready, utils }) => {
       <thead>
         <tr>
           {heads.map((header) => (
-            <th key={header}>{header}</th>
+            <th key={header}>{header as string}</th>
           ))}
         </tr>
       </thead>

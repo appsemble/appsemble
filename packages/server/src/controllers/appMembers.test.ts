@@ -2,7 +2,18 @@ import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
-import { App, AppMember, BlockVersion, Member, Organization, User } from '../models';
+import {
+  App,
+  AppMember,
+  AppOAuth2Authorization,
+  AppOAuth2Secret,
+  AppSamlAuthorization,
+  AppSamlSecret,
+  BlockVersion,
+  Member,
+  Organization,
+  User,
+} from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
@@ -10,6 +21,7 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 
 let organization: Organization;
 let clock: Clock;
+let member: Member;
 let user: User;
 
 function createDefaultApp(org: Organization): Promise<App> {
@@ -51,7 +63,7 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
   await BlockVersion.create({
@@ -100,7 +112,13 @@ describe('getAppMembers', () => {
       OrganizationId: organization.id,
     });
 
-    await AppMember.create({ UserId: user.id, AppId: app.id, role: 'Admin' });
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Test Member',
+      email: 'member@example.com',
+      role: 'Admin',
+    });
 
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members`);
@@ -109,8 +127,8 @@ describe('getAppMembers', () => {
       data: [
         {
           id: user.id,
-          name: 'Test User',
-          primaryEmail: 'test@example.com',
+          name: 'Test Member',
+          primaryEmail: 'member@example.com',
           role: 'Admin',
         },
       ],
@@ -185,7 +203,73 @@ describe('getAppMembers', () => {
 });
 
 describe('getAppMember', () => {
-  it('should return default app member role if policy is set to everyone', async () => {
+  it('should return 404 if no app was found', async () => {
+    authorizeStudio();
+    const response = await request.get(
+      '/api/apps/123/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37',
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should return 404 if the app doesn’t have a security definition', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.get(
+      `/api/apps/${app.id}/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37`,
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App does not have a security definition',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should return 404 if no app member was found', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: { definition: {} },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.get(
+      `/api/apps/${app.id}/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37`,
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App member not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should return an app member if it is found', async () => {
     const app = await App.create({
       definition: {
         name: 'Test App',
@@ -206,103 +290,18 @@ describe('getAppMember', () => {
       OrganizationId: organization.id,
     });
 
-    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: 'Foo',
+      email: 'foo@example.com',
+      role: 'Reader',
+    });
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
-    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`);
     expect(response).toMatchObject({
       status: 200,
-      data: {
-        id: user.id,
-        name: 'Test User',
-        primaryEmail: 'test@example.com',
-        role: 'Reader',
-      },
-    });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: { id: userB.id, name: 'Foo', primaryEmail: 'foo@example.com', role: 'Reader' },
-    });
-  });
-
-  it('should return a 404 on uninvited members if policy is set to organization', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'organization',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    const userB = await User.create();
-
-    authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
-    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`);
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: user.id,
-        name: user.name,
-        primaryEmail: user.primaryEmail,
-        role: 'Reader',
-      },
-    });
-
-    expect(responseB).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        statusCode: 404,
-        message: 'User is not a member of the organization.',
-      },
-    });
-  });
-
-  it('should return a 404 on uninvited organization members if policy is set to invite', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'invite',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
-
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        statusCode: 404,
-        message: 'User is not a member of the app.',
-      },
+      data: { id: user.id, name: 'Foo', primaryEmail: 'foo@example.com', role: 'Reader' },
     });
   });
 });
@@ -340,11 +339,249 @@ describe('setAppMember', () => {
       status: 200,
       data: {
         id: userB.id,
-        name: 'Foo',
-        primaryEmail: 'foo@example.com',
+        name: null,
+        primaryEmail: null,
         role: 'Admin',
       },
     });
+  });
+});
+
+describe('deleteAppMember', () => {
+  it('should throw 404 if the app doesn’t exist', async () => {
+    authorizeStudio();
+    const response = await request.delete(
+      '/api/apps/253/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624',
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should throw 404 if the app member doesn’t exist', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const response = await request.delete(
+      `/api/apps/${app.id}/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624`,
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App member not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should verify the app role if the user id and member id don’t match', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await member.update({ role: 'Member' });
+    const userB = await User.create();
+    await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should allow app owners to delete an app member', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const userB = await User.create();
+    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
+    await expect(() => appMember.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+  });
+
+  it('should allow app users to delete their own account', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const userB = await User.create();
+    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    authorizeStudio(userB);
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
+    await expect(() => appMember.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+  });
+
+  it('should cascade correctly', async () => {
+    authorizeStudio();
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    const userB = await User.create();
+    const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
+    const samlSecret = await AppSamlSecret.create({
+      AppId: app.id,
+      entityId: '',
+      ssoUrl: '',
+      name: '',
+      icon: '',
+      idpCertificate: '',
+      spPrivateKey: '',
+      spPublicKey: '',
+      spCertificate: '',
+    });
+    const oauth2Secret = await AppOAuth2Secret.create({
+      AppId: app.id,
+      authorizationUrl: '',
+      tokenUrl: '',
+      clientId: '',
+      clientSecret: '',
+      icon: '',
+      name: '',
+      scope: '',
+    });
+    const samlAuthorization = await AppSamlAuthorization.create({
+      AppSamlSecretId: samlSecret.id,
+      AppMemberId: appMember.id,
+      nameId: 'foo',
+    });
+    const oauth2Authorization = await AppOAuth2Authorization.create({
+      AppOAuth2SecretId: oauth2Secret.id,
+      AppMemberId: appMember.id,
+      accessToken: 'foo.bar.baz',
+      sub: '42',
+      refreshToken: 'refresh',
+      expiresAt: new Date(),
+    });
+    const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
+
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
+    await expect(() => appMember.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+    await expect(() => samlAuthorization.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+    await expect(() => oauth2Authorization.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+    await samlSecret.reload();
+    await oauth2Secret.reload();
   });
 });
 
@@ -359,10 +596,10 @@ describe('registerMemberEmail', () => {
       data: {},
     });
 
-    const member = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
-    expect(member.password).not.toBe('password');
-    expect(await compare(data.password, member.password)).toBe(true);
+    expect(m.password).not.toBe('password');
+    expect(await compare(data.password, m.password)).toBe(true);
   });
 
   it('should accept a display name', async () => {
@@ -375,8 +612,8 @@ describe('registerMemberEmail', () => {
       data: {},
     });
 
-    const member = await AppMember.findOne({ where: { email: 'test@example.com' } });
-    expect(member.name).toBe('Me');
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    expect(m.name).toBe('Me');
   });
 
   it('should not register invalid email addresses', async () => {
@@ -416,19 +653,19 @@ describe('verifyMemberEmail', () => {
       email: 'test@example.com',
       password: 'password',
     });
-    const member = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
-    expect(member.emailVerified).toBe(false);
-    expect(member.emailKey).not.toBeNull();
+    expect(m.emailVerified).toBe(false);
+    expect(m.emailKey).not.toBeNull();
 
     const response = await request.post(`/api/apps/${app.id}/member/verify`, {
-      token: member.emailKey,
+      token: m.emailKey,
     });
     expect(response).toMatchObject({ status: 200 });
 
-    await member.reload();
-    expect(member.emailVerified).toBe(true);
-    expect(member.emailKey).toBeNull();
+    await m.reload();
+    expect(m.emailVerified).toBe(true);
+    expect(m.emailKey).toBeNull();
   });
 
   it('should not verify empty or invalid keys', async () => {
@@ -457,18 +694,18 @@ describe('requestMemberResetPassword', () => {
       email: data.email,
     });
 
-    const member = await AppMember.findOne({ where: { email: data.email } });
+    const m = await AppMember.findOne({ where: { email: data.email } });
     const responseB = await request.post(`/api/apps/${app.id}/member/reset`, {
-      token: member.resetKey,
+      token: m.resetKey,
       password: 'newPassword',
     });
 
-    await member.reload();
+    await m.reload();
 
     expect(responseA).toMatchObject({ status: 204 });
     expect(responseB).toMatchObject({ status: 204 });
-    expect(await compare('newPassword', member.password)).toBe(true);
-    expect(member.resetKey).toBeNull();
+    expect(await compare('newPassword', m.password)).toBe(true);
+    expect(m.resetKey).toBeNull();
   });
 
   it('should not reveal existing emails', async () => {

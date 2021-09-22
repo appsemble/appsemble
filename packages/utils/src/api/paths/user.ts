@@ -208,4 +208,85 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
+  '/api/user/apps/accounts': {
+    get: {
+      description: 'Get the accounts that have been linked to an app and the user',
+      tags: ['user'],
+      operationId: 'getAppAccounts',
+      security: [{ studio: [] }],
+      responses: {
+        200: {
+          description: 'A list of linked accounts',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/AppAccount',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  '/api/user/apps/{appId}/account': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      description: 'Get a single account that has been linked to an app and the current user',
+      tags: ['user'],
+      operationId: 'getAppAccount',
+      security: [{ studio: [] }],
+      responses: {
+        200: {
+          description: 'A list of linked accounts',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/AppAccount',
+              },
+            },
+          },
+        },
+      },
+    },
+    put: {
+      description: 'Update user data for a specific app',
+      tags: ['user'],
+      operationId: 'updateAppAccount',
+      security: [{ studio: [] }],
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+                name: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'A linked app account',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/AppAccount',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };

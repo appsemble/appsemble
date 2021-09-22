@@ -24,7 +24,7 @@ export function DateTimeInput({
   const { utils } = useBlock();
   const { label, name, placeholder, readOnly, tag } = field;
 
-  const dateTimeLabel = utils.remap(label, value);
+  const dateTimeLabel = utils.remap(label, value) as string;
 
   const required = isRequired(field);
 
@@ -52,10 +52,10 @@ export function DateTimeInput({
       name={name}
       onChange={handleOnChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
-      placeholder={utils.remap(placeholder, value) || dateTimeLabel || name}
+      placeholder={(utils.remap(placeholder, value) as string) || dateTimeLabel || name}
       readOnly={readOnly}
       required={required}
-      tag={utils.remap(tag, value)}
+      tag={utils.remap(tag, value) as string}
       value={value}
     />
   );

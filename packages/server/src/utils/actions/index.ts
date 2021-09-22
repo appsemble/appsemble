@@ -48,6 +48,8 @@ export const actions = {
   'resource.subscription.unsubscribe': noop,
   share: noop,
   static: staticAction,
+  'storage.read': noop,
+  'storage.write': noop,
   'team.join': noop,
   'team.list': noop,
   throw: throwAction,

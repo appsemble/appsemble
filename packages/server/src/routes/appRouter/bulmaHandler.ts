@@ -15,10 +15,15 @@ const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').repl
  * @returns SASS string containing the base Appsemble style augmented by user parameters.
  */
 function processStyle(theme: Partial<Theme>): string {
+  const font = theme.font || baseTheme.font;
+  const googleFontsUrl = new URL('https://fonts.googleapis.com/css');
+  googleFontsUrl.searchParams.set('display', 'swap');
+  googleFontsUrl.searchParams.set('family', font);
+
   return `
     @charset "utf-8";
-    @import url(https://fonts.googleapis.com/css?display=swap&family=Open+Sans);
-    $family-sans-serif: 'Open Sans', sans-serif !default;
+    @import url(${googleFontsUrl});
+    $family-sans-serif: '${font}', sans-serif !default;
     $primary: ${theme.primaryColor || baseTheme.primaryColor};
     $link: ${theme.linkColor || baseTheme.linkColor};
     $info: ${theme.infoColor || baseTheme.infoColor};

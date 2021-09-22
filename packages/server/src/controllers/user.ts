@@ -1,13 +1,27 @@
 import { randomBytes } from 'crypto';
 
+import { AppAccount, App as AppType, SSOConfiguration } from '@appsemble/types';
 import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import { Context } from 'koa';
-import { literal } from 'sequelize';
+import { FindOptions, IncludeOptions, literal } from 'sequelize';
 
-import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
+import {
+  App,
+  AppMember,
+  AppOAuth2Authorization,
+  AppOAuth2Secret,
+  AppSamlAuthorization,
+  AppSamlSecret,
+  EmailAuthorization,
+  OAuthAuthorization,
+  Organization,
+  User,
+} from '../models';
+import { applyAppMessages, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
+import { getAppFromRecord } from '../utils/model';
 
 export async function getUser(ctx: Context): Promise<void> {
   const { user } = ctx;
@@ -212,4 +226,146 @@ export function refreshToken(ctx: Context): void {
   }
 
   ctx.body = createJWTResponse(sub);
+}
+
+function createAppAccountQuery(user: User, include: IncludeOptions[]): FindOptions {
+  return {
+    attributes: {
+      include: [
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+      ],
+      exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
+    },
+    include: [
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      {
+        model: AppMember,
+        where: { UserId: user.id },
+        include: [
+          {
+            model: AppSamlAuthorization,
+            required: false,
+            include: [AppSamlSecret],
+          },
+          {
+            model: AppOAuth2Authorization,
+            required: false,
+            include: [AppOAuth2Secret],
+          },
+        ],
+      },
+      ...include,
+    ],
+  };
+}
+
+/**
+ * Create an app member as JSON output from an app.
+ *
+ * @param app - The app to output. A single app member should be present.
+ * @param language - The language to use.
+ * @param baseLanguage - The base language to use.
+ * @returns The app member of the app.
+ */
+function outputAppMember(app: App, language: string, baseLanguage: string): AppAccount {
+  const [member] = app.AppMembers;
+
+  applyAppMessages(app, language, baseLanguage);
+
+  const sso: SSOConfiguration[] = [];
+
+  if (member.AppOAuth2Authorizations) {
+    for (const { AppOAuth2Secret: secret } of member.AppOAuth2Authorizations) {
+      sso.push({
+        type: 'oauth2',
+        icon: secret.icon,
+        // @ts-expect-error Workaround for https://github.com/sequelize/sequelize/issues/4158
+        url: secret.dataValues.authorizatio,
+        name: secret.name,
+      });
+    }
+  }
+  if (member.AppSamlAuthorizations) {
+    for (const { AppSamlSecret: secret } of member.AppSamlAuthorizations) {
+      sso.push({
+        type: 'saml',
+        icon: secret.icon,
+        url: secret.ssoUrl,
+        name: secret.name,
+      });
+    }
+  }
+
+  return {
+    app: getAppFromRecord(app) as AppType,
+    id: member.id,
+    email: member.email,
+    name: member.name,
+    role: member.role,
+    sso,
+  };
+}
+
+export async function getAppAccounts(ctx: Context): Promise<void> {
+  const { user } = ctx;
+  const { baseLanguage, language, query } = parseLanguage(ctx);
+
+  const apps = await App.findAll(createAppAccountQuery(user, query));
+
+  ctx.body = apps.map((app) => outputAppMember(app, language, baseLanguage));
+}
+
+export async function getAppAccount(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    user,
+  } = ctx;
+  const { baseLanguage, language, query } = parseLanguage(ctx);
+
+  const app = await App.findOne({
+    where: { id: appId },
+    ...createAppAccountQuery(user, query),
+  });
+
+  if (!app) {
+    throw notFound('App account not found');
+  }
+
+  ctx.body = outputAppMember(app, language, baseLanguage);
+}
+
+export async function updateAppAccount(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    request: {
+      body: { email, name },
+    },
+    user,
+  } = ctx;
+  const { baseLanguage, language, query } = parseLanguage(ctx);
+
+  const app = await App.findOne({
+    where: { id: appId },
+    ...createAppAccountQuery(user, query),
+  });
+
+  if (!app) {
+    throw notFound('App account not found');
+  }
+
+  const [member] = app.AppMembers;
+  await member.update({ name, email });
+
+  ctx.body = outputAppMember(app, language, baseLanguage);
 }

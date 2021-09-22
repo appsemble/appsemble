@@ -39,7 +39,8 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
 
         const createNode = (newData: unknown): ChildNode => {
           const newText = utils.remap(label, newData);
-          return typeof newText === 'string' || Number.isFinite(newText) ? (
+          return typeof newText === 'string' ||
+            (typeof newText === 'number' && Number.isFinite(newText)) ? (
             <span>{newText}</span>
           ) : (
             // Even if the label is empty, we want to be able to replace the node when new data is

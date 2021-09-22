@@ -1,6 +1,7 @@
 export * from './baseTheme';
 export * from './asciiLogo';
 export * from './date';
+export * from './fonts';
 export * from './locale';
 export * from './scopes';
 export * from './patterns';

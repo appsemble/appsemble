@@ -1,5 +1,6 @@
 export * from './ActionDefinition';
 export * from './App';
+export * from './AppAccount';
 export * from './AppDefinition';
 export * from './AppLayoutDefinition';
 export * from './AppMessages';
@@ -76,7 +77,10 @@ export * from './SecurityDefaultDefinition';
 export * from './SecurityDefinition';
 export * from './SecurityRoleDefinition';
 export * from './ShareActionDefinition';
+export * from './SSOConfiguration';
 export * from './StaticActionDefinition';
+export * from './StorageReadActionDefinition';
+export * from './StorageWriteActionDefinition';
 export * from './SubPage';
 export * from './TabsPageDefinition';
 export * from './TeamJoinActionDefinition';

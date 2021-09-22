@@ -6,6 +6,7 @@ import {
   DataType,
   Default,
   ForeignKey,
+  HasMany,
   Index,
   IsUUID,
   Model,
@@ -15,7 +16,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, User } from '.';
+import { App, AppOAuth2Authorization, AppSamlAuthorization, User } from '.';
 
 @Table({ tableName: 'AppMember' })
 export class AppMember extends Model {
@@ -74,4 +75,10 @@ export class AppMember extends Model {
 
   @BelongsTo(() => User)
   User: User;
+
+  @HasMany(() => AppOAuth2Authorization)
+  AppOAuth2Authorizations: AppOAuth2Authorization[];
+
+  @HasMany(() => AppSamlAuthorization)
+  AppSamlAuthorizations: AppSamlAuthorization[];
 }

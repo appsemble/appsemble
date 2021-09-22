@@ -25,6 +25,7 @@ function runTests(tests: Record<string, TestCase>): void {
         userInfo,
         context,
         appId: 6789,
+        pageData: { hello: 'Page data' },
       });
       expect(result).toStrictEqual(expected);
     },
@@ -72,6 +73,14 @@ describe('page', () => {
       input: {},
       mappers: { page: 'url' },
       expected: 'https://example.com/en/example',
+    },
+  });
+
+  runTests({
+    'return page data': {
+      input: {},
+      mappers: { page: 'data' },
+      expected: { hello: 'Page data' },
     },
   });
 });
@@ -296,6 +305,48 @@ describe('array.map', () => {
   });
 });
 
+describe('array.unique', () => {
+  runTests({
+    'return the input if the input is not an array': {
+      input: { a: 1, b: 2, c: 3 },
+      mappers: [{ 'array.unique': null }],
+      expected: { a: 1, b: 2, c: 3 },
+    },
+    'filter out duplicate values using primitive values without a remapper': {
+      input: [1, 2, 2, 3],
+      mappers: [{ 'array.unique': null }],
+      expected: [1, 2, 3],
+    },
+    'filter out duplicate values using complex values without a remapper': {
+      input: [
+        { id: 1, value: 'one' },
+        { id: 1, value: 'one' },
+        { id: 1, value: 'one' },
+        { id: 2, value: 'two' },
+      ],
+      mappers: [{ 'array.unique': null }],
+      expected: [
+        { id: 1, value: 'one' },
+        { id: 2, value: 'two' },
+      ],
+    },
+    'filter out duplicate values using complex values with a remapper': {
+      input: [
+        { id: 1, value: 'one' },
+        { id: 1, value: 'one' },
+        { id: 1, value: 'ONE' },
+        { id: 2, value: 'two' },
+      ],
+      mappers: [{ 'array.unique': { prop: 'value' } }],
+      expected: [
+        { id: 1, value: 'one' },
+        { id: 1, value: 'ONE' },
+        { id: 2, value: 'two' },
+      ],
+    },
+  });
+});
+
 describe('array', () => {
   runTests({
     'return undefined if not in the context of array.map': {
@@ -372,6 +423,22 @@ describe('prop', () => {
       input: { foo: null },
       mappers: { prop: 'foo' },
       expected: null,
+    },
+  });
+});
+
+describe('random.choice', () => {
+  it('should return random entries from a list', () => {
+    const input = [1, 2, 3, 4];
+    const result = remap({ 'random.choice': null }, input, null);
+    expect(input).toContain(result);
+  });
+
+  runTests({
+    'return the input if the input is not an array': {
+      input: { input: [1, 2, 3, 4] },
+      mappers: [{ 'random.choice': null }],
+      expected: { input: [1, 2, 3, 4] },
     },
   });
 });

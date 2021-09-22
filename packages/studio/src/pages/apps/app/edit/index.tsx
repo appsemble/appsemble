@@ -2,10 +2,11 @@ import {
   Loader,
   useBeforeUnload,
   useConfirmation,
+  useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { AppDefinition, BlockManifest } from '@appsemble/types';
+import { AppDefinition, BlockManifest, SSLStatusMap } from '@appsemble/types';
 import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
@@ -55,7 +56,6 @@ export default function EditPage(): ReactElement {
   const [coreStyle, setCoreStyle] = useState('');
   const [sharedStyle, setSharedStyle] = useState('');
   const [initialDefinition, setInitialDefinition] = useState('');
-  const [path, setPath] = useState('');
   const [valid, setValid] = useState(false);
   const [dirty, setDirty] = useState(true);
 
@@ -93,7 +93,7 @@ export default function EditPage(): ReactElement {
     getStyles();
 
     // Destructuring path, and organizationId also hides these technical details for the user
-    const { definition, path: p } = app;
+    const { definition } = app;
     let { yaml: yamlDefinition } = app;
 
     if (!yamlDefinition) {
@@ -103,7 +103,6 @@ export default function EditPage(): ReactElement {
 
     setAppDefinition(yamlDefinition);
     setInitialDefinition(yamlDefinition);
-    setPath(p);
   }, [app, history, formatMessage, location.hash, params, push]);
 
   const onSave = useCallback(async () => {
@@ -161,7 +160,7 @@ export default function EditPage(): ReactElement {
 
       // YAML and schema appear to be valid, send it to the app preview iframe
       delete definition.anchors;
-      frame.current.contentWindow.postMessage(
+      frame.current?.contentWindow.postMessage(
         { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
         getAppUrl(app.OrganizationId, app.path),
       );
@@ -173,6 +172,23 @@ export default function EditPage(): ReactElement {
   }, [app, formatMessage, push, appDefinition, sharedStyle, coreStyle]);
 
   useBeforeUnload(appDefinition !== initialDefinition);
+
+  const appDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
+  const { data: sslStatus, refresh: refreshSSLStatus } = useData<SSLStatusMap>(
+    `/api/ssl?${new URLSearchParams({ domains: appDomain })}`,
+  );
+
+  useEffect(() => {
+    if (sslStatus) {
+      for (const status of Object.values(sslStatus)) {
+        if (status !== 'ready') {
+          const timeout = setTimeout(refreshSSLStatus, 30_000);
+
+          return () => clearTimeout(timeout);
+        }
+      }
+    }
+  }, [refreshSSLStatus, sslStatus]);
 
   const uploadApp = useCallback(async () => {
     if (!valid) {
@@ -192,7 +208,6 @@ export default function EditPage(): ReactElement {
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
 
       const { data } = await axios.patch(`/api/apps/${id}`, formData);
-      setPath(data.path);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });
 
       // Update App State
@@ -290,13 +305,14 @@ export default function EditPage(): ReactElement {
             onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
+            showDiagnostics
             value={value}
           />
         </div>
       </div>
 
       <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
-        {path && (
+        {window.location.protocol === 'http:' || sslStatus?.[appDomain] === 'ready' ? (
           <iframe
             allow={allow.map((feature) => `${feature} ${src}`).join('; ')}
             className={styles.appFrame}
@@ -304,6 +320,16 @@ export default function EditPage(): ReactElement {
             src={src}
             title={formatMessage(messages.iframeTitle)}
           />
+        ) : (
+          <div className="has-background-white is-flex is-flex-direction-column is-flex-grow-1 is-flex-shrink-1 is-align-items-center is-justify-content-center">
+            <Loader className={styles.sslLoader} />
+            <p className="pt-6">
+              <FormattedMessage {...messages.sslGenerating} />
+            </p>
+            <p>
+              <FormattedMessage {...messages.sslInfo} />
+            </p>
+          </div>
         )}
       </div>
     </div>

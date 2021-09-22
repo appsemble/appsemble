@@ -41,6 +41,11 @@ export interface RemapperContext {
   getMessage: MessageGetter;
 
   /**
+   * Custom data that is available in the page.
+   */
+  pageData?: unknown;
+
+  /**
    * The OpenID compatible userinfo object for the current user.
    */
   userInfo: UserInfo;
@@ -109,6 +114,9 @@ const mapperImplementations: MapperImplementations = {
   },
 
   page: (prop, input, context) => {
+    if (prop === 'data') {
+      return context.pageData;
+    }
     if (prop === 'url') {
       return context.url;
     }
@@ -150,6 +158,27 @@ const mapperImplementations: MapperImplementations = {
       }),
     ) ?? [],
 
+  'array.unique': (mapper, input, context) => {
+    if (!Array.isArray(input)) {
+      return input;
+    }
+
+    const remapped = input.map((value, index) =>
+      mapper == null
+        ? value
+        : remap(mapper, value, { ...context, array: { index, length: input.length } }),
+    );
+    return input.filter((value, index) => {
+      for (let i = 0; i < index; i += 1) {
+        if (equal(remapped[index], remapped[i])) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  },
+
   array: (prop, input, context) => context.array?.[prop],
 
   static: (input) => input,
@@ -173,6 +202,9 @@ const mapperImplementations: MapperImplementations = {
 
     return addMilliseconds(input, expireDuration);
   },
+
+  'random.choice': (args, input: any[]) =>
+    Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,
 
   root: (args, input, context) => context.root,
 

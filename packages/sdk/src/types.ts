@@ -94,6 +94,8 @@ export type Action =
   | BaseAction<'resource.subscription.unsubscribe'>
   | BaseAction<'share'>
   | BaseAction<'static'>
+  | BaseAction<'storage.read'>
+  | BaseAction<'storage.write'>
   | BaseAction<'team.join'>
   | BaseAction<'team.list'>
   | BaseAction<'throw'>
@@ -197,4 +199,9 @@ export interface Theme {
    * The link to the tile layer used for Leaflet maps.
    */
   tileLayer: string;
+
+  /**
+   * The name of a font available on Google fonts.
+   */
+  font: string;
 }

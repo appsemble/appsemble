@@ -140,6 +140,9 @@ export function AssetsPage(): ReactElement {
                   <FormattedMessage {...messages.id} />
                 </th>
                 <th>
+                  <FormattedMessage {...messages.resource} />
+                </th>
+                <th>
                   <FormattedMessage {...messages.mime} />
                 </th>
                 <th>

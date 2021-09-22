@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.30](https://gitlab.com/appsemble/appsemble/-/releases/0.18.30)] - 2021-09-17
+
+### Added
+
+- Block(`html`): Add `data` event listener.
+- Block(`markdown`): Add `data` event listener.
+- App: Add `data` option to `page` remapper.
+- App: Add `random.choice` remapper. It returns a random entry from an array of items, or the input
+  if the input is not an array.
+- App: Add `storage.read` and `storage.write` actions.
+- Studio: Render Monaco editor diagnostics below the editor pane.
+
+## \[[0.18.29](https://gitlab.com/appsemble/appsemble/-/releases/0.18.29)] - 2021-09-08
+
+### Added
+
+- Cli: Support translating values from `string.format` remappers.
+- Studio: Support translating values from `string.format` remappers.
+
+### Changed
+
+- Server: Represent app members user app member information, not user information.
+
+### Fixed
+
+- Server: Return the correct role when getting a single app member.
+
 ## \[[0.18.28](https://gitlab.com/appsemble/appsemble/-/releases/0.18.28)] - 2021-09-04
 
 ### Added

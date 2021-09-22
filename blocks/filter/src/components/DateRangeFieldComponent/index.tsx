@@ -42,7 +42,7 @@ export function DateRangeFieldComponent({
         className={styles.input}
         name={field.name}
         onChange={onChangeFrom}
-        placeholder={utils.remap(field.fromLabel ?? 'From', {})}
+        placeholder={utils.remap(field.fromLabel ?? 'From', {}) as string}
         type="date"
         value={value[0]}
       />
@@ -50,7 +50,7 @@ export function DateRangeFieldComponent({
         className={styles.input}
         name={field.name}
         onChange={onChangeTo}
-        placeholder={utils.remap(field.toLabel ?? 'To', {})}
+        placeholder={utils.remap(field.toLabel ?? 'To', {}) as string}
         type="date"
         value={value[1]}
       />

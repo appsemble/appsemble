@@ -1,6 +1,8 @@
 import { inspect } from 'util';
 
 import { AppsembleError } from '@appsemble/node-utils';
+import { SSLStatusMap } from '@appsemble/types';
+import { Promisable } from 'type-fest';
 
 import { argv } from '../argv';
 import * as kubernetes from './kubernetes';
@@ -42,4 +44,20 @@ export async function cleanupDNS(): Promise<void> {
  */
 export async function restoreDNS(): Promise<void> {
   await getImplementation()?.restoreDNS();
+}
+
+/**
+ * Get the SSL status for all given domain names.
+ *
+ * If no implementation exists, a status of `unknown` is returned.
+ *
+ * @param domains - The domain names to get a status for.
+ * @returns A mapping of domain names to the status of the SSL certificate.
+ */
+export function getSSLStatus(domains: string[]): Promisable<SSLStatusMap> {
+  const implementation = getImplementation();
+  if (implementation) {
+    return implementation.getSSLStatus(domains);
+  }
+  return Object.fromEntries(domains.map((domain) => [domain, 'unknown']));
 }

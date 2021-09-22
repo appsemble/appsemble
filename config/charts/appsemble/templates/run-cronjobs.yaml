@@ -43,6 +43,12 @@ spec:
                     secretKeyRef:
                       name: {{ .Values.global.postgresql.existingSecret }}
                       key: postgresql-postgres-password
+                - name: HOST
+                  {{ if .Values.ingress.enabled -}}
+                  value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
+                  {{- else }}
+                  value: http://{{ include "appsemble.fullname" . }}
+                  {{- end }}
                 {{- with .Values.smtpSecret }}
                 - name: SMTP_HOST
                   valueFrom:

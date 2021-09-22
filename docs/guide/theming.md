@@ -23,6 +23,7 @@ The supported variables are:
 - `infoColor`
 - `warningColor`
 - `dangerColor`
+- `font`
 - `tileLayer`
 
 The `themeColor` and `splashColor` variables are not visible at all times. These define the colors
@@ -34,9 +35,11 @@ They can be accessed in the CSS using custom variables using kebab-case, for exa
 `background-color: var(--primary-color)`. An appropriately readable shade for the text of each color
 can be found by appending `-invert` to the variable name.
 
-Aside from color-related theme properties, the tile layer used on components that display a map
-(such as `map` and `form`) can be customized using the `tileLayer` property by specifying a URL
-template.
+The tile layer used on components that display a map (such as `map` and `form`) can be customized
+using the `tileLayer` property by specifying a URL template.
+
+The `font` property can be used to specify which font family to use. Any font family from [Google
+Fonts][] may be used
 
 ### Example
 
@@ -231,4 +234,5 @@ To do even more advanced CSS transformations, a custom `postcssrc` file can be c
 [bulma]: https://bulma.io/
 [hex]: https://htmlcolorcodes.com/
 [css-variables]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
+[google fonts]: https://fonts.google.com
 [`postcss-load-config`]: https://github.com/michael-ciniawsky/postcss-load-config

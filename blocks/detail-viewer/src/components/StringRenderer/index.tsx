@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { VNode } from 'preact';
+import { isPreactChild } from 'preact-components/src/utils';
 
 import { RendererProps, StringField } from '../../../block';
 
@@ -14,7 +15,7 @@ export function StringRenderer({ data, field }: RendererProps<StringField>): VNo
 
   return (
     <div className="appsemble-string mb-5">
-      {label ? <h6 className="title is-6 mb-0">{label}</h6> : null}
+      {isPreactChild(label) ? <h6 className="title is-6 mb-0">{label}</h6> : null}
       {value ? (
         <div className="content">{typeof value === 'string' ? value : JSON.stringify(value)}</div>
       ) : null}

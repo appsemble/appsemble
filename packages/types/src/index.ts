@@ -4,10 +4,12 @@ import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
 
+export * from './appMember';
 export * from './asset';
 export * from './author';
 export * from './snapshot';
 export * from './resource';
+export * from './ssl';
 export * from './template';
 
 export { Theme };
@@ -208,9 +210,10 @@ export interface Remappers {
    *
    * Supported properties:
    *
+   * - `data`: Get the current page data.
    * - `url`: Get the URL of the current page.
    */
-  page: 'url';
+  page: 'data' | 'url';
 
   /**
    * Get a property from the context.
@@ -249,6 +252,18 @@ export interface Remappers {
   'array.map': Remapper;
 
   /**
+   * Filters out unique entries from an array.
+   *
+   * The value Remapper is applied to each entry in the array,
+   * using its result to determine uniqueness.
+   *
+   * If the value Remapper result in `undefined` or `null`, the entire entry is used for uniqueness.
+   *
+   * If the input is not an array, the input is returned without any modifications.
+   */
+  'array.unique': Remapper;
+
+  /**
    * Checks if condition results in a truthy value.
    *
    * Returns value of then if condition is truthy, otherwise it returns the value of else.
@@ -283,9 +298,16 @@ export interface Remappers {
   prop: string;
 
   /**
+   * Pick and return a random entry from an array.
+   *
+   * If the input is not an array, the input is returned as-is.
+   */
+  'random.choice': null;
+
+  /**
    * Get the input data as it was initially passed to the remap function.
    */
-  root: unknown;
+  root: null;
 
   /**
    * Convert an input to lower or upper case.
@@ -631,6 +653,25 @@ export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
   title?: Remapper;
 }
 
+export interface StorageReadActionDefinition extends BaseActionDefinition<'storage.read'> {
+  /**
+   * The key of the entry to read from the app’s storage.
+   */
+  key: Remapper;
+}
+
+export interface StorageWriteActionDefinition extends BaseActionDefinition<'storage.write'> {
+  /**
+   * The key of the entry to write to the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The data to write to the app’s storage.
+   */
+  value: Remapper;
+}
+
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
   extends BaseActionDefinition<T> {
   /**
@@ -773,7 +814,9 @@ export type ActionDefinition =
   | ResourceSubscriptionUnsubscribeActionDefinition
   | ResourceUpdateActionDefinition
   | ShareActionDefinition
-  | StaticActionDefinition;
+  | StaticActionDefinition
+  | StorageReadActionDefinition
+  | StorageWriteActionDefinition;
 
 export interface ActionType {
   /**

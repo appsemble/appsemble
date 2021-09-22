@@ -37,6 +37,7 @@ export function Page(): ReactElement {
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
   const { page: navPage, setPage } = usePage();
 
+  const [data, setData] = useState<unknown>({});
   const [dialog, setDialog] = useState<ShowDialogParams>();
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
@@ -81,11 +82,12 @@ export function Page(): ReactElement {
         url: window.location.href,
         appUrl: window.location.origin,
         getMessage,
+        pageData: data,
         userInfo,
         context,
         root: input,
       }),
-    [getMessage, userInfo],
+    [data, getMessage, userInfo],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {
@@ -152,6 +154,7 @@ export function Page(): ReactElement {
         <TitleBar>{msg.format() as string}</TitleBar>
         {page.type === 'tabs' ? (
           <TabsPage
+            data={data}
             ee={ee.current}
             page={page}
             prefix={prefix}
@@ -166,17 +169,20 @@ export function Page(): ReactElement {
             <Route exact path={`${path}${(page.parameters || []).map((param) => `/:${param}`)}`}>
               {page.type === 'flow' ? (
                 <FlowPage
+                  data={data}
                   definition={definition}
                   ee={ee.current}
                   page={page}
                   prefix={prefix}
                   remap={remapWithContext}
+                  setData={setData}
                   showDialog={showDialog}
                   showShareDialog={showShareDialog}
                 />
               ) : (
                 <BlockList
                   blocks={page.blocks}
+                  data={data}
                   ee={ee.current}
                   key={prefix}
                   page={page}

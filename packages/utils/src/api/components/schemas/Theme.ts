@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { baseTheme, hexColor } from '../../../constants';
+import { baseTheme, googleFonts, hexColor } from '../../../constants';
 
 export const Theme: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -70,6 +70,14 @@ This is used in various elements like the navbar.
       format: 'uri',
       default: baseTheme.tileLayer,
       description: 'The tileLayer to use for Leaflet maps.',
+    },
+    font: {
+      enum: googleFonts,
+      description: `The font to use in the app.
+
+Any font available on [Google Fonts](https://fonts.google.com) may be used.
+`,
+      default: baseTheme.font,
     },
   },
 };

@@ -38,6 +38,10 @@ export function validate(
   }
   const requirement = validators[field.type](field, value, utils.remap);
   if (requirement) {
-    return utils.remap(requirement.errorMessage, value) || utils.remap(defaultError, value) || true;
+    return (
+      (utils.remap(requirement.errorMessage, value) as string) ||
+      (utils.remap(defaultError, value) as string) ||
+      true
+    );
   }
 }

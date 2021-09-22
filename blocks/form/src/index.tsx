@@ -13,7 +13,7 @@ import { isFormValid } from './utils/validity';
 bootstrap(
   ({ actions, data, events, parameters: { fields, previous, requirements }, ready, utils }) => {
     const defaultValues = useMemo<Values>(
-      () => ({ ...generateDefaultValues(fields), ...data }),
+      () => ({ ...generateDefaultValues(fields), ...(data as Record<string, unknown>) }),
       [data, fields],
     );
 
@@ -71,7 +71,9 @@ bootstrap(
               requirementErrors.set(
                 requirements.indexOf(requirement),
                 requirement.errorMessage
-                  ? utils.remap(requirement.errorMessage, values, { error: errorResponse })
+                  ? (utils.remap(requirement.errorMessage, values, {
+                      error: errorResponse,
+                    }) as string)
                   : utils.formatMessage('formRequirementError'),
               );
             },
@@ -136,7 +138,9 @@ bootstrap(
                 requirementErrors.set(
                   requirements.indexOf(requirement),
                   requirement.errorMessage
-                    ? utils.remap(requirement.errorMessage, newValues, { error: errorResponse })
+                    ? (utils.remap(requirement.errorMessage, newValues, {
+                        error: errorResponse,
+                      }) as string)
                     : utils.formatMessage('formRequirementError'),
                 );
               },

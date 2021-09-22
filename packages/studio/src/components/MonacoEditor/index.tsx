@@ -1,8 +1,11 @@
 import { applyRefs } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { editor, KeyCode, KeyMod } from 'monaco-editor/esm/vs/editor/editor.api';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
 import './custom';
+import { Diagnostic } from './Diagnostic';
+import styles from './index.module.css';
 
 editor.setTheme('vs');
 
@@ -41,6 +44,11 @@ interface MonacoEditorProps {
    * Whether or not the editor is on read-only mode.
    */
   readOnly?: boolean;
+
+  /**
+   * If true, render editor diagnostics in a pane below the editor.
+   */
+  showDiagnostics?: boolean;
 }
 
 const defaultOptions: Options = {
@@ -57,8 +65,12 @@ const defaultOptions: Options = {
  * object, it is recommended to use a state setter function.
  */
 export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
-  ({ className, language, onChange, onSave, readOnly = false, value = '' }, ref) => {
+  (
+    { className, language, onChange, onSave, readOnly = false, showDiagnostics, value = '' },
+    ref,
+  ) => {
     const [monaco, setMonaco] = useState<editor.IStandaloneCodeEditor>();
+    const [markers, setMarkers] = useState<editor.IMarker[]>([]);
 
     const saveRef = useRef(onSave);
     saveRef.current = onSave;
@@ -117,6 +129,38 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
       return () => subscription.dispose();
     }, [monaco, onChange]);
 
-    return <div className={className} ref={nodeRef} />;
+    useEffect(() => {
+      if (!monaco) {
+        return;
+      }
+      const uri = String(monaco.getModel().uri);
+      const disposable = editor.onDidChangeMarkers((resources) => {
+        for (const resource of resources) {
+          if (String(resource) === uri) {
+            setMarkers(editor.getModelMarkers({ resource }));
+            break;
+          }
+        }
+      });
+
+      return () => disposable.dispose();
+    }, [monaco]);
+
+    return (
+      <div className={classNames('is-flex is-flex-direction-column', className)}>
+        <div className="is-flex-grow-1 is-flex-shrink-1" ref={nodeRef} />
+        {showDiagnostics ? (
+          <div className={`is-flex-grow-1 is-flex-shrink-1 ${styles.diagnostics}`}>
+            {markers.map((marker) => (
+              <Diagnostic
+                key={`${marker.code}-${marker.startLineNumber}-${marker.startColumn}-${marker.endLineNumber}-${marker.endColumn}`}
+                marker={marker}
+                monaco={monaco}
+              />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    );
   },
 );

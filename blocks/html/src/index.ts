@@ -1,12 +1,27 @@
-import { bootstrap } from '@appsemble/sdk';
+import { bootstrap, Remapper } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
 const parser = new DOMParser();
+
+function populateContentNodes(
+  nodes: NodeListOf<HTMLElement>,
+  data: any,
+  placeholders: Record<string, Remapper>,
+  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
+): void {
+  for (const contentNode of nodes) {
+    const placeholderName = contentNode.dataset.content;
+    if (has(placeholders, placeholderName)) {
+      contentNode.textContent = remap(placeholders[placeholderName], data);
+    }
+  }
+}
 
 bootstrap(
   ({
     actions,
     data,
+    events,
     parameters: { content, placeholders },
     shadowRoot,
     utils: { asset, remap },
@@ -17,12 +32,8 @@ bootstrap(
     const assetNodes = body.querySelectorAll<HTMLElement>('[data-asset]');
     const clickNodes = body.querySelectorAll<HTMLElement>('[data-click]');
 
-    for (const contentNode of contentNodes) {
-      const placeholderName = contentNode.dataset.content;
-      if (has(placeholders, placeholderName)) {
-        contentNode.textContent = remap(placeholders[placeholderName], data);
-      }
-    }
+    events.on.data((d) => populateContentNodes(contentNodes, d, placeholders, remap));
+    populateContentNodes(contentNodes, data, placeholders, remap);
 
     for (const assetNode of assetNodes) {
       const assetId = assetNode.dataset.asset;

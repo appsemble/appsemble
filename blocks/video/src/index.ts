@@ -25,7 +25,6 @@ bootstrap(
     theme,
     utils,
   }) => {
-    const onFinish = (): Promise<void> => actions.onFinish(data);
     const errorNode = document.createElement('article');
     errorNode.className = `my-4 message is-danger ${styles.error}`;
     const errorMessage = document.createElement('div');
@@ -34,6 +33,11 @@ bootstrap(
     errorNode.append(errorMessage);
     let player: Vimeo;
     let playerDiv: HTMLDivElement;
+    const onFinish = async (): Promise<void> =>
+      actions.onFinish(data, {
+        videoId: await player.getVideoId(),
+        videoUrl: await player.getVideoUrl(),
+      });
     utils.addCleanup(() => player?.destroy());
 
     const setupError = (): void => {
@@ -100,7 +104,7 @@ bootstrap(
     });
 
     if (!hasEvent) {
-      const id = utils.remap(url, data);
+      const id = utils.remap(url, data) as string;
       setupPlayer(id);
     }
   },
