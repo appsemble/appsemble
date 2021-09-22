@@ -1,4 +1,6 @@
-export const baseTheme = {
+import { Theme } from '@appsemble/types';
+
+export const baseTheme: Theme = {
   primaryColor: '#5393ff',
   linkColor: '#0440ad',
   infoColor: '#a7d0ff',
@@ -8,4 +10,5 @@ export const baseTheme = {
   splashColor: '#ffffff',
   themeColor: '#ffffff',
   tileLayer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  font: 'Open Sans',
 };
