@@ -36,6 +36,17 @@ The remappers gets applied to each item in the array.
 Always returns an array, can be empty if supplied data isn’t an array.
 `,
     },
+    'array.unique': {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: `Filters out unique entries from an array.
+
+The value Remapper is applied to each entry in the array,
+using its result to determine uniqueness.
+
+If the value Remapper result in \`undefined\` or \`null\`, the entire entry is used for uniqueness.
+
+If the input is not an array, the input is returned without any modifications.`,
+    },
     context: {
       type: 'string',
       description: 'Get a property from the context.',
