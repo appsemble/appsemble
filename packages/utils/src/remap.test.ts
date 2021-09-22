@@ -305,6 +305,48 @@ describe('array.map', () => {
   });
 });
 
+describe('array.unique', () => {
+  runTests({
+    'return the input if the input is not an array': {
+      input: { a: 1, b: 2, c: 3 },
+      mappers: [{ 'array.unique': null }],
+      expected: { a: 1, b: 2, c: 3 },
+    },
+    'filter out duplicate values using primitive values without a remapper': {
+      input: [1, 2, 2, 3],
+      mappers: [{ 'array.unique': null }],
+      expected: [1, 2, 3],
+    },
+    'filter out duplicate values using complex values without a remapper': {
+      input: [
+        { id: 1, value: 'one' },
+        { id: 1, value: 'one' },
+        { id: 1, value: 'one' },
+        { id: 2, value: 'two' },
+      ],
+      mappers: [{ 'array.unique': null }],
+      expected: [
+        { id: 1, value: 'one' },
+        { id: 2, value: 'two' },
+      ],
+    },
+    'filter out duplicate values using complex values with a remapper': {
+      input: [
+        { id: 1, value: 'one' },
+        { id: 1, value: 'one' },
+        { id: 1, value: 'ONE' },
+        { id: 2, value: 'two' },
+      ],
+      mappers: [{ 'array.unique': { prop: 'value' } }],
+      expected: [
+        { id: 1, value: 'one' },
+        { id: 1, value: 'ONE' },
+        { id: 2, value: 'two' },
+      ],
+    },
+  });
+});
+
 describe('array', () => {
   runTests({
     'return undefined if not in the context of array.map': {

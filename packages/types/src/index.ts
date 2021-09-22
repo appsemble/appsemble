@@ -252,6 +252,18 @@ export interface Remappers {
   'array.map': Remapper;
 
   /**
+   * Filters out unique entries from an array.
+   *
+   * The value Remapper is applied to each entry in the array,
+   * using its result to determine uniqueness.
+   *
+   * If the value Remapper result in `undefined` or `null`, the entire entry is used for uniqueness.
+   *
+   * If the input is not an array, the input is returned without any modifications.
+   */
+  'array.unique': Remapper;
+
+  /**
    * Checks if condition results in a truthy value.
    *
    * Returns value of then if condition is truthy, otherwise it returns the value of else.

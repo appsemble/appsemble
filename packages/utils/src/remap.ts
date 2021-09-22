@@ -158,6 +158,27 @@ const mapperImplementations: MapperImplementations = {
       }),
     ) ?? [],
 
+  'array.unique': (mapper, input, context) => {
+    if (!Array.isArray(input)) {
+      return input;
+    }
+
+    const remapped = input.map((value, index) =>
+      mapper == null
+        ? value
+        : remap(mapper, value, { ...context, array: { index, length: input.length } }),
+    );
+    return input.filter((value, index) => {
+      for (let i = 0; i < index; i += 1) {
+        if (equal(remapped[index], remapped[i])) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  },
+
   array: (prop, input, context) => context.array?.[prop],
 
   static: (input) => input,
