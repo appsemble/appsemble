@@ -72,7 +72,12 @@ export function Login(): ReactElement {
       <TitleBar />
       <Content className={`is-flex appsemble-login ${styles.wrapper}`} padding>
         <figure className="my-4">
-          <img alt={definition.name} src={`/icon-256.png?updated=${appUpdated}`} />
+          <img
+            alt={definition.name}
+            height="256"
+            src={`/icon-256.png?updated=${appUpdated}`}
+            width="256"
+          />
         </figure>
         <PasswordLogin
           enableRegistration
