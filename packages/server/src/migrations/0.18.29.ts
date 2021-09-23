@@ -27,27 +27,6 @@ export async function up(db: Sequelize): Promise<void> {
 
   logger.info('Removing table `OAuth2Consent');
   await queryInterface.dropTable('OAuth2Consent');
-
-  logger.info('Adding column `password` to `AppMember`');
-  await queryInterface.addColumn('AppMember', 'password', {
-    type: DataTypes.STRING,
-  });
-
-  logger.info('Adding column `emailKey` to `AppMember`');
-  await queryInterface.addColumn('AppMember', 'emailKey', {
-    type: DataTypes.STRING,
-  });
-  logger.info('Adding column `resetKey` to `AppMember`');
-  await queryInterface.addColumn('AppMember', 'resetKey', {
-    type: DataTypes.STRING,
-  });
-
-  logger.info('Adding unique index between columns `AppId` and `email` for `AppMember`');
-  await queryInterface.addConstraint('AppMember', {
-    name: 'UniqueAppMemberEmailIndex',
-    fields: ['AppId', 'email'],
-    type: 'unique',
-  });
 }
 
 /**
@@ -98,13 +77,4 @@ export async function down(db: Sequelize): Promise<void> {
 
   logger.info('Removing column `consent` from `AppMember`');
   await queryInterface.removeColumn('AppMember', 'consent');
-
-  logger.info('Removing column `password` from `AppMember`');
-  await queryInterface.removeColumn('AppMember', 'password');
-
-  logger.info('Removing column `resetKey` from `AppMember`');
-  await queryInterface.removeColumn('AppMember', 'resetKey');
-
-  logger.info('Removing column `emailKey` from `AppMember`');
-  await queryInterface.removeColumn('AppMember', 'emailKey');
 }
