@@ -22,10 +22,29 @@ description:
     shortDescription:
       Appsemple is an open source low-code app building platform. The low-code editor allows users
       to build apps without the need for technical knowledge.
-    longDescription:
-      Appsemble is an open source low-code app building platform. Appsemble enables users to build
-      production grade apps in no time using blocks. Appsemble apps can also use existing data
-      sources. The apps built using Appsemble are discoverable in an internal app store.
+    longDescription: |
+      Appsemple is an open source low-code platform. In the available low-code editor, basic
+      building blocks are offered to build an app quickly and easily. It is also relatively easy to
+      link data to the applications and the developed apps can be stored in their own store.
+
+      Our mission is to build a low-code open source platform where anyone can create user-friendly
+      apps without the need for technical knowledge.
+
+      #### Why open source?
+
+      Open source is a good and proven way to allow software projects of any size to grow into
+      something that many people can use and build their own adaptations.
+
+      #### Appsemble has been developed with the following principles:
+
+      - Open Source, no vendor lock-in.
+      - Use of modern standards (PWA, React / Node.js, Docker, Kubernetes, Oauth2, JWT)
+      - Pragmatic: rather minimal functionality today than a great app tomorrow. We iterate towards
+        it every day.
+      - An app is built by creating an app recipe in a human readable (YAML) format. Building blocks
+        are chosen and configured here.
+      - Apps should be easy to share, copy and customize.
+      - Graphical choices are independent of the app and are defined at the organizational level.
     documentation: https://appsemble.app/docs
     features:
       - Not much technical knowledge required
@@ -35,13 +54,34 @@ description:
     localisedName: Appsemble
     genericName: Appsemble
     shortDescription:
-      Appsemple is een open source low-code app platform. In de beschikbare low-code editor worden
-      er basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen.
-    longDescription:
+      Appsemple is een open source low-code app platform. In de beschikbare editor kunnen gebruikers
+      eenvoudig een app bouwen zonder technische kennis.
+    longDescription: |
       Appsemple is een open source low-code platform. In de beschikbare low-code editor worden er
       basis bouwblokken aangeboden om snel en gemakkelijk een app te bouwen. Ook kan er relatief
       gemakkelijk data aan de applicaties worden gekoppeld en kunnen de ontwikkelde apps in een
       eigen store worden opgeslagen.
+
+      Onze missie is het bouwen van een low-code open source platform waar iedereen
+      gebruikersvriendelijke apps kan maken zonder dat daar technische kennis voor nodig is.
+
+      #### Waarom open source?
+
+      Open source is een goede en bewezen manier om software projecten van enige omvang goed te
+      kunnen laten uitgroeien tot iets waar veel mensen gebruik van kunnen maken en hun eigen
+      aanpassingen kunnen (laten) bouwen.
+
+      #### Appsemble is ontwikkeld met de volgende uitgangspunten:
+
+      - Open Source, geen vendor lock-in.
+      - Gebruik van moderne standaarden (PWA, React/Node.js, Docker, Kubernetes, Oauth2, JWT)
+      - Pragmatisch: liever minimale functionaliteit vandaag dan een fantastische app morgen. We
+        itereren er elke dag verder naar toe.
+      - Een app wordt gebouwd door een appdefinitie op te stellen in een door mensen leesbaar (YAML)
+        formaat. Hierin worden bouwblokken gekozen en geconfigureerd.
+      - Apps moeten eenvoudig kunnen worden gedeeld, gekopieerd en worden aangepast.
+      - Grafische keuzes staan los van de app en wordt op organisatie niveau gedefinieerd. eigen
+        store worden opgeslagen.
     documentation: https://appsemble.app/docs
     features:
       - Weinig technische kennis benodigd
