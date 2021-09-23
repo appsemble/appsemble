@@ -12,7 +12,14 @@ import { FormattedMessage } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
-import { apiUrl, appId, appUpdated, logins, showAppsembleLogin } from '../../utils/settings';
+import {
+  apiUrl,
+  appId,
+  appUpdated,
+  logins,
+  showAppsembleLogin,
+  showAppsembleOAuth2Login,
+} from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { Main } from '../Main';
 import { OpenIDLogin } from '../OpenIDLogin';
@@ -48,7 +55,7 @@ export function Login(): ReactElement {
     return <Redirect to={redirect || normalize(defaultPageName)} />;
   }
 
-  if (!logins.length && !showAppsembleLogin) {
+  if (!logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin) {
     return (
       <Content padding>
         <Message color="danger">
@@ -79,12 +86,14 @@ export function Login(): ReactElement {
             width="256"
           />
         </figure>
-        <PasswordLogin
-          enableRegistration
-          onPasswordLogin={onPasswordLogin}
-          registerLink={`/${lang}/Register`}
-          resetPasswordLink={`/${lang}/Reset-Password`}
-        />
+        {showAppsembleLogin && (
+          <PasswordLogin
+            enableRegistration
+            onPasswordLogin={onPasswordLogin}
+            registerLink={`/${lang}/Register`}
+            resetPasswordLink={`/${lang}/Reset-Password`}
+          />
+        )}
         <OpenIDLogin disabled={busy.enabled} />
       </Content>
     </Main>

@@ -13,6 +13,15 @@ export function SecretsPage(): ReactElement {
   const { app, setApp } = useApp();
   const [submitting, setSubmitting] = useState(false);
 
+  const onClickOAuth2Checkbox = useCallback(async () => {
+    setSubmitting(true);
+    const formData = new FormData();
+    formData.set('showAppsembleOAuth2Login', String(!app.showAppsembleOAuth2Login));
+    await axios.patch(`/api/apps/${app.id}`, formData);
+    setApp({ ...app, showAppsembleOAuth2Login: !app.showAppsembleOAuth2Login });
+    setSubmitting(false);
+  }, [app, setApp, setSubmitting]);
+
   const onClickCheckbox = useCallback(async () => {
     setSubmitting(true);
     const formData = new FormData();
@@ -31,6 +40,14 @@ export function SecretsPage(): ReactElement {
         <Title size={4}>
           <FormattedMessage {...messages.appsembleLogin} />
         </Title>
+        <Checkbox
+          className="is-block mb-2"
+          disabled={app.locked || submitting}
+          label={<FormattedMessage {...messages.displayAppsembleOAuth2Login} />}
+          name="enableAppsembleOAuth2Login"
+          onChange={onClickOAuth2Checkbox}
+          value={app.showAppsembleOAuth2Login}
+        />
         <Checkbox
           disabled={app.locked || submitting}
           label={<FormattedMessage {...messages.displayAppsembleLogin} />}

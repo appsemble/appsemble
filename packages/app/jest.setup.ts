@@ -9,7 +9,8 @@ window.settings = {
   logins: [],
   sentryDsn: null,
   sentryEnvironment: null,
-  showAppsembleLogin: true,
+  showAppsembleLogin: false,
+  showAppsembleOAuth2Login: true,
   vapidPublicKey: '123',
   appUpdated: '1970-01-01T00:00:00.000Z',
 };

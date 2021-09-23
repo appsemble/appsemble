@@ -1171,9 +1171,14 @@ export interface App {
   locked: boolean;
 
   /**
-   * Whether the Appsemble login method should be shown.
+   * Whether the Appsemble password login method should be shown.
    */
   showAppsembleLogin: boolean;
+
+  /**
+   * Whether the Appsemble OAuth2 login method should be shown.
+   */
+  showAppsembleOAuth2Login: boolean;
 
   /**
    * The app definition.

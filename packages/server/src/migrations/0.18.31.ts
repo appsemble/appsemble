@@ -6,7 +6,8 @@ export const key = '0.18.31';
 /**
  * Summary:
  * - Add columns `consent`, `password`, `emailKey`, and `resetKey` to AppMember
- * - Adds column `
+ * - Renames column `showAppsembleLogin` to `showAppsembleOAuth2Login` in `App`
+ * - Adds column `showAppsembleLogin` to `App`
  *
  * @param db - The sequelize database.
  */
@@ -34,8 +35,11 @@ export async function up(db: Sequelize): Promise<void> {
     type: 'unique',
   });
 
-  logger.info('Adding column `showAppsemblePasswordLogin` to `App`');
-  await queryInterface.addColumn('App', 'showAppsemblePasswordLogin', {
+  logger.info('Renaming column `showAppsembleLogin` to `showAppsembleOAuth2Login` in `App`');
+  await queryInterface.renameColumn('App', 'showAppsembleLogin', 'showAppsembleOAuth2Login');
+
+  logger.info('Adding column `showAppsembleLogin` to `App`');
+  await queryInterface.addColumn('App', 'showAppsembleLogin', {
     type: DataTypes.STRING,
     defaultValue: false,
   });
@@ -44,6 +48,8 @@ export async function up(db: Sequelize): Promise<void> {
 /**
  * Summary:
  * - Remove columns `password`, `resetKey`, and `emailKey` from AppMember
+ * - Remove column `showAppsembleLogin` from `App`
+ * - Rename column `showAppsembleOAuth2Login` to `showAppsembleLogin` in `App`
  *
  * @param db - The sequelize database.
  */
@@ -58,4 +64,10 @@ export async function down(db: Sequelize): Promise<void> {
 
   logger.info('Removing column `emailKey` from `AppMember`');
   await queryInterface.removeColumn('AppMember', 'emailKey');
+
+  logger.info('Removing column `showAppsembleLogin` from `App`');
+  await queryInterface.removeColumn('App', 'showAppsembleLogin');
+
+  logger.info('Renaming column `showAppsembleOAuth2Login` to `showAppsembleLogin` in `App`');
+  await queryInterface.renameColumn('App', 'showAppsembleOAuth2Login', 'showAppsembleLogin');
 }

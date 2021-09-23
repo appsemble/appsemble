@@ -527,6 +527,7 @@
   "studio.src.pages.apps.app.secrets.SamlSecrets.title": "SAML",
   "studio.src.pages.apps.app.secrets.appsembleLogin": "Appsemble login",
   "studio.src.pages.apps.app.secrets.displayAppsembleLogin": "Toon de Appsemble loginoptie",
+  "studio.src.pages.apps.app.secrets.displayAppsembleOAuth2Login": "Toon de Appsemble OAuth2 loginoptie",
   "studio.src.pages.apps.app.secrets.title": "Geheimen",
   "studio.src.pages.apps.app.settings": "Instellingen",
   "studio.src.pages.apps.app.settings.IconTool.cancel": "Annuleren",

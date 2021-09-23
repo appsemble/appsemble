@@ -37,6 +37,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
       'coreStyle',
       'vapidPublicKey',
       'showAppsembleLogin',
+      'showAppsembleOAuth2Login',
       'updated',
     ],
     include: [
@@ -118,7 +119,8 @@ export async function indexHandler(ctx: Context): Promise<void> {
     ],
     vapidPublicKey: app.vapidPublicKey,
     definition: app.definition,
-    showAppsembleLogin: app.showAppsembleLogin ?? true,
+    showAppsembleLogin: app.showAppsembleLogin ?? false,
+    showAppsembleOAuth2Login: app.showAppsembleOAuth2Login ?? true,
     sentryDsn,
     sentryEnvironment,
     appUpdated: app.updated.toISOString(),

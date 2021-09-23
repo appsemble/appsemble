@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { oauth2Scope } from '../../utils/constants';
-import { apiUrl, appId, logins, showAppsembleLogin } from '../../utils/settings';
+import { apiUrl, appId, logins, showAppsembleOAuth2Login } from '../../utils/settings';
 import styles from './index.module.css';
 import { messages } from './messages';
 
@@ -27,7 +27,7 @@ export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactElement {
 
   return (
     <>
-      {showAppsembleLogin && (
+      {showAppsembleOAuth2Login && (
         <OAuth2LoginButton
           authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
           className={buttonProps.className}

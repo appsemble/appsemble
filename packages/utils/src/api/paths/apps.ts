@@ -231,6 +231,10 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'boolean',
                   description: 'Whether the Appsemble login method should be shown.',
                 },
+                showAppsembleOAuth2Login: {
+                  type: 'boolean',
+                  description: 'Whether the Appsemble OAuth2 login method should be shown.',
+                },
               },
             },
             encoding: {
