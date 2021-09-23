@@ -3,6 +3,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Main } from '../Main';
+import { ProfileSettings } from '../ProfileSettings';
 import { TitleBar } from '../TitleBar';
 import { AppSubscriptions } from './AppSubscriptions';
 import { LanguagePreference } from './LanguagePreference';
@@ -18,6 +19,7 @@ export function AppSettings(): ReactElement {
         <FormattedMessage {...messages.settings} />
       </TitleBar>
       <Main>
+        <ProfileSettings />
         <LanguagePreference />
         <AppSubscriptions />
       </Main>
