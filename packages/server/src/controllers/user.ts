@@ -1,5 +1,6 @@
 import { randomBytes } from 'crypto';
 
+import { logger } from '@appsemble/node-utils';
 import { AppAccount, App as AppType, SSOConfiguration } from '@appsemble/types';
 import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
 import { JwtPayload, verify } from 'jsonwebtoken';
@@ -348,9 +349,10 @@ export async function getAppAccount(ctx: Context): Promise<void> {
 
 export async function patchAppAccount(ctx: Context): Promise<void> {
   const {
+    mailer,
     pathParams: { appId },
     request: {
-      body: { email, name },
+      body: { email, name, picture },
     },
     user,
   } = ctx;
@@ -371,10 +373,27 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     result.email = email;
     result.emailVerified = false;
     result.emailKey = randomBytes(40).toString('hex');
+
+    const url = new URL(argv.host);
+    url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+    const appUrl = String(url);
+
+    mailer
+      .sendTemplateEmail({ email, name }, 'appMemberEmailChange', {
+        url: `${appUrl}/Verify?token=${result.emailKey}`,
+        name: app.definition.name,
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
   }
 
   if (name != null) {
     result.name = name;
+  }
+
+  if (picture) {
+    result.picture = picture.contents;
   }
 
   await member.update(result);

@@ -270,6 +270,16 @@ export const paths: OpenAPIV3.PathsObject = {
                 name: {
                   type: 'string',
                 },
+                picture: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The member’s avatar.',
+                },
+              },
+            },
+            encoding: {
+              picture: {
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
               },
             },
           },

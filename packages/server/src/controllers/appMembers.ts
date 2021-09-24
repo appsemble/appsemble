@@ -12,6 +12,7 @@ import { App, AppMember, Organization, transactional, User } from '../models';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { createJWTResponse } from '../utils/createJWTResponse';
+import { serveIcon } from '../utils/icon';
 
 export async function getAppMembers(ctx: Context): Promise<void> {
   const {
@@ -128,6 +129,34 @@ export async function setAppMember(ctx: Context): Promise<void> {
     primaryEmail: member.email,
     role,
   };
+}
+
+export async function getAppMemberAvatar(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, memberId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: [{ model: AppMember, where: { id: memberId }, required: false }],
+  });
+
+  if (!app) {
+    throw notFound('App could not be found.');
+  }
+
+  if (!app.AppMembers.length) {
+    throw notFound('This member does not exist');
+  }
+
+  if (!app.AppMembers[0].picture) {
+    throw notFound('This member has no custom avatar set.');
+  }
+
+  await serveIcon(ctx, {
+    icon: app.AppMembers[0].picture,
+    fallback: 'user-solid.png',
+    raw: true,
+  });
 }
 
 export async function registerMemberEmail(ctx: Context): Promise<void> {
