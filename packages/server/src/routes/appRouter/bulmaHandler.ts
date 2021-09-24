@@ -8,22 +8,32 @@ const functionPath = require.resolve('bulma/sass/utilities/functions.sass').repl
 const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass').replace(/\\/g, '/');
 const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').replace(/\\/g, '/');
 
+interface QueryParamTheme extends Omit<Partial<Theme>, 'font'> {
+  fontFamily?: string;
+  fontSource?: string;
+}
+
 /**
  * Process SASS styles based on given parameters.
  *
  * @param theme - The theme object to turn into a SASS file.
  * @returns SASS string containing the base Appsemble style augmented by user parameters.
  */
-function processStyle(theme: Partial<Theme>): string {
-  const font = theme.font || baseTheme.font;
-  const googleFontsUrl = new URL('https://fonts.googleapis.com/css');
-  googleFontsUrl.searchParams.set('display', 'swap');
-  googleFontsUrl.searchParams.set('family', font);
+function processStyle(theme: QueryParamTheme): string {
+  const fontSource = theme.fontSource || baseTheme.font.source;
+  const fontFamily = theme.fontFamily || baseTheme.font.family;
+  let googleFontsImport = '';
+  if (fontSource === 'google') {
+    const googleFontsUrl = new URL('https://fonts.googleapis.com/css');
+    googleFontsUrl.searchParams.set('display', 'swap');
+    googleFontsUrl.searchParams.set('family', fontFamily);
+    googleFontsImport = `@import url(${googleFontsUrl})`;
+  }
 
   return `
     @charset "utf-8";
-    @import url(${googleFontsUrl});
-    $family-sans-serif: '${font}', sans-serif !default;
+    ${googleFontsImport}
+    $family-sans-serif: '${fontFamily}', sans-serif !default;
     $primary: ${theme.primaryColor || baseTheme.primaryColor};
     $link: ${theme.linkColor || baseTheme.linkColor};
     $info: ${theme.infoColor || baseTheme.infoColor};

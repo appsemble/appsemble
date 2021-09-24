@@ -10,5 +10,8 @@ export const baseTheme: Theme = {
   splashColor: '#ffffff',
   themeColor: '#ffffff',
   tileLayer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  font: 'Open Sans',
+  font: {
+    family: 'Open Sans',
+    source: 'google',
+  },
 };
