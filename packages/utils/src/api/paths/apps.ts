@@ -532,6 +532,37 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
+  '/api/apps/{appId}/members/{memberId}/avatar': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      {
+        name: 'memberId',
+        in: 'path',
+        description: 'The ID of the member on which to perform an operation',
+        required: true,
+        schema: { $ref: '#/components/schemas/User/properties/id' },
+      },
+    ],
+    get: {
+      tags: ['app'],
+      description: `Get an app member’s avatar.
+
+This will return a 404 if the user has not uploaded one.`,
+      operationId: 'getAppMemberAvatar',
+      responses: {
+        200: {
+          description: 'The icon of the app that matches the given id.',
+          content: {
+            'image/png': {},
+            'image/jpeg': {},
+            'image/tiff': {},
+            'image/webp': {},
+          },
+        },
+      },
+      security: [{ studio: [] }, { app: ['openid'] }],
+    },
+  },
   '/api/apps/{appId}/ratings': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {

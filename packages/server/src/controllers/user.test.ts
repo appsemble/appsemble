@@ -415,7 +415,7 @@ describe('getAppAccount', () => {
   });
 });
 
-describe('updateAppAccount', () => {
+describe('patchAppAccount', () => {
   it('should return the user’s app account', async () => {
     authorizeStudio();
 
@@ -427,7 +427,7 @@ describe('updateAppAccount', () => {
     });
     const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
-    const response = await request.put(`/api/user/apps/${app.id}/account`, {
+    const response = await request.patch(`/api/user/apps/${app.id}/account`, {
       name: 'Me',
       email: 'user@example.com',
     });
@@ -475,7 +475,7 @@ describe('updateAppAccount', () => {
       definition: {},
     });
 
-    const response = await request.put(`/api/user/apps/${app.id}/account`, {
+    const response = await request.patch(`/api/user/apps/${app.id}/account`, {
       name: '',
       email: 'user@example.com',
     });

@@ -6,6 +6,7 @@ import {
   SimpleSubmit,
   useMessages,
 } from '@appsemble/react-components';
+import { App } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -16,16 +17,26 @@ import { messages } from './messages';
 
 export function ProfileSettings(): ReactElement {
   const { formatMessage } = useIntl();
-  const { userInfo } = useUser();
+  const { setUserInfo, userInfo } = useUser();
   const push = useMessages();
 
   const onSaveProfile = useCallback(
     async (values: { name: string }) => {
-      await axios.put(`${apiUrl}/api/apps/${appId}/member`, values);
-      // RefreshUserInfo();
+      const { data } = await axios.put<{
+        app: App;
+        email: string;
+        id: string;
+        name: string;
+      }>(`${apiUrl}/api/user/apps/${appId}/account`, values);
+      setUserInfo({
+        ...userInfo,
+        email: data.email,
+        sub: data.id,
+        name: data.name,
+      });
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     },
-    [formatMessage, push],
+    [formatMessage, push, setUserInfo, userInfo],
   );
 
   return (
@@ -43,6 +54,7 @@ export function ProfileSettings(): ReactElement {
         name="name"
         placeholder={formatMessage(messages.displayName)}
       />
+
       <FormButtons>
         <SimpleSubmit>
           <FormattedMessage {...messages.saveProfile} />

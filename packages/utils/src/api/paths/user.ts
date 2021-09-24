@@ -251,11 +251,11 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
-    put: {
+    patch: {
       description: 'Update user data for a specific app',
       tags: ['user'],
-      operationId: 'updateAppAccount',
-      security: [{ studio: [] }],
+      operationId: 'patchAppAccount',
+      security: [{ studio: [] }, { app: [] }],
       requestBody: {
         content: {
           'application/json': {

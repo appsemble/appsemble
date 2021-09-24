@@ -311,6 +311,7 @@ function outputAppMember(app: App, language: string, baseLanguage: string): AppA
     app: getAppFromRecord(app) as AppType,
     id: member.id,
     email: member.email,
+    email_verified: member.emailVerified,
     name: member.name,
     role: member.role,
     sso,
@@ -345,7 +346,7 @@ export async function getAppAccount(ctx: Context): Promise<void> {
   ctx.body = outputAppMember(app, language, baseLanguage);
 }
 
-export async function updateAppAccount(ctx: Context): Promise<void> {
+export async function patchAppAccount(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
     request: {
@@ -365,7 +366,17 @@ export async function updateAppAccount(ctx: Context): Promise<void> {
   }
 
   const [member] = app.AppMembers;
-  await member.update({ name, email });
+  const result: Partial<AppMember> = {};
+  if (email != null && member.email !== email) {
+    result.email = email;
+    result.emailVerified = false;
+    result.emailKey = randomBytes(40).toString('hex');
+  }
 
+  if (name != null) {
+    result.name = name;
+  }
+
+  await member.update(result);
   ctx.body = outputAppMember(app, language, baseLanguage);
 }
