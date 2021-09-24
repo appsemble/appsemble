@@ -493,7 +493,7 @@ describe('patchAppAccount', () => {
   it('should throw 404 if the app doesn’t exist', async () => {
     authorizeStudio();
 
-    const response = await request.put('/api/user/apps/404/account', {
+    const response = await request.patch('/api/user/apps/404/account', {
       name: '',
       email: 'user@example.com',
     });
