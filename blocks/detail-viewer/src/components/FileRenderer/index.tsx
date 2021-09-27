@@ -1,6 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
 import { VNode } from 'preact';
+import { isPreactChild } from 'preact-components/src/utils';
 
 import { FileField, RendererProps } from '../../../block';
 import { ImageField } from '../ImageField';
@@ -12,24 +13,25 @@ import styles from './index.module.css';
 export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
   const { utils } = useBlock();
   const value = utils.remap(field.value, data);
+  const label = utils.remap(field.label, data);
 
   return (
     <div className="appsemble-file">
-      {field.label && <h6 className="title is-6">{field.label}</h6>}
+      {isPreactChild(label) && <h6 className="title is-6">{label}</h6>}
       {field.repeated ? (
         <div className={classNames('container', styles.repeated)}>
           {((value || []) as string[]).map((v, index) => (
             <ImageField
               // eslint-disable-next-line react/no-array-index-key
               key={index}
-              label={field.label}
+              label={label}
               name={field.value}
               src={field.repeatedName ? (utils.remap(field.repeatedName, v) as string) : v}
             />
           ))}
         </div>
       ) : (
-        value && <ImageField label={field.label} name={field.value} src={value as string} />
+        value && <ImageField label={label} name={field.value} src={value as string} />
       )}
     </div>
   );
