@@ -3,6 +3,7 @@ import { OpenAPIV3 } from 'openapi-types';
 export const CustomFontDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A custom font definition.',
+  additionalProperties: false,
   required: ['source', 'family'],
   properties: {
     source: {

@@ -5,6 +5,7 @@ import { baseTheme, googleFonts } from '../../../constants';
 export const GoogleFontDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A Google font definition.',
+  additionalProperties: false,
   required: ['family'],
   properties: {
     source: {
