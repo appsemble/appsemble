@@ -7,6 +7,18 @@ import parseDuration from 'parse-duration';
 import { has } from './has';
 import { mapValues } from './mapValues';
 
+/**
+ * Stub the console types, since we don’t want to use dom or node types here.
+ */
+declare const console: {
+  /**
+   * Log an error message to the console.
+   *
+   * @param args - The message to render to the console.
+   */
+  error: (...args: unknown[]) => void;
+};
+
 export interface IntlMessage {
   id?: string;
   defaultMessage?: string;
@@ -99,7 +111,6 @@ export function remap(
   for (const mapper of remappers) {
     const entries = Object.entries(mapper) as [keyof MapperImplementations, unknown][];
     if (entries.length !== 1) {
-      // eslint-disable-next-line no-console
       console.error(mapper);
       throw new RemapperError(
         `Remapper has multiple keys: ${Object.keys(mapper)
@@ -111,7 +122,6 @@ export function remap(
     const [[name, args]] = entries;
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     if (!has(mapperImplementations, name)) {
-      // eslint-disable-next-line no-console
       console.error(mapper);
       throw new RemapperError(`Remapper name does not exist: ${JSON.stringify(name)}`, mapper);
     }
