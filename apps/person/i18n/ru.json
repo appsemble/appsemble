@@ -10,6 +10,7 @@
     "description": "Описание",
     "email": "Эл. почта",
     "firstName": "Имя",
-    "lastName": "Фамилия"
+    "lastName": "Фамилия",
+    "picture": ""
   }
 }
