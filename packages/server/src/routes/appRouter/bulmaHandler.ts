@@ -27,7 +27,7 @@ function processStyle(theme: QueryParamTheme): string {
     const googleFontsUrl = new URL('https://fonts.googleapis.com/css');
     googleFontsUrl.searchParams.set('display', 'swap');
     googleFontsUrl.searchParams.set('family', fontFamily);
-    googleFontsImport = `@import url(${googleFontsUrl})`;
+    googleFontsImport = `@import url(${googleFontsUrl});`;
   }
 
   return `
