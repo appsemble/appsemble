@@ -14,7 +14,7 @@ export const CustomFontDefinition: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: `The font family to use in the app.
 
-It’s your responsibility as an app developer to make sure the font is available using custom CSS.
+Make sure the font is available using custom CSS.
 `,
     },
   },
