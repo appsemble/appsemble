@@ -82,13 +82,15 @@ export function JSONSchemaArrayEditor({
 
   return (
     <div className={`${styles.root} px-3 py-3 my-2 mx-0`}>
-      <Button
-        className="is-pulled-right"
-        color="success"
-        icon="plus"
-        onClick={onItemAdded}
-        title={formatMessage(messages.addTop, { name: name.replace(`${prefix}.`, '') })}
-      />
+      {schema.maxItems == null || value.length < schema.maxItems ? (
+        <Button
+          className="is-pulled-right"
+          color="success"
+          icon="plus"
+          onClick={onItemAdded}
+          title={formatMessage(messages.addTop, { name: name.replace(`${prefix}.`, '') })}
+        />
+      ) : null}
       <Collapsible
         className={styles.title}
         level={5}
@@ -104,6 +106,7 @@ export function JSONSchemaArrayEditor({
               nested
               onChange={onPropertyChange}
               prefix={prefix}
+              required={schema.minItems != null && index < schema.minItems}
               schema={items}
               value={val}
             />
@@ -118,23 +121,27 @@ export function JSONSchemaArrayEditor({
                   title={formatMessage(messages.swap)}
                 />
               ) : null}
-              <Button
-                color="danger"
-                icon="minus"
-                name={`${name}.${index}`}
-                onClick={onClickRemoveItem}
-                title={formatMessage(messages.removeAbove, {
-                  name: `${name.replace(`${prefix}.`, '')}.${index}`,
-                })}
-              />
-              <Button
-                className="ml-1"
-                color="success"
-                icon="plus"
-                name={`${name}.${index}`}
-                onClick={onItemAdded}
-                title={formatMessage(messages.addBelow, { index: index + 1 })}
-              />
+              {schema.minItems == null || value.length > schema.minItems ? (
+                <Button
+                  color="danger"
+                  icon="minus"
+                  name={`${name}.${index}`}
+                  onClick={onClickRemoveItem}
+                  title={formatMessage(messages.removeAbove, {
+                    name: `${name.replace(`${prefix}.`, '')}.${index}`,
+                  })}
+                />
+              ) : null}
+              {schema.maxItems == null || value.length < schema.maxItems ? (
+                <Button
+                  className="ml-1"
+                  color="success"
+                  icon="plus"
+                  name={`${name}.${index}`}
+                  onClick={onItemAdded}
+                  title={formatMessage(messages.addBelow, { index: index + 1 })}
+                />
+              ) : null}
             </div>
             <hr />
           </div>
