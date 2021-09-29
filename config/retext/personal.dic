@@ -4,6 +4,7 @@ Appsemble
 accessor/processor
 anonymize/synthesize
 changelog/kitten
+cryptographical/potential
 decrypt/encrypt
 dialog/kitten
 enum/kitten
