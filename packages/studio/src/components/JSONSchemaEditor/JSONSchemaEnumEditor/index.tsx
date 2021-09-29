@@ -1,5 +1,4 @@
 import { MarkdownContent, SelectField } from '@appsemble/react-components';
-import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -33,9 +32,11 @@ export function JSONSchemaEnumEditor({
           {formatMessage(messages.empty)}
         </option>
       )}
-      {(schema as OpenAPIV3.SchemaObject).enum.map((option) => (
+      {schema.enum.map((option, index) => (
         <option key={option} value={option}>
-          {option}
+          {schema.enumDescriptions?.[index]
+            ? `${schema.enumDescriptions[index]} (${option})`
+            : option}
         </option>
       ))}
     </SelectField>

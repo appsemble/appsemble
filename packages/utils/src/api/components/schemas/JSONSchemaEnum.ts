@@ -14,6 +14,13 @@ export const JSONSchemaEnum = extendJSONSchema(BaseJSONSchema, {
         anyOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
       },
     },
+    enumDescriptions: {
+      type: 'array',
+      description: `An array is descriptions for the enum values.
+
+The description is applied to the enum value at the same index.`,
+      items: { type: 'string' },
+    },
     example: {
       anyOf: [{ type: 'boolean' }, { type: 'number' }, { type: 'string' }, { enum: [null] }],
       description: 'An example which is valid according to this schema.',
