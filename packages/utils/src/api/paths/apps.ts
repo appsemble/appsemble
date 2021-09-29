@@ -532,7 +532,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
-  '/api/apps/{appId}/members/{memberId}/avatar': {
+  '/api/apps/{appId}/members/{memberId}/picture': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {
@@ -545,13 +545,13 @@ export const paths: OpenAPIV3.PathsObject = {
     ],
     get: {
       tags: ['app'],
-      description: `Get an app member’s avatar.
+      description: `Get an app member’s profile picture.
 
 This will return a 404 if the user has not uploaded one.`,
-      operationId: 'getAppMemberAvatar',
+      operationId: 'getAppMemberPicture',
       responses: {
         200: {
-          description: 'The icon of the app that matches the given id.',
+          description: 'The profile picture of the app member.',
           content: {
             'image/png': {},
             'image/jpeg': {},
@@ -560,7 +560,6 @@ This will return a 404 if the user has not uploaded one.`,
           },
         },
       },
-      security: [{ studio: [] }, { app: ['openid'] }],
     },
   },
   '/api/apps/{appId}/ratings': {

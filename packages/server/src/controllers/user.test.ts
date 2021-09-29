@@ -1,5 +1,6 @@
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import FormData from 'form-data';
 
 import { App, AppMember, EmailAuthorization, Member, Organization, User } from '../models';
 import { setArgv } from '../utils/argv';
@@ -427,10 +428,11 @@ describe('patchAppAccount', () => {
     });
     const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
-    const response = await request.patch(`/api/user/apps/${app.id}/account`, {
-      name: 'Me',
-      email: 'user@example.com',
-    });
+    const data = new FormData();
+    data.append('name', 'Me');
+    data.append('email', 'user@example.com');
+
+    const response = await request.patch(`/api/user/apps/${app.id}/account`, data);
 
     expect(response).toMatchObject({
       status: 200,
@@ -475,10 +477,11 @@ describe('patchAppAccount', () => {
       definition: {},
     });
 
-    const response = await request.patch(`/api/user/apps/${app.id}/account`, {
-      name: '',
-      email: 'user@example.com',
-    });
+    const data = new FormData();
+    data.append('name', '');
+    data.append('email', 'user@example.com');
+
+    const response = await request.patch(`/api/user/apps/${app.id}/account`, data);
 
     expect(response).toMatchObject({
       status: 404,
@@ -493,10 +496,11 @@ describe('patchAppAccount', () => {
   it('should throw 404 if the app doesn’t exist', async () => {
     authorizeStudio();
 
-    const response = await request.patch('/api/user/apps/404/account', {
-      name: '',
-      email: 'user@example.com',
-    });
+    const data = new FormData();
+    data.append('name', '');
+    data.append('email', 'user@example.com');
+
+    const response = await request.patch('/api/user/apps/404/account', data);
 
     expect(response).toMatchObject({
       status: 404,

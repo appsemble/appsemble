@@ -258,7 +258,7 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }, { app: [] }],
       requestBody: {
         content: {
-          'application/json': {
+          'multipart/form-data': {
             schema: {
               type: 'object',
               additionalProperties: false,

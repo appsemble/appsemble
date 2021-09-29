@@ -1,4 +1,5 @@
 import {
+  FileUpload,
   FormButtons,
   SimpleForm,
   SimpleFormError,
@@ -14,6 +15,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { apiUrl, appId } from '../../utils/settings';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
+import { PicturePreview } from './PicturePreview';
 
 export function ProfileSettings(): ReactElement {
   const { formatMessage } = useIntl();
@@ -21,18 +23,28 @@ export function ProfileSettings(): ReactElement {
   const push = useMessages();
 
   const onSaveProfile = useCallback(
-    async (values: { name: string }) => {
-      const { data } = await axios.put<{
+    async (values: { name: string; email: string; picture: File }) => {
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('email', values.email);
+
+      if (values.picture) {
+        formData.append('picture', values.picture);
+      }
+
+      const { data } = await axios.patch<{
         app: App;
         email: string;
         id: string;
         name: string;
-      }>(`${apiUrl}/api/user/apps/${appId}/account`, values);
+        picture: string;
+      }>(`${apiUrl}/api/user/apps/${appId}/account`, formData);
       setUserInfo({
         ...userInfo,
         email: data.email,
         sub: data.id,
         name: data.name,
+        picture: data.picture,
       });
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     },
@@ -42,7 +54,9 @@ export function ProfileSettings(): ReactElement {
   return (
     <SimpleForm
       defaultValues={{
-        name: userInfo.name || '',
+        name: userInfo?.name || '',
+        email: userInfo?.email || '',
+        picture: null,
       }}
       onSubmit={onSaveProfile}
     >
@@ -53,6 +67,16 @@ export function ProfileSettings(): ReactElement {
         label={<FormattedMessage {...messages.displayName} />}
         name="name"
         placeholder={formatMessage(messages.displayName)}
+      />
+      <SimpleFormField
+        accept="image/jpeg, image/png, image/tiff, image/webp"
+        component={FileUpload}
+        fileButtonLabel={<FormattedMessage {...messages.picture} />}
+        fileLabel={<FormattedMessage {...messages.selectFile} />}
+        help={<FormattedMessage {...messages.pictureDescription} />}
+        label={<FormattedMessage {...messages.picture} />}
+        name="picture"
+        preview={<PicturePreview pictureUrl={userInfo?.picture} />}
       />
 
       <FormButtons>

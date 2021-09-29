@@ -131,13 +131,19 @@ export async function setAppMember(ctx: Context): Promise<void> {
   };
 }
 
-export async function getAppMemberAvatar(ctx: Context): Promise<void> {
+export async function getAppMemberPicture(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, memberId },
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    include: [{ model: AppMember, where: { id: memberId }, required: false }],
+    include: [
+      {
+        model: AppMember,
+        where: { [Op.or]: [{ id: memberId }, { UserId: memberId }] },
+        required: false,
+      },
+    ],
   });
 
   if (!app) {

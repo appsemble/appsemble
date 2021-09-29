@@ -8,4 +8,7 @@ export const messages = defineMessages({
   saveProfile: 'Save Profile',
   submitSuccess: 'Successfully updated profile.',
   submitError: 'Something went wrong trying to update your profile.',
+  picture: 'Picture',
+  selectFile: 'Select a file',
+  pictureDescription: 'The public picture to use for your profile.',
 });

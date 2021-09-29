@@ -22,6 +22,7 @@ import {
 import { applyAppMessages, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { createJWTResponse } from '../utils/createJWTResponse';
+import { getGravatarUrl } from '../utils/gravatar';
 import { getAppFromRecord } from '../utils/model';
 
 export async function getUser(ctx: Context): Promise<void> {
@@ -313,6 +314,16 @@ function outputAppMember(app: App, language: string, baseLanguage: string): AppA
     id: member.id,
     email: member.email,
     email_verified: member.emailVerified,
+    picture: member.picture
+      ? String(
+          new URL(
+            `/api/apps/${app.id}/members/${
+              member.UserId
+            }/picture?updated=${member.updated.getTime()}`,
+            argv.host,
+          ),
+        )
+      : getGravatarUrl(member.email),
     name: member.name,
     role: member.role,
     sso,

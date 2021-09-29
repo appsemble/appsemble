@@ -54,7 +54,10 @@ export function DetailsPage(): ReactElement {
 
   const onSubmit = useCallback(
     async ({ email, name }: AppAccount) => {
-      const { data } = await axios.patch(`/api/user/apps/${appId}/account`, { email, name });
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      const { data } = await axios.patch(`/api/user/apps/${appId}/account`, formData);
       result.setData(data);
     },
     [appId, result],
