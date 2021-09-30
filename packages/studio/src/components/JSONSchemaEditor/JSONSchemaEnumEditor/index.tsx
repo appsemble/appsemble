@@ -1,7 +1,6 @@
 import { MarkdownContent, SelectField } from '@appsemble/react-components';
-import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { CommonJSONSchemaEditorProps } from '../types';
@@ -16,6 +15,8 @@ export function JSONSchemaEnumEditor({
   schema,
   value = '',
 }: CommonJSONSchemaEditorProps<any>): ReactElement {
+  const { formatMessage } = useIntl();
+
   return (
     <SelectField
       disabled={disabled}
@@ -26,12 +27,16 @@ export function JSONSchemaEnumEditor({
       required={required}
       value={value}
     >
-      <option disabled hidden>
-        <FormattedMessage {...messages.empty} />
-      </option>
-      {(schema as OpenAPIV3.SchemaObject).enum.map((option) => (
+      {schema.enum.includes(value) ? null : (
+        <option disabled value="">
+          {formatMessage(messages.empty)}
+        </option>
+      )}
+      {schema.enum.map((option, index) => (
         <option key={option} value={option}>
-          {option}
+          {schema.enumDescriptions?.[index]
+            ? `${schema.enumDescriptions[index]} (${option})`
+            : option}
         </option>
       ))}
     </SelectField>
