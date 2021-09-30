@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.18.30
-appVersion: 0.18.30
+version: 0.18.31
+appVersion: 0.18.31
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,19 +25,13 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: 'Block(html): Add data event listener.'
+      description: 'Block(video): Add videoId and videoUrl to context in the onFinish action.'
     - kind: added
-      description: 'Block(markdown): Add data event listener.'
+      description: 'App: Add array.unique remapper.'
     - kind: added
-      description: 'App: Add data option to page remapper.'
-    - kind: added
-      description: >-
-        App: Add random.choice remapper. It returns a random entry from an array of
-        items, or the input if the input is not an array.
-    - kind: added
-      description: 'App: Add storage.read and storage.write actions.'
-    - kind: added
-      description: 'Studio: Render Monaco editor diagnostics below the editor pane.'
+      description: 'App: Allow apps to use any font from Google Fonts.'
+    - kind: changed
+      description: 'Block(html): Placeholders are now optional.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

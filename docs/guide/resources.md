@@ -136,7 +136,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.18.30
+        version: 0.18.31
         actions:
           onLoad:
             type: resource.query
@@ -300,8 +300,26 @@ For more information about this, please refer to [this page](./security.md)
 
 ## Assets
 
-Some resources may also include files such as images or documents. To support this, Appsemble
-provides the Asset API. The asset API accepts file uploads and returns the corresponding ID which
-can be referenced to within a resource.
+Some resources may need binary data such as images or documents. To support this, Appsemble provides
+the [asset](./assets.md) API. The resource API works with the asset API to handle binary data. To
+treat a field in a resource in as a binary asset, specify it as `type: string` and `format: binary`
+in the JSON schema.
 
-The Asset API can be found at `/assets/{id?}`.
+```yaml
+resources:
+  picture:
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        picture:
+          type: string
+          format: binary
+```
+
+Now if the user uses resource actions to create or update a resource which has a picture, The
+picture will be uploaded as a binary blob alongside the rest of the resource which is serialized as
+JSON. The API will replace the asset with an auto-generated ID. This ID can be used to reference the
+asset in a URL.
+
+The same happens when a resource is managed using Appsemble Studio.

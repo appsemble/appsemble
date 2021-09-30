@@ -1,4 +1,5 @@
 import {
+  AsyncCheckbox,
   Button,
   CardFooterButton,
   Checkbox,
@@ -22,7 +23,6 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import { RouteParams } from '..';
 import { useApp } from '../../../..';
 import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor';
-import { ClonableCheckbox } from '../ClonableCheckbox';
 import { ResourceCell } from '../ResourceCell';
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -95,11 +95,12 @@ export function ResourceRow({
   const { formatMessage } = useIntl();
 
   const onSetClonable = useCallback(async () => {
+    const { $author, $clonable, $created, $updated, ...rest } = resource;
     const { data } = await axios.put<Resource>(
       `/api/apps/${appId}/resources/${resourceName}/${resource.id}`,
       {
-        ...resource,
-        $clonable: !resource.$clonable,
+        ...rest,
+        $clonable: !$clonable,
       },
     );
     onEdit(data);
@@ -265,10 +266,10 @@ export function ResourceRow({
 
       {has(app, 'resources') && !filter.has('$clonable') && (
         <td>
-          <ClonableCheckbox
-            checked={resource.$clonable}
+          <AsyncCheckbox
             id={`clonable${resource.id}`}
             onChange={onSetClonable}
+            value={resource.$clonable}
           />
         </td>
       )}

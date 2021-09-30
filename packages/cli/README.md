@@ -84,6 +84,15 @@ npm install webpack@webpack-4 @appsemble/webpack-config
 For a more in-depth explanation of how to build apps, use our
 [block development guide](https://appsemble.app/docs/development/developing-blocks).
 
+### Assets
+
+The Appsemble CLI can be used to upload assets from disk. For example, the following command creates
+an asset named `example-asset`:
+
+```sh
+appsemble asset create --app-id 1 path/to/example-asset.png
+```
+
 ## License
 
 [LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.18.23/LICENSE.md) ©

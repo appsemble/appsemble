@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.18.31](https://gitlab.com/appsemble/appsemble/-/releases/0.18.31)] - 2021-09-23
+
+### Added
+
+- Block(`video`): Add `videoId` and `videoUrl` to `context` in the `onFinish` action.
+- App: Add `array.unique` remapper.
+- App: Allow apps to use any font from Google Fonts.
+
+### Changed
+
+- Block(`html`): Placeholders are now optional.
+
 ## \[[0.18.30](https://gitlab.com/appsemble/appsemble/-/releases/0.18.30)] - 2021-09-17
 
 ### Added

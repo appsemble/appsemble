@@ -1,6 +1,6 @@
-import { Checkbox, Content, Title, useMeta } from '@appsemble/react-components';
+import { AsyncCheckbox, Content, Title, useMeta } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '..';
@@ -11,25 +11,20 @@ import { SamlSecrets } from './SamlSecrets';
 export function SecretsPage(): ReactElement {
   useMeta(messages.title);
   const { app, setApp } = useApp();
-  const [submitting, setSubmitting] = useState(false);
 
   const onClickOAuth2Checkbox = useCallback(async () => {
-    setSubmitting(true);
     const formData = new FormData();
     formData.set('showAppsembleOAuth2Login', String(!app.showAppsembleOAuth2Login));
     await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, showAppsembleOAuth2Login: !app.showAppsembleOAuth2Login });
-    setSubmitting(false);
-  }, [app, setApp, setSubmitting]);
+  }, [app, setApp]);
 
   const onClickCheckbox = useCallback(async () => {
-    setSubmitting(true);
     const formData = new FormData();
     formData.set('showAppsembleLogin', String(!app.showAppsembleLogin));
     await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, showAppsembleLogin: !app.showAppsembleLogin });
-    setSubmitting(false);
-  }, [app, setApp, setSubmitting]);
+  }, [app, setApp]);
 
   return (
     <Content>
@@ -40,16 +35,16 @@ export function SecretsPage(): ReactElement {
         <Title size={4}>
           <FormattedMessage {...messages.appsembleLogin} />
         </Title>
-        <Checkbox
+        <AsyncCheckbox
           className="is-block mb-2"
-          disabled={app.locked || submitting}
+          disabled={app.locked}
           label={<FormattedMessage {...messages.displayAppsembleOAuth2Login} />}
           name="enableAppsembleOAuth2Login"
           onChange={onClickOAuth2Checkbox}
           value={app.showAppsembleOAuth2Login}
         />
-        <Checkbox
-          disabled={app.locked || submitting}
+        <AsyncCheckbox
+          disabled={app.locked}
           label={<FormattedMessage {...messages.displayAppsembleLogin} />}
           name="enableAppsembleLogin"
           onChange={onClickCheckbox}
