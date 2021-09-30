@@ -273,10 +273,11 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
   if (app?.AppMembers.length && !app.AppMembers[0].emailVerified) {
     const url = new URL(argv.host);
     url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-    const appUrl = String(url);
+    url.pathname = '/Verify';
+    url.searchParams.set('token', app.AppMembers[0].emailKey);
 
     await mailer.sendTemplateEmail(app.AppMembers[0], 'resend', {
-      url: `${appUrl}Verify?token=${app.AppMembers[0].emailKey}`,
+      url: String(url),
       name: app.definition.name,
     });
   }
@@ -302,11 +303,12 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
 
     const url = new URL(argv.host);
     url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-    const appUrl = String(url);
+    url.pathname = '/Edit-Password';
+    url.searchParams.set('token', resetKey);
 
     await member.update({ resetKey });
     await mailer.sendTemplateEmail(member, 'reset', {
-      url: `${appUrl}Edit-Password?token=${resetKey}`,
+      url: String(url),
       name: app.definition.name.endsWith('App')
         ? app.definition.name
         : `${app.definition.name} App`,
