@@ -78,7 +78,6 @@ export function ProfileSettings(): ReactElement {
         name="picture"
         preview={<PicturePreview pictureUrl={userInfo?.picture} />}
       />
-
       <FormButtons>
         <SimpleSubmit>
           <FormattedMessage {...messages.saveProfile} />
