@@ -1,6 +1,7 @@
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
+import FormData from 'form-data';
 
 import {
   App,
@@ -585,11 +586,263 @@ describe('deleteAppMember', () => {
   });
 });
 
+describe('getAppAccounts', () => {
+  it('should return all of the user’s app accounts', async () => {
+    authorizeStudio();
+
+    const appA = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appB = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    await AppMember.create({ AppId: appA.id, UserId: user.id, role: 'Admin' });
+    await AppMember.create({ AppId: appB.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.get('/api/user/apps/accounts');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          app: {
+            $created: '1970-01-01T00:00:00.000Z',
+            $updated: '1970-01-01T00:00:00.000Z',
+            OrganizationId: 'testorganization',
+            OrganizationName: 'Test Organization',
+            definition: {},
+            domain: null,
+            hasIcon: false,
+            hasMaskableIcon: false,
+            iconBackground: '#ffffff',
+            iconUrl: null,
+            id: 1,
+            locked: false,
+            longDescription: null,
+            path: null,
+            private: false,
+            showAppsembleLogin: false,
+            showAppsembleOAuth2Login: true,
+            yaml: '{}\n',
+          },
+          role: 'Admin',
+        },
+        {
+          app: {
+            $created: '1970-01-01T00:00:00.000Z',
+            $updated: '1970-01-01T00:00:00.000Z',
+            OrganizationId: 'testorganization',
+            OrganizationName: 'Test Organization',
+            definition: {},
+            domain: null,
+            hasIcon: false,
+            hasMaskableIcon: false,
+            iconBackground: '#ffffff',
+            iconUrl: null,
+            id: 2,
+            locked: false,
+            longDescription: null,
+            path: null,
+            private: false,
+            showAppsembleLogin: false,
+            showAppsembleOAuth2Login: true,
+            yaml: '{}\n',
+          },
+          role: 'Member',
+        },
+      ],
+    });
+  });
+});
+
+describe('getAppAccount', () => {
+  it('should return the user’s app account', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.get(`/api/user/apps/${app.id}/account`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        app: {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          OrganizationId: 'testorganization',
+          OrganizationName: 'Test Organization',
+          definition: {},
+          domain: null,
+          hasIcon: false,
+          hasMaskableIcon: false,
+          iconBackground: '#ffffff',
+          iconUrl: null,
+          id: 1,
+          locked: false,
+          longDescription: null,
+          path: null,
+          private: false,
+          showAppsembleLogin: false,
+          showAppsembleOAuth2Login: true,
+          yaml: '{}\n',
+        },
+        role: 'Member',
+      },
+    });
+  });
+
+  it('should throw 404 if the app account doesn’t exist', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+
+    const response = await request.get(`/api/user/apps/${app.id}/account`);
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should throw 404 if the app doesn’t exist', async () => {
+    authorizeStudio();
+
+    const response = await request.get('/api/user/apps/404/account');
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+});
+
+describe('patchAppAccount', () => {
+  it('should return the user’s app account', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const data = new FormData();
+    data.append('name', 'Me');
+    data.append('email', 'user@example.com');
+
+    const response = await request.patch(`/api/user/apps/${app.id}/account`, data);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        app: {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          OrganizationId: 'testorganization',
+          OrganizationName: 'Test Organization',
+          definition: {},
+          domain: null,
+          hasIcon: false,
+          hasMaskableIcon: false,
+          iconBackground: '#ffffff',
+          iconUrl: null,
+          id: 1,
+          locked: false,
+          longDescription: null,
+          path: null,
+          private: false,
+          showAppsembleLogin: false,
+          showAppsembleOAuth2Login: true,
+          yaml: '{}\n',
+        },
+        name: 'Me',
+        email: 'user@example.com',
+        role: 'Member',
+      },
+    });
+    await appMember.reload();
+    expect(appMember.name).toBe('Me');
+    expect(appMember.email).toBe('user@example.com');
+  });
+
+  it('should throw 404 if the app account doesn’t exist', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+
+    const data = new FormData();
+    data.append('name', '');
+    data.append('email', 'user@example.com');
+
+    const response = await request.patch(`/api/user/apps/${app.id}/account`, data);
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should throw 404 if the app doesn’t exist', async () => {
+    authorizeStudio();
+
+    const data = new FormData();
+    data.append('name', '');
+    data.append('email', 'user@example.com');
+
+    const response = await request.patch('/api/user/apps/404/account', data);
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+});
+
 describe('registerMemberEmail', () => {
   it('should register valid email addresses', async () => {
     const app = await createDefaultApp(organization);
     const data = { email: 'test@example.com', password: 'password' };
-    const response = await request.post(`/api/apps/${app.id}/member`, data);
+    const response = await request.post(`/api/user/apps/${app.id}/account`, data);
 
     expect(response).toMatchObject({
       status: 201,
@@ -605,7 +858,7 @@ describe('registerMemberEmail', () => {
   it('should accept a display name', async () => {
     const app = await createDefaultApp(organization);
     const data = { email: 'test@example.com', name: 'Me', password: 'password' };
-    const response = await request.post(`/api/apps/${app.id}/member`, data);
+    const response = await request.post(`/api/user/apps/${app.id}/account`, data);
 
     expect(response).toMatchObject({
       status: 201,
@@ -618,7 +871,7 @@ describe('registerMemberEmail', () => {
 
   it('should not register invalid email addresses', async () => {
     const app = await createDefaultApp(organization);
-    const response = await request.post(`/api/apps/${app.id}/member`, {
+    const response = await request.post(`/api/user/apps/${app.id}/account`, {
       email: 'foo',
       password: 'bar',
     });
@@ -636,7 +889,7 @@ describe('registerMemberEmail', () => {
       email: 'test@example.com',
     });
 
-    const response = await request.post(`/api/apps/${app.id}/member`, {
+    const response = await request.post(`/api/user/apps/${app.id}/account`, {
       email: 'test@example.com',
       password: 'password',
     });
@@ -649,7 +902,7 @@ describe('verifyMemberEmail', () => {
   it('should verify existing email addresses', async () => {
     const app = await createDefaultApp(organization);
 
-    await request.post(`/api/apps/${app.id}/member`, {
+    await request.post(`/api/user/apps/${app.id}/account`, {
       email: 'test@example.com',
       password: 'password',
     });
@@ -658,7 +911,7 @@ describe('verifyMemberEmail', () => {
     expect(m.emailVerified).toBe(false);
     expect(m.emailKey).not.toBeNull();
 
-    const response = await request.post(`/api/apps/${app.id}/member/verify`, {
+    const response = await request.post(`/api/user/apps/${app.id}/account/verify`, {
       token: m.emailKey,
     });
     expect(response).toMatchObject({ status: 200 });
@@ -671,9 +924,11 @@ describe('verifyMemberEmail', () => {
   it('should not verify empty or invalid keys', async () => {
     const app = await createDefaultApp(organization);
 
-    const responseA = await request.post(`/api/apps/${app.id}/member/verify`);
-    const responseB = await request.post(`/api/apps/${app.id}/member/verify`, { token: null });
-    const responseC = await request.post(`/api/apps/${app.id}/member/verify`, {
+    const responseA = await request.post(`/api/user/apps/${app.id}/account/verify`);
+    const responseB = await request.post(`/api/user/apps/${app.id}/account/verify`, {
+      token: null,
+    });
+    const responseC = await request.post(`/api/user/apps/${app.id}/account/verify`, {
       token: 'invalidkey',
     });
 
@@ -688,14 +943,14 @@ describe('requestMemberResetPassword', () => {
     const app = await createDefaultApp(organization);
 
     const data = { email: 'test@example.com', password: 'password' };
-    await request.post(`/api/apps/${app.id}/member`, data);
+    await request.post(`/api/user/apps/${app.id}/account`, data);
 
-    const responseA = await request.post(`/api/apps/${app.id}/member/reset/request`, {
+    const responseA = await request.post(`/api/user/apps/${app.id}/account/reset/request`, {
       email: data.email,
     });
 
     const m = await AppMember.findOne({ where: { email: data.email } });
-    const responseB = await request.post(`/api/apps/${app.id}/member/reset`, {
+    const responseB = await request.post(`/api/user/apps/${app.id}/account/reset`, {
       token: m.resetKey,
       password: 'newPassword',
     });
@@ -711,7 +966,7 @@ describe('requestMemberResetPassword', () => {
   it('should not reveal existing emails', async () => {
     const app = await createDefaultApp(organization);
 
-    const response = await request.post(`/api/apps/${app.id}/member/reset/request`, {
+    const response = await request.post(`/api/user/apps/${app.id}/account/reset/request`, {
       email: 'idonotexist@example.com',
     });
 
@@ -723,7 +978,7 @@ describe('resetMemberPassword', () => {
   it('should return not found when resetting using a non-existent token', async () => {
     const app = await createDefaultApp(organization);
 
-    const response = await request.post(`/api/apps/${app.id}/member/reset`, {
+    const response = await request.post(`/api/apps/${app.id}/account/reset`, {
       token: 'idontexist',
       password: 'whatever',
     });
