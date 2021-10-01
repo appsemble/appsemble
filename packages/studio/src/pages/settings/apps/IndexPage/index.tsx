@@ -3,8 +3,8 @@ import { AppAccount } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
-import { AppCard } from 'studio/src/components/AppCard';
 
+import { AppCard } from '../../../../components/AppCard';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
 import styles from './index.module.css';
 import { messages } from './messages';

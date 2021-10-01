@@ -1,8 +1,8 @@
 import { Title } from '@appsemble/react-components';
+import { generateDataFromSchema } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
-import { generateDataFromSchema } from 'utils/src/jsonschema';
 
 import { useApp } from '../../../..';
 import { messages } from './messages';

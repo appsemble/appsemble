@@ -16,9 +16,9 @@ import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { checkRole } from 'studio/src/utils/checkRole';
 
 import { useUser } from '../../../../components/UserProvider';
+import { checkRole } from '../../../../utils/checkRole';
 import { messages } from './messages';
 
 interface Template {

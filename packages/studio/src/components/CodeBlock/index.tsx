@@ -1,8 +1,7 @@
+import { Button, useMessages } from '@appsemble/react-components';
 import { downloadBlob } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
-import { Button } from 'react-components/src/Button';
-import { useMessages } from 'react-components/src/MessagesProvider';
 import { useIntl } from 'react-intl';
 
 import { HighlightedCode, HighlightedCodeProps } from '../HighlightedCode';

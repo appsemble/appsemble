@@ -1,9 +1,9 @@
 import { Icon, NavbarDropdown, NavbarItem } from '@appsemble/react-components';
-import { sentryDsn } from 'app/src/utils/settings';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
+import { sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.module.css';

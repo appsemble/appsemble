@@ -12,9 +12,9 @@ import axios from 'axios';
 import { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
-import { useUser } from 'studio/src/components/UserProvider';
 
 import { useApp } from '../..';
+import { useUser } from '../../../../../components/UserProvider';
 import { IconPicker } from '../IconPicker';
 import styles from './index.module.css';
 import { messages } from './messages';

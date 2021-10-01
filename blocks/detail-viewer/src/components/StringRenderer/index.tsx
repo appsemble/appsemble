@@ -1,6 +1,6 @@
 import { useBlock } from '@appsemble/preact';
+import { isPreactChild } from '@appsemble/preact-components';
 import { VNode } from 'preact';
-import { isPreactChild } from 'preact-components/src/utils';
 
 import { RendererProps, StringField } from '../../../block';
 
