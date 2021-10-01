@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.18.31",
-    "@types/leaflet": "^1.7.4",
-    "@wesselkuipers/leaflet.markercluster": "^1.4.4",
-    "leaflet": "~1.5.1"
+    "@types/leaflet": "^1.0.0",
+    "@wesselkuipers/leaflet.markercluster": "^1.0.0",
+    "leaflet": "~1.5.0"
   }
 }

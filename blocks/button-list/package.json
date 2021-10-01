@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.18.31",
-    "classnames": "2.3.1",
-    "mini-jsx": "^3.0.1"
+    "classnames": "^2.0.0",
+    "mini-jsx": "^3.0.0"
   }
 }

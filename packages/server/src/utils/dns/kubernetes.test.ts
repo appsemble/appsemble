@@ -52,7 +52,7 @@ describe('configureDNS', () => {
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
-      'Content-Type': 'application/json;charset=utf-8',
+      'Content-Type': 'application/json',
     });
     expect(config.httpsAgent).toBeInstanceOf(Agent);
     expect(config.httpsAgent.options.ca).toBe(ca);
@@ -113,7 +113,7 @@ describe('configureDNS', () => {
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
-      'Content-Type': 'application/json;charset=utf-8',
+      'Content-Type': 'application/json',
     });
     expect(config.httpsAgent).toBeInstanceOf(Agent);
     expect(config.httpsAgent.options.ca).toBe(ca);
@@ -190,7 +190,7 @@ describe('configureDNS', () => {
     expect(config.headers).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
-      'Content-Type': 'application/json;charset=utf-8',
+      'Content-Type': 'application/json',
     });
     expect(config.httpsAgent).toBeInstanceOf(Agent);
     expect(config.httpsAgent.options.ca).toBe(ca);

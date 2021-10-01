@@ -27,11 +27,11 @@
   "dependencies": {
     "@appsemble/types": "0.18.31",
     "@appsemble/utils": "0.18.31",
-    "@fortawesome/fontawesome-common-types": "^0.2.35",
-    "@sentry/browser": "^6.10.0",
-    "@types/mdast": "^3.0.10",
-    "@types/webpack-env": "^1.16.2",
-    "axios": "^0.21.1",
-    "type-fest": "^1.2.2"
+    "@fortawesome/fontawesome-common-types": "^0.2.0",
+    "@sentry/browser": "^6.0.0",
+    "@types/mdast": "^3.0.0",
+    "@types/webpack-env": "^1.0.0",
+    "axios": "^0.21.0",
+    "type-fest": "^1.0.0"
   }
 }

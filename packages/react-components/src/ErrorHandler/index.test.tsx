@@ -13,6 +13,7 @@ it('should render its children if no errors are thrown', () => {
   }
   const { container } = render(
     <BrowserRouter>
+      {/* eslint-disable-next-line react/jsx-no-bind */}
       <ErrorHandler fallback={Fallback}>
         <Child />
       </ErrorHandler>
@@ -32,6 +33,7 @@ it('should render its fallback when errors are thrown', () => {
   }
   const { container } = render(
     <BrowserRouter>
+      {/* eslint-disable-next-line react/jsx-no-bind */}
       <ErrorHandler fallback={Fallback}>
         <Child />
       </ErrorHandler>
