@@ -1,0 +1,11 @@
+.root {
+  height: 100%;
+}
+
+.wrapper {
+  align-items: center;
+  flex: 1 1 auto;
+  flex-flow: column;
+  height: 100%;
+  justify-content: center;
+}

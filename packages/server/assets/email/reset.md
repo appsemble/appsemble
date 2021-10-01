@@ -13,4 +13,4 @@ Your email address may have been entered by mistake. This email can be ignored s
 
 Kind regards,
 
-_The Appsemble Team_
+_`{{name}}`_

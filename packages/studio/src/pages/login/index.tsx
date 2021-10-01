@@ -1,12 +1,8 @@
 import {
   Content,
-  FormButtons,
+  Login,
+  LoginFormValues,
   OAuth2LoginButton,
-  PasswordField,
-  SimpleForm,
-  SimpleFormError,
-  SimpleFormField,
-  SimpleSubmit,
   useMeta,
   useQuery,
   useToggle,
@@ -14,21 +10,15 @@ import {
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { useUser } from '../../components/UserProvider';
 import { enableRegistration, logins } from '../../utils/settings';
 import styles from './index.module.css';
 import { messages } from './messages';
 
-interface LoginFormValues {
-  email: string;
-  password: string;
-}
-
 export function LoginPage(): ReactElement {
   useMeta(messages.title, messages.description);
-  const location = useLocation();
   const { login } = useUser();
   const qs = useQuery();
   const busy = useToggle();
@@ -52,51 +42,12 @@ export function LoginPage(): ReactElement {
 
   return (
     <Content>
-      <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={onPasswordLogin}>
-        <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
-        <SimpleFormField
-          autoComplete="email"
-          disabled={busy.enabled}
-          icon="envelope"
-          label={<FormattedMessage {...messages.emailLabel} />}
-          name="email"
-          required
-          type="email"
-          validityMessages={{
-            typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
-            valueMissing: <FormattedMessage {...messages.emailRequired} />,
-          }}
-        />
-        <SimpleFormField
-          autoComplete="current-password"
-          component={PasswordField}
-          disabled={busy.enabled}
-          label={<FormattedMessage {...messages.passwordLabel} />}
-          name="password"
-          required
-          validityMessages={{
-            valueMissing: <FormattedMessage {...messages.passwordRequired} />,
-          }}
-        />
-        <FormButtons>
-          {enableRegistration && (
-            <div>
-              <Link
-                className="is-block"
-                to={{ pathname: `/${lang}/register`, search: location.search, hash: location.hash }}
-              >
-                <FormattedMessage {...messages.registerLink} />
-              </Link>
-              <Link className="is-block" to={`/${lang}/reset-password`}>
-                <FormattedMessage {...messages.forgotPasswordLink} />
-              </Link>
-            </div>
-          )}
-          <SimpleSubmit disabled={busy.enabled}>
-            <FormattedMessage {...messages.loginButton} />
-          </SimpleSubmit>
-        </FormButtons>
-      </SimpleForm>
+      <Login
+        enableRegistration={enableRegistration}
+        onPasswordLogin={onPasswordLogin}
+        registerLink={`/${lang}/register`}
+        resetPasswordLink={`/${lang}/reset-password`}
+      />
       <div className={`${styles.socialLogins} mt-5`}>
         {logins.map((provider) => (
           <OAuth2LoginButton

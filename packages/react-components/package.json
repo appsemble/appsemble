@@ -40,6 +40,7 @@
     "@types/react-router-dom": "^5.1.8",
     "@types/react-transition-group": "^4.4.2",
     "@types/webpack-env": "^1.16.2",
+    "@zxcvbn-ts/core": "^1.0.0-beta.0",
     "axios": "^0.21.1",
     "classnames": "2.3.1",
     "date-fns": "^2.23.0",

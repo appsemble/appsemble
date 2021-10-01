@@ -37,6 +37,7 @@ describe('sendEmail', () => {
     } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com', name: 'Me' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
+      name: 'The Appsemble Team',
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
       to: 'Me <test@example.com>',
@@ -53,6 +54,7 @@ describe('sendEmail', () => {
     } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
+      name: 'The Appsemble Team',
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
       to: 'test@example.com',
@@ -67,6 +69,7 @@ describe('sendEmail', () => {
     expect(
       await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
         url: 'https://example.appsemble.app/verify?code=test',
+        name: 'The Appsemble Team',
       }),
     ).toBeUndefined();
   });

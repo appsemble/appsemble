@@ -1,5 +1,6 @@
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import { compare } from 'bcrypt';
 
 import {
   App,
@@ -22,6 +23,29 @@ let organization: Organization;
 let clock: Clock;
 let member: Member;
 let user: User;
+
+function createDefaultApp(org: Organization): Promise<App> {
+  return App.create({
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      security: {
+        default: {
+          role: 'Reader',
+          policy: 'everyone',
+        },
+        roles: {
+          Reader: {},
+          Admin: {},
+        },
+      },
+    },
+    path: 'test-app',
+    vapidPublicKey: 'a',
+    vapidPrivateKey: 'b',
+    OrganizationId: org.id,
+  });
+}
 
 beforeAll(createTestSchema('appmembers'));
 
@@ -558,5 +582,152 @@ describe('deleteAppMember', () => {
     );
     await samlSecret.reload();
     await oauth2Secret.reload();
+  });
+});
+
+describe('registerMemberEmail', () => {
+  it('should register valid email addresses', async () => {
+    const app = await createDefaultApp(organization);
+    const data = { email: 'test@example.com', password: 'password' };
+    const response = await request.post(`/api/apps/${app.id}/member`, data);
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {},
+    });
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+
+    expect(m.password).not.toBe('password');
+    expect(await compare(data.password, m.password)).toBe(true);
+  });
+
+  it('should accept a display name', async () => {
+    const app = await createDefaultApp(organization);
+    const data = { email: 'test@example.com', name: 'Me', password: 'password' };
+    const response = await request.post(`/api/apps/${app.id}/member`, data);
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {},
+    });
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    expect(m.name).toBe('Me');
+  });
+
+  it('should not register invalid email addresses', async () => {
+    const app = await createDefaultApp(organization);
+    const response = await request.post(`/api/apps/${app.id}/member`, {
+      email: 'foo',
+      password: 'bar',
+    });
+
+    expect(response).toMatchObject({ status: 400 });
+  });
+
+  it('should not register duplicate email addresses', async () => {
+    const app = await createDefaultApp(organization);
+
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+      email: 'test@example.com',
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/member`, {
+      email: 'test@example.com',
+      password: 'password',
+    });
+
+    expect(response).toMatchObject({ status: 409 });
+  });
+});
+
+describe('verifyMemberEmail', () => {
+  it('should verify existing email addresses', async () => {
+    const app = await createDefaultApp(organization);
+
+    await request.post(`/api/apps/${app.id}/member`, {
+      email: 'test@example.com',
+      password: 'password',
+    });
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+
+    expect(m.emailVerified).toBe(false);
+    expect(m.emailKey).not.toBeNull();
+
+    const response = await request.post(`/api/apps/${app.id}/member/verify`, {
+      token: m.emailKey,
+    });
+    expect(response).toMatchObject({ status: 200 });
+
+    await m.reload();
+    expect(m.emailVerified).toBe(true);
+    expect(m.emailKey).toBeNull();
+  });
+
+  it('should not verify empty or invalid keys', async () => {
+    const app = await createDefaultApp(organization);
+
+    const responseA = await request.post(`/api/apps/${app.id}/member/verify`);
+    const responseB = await request.post(`/api/apps/${app.id}/member/verify`, { token: null });
+    const responseC = await request.post(`/api/apps/${app.id}/member/verify`, {
+      token: 'invalidkey',
+    });
+
+    expect(responseA).toMatchObject({ status: 415 });
+    expect(responseB).toMatchObject({ status: 400 });
+    expect(responseC).toMatchObject({ status: 404 });
+  });
+});
+
+describe('requestMemberResetPassword', () => {
+  it('should create a password reset token', async () => {
+    const app = await createDefaultApp(organization);
+
+    const data = { email: 'test@example.com', password: 'password' };
+    await request.post(`/api/apps/${app.id}/member`, data);
+
+    const responseA = await request.post(`/api/apps/${app.id}/member/reset/request`, {
+      email: data.email,
+    });
+
+    const m = await AppMember.findOne({ where: { email: data.email } });
+    const responseB = await request.post(`/api/apps/${app.id}/member/reset`, {
+      token: m.resetKey,
+      password: 'newPassword',
+    });
+
+    await m.reload();
+
+    expect(responseA).toMatchObject({ status: 204 });
+    expect(responseB).toMatchObject({ status: 204 });
+    expect(await compare('newPassword', m.password)).toBe(true);
+    expect(m.resetKey).toBeNull();
+  });
+
+  it('should not reveal existing emails', async () => {
+    const app = await createDefaultApp(organization);
+
+    const response = await request.post(`/api/apps/${app.id}/member/reset/request`, {
+      email: 'idonotexist@example.com',
+    });
+
+    expect(response).toMatchObject({ status: 204 });
+  });
+});
+
+describe('resetMemberPassword', () => {
+  it('should return not found when resetting using a non-existent token', async () => {
+    const app = await createDefaultApp(organization);
+
+    const response = await request.post(`/api/apps/${app.id}/member/reset`, {
+      token: 'idontexist',
+      password: 'whatever',
+    });
+
+    expect(response).toMatchObject({ status: 404 });
   });
 });

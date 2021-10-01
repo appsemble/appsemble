@@ -1,11 +1,17 @@
+import { randomBytes } from 'crypto';
+
+import { logger } from '@appsemble/node-utils';
 import { AppMember as AppMemberType } from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
-import { badRequest, notFound } from '@hapi/boom';
+import { badRequest, conflict, notFound } from '@hapi/boom';
+import { hash } from 'bcrypt';
 import { Context } from 'koa';
-import { Op } from 'sequelize';
+import { DatabaseError, Op, UniqueConstraintError } from 'sequelize';
 
-import { App, AppMember, Organization, User } from '../models';
+import { App, AppMember, Organization, transactional, User } from '../models';
+import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
+import { createJWTResponse } from '../utils/createJWTResponse';
 
 export async function getAppMembers(ctx: Context): Promise<void> {
   const {
@@ -122,6 +128,228 @@ export async function setAppMember(ctx: Context): Promise<void> {
     primaryEmail: member.email,
     role,
   };
+}
+
+export async function registerMemberEmail(ctx: Context): Promise<void> {
+  const {
+    mailer,
+    pathParams: { appId },
+    request: {
+      body: { name, password },
+    },
+  } = ctx;
+
+  const email = ctx.request.body.email.toLowerCase();
+  const hashedPassword = await hash(password, 10);
+  const key = randomBytes(40).toString('hex');
+  let user: User;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition'],
+    include: {
+      model: AppMember,
+      where: { email },
+      required: false,
+    },
+  });
+
+  if (!app) {
+    throw notFound('App could not be found.');
+  }
+
+  if (!app.definition?.security?.default?.role) {
+    throw badRequest('This app has no security definition');
+  }
+
+  // XXX: This could introduce a race condition.
+  // If this is not manually checked here, Sequelize never returns on
+  // the AppMember.create() call if there is a conflict on the email index.
+  if (app.AppMembers.length) {
+    throw conflict('User with this email address already exists.');
+  }
+
+  try {
+    await transactional(async (transaction) => {
+      user = await User.create(
+        {
+          name,
+        },
+        { transaction },
+      );
+      await AppMember.create(
+        {
+          UserId: user.id,
+          AppId: appId,
+          name,
+          password: hashedPassword,
+          email,
+          role: app.definition.security.default.role,
+          emailKey: key,
+        },
+        { transaction },
+      );
+    });
+  } catch (error: unknown) {
+    if (error instanceof UniqueConstraintError) {
+      throw conflict('User with this email address already exists.');
+    }
+    if (error instanceof DatabaseError) {
+      // XXX: Postgres throws a generic transaction aborted error
+      // if there is a way to read the internal error, replace this code.
+      throw conflict('User with this email address already exists.');
+    }
+
+    throw error;
+  }
+
+  const url = new URL(argv.host);
+  url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+  const appUrl = String(url);
+
+  // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
+  // will still be logged in, but will have to request a new verification email in order to verify
+  // their account.
+  mailer
+    .sendTemplateEmail({ email, name }, 'welcomeMember', {
+      url: `${appUrl}/Verify?token=${key}`,
+      name: app.definition.name,
+    })
+    .catch((error: Error) => {
+      logger.error(error);
+    });
+
+  ctx.body = createJWTResponse(user.id);
+}
+export async function verifyMemberEmail(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    request: {
+      body: { token },
+    },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition'],
+    include: [
+      {
+        model: AppMember,
+        required: false,
+        where: {
+          emailKey: token,
+        },
+      },
+    ],
+  });
+
+  if (!app) {
+    throw notFound('App could not be found.');
+  }
+
+  if (!app.AppMembers.length) {
+    throw notFound('Unable to verify this token.');
+  }
+
+  const [member] = app.AppMembers;
+  member.emailVerified = true;
+  member.emailKey = null;
+  await member.save();
+
+  ctx.status = 200;
+}
+export async function resendMemberEmailVerification(ctx: Context): Promise<void> {
+  const {
+    mailer,
+    pathParams: { appId },
+    request,
+  } = ctx;
+
+  const email = request.body.email.toLowerCase();
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition', 'domain', 'path', 'OrganizationId'],
+    include: [{ model: AppMember, where: { email }, required: false }],
+  });
+
+  if (app?.AppMembers.length && !app.AppMembers[0].emailVerified) {
+    const url = new URL(argv.host);
+    url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+    url.pathname = '/Verify';
+    url.searchParams.set('token', app.AppMembers[0].emailKey);
+
+    await mailer.sendTemplateEmail(app.AppMembers[0], 'resend', {
+      url: String(url),
+      name: app.definition.name,
+    });
+  }
+
+  ctx.status = 204;
+}
+export async function requestMemberResetPassword(ctx: Context): Promise<void> {
+  const {
+    mailer,
+    pathParams: { appId },
+    request,
+  } = ctx;
+
+  const email = request.body.email.toLowerCase();
+  const app = await App.findByPk(appId, {
+    attributes: ['definition', 'domain', 'path', 'OrganizationId'],
+    include: [{ model: AppMember, where: { email }, required: false }],
+  });
+
+  if (app?.AppMembers.length) {
+    const [member] = app.AppMembers;
+    const resetKey = randomBytes(40).toString('hex');
+
+    const url = new URL(argv.host);
+    url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+    url.pathname = '/Edit-Password';
+    url.searchParams.set('token', resetKey);
+
+    await member.update({ resetKey });
+    await mailer.sendTemplateEmail(member, 'reset', {
+      url: String(url),
+      name: app.definition.name.endsWith('App')
+        ? app.definition.name
+        : `${app.definition.name} App`,
+    });
+  }
+
+  ctx.status = 204;
+}
+export async function resetMemberPassword(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    request: {
+      body: { token },
+    },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: {
+      model: AppMember,
+      required: false,
+      where: {
+        resetKey: token,
+      },
+    },
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppMembers.length) {
+    throw notFound(`Unknown password reset token: ${token}`);
+  }
+
+  const password = await hash(ctx.request.body.password, 10);
+  const [member] = app.AppMembers;
+
+  await member.update({
+    password,
+    resetKey: null,
+  });
 }
 
 export async function deleteAppMember(ctx: Context): Promise<void> {

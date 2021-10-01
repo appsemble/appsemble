@@ -160,6 +160,7 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
           if (!verified) {
             await mailer.sendTemplateEmail(userInfo as Recipient, 'resend', {
               url: `${argv.host}/verify?token=${key}`,
+              name: 'The Appsemble Team',
             });
           }
         }

@@ -6,11 +6,15 @@ import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { AppSettings } from '../AppSettings';
+import { EditPassword } from '../EditPassword';
 import { Login } from '../Login';
 import { OpenIDCallback } from '../OpenIDCallback';
 import { Page } from '../Page';
+import { Register } from '../Register';
+import { ResetPassword } from '../ResetPassword';
 import { SentryFeedback } from '../SentryFeedback';
 import { useUser } from '../UserProvider';
+import { Verify } from '../Verify';
 
 /**
  * The main body of the loaded app.
@@ -34,8 +38,25 @@ export function AppRoutes(): ReactElement {
       <Route exact path="/:lang/Settings" sensitive>
         <AppSettings />
       </Route>
-      <Route exact path="/:lang/Login" sensitive>
-        <Login />
+
+      {!isLoggedIn && (
+        <Route exact path="/:lang/Login" sensitive>
+          <Login />
+        </Route>
+      )}
+      {!isLoggedIn && (
+        <Route exact path="/:lang/Register" sensitive>
+          <Register />
+        </Route>
+      )}
+      <Route exact path="/:lang/Reset-Password" sensitive>
+        <ResetPassword />
+      </Route>
+      <Route exact path="/:lang/Edit-Password" sensitive>
+        <EditPassword />
+      </Route>
+      <Route exact path="/:lang/Verify" sensitive>
+        <Verify />
       </Route>
       <Route exact path="/:lang/Callback" sensitive>
         <OpenIDCallback />

@@ -138,7 +138,8 @@ export async function createApp(ctx: Context): Promise<void> {
       domain: domain || null,
       private: Boolean(isPrivate),
       template: Boolean(template),
-      showAppsembleLogin: true,
+      showAppsembleLogin: false,
+      showAppsembleOAuth2Login: true,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
     };
@@ -437,6 +438,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         screenshots,
         sharedStyle,
         showAppsembleLogin,
+        showAppsembleOAuth2Login,
         template,
         yaml,
       },
@@ -500,6 +502,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (showAppsembleLogin !== undefined) {
       result.showAppsembleLogin = showAppsembleLogin;
+    }
+
+    if (showAppsembleOAuth2Login !== undefined) {
+      result.showAppsembleOAuth2Login = showAppsembleOAuth2Login;
     }
 
     if (coreStyle) {

@@ -1,29 +1,24 @@
-import { Content, OAuth2LoginButton, useQuery, useToggle } from '@appsemble/react-components';
+import { OAuth2LoginButton, useQuery, useToggle } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { oauth2Scope } from '../../utils/constants';
-import {
-  apiUrl,
-  appId,
-  appUpdated,
-  definition,
-  logins,
-  showAppsembleLogin,
-} from '../../utils/settings';
-import { Main } from '../Main';
-import { TitleBar } from '../TitleBar';
+import { apiUrl, appId, logins, showAppsembleOAuth2Login } from '../../utils/settings';
 import styles from './index.module.css';
 import { messages } from './messages';
 
-export function OpenIDLogin(): ReactElement {
+interface OpenIDLoginProps {
+  disabled: boolean;
+}
+
+export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactElement {
   const qs = useQuery();
   const busy = useToggle();
 
   const buttonProps = {
     className: `is-fullwidth my-2 ${styles.button}`,
     clientId: `app:${appId}`,
-    disabled: busy.enabled,
+    disabled: disabled || busy.enabled,
     onClick: busy.enable,
     redirectUrl: '/Callback',
     scope: oauth2Scope,
@@ -31,34 +26,28 @@ export function OpenIDLogin(): ReactElement {
   };
 
   return (
-    <Main className={styles.root}>
-      <TitleBar />
-      <Content className={`is-flex appsemble-login ${styles.wrapper}`} padding>
-        <figure className="my-4">
-          <img alt={definition.name} src={`/icon-256.png?updated=${appUpdated}`} />
-        </figure>
-        {showAppsembleLogin && (
-          <OAuth2LoginButton
-            authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
-            className={buttonProps.className}
-            icon="user"
-            {...buttonProps}
-          >
-            <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
-          </OAuth2LoginButton>
-        )}
-        {logins?.map(({ icon, id, name, type }) => (
-          <OAuth2LoginButton
-            authorizationUrl={String(new URL(`/connect/authorize/${type}/${id}`, apiUrl))}
-            className={buttonProps.className}
-            icon={icon}
-            key={`${type} ${id}`}
-            {...buttonProps}
-          >
-            <FormattedMessage {...messages.loginWith} values={{ name }} />
-          </OAuth2LoginButton>
-        ))}
-      </Content>
-    </Main>
+    <>
+      {showAppsembleOAuth2Login && (
+        <OAuth2LoginButton
+          authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
+          className={buttonProps.className}
+          icon="user"
+          {...buttonProps}
+        >
+          <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
+        </OAuth2LoginButton>
+      )}
+      {logins?.map(({ icon, id, name, type }) => (
+        <OAuth2LoginButton
+          authorizationUrl={String(new URL(`/connect/authorize/${type}/${id}`, apiUrl))}
+          className={buttonProps.className}
+          icon={icon}
+          key={`${type} ${id}`}
+          {...buttonProps}
+        >
+          <FormattedMessage {...messages.loginWith} values={{ name }} />
+        </OAuth2LoginButton>
+      ))}
+    </>
   );
 }

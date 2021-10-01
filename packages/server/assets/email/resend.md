@@ -16,4 +16,4 @@ nothing will happen to your account.
 
 Kind regards,
 
-_The Appsemble Team_
+_`{{name}}`_

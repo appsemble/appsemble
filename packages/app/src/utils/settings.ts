@@ -9,6 +9,7 @@ export const {
   sentryDsn,
   sentryEnvironment,
   showAppsembleLogin,
+  showAppsembleOAuth2Login,
   vapidPublicKey,
 } = window.settings;
 delete window.settings;

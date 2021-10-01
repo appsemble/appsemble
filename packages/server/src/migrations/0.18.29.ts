@@ -5,7 +5,7 @@ export const key = '0.18.29';
 
 /**
  * Summary:
- * - Add consent column to AppMember
+ * - Add columns `consent`, `password`, `emailKey`, and `resetKey` to AppMember
  * - Migrate data into consent column
  * - Remove OAuth2Consent table
  *
@@ -33,7 +33,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Create OAuth2Consent table
  * - Migrate consent data from AppMember
- * - Remove consent column from AppMember
+ * - Remove columns `consent`, `password`, `resetKey`, and `emailKey` from AppMember
  *
  * @param db - The sequelize database.
  */

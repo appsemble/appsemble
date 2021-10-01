@@ -14,16 +14,20 @@ const tests = {
     { greeting: 'Hello', url: 'https://example.com', organization: 'winners' },
   ],
   resend: [
-    { greeting: 'Hello User', url: 'https://example.com' },
-    { greeting: 'Hello', url: 'https://example.com' },
+    { greeting: 'Hello User', url: 'https://example.com', name: 'The Appsemble Team' },
+    { greeting: 'Hello', url: 'https://example.com', name: 'The Appsemble Team' },
   ],
   reset: [
-    { greeting: 'Hello User', url: 'https://example.com' },
-    { greeting: 'Hello', url: 'https://example.com' },
+    { greeting: 'Hello User', url: 'https://example.com', name: 'The Appsemble Team' },
+    { greeting: 'Hello', url: 'https://example.com', name: 'The Appsemble Team' },
   ],
   welcome: [
     { greeting: 'Hello User', url: 'https://example.com' },
     { greeting: 'Hello', url: 'https://example.com' },
+  ],
+  welcomeMember: [
+    { greeting: 'Hello User', url: 'https://example.com', name: 'Example App' },
+    { greeting: 'Hello', url: 'https://example.com', name: 'Example App' },
   ],
 };
 

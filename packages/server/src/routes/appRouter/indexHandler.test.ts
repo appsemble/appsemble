@@ -246,7 +246,8 @@ it('should render the index page', async () => {
     vapidPublicKey: '',
     languages: ['en'],
     logins: [],
-    showAppsembleLogin: true,
+    showAppsembleLogin: false,
+    showAppsembleOAuth2Login: true,
     definition: {
       pages: [
         {

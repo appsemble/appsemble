@@ -95,6 +95,7 @@ export async function resendEmailVerification(ctx: Context): Promise<void> {
     const { key } = record;
     await mailer.sendTemplateEmail(record, 'resend', {
       url: `${argv.host}/verify?token=${key}`,
+      name: 'The Appsemble Team',
     });
   }
 
@@ -115,6 +116,7 @@ export async function requestResetPassword(ctx: Context): Promise<void> {
     await ResetPasswordToken.create({ UserId: user.id, token });
     await mailer.sendTemplateEmail({ email, name }, 'reset', {
       url: `${argv.host}/edit-password?token=${token}`,
+      name: 'The Appsemble Team',
     });
   }
 

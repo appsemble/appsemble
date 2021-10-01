@@ -99,6 +99,10 @@ export class App extends Model {
 
   @Default(true)
   @Column
+  showAppsembleOAuth2Login: boolean;
+
+  @Default(false)
+  @Column
   showAppsembleLogin: boolean;
 
   @UpdatedAt

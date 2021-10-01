@@ -1,6 +1,8 @@
 import { ComponentPropsWithoutRef, forwardRef, useCallback, useRef, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import { IconButton, InputField, useCombinedRefs } from '..';
+import { messages } from './messages';
 
 type PasswordFieldProps = Omit<
   ComponentPropsWithoutRef<typeof InputField>,
@@ -13,6 +15,7 @@ type PasswordFieldProps = Omit<
 export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>((props, ref) => {
   const inputRef = useRef<HTMLInputElement>();
   const [visible, setVisible] = useState(false);
+  const { formatMessage } = useIntl();
 
   const toggle = useCallback(() => {
     setVisible(!visible);
@@ -24,6 +27,9 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>((p
   return (
     <InputField
       {...props}
+      aria-label={
+        visible ? formatMessage(messages.hidePassword) : formatMessage(messages.showPassword)
+      }
       control={<IconButton icon={visible ? 'eye-slash' : 'eye'} onClick={toggle} />}
       icon="unlock"
       ref={combinedRef}

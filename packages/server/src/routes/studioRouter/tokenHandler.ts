@@ -7,7 +7,7 @@ import { JwtPayload, verify } from 'jsonwebtoken';
 import { Context } from 'koa';
 import raw from 'raw-body';
 
-import { OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models';
+import { AppMember, OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models';
 import { argv } from '../../utils/argv';
 import { createJWTResponse } from '../../utils/createJWTResponse';
 import { hasScope } from '../../utils/oauth2';
@@ -48,7 +48,7 @@ function checkTokenRequestParameters(
 /**
  * Get an access token for a client.
  *
- * This handler is written to be complaitn with [rfc6749](https://tools.ietf.org/html/rfc6749).
+ * This handler is written to be compliant with [rfc6749](https://tools.ietf.org/html/rfc6749).
  *
  * @param ctx - The Koa context.
  */
@@ -156,6 +156,28 @@ export async function tokenHandler(ctx: Context): Promise<void> {
         } catch {
           throw new GrantError('invalid_grant');
         }
+        break;
+      }
+      case 'password': {
+        const {
+          client_id: clientId,
+          password,
+          scope: requestedScope,
+          username,
+        } = checkTokenRequestParameters(query, ['client_id', 'username', 'password', 'scope']);
+        const appId = Number(clientId.replace('app:', ''));
+        const member = await AppMember.findOne({
+          where: { AppId: appId, email: username },
+        });
+
+        if (!member || !(await compare(password, member.password))) {
+          throw new GrantError('invalid_client');
+        }
+
+        aud = clientId;
+        sub = member.UserId;
+        scope = requestedScope;
+        refreshToken = true;
         break;
       }
       default:
