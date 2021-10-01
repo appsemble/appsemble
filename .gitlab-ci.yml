@@ -454,9 +454,9 @@ review:
       --set "postgresql.fullnameOverride=review-$CI_MERGE_REQUEST_IID-postgresql"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentryAllowedDomains={*.appsemble.review}"
-      --set "sentryEnvironment=$CI_ENVIRONMENT_NAME"
-      --set "sentrySecret=sentry"
+      --set "sentry.allowedDomains={*.appsemble.review}"
+      --set "sentry.environment=$CI_ENVIRONMENT_NAME"
+      --set "sentry.secret=sentry"
 
 # Stop a review environment.
 stop review:
@@ -522,9 +522,9 @@ staging:
       --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
       --set "proxy=true"
       --set "remote=https://appsemble.app"
-      --set "sentryAllowedDomains={*.appsemble.review}"
-      --set "sentryEnvironment=staging"
-      --set "sentrySecret=sentry"
+      --set "sentry.allowedDomains={*.appsemble.review}"
+      --set "sentry.environment=staging"
+      --set "sentry.secret=sentry"
 
 production:
   image: dtzar/helm-kubectl:3
@@ -562,9 +562,9 @@ production:
       --set "postgresql.enabled=false"
       --set 'postgresSSL=true'
       --set "proxy=true"
-      --set "sentryAllowedDomains={*.appsemble.app, appsemble.app}"
-      --set "sentryEnvironment=production"
-      --set "sentrySecret=sentry"
+      --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
+      --set "sentry.environment=production"
+      --set "sentry.secret=sentry"
       --wait
 
 ###################################################################################################

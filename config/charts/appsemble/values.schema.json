@@ -107,20 +107,27 @@
       "type": ["string", "null"],
       "description": "The secret which holds client ids and client secrets for OAuth2 providers."
     },
-    "sentryAllowedDomains": {
-      "type": ["array", "null"],
-      "description": "A list of domains on which Sentry integration will be enabled. Wildcards are supported.",
-      "items": {
-        "type": "string"
+    "sentry": {
+      "type": ["object", "null"],
+      "description": "Sentry settings",
+      "required": ["secret"],
+      "properties": {
+        "allowedDomains": {
+          "type": "array",
+          "description": "A list of domains on which Sentry integration will be enabled. Wildcards are supported.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "secret": {
+          "type": "string",
+          "description": "The secret from which to read the Sentry DSN."
+        },
+        "environment": {
+          "type": "string",
+          "description": "The environment to send with Sentry error reports"
+        }
       }
-    },
-    "sentrySecret": {
-      "type": ["string", "null"],
-      "description": "The secret from which to read the Sentry DSN."
-    },
-    "sentryEnvironment": {
-      "type": ["string", "null"],
-      "description": "The environment to send with Sentry error reports"
     },
     "secretSecret": {
       "type": "string",

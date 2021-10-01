@@ -89,3 +89,24 @@ Configure the environment variables for Appsemble to connect with the Postgres i
       name: {{ .Values.global.postgresql.auth.existingSecret | quote }}
       key: {{ .Values.global.postgresql.auth.secretKeys.userPasswordKey | quote }}
 {{- end -}}
+
+
+{{/*
+Configure the environment variables for Sentry.
+*/}}
+{{- define "appsemble.sentry" -}}
+{{ with .Values.sentry }}
+- name: SENTRY_DSN
+  valueFrom:
+    secretKeyRef:
+      name: {{ .secret | quote }}
+      key: dsn
+{{ with .environment }}
+- name: SENTRY_ENVIRONMENT
+  value: {{ . | quote }}
+{{ end }}
+{{ with .allowedDomains }}
+- name: SENTRY_ALLOWED_DOMAINS
+  value: {{ join "," . | quote }}
+{{ end }}
+{{- end -}}
