@@ -20,6 +20,6 @@
     "@appsemble/preact-components": "0.18.31",
     "@appsemble/sdk": "0.18.31",
     "@appsemble/utils": "0.18.31",
-    "preact": "^10.5.14"
+    "preact": "^10.0.0"
   }
 }

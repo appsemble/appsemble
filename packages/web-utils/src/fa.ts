@@ -396,7 +396,6 @@ const brands = new Set<IconName>([
   'tiktok',
   'trade-federation',
   'trello',
-  'tripadvisor',
   'tumblr',
   'tumblr-square',
   'twitch',

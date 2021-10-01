@@ -47,7 +47,7 @@ export function Button<C extends ElementType = 'button'>({
   children,
   className,
   color,
-  component: Component = 'button',
+  component: Component = 'button' as C,
   icon,
   iconPosition = 'left',
   iconSize,
@@ -63,6 +63,7 @@ export function Button<C extends ElementType = 'button'>({
     props.type ??= 'button';
   }
   return (
+    // @ts-expect-error This is working as intended.
     <Component
       className={classNames('button', className, {
         [`is-${color}`]: color,
