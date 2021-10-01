@@ -154,6 +154,20 @@ export interface Message extends BaseMessage {
   body: string;
 }
 
+export interface FontDefinition {
+  /**
+   * Where to load a font from.
+   */
+  source?: 'custom' | 'google';
+
+  /**
+   * The name of the font family.
+   *
+   * This will be referenced in the Bulma CSS.
+   */
+  family: string;
+}
+
 export interface Theme {
   /**
    * The color primarily featured in the color scheme.
@@ -203,5 +217,5 @@ export interface Theme {
   /**
    * The name of a font available on Google fonts.
    */
-  font: string;
+  font: FontDefinition;
 }
