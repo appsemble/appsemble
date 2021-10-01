@@ -1,6 +1,6 @@
+import { Icon } from '@appsemble/react-components';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { ReactElement, useCallback } from 'react';
-import { Icon } from 'react-components/src/Icon';
 
 import styles from './index.module.css';
 

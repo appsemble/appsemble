@@ -13,9 +13,9 @@ import { AppMessages, AppsembleMessages } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Collapsible } from 'studio/src/components/Collapsible';
 
 import { useApp } from '../..';
+import { Collapsible } from '../../../../../components/Collapsible';
 import { messages } from './messages';
 
 interface MessagesFormProps {
