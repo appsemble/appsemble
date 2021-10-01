@@ -1,0 +1,23 @@
+{
+  "name": "@appsemble/flow-controls",
+  "version": "0.18.31",
+  "private": true,
+  "description": "A block that renders list of actionable buttons",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/button-list"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.18.31",
+    "classnames": "2.3.1",
+    "mini-jsx": "^3.0.1"
+  }
+}
