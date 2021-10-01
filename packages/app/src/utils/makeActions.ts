@@ -179,6 +179,8 @@ export function createTestAction<T extends ActionDefinition['type']>(
     teams: [],
     updateTeam: null,
     userInfo: null,
+    passwordLogin: null,
+    setUserInfo: null,
     ...params,
   });
 }

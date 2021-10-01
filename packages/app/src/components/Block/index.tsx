@@ -81,7 +81,7 @@ export function Block({
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
   const { getBlockMessage } = useAppMessages();
-  const { teams, updateTeam, userInfo } = useUser();
+  const { passwordLogin, setUserInfo, teams, updateTeam, userInfo } = useUser();
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<(() => void)[]>([]);
@@ -130,6 +130,8 @@ export function Block({
       teams,
       updateTeam,
       userInfo,
+      passwordLogin,
+      setUserInfo,
     });
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
     const [bulmaBase] = BULMA_URL.href.split('?');
@@ -207,12 +209,14 @@ export function Block({
     page,
     pageReady,
     params,
+    passwordLogin,
     prefix,
     push,
     pushNotifications,
     ready,
     remap,
     route,
+    setUserInfo,
     showDialog,
     showShareDialog,
     teams,
