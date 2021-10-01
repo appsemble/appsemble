@@ -6,7 +6,7 @@ import { VNode } from 'preact';
 import styles from './index.module.css';
 
 interface ImageFieldProps {
-  label?: Remapper;
+  label?: unknown;
   name?: Remapper;
   src: Blob | string;
 }
@@ -17,7 +17,7 @@ export function ImageField({ label, name, src }: ImageFieldProps): VNode {
   const url = useObjectURL(obj);
   const modal = useToggle();
 
-  const alt = (utils.remap(label, src) || utils.remap(name, src)) as string;
+  const alt = (label || utils.remap(name, src)) as string;
 
   return (
     <>
