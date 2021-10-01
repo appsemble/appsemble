@@ -1,4 +1,4 @@
-image: node:16-buster-slim
+image: node:16-bullseye-slim
 
 stages:
   - test
@@ -117,7 +117,7 @@ stylelint:
 # Run unittests using NodeJS 12.
 test node 12:
   interruptible: true
-  image: node:12-buster-slim
+  image: node:12-bullseye-slim
   services:
     - name: postgres:11
   variables:
@@ -135,7 +135,7 @@ test node 12:
 # Run unittests using NodeJS 14.
 test node 14:
   interruptible: true
-  image: node:14-buster-slim
+  image: node:14-bullseye-slim
   services:
     - name: postgres:11
   variables:

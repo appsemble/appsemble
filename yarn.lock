@@ -7370,10 +7370,10 @@ inquirer@^8.1.2:
     strip-ansi "^6.0.0"
     through "^2.3.6"
 
-install-chrome-dependencies@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/install-chrome-dependencies/-/install-chrome-dependencies-1.1.1.tgz#5dd5b5ec38418c8bce4646ad47341d96e8d15834"
-  integrity sha512-vlRWxImsusOUk3A48B97jZUeMZgkoG1Pld3AbNoHqRzYbK/GbpavZ/y98FCuHsHDbxwlMaVSSEji76lmbcIXTA==
+install-chrome-dependencies@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/install-chrome-dependencies/-/install-chrome-dependencies-1.1.2.tgz#b06b99a4545647f84ee69043adeb3195f2ac368a"
+  integrity sha512-fPwOo7IA/kDzF3nBl9r2qTztvKjw8A9TMFXfudwJFcTu5loLqKslPLgn9vz9G8j15M7rKJJAOGi/zMogC6VlEw==
 
 internal-slot@^1.0.3:
   version "1.0.3"
