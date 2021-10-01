@@ -4,7 +4,20 @@ import equal from 'fast-deep-equal';
 import { IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
+import { has } from './has';
 import { mapValues } from './mapValues';
+
+/**
+ * Stub the console types, since we don’t want to use dom or node types here.
+ */
+declare const console: {
+  /**
+   * Log an error message to the console.
+   *
+   * @param args - The message to render to the console.
+   */
+  error: (...args: unknown[]) => void;
+};
 
 export interface IntlMessage {
   id?: string;
@@ -69,6 +82,16 @@ type MapperImplementations = {
   [F in keyof Remappers]: (args: Remappers[F], input: unknown, context: InternalContext) => unknown;
 };
 
+class RemapperError extends TypeError {
+  remapper: Remapper;
+
+  constructor(message: string, remapper: Remapper) {
+    super(message);
+    this.name = 'RemapperError';
+    this.remapper = remapper;
+  }
+}
+
 export function remap(
   remapper: Remapper,
   input: unknown,
@@ -83,16 +106,30 @@ export function remap(
     return remapper;
   }
 
-  return [].concat(remapper).reduce((acc, mapper) => {
-    const entries = Object.entries(mapper) as [[keyof MapperImplementations, unknown]];
+  let result = input;
+  const remappers = Array.isArray(remapper) ? remapper : [remapper];
+  for (const mapper of remappers) {
+    const entries = Object.entries(mapper) as [keyof MapperImplementations, unknown][];
     if (entries.length !== 1) {
-      throw new Error(`Remapper has duplicate function definition: ${JSON.stringify(mapper)}`);
+      console.error(mapper);
+      throw new RemapperError(
+        `Remapper has multiple keys: ${Object.keys(mapper)
+          .map((key) => JSON.stringify(key))
+          .join(', ')}`,
+        mapper,
+      );
     }
     const [[name, args]] = entries;
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const implementation = mapperImplementations[name] as any;
-    return implementation(args, acc, { root: input, ...context });
-  }, input);
+    if (!has(mapperImplementations, name)) {
+      console.error(mapper);
+      throw new RemapperError(`Remapper name does not exist: ${JSON.stringify(name)}`, mapper);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    const implementation = mapperImplementations[name];
+    result = implementation(args as any, result, { root: input, ...context });
+  }
+  return result;
 }
 
 /**

@@ -374,7 +374,6 @@ describe('array', () => {
                 length: [{ array: 'length' }],
               },
             },
-            ,
           ],
         },
       ],
