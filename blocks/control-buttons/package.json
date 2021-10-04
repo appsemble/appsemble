@@ -1,0 +1,23 @@
+{
+  "name": "@appsemble/control-buttons",
+  "version": "0.18.31",
+  "private": true,
+  "description": "This block renders a back and a forward button",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/control-buttons"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.18.31",
+    "classnames": "^2.0.0",
+    "mini-jsx": "^3.0.0"
+  }
+}
