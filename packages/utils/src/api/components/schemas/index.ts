@@ -89,3 +89,6 @@ export * from './Theme';
 export * from './ThrowActionDefinition';
 export * from './UserEmail';
 export * from './User';
+export * from './UserLoginActionDefinition';
+export * from './UserRegisterActionDefinition';
+export * from './UserUpdateActionDefinition';

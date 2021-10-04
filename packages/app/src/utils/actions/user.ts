@@ -16,8 +16,8 @@ export const register: ActionCreator<'user.register'> = ({
     }
 
     const email = remap(definition.email, data);
-    const password = remap(definition.email, data);
-    const name = remap(definition.email, data);
+    const password = remap(definition.password, data);
+    const name = remap(definition.displayName, data);
 
     const response = await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, {
       email,
@@ -42,7 +42,7 @@ export const login: ActionCreator<'user.login'> = ({
     }
 
     const email = remap(definition.email, data);
-    const password = remap(definition.email, data);
+    const password = remap(definition.password, data);
 
     await passwordLogin({ username: email, password });
     return data;
@@ -62,15 +62,16 @@ export const update: ActionCreator<'user.update'> = ({
     }
 
     const email = remap(definition.email, data);
-    const password = remap(definition.email, data);
-    const name = remap(definition.email, data);
+    const name = remap(definition.displayName, data);
     const picture = remap(definition.picture, data);
 
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('password', password);
-
+    if (name) {
+      formData.append('name', name);
+    }
+    if (email) {
+      formData.append('email', email);
+    }
     if (picture && picture instanceof File) {
       formData.append('picture', picture);
     }
