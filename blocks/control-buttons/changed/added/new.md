@@ -1,1 +1,0 @@
-Add `control-buttons` block.

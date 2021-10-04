@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.0](https://gitlab.com/appsemble/appsemble/-/releases/0.19.0)] - 2021-10-04
+
+### Added
+
+- Block(`control-buttons`): Add `control-buttons` block.
+- App: Add support for custom fonts.
+
+### Changed
+
+- App: The theme font now takes an object containing `source` and `family` instead of just a font
+  name.
+- Server: Update the Docker base image to `node:16-bullseye-slim`.
+- Utils: Invalid remapper calls now show more useful information.
+
 ## \[[0.18.31](https://gitlab.com/appsemble/appsemble/-/releases/0.18.31)] - 2021-09-23
 
 ### Added

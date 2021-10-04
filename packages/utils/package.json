@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.18.31",
+  "version": "0.19.0",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -29,7 +29,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.18.31",
+    "@appsemble/types": "0.19.0",
     "axios": "^0.21.0",
     "cron-parser": "^3.0.0",
     "date-fns": "^2.0.0",
