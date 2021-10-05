@@ -838,8 +838,7 @@ describe('patchAppAccount', () => {
         name: 'Me',
         email: 'user@example.com',
         role: 'Member',
-        picture:
-          'http://localhost/api/apps/1/members/ee22ea14-3b53-487f-81df-87d62118b976/picture?updated=0',
+        picture: `http://localhost/api/apps/${app.id}/members/${user.id}/picture?updated=0`,
       },
     });
     await appMember.reload();
@@ -950,8 +949,8 @@ describe('registerMemberEmail', () => {
     });
     expect(response.status).toBe(201);
     expect(m.picture).toStrictEqual(await readFixture('tux.png'));
-    expect(responseB.data).toMatchImageSnapshot();
-    expect(responseC.data).toMatchImageSnapshot();
+    expect(responseB.data).toStrictEqual(await readFixture('tux.png'));
+    expect(responseC.data).toStrictEqual(await readFixture('tux.png'));
   });
 
   it('should not register invalid email addresses', async () => {
@@ -1071,5 +1070,42 @@ describe('resetMemberPassword', () => {
     });
 
     expect(response).toMatchObject({ status: 404 });
+  });
+});
+
+describe('getAppMemberPicture', () => {
+  it('should fetch the app member’s profile picture', async () => {
+    const app = await createDefaultApp(organization);
+    await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        picture: createFixtureStream('tux.png'),
+      }),
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const response = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response.data).toStrictEqual(await readFixture('tux.png'));
+  });
+
+  it('should return 404 if the user has not uploaded a picture', async () => {
+    const app = await createDefaultApp(organization);
+    await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', password: 'password' }),
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const response = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`);
+
+    expect(response.data).toMatchObject({
+      statusCode: 404,
+      message: 'This member has no profile picture set.',
+    });
   });
 });

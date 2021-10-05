@@ -361,7 +361,7 @@ export async function getAppMemberPicture(ctx: Context): Promise<void> {
   }
 
   if (!app.AppMembers[0].picture) {
-    throw notFound('This member has no custom avatar set.');
+    throw notFound('This member has no profile picture set.');
   }
 
   await serveIcon(ctx, {
