@@ -124,7 +124,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   ee: EventEmitter;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showMessage: ShowMessage;
-  userInfo: UserInfo;
+  getUserInfo: () => UserInfo;
   passwordLogin: (params: { username: string; password: string }) => Promise<void>;
   setUserInfo: Dispatch<UserInfo>;
   updateTeam: UpdateTeam;

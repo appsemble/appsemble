@@ -5,11 +5,12 @@ import { apiUrl, appId } from '../settings';
 
 export const register: ActionCreator<'user.register'> = ({
   definition,
+  getUserInfo,
   passwordLogin,
   remap,
-  userInfo,
 }) => [
   async (data) => {
+    const userInfo = getUserInfo();
     if (userInfo?.sub) {
       // User is already logged in, do nothing.
       return data;
@@ -19,23 +20,24 @@ export const register: ActionCreator<'user.register'> = ({
     const password = remap(definition.password, data);
     const name = remap(definition.displayName, data);
 
-    const response = await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, {
+    await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, {
       email,
       name,
       password,
     });
     await passwordLogin({ username: email, password });
-    return response.data;
+    return data;
   },
 ];
 
 export const login: ActionCreator<'user.login'> = ({
   definition,
+  getUserInfo,
   passwordLogin,
   remap,
-  userInfo,
 }) => [
   async (data) => {
+    const userInfo = getUserInfo();
     if (userInfo?.sub) {
       // User is already logged in, do nothing.
       return data;
@@ -51,11 +53,12 @@ export const login: ActionCreator<'user.login'> = ({
 
 export const update: ActionCreator<'user.update'> = ({
   definition,
+  getUserInfo,
   remap,
   setUserInfo,
-  userInfo,
 }) => [
   async (data) => {
+    const userInfo = getUserInfo();
     if (!userInfo?.sub) {
       // User is already logged in, do nothing.
       return data;
@@ -78,6 +81,7 @@ export const update: ActionCreator<'user.update'> = ({
 
     const { data: response } = await axios.patch<{
       email: string;
+      email_verified: boolean;
       id: string;
       name: string;
       picture: string;
@@ -88,6 +92,7 @@ export const update: ActionCreator<'user.update'> = ({
       sub: response.id,
       name: response.name,
       picture: response.picture,
+      email_verified: response.email_verified,
     });
 
     return data;

@@ -26,7 +26,7 @@ describe('makeActions', () => {
       showMessage: null,
       teams: [],
       updateTeam: null,
-      userInfo: null,
+      getUserInfo: null,
       passwordLogin: null,
       setUserInfo: null,
     };

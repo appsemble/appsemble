@@ -6,11 +6,13 @@ import jwtDecode from 'jwt-decode';
 import {
   createContext,
   Dispatch,
+  MutableRefObject,
   ReactElement,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -54,6 +56,7 @@ interface UserContext extends LoginState {
   logout: () => any;
   updateTeam: UpdateTeam;
   userInfo: UserInfo;
+  userInfoRef: MutableRefObject<UserInfo>;
   setUserInfo: Dispatch<UserInfo>;
 }
 
@@ -88,6 +91,9 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   const [userInfo, setUserInfo] = useState<UserInfo>(null);
   const [exp, setExp] = useState(null);
   const [authorization, setAuthorization] = useState<string>(null);
+
+  const userInfoRef = useRef(userInfo);
+  userInfoRef.current = userInfo;
 
   /**
    * Reset everything to its initial state for a logged out user.
@@ -276,6 +282,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       updateTeam,
       setUserInfo,
       userInfo,
+      userInfoRef,
       ...state,
     }),
     [authorizationCodeLogin, passwordLogin, logout, updateTeam, userInfo, state],

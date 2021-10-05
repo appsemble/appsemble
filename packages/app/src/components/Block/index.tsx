@@ -81,7 +81,7 @@ export function Block({
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
   const { getBlockMessage } = useAppMessages();
-  const { passwordLogin, setUserInfo, teams, updateTeam, userInfo } = useUser();
+  const { passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } = useUser();
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<(() => void)[]>([]);
@@ -129,7 +129,7 @@ export function Block({
       showMessage: push,
       teams,
       updateTeam,
-      userInfo,
+      getUserInfo: () => userInfoRef.current,
       passwordLogin,
       setUserInfo,
     });
@@ -222,6 +222,7 @@ export function Block({
     teams,
     updateTeam,
     userInfo,
+    userInfoRef,
   ]);
 
   const { layout = manifest.layout } = block;
