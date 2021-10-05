@@ -742,7 +742,7 @@ describe('getAppAccount', () => {
 });
 
 describe('patchAppAccount', () => {
-  it('should return the user’s app account', async () => {
+  it('should update and return the user’s app account', async () => {
     authorizeStudio();
 
     const app = await App.create({
@@ -784,11 +784,66 @@ describe('patchAppAccount', () => {
         name: 'Me',
         email: 'user@example.com',
         role: 'Member',
+        picture: 'https://www.gravatar.com/avatar/b58996c504c5638798eb6b511e6f49af?s=128&d=mp',
       },
     });
     await appMember.reload();
     expect(appMember.name).toBe('Me');
     expect(appMember.email).toBe('user@example.com');
+  });
+
+  it('should allow for updating the profile picture', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.patch(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({
+        email: 'user@example.com',
+        name: 'Me',
+        picture: createFixtureStream('tux.png'),
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        app: {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          OrganizationId: 'testorganization',
+          OrganizationName: 'Test Organization',
+          definition: {},
+          domain: null,
+          hasIcon: false,
+          hasMaskableIcon: false,
+          iconBackground: '#ffffff',
+          iconUrl: null,
+          id: 1,
+          locked: false,
+          longDescription: null,
+          path: null,
+          private: false,
+          showAppsembleLogin: false,
+          showAppsembleOAuth2Login: true,
+          yaml: '{}\n',
+        },
+        name: 'Me',
+        email: 'user@example.com',
+        role: 'Member',
+        picture:
+          'http://localhost/api/apps/1/members/ee22ea14-3b53-487f-81df-87d62118b976/picture?updated=0',
+      },
+    });
+    await appMember.reload();
+    expect(appMember.picture).toStrictEqual(await readFixture('tux.png'));
   });
 
   it('should throw 404 if the app account doesn’t exist', async () => {
