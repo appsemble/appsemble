@@ -19,12 +19,21 @@ export const register: ActionCreator<'user.register'> = ({
     const email = remap(definition.email, data);
     const password = remap(definition.password, data);
     const name = remap(definition.displayName, data);
+    const picture = remap(definition.picture, data);
 
-    await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, {
-      email,
-      name,
-      password,
-    });
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+
+    if (name) {
+      formData.append('name', name);
+    }
+
+    if (picture && picture instanceof File) {
+      formData.append('picture', picture);
+    }
+
+    await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, formData);
     await passwordLogin({ username: email, password });
     return data;
   },
