@@ -253,13 +253,13 @@ export const paths: OpenAPIV3.PathsObject = {
     },
     post: {
       tags: ['appMember'],
-      description: 'Register a new account using an email address and a password.',
+      description: 'Register a new app account using an email address and a password.',
       operationId: 'registerMemberEmail',
       requestBody: {
         description: 'The user account to register.',
         required: true,
         content: {
-          'application/json': {
+          'multipart/form-data': {
             schema: {
               type: 'object',
               required: ['email', 'password'],
@@ -274,6 +274,11 @@ export const paths: OpenAPIV3.PathsObject = {
                 password: {
                   type: 'string',
                   minLength: 8,
+                },
+                picture: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The account’s profile picture.',
                 },
               },
             },
@@ -308,7 +313,7 @@ export const paths: OpenAPIV3.PathsObject = {
                 picture: {
                   type: 'string',
                   format: 'binary',
-                  description: 'The member’s avatar.',
+                  description: 'The member’s profile picture.',
                 },
               },
             },

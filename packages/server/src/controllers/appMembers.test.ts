@@ -1,7 +1,7 @@
+import { createFormData } from '@appsemble/node-utils';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
-import FormData from 'form-data';
 
 import {
   App,
@@ -753,11 +753,10 @@ describe('patchAppAccount', () => {
     });
     const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
-    const data = new FormData();
-    data.append('name', 'Me');
-    data.append('email', 'user@example.com');
-
-    const response = await request.patch(`/api/user/apps/${app.id}/account`, data);
+    const response = await request.patch(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'user@example.com', name: 'Me' }),
+    );
 
     expect(response).toMatchObject({
       status: 200,
@@ -802,11 +801,10 @@ describe('patchAppAccount', () => {
       definition: {},
     });
 
-    const data = new FormData();
-    data.append('name', '');
-    data.append('email', 'user@example.com');
-
-    const response = await request.patch(`/api/user/apps/${app.id}/account`, data);
+    const response = await request.patch(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'user@example.com', name: '' }),
+    );
 
     expect(response).toMatchObject({
       status: 404,
@@ -821,11 +819,10 @@ describe('patchAppAccount', () => {
   it('should throw 404 if the app doesn’t exist', async () => {
     authorizeStudio();
 
-    const data = new FormData();
-    data.append('name', '');
-    data.append('email', 'user@example.com');
-
-    const response = await request.patch('/api/user/apps/404/account', data);
+    const response = await request.patch(
+      '/api/user/apps/404/account',
+      createFormData({ email: 'user@example.com', name: '' }),
+    );
 
     expect(response).toMatchObject({
       status: 404,
@@ -841,8 +838,11 @@ describe('patchAppAccount', () => {
 describe('registerMemberEmail', () => {
   it('should register valid email addresses', async () => {
     const app = await createDefaultApp(organization);
-    const data = { email: 'test@example.com', password: 'password' };
-    const response = await request.post(`/api/user/apps/${app.id}/account`, data);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', password: 'password' }),
+    );
 
     expect(response).toMatchObject({
       status: 201,
@@ -852,13 +852,16 @@ describe('registerMemberEmail', () => {
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
     expect(m.password).not.toBe('password');
-    expect(await compare(data.password, m.password)).toBe(true);
+    expect(await compare('password', m.password)).toBe(true);
   });
 
   it('should accept a display name', async () => {
     const app = await createDefaultApp(organization);
-    const data = { email: 'test@example.com', name: 'Me', password: 'password' };
-    const response = await request.post(`/api/user/apps/${app.id}/account`, data);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', name: 'Me', password: 'password' }),
+    );
 
     expect(response).toMatchObject({
       status: 201,
@@ -871,10 +874,11 @@ describe('registerMemberEmail', () => {
 
   it('should not register invalid email addresses', async () => {
     const app = await createDefaultApp(organization);
-    const response = await request.post(`/api/user/apps/${app.id}/account`, {
-      email: 'foo',
-      password: 'bar',
-    });
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'foo', password: 'bar' }),
+    );
 
     expect(response).toMatchObject({ status: 400 });
   });
@@ -889,10 +893,10 @@ describe('registerMemberEmail', () => {
       email: 'test@example.com',
     });
 
-    const response = await request.post(`/api/user/apps/${app.id}/account`, {
-      email: 'test@example.com',
-      password: 'password',
-    });
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', password: 'password' }),
+    );
 
     expect(response).toMatchObject({ status: 409 });
   });
@@ -902,10 +906,11 @@ describe('verifyMemberEmail', () => {
   it('should verify existing email addresses', async () => {
     const app = await createDefaultApp(organization);
 
-    await request.post(`/api/user/apps/${app.id}/account`, {
-      email: 'test@example.com',
-      password: 'password',
-    });
+    await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', password: 'password' }),
+    );
+
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
     expect(m.emailVerified).toBe(false);
@@ -943,7 +948,7 @@ describe('requestMemberResetPassword', () => {
     const app = await createDefaultApp(organization);
 
     const data = { email: 'test@example.com', password: 'password' };
-    await request.post(`/api/user/apps/${app.id}/account`, data);
+    await request.post(`/api/user/apps/${app.id}/account`, createFormData(data));
 
     const responseA = await request.post(`/api/user/apps/${app.id}/account/reset/request`, {
       email: data.email,

@@ -376,7 +376,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { name, password },
+      body: { name, password, picture },
     },
   } = ctx;
 
@@ -417,6 +417,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
         },
         { transaction },
       );
+
       await AppMember.create(
         {
           UserId: user.id,
@@ -426,6 +427,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
           email,
           role: app.definition.security.default.role,
           emailKey: key,
+          picture: picture ? picture.contents : null,
         },
         { transaction },
       );
