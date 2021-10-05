@@ -1,4 +1,4 @@
-import { createFormData } from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
@@ -870,6 +870,33 @@ describe('registerMemberEmail', () => {
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
     expect(m.name).toBe('Me');
+  });
+
+  it('should accept a profile picture', async () => {
+    const app = await createDefaultApp(organization);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({
+        email: 'test@example.com',
+        name: 'Me',
+        password: 'password',
+        picture: createFixtureStream('tux.png'),
+      }),
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+
+    const responseB = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`, {
+      responseType: 'arraybuffer',
+    });
+    const responseC = await request.get(`/api/apps/${app.id}/members/${m.UserId}/picture`, {
+      responseType: 'arraybuffer',
+    });
+    expect(response.status).toBe(201);
+    expect(m.picture).toStrictEqual(await readFixture('tux.png'));
+    expect(responseB.data).toMatchImageSnapshot();
+    expect(responseC.data).toMatchImageSnapshot();
   });
 
   it('should not register invalid email addresses', async () => {
