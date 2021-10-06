@@ -11,6 +11,14 @@ declare module 'jsonschema' {
   interface Schema {
     default?: JsonValue;
     examples?: JsonArray;
+
+    /**
+     * Descriptions for enum values.
+     *
+     * This is a JSON schema extension that’s supported by Monaco editor, and also used in Appsemble
+     * Studio.
+     */
+    enumDescriptions?: string[];
   }
 }
 

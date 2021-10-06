@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { Button, Content, Message, useLocationString } from '@appsemble/react-components';
 import { PageDefinition, Remapper } from '@appsemble/types';
-import { checkAppRole, normalize, remap } from '@appsemble/utils';
+import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -101,12 +101,8 @@ export function Page(): ReactElement {
     if (!page) {
       return;
     }
-    const queryStringParams = new URLSearchParams({ ...definition.theme, ...page.theme });
-    const bulmaStyle = document.getElementById('bulma-style-app') as HTMLLinkElement;
-    const bulmaUrl = new URL(bulmaStyle.href);
-    queryStringParams.sort();
-    bulmaUrl.search = String(queryStringParams);
-    bulmaStyle.href = String(bulmaUrl);
+    const bulmaElement = document.getElementById('bulma-style-app') as HTMLLinkElement;
+    bulmaElement.href = createThemeURL(mergeThemes(definition.theme, page.theme));
   }, [definition, page]);
 
   // Remove the listeners from any previous pages

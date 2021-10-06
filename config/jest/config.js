@@ -45,6 +45,9 @@ module.exports = (rootDir) => {
     resetMocks: true,
     restoreMocks: true,
     setupFilesAfterEnv,
+    snapshotFormat: {
+      printBasicPrototype: false,
+    },
     // Use the jsdom environment if the project uses dom or webworker types. Otherwise default to
     // node.
     testEnvironment: lib.includes('dom') || lib.includes('webworker') ? 'jsdom' : 'node',

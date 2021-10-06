@@ -13,8 +13,8 @@ import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { IconPreview } from 'studio/src/pages/organizations/organization/SettingsPage/IconPreview';
 
+import { IconPreview } from '../IconPreview';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
 

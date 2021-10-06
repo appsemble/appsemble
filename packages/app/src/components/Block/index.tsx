@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { Title, useMessages } from '@appsemble/react-components';
 import { Utils } from '@appsemble/sdk';
 import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
-import { baseTheme, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
+import { createThemeURL, mergeThemes, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { ReactElement, useEffect, useRef, useState } from 'react';
@@ -133,20 +133,9 @@ export function Block({
       passwordLogin,
       setUserInfo,
     });
-    const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
-    const [bulmaBase] = BULMA_URL.href.split('?');
-    const theme = {
-      ...baseTheme,
-      ...definition.theme,
-      ...page.theme,
-      ...block.theme,
-    };
+    const theme = mergeThemes(definition.theme, page.theme, block.theme);
 
-    const urlParams = new URLSearchParams(theme);
-    urlParams.sort();
-
-    const bulmaUrl =
-      definition.theme || page.theme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
+    const bulmaUrl = createThemeURL(theme);
 
     const utils: Utils = {
       remap,

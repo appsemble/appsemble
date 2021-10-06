@@ -2,9 +2,9 @@ import { Button, Title, useMeta } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
-import { AppIcon } from 'studio/src/components/AppIcon';
 
 import { useApp } from '..';
+import { AppIcon } from '../../../../components/AppIcon';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
 import { CloneButton } from '../../../../components/CloneButton';
 import { CodeBlock } from '../../../../components/CodeBlock';

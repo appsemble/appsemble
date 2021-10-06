@@ -20,11 +20,11 @@ import axios from 'axios';
 import { Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
-import { useUser } from 'studio/src/components/UserProvider';
 
 import { AppIcon } from '../../../../components/AppIcon';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
+import { useUser } from '../../../../components/UserProvider';
 import { messages } from './messages';
 import { PicturePreview } from './PicturePreview';
 

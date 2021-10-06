@@ -4,11 +4,11 @@ import classNames from 'classnames';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
-import { AppIcon } from 'studio/src/components/AppIcon';
-import { CloneButton } from 'studio/src/components/CloneButton';
 
 import { useApp } from '..';
+import { AppIcon } from '../../../../components/AppIcon';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
+import { CloneButton } from '../../../../components/CloneButton';
 import { StarRating } from '../../../../components/StarRating';
 import { getAppUrl } from '../../../../utils/getAppUrl';
 import { AppRatings } from './AppRatings';

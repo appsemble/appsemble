@@ -1,7 +1,12 @@
 import { randomBytes } from 'crypto';
-import { URLSearchParams } from 'url';
 
-import { defaultLocale, filterBlocks, getAppBlocks } from '@appsemble/utils';
+import {
+  createThemeURL,
+  defaultLocale,
+  filterBlocks,
+  getAppBlocks,
+  mergeThemes,
+} from '@appsemble/utils';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -139,14 +144,14 @@ export async function indexHandler(ctx: Context): Promise<void> {
     'img-src': ['*', 'blob:', 'data:', host],
     'media-src': ['*', 'blob:', 'data:', host],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+    'font-src': ['*', 'data:'],
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
   ctx.set('Content-Security-Policy', makeCSP(csp));
   return render(ctx, 'app/index.html', {
     app,
-    bulmaURL: `${bulmaURL}?${new URLSearchParams(app.definition.theme)}`,
+    bulmaURL: createThemeURL(mergeThemes(app.definition.theme)),
     faURL,
     nonce,
     settings,

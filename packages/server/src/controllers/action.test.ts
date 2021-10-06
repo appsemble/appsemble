@@ -181,7 +181,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       connection: 'close',
       'content-length': '2',
-      'content-type': 'application/json;charset=utf-8',
+      'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${version}`,
     });
@@ -196,7 +196,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       connection: 'close',
       'content-length': '2',
-      'content-type': 'application/json;charset=utf-8',
+      'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${version}`,
     });
@@ -211,7 +211,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       connection: 'close',
       'content-length': '2',
-      'content-type': 'application/json;charset=utf-8',
+      'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${version}`,
     });

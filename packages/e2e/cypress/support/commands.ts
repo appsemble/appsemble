@@ -1,43 +1,48 @@
-// eslint-disable-next-line @typescript-eslint/no-namespace
-namespace Cypress {
-  export interface Chainable {
-    /**
-     * Perform a login in Appsemble Studio using a user flow.
-     *
-     * @param redirect - The URL to navigate to after logging in.
-     */
-    login: (redirect: string) => void;
+import fa from '@fortawesome/fontawesome-free/package.json';
+import bulma from 'bulma/package.json';
 
-    /**
-     * Intercept and wait for an API call to have finished.
-     *
-     * @param params - Object containing the method and url of the API method.
-     */
-    waitForAPICall: (params: { method?: string; url: string }) => void;
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    export interface Chainable {
+      /**
+       * Perform a login in Appsemble Studio using a user flow.
+       *
+       * @param redirect - The URL to navigate to after logging in.
+       */
+      login: (redirect: string) => void;
 
-    /**
-     * Helper function to wait until the app is loaded.
-     */
-    waitForAppLoaded: () => void;
+      /**
+       * Intercept and wait for an API call to have finished.
+       *
+       * @param params - Object containing the method and url of the API method.
+       */
+      waitForAPICall: (params: { method?: string; url: string }) => void;
 
-    /**
-     * Helper function to wait until an app’s styling is loaded.
-     */
-    visitAndWaitForCss: (url: string, options?: Partial<Cypress.VisitOptions>) => void;
+      /**
+       * Helper function to wait until the app is loaded.
+       */
+      waitForAppLoaded: () => void;
 
-    /**
-     * Visit an app and wait for it to have been cached.
-     */
-    visitApp: (
-      cached: boolean,
-      appPath: string,
-      options?: Partial<Cypress.VisitOptions>,
-    ) => boolean;
+      /**
+       * Helper function to wait until an app’s styling is loaded.
+       */
+      visitAndWaitForCss: (url: string, options?: Partial<Cypress.VisitOptions>) => void;
 
-    /**
-     * Login to an Appsemble app.
-     */
-    loginApp: () => void;
+      /**
+       * Visit an app and wait for it to have been cached.
+       */
+      visitApp: (
+        cached: boolean,
+        appPath: string,
+        options?: Partial<Cypress.VisitOptions>,
+      ) => boolean;
+
+      /**
+       * Login to an Appsemble app.
+       */
+      loginApp: () => void;
+    }
   }
 }
 
@@ -60,8 +65,8 @@ Cypress.Commands.add('waitForAppLoaded', () => {
 });
 
 Cypress.Commands.add('visitAndWaitForCss', (url, options) => {
-  cy.intercept({ method: 'GET', url: '*bulma/0.9.3/bulma.min.css' }).as('bulma');
-  cy.intercept({ method: 'GET', url: '*fa/5.15.3/css/all.min.css' }).as('fa');
+  cy.intercept({ method: 'GET', pathname: `/bulma/${bulma.version}/bulma.min.css` }).as('bulma');
+  cy.intercept({ method: 'GET', pathname: `/fa/${fa.version}/css/all.min.css` }).as('fa');
   cy.visit(url, options);
   cy.wait(['@bulma', '@fa']);
 });

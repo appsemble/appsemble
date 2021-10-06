@@ -11,9 +11,9 @@ import axios from 'axios';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { IconPreview } from '../../../../components/IconPreview';
 import { useUser } from '../../../../components/UserProvider';
 import { Organization } from '../../../../types';
-import { IconPreview } from './IconPreview';
 import { messages } from './messages';
 
 interface SettingsPageProps {
