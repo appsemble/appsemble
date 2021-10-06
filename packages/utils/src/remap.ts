@@ -54,6 +54,11 @@ export interface RemapperContext {
   getMessage: MessageGetter;
 
   /**
+   * The current locale of the app.
+   */
+  locale: string;
+
+  /**
    * Custom data that is available in the page.
    */
   pageData?: unknown;
@@ -239,6 +244,8 @@ const mapperImplementations: MapperImplementations = {
 
     return addMilliseconds(input, expireDuration);
   },
+
+  locale: (unused, input, context) => context.locale,
 
   'random.choice': (args, input: any[]) =>
     Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,

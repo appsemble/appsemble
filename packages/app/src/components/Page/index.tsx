@@ -86,8 +86,9 @@ export function Page(): ReactElement {
         userInfo,
         context,
         root: input,
+        locale: lang,
       }),
-    [data, getMessage, userInfo],
+    [data, getMessage, lang, userInfo],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {

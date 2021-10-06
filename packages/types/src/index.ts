@@ -278,6 +278,11 @@ export interface Remappers {
   array: 'index' | 'length';
 
   /**
+   * The locale remapper returns the current locale of the app.
+   */
+  locale: null;
+
+  /**
    * Create a new object given some predefined mapper keys.
    */
   'object.from': Record<string, Remapper>;

@@ -20,7 +20,10 @@ interface SideNavigationProps {
  * The app navigation that is displayed in the side menu.
  */
 export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
-  const { url } = useRouteMatch();
+  const {
+    params: { lang },
+    url,
+  } = useRouteMatch<{ lang: string }>();
   const { getAppMessage, getMessage } = useAppMessages();
   const {
     definition: { layout, security, ...definition },
@@ -43,6 +46,7 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
                 getMessage,
                 userInfo,
                 context: { name },
+                locale: lang,
               })
             : name;
 

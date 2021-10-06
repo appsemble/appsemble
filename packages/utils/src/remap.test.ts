@@ -25,6 +25,7 @@ function runTests(tests: Record<string, TestCase>): void {
         userInfo,
         context,
         appId: 6789,
+        locale: 'en',
         pageData: { hello: 'Page data' },
       });
       expect(result).toStrictEqual(expected);
@@ -422,6 +423,16 @@ describe('prop', () => {
       input: { foo: null },
       mappers: { prop: 'foo' },
       expected: null,
+    },
+  });
+});
+
+describe('locale', () => {
+  runTests({
+    'return the current locale': {
+      input: {},
+      mappers: { locale: null },
+      expected: 'en',
     },
   });
 });
