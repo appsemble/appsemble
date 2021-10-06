@@ -5,7 +5,7 @@ export const key = '0.19.0';
 
 /**
  * Summary:
- * - Add columns `consent`, `password`, `emailKey`, `picture`, and `resetKey` to AppMember
+ * - Add columns `consent`, `password`, `emailKey`, and `resetKey` to AppMember
  * - Renames column `showAppsembleLogin` to `showAppsembleOAuth2Login` in `App`
  * - Adds column `showAppsembleLogin` to `App`
  *
@@ -28,11 +28,6 @@ export async function up(db: Sequelize): Promise<void> {
     type: DataTypes.STRING,
   });
 
-  logger.info('Adding column `picture` to `AppMember`');
-  await queryInterface.addColumn('AppMember', 'picture', {
-    type: DataTypes.BLOB,
-  });
-
   logger.info('Adding unique index between columns `AppId` and `email` for `AppMember`');
   await queryInterface.addConstraint('AppMember', {
     name: 'UniqueAppMemberEmailIndex',
@@ -52,7 +47,7 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
- * - Remove columns `password`, `resetKey`, `picture`, and `emailKey` from AppMember
+ * - Remove columns `password`, `resetKey`, and `emailKey` from AppMember
  * - Remove column `showAppsembleLogin` from `App`
  * - Rename column `showAppsembleOAuth2Login` to `showAppsembleLogin` in `App`
  *
