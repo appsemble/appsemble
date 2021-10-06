@@ -295,7 +295,7 @@ export interface Remappers {
   /**
    * Get a property from an object.
    */
-  prop: string;
+  prop: number | string;
 
   /**
    * Pick and return a random entry from an array.
