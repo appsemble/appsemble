@@ -289,7 +289,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { email, name, picture },
+      body: { email, locale, name, picture },
     },
     user,
   } = ctx;
@@ -331,6 +331,10 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
 
   if (picture) {
     result.picture = picture.contents;
+  }
+
+  if (locale) {
+    result.locale = locale;
   }
 
   await member.update(result);
