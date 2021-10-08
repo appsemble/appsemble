@@ -4,6 +4,7 @@ import {
   InputField,
   MarkdownContent,
   PasswordField,
+  TextAreaField,
 } from '@appsemble/react-components';
 import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement } from 'react';
@@ -35,6 +36,10 @@ export function JSONSchemaStringEditor({
     step: multipleOf,
     value,
   };
+
+  if (schema.multiline) {
+    return <TextAreaField {...commonProps} onChange={onChange} />;
+  }
 
   if (format === 'password') {
     return <PasswordField {...commonProps} onChange={onChange} />;
