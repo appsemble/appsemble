@@ -42,6 +42,8 @@ annotations:
       url: https://appsemble.app
     - name: Documentation
       url: https://appsemble.app/docs
+    - name: support
+      url: https://gitlab.com/appsemble/appsemble/-/issues
   artifacthub.io/recommendations: |
     - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
     - url: https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
