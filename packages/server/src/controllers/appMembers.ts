@@ -313,11 +313,12 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
 
     const url = new URL(argv.host);
     url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-    const appUrl = String(url);
+    const verificationUrl = new URL('/Verify', url);
+    verificationUrl.searchParams.set('token', result.emailKey);
 
     mailer
       .sendTemplateEmail({ email, name }, 'appMemberEmailChange', {
-        url: `${appUrl}/Verify?token=${result.emailKey}`,
+        url: String(verificationUrl),
         name: app.definition.name,
       })
       .catch((error: Error) => {
