@@ -54,6 +54,11 @@ export interface RemapperContext {
   getMessage: MessageGetter;
 
   /**
+   * The current locale of the app.
+   */
+  locale: string;
+
+  /**
    * Custom data that is available in the page.
    */
   pageData?: unknown;
@@ -143,6 +148,9 @@ const mapperImplementations: MapperImplementations = {
   app: (prop, input, context) => {
     if (prop === 'id') {
       return context.appId;
+    }
+    if (prop === 'locale') {
+      return context.locale;
     }
     if (prop === 'url') {
       return context.appUrl;

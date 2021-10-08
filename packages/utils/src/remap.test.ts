@@ -25,6 +25,7 @@ function runTests(tests: Record<string, TestCase>): void {
         userInfo,
         context,
         appId: 6789,
+        locale: 'en',
         pageData: { hello: 'Page data' },
       });
       expect(result).toStrictEqual(expected);
@@ -63,6 +64,11 @@ describe('app', () => {
       input: {},
       mappers: { app: 'url' },
       expected: 'https://example.com',
+    },
+    'return the current locale': {
+      input: {},
+      mappers: { app: 'locale' },
+      expected: 'en',
     },
   });
 });

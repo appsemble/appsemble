@@ -201,9 +201,10 @@ export interface Remappers {
    * Supported properties:
    *
    * - `id`: Get the app id.
+   * - `locale`: Get the current locale of the app.
    * - `url`: Get the base URL of the app.
    */
-  app: 'id' | 'url';
+  app: 'id' | 'locale' | 'url';
 
   /**
    * Get page metadata.
