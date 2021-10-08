@@ -315,6 +315,9 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The member’s profile picture.',
                 },
+                locale: {
+                  type: 'string',
+                },
               },
             },
             encoding: {
