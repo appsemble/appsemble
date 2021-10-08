@@ -14,7 +14,7 @@ export interface AppAccount {
   role: string;
   name: string;
   email: string;
-  email_verified: boolean;
+  emailVerified: boolean;
   picture: string;
   app: App;
   sso: SSOConfiguration[];

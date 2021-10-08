@@ -148,6 +148,78 @@ Will not render if undefined.",
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks control-buttons 1`] = `
+{
+  "actions": {
+    "onBack": {
+      "description": "This actions gets triggered then the back button is clicked.
+
+It will be called with the page data.",
+    },
+    "onForward": {
+      "description": "This actions gets triggered then the back button is clicked.
+
+It will be called with the page data.",
+    },
+  },
+  "events": undefined,
+  "messages": {
+    "back": {
+      "description": "The label that’s used on the back button.",
+    },
+    "forward": {
+      "description": "The label that’s used on the forward button.",
+    },
+  },
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+      "Button": {
+        "additionalProperties": false,
+        "properties": {
+          "icon": {
+            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
+
+By default a cared pointing left or right respectively will be rendered.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    },
+    "properties": {
+      "back": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/Button",
+          },
+          {
+            "const": false,
+            "type": "boolean",
+          },
+        ],
+        "description": "The configuration for the back button.",
+      },
+      "forward": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/Button",
+          },
+          {
+            "const": false,
+            "type": "boolean",
+          },
+        ],
+        "description": "The configuration for the forward button.",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks data-loader 1`] = `
 {
   "actions": {

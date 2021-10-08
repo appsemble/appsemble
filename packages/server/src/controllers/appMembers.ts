@@ -80,7 +80,7 @@ function outputAppMember(app: App, language: string, baseLanguage: string): AppA
     app: getAppFromRecord(app) as AppType,
     id: member.id,
     email: member.email,
-    email_verified: member.emailVerified,
+    emailVerified: member.emailVerified,
     picture: member.picture
       ? String(
           new URL(

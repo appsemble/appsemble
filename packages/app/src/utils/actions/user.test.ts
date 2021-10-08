@@ -15,7 +15,6 @@ describe('user.register', () => {
 
   it('should call the API to register a new user', async () => {
     mock.onPost(`${apiUrl}/api/user/apps/${appId}/account`).reply(() => [201]);
-    const userInfo: any = undefined;
     const action = createTestAction({
       definition: {
         type: 'user.register',
@@ -24,7 +23,8 @@ describe('user.register', () => {
         email: 'test@example.com',
       },
       passwordLogin,
-      getUserInfo: () => userInfo,
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getUserInfo: () => undefined,
     });
 
     const result = await action({ name: 'name' });
@@ -34,7 +34,6 @@ describe('user.register', () => {
 
   it('should do nothing and return data if used is logged in', async () => {
     mock.onPost(`${apiUrl}/api/user/apps/${appId}/account`).reply(() => [201]);
-    const userInfo: any = { sub: 'some-user-id' };
     const action = createTestAction({
       definition: {
         type: 'user.register',
@@ -43,7 +42,12 @@ describe('user.register', () => {
         email: 'test@example.com',
       },
       passwordLogin,
-      getUserInfo: () => userInfo,
+      getUserInfo: () => ({
+        sub: 'some-user-id',
+        email: 'test@example.com',
+        email_verified: true,
+        name: 'name',
+      }),
     });
 
     const result = await action({ name: 'name' });
@@ -60,7 +64,6 @@ describe('user.login', () => {
   });
 
   it('should log the user in', async () => {
-    const userInfo: any = undefined;
     const action = createTestAction({
       definition: {
         type: 'user.login',
@@ -68,7 +71,8 @@ describe('user.login', () => {
         email: 'test@example.com',
       },
       passwordLogin,
-      getUserInfo: () => userInfo,
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getUserInfo: () => undefined,
     });
 
     const result = await action({ name: 'name' });
@@ -77,7 +81,6 @@ describe('user.login', () => {
   });
 
   it('should do nothing and return the data if the user is logged in', async () => {
-    const userInfo: any = { sub: 'some-user-id' };
     const action = createTestAction({
       definition: {
         type: 'user.login',
@@ -85,7 +88,12 @@ describe('user.login', () => {
         email: 'test@example.com',
       },
       passwordLogin,
-      getUserInfo: () => userInfo,
+      getUserInfo: () => ({
+        sub: 'some-user-id',
+        email: 'test@example.com',
+        email_verified: true,
+        name: 'name',
+      }),
     });
 
     const result = await action({ name: 'name' });
@@ -109,33 +117,30 @@ describe('user.update', () => {
       {
         id: 'some-user-id',
         email: 'test2@example.com',
-        email_verified: false,
+        emailVerified: false,
         name: 'name',
         picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
       },
     ]);
-    const userInfo: any = {
-      sub: 'some-user-id',
-      name: 'old name',
-      email: 'test@example.com',
-      email_verified: true,
-      picture: 'https://example.com/old-avatar.jpg',
-      role: 'Test role',
-    };
     const action = createTestAction({
       definition: {
         type: 'user.update',
         displayName: { prop: 'name' },
         email: 'test2@example.com',
       },
-      getUserInfo: () => userInfo,
+      getUserInfo: () => ({
+        sub: 'some-user-id',
+        name: 'old name',
+        email: 'test@example.com',
+        email_verified: true,
+        picture: 'https://example.com/old-avatar.jpg',
+      }),
       setUserInfo,
     });
 
     const result = await action({ name: 'name', foo: 123 });
     expect(result).toStrictEqual({ name: 'name', foo: 123 });
     expect(setUserInfo).toHaveBeenCalledWith({
-      role: userInfo.role,
       sub: 'some-user-id',
       email: 'test2@example.com',
       email_verified: false,
@@ -145,14 +150,14 @@ describe('user.update', () => {
   });
 
   it('should do nothing and return the data if the user is not logged in', async () => {
-    const userInfo: any = undefined;
     const action = createTestAction({
       definition: {
         type: 'user.update',
         displayName: { prop: 'name' },
         email: 'test@example.com',
       },
-      getUserInfo: () => userInfo,
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      getUserInfo: () => undefined,
     });
 
     const result = await action({ name: 'name' });

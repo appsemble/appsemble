@@ -1,3 +1,4 @@
+import { AppAccount } from '@appsemble/types';
 import axios from 'axios';
 
 import { ActionCreator } from '.';
@@ -88,20 +89,17 @@ export const update: ActionCreator<'user.update'> = ({
       formData.append('picture', picture);
     }
 
-    const { data: response } = await axios.patch<{
-      email: string;
-      email_verified: boolean;
-      id: string;
-      name: string;
-      picture: string;
-    }>(`${apiUrl}/api/user/apps/${appId}/account`, formData);
+    const { data: response } = await axios.patch<AppAccount>(
+      `${apiUrl}/api/user/apps/${appId}/account`,
+      formData,
+    );
     setUserInfo({
       ...userInfo,
       email: response.email,
       sub: response.id,
       name: response.name,
       picture: response.picture,
-      email_verified: response.email_verified,
+      email_verified: response.emailVerified,
     });
 
     return data;
