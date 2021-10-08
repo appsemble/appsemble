@@ -56,6 +56,9 @@ export class AppMember extends Model {
   @Column
   picture?: Buffer;
 
+  @Column
+  locale?: string;
+
   @CreatedAt
   created: Date;
 

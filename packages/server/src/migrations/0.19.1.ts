@@ -6,6 +6,7 @@ export const key = '0.19.1';
 /**
  * Summary:
  * - Add columns `picture` to AppMember
+ * - Add column `locale` to AppMember
  *
  * @param db - The sequelize database.
  */
@@ -16,11 +17,17 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.addColumn('AppMember', 'picture', {
     type: DataTypes.BLOB,
   });
+
+  logger.info('Adding column `locale` to `AppMember`');
+  await queryInterface.addColumn('AppMember', 'locale', {
+    type: DataTypes.STRING,
+  });
 }
 
 /**
  * Summary:
  * - Remove column `picture` from AppMember
+ * - Remove column `locale` from AppMember
  *
  * @param db - The sequelize database.
  */
@@ -29,4 +36,6 @@ export async function down(db: Sequelize): Promise<void> {
 
   logger.info('Removing column `picture` from `AppMember`');
   await queryInterface.removeColumn('AppMember', 'picture');
+  logger.info('Removing column `locale` from `AppMember`');
+  await queryInterface.removeColumn('AppMember', 'locale');
 }
