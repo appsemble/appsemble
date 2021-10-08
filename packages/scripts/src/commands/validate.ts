@@ -2,12 +2,13 @@ import { basename, dirname, join, relative } from 'path';
 
 import { getWorkspaces, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
-import extractMessages from 'extract-react-intl-messages';
 import { existsSync, readJson } from 'fs-extra';
 import { isEqual } from 'lodash';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
 import { PackageJson } from 'type-fest';
+
+import { extractMessages } from '../lib/i18n';
 
 export const command = 'validate';
 export const description = 'Validate all workspaces have a proper configuration';
@@ -67,7 +68,6 @@ interface Result {
 type Assert = (assertion: boolean, filename: string, message: string, workspace?: string) => void;
 
 async function validateTranslations(assert: Assert): Promise<void> {
-  const workspaces = ['app', 'react-components', 'studio'];
   const developerLocales = [defaultLocale, 'nl'].sort();
   const translations: Record<string, Record<string, string>> = {};
 
@@ -87,16 +87,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
   });
 
   const allLocales = [...new Set([...developerLocales, ...Object.keys(translations)])].sort();
-  const translatedMessages = await extractMessages.extractReactIntl(
-    allLocales,
-    `./packages/@(${workspaces.join('|')})/src/**/messages.ts`,
-    {
-      format: 'json',
-      flat: true,
-      defaultLocale,
-      overwriteDefault: true,
-    },
-  );
+  const translatedMessages = await extractMessages();
 
   for (const language of allLocales) {
     const path = `i18n/${language}.json`;
