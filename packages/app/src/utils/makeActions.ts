@@ -1,6 +1,6 @@
 import { Action } from '@appsemble/sdk';
 import { ActionDefinition, ActionType } from '@appsemble/types';
-import { has, remap } from '@appsemble/utils';
+import { defaultLocale, has, remap } from '@appsemble/utils';
 import { addBreadcrumb, Severity } from '@sentry/browser';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { SetRequired } from 'type-fest';
@@ -171,6 +171,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
         appUrl: 'https://example.com',
         userInfo: null,
         context,
+        locale: defaultLocale,
       }),
     route: null,
     showDialog: null,

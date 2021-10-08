@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { remap } from '@appsemble/utils';
+import { defaultLocale, remap } from '@appsemble/utils';
 
 import { actions, ServerActionParameters } from './actions';
 import { argv } from './argv';
@@ -26,6 +26,7 @@ export async function handleAction(
             return null;
           },
           userInfo: undefined,
+          locale: params.app.definition.defaultLanguage ?? defaultLocale,
         })
       : params.data;
 

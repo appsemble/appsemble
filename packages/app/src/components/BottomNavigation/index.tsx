@@ -22,7 +22,10 @@ interface BottomNavigationProps {
  * The app navigation that is displayed at the bottom of the app.
  */
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
-  const { url } = useRouteMatch();
+  const {
+    params: { lang },
+    url,
+  } = useRouteMatch<{ lang: string }>();
   const { isLoggedIn, teams } = useUser();
   const { getAppMessage, getMessage } = useAppMessages();
   const { definition } = useAppDefinition();
@@ -50,6 +53,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                   getMessage,
                   userInfo,
                   context: { name },
+                  locale: lang,
                 })
               : name;
 

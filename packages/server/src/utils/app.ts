@@ -2,6 +2,7 @@ import { URL } from 'url';
 
 import { UserInfo } from '@appsemble/types';
 import {
+  defaultLocale,
   extractAppMessages,
   has,
   objectCache,
@@ -127,6 +128,7 @@ export async function getRemapperContext(
     },
     userInfo,
     context: {},
+    locale: userInfo?.locale ?? app.definition.defaultLanguage ?? defaultLocale,
   };
 }
 

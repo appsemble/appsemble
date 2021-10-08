@@ -19,6 +19,13 @@ declare module 'jsonschema' {
      * Studio.
      */
     enumDescriptions?: string[];
+
+    /**
+     * If true, Appsemble renders a textarea in the graphical JSON editor.
+     *
+     * This is a custom property used by Appsemble.
+     */
+    multiline?: boolean;
   }
 }
 
