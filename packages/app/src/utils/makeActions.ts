@@ -173,7 +173,12 @@ export function createTestAction<T extends ActionDefinition['type']>(
         context,
         locale: defaultLocale,
       }),
-    route: null,
+    route: {
+      params: { lang: 'en' },
+      isExact: false,
+      path: '/example',
+      url: 'https://example.com/en/example',
+    },
     showDialog: null,
     showShareDialog: null,
     showMessage: null,

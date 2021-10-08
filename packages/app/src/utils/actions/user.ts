@@ -9,6 +9,7 @@ export const register: ActionCreator<'user.register'> = ({
   getUserInfo,
   passwordLogin,
   remap,
+  route,
 }) => [
   async (data) => {
     const userInfo = getUserInfo();
@@ -25,6 +26,7 @@ export const register: ActionCreator<'user.register'> = ({
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
+    formData.append('locale', route.params.lang);
 
     if (name) {
       formData.append('name', name);
@@ -65,6 +67,7 @@ export const update: ActionCreator<'user.update'> = ({
   definition,
   getUserInfo,
   remap,
+  route,
   setUserInfo,
 }) => [
   async (data) => {
@@ -88,6 +91,7 @@ export const update: ActionCreator<'user.update'> = ({
     if (picture && picture instanceof File) {
       formData.append('picture', picture);
     }
+    formData.append('locale', route.params.lang);
 
     const { data: response } = await axios.patch<AppAccount>(
       `${apiUrl}/api/user/apps/${appId}/account`,
