@@ -201,9 +201,10 @@ export interface Remappers {
    * Supported properties:
    *
    * - `id`: Get the app id.
+   * - `locale`: Get the current locale of the app.
    * - `url`: Get the base URL of the app.
    */
-  app: 'id' | 'url';
+  app: 'id' | 'locale' | 'url';
 
   /**
    * Get page metadata.
@@ -276,11 +277,6 @@ export interface Remappers {
    * Returns nothing if array.map’s context isn’t set.
    */
   array: 'index' | 'length';
-
-  /**
-   * The locale remapper returns the current locale of the app.
-   */
-  locale: null;
 
   /**
    * Create a new object given some predefined mapper keys.

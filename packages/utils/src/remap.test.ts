@@ -65,6 +65,11 @@ describe('app', () => {
       mappers: { app: 'url' },
       expected: 'https://example.com',
     },
+    'return the current locale': {
+      input: {},
+      mappers: { app: 'locale' },
+      expected: 'en',
+    },
   });
 });
 
@@ -423,16 +428,6 @@ describe('prop', () => {
       input: { foo: null },
       mappers: { prop: 'foo' },
       expected: null,
-    },
-  });
-});
-
-describe('locale', () => {
-  runTests({
-    'return the current locale': {
-      input: {},
-      mappers: { locale: null },
-      expected: 'en',
     },
   });
 });

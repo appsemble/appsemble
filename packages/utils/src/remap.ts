@@ -149,6 +149,9 @@ const mapperImplementations: MapperImplementations = {
     if (prop === 'id') {
       return context.appId;
     }
+    if (prop === 'locale') {
+      return context.locale;
+    }
     if (prop === 'url') {
       return context.appUrl;
     }
@@ -244,8 +247,6 @@ const mapperImplementations: MapperImplementations = {
 
     return addMilliseconds(input, expireDuration);
   },
-
-  locale: (unused, input, context) => context.locale,
 
   'random.choice': (args, input: any[]) =>
     Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,
