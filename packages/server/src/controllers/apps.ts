@@ -246,7 +246,7 @@ export async function getAppById(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
   } = ctx;
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx.query?.language);
 
   const app = await App.findByPk(appId, {
     attributes: {
@@ -301,7 +301,7 @@ export async function getAppById(ctx: Context): Promise<void> {
 }
 
 export async function queryApps(ctx: Context): Promise<void> {
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx.query?.language);
 
   const apps = await App.findAll({
     attributes: {
@@ -359,7 +359,7 @@ export async function queryApps(ctx: Context): Promise<void> {
 
 export async function queryMyApps(ctx: Context): Promise<void> {
   const { user } = ctx;
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx.query?.language);
 
   const memberships = await Member.findAll({
     attributes: ['OrganizationId'],

@@ -11,7 +11,16 @@ import globby from 'globby';
 
 type Translations = Record<string, Record<string, string>>;
 
-const serverMessageKeys: string[] = [];
+const serverMessageKeys: string[] = [
+  'server.emails.resend.subject',
+  'server.emails.resend.body',
+  'server.emails.welcome.subject',
+  'server.emails.welcome.body',
+  'server.emails.reset.subject',
+  'server.emails.reset.body',
+  'server.emails.appMemberEmailChange.subject',
+  'server.emails.appMemberEmailChange.body',
+];
 
 export async function extractMessages(): Promise<Translations> {
   const translationsDir = 'i18n';

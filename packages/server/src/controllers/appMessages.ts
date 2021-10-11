@@ -66,6 +66,9 @@ export async function getMessages(ctx: Context): Promise<void> {
         ([key]) => key.startsWith('app') || key.startsWith('react-components'),
       ),
     ),
+    server: Object.fromEntries(
+      Object.entries(coreMessages).filter(([key]) => key.startsWith('server')),
+    ),
     blocks: {},
     ...extractAppMessages(app.definition, (block, prefix) => {
       const blockName = normalizeBlockName(block.type);

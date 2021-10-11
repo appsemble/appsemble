@@ -1,11 +1,18 @@
 import { logger } from '@appsemble/node-utils';
+import { defaultLocale, has } from '@appsemble/utils';
+import { FormatXMLElementFn, IntlMessageFormat, PrimitiveType } from 'intl-messageformat';
+import tags from 'language-tags';
 import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
-import { Options } from 'nodemailer/lib/smtp-connection';
+import { Options } from 'nodemailer/lib/smtp-transport';
+import { Op } from 'sequelize';
 
+import { AppMessages } from '../../models';
 import { argv } from '../argv';
+import { getAppsembleMessages, getSupportedLanguages } from '../getAppsembleMessages';
 import { readAsset } from '../readAsset';
 import { renderEmail } from './renderEmail';
 
+const supportedLanguages = getSupportedLanguages();
 export interface Recipient {
   /**
    * The email address of the recipient.
@@ -89,6 +96,89 @@ export class Mailer {
       return;
     }
     await this.transport.verify();
+  }
+
+  async sendTranslatedEmail({
+    appId,
+    emailName,
+    locale = defaultLocale,
+    to,
+    values,
+  }: {
+    to: Recipient;
+    appId: number;
+    emailName: string;
+    values: Record<string, FormatXMLElementFn<string, string[] | string> | PrimitiveType>;
+    locale: string;
+  }): Promise<void> {
+    const lang = locale.toLowerCase();
+    const baseLanguage = tags(lang)
+      .subtags()
+      .find((sub) => sub.type() === 'language');
+    const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
+    const appMessages = await AppMessages.findAll({
+      where: {
+        AppId: appId,
+        language: { [Op.or]: baseLang ? [baseLang, lang, defaultLocale] : [lang, defaultLocale] },
+      },
+    });
+
+    const subjectKey = `server.emails.${emailName}.subject`;
+    const bodyKey = `server.emails.${emailName}.body`;
+
+    let templateSubject: string;
+    let templateBody: string;
+
+    const langMessages = appMessages.find((a) => a.language === lang);
+    const baseLangMessages = appMessages.find((a) => a.language === baseLang);
+    const defaultLocaleMessages = appMessages.find((a) => a.language === defaultLocale);
+
+    if (
+      langMessages &&
+      has(langMessages.messages?.server, subjectKey) &&
+      has(langMessages.messages?.server, bodyKey)
+    ) {
+      templateSubject = langMessages.messages.server[subjectKey];
+      templateBody = langMessages.messages.server[bodyKey];
+    } else if (
+      baseLangMessages &&
+      has(baseLangMessages.messages?.server, subjectKey) &&
+      has(baseLangMessages.messages?.server, bodyKey)
+    ) {
+      templateSubject = baseLangMessages.messages.server[subjectKey];
+      templateBody = baseLangMessages.messages.server[bodyKey];
+    } else if (
+      defaultLocaleMessages &&
+      has(defaultLocaleMessages.messages?.server, subjectKey) &&
+      has(defaultLocaleMessages.messages?.server, bodyKey)
+    ) {
+      templateSubject = defaultLocaleMessages.messages.server[subjectKey];
+      templateBody = defaultLocaleMessages.messages.server[bodyKey];
+    } else if ((await supportedLanguages).has(baseLang) || (await supportedLanguages).has(lang)) {
+      const coreMessages = await getAppsembleMessages(lang, baseLang);
+      if (has(coreMessages, bodyKey) && has(coreMessages, subjectKey)) {
+        templateSubject = coreMessages[subjectKey];
+        templateBody = coreMessages[bodyKey];
+      }
+    }
+
+    if (!templateSubject || !templateBody) {
+      const messages = await getAppsembleMessages(defaultLocale);
+      templateSubject = messages[subjectKey];
+      templateBody = messages[bodyKey];
+    }
+
+    const sub = new IntlMessageFormat(templateSubject, locale).format(values);
+    const body = new IntlMessageFormat(templateBody, locale).format(values);
+
+    const { html, subject, text } = await renderEmail(body as string, {}, sub as string);
+
+    await this.sendEmail({
+      to: to.name ? `${to.name} <${to.email}>` : to.email,
+      subject,
+      html,
+      text,
+    });
   }
 
   /**
