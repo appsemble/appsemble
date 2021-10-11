@@ -299,6 +299,13 @@ export interface Remappers {
   prop: number | string;
 
   /**
+   * Recursively strip all nullish values from an object or array.
+   */
+  'null.strip': {
+    depth: number;
+  } | null;
+
+  /**
    * Pick and return a random entry from an array.
    *
    * If the input is not an array, the input is returned as-is.
