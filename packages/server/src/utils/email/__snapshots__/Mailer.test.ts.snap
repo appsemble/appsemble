@@ -1,0 +1,249 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange %# for locale en 1`] = `"Email changed"`;
+
+exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange %# for locale en 2`] = `
+"Hello,
+
+You have changed your email address for The Appsemble Team. Before you can use your account, we need to verify your email address.
+
+Please click [here](https://example.com) to verify your email address.
+
+Kind regards
+
+, _The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange %# for locale en 3`] = `"Email changed"`;
+
+exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange %# for locale en 4`] = `
+"Hello John Doe,
+
+You have changed your email address for The Appsemble Team. Before you can use your account, we need to verify your email address.
+
+Please click [here](https://example.com) to verify your email address.
+
+Kind regards
+
+, _The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmailChange %# for locale nl 1`] = `"E-mail gewijzigd"`;
+
+exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmailChange %# for locale nl 2`] = `
+"Hallo,
+
+Je hebt je e-mailadres voor The Appsemble Team gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
+
+Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
+
+Met vriendelijke groet,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmailChange %# for locale nl 3`] = `"E-mail gewijzigd"`;
+
+exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmailChange %# for locale nl 4`] = `
+"Beste John Doe,
+
+Je hebt je e-mailadres voor The Appsemble Team gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
+
+Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
+
+Met vriendelijke groet,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail resend en should render resend %# for locale en 1`] = `"Confirm account registration"`;
+
+exports[`sendTranslatedEmail resend en should render resend %# for locale en 2`] = `
+"Hello,
+
+Someone has requested to resend the verification key for your account. Before you can use your account, we need to verify your email address.
+
+Please click [this link](https://example.com) to vervify your email address.
+
+**Didn’t request this email?**
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will happen to your account.
+
+Kind regards,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail resend en should render resend %# for locale en 3`] = `"Confirm account registration"`;
+
+exports[`sendTranslatedEmail resend en should render resend %# for locale en 4`] = `
+"Hello John Doe,
+
+Someone has requested to resend the verification key for your account. Before you can use your account, we need to verify your email address.
+
+Please click [this link](https://example.com) to vervify your email address.
+
+**Didn’t request this email?**
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will happen to your account.
+
+Kind regards,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail resend nl should render resend %# for locale nl 1`] = `"Accountregistratie bevestigen"`;
+
+exports[`sendTranslatedEmail resend nl should render resend %# for locale nl 2`] = `
+"Hallo,
+
+Iemand heeft gevraagd om de verificatiesleutel voor jouw account opnieuw te verzenden. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.
+
+Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
+
+**Heb je deze e-mail niet aangevraagd?**
+
+Geen zorgen! Het kan zijn dat jouw e-mailadres per ongeluk is ingevoerd. Als je deze e-mail negeert of verwijdert, gebeurt er niets met jouw account.
+
+Met vriendelijke groet,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail resend nl should render resend %# for locale nl 3`] = `"Accountregistratie bevestigen"`;
+
+exports[`sendTranslatedEmail resend nl should render resend %# for locale nl 4`] = `
+"Beste John Doe,
+
+Iemand heeft gevraagd om de verificatiesleutel voor jouw account opnieuw te verzenden. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.
+
+Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
+
+**Heb je deze e-mail niet aangevraagd?**
+
+Geen zorgen! Het kan zijn dat jouw e-mailadres per ongeluk is ingevoerd. Als je deze e-mail negeert of verwijdert, gebeurt er niets met jouw account.
+
+Met vriendelijke groet,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail reset en should render reset %# for locale en 1`] = `"Password reset"`;
+
+exports[`sendTranslatedEmail reset en should render reset %# for locale en 2`] = `
+"Hello,
+
+A password reset has been requested for your account. Please click [here](https://example.com) to reset your password.
+
+**Didn’t request this email?**
+
+Your email address may have been entered by mistake. This email can be ignored safely.
+
+Kind regards,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail reset en should render reset %# for locale en 3`] = `"Password reset"`;
+
+exports[`sendTranslatedEmail reset en should render reset %# for locale en 4`] = `
+"Hello John Doe,
+
+A password reset has been requested for your account. Please click [here](https://example.com) to reset your password.
+
+**Didn’t request this email?**
+
+Your email address may have been entered by mistake. This email can be ignored safely.
+
+Kind regards,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail reset nl should render reset %# for locale nl 1`] = `"Wachtwoordherstel"`;
+
+exports[`sendTranslatedEmail reset nl should render reset %# for locale nl 2`] = `
+"Hallo,
+
+Er is een wachtwoordherstel aangevraagd voor jouw account. Klik [hier](https://example.com) om jouw wachtwoord opnieuw in te stellen.
+
+**Heb je deze e-mail niet aangevraagd?**
+
+Jouw e-mailadres is mogelijk per ongeluk ingevoerd. Deze e-mail kan veilig worden genegeerd.
+
+Met vriendelijke groet,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail reset nl should render reset %# for locale nl 3`] = `"Wachtwoordherstel"`;
+
+exports[`sendTranslatedEmail reset nl should render reset %# for locale nl 4`] = `
+"Beste John Doe,
+
+Er is een wachtwoordherstel aangevraagd voor jouw account. Klik [hier](https://example.com) om jouw wachtwoord opnieuw in te stellen.
+
+**Heb je deze e-mail niet aangevraagd?**
+
+Jouw e-mailadres is mogelijk per ongeluk ingevoerd. Deze e-mail kan veilig worden genegeerd.
+
+Met vriendelijke groet,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 1`] = `"Welcome to The Appsemble Team"`;
+
+exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 2`] = `
+"Hello,
+
+Thank you for registering your account. Before you can use your account, we need to verify your email address.
+
+Please click [here](https://example.com) to verify your email address.
+
+Kind regards,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 3`] = `"Welcome to The Appsemble Team"`;
+
+exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 4`] = `
+"Hello John Doe,
+
+Thank you for registering your account. Before you can use your account, we need to verify your email address.
+
+Please click [here](https://example.com) to verify your email address.
+
+Kind regards,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 1`] = `"Welkom bij The Appsemble Team"`;
+
+exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 2`] = `
+"Hallo,
+
+Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.
+
+Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
+
+Met vriendelijke groet,
+
+_The Appsemble Team_"
+`;
+
+exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 3`] = `"Welkom bij The Appsemble Team"`;
+
+exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 4`] = `
+"Beste John Doe,
+
+Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.
+
+Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
+
+Met vriendelijke groet,
+
+_The Appsemble Team_"
+`;

@@ -324,7 +324,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
         emailName: 'appMemberEmailChange',
         values: {
           link: (text) => `[${text}](${url})`,
-          name: member.name,
+          name: member.name || 'null',
           appName: app.definition.name,
         },
       })
@@ -475,7 +475,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
       values: {
         link: (text) => `[${text}](${url})`,
         appName: app.definition.name,
-        name,
+        name: name || 'null',
       },
     })
     .catch((error: Error) => {
@@ -549,7 +549,7 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
         to: app.AppMembers[0],
         values: {
           link: (text) => `[${text}](${url})`,
-          name: app.AppMembers[0].name,
+          name: app.AppMembers[0].name || 'null',
           appName: app.definition.name,
         },
       })
@@ -594,7 +594,7 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
           appName: app.definition.name.endsWith('App')
             ? app.definition.name
             : `${app.definition.name} App`,
-          name: member.name,
+          name: member.name || 'null',
         },
       })
       .catch((error: Error) => {

@@ -1,7 +1,13 @@
+import { defaultLocale } from '@appsemble/utils';
+import { setTestApp } from 'axios-test-instance';
 import { Transporter } from 'nodemailer';
 
+import { App, AppMessages, Organization } from '../../models';
 import { setArgv } from '../argv';
+import { createServer } from '../createServer';
+import { closeTestSchema, createTestSchema, truncate } from '../test/testSchema';
 import { Mailer } from './Mailer';
+import * as RenderEmail from './renderEmail';
 
 let mailer: Mailer;
 
@@ -72,5 +78,285 @@ describe('sendEmail', () => {
         name: 'The Appsemble Team',
       }),
     ).toBeUndefined();
+  });
+});
+
+describe('sendTranslatedEmail', () => {
+  let app: App;
+  const supportedLocales = [defaultLocale, 'nl'];
+  let spy: jest.SpyInstance<
+    Promise<{
+      html: string;
+      subject: string;
+      text: string;
+    }>,
+    [template: string, values: Record<string, string>, sub?: string]
+  >;
+
+  const tests = {
+    resend: [
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'The Appsemble Team',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'The Appsemble Team',
+      },
+    ],
+    reset: [
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'The Appsemble Team',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'The Appsemble Team',
+      },
+    ],
+    welcome: [
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'The Appsemble Team',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'The Appsemble Team',
+      },
+    ],
+    appMemberEmailChange: [
+      {
+        name: 'null',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'The Appsemble Team',
+      },
+      {
+        name: 'John Doe',
+        link: (text: string) => `[${text}](https://example.com)`,
+        appName: 'The Appsemble Team',
+      },
+    ],
+  };
+
+  beforeAll(async () => {
+    await createTestSchema('Mailer')();
+  });
+
+  beforeEach(async () => {
+    const server = await createServer();
+    await setTestApp(server);
+    spy = jest.spyOn(RenderEmail, 'renderEmail');
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+  });
+
+  afterEach(() => {
+    truncate();
+  });
+
+  afterAll(closeTestSchema);
+
+  it('should send emails in the default language', async () => {
+    await mailer.sendTranslatedEmail({
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'en',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](http://example.com/token=abcdefg)`,
+      },
+    });
+
+    expect(spy).toHaveBeenCalledWith(
+      `Hello John Doe,
+
+Thank you for registering your account. Before you can use your account, we need to verify your email address.
+
+Please click [here](http://example.com/token=abcdefg) to verify your email address.
+
+Kind regards,
+
+_Test App_`,
+      {},
+      'Welcome to Test App',
+    );
+  });
+
+  it('should send emails in another default supported language', async () => {
+    await mailer.sendTranslatedEmail({
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'nl',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](http://example.com/token=abcdefg)`,
+      },
+    });
+
+    expect(spy).toHaveBeenCalledWith(
+      `Beste John Doe,
+
+Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.
+
+Klik [hier](http://example.com/token=abcdefg) om jouw e-mailadres te verifiëren.
+
+Met vriendelijke groet,
+
+_Test App_`,
+      {},
+      'Welkom bij Test App',
+    );
+  });
+
+  it('should use fall back to the english translations if an app’s email translations don’t exist', async () => {
+    await mailer.sendTranslatedEmail({
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'jp',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](http://example.com/token=abcdefg)`,
+      },
+    });
+
+    expect(spy).toHaveBeenCalledWith(expect.any(String), {}, 'Welcome to Test App');
+  });
+
+  it('should use an app’s email translations', async () => {
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl-nl',
+      messages: {
+        server: {
+          'server.emails.welcome.subject': 'Aangenaam!',
+          'server.emails.welcome.body': 'Hoi {name}!',
+        },
+      },
+    });
+    await mailer.sendTranslatedEmail({
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'nl-nl',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](http://example.com/token=abcdefg)`,
+      },
+    });
+
+    expect(spy).toHaveBeenCalledWith('Hoi John Doe!', {}, 'Aangenaam!');
+  });
+
+  it('should use an app’s email translations for the base language if the selected locale isn’t directly translated', async () => {
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'nl',
+      messages: {
+        server: {
+          'server.emails.welcome.subject': 'Aangenaam!',
+          'server.emails.welcome.body': 'Hoi {name}!',
+        },
+      },
+    });
+    await mailer.sendTranslatedEmail({
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'nl-nl',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](http://example.com/token=abcdefg)`,
+      },
+    });
+
+    expect(spy).toHaveBeenCalledWith('Hoi John Doe!', {}, 'Aangenaam!');
+  });
+
+  it('should use an app’s english email translation overrides if the base language if the selected locale isn’t translated', async () => {
+    await AppMessages.create({
+      AppId: app.id,
+      language: 'en',
+      messages: {
+        server: {
+          'server.emails.welcome.subject': 'Hello!',
+          'server.emails.welcome.body': 'How do you do, {name}?',
+        },
+      },
+    });
+    await mailer.sendTranslatedEmail({
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'jp',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](http://example.com/token=abcdefg)`,
+      },
+    });
+
+    expect(spy).toHaveBeenCalledWith('How do you do, John Doe?', {}, 'Hello!');
+  });
+
+  describe.each(supportedLocales)('%s', (locale) => {
+    it('should support %s', () => {
+      expect(supportedLocales.includes(locale)).toBeTruthy();
+    });
+  });
+
+  describe.each(Object.entries(tests))('%s', (name, testValues) => {
+    describe.each(supportedLocales)('%s', (locale) => {
+      it.each(testValues)(`should render ${name} %# for locale ${locale}`, async (values) => {
+        await mailer.sendTranslatedEmail({
+          appId: app.id,
+          emailName: name,
+          to: { email: 'test@example.com', name: values.name },
+          values: values as any,
+          locale,
+        });
+
+        expect(spy).toHaveBeenCalledTimes(1);
+        // The subject
+        expect(spy.mock.calls[0][2]).toMatchSnapshot();
+        // The body
+        expect(spy.mock.calls[0][0]).toMatchSnapshot();
+      });
+    });
   });
 });
