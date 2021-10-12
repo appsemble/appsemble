@@ -360,6 +360,7 @@ export async function writeAppMessages(
       oldMessages = {
         core: {},
         blocks: {},
+        server: {},
         ...extractedMessages,
       };
     }
@@ -408,6 +409,13 @@ export async function writeAppMessages(
     for (const [key, value] of Object.entries(coreMessages)) {
       if (!value || typeof value !== 'string') {
         throw new AppsembleError(`Invalid translation key: core.${key}`);
+      }
+    }
+
+    const serverMessages = oldMessages.server ?? {};
+    for (const [key, value] of Object.entries(serverMessages)) {
+      if (!value || typeof value !== 'string') {
+        throw new AppsembleError(`Invalid translation key: server.${key}`);
       }
     }
 
@@ -460,6 +468,7 @@ This block version is not used in the app`,
       ...(Object.keys(newMessageIds).length && { messageIds: newMessageIds }),
       ...(Object.keys(blockMessages).length && { blocks: blockMessages }),
       ...(Object.keys(coreMessages).length && { core: coreMessages }),
+      ...(Object.keys(serverMessages).length && { server: serverMessages }),
     };
 
     await writeData(filepath, result);
