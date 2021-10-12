@@ -530,6 +530,7 @@ describe('string.format', () => {
         core: {},
         app: {},
         blocks: {},
+        server: {},
         messageIds: {
           patty: '{type} Patty',
         },
@@ -575,6 +576,7 @@ describe('translate', () => {
         core: {},
         app: {},
         blocks: {},
+        server: {},
         messageIds: {
           patty: 'Patty',
         },
@@ -590,6 +592,7 @@ describe('translate', () => {
         core: {},
         app: {},
         blocks: {},
+        server: {},
         messageIds: {
           patty: '',
         },
