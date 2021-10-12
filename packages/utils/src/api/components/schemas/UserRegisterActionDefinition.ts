@@ -21,5 +21,8 @@ Does nothing if the user is already logged in.`,
     displayName: {
       description: 'The display name of the user.',
     },
+    picture: {
+      description: 'The image to use for the profile picture of the user.',
+    },
   },
 });
