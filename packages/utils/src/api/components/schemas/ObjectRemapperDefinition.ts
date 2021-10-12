@@ -104,6 +104,7 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
         {
           type: 'object',
           required: ['depth'],
+          additionalProperties: false,
           properties: {
             depth: {
               type: 'integer',
