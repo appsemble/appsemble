@@ -105,6 +105,7 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
           type: 'object',
           required: ['depth'],
           additionalProperties: false,
+          description: 'Options for the null.strip remapper.',
           properties: {
             depth: {
               type: 'integer',
