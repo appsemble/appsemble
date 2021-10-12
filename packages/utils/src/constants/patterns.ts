@@ -31,3 +31,8 @@ export const blockNamePattern = new RegExp(
 );
 
 export const domainPattern = new RegExp(`^(${partialNormalized.source}+\\.)+[a-z]{2,}$`);
+
+/**
+ * A pattern to match a Google Analytics ID or an empty string.
+ */
+export const googleAnalyticsIDPattern = /^(|UA-\d{8}-\d|G-[\dA-Z]{10})$/;

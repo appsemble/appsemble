@@ -20,7 +20,7 @@ import {
 import { getApp } from '../../utils/app';
 import { argv } from '../../utils/argv';
 import { organizationBlocklist } from '../../utils/organizationBlocklist';
-import { createSettings, makeCSP, render } from '../../utils/render';
+import { createGtagCode, createSettings, makeCSP, render } from '../../utils/render';
 import { getSentryClientSettings } from '../../utils/sentry';
 import { bulmaURL, faURL } from '../../utils/styleURL';
 
@@ -37,6 +37,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
   const { app, appPath, organizationId } = await getApp(ctx, {
     attributes: [
       'definition',
+      'googleAnalyticsID',
       'id',
       'sharedStyle',
       'coreStyle',
@@ -99,37 +100,40 @@ export async function indexHandler(ctx: Context): Promise<void> {
   const nonce = randomBytes(16).toString('base64');
   const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } =
     getSentryClientSettings(hostname);
-  const [settingsHash, settings] = createSettings({
-    apiUrl: host,
-    blockManifests: blockManifests.map(
-      ({ BlockAssets, OrganizationId, actions, events, layout, name, version }) => ({
-        name: `@${OrganizationId}/${name}`,
-        version,
-        layout,
-        actions,
-        events,
-        files: BlockAssets.map(({ filename }) => filename),
-      }),
-    ),
-    id: app.id,
-    languages: [
-      ...new Set([
-        ...app.AppMessages.map(({ language }) => language),
-        app.definition.defaultLanguage || defaultLocale,
-      ]),
-    ].sort(),
-    logins: [
-      ...app.AppOAuth2Secrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'oauth2' })),
-      ...app.AppSamlSecrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'saml' })),
-    ],
-    vapidPublicKey: app.vapidPublicKey,
-    definition: app.definition,
-    showAppsembleLogin: app.showAppsembleLogin ?? false,
-    showAppsembleOAuth2Login: app.showAppsembleOAuth2Login ?? true,
-    sentryDsn,
-    sentryEnvironment,
-    appUpdated: app.updated.toISOString(),
-  });
+  const [settingsHash, settings] = createSettings(
+    {
+      apiUrl: host,
+      blockManifests: blockManifests.map(
+        ({ BlockAssets, OrganizationId, actions, events, layout, name, version }) => ({
+          name: `@${OrganizationId}/${name}`,
+          version,
+          layout,
+          actions,
+          events,
+          files: BlockAssets.map(({ filename }) => filename),
+        }),
+      ),
+      id: app.id,
+      languages: [
+        ...new Set([
+          ...app.AppMessages.map(({ language }) => language),
+          app.definition.defaultLanguage || defaultLocale,
+        ]),
+      ].sort(),
+      logins: [
+        ...app.AppOAuth2Secrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'oauth2' })),
+        ...app.AppSamlSecrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'saml' })),
+      ],
+      vapidPublicKey: app.vapidPublicKey,
+      definition: app.definition,
+      showAppsembleLogin: app.showAppsembleLogin ?? false,
+      showAppsembleOAuth2Login: app.showAppsembleOAuth2Login ?? true,
+      sentryDsn,
+      sentryEnvironment,
+      appUpdated: app.updated.toISOString(),
+    },
+    app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : undefined,
+  );
   const csp = {
     'report-uri': [reportUri],
     'connect-src': ['*', 'blob:', 'data:', sentryOrigin, sentryDsn && 'https://sentry.io'],
@@ -138,6 +142,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
       "'self'",
       `'nonce-${nonce}'`,
       settingsHash,
+      app.googleAnalyticsID && 'https://www.googletagmanager.com',
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
