@@ -11,12 +11,13 @@ Object based remappers may only define 1 key. The allowed value depends on the r
   additionalProperties: false,
   properties: {
     app: {
-      enum: ['id', 'url'],
+      enum: ['id', 'locale', 'url'],
       description: `Get app metadata.
 
 Supported properties:
 
 - \`id\`: Get the app id.
+- \`locale\`: Get the current locale of the app.
 - \`url\`: Get the base URL of the app.
 `,
     },

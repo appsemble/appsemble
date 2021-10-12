@@ -104,5 +104,10 @@ If you don’t know what this is, we recommend to omit this field for now.
       minLength: 1,
       format: 'regex',
     },
+    multiline: {
+      type: 'boolean',
+      description: 'If true, Appsemble renders a textarea in the graphical JSON editor.',
+      default: false,
+    },
   },
 });
