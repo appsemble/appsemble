@@ -291,5 +291,5 @@ const mapperImplementations: MapperImplementations = {
     return message.format() || `{${messageId}}`;
   },
 
-  user: (values, input, context) => context.userInfo?.[values],
+  user: (property, input, context) => context.userInfo?.[property],
 };

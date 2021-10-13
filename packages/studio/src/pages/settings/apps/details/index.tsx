@@ -1,6 +1,7 @@
 import {
   AsyncButton,
   Button,
+  FileUpload,
   FormButtons,
   Icon,
   SimpleForm,
@@ -25,6 +26,7 @@ import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
 import { useUser } from '../../../../components/UserProvider';
 import { messages } from './messages';
+import { PicturePreview } from './PicturePreview';
 
 export function DetailsPage(): ReactElement {
   const { appId, lang } = useParams<{ appId: string; lang: string }>();
@@ -53,8 +55,16 @@ export function DetailsPage(): ReactElement {
   });
 
   const onSubmit = useCallback(
-    async ({ email, name }: AppAccount) => {
-      const { data } = await axios.put(`/api/user/apps/${appId}/account`, { email, name });
+    async ({ email, name, picture }: AppAccount) => {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+
+      if (picture) {
+        formData.append('picture', picture);
+      }
+
+      const { data } = await axios.patch(`/api/user/apps/${appId}/account`, formData);
       result.setData(data);
     },
     [appId, result],
@@ -127,6 +137,16 @@ export function DetailsPage(): ReactElement {
                 typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
                 valueMissing: <FormattedMessage {...messages.emailRequired} />,
               }}
+            />
+            <SimpleFormField
+              accept="image/jpeg, image/png, image/tiff, image/webp"
+              component={FileUpload}
+              fileButtonLabel={<FormattedMessage {...messages.picture} />}
+              fileLabel={<FormattedMessage {...messages.selectFile} />}
+              help={<FormattedMessage {...messages.pictureDescription} />}
+              label={<FormattedMessage {...messages.picture} />}
+              name="picture"
+              preview={<PicturePreview pictureUrl={userInfo?.picture} />}
             />
             <FormButtons>
               <SimpleSubmit>
