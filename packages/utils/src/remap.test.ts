@@ -392,6 +392,21 @@ describe('array', () => {
   });
 });
 
+describe('null.strip', () => {
+  runTests({
+    'strip null values': {
+      input: { foo: null, bar: { baz: undefined }, fooz: [null, , undefined] },
+      mappers: [{ 'null.strip': null }],
+      expected: { bar: {}, fooz: [] },
+    },
+    'support depth': {
+      input: { foo: null, bar: { baz: undefined }, fooz: [null, , undefined] },
+      mappers: [{ 'null.strip': { depth: 1 } }],
+      expected: { bar: { baz: undefined }, fooz: [null, , undefined] },
+    },
+  });
+});
+
 describe('prop', () => {
   runTests({
     'get a simple property': {
