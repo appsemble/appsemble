@@ -7,11 +7,6 @@ export const AppsembleMessages: OpenAPIV3.NonArraySchemaObject = {
   description: 'A mapping of the messages for this language',
   additionalProperties: false,
   properties: {
-    server: {
-      type: 'object',
-      description: 'Translations for the server.',
-      additionalProperties: { type: 'string' },
-    },
     core: {
       type: 'object',
       description: 'Translations for the core of the app.',

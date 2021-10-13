@@ -8,5 +8,4 @@ export const messages = defineMessages({
   app: 'App messages',
   block: 'Block messages',
   core: 'Core messages',
-  server: 'Server messages',
 });

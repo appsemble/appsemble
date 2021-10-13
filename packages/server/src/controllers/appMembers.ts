@@ -591,9 +591,7 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
         locale: member.locale,
         values: {
           link: (text) => `[${text}](${url})`,
-          appName: app.definition.name.endsWith('App')
-            ? app.definition.name
-            : `${app.definition.name} App`,
+          appName: app.definition.name,
           name: member.name || 'null',
         },
       })

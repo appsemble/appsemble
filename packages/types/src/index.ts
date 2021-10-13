@@ -1455,13 +1455,6 @@ export interface AppsembleMessages {
   core: Record<string, string>;
 
   /**
-   * Messages related to the Appsemble server. Primarily used for email translations.
-   *
-   * This may be an empty object if the language is the default locale.
-   */
-  server: Record<string, string>;
-
-  /**
    * Translations for global block messages and meta properties of the app.
    *
    * This may be an empty object if the language is the default locale.

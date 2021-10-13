@@ -85,12 +85,6 @@ export function MessagesForm({
           defaultAppMessages.messages.core[key] === value ? '' : value,
         ]),
       ),
-      server: Object.fromEntries(
-        Object.entries(appMessages.messages.server).map(([key, value]) => [
-          key,
-          defaultAppMessages.messages.server[key] === value ? '' : value,
-        ]),
-      ),
       blocks,
       messageIds: appMessages.messages.messageIds,
     };
@@ -158,21 +152,6 @@ export function MessagesForm({
       <Collapsible collapsed size={5} title={<FormattedMessage {...messages.core} />}>
         <SimpleFormObject name="core">
           {Object.entries(defaultAppMessages.messages.core).map(([id, defaultMessage]) => (
-            <SimpleFormField
-              component={TextAreaField}
-              disabled={app.locked}
-              key={id}
-              label={id}
-              name={id}
-              placeholder={defaultMessage}
-              rows={2}
-            />
-          ))}
-        </SimpleFormObject>
-      </Collapsible>
-      <Collapsible collapsed size={5} title={<FormattedMessage {...messages.server} />}>
-        <SimpleFormObject name="server">
-          {Object.entries(defaultAppMessages.messages.server).map(([id, defaultMessage]) => (
             <SimpleFormField
               component={TextAreaField}
               disabled={app.locked}

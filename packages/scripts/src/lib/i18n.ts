@@ -11,7 +11,7 @@ import globby from 'globby';
 
 type Translations = Record<string, Record<string, string>>;
 
-const serverMessageKeys: string[] = [
+const serverMessageKeys = [
   'server.emails.resend.subject',
   'server.emails.resend.body',
   'server.emails.welcome.subject',
