@@ -105,7 +105,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
       assert(untranslatedMessages.length === 0, path, 'Messages should be translated');
     } else {
       assert(
-        isEqual(Object.keys(messages), Object.keys(translatedMessages[language]).sort()),
+        isEqual(Object.keys(messages).sort(), Object.keys(translatedMessages[language]).sort()),
         path,
         'Keys should be the same',
       );
