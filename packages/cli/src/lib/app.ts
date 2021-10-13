@@ -405,6 +405,17 @@ export async function writeAppMessages(
       }),
     );
 
+    const appMessagePrefixes = Object.keys(newAppMessages);
+    for (const [key, message] of Object.entries(oldMessages.app)) {
+      const match = /^(pages\.\d+(\..+)?)\.blocks\.\d+.+/.exec(key);
+      if (!match) {
+        continue;
+      }
+      if (appMessagePrefixes.includes(match[1])) {
+        newAppMessages[key] = message;
+      }
+    }
+
     const coreMessages = oldMessages.core ?? {};
     for (const [key, value] of Object.entries(coreMessages)) {
       if (!value || typeof value !== 'string') {

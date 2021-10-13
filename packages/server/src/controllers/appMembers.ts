@@ -313,8 +313,8 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
 
     const url = new URL(argv.host);
     url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-    url.pathname = '/Verify';
-    url.searchParams.set('token', result.emailKey);
+    const verificationUrl = new URL('/Verify', url);
+    verificationUrl.searchParams.set('token', result.emailKey);
 
     mailer
       .sendTranslatedEmail({
@@ -323,7 +323,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
         locale: member.locale,
         emailName: 'appMemberEmailChange',
         values: {
-          link: (text) => `[${text}](${url})`,
+          link: (text) => `[${text}](${verificationUrl})`,
           name: member.name || 'null',
           appName: app.definition.name,
         },

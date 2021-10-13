@@ -21,7 +21,7 @@ export function Register(): ReactElement {
       formData.append('password', values.password);
       formData.append('locale', lang);
       if (values.name) {
-        formData.append('email', values.name);
+        formData.append('name', values.name);
       }
 
       await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, formData);
