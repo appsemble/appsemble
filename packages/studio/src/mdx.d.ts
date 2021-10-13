@@ -3,26 +3,6 @@
  */
 declare module '*.md' {
   import { IconName } from '@fortawesome/fontawesome-common-types';
-  import { FC, ReactChild } from 'react';
-
-  export interface MDXWrapperProps {
-    /**
-     * The content to render.
-     */
-    children?: ReactChild;
-
-    /**
-     * By default markdown pages are considered to fill an entire main page. Set this to `false` to
-     * render the arkdown content only.
-     */
-    main?: boolean;
-  }
-
-  /**
-   * The MDX document as a React component.
-   */
-  const mdxComponent: FC<MDXWrapperProps>;
-  export default mdxComponent;
 
   /**
    * An icon for the document.
