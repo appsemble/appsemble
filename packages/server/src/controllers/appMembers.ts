@@ -93,6 +93,7 @@ function outputAppMember(app: App, language: string, baseLanguage: string): AppA
       : getGravatarUrl(member.email),
     name: member.name,
     role: member.role,
+    properties: member.properties ?? {},
     sso,
   };
 }
@@ -214,7 +215,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, memberId },
     request: {
-      body: { role },
+      body: { properties, role },
     },
   } = ctx;
 
@@ -239,12 +240,17 @@ export async function setAppMember(ctx: Context): Promise<void> {
   let member = app.AppMembers?.[0];
 
   if (member) {
-    await member.update({ role });
+    const result: any = { role };
+    if (properties) {
+      result.properties = properties;
+    }
+    await member.update(result);
   } else {
     member = await AppMember.create({
       UserId: user.id,
       AppId: app.id,
       role,
+      properties,
     });
   }
 
@@ -253,6 +259,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
     name: member.name,
     primaryEmail: member.email,
     role,
+    properties,
   };
 }
 
@@ -289,7 +296,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { email, name, picture },
+      body: { email, name, picture, properties },
     },
     user,
   } = ctx;
@@ -332,6 +339,10 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
 
   if (picture) {
     result.picture = picture.contents;
+  }
+
+  if (properties) {
+    result.properties = properties;
   }
 
   await member.update(result);
@@ -377,7 +388,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { name, password, picture },
+      body: { name, password, picture, properties = {} },
     },
   } = ctx;
 
@@ -429,6 +440,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
           role: app.definition.security.default.role,
           emailKey: key,
           picture: picture ? picture.contents : null,
+          properties,
         },
         { transaction },
       );

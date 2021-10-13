@@ -18,4 +18,5 @@ export interface AppAccount {
   picture: string;
   app: App;
   sso: SSOConfiguration[];
+  properties: Record<string, string>;
 }

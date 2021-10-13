@@ -280,6 +280,11 @@ export const paths: OpenAPIV3.PathsObject = {
                   format: 'binary',
                   description: 'The account’s profile picture.',
                 },
+                properties: {
+                  type: 'object',
+                  additionalProperties: { type: 'string' },
+                  description: 'The member’s custom properties.',
+                },
               },
             },
           },
@@ -314,6 +319,11 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'string',
                   format: 'binary',
                   description: 'The member’s profile picture.',
+                },
+                properties: {
+                  type: 'object',
+                  additionalProperties: { type: 'string' },
+                  description: 'The member’s custom properties.',
                 },
               },
             },
