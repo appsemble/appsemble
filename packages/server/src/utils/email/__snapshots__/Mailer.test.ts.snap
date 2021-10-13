@@ -5,13 +5,13 @@ exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmai
 exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange %# for locale en 2`] = `
 "Hello,
 
-You have changed your email address for The Appsemble Team. Before you can use your account, we need to verify your email address.
+You have changed your email address for Test App. Before you can use your account, we need to verify your email address.
 
 Please click [here](https://example.com) to verify your email address.
 
 Kind regards
 
-, _The Appsemble Team_"
+, _Test App_"
 `;
 
 exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange %# for locale en 3`] = `"Email changed"`;
@@ -19,13 +19,13 @@ exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmai
 exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange %# for locale en 4`] = `
 "Hello John Doe,
 
-You have changed your email address for The Appsemble Team. Before you can use your account, we need to verify your email address.
+You have changed your email address for Test App. Before you can use your account, we need to verify your email address.
 
 Please click [here](https://example.com) to verify your email address.
 
 Kind regards
 
-, _The Appsemble Team_"
+, _Test App_"
 `;
 
 exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmailChange %# for locale nl 1`] = `"E-mail gewijzigd"`;
@@ -33,13 +33,13 @@ exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmai
 exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmailChange %# for locale nl 2`] = `
 "Hallo,
 
-Je hebt je e-mailadres voor The Appsemble Team gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
+Je hebt je e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
 
 Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
 
 Met vriendelijke groet,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmailChange %# for locale nl 3`] = `"E-mail gewijzigd"`;
@@ -47,13 +47,13 @@ exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmai
 exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmailChange %# for locale nl 4`] = `
 "Beste John Doe,
 
-Je hebt je e-mailadres voor The Appsemble Team gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
+Je hebt je e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.
 
 Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
 
 Met vriendelijke groet,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail resend en should render resend %# for locale en 1`] = `"Confirm account registration"`;
@@ -71,7 +71,7 @@ No worries! Your address may have been entered by mistake. If you ignore or dele
 
 Kind regards,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail resend en should render resend %# for locale en 3`] = `"Confirm account registration"`;
@@ -89,7 +89,7 @@ No worries! Your address may have been entered by mistake. If you ignore or dele
 
 Kind regards,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail resend nl should render resend %# for locale nl 1`] = `"Accountregistratie bevestigen"`;
@@ -107,7 +107,7 @@ Geen zorgen! Het kan zijn dat jouw e-mailadres per ongeluk is ingevoerd. Als je 
 
 Met vriendelijke groet,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail resend nl should render resend %# for locale nl 3`] = `"Accountregistratie bevestigen"`;
@@ -125,7 +125,7 @@ Geen zorgen! Het kan zijn dat jouw e-mailadres per ongeluk is ingevoerd. Als je 
 
 Met vriendelijke groet,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail reset en should render reset %# for locale en 1`] = `"Password reset"`;
@@ -141,7 +141,7 @@ Your email address may have been entered by mistake. This email can be ignored s
 
 Kind regards,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail reset en should render reset %# for locale en 3`] = `"Password reset"`;
@@ -157,7 +157,7 @@ Your email address may have been entered by mistake. This email can be ignored s
 
 Kind regards,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail reset nl should render reset %# for locale nl 1`] = `"Wachtwoordherstel"`;
@@ -173,7 +173,7 @@ Jouw e-mailadres is mogelijk per ongeluk ingevoerd. Deze e-mail kan veilig worde
 
 Met vriendelijke groet,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
 exports[`sendTranslatedEmail reset nl should render reset %# for locale nl 3`] = `"Wachtwoordherstel"`;
@@ -189,10 +189,10 @@ Jouw e-mailadres is mogelijk per ongeluk ingevoerd. Deze e-mail kan veilig worde
 
 Met vriendelijke groet,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
-exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 1`] = `"Welcome to The Appsemble Team"`;
+exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 1`] = `"Welcome to Test App"`;
 
 exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 2`] = `
 "Hello,
@@ -203,10 +203,10 @@ Please click [here](https://example.com) to verify your email address.
 
 Kind regards,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
-exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 3`] = `"Welcome to The Appsemble Team"`;
+exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 3`] = `"Welcome to Test App"`;
 
 exports[`sendTranslatedEmail welcome en should render welcome %# for locale en 4`] = `
 "Hello John Doe,
@@ -217,10 +217,10 @@ Please click [here](https://example.com) to verify your email address.
 
 Kind regards,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
-exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 1`] = `"Welkom bij The Appsemble Team"`;
+exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 1`] = `"Welkom bij Test App"`;
 
 exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 2`] = `
 "Hallo,
@@ -231,10 +231,10 @@ Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
 
 Met vriendelijke groet,
 
-_The Appsemble Team_"
+_Test App_"
 `;
 
-exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 3`] = `"Welkom bij The Appsemble Team"`;
+exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 3`] = `"Welkom bij Test App"`;
 
 exports[`sendTranslatedEmail welcome nl should render welcome %# for locale nl 4`] = `
 "Beste John Doe,
@@ -245,5 +245,5 @@ Klik [hier](https://example.com) om jouw e-mailadres te verifiëren.
 
 Met vriendelijke groet,
 
-_The Appsemble Team_"
+_Test App_"
 `;

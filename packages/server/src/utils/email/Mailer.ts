@@ -135,25 +135,25 @@ export class Mailer {
 
     if (
       langMessages &&
-      has(langMessages.messages?.server, subjectKey) &&
-      has(langMessages.messages?.server, bodyKey)
+      has(langMessages.messages?.core, subjectKey) &&
+      has(langMessages.messages?.core, bodyKey)
     ) {
-      templateSubject = langMessages.messages.server[subjectKey];
-      templateBody = langMessages.messages.server[bodyKey];
+      templateSubject = langMessages.messages.core[subjectKey];
+      templateBody = langMessages.messages.core[bodyKey];
     } else if (
       baseLangMessages &&
-      has(baseLangMessages.messages?.server, subjectKey) &&
-      has(baseLangMessages.messages?.server, bodyKey)
+      has(baseLangMessages.messages?.core, subjectKey) &&
+      has(baseLangMessages.messages?.core, bodyKey)
     ) {
-      templateSubject = baseLangMessages.messages.server[subjectKey];
-      templateBody = baseLangMessages.messages.server[bodyKey];
+      templateSubject = baseLangMessages.messages.core[subjectKey];
+      templateBody = baseLangMessages.messages.core[bodyKey];
     } else if (
       defaultLocaleMessages &&
-      has(defaultLocaleMessages.messages?.server, subjectKey) &&
-      has(defaultLocaleMessages.messages?.server, bodyKey)
+      has(defaultLocaleMessages.messages?.core, subjectKey) &&
+      has(defaultLocaleMessages.messages?.core, bodyKey)
     ) {
-      templateSubject = defaultLocaleMessages.messages.server[subjectKey];
-      templateBody = defaultLocaleMessages.messages.server[bodyKey];
+      templateSubject = defaultLocaleMessages.messages.core[subjectKey];
+      templateBody = defaultLocaleMessages.messages.core[bodyKey];
     } else if ((await supportedLanguages).has(baseLang) || (await supportedLanguages).has(lang)) {
       const coreMessages = await getAppsembleMessages(lang, baseLang);
       if (has(coreMessages, bodyKey) && has(coreMessages, subjectKey)) {

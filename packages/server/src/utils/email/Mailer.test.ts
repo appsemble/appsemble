@@ -43,7 +43,7 @@ describe('sendEmail', () => {
     } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com', name: 'Me' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
-      name: 'The Appsemble Team',
+      name: 'Test App',
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
       to: 'Me <test@example.com>',
@@ -60,7 +60,7 @@ describe('sendEmail', () => {
     } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
-      name: 'The Appsemble Team',
+      name: 'Test App',
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
       to: 'test@example.com',
@@ -98,48 +98,48 @@ describe('sendTranslatedEmail', () => {
       {
         name: 'null',
         link: (text: string) => `[${text}](https://example.com)`,
-        appName: 'The Appsemble Team',
+        appName: 'Test App',
       },
       {
         name: 'John Doe',
         link: (text: string) => `[${text}](https://example.com)`,
-        appName: 'The Appsemble Team',
+        appName: 'Test App',
       },
     ],
     reset: [
       {
         name: 'null',
         link: (text: string) => `[${text}](https://example.com)`,
-        appName: 'The Appsemble Team',
+        appName: 'Test App',
       },
       {
         name: 'John Doe',
         link: (text: string) => `[${text}](https://example.com)`,
-        appName: 'The Appsemble Team',
+        appName: 'Test App',
       },
     ],
     welcome: [
       {
         name: 'null',
         link: (text: string) => `[${text}](https://example.com)`,
-        appName: 'The Appsemble Team',
+        appName: 'Test App',
       },
       {
         name: 'John Doe',
         link: (text: string) => `[${text}](https://example.com)`,
-        appName: 'The Appsemble Team',
+        appName: 'Test App',
       },
     ],
     appMemberEmailChange: [
       {
         name: 'null',
         link: (text: string) => `[${text}](https://example.com)`,
-        appName: 'The Appsemble Team',
+        appName: 'Test App',
       },
       {
         name: 'John Doe',
         link: (text: string) => `[${text}](https://example.com)`,
-        appName: 'The Appsemble Team',
+        appName: 'Test App',
       },
     ],
   };
@@ -261,7 +261,7 @@ _Test App_`,
       AppId: app.id,
       language: 'nl-nl',
       messages: {
-        server: {
+        core: {
           'server.emails.welcome.subject': 'Aangenaam!',
           'server.emails.welcome.body': 'Hoi {name}!',
         },
@@ -287,7 +287,7 @@ _Test App_`,
       AppId: app.id,
       language: 'nl',
       messages: {
-        server: {
+        core: {
           'server.emails.welcome.subject': 'Aangenaam!',
           'server.emails.welcome.body': 'Hoi {name}!',
         },
@@ -313,7 +313,7 @@ _Test App_`,
       AppId: app.id,
       language: 'en',
       messages: {
-        server: {
+        core: {
           'server.emails.welcome.subject': 'Hello!',
           'server.emails.welcome.body': 'How do you do, {name}?',
         },
