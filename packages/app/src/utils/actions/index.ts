@@ -18,6 +18,7 @@ import { staticAction } from './static';
 import { read, write } from './storage';
 import { teamJoin, teamList } from './team';
 import { throwAction } from './throw';
+import { login, register, update } from './user';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
   Extract<Action, { type: T }>,
@@ -78,4 +79,7 @@ export const actionCreators: ActionCreators = {
   'storage.write': write,
   'team.join': teamJoin,
   'team.list': teamList,
+  'user.login': login,
+  'user.register': register,
+  'user.update': update,
 };

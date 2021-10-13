@@ -1,6 +1,7 @@
 import { Dirent, promises as fs, Stats } from 'fs';
 import { dirname, extname, join } from 'path';
 
+import { compareStrings } from '@appsemble/utils';
 import yaml from 'js-yaml';
 import parseJson from 'parse-json';
 import sortKeys from 'sort-keys';
@@ -72,7 +73,7 @@ export async function writeData(
   data: unknown,
   { sort = true }: WriteDataOptions = {},
 ): Promise<string> {
-  const sorted = sort ? sortKeys(data, { deep: true }) : data;
+  const sorted = sort ? sortKeys(data, { deep: true, compare: compareStrings }) : data;
   let buffer: string;
   try {
     const { format, getFileInfo, resolveConfig } = await import('prettier');

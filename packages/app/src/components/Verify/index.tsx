@@ -18,7 +18,7 @@ export function Verify(): ReactElement {
   useEffect(() => {
     (async () => {
       try {
-        await axios.post(`${apiUrl}/api/apps/${appId}/member/verify`, { token });
+        await axios.post(`${apiUrl}/api/user/apps/${appId}/account/verify`, { token });
         setSuccess(true);
       } catch {
         setSuccess(false);

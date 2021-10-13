@@ -302,6 +302,13 @@ export interface Remappers {
   prop: number | string;
 
   /**
+   * Recursively strip all nullish values from an object or array.
+   */
+  'null.strip': {
+    depth: number;
+  } | null;
+
+  /**
    * Pick and return a random entry from an array.
    *
    * If the input is not an array, the input is returned as-is.
@@ -676,6 +683,66 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
   value: Remapper;
 }
 
+export interface UserLoginAction extends BaseActionDefinition<'user.login'> {
+  /**
+   * The email address to login with.
+   */
+  email: Remapper;
+
+  /**
+   * The password to login with.
+   */
+  password: Remapper;
+}
+
+export interface UserRegisterAction extends BaseActionDefinition<'user.register'> {
+  /**
+   * The email address to login with.
+   */
+  email: Remapper;
+
+  /**
+   * The password to login with.
+   */
+  password: Remapper;
+
+  /**
+   * The display name of the user.
+   */
+  displayName: Remapper;
+
+  /**
+   * The profile picture to use.
+   *
+   * This must be a file, otherwise it’s discarded.
+   */
+  picture?: Remapper;
+}
+
+export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
+  /**
+   * The email address to update.
+   */
+  email?: Remapper;
+
+  /**
+   * The password to update.
+   */
+  password?: Remapper;
+
+  /**
+   * The display name to update.
+   */
+  displayName?: Remapper;
+
+  /**
+   * The profile picture to update.
+   *
+   * This must be a file, otherwise it’s ignored.
+   */
+  picture?: Remapper;
+}
+
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
   extends BaseActionDefinition<T> {
   /**
@@ -820,7 +887,10 @@ export type ActionDefinition =
   | ShareActionDefinition
   | StaticActionDefinition
   | StorageReadActionDefinition
-  | StorageWriteActionDefinition;
+  | StorageWriteActionDefinition
+  | UserLoginAction
+  | UserRegisterAction
+  | UserUpdateAction;
 
 export interface ActionType {
   /**

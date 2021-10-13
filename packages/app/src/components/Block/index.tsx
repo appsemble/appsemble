@@ -81,7 +81,7 @@ export function Block({
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
   const { getBlockMessage } = useAppMessages();
-  const { teams, updateTeam, userInfo } = useUser();
+  const { passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } = useUser();
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<(() => void)[]>([]);
@@ -129,7 +129,9 @@ export function Block({
       showMessage: push,
       teams,
       updateTeam,
-      userInfo,
+      getUserInfo: () => userInfoRef.current,
+      passwordLogin,
+      setUserInfo,
     });
     const theme = mergeThemes(definition.theme, page.theme, block.theme);
 
@@ -196,17 +198,20 @@ export function Block({
     page,
     pageReady,
     params,
+    passwordLogin,
     prefix,
     push,
     pushNotifications,
     ready,
     remap,
     route,
+    setUserInfo,
     showDialog,
     showShareDialog,
     teams,
     updateTeam,
     userInfo,
+    userInfoRef,
   ]);
 
   const { layout = manifest.layout } = block;

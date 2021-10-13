@@ -5,11 +5,14 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import {
   createContext,
+  Dispatch,
+  MutableRefObject,
   ReactElement,
   useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -28,7 +31,6 @@ interface JwtPayload {
 const initialState: LoginState = {
   isLoggedIn: false,
   role: null,
-  userInfo: null,
   teams: [],
 };
 
@@ -45,7 +47,6 @@ interface AuthorizationCodeLoginParams {
 interface LoginState {
   isLoggedIn: boolean;
   role: string;
-  userInfo: UserInfo;
   teams: TeamMember[];
 }
 
@@ -54,6 +55,9 @@ interface UserContext extends LoginState {
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   logout: () => any;
   updateTeam: UpdateTeam;
+  userInfo: UserInfo;
+  userInfoRef: MutableRefObject<UserInfo>;
+  setUserInfo: Dispatch<UserInfo>;
 }
 
 interface UserProviderProps {
@@ -84,8 +88,12 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   // If there is no security definition, don’t even bother going into the loading state.
   const [isLoading, setLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
+  const [userInfo, setUserInfo] = useState<UserInfo>(null);
   const [exp, setExp] = useState(null);
   const [authorization, setAuthorization] = useState<string>(null);
+
+  const userInfoRef = useRef(userInfo);
+  userInfoRef.current = userInfo;
 
   /**
    * Reset everything to its initial state for a logged out user.
@@ -95,6 +103,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
     setState(initialState);
+    setUserInfo(null);
     setAuthorization(null);
   }, []);
 
@@ -135,7 +144,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       try {
         const [auth, { sub }] = await fetchToken(grantType, params);
         const config = { headers: { authorization: auth } };
-        const [{ data: userInfo }, role, { data: teams }] = await Promise.all([
+        const [{ data: user }, role, { data: teams }] = await Promise.all([
           axios.get<UserInfo>(`${apiUrl}/api/connect/userinfo`, config),
           axios.get<AppMember>(`${apiUrl}/api/apps/${appId}/members/${sub}`, config).then(
             ({ data }) => data.role,
@@ -154,11 +163,11 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
           ),
           axios.get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams`, config),
         ]);
-        setUser({ id: userInfo.sub });
+        setUser({ id: user.sub });
+        setUserInfo(user);
         setState({
           isLoggedIn: true,
           role,
-          userInfo,
           teams,
         });
       } catch (error: unknown) {
@@ -266,8 +275,17 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
 
   // The value is memoized to prevent unnecessary rerenders.
   const value = useMemo(
-    () => ({ authorizationCodeLogin, passwordLogin, logout, updateTeam, ...state }),
-    [authorizationCodeLogin, passwordLogin, logout, state, updateTeam],
+    () => ({
+      authorizationCodeLogin,
+      passwordLogin,
+      logout,
+      updateTeam,
+      setUserInfo,
+      userInfo,
+      userInfoRef,
+      ...state,
+    }),
+    [authorizationCodeLogin, passwordLogin, logout, updateTeam, userInfo, state],
   );
 
   // If security hasn’t been initialized yet, show a loader instead of the children. This prevents

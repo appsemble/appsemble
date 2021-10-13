@@ -1,5 +1,4 @@
 import { paths as action } from './action';
-import { paths as appMemberPaths } from './appMember';
 import { paths as translations } from './appMessages';
 import { paths as appOAuth2Secrets } from './appOAuth2Secrets';
 import { paths as apps } from './apps';
@@ -23,7 +22,6 @@ export const paths = {
   ...appOAuth2Secrets,
   ...apps,
   ...appSamlSecrets,
-  ...appMemberPaths,
   ...appsembleMessages,
   ...assets,
   ...blocks,

@@ -251,14 +251,54 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
-    put: {
+    post: {
+      tags: ['appMember'],
+      description: 'Register a new app account using an email address and a password.',
+      operationId: 'registerMemberEmail',
+      requestBody: {
+        description: 'The user account to register.',
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['email', 'password'],
+              properties: {
+                name: {
+                  type: 'string',
+                },
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+                password: {
+                  type: 'string',
+                  minLength: 8,
+                },
+                picture: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The account’s profile picture.',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The account that was created.',
+        },
+      },
+    },
+    patch: {
       description: 'Update user data for a specific app',
       tags: ['user'],
-      operationId: 'updateAppAccount',
-      security: [{ studio: [] }],
+      operationId: 'patchAppAccount',
+      security: [{ studio: [] }, { app: [] }],
       requestBody: {
         content: {
-          'application/json': {
+          'multipart/form-data': {
             schema: {
               type: 'object',
               additionalProperties: false,
@@ -270,6 +310,16 @@ export const paths: OpenAPIV3.PathsObject = {
                 name: {
                   type: 'string',
                 },
+                picture: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The member’s profile picture.',
+                },
+              },
+            },
+            encoding: {
+              picture: {
+                contentType: 'image/png,image/jpeg,image/tiff,image/webp',
               },
             },
           },
@@ -285,6 +335,130 @@ export const paths: OpenAPIV3.PathsObject = {
               },
             },
           },
+        },
+      },
+    },
+  },
+  '/api/user/apps/{appId}/account/verify': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['appMember'],
+      description: 'Verify the email address of a registered user.',
+      operationId: 'verifyMemberEmail',
+      requestBody: {
+        description: 'The user account to register.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['token'],
+              properties: {
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The account was successfully verified.',
+        },
+      },
+    },
+  },
+  '/api/user/apps/{appId}/account/resend': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['appMember'],
+      description: 'Resend the verification code for a registered email.',
+      operationId: 'resendMemberEmailVerification',
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['email'],
+              properties: {
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The verification email was sent if an account was found in the database.',
+        },
+      },
+      security: [{ studio: [] }, { app: ['email'] }],
+    },
+  },
+  '/api/user/apps/{appId}/account/reset/request': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['appMember'],
+      description: 'Request a reset token for resetting passwords.',
+      operationId: 'requestMemberResetPassword',
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['email'],
+              properties: {
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The request has been received and an email was sent if it exists.',
+        },
+      },
+    },
+  },
+  '/api/user/apps/{appId}/account/reset': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['appMember'],
+      description: 'Reset a password using a password reset token.',
+      operationId: 'resetMemberPassword',
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['password', 'token'],
+              properties: {
+                password: {
+                  type: 'string',
+                  minLength: 8,
+                },
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The password has been reset.',
         },
       },
     },

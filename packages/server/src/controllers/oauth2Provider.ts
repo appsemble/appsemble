@@ -3,6 +3,7 @@ import { Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { App, AppMember, EmailAuthorization, Member, User } from '../models';
+import { argv } from '../utils/argv';
 import { getGravatarUrl } from '../utils/gravatar';
 import { createOAuth2AuthorizationCode } from '../utils/model';
 
@@ -43,7 +44,14 @@ export async function getUserInfo(ctx: Context): Promise<void> {
       email: appMember.email,
       email_verified: appMember.emailVerified,
       name: appMember.name,
-      picture: getGravatarUrl(appMember.email),
+      picture: appMember.picture
+        ? new URL(
+            `/api/apps/${client.app.id}/members/${
+              user.id
+            }/picture?updated=${appMember.updated.getTime()}`,
+            argv.host,
+          )
+        : getGravatarUrl(appMember.email),
       sub: user.id,
       locale: user.locale,
     };

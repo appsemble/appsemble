@@ -1,3 +1,5 @@
+const collator = new Intl.Collator('en', { numeric: true });
+
 /**
  * Default comparison function for strings.
  *
@@ -5,6 +7,4 @@
  * @param b - The second string to compare.
  * @returns Number representing whether `a` is less than, equal, or great compared to `b`.
  */
-export function compareStrings(a: string, b: string): number {
-  return a.localeCompare(b);
-}
+export const compareStrings = collator.compare;
