@@ -63,7 +63,8 @@ export async function getMessages(ctx: Context): Promise<void> {
   const appMessages: AppsembleMessages = {
     core: Object.fromEntries(
       Object.entries(coreMessages).filter(
-        ([key]) => key.startsWith('app') || key.startsWith('react-components') || key.startsWith('server'),
+        ([key]) =>
+          key.startsWith('app') || key.startsWith('react-components') || key.startsWith('server'),
       ),
     ),
     blocks: {},
