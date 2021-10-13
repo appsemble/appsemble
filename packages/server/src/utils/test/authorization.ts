@@ -65,7 +65,7 @@ export function authorizeApp(app: App, user = testUser): void {
         .authorizationCode.scopes,
     ).join(' '),
   });
-  request.defaults.headers.authorization = bearer(tokens);
+  request.defaults.headers.common.authorization = bearer(tokens);
 }
 
 /**
@@ -88,7 +88,7 @@ export async function authorizeClientCredentials(
   });
   credentials.User = user;
   const tokens = createJWTResponse(user.id, { aud: credentials.id, scope });
-  request.defaults.headers.authorization = bearer(tokens);
+  request.defaults.headers.common.authorization = bearer(tokens);
   return credentials;
 }
 
@@ -100,7 +100,7 @@ export async function authorizeClientCredentials(
  */
 export function authorizeStudio(user = testUser): TokenResponse {
   const tokens = createJWTResponse(user.id, { refreshToken: true });
-  request.defaults.headers.authorization = bearer(tokens);
+  request.defaults.headers.common.authorization = bearer(tokens);
   return tokens;
 }
 
@@ -108,7 +108,7 @@ export function authorizeStudio(user = testUser): TokenResponse {
  * Logout the default axios test instance.
  */
 export function unauthorize(): void {
-  delete request.defaults.headers.authorization;
+  delete request.defaults.headers.common.authorization;
 }
 
 // Reset the test user after every test.

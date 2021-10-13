@@ -25,7 +25,7 @@ export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactEle
     const [, appId] = appRequest.get('client_id').split(':');
 
     axios
-      .post(`/api/apps/${appId}/secrets/oauth2/${session.id}/verify`, {
+      .post<Record<string, string>>(`/api/apps/${appId}/secrets/oauth2/${session.id}/verify`, {
         code,
         scope: appRequest.get('scope'),
         redirectUri: appRequest.get('redirect_uri'),

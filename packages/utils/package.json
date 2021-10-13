@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@appsemble/types": "0.19.0",
-    "axios": "^0.21.0",
+    "axios": "^0.23.0",
     "cron-parser": "^3.0.0",
     "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",

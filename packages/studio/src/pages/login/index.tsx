@@ -7,6 +7,7 @@ import {
   useQuery,
   useToggle,
 } from '@appsemble/react-components';
+import { TokenResponse } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -28,7 +29,7 @@ export function LoginPage(): ReactElement {
     async ({ email, password }: LoginFormValues) => {
       busy.enable();
       try {
-        const { data } = await axios.post('/api/login', undefined, {
+        const { data } = await axios.post<TokenResponse>('/api/login', undefined, {
           headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
         });
         login(data);

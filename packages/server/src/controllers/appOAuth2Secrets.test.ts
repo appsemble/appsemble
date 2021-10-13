@@ -1,3 +1,4 @@
+import { LoginCodeResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { sign } from 'jsonwebtoken';
 
@@ -398,7 +399,7 @@ describe('verifyAppOAuth2SecretCode', () => {
     });
 
     authorizeStudio();
-    const response = await request.post(
+    const response = await request.post<LoginCodeResponse>(
       `/api/apps/${app.id}/secrets/oauth2/${secret.id}/verify`,
       {
         code: 'authorization_code',

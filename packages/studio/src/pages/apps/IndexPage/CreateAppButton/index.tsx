@@ -11,6 +11,7 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
+import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
@@ -41,7 +42,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
 
-      const { data } = await axios.post('/api/templates', {
+      const { data } = await axios.post<App>('/api/templates', {
         templateId: id,
         name,
         description,

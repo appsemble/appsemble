@@ -1,4 +1,5 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { Team } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 
@@ -79,7 +80,7 @@ export async function createTeam({
   logger.info(`Creating team ${name}`);
   const {
     data: { id },
-  } = await axios.post(`/api/apps/${appId}/teams`, {
+  } = await axios.post<Team>(`/api/apps/${appId}/teams`, {
     name,
     annotations: resolveAnnotations(annotations),
   });

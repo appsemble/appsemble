@@ -59,7 +59,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
 
   const cloneApp = useCallback(
     async (values: Template) => {
-      const { data } = await axios.post('/api/templates', values);
+      const { data } = await axios.post<App>('/api/templates', values);
 
       history.push(`/apps/${data.id}/edit`);
     },

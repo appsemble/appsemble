@@ -1,3 +1,4 @@
+import { LoginCodeResponse } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
@@ -99,7 +100,7 @@ describe('verifyOAuth2Consent', () => {
       role: 'User',
     });
     authorizeStudio();
-    const response = await request.post('/api/oauth2/consent/verify', {
+    const response = await request.post<LoginCodeResponse>('/api/oauth2/consent/verify', {
       appId: app.id,
       redirectUri: 'http://app.org.localhost:9999',
       scope: 'openid',
@@ -147,7 +148,7 @@ describe('verifyOAuth2Consent', () => {
       role: 'User',
     });
     authorizeStudio();
-    const response = await request.post('/api/oauth2/consent/verify', {
+    const response = await request.post<LoginCodeResponse>('/api/oauth2/consent/verify', {
       appId: app.id,
       redirectUri: 'http://app.example:9999',
       scope: 'email',
@@ -295,7 +296,7 @@ describe('agreeOAuth2Consent', () => {
       vapidPrivateKey: '',
     });
     authorizeStudio();
-    const response = await request.post('/api/oauth2/consent/agree', {
+    const response = await request.post<LoginCodeResponse>('/api/oauth2/consent/agree', {
       appId: app.id,
       redirectUri: 'http://app.org.localhost:9999',
       scope: 'openid',
@@ -337,7 +338,7 @@ describe('agreeOAuth2Consent', () => {
       vapidPrivateKey: '',
     });
     authorizeStudio();
-    const response = await request.post('/api/oauth2/consent/agree', {
+    const response = await request.post<LoginCodeResponse>('/api/oauth2/consent/agree', {
       appId: app.id,
       redirectUri: 'http://app.example:9999',
       scope: 'email',

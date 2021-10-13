@@ -1,3 +1,4 @@
+import { AppMessages as AppMessagesType, App as AppType } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { dump } from 'js-yaml';
@@ -117,7 +118,7 @@ describe('getAppTemplates', () => {
 describe('createTemplateApp', () => {
   it('should create a new app using a template', async () => {
     authorizeStudio();
-    const response = await request.post('/api/templates', {
+    const response = await request.post<AppType>('/api/templates', {
       templateId: templates[0].id,
       name: 'Test app',
       description: 'This is a test app',
@@ -148,7 +149,7 @@ describe('createTemplateApp', () => {
   it('should create a new app with example resources', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post('/api/templates', {
+    const response = await request.post<AppType>('/api/templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test app',
@@ -165,7 +166,7 @@ describe('createTemplateApp', () => {
   it('should include the app’s styles when cloning an app', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post('/api/templates', {
+    const response = await request.post<AppType>('/api/templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test app',
@@ -193,7 +194,7 @@ describe('createTemplateApp', () => {
     });
 
     const { id } = response.data;
-    const { data: messages } = await request.get(`/api/apps/${id}/messages/nl-nl`);
+    const { data: messages } = await request.get<AppMessagesType>(`/api/apps/${id}/messages/nl-nl`);
 
     expect(messages.language).toStrictEqual('nl-nl');
     expect(messages.messages.messageIds).toStrictEqual({ test: 'Dit is een testbericht' });

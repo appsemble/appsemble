@@ -6,11 +6,14 @@ import { JsonObject, RequireExactlyOne } from 'type-fest';
 
 export * from './appMember';
 export * from './asset';
+export * from './authentication';
 export * from './author';
 export * from './snapshot';
 export * from './resource';
+export * from './saml';
 export * from './ssl';
 export * from './template';
+export * from './user';
 
 export { Theme };
 
@@ -1558,6 +1561,11 @@ export interface AppSamlSecret extends WritableAppSamlSecret {
    * The unique ID of the secret.
    */
   id?: number;
+
+  /**
+   * When the secret was last updated.
+   */
+  updated?: string;
 
   /**
    * The SAML service provider certificate.

@@ -6,7 +6,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { AppDefinition, BlockManifest, SSLStatusMap } from '@appsemble/types';
+import { App, AppDefinition, BlockManifest, SSLStatusMap } from '@appsemble/types';
 import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
@@ -75,8 +75,8 @@ export default function EditPage(): ReactElement {
 
     const getStyles = async (): Promise<void> => {
       try {
-        const { data: coreStyleData } = await axios.get(`/api/apps/${id}/style/core`);
-        const { data: sharedStyleData } = await axios.get(`/api/apps/${id}/style/shared`);
+        const { data: coreStyleData } = await axios.get<string>(`/api/apps/${id}/style/core`);
+        const { data: sharedStyleData } = await axios.get<string>(`/api/apps/${id}/style/shared`);
 
         setCoreStyle(coreStyleData);
         setSharedStyle(sharedStyleData);
@@ -207,7 +207,7 @@ export default function EditPage(): ReactElement {
       formData.append('coreStyle', new Blob([coreStyle], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
 
-      const { data } = await axios.patch(`/api/apps/${id}`, formData);
+      const { data } = await axios.patch<App>(`/api/apps/${id}`, formData);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });
 
       // Update App State
