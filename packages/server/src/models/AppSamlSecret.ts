@@ -1,4 +1,3 @@
-import { AppSamlSecret as Interface } from '@appsemble/types';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import {
@@ -32,7 +31,7 @@ import { App } from '.';
   ],
 }))
 @Table({ tableName: 'AppSamlSecret' })
-export class AppSamlSecret extends Model implements Interface {
+export class AppSamlSecret extends Model {
   @PrimaryKey
   @AutoIncrement
   @Column

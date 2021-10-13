@@ -1,3 +1,4 @@
+import { AppSamlSecret as AppSamlSecretType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, AppSamlSecret, Member, Organization } from '../models';
@@ -213,13 +214,16 @@ describe('updateAppSamlSecret', () => {
       spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
-    const response = await request.put(`/api/apps/${app.id}/secrets/saml/${secret.id}`, {
-      entityId: 'https://updated.example/saml/metadata.xml',
-      ssoUrl: 'https://updated.example/saml/login',
-      idpCertificate: '-----BEGIN CERTIFICATE-----\nUPDATED\n-----END CERTIFICATE-----',
-      icon: 'updated',
-      name: 'Updated',
-    });
+    const response = await request.put<AppSamlSecretType>(
+      `/api/apps/${app.id}/secrets/saml/${secret.id}`,
+      {
+        entityId: 'https://updated.example/saml/metadata.xml',
+        ssoUrl: 'https://updated.example/saml/login',
+        idpCertificate: '-----BEGIN CERTIFICATE-----\nUPDATED\n-----END CERTIFICATE-----',
+        icon: 'updated',
+        name: 'Updated',
+      },
+    );
     expect(response).toMatchObject({
       status: 200,
       data: {

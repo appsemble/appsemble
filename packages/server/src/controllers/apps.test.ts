@@ -1,4 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
+import { App as AppType } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -465,7 +466,7 @@ describe('queryMyApps', () => {
 describe('createApp', () => {
   it('should create an app', async () => {
     authorizeStudio();
-    const createdResponse = await request.post(
+    const createdResponse = await request.post<AppType>(
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
@@ -1153,7 +1154,7 @@ pages:
       filename: 'test.css',
     });
     authorizeStudio();
-    const response = await request.post('/api/apps', form);
+    const response = await request.post<AppType>('/api/apps', form);
 
     const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
@@ -1967,7 +1968,7 @@ pages:
     const buffer = Buffer.from(yaml);
 
     authorizeStudio();
-    const response = await request.patch(
+    const response = await request.patch<AppType>(
       `/api/apps/${app.id}`,
       createFormData({
         definition: {
@@ -2086,7 +2087,7 @@ pages:
       filename: 'style.css',
     });
     authorizeStudio();
-    const response = await request.patch(`/api/apps/${app.id}`, form);
+    const response = await request.patch<AppType>(`/api/apps/${app.id}`, form);
 
     const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
@@ -2266,7 +2267,7 @@ describe('deleteApp', () => {
     authorizeStudio();
     const {
       data: { id },
-    } = await request.post(
+    } = await request.post<AppType>(
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,

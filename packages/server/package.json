@@ -43,7 +43,7 @@
     "@sentry/node": "^6.0.0",
     "@types/mdast": "^3.0.0",
     "@xmldom/xmldom": "^0.7.0",
-    "axios": "^0.21.0",
+    "axios": "^0.23.0",
     "bcrypt": "5.0.1",
     "bulma": "0.9.3",
     "bulma-checkradio": "^1.0.0",
@@ -140,7 +140,7 @@
     "@types/webpack-dev-middleware": "^5.0.0",
     "@types/xml-crypto": "^1.0.0",
     "axios-mock-adapter": "^1.0.0",
-    "axios-test-instance": "^4.0.0",
+    "axios-test-instance": "^5.0.0",
     "express-to-koa": "^2.0.0",
     "jest-image-snapshot": "^4.0.0",
     "memfs": "^3.0.0"

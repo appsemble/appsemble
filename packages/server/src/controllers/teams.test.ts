@@ -273,7 +273,7 @@ describe('patchTeam', () => {
     const team = await Team.create({ name: 'A', AppId: app.id });
     authorizeStudio();
     const response = await request.patch(`/api/apps/${app.id}/teams/${team.id}`, { name: 'B' });
-    const responseB = await request.get(`/api/apps/${app.id}/teams/${team.id}`);
+    const responseB = await request.get<Team>(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({ status: 200, data: { id: team.id, name: 'B' } });
     expect(responseB.data.name).toStrictEqual('B');

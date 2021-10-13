@@ -1,3 +1,4 @@
+import { OAuth2ClientCredentials as OAuth2ClientCredentialsType } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
@@ -36,11 +37,14 @@ afterAll(closeTestSchema);
 describe('registerOAuth2ClientCredentials', () => {
   it('should register OAuth2 client credentials', async () => {
     authorizeStudio();
-    const response = await request.post('/api/oauth2/client-credentials', {
-      description: 'Test client',
-      expires: '2345-01-02T03:04:05Z',
-      scopes: ['organizations:write', 'blocks:write'],
-    });
+    const response = await request.post<OAuth2ClientCredentialsType>(
+      '/api/oauth2/client-credentials',
+      {
+        description: 'Test client',
+        expires: '2345-01-02T03:04:05Z',
+        scopes: ['organizations:write', 'blocks:write'],
+      },
+    );
     expect(response).toMatchObject({
       status: 201,
       data: {

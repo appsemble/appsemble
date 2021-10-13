@@ -64,7 +64,7 @@ export function DetailsPage(): ReactElement {
         formData.append('picture', picture);
       }
 
-      const { data } = await axios.patch(`/api/user/apps/${appId}/account`, formData);
+      const { data } = await axios.patch<AppAccount>(`/api/user/apps/${appId}/account`, formData);
       result.setData(data);
     },
     [appId, result],

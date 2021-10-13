@@ -57,7 +57,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   });
 
   const setToken = useCallback((response: TokenResponse) => {
-    axios.defaults.headers.authorization = `Bearer ${response.access_token}`;
+    axios.defaults.headers.common.authorization = `Bearer ${response.access_token}`;
     localStorage.access_token = response.access_token;
     localStorage.refresh_token = response.refresh_token;
     setTokenResponse(response);
@@ -86,7 +86,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     setUser(null);
     setUserInfo(null);
     setOrganizations([]);
-    delete axios.defaults.headers.authorization;
+    delete axios.defaults.headers.common.authorization;
     delete localStorage.access_token;
     delete localStorage.refresh_token;
   }, []);
@@ -110,7 +110,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       return;
     }
 
-    axios.defaults.headers.authorization = `Bearer ${tokenResponse.access_token}`;
+    axios.defaults.headers.common.authorization = `Bearer ${tokenResponse.access_token}`;
 
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();

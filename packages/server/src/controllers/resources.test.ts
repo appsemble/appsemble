@@ -1,4 +1,5 @@
 import { createFormData } from '@appsemble/node-utils';
+import { Resource as ResourceType } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
@@ -378,7 +379,7 @@ describe('getResourceById', () => {
     const app = await exampleApp(organization.id);
     const {
       data: { id },
-    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
     });
 
@@ -1011,13 +1012,13 @@ describe('queryResources', () => {
     const app = await exampleApp(organization.id);
     const {
       data: { id: idA },
-    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
     });
     const {
       data: { id: idB },
-    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'bar',
     });
 
@@ -1642,7 +1643,7 @@ describe('createResource', () => {
 
   it('should accept assets as form data', async () => {
     const app = await exampleApp(organization.id);
-    const response = await request.post(
+    const response = await request.post<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
         resource: { file: '0' },
@@ -1999,7 +2000,7 @@ describe('updateResource', () => {
     const app = await exampleApp(organization.id);
     const {
       data: { id },
-    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
     });
@@ -2043,7 +2044,7 @@ describe('updateResource', () => {
     const app = await exampleApp(organization.id);
     const {
       data: { id },
-    } = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
     });
 
@@ -2065,7 +2066,7 @@ describe('updateResource', () => {
   it('should accept assets as form data', async () => {
     const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
-    const response = await request.put(
+    const response = await request.put<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({
         resource: { file: '0' },

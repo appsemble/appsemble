@@ -1,3 +1,4 @@
+import { User as APIUser } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
@@ -190,7 +191,7 @@ describe('removeEmail', () => {
 
     expect(response).toMatchObject({ status: 204 });
 
-    const { data } = await request.get('/api/user');
+    const { data } = await request.get<APIUser>('/api/user');
 
     expect(data.emails).not.toContainEqual({
       email: 'test2@example.com',

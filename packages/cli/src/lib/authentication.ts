@@ -1,6 +1,7 @@
 import { URL, URLSearchParams } from 'url';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { TokenResponse } from '@appsemble/types';
 import axios from 'axios';
 import { prompt } from 'inquirer';
 
@@ -131,7 +132,7 @@ export async function authenticate(
     return;
   }
   logger.verbose(`Logging in to ${remote}`);
-  const { data } = await axios.post(
+  const { data } = await axios.post<TokenResponse>(
     '/oauth2/token',
     new URLSearchParams({ grant_type: 'client_credentials', scope }),
     {

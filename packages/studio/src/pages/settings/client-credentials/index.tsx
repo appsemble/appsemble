@@ -19,12 +19,12 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
+import { OAuth2ClientCredentials } from '@appsemble/types';
 import { has, scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
-import { OAuth2ClientCredentials } from '../../../types';
 import styles from './index.module.css';
 import { messages } from './messages';
 
@@ -53,7 +53,7 @@ export function ClientCredentialsPage(): ReactElement {
       const scopes = Object.entries(values)
         .filter(([key, value]) => value && (knownScopes as readonly string[]).includes(key))
         .map(([key]) => key);
-      const { data } = await axios.post('/api/oauth2/client-credentials', {
+      const { data } = await axios.post<OAuth2ClientCredentials>('/api/oauth2/client-credentials', {
         description,
         expires: expires ? new Date(expires) : undefined,
         scopes,

@@ -4,7 +4,7 @@ import { URL } from 'url';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
-import { AppDefinition, AppsembleMessages, Messages } from '@appsemble/types';
+import { App, AppDefinition, AppsembleMessages, Messages } from '@appsemble/types';
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -534,7 +534,7 @@ export async function updateApp({
   }
 
   await authenticate(remote, 'apps:write', clientCredentials);
-  const { data } = await axios.patch(`/api/apps/${id}`, formData, { baseURL: remote });
+  const { data } = await axios.patch<App>(`/api/apps/${id}`, formData, { baseURL: remote });
 
   if (file.isDirectory()) {
     // After uploading the app, upload block styles and messages if they are available
@@ -614,7 +614,10 @@ export async function createApp({
     resources ? 'apps:write resources:write' : 'apps:write',
     clientCredentials,
   );
-  const { data } = await axios.post('/api/apps', formData, { baseURL: remote, params: { dryRun } });
+  const { data } = await axios.post<App>('/api/apps', formData, {
+    baseURL: remote,
+    params: { dryRun },
+  });
 
   if (dryRun) {
     logger.info('Skipped uploading block themes and app messages.');

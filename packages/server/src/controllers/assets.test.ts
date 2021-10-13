@@ -1,4 +1,5 @@
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
+import { Asset as AssetType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, Asset, Member, Organization, Resource, User } from '../models';
@@ -380,7 +381,7 @@ describe('createAsset', () => {
 
   it('should associate the user if the user is authenticated', async () => {
     authorizeStudio();
-    const response = await request.post(
+    const response = await request.post<AssetType>(
       `/api/apps/${app.id}/assets`,
       createFormData({ file: Buffer.alloc(0) }),
     );

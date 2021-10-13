@@ -3,6 +3,7 @@ import { promisify } from 'util';
 import { inflateRaw } from 'zlib';
 
 import { readFixture } from '@appsemble/node-utils';
+import { SAMLRedirectResponse } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import toXml from 'xast-util-to-xml';
@@ -224,11 +225,14 @@ afterAll(closeTestSchema);
 describe('createAuthnRequest', () => {
   it('should generate SAML parameters', async () => {
     authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/saml/${secret.id}/authn`, {
-      redirectUri: 'https://app.example',
-      scope: 'email openid profile',
-      state: 'secret state',
-    });
+    const response = await request.post<SAMLRedirectResponse>(
+      `/api/apps/${app.id}/saml/${secret.id}/authn`,
+      {
+        redirectUri: 'https://app.example',
+        scope: 'email openid profile',
+        state: 'secret state',
+      },
+    );
     expect(response).toMatchObject({
       status: 201,
     });

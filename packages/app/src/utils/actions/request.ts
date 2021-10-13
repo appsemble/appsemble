@@ -28,7 +28,10 @@ export const request: ActionCreator<'request'> = ({ definition, prefix, remap })
 
       const response = await axios(req);
       let responseBody = response.data;
-      if (/^(application|text)\/(.+\+)?xml/.test(response.headers['content-type'])) {
+      if (
+        typeof responseBody === 'string' &&
+        /^(application|text)\/(.+\+)?xml/.test(response.headers['content-type'])
+      ) {
         responseBody = xmlToJson(responseBody, schema);
       }
 
