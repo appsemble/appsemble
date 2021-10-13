@@ -55,7 +55,7 @@ export function useData<T>(url: string): UseAxiosResult<T> {
     setResult(null);
 
     axios
-      .get(url, { cancelToken: source.token })
+      .get<T>(url, { cancelToken: source.token })
       .then(({ data }) => {
         setResult(data);
         setError(null);

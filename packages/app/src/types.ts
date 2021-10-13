@@ -11,6 +11,7 @@ import {
   UserInfo,
 } from '@appsemble/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
+import { Dispatch } from 'react';
 import { match as Match, RouteComponentProps } from 'react-router-dom';
 import { JsonValue } from 'type-fest';
 
@@ -123,7 +124,9 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   ee: EventEmitter;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   showMessage: ShowMessage;
-  userInfo: UserInfo;
+  getUserInfo: () => UserInfo;
+  passwordLogin: (params: { username: string; password: string }) => Promise<void>;
+  setUserInfo: Dispatch<UserInfo>;
   updateTeam: UpdateTeam;
   teams: TeamMember[];
 }

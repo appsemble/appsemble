@@ -57,7 +57,7 @@ export function AssetsPage(): ReactElement {
       if (name) {
         formData.append('name', normalize(name));
       }
-      const { data } = await axios.post(`/api/apps/${app.id}/assets`, formData);
+      const { data } = await axios.post<Asset>(`/api/apps/${app.id}/assets`, formData);
 
       push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 

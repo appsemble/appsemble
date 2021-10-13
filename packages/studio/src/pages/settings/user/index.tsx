@@ -17,6 +17,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
+import { UserEmail } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback } from 'react';
@@ -25,7 +26,6 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { ResendEmailButton } from '../../../components/ResendEmailButton';
 import { useUser } from '../../../components/UserProvider';
-import { UserEmail } from '../../../types';
 import { supportedLanguages } from '../../../utils/constants';
 import styles from './index.module.css';
 import { messages } from './messages';

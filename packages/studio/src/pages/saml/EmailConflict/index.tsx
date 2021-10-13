@@ -8,13 +8,13 @@ import {
   useMessages,
   useQuery,
 } from '@appsemble/react-components';
+import { SAMLRedirectResponse, UserEmail } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { useUser } from '../../../components/UserProvider';
-import { UserEmail } from '../../../types';
 import { messages } from './messages';
 
 export function EmailConflict(): ReactElement {
@@ -31,7 +31,7 @@ export function EmailConflict(): ReactElement {
 
   const skipLogin = useCallback(async () => {
     try {
-      const { data } = await axios.post('/api/saml/continue', { id });
+      const { data } = await axios.post<SAMLRedirectResponse>('/api/saml/continue', { id });
       window.location.replace(data.redirect);
     } catch {
       push(formatMessage(messages.skipLoginError));
@@ -47,7 +47,9 @@ export function EmailConflict(): ReactElement {
         setLoading(false);
         return;
       }
-      const { data: appRedirect } = await axios.post('/api/saml/continue', { id });
+      const { data: appRedirect } = await axios.post<SAMLRedirectResponse>('/api/saml/continue', {
+        id,
+      });
       window.location.replace(appRedirect.redirect);
     });
   }, [email, id, userInfo]);

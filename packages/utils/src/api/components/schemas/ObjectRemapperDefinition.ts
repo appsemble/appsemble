@@ -97,6 +97,25 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
         },
       },
     },
+    'null.strip': {
+      description: 'Strip all null, undefined, and empty array values from an object.',
+      anyOf: [
+        { enum: [null] },
+        {
+          type: 'object',
+          required: ['depth'],
+          additionalProperties: false,
+          description: 'Options for the null.strip remapper.',
+          properties: {
+            depth: {
+              type: 'integer',
+              minimum: 1,
+              description: 'How deep to recurse into objects and arrays to remove null values.',
+            },
+          },
+        },
+      ],
+    },
     'object.assign': {
       description: 'Assign properties to an existing object given some predefined mapper keys.',
       additionalProperties: {

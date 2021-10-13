@@ -41,7 +41,7 @@ export function FlowPage({
   const [currentPage, setCurrentPage] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
-  const { teams, updateTeam, userInfo } = useUser();
+  const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
 
   // XXX Something weird is going on here.
   // eslint-disable-next-line prefer-const
@@ -146,24 +146,28 @@ export function FlowPage({
         showMessage,
         teams,
         updateTeam,
-        userInfo,
+        getUserInfo: () => userInfoRef.current,
+        passwordLogin,
+        setUserInfo,
       }),
     [
       definition,
-      ee,
-      flowActions,
-      history,
       page,
-      prefix,
-      pushNotifications,
-      remap,
-      route,
+      history,
       showDialog,
       showShareDialog,
+      flowActions,
+      prefix,
+      pushNotifications,
+      ee,
+      remap,
+      route,
       showMessage,
       teams,
-      userInfo,
       updateTeam,
+      passwordLogin,
+      setUserInfo,
+      userInfoRef,
     ],
   );
 

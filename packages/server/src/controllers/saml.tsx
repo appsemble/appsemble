@@ -161,7 +161,7 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   let idpCertificate: string;
   if (secret.entityId) {
     try {
-      const { data } = await axios.get(secret.entityId);
+      const { data } = await axios.get<string>(secret.entityId);
       const metadata = parser.parseFromString(data);
       const cert = x('X509Certificate', NS.ds, metadata)?.textContent;
       if (cert) {

@@ -27,7 +27,7 @@ export function RateApp({ app, onRate }: RateAppProps): ReactElement {
 
   const submit = useCallback(
     async (values) => {
-      const { data } = await axios.post(`/api/apps/${app.id}/ratings`, values);
+      const { data } = await axios.post<Rating>(`/api/apps/${app.id}/ratings`, values);
       onRate(data);
       modal.disable();
     },

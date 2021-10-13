@@ -1,4 +1,5 @@
 import { Button, Content, Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
+import { LoginCodeResponse } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
@@ -49,7 +50,7 @@ export function IndexPage(): ReactElement {
   const onAccept = useCallback(() => {
     setGenerating(true);
     axios
-      .post('/api/oauth2/consent/agree', {
+      .post<LoginCodeResponse>('/api/oauth2/consent/agree', {
         appId,
         redirectUri,
         scope: [...new Set(scopes)].join(' '),
@@ -68,11 +69,15 @@ export function IndexPage(): ReactElement {
     }
 
     axios
-      .post('/api/oauth2/consent/verify', { appId, redirectUri, scope })
+      .post<LoginCodeResponse>('/api/oauth2/consent/verify', {
+        appId,
+        redirectUri,
+        scope,
+      })
       .then(({ data }) => {
         if (!data.isAllowed || 'Cypress' in window) {
           setIsAllowed(data.isAllowed);
-          setAppName(data?.appName);
+          setAppName(data.appName);
           setAppLoading(false);
           return;
         }

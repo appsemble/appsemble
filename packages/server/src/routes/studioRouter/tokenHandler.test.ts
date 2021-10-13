@@ -1,6 +1,7 @@
 import { URLSearchParams } from 'url';
 
 import { basicAuth } from '@appsemble/node-utils';
+import { TokenResponse } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
@@ -240,7 +241,7 @@ describe('authorization_code', () => {
       redirectUri: 'http://foo.bar.localhost:9999/',
       scope: 'email openid',
     });
-    const response = await request.post(
+    const response = await request.post<TokenResponse>(
       '/oauth2/token',
       new URLSearchParams({
         client_id: `app:${app.id}`,
@@ -365,7 +366,7 @@ describe('client_credentials', () => {
   });
 
   it('should return an access token response if the request is made correctly', async () => {
-    const response = await request.post(
+    const response = await request.post<TokenResponse>(
       '/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write',
       { headers: { authorization: basicAuth('testClientId', 'testClientSecret') } },
@@ -409,7 +410,7 @@ describe('refresh_token', () => {
   });
 
   it('should create a refresh token', async () => {
-    const response = await request.post(
+    const response = await request.post<TokenResponse>(
       '/oauth2/token',
       new URLSearchParams({
         grant_type: 'refresh_token',

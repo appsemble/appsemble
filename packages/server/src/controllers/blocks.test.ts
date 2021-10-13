@@ -1,4 +1,5 @@
 import { createFixtureStream, readFixture } from '@appsemble/node-utils';
+import { BlockManifest } from '@appsemble/types';
 import { install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
@@ -69,7 +70,7 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: apple } = await request.post('/api/blocks', formDataA);
+    const { data: apple } = await request.post<BlockManifest>('/api/blocks', formDataA);
 
     const formDataB = new FormData();
     formDataB.append('name', '@xkcd/pen');
@@ -80,9 +81,9 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: pen } = await request.post('/api/blocks', formDataB);
+    const { data: pen } = await request.post<BlockManifest>('/api/blocks', formDataB);
 
-    const { data: bam } = await request.get('/api/blocks');
+    const { data: bam } = await request.get<BlockManifest[]>('/api/blocks');
     expect(bam).toMatchObject([
       omit(apple, ['files', 'languages']),
       omit(pen, ['files', 'languages']),
@@ -555,9 +556,9 @@ describe('getBlockVersion', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: created } = await request.post('/api/blocks', formData);
+    const { data: created } = await request.post<BlockManifest>('/api/blocks', formData);
 
-    const { data: retrieved, status } = await request.get(
+    const { data: retrieved, status } = await request.get<BlockManifest>(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 
@@ -580,7 +581,7 @@ describe('getBlockVersion', () => {
 
     await authorizeClientCredentials('blocks:write');
     const { data: created } = await request.post('/api/blocks', formData);
-    const { data: retrieved, status } = await request.get(
+    const { data: retrieved, status } = await request.get<BlockManifest>(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 
@@ -608,7 +609,7 @@ describe('getBlockVersion', () => {
     await authorizeClientCredentials('blocks:write');
     const { data: created } = await request.post('/api/blocks', formData);
 
-    const { data: retrieved, status } = await request.get(
+    const { data: retrieved, status } = await request.get<BlockManifest>(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
 

@@ -29,6 +29,10 @@ const tests = {
     { greeting: 'Hello User', url: 'https://example.com', name: 'Example App' },
     { greeting: 'Hello', url: 'https://example.com', name: 'Example App' },
   ],
+  appMemberEmailChange: [
+    { greeting: 'Hello User', url: 'https://example.com', name: 'Example App' },
+    { greeting: 'Hello', url: 'https://example.com', name: 'Example App' },
+  ],
 };
 
 it.each(readdirSync(join(assetDir, 'email')).map((f) => parse(f).name))(

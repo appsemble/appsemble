@@ -2,30 +2,6 @@ import { OAuth2Provider, UserInfo } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import { OAuth2State } from '@appsemble/web-utils';
 
-/**
- * A user email registration.
- */
-export interface UserEmail {
-  /**
-   * The registered email address
-   */
-  email: string;
-
-  /**
-   * Wether or not the email address has been verified.
-   */
-  verified: boolean;
-}
-
-export interface OAuth2ClientCredentials {
-  $created?: string;
-  id: string;
-  secret?: string;
-  description: string;
-  expires?: string;
-  scopes: string[];
-}
-
 export type Role = 'AppEditor' | 'Maintainer' | 'Member' | 'Owner';
 
 export interface Member {

@@ -1,17 +1,143 @@
 import { randomBytes } from 'crypto';
 
 import { logger } from '@appsemble/node-utils';
-import { AppMember as AppMemberType } from '@appsemble/types';
+import {
+  AppAccount,
+  AppMember as AppMemberType,
+  App as AppType,
+  SSOConfiguration,
+} from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
 import { Context } from 'koa';
-import { DatabaseError, Op, UniqueConstraintError } from 'sequelize';
+import {
+  DatabaseError,
+  FindOptions,
+  IncludeOptions,
+  literal,
+  Op,
+  UniqueConstraintError,
+} from 'sequelize';
 
-import { App, AppMember, Organization, transactional, User } from '../models';
+import {
+  App,
+  AppMember,
+  AppOAuth2Authorization,
+  AppOAuth2Secret,
+  AppSamlAuthorization,
+  AppSamlSecret,
+  Organization,
+  transactional,
+  User,
+} from '../models';
+import { applyAppMessages, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { createJWTResponse } from '../utils/createJWTResponse';
+import { getGravatarUrl } from '../utils/gravatar';
+import { serveIcon } from '../utils/icon';
+import { getAppFromRecord } from '../utils/model';
+
+/**
+ * Create an app member as JSON output from an app.
+ *
+ * @param app - The app to output. A single app member should be present.
+ * @param language - The language to use.
+ * @param baseLanguage - The base language to use.
+ * @returns The app member of the app.
+ */
+function outputAppMember(app: App, language: string, baseLanguage: string): AppAccount {
+  const [member] = app.AppMembers;
+
+  applyAppMessages(app, language, baseLanguage);
+
+  const sso: SSOConfiguration[] = [];
+
+  if (member.AppOAuth2Authorizations) {
+    for (const { AppOAuth2Secret: secret } of member.AppOAuth2Authorizations) {
+      sso.push({
+        type: 'oauth2',
+        icon: secret.icon,
+        // @ts-expect-error Workaround for https://github.com/sequelize/sequelize/issues/4158
+        url: secret.dataValues.authorizatio,
+        name: secret.name,
+      });
+    }
+  }
+  if (member.AppSamlAuthorizations) {
+    for (const { AppSamlSecret: secret } of member.AppSamlAuthorizations) {
+      sso.push({
+        type: 'saml',
+        icon: secret.icon,
+        url: secret.ssoUrl,
+        name: secret.name,
+      });
+    }
+  }
+
+  return {
+    app: getAppFromRecord(app) as AppType,
+    id: member.id,
+    email: member.email,
+    emailVerified: member.emailVerified,
+    picture: member.picture
+      ? String(
+          new URL(
+            `/api/apps/${app.id}/members/${
+              member.UserId
+            }/picture?updated=${member.updated.getTime()}`,
+            argv.host,
+          ),
+        )
+      : getGravatarUrl(member.email),
+    name: member.name,
+    role: member.role,
+    sso,
+  };
+}
+
+function createAppAccountQuery(user: User, include: IncludeOptions[]): FindOptions {
+  return {
+    attributes: {
+      include: [
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+      ],
+      exclude: ['App.icon', 'maskableIcon', 'coreStyle', 'sharedStyle'],
+    },
+    include: [
+      {
+        model: Organization,
+        attributes: {
+          include: [
+            'id',
+            'name',
+            'updated',
+            [literal('"Organization".icon IS NOT NULL'), 'hasIcon'],
+          ],
+        },
+      },
+      {
+        model: AppMember,
+        where: { UserId: user.id },
+        include: [
+          {
+            model: AppSamlAuthorization,
+            required: false,
+            include: [AppSamlSecret],
+          },
+          {
+            model: AppOAuth2Authorization,
+            required: false,
+            include: [AppOAuth2Secret],
+          },
+        ],
+      },
+      ...include,
+    ],
+  };
+}
 
 export async function getAppMembers(ctx: Context): Promise<void> {
   const {
@@ -130,12 +256,128 @@ export async function setAppMember(ctx: Context): Promise<void> {
   };
 }
 
+export async function getAppAccounts(ctx: Context): Promise<void> {
+  const { user } = ctx;
+  const { baseLanguage, language, query } = parseLanguage(ctx);
+
+  const apps = await App.findAll(createAppAccountQuery(user, query));
+
+  ctx.body = apps.map((app) => outputAppMember(app, language, baseLanguage));
+}
+
+export async function getAppAccount(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    user,
+  } = ctx;
+  const { baseLanguage, language, query } = parseLanguage(ctx);
+
+  const app = await App.findOne({
+    where: { id: appId },
+    ...createAppAccountQuery(user, query),
+  });
+
+  if (!app) {
+    throw notFound('App account not found');
+  }
+
+  ctx.body = outputAppMember(app, language, baseLanguage);
+}
+
+export async function patchAppAccount(ctx: Context): Promise<void> {
+  const {
+    mailer,
+    pathParams: { appId },
+    request: {
+      body: { email, name, picture },
+    },
+    user,
+  } = ctx;
+  const { baseLanguage, language, query } = parseLanguage(ctx);
+
+  const app = await App.findOne({
+    where: { id: appId },
+    ...createAppAccountQuery(user, query),
+  });
+
+  if (!app) {
+    throw notFound('App account not found');
+  }
+
+  const [member] = app.AppMembers;
+  const result: Partial<AppMember> = {};
+  if (email != null && member.email !== email) {
+    result.email = email;
+    result.emailVerified = false;
+    result.emailKey = randomBytes(40).toString('hex');
+
+    const url = new URL(argv.host);
+    url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+    const verificationUrl = new URL('/Verify', url);
+    verificationUrl.searchParams.set('token', result.emailKey);
+
+    mailer
+      .sendTemplateEmail({ email, name }, 'appMemberEmailChange', {
+        url: String(verificationUrl),
+        name: app.definition.name,
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
+  }
+
+  if (name != null) {
+    result.name = name;
+  }
+
+  if (picture) {
+    result.picture = picture.contents;
+  }
+
+  await member.update(result);
+  ctx.body = outputAppMember(app, language, baseLanguage);
+}
+
+export async function getAppMemberPicture(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, memberId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    include: [
+      {
+        model: AppMember,
+        where: { [Op.or]: [{ id: memberId }, { UserId: memberId }] },
+        required: false,
+      },
+    ],
+  });
+
+  if (!app) {
+    throw notFound('App could not be found.');
+  }
+
+  if (!app.AppMembers.length) {
+    throw notFound('This member does not exist');
+  }
+
+  if (!app.AppMembers[0].picture) {
+    throw notFound('This member has no profile picture set.');
+  }
+
+  await serveIcon(ctx, {
+    icon: app.AppMembers[0].picture,
+    fallback: 'user-solid.png',
+    raw: true,
+  });
+}
+
 export async function registerMemberEmail(ctx: Context): Promise<void> {
   const {
     mailer,
     pathParams: { appId },
     request: {
-      body: { name, password },
+      body: { name, password, picture },
     },
   } = ctx;
 
@@ -176,6 +418,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
         },
         { transaction },
       );
+
       await AppMember.create(
         {
           UserId: user.id,
@@ -185,6 +428,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
           email,
           role: app.definition.security.default.role,
           emailKey: key,
+          picture: picture ? picture.contents : null,
         },
         { transaction },
       );
@@ -220,6 +464,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
 
   ctx.body = createJWTResponse(user.id);
 }
+
 export async function verifyMemberEmail(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },

@@ -23,4 +23,7 @@ export const messages = defineMessages({
   submit: 'Save',
   submitError: 'There was a problem',
   ssoTitle: 'Single sign on accounts',
+  picture: 'Picture',
+  selectFile: 'Select a file',
+  pictureDescription: 'The public picture to use for your profile.',
 });

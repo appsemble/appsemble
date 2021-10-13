@@ -21,15 +21,18 @@ export async function handler(): Promise<void> {
   logger.info(`Logging in to ${DOCKER_HUB_URL}`);
   const {
     data: { token },
-  } = await docker.post('users/login', {
+  } = await docker.post<{ token: string }>('users/login', {
     username: DOCKER_HUB_USERNAME,
     password: DOCKER_HUB_PASSWORD,
   });
-  docker.defaults.headers.authorization = `JWT ${token}`;
   logger.info(`Successfully logged in to ${DOCKER_HUB_URL}`);
 
   logger.info(`Updating full description on ${DOCKER_HUB_URL}`);
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  await docker.patch('repositories/appsemble/appsemble', { full_description: readme });
+  await docker.patch(
+    'repositories/appsemble/appsemble',
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    { full_description: readme },
+    { headers: { authorization: `JWT ${token}` } },
+  );
   logger.info(`Successfully updated full description on ${DOCKER_HUB_URL}`);
 }

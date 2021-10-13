@@ -179,7 +179,9 @@ export function createTestAction<T extends ActionDefinition['type']>(
     showMessage: null,
     teams: [],
     updateTeam: null,
-    userInfo: null,
+    getUserInfo: null,
+    passwordLogin: null,
+    setUserInfo: null,
     ...params,
   });
 }

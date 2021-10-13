@@ -53,6 +53,9 @@ export class AppMember extends Model {
   @Column
   consent: Date;
 
+  @Column
+  picture?: Buffer;
+
   @CreatedAt
   created: Date;
 

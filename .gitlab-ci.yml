@@ -203,8 +203,8 @@ pack:
     - yarn workspace @appsemble/types pack
     - yarn workspace @appsemble/sdk pack
     - yarn workspace @appsemble/preact pack
-    - yarn workspace @appsemble/node-utils pack
     - yarn workspace @appsemble/utils pack
+    - yarn workspace @appsemble/node-utils pack
     - yarn workspace @appsemble/webpack-config pack
     - yarn workspace @appsemble/cli pack
     - yarn workspace appsemble pack

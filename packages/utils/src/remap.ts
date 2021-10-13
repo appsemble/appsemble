@@ -6,6 +6,7 @@ import parseDuration from 'parse-duration';
 
 import { has } from './has';
 import { mapValues } from './mapValues';
+import { stripNullValues } from './miscellaneous';
 
 /**
  * Stub the console types, since we don’t want to use dom or node types here.
@@ -248,6 +249,8 @@ const mapperImplementations: MapperImplementations = {
     return addMilliseconds(input, expireDuration);
   },
 
+  'null.strip': (args, input) => stripNullValues(input, args || {}),
+
   'random.choice': (args, input: any[]) =>
     Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,
 
@@ -288,5 +291,5 @@ const mapperImplementations: MapperImplementations = {
     return message.format() || `{${messageId}}`;
   },
 
-  user: (values, input, context) => context.userInfo?.[values],
+  user: (property, input, context) => context.userInfo?.[property],
 };

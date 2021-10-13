@@ -1,3 +1,4 @@
+import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
@@ -585,11 +586,317 @@ describe('deleteAppMember', () => {
   });
 });
 
+describe('getAppAccounts', () => {
+  it('should return all of the user’s app accounts', async () => {
+    authorizeStudio();
+
+    const appA = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appB = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    await AppMember.create({ AppId: appA.id, UserId: user.id, role: 'Admin' });
+    await AppMember.create({ AppId: appB.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.get('/api/user/apps/accounts');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          app: {
+            $created: '1970-01-01T00:00:00.000Z',
+            $updated: '1970-01-01T00:00:00.000Z',
+            OrganizationId: 'testorganization',
+            OrganizationName: 'Test Organization',
+            definition: {},
+            domain: null,
+            hasIcon: false,
+            hasMaskableIcon: false,
+            iconBackground: '#ffffff',
+            iconUrl: null,
+            id: 1,
+            locked: false,
+            longDescription: null,
+            path: null,
+            private: false,
+            showAppsembleLogin: false,
+            showAppsembleOAuth2Login: true,
+            yaml: '{}\n',
+          },
+          role: 'Admin',
+        },
+        {
+          app: {
+            $created: '1970-01-01T00:00:00.000Z',
+            $updated: '1970-01-01T00:00:00.000Z',
+            OrganizationId: 'testorganization',
+            OrganizationName: 'Test Organization',
+            definition: {},
+            domain: null,
+            hasIcon: false,
+            hasMaskableIcon: false,
+            iconBackground: '#ffffff',
+            iconUrl: null,
+            id: 2,
+            locked: false,
+            longDescription: null,
+            path: null,
+            private: false,
+            showAppsembleLogin: false,
+            showAppsembleOAuth2Login: true,
+            yaml: '{}\n',
+          },
+          role: 'Member',
+        },
+      ],
+    });
+  });
+});
+
+describe('getAppAccount', () => {
+  it('should return the user’s app account', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.get(`/api/user/apps/${app.id}/account`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        app: {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          OrganizationId: 'testorganization',
+          OrganizationName: 'Test Organization',
+          definition: {},
+          domain: null,
+          hasIcon: false,
+          hasMaskableIcon: false,
+          iconBackground: '#ffffff',
+          iconUrl: null,
+          id: 1,
+          locked: false,
+          longDescription: null,
+          path: null,
+          private: false,
+          showAppsembleLogin: false,
+          showAppsembleOAuth2Login: true,
+          yaml: '{}\n',
+        },
+        role: 'Member',
+      },
+    });
+  });
+
+  it('should throw 404 if the app account doesn’t exist', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+
+    const response = await request.get(`/api/user/apps/${app.id}/account`);
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should throw 404 if the app doesn’t exist', async () => {
+    authorizeStudio();
+
+    const response = await request.get('/api/user/apps/404/account');
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+});
+
+describe('patchAppAccount', () => {
+  it('should update and return the user’s app account', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.patch(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'user@example.com', name: 'Me' }),
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        app: {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          OrganizationId: 'testorganization',
+          OrganizationName: 'Test Organization',
+          definition: {},
+          domain: null,
+          hasIcon: false,
+          hasMaskableIcon: false,
+          iconBackground: '#ffffff',
+          iconUrl: null,
+          id: 1,
+          locked: false,
+          longDescription: null,
+          path: null,
+          private: false,
+          showAppsembleLogin: false,
+          showAppsembleOAuth2Login: true,
+          yaml: '{}\n',
+        },
+        name: 'Me',
+        email: 'user@example.com',
+        role: 'Member',
+        picture: 'https://www.gravatar.com/avatar/b58996c504c5638798eb6b511e6f49af?s=128&d=mp',
+      },
+    });
+    await appMember.reload();
+    expect(appMember.name).toBe('Me');
+    expect(appMember.email).toBe('user@example.com');
+  });
+
+  it('should allow for updating the profile picture', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+    const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const response = await request.patch(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({
+        email: 'user@example.com',
+        name: 'Me',
+        picture: createFixtureStream('tux.png'),
+      }),
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        app: {
+          $created: '1970-01-01T00:00:00.000Z',
+          $updated: '1970-01-01T00:00:00.000Z',
+          OrganizationId: 'testorganization',
+          OrganizationName: 'Test Organization',
+          definition: {},
+          domain: null,
+          hasIcon: false,
+          hasMaskableIcon: false,
+          iconBackground: '#ffffff',
+          iconUrl: null,
+          id: 1,
+          locked: false,
+          longDescription: null,
+          path: null,
+          private: false,
+          showAppsembleLogin: false,
+          showAppsembleOAuth2Login: true,
+          yaml: '{}\n',
+        },
+        name: 'Me',
+        email: 'user@example.com',
+        role: 'Member',
+        picture: `http://localhost/api/apps/${app.id}/members/${user.id}/picture?updated=0`,
+      },
+    });
+    await appMember.reload();
+    expect(appMember.picture).toStrictEqual(await readFixture('tux.png'));
+  });
+
+  it('should throw 404 if the app account doesn’t exist', async () => {
+    authorizeStudio();
+
+    const app = await App.create({
+      OrganizationId: 'testorganization',
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      definition: {},
+    });
+
+    const response = await request.patch(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'user@example.com', name: '' }),
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should throw 404 if the app doesn’t exist', async () => {
+    authorizeStudio();
+
+    const response = await request.patch(
+      '/api/user/apps/404/account',
+      createFormData({ email: 'user@example.com', name: '' }),
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'App account not found',
+        statusCode: 404,
+      },
+    });
+  });
+});
+
 describe('registerMemberEmail', () => {
   it('should register valid email addresses', async () => {
     const app = await createDefaultApp(organization);
-    const data = { email: 'test@example.com', password: 'password' };
-    const response = await request.post(`/api/apps/${app.id}/member`, data);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', password: 'password' }),
+    );
 
     expect(response).toMatchObject({
       status: 201,
@@ -599,13 +906,16 @@ describe('registerMemberEmail', () => {
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
     expect(m.password).not.toBe('password');
-    expect(await compare(data.password, m.password)).toBe(true);
+    expect(await compare('password', m.password)).toBe(true);
   });
 
   it('should accept a display name', async () => {
     const app = await createDefaultApp(organization);
-    const data = { email: 'test@example.com', name: 'Me', password: 'password' };
-    const response = await request.post(`/api/apps/${app.id}/member`, data);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', name: 'Me', password: 'password' }),
+    );
 
     expect(response).toMatchObject({
       status: 201,
@@ -616,12 +926,40 @@ describe('registerMemberEmail', () => {
     expect(m.name).toBe('Me');
   });
 
+  it('should accept a profile picture', async () => {
+    const app = await createDefaultApp(organization);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({
+        email: 'test@example.com',
+        name: 'Me',
+        password: 'password',
+        picture: createFixtureStream('tux.png'),
+      }),
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+
+    const responseB = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`, {
+      responseType: 'arraybuffer',
+    });
+    const responseC = await request.get(`/api/apps/${app.id}/members/${m.UserId}/picture`, {
+      responseType: 'arraybuffer',
+    });
+    expect(response.status).toBe(201);
+    expect(m.picture).toStrictEqual(await readFixture('tux.png'));
+    expect(responseB.data).toStrictEqual(await readFixture('tux.png'));
+    expect(responseC.data).toStrictEqual(await readFixture('tux.png'));
+  });
+
   it('should not register invalid email addresses', async () => {
     const app = await createDefaultApp(organization);
-    const response = await request.post(`/api/apps/${app.id}/member`, {
-      email: 'foo',
-      password: 'bar',
-    });
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'foo', password: 'bar' }),
+    );
 
     expect(response).toMatchObject({ status: 400 });
   });
@@ -636,10 +974,10 @@ describe('registerMemberEmail', () => {
       email: 'test@example.com',
     });
 
-    const response = await request.post(`/api/apps/${app.id}/member`, {
-      email: 'test@example.com',
-      password: 'password',
-    });
+    const response = await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', password: 'password' }),
+    );
 
     expect(response).toMatchObject({ status: 409 });
   });
@@ -649,16 +987,17 @@ describe('verifyMemberEmail', () => {
   it('should verify existing email addresses', async () => {
     const app = await createDefaultApp(organization);
 
-    await request.post(`/api/apps/${app.id}/member`, {
-      email: 'test@example.com',
-      password: 'password',
-    });
+    await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', password: 'password' }),
+    );
+
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
     expect(m.emailVerified).toBe(false);
     expect(m.emailKey).not.toBeNull();
 
-    const response = await request.post(`/api/apps/${app.id}/member/verify`, {
+    const response = await request.post(`/api/user/apps/${app.id}/account/verify`, {
       token: m.emailKey,
     });
     expect(response).toMatchObject({ status: 200 });
@@ -671,9 +1010,11 @@ describe('verifyMemberEmail', () => {
   it('should not verify empty or invalid keys', async () => {
     const app = await createDefaultApp(organization);
 
-    const responseA = await request.post(`/api/apps/${app.id}/member/verify`);
-    const responseB = await request.post(`/api/apps/${app.id}/member/verify`, { token: null });
-    const responseC = await request.post(`/api/apps/${app.id}/member/verify`, {
+    const responseA = await request.post(`/api/user/apps/${app.id}/account/verify`);
+    const responseB = await request.post(`/api/user/apps/${app.id}/account/verify`, {
+      token: null,
+    });
+    const responseC = await request.post(`/api/user/apps/${app.id}/account/verify`, {
       token: 'invalidkey',
     });
 
@@ -688,14 +1029,14 @@ describe('requestMemberResetPassword', () => {
     const app = await createDefaultApp(organization);
 
     const data = { email: 'test@example.com', password: 'password' };
-    await request.post(`/api/apps/${app.id}/member`, data);
+    await request.post(`/api/user/apps/${app.id}/account`, createFormData(data));
 
-    const responseA = await request.post(`/api/apps/${app.id}/member/reset/request`, {
+    const responseA = await request.post(`/api/user/apps/${app.id}/account/reset/request`, {
       email: data.email,
     });
 
     const m = await AppMember.findOne({ where: { email: data.email } });
-    const responseB = await request.post(`/api/apps/${app.id}/member/reset`, {
+    const responseB = await request.post(`/api/user/apps/${app.id}/account/reset`, {
       token: m.resetKey,
       password: 'newPassword',
     });
@@ -711,7 +1052,7 @@ describe('requestMemberResetPassword', () => {
   it('should not reveal existing emails', async () => {
     const app = await createDefaultApp(organization);
 
-    const response = await request.post(`/api/apps/${app.id}/member/reset/request`, {
+    const response = await request.post(`/api/user/apps/${app.id}/account/reset/request`, {
       email: 'idonotexist@example.com',
     });
 
@@ -723,11 +1064,48 @@ describe('resetMemberPassword', () => {
   it('should return not found when resetting using a non-existent token', async () => {
     const app = await createDefaultApp(organization);
 
-    const response = await request.post(`/api/apps/${app.id}/member/reset`, {
+    const response = await request.post(`/api/apps/${app.id}/account/reset`, {
       token: 'idontexist',
       password: 'whatever',
     });
 
     expect(response).toMatchObject({ status: 404 });
+  });
+});
+
+describe('getAppMemberPicture', () => {
+  it('should fetch the app member’s profile picture', async () => {
+    const app = await createDefaultApp(organization);
+    await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        picture: createFixtureStream('tux.png'),
+      }),
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const response = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`, {
+      responseType: 'arraybuffer',
+    });
+
+    expect(response.data).toStrictEqual(await readFixture('tux.png'));
+  });
+
+  it('should return 404 if the user has not uploaded a picture', async () => {
+    const app = await createDefaultApp(organization);
+    await request.post(
+      `/api/user/apps/${app.id}/account`,
+      createFormData({ email: 'test@example.com', password: 'password' }),
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    const response = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`);
+
+    expect(response.data).toMatchObject({
+      statusCode: 404,
+      message: 'This member has no profile picture set.',
+    });
   });
 });
