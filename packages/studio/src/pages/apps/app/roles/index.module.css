@@ -1,0 +1,6 @@
+.property {
+  max-width: 50vw;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

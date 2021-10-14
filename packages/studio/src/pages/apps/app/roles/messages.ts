@@ -13,4 +13,6 @@ export const messages = defineMessages({
   noMembers: 'This app currently has no members.',
   memberError: 'Something went wrong when trying to load the list of members.',
   loadingMembers: 'Loading members…',
+  properties: 'Properties',
+  empty: 'Empty',
 });

@@ -1,5 +1,6 @@
 import {
   AsyncSelect,
+  Button,
   Table,
   Title,
   useData,
@@ -14,6 +15,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useApp } from '..';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
 import { useUser } from '../../../../components/UserProvider';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 export interface Member {
@@ -21,6 +23,7 @@ export interface Member {
   name?: string;
   primaryEmail?: string;
   role: string;
+  properties?: Record<string, string>;
 }
 
 export function RolesPage(): ReactElement {
@@ -86,6 +89,9 @@ export function RolesPage(): ReactElement {
                 <th>
                   <FormattedMessage {...messages.member} />
                 </th>
+                <th>
+                  <FormattedMessage {...messages.properties} />
+                </th>
                 <th className="has-text-right">
                   <FormattedMessage {...messages.role} />
                 </th>
@@ -103,6 +109,16 @@ export function RolesPage(): ReactElement {
                         </span>
                       )}
                     </div>
+                  </td>
+                  <td className={styles.propertyRow}>
+                    {member.properties && Object.keys(member.properties).length ? (
+                      <span className={styles.property}>{JSON.stringify(member.properties)}</span>
+                    ) : (
+                      <span className="has-text-grey">
+                        (<FormattedMessage {...messages.empty} />)
+                      </span>
+                    )}
+                    <Button color="primary" icon="edit" />
                   </td>
                   <td className="has-text-right">
                     <div className="control is-inline">
