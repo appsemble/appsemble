@@ -15,7 +15,6 @@ import {
   Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
-import { DataTypes } from 'sequelize/types';
 
 import { App, AppOAuth2Authorization, AppSamlAuthorization, User } from '.';
 
@@ -57,7 +56,7 @@ export class AppMember extends Model {
   @Column
   picture?: Buffer;
 
-  @Column(DataTypes.JSON)
+  @Column(DataType.JSON)
   properties?: Record<string, string>;
 
   @Column
