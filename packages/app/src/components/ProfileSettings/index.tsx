@@ -11,6 +11,7 @@ import { App } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
 import { apiUrl, appId } from '../../utils/settings';
 import { useUser } from '../UserProvider';
@@ -20,6 +21,7 @@ import { PicturePreview } from './PicturePreview';
 export function ProfileSettings(): ReactElement {
   const { formatMessage } = useIntl();
   const { setUserInfo, userInfo } = useUser();
+  const { lang } = useParams<{ lang: string }>();
   const push = useMessages();
 
   const onSaveProfile = useCallback(
@@ -27,6 +29,7 @@ export function ProfileSettings(): ReactElement {
       const formData = new FormData();
       formData.append('name', values.name);
       formData.append('email', values.email);
+      formData.append('locale', lang);
 
       if (values.picture) {
         formData.append('picture', values.picture);
@@ -48,7 +51,7 @@ export function ProfileSettings(): ReactElement {
       });
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     },
-    [formatMessage, push, setUserInfo, userInfo],
+    [formatMessage, push, setUserInfo, userInfo, lang],
   );
 
   return (
