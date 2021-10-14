@@ -24,5 +24,10 @@ Does nothing if the user isn’t logged in.`,
     picture: {
       description: 'The new profile picture of the user.',
     },
+    properties: {
+      description: `The custom properties for the user.
+
+Every value will be converted to a string.`,
+    },
   },
 });
