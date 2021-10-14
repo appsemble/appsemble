@@ -154,19 +154,16 @@ export function compareApps(a: App, b: App): number {
 /**
  * Extracts and parses the language from the query string of a request.
  *
- * @param ctx - Koa context of the request to extract the languages of
+ * @param input - The language string to parse.
  * @returns An object containing the language, base language, and Sequelize filter
  * to filter AppMessages by these languages.
  */
-export function parseLanguage(ctx: Context): {
+export function parseLanguage(input: string[] | string): {
   language: string;
   baseLanguage: string;
   query: IncludeOptions[];
 } {
-  const {
-    query: { language },
-  } = ctx;
-
+  const language = input && Array.isArray(input) ? input[0] : input;
   if (!language) {
     return { language: undefined, baseLanguage: undefined, query: [] };
   }

@@ -76,7 +76,7 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
     pathParams: { organizationId },
     user,
   } = ctx;
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx);
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx.query?.language);
 
   const memberInclude = user
     ? { include: [{ model: User, where: { id: user.id }, required: false }] }

@@ -325,6 +325,10 @@ export const paths: OpenAPIV3.PathsObject = {
                   additionalProperties: { type: 'string' },
                   description: 'The member’s custom properties.',
                 },
+                locale: {
+                  type: 'string',
+                  description: 'The preferred locale of the user.',
+                },
               },
             },
             encoding: {

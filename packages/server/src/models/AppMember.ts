@@ -60,6 +60,9 @@ export class AppMember extends Model {
   @Column(DataTypes.JSON)
   properties?: Record<string, string>;
 
+  @Column
+  locale?: string;
+
   @CreatedAt
   created: Date;
 

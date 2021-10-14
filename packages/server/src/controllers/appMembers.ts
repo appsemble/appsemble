@@ -265,7 +265,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
 
 export async function getAppAccounts(ctx: Context): Promise<void> {
   const { user } = ctx;
-  const { baseLanguage, language, query } = parseLanguage(ctx);
+  const { baseLanguage, language, query } = parseLanguage(ctx.query?.language);
 
   const apps = await App.findAll(createAppAccountQuery(user, query));
 
@@ -277,7 +277,7 @@ export async function getAppAccount(ctx: Context): Promise<void> {
     pathParams: { appId },
     user,
   } = ctx;
-  const { baseLanguage, language, query } = parseLanguage(ctx);
+  const { baseLanguage, language, query } = parseLanguage(ctx.query?.language);
 
   const app = await App.findOne({
     where: { id: appId },
@@ -296,11 +296,11 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { email, name, picture, properties },
+      body: { email, locale, name, picture, properties },
     },
     user,
   } = ctx;
-  const { baseLanguage, language, query } = parseLanguage(ctx);
+  const { baseLanguage, language, query } = parseLanguage(ctx.query?.language);
 
   const app = await App.findOne({
     where: { id: appId },
@@ -324,9 +324,16 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     verificationUrl.searchParams.set('token', result.emailKey);
 
     mailer
-      .sendTemplateEmail({ email, name }, 'appMemberEmailChange', {
-        url: String(verificationUrl),
-        name: app.definition.name,
+      .sendTranslatedEmail({
+        appId,
+        to: { email, name },
+        locale: member.locale,
+        emailName: 'appMemberEmailChange',
+        values: {
+          link: (text) => `[${text}](${verificationUrl})`,
+          name: member.name || 'null',
+          appName: app.definition.name,
+        },
       })
       .catch((error: Error) => {
         logger.error(error);
@@ -343,6 +350,10 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
 
   if (properties) {
     result.properties = properties;
+  }
+
+  if (locale) {
+    result.locale = locale;
   }
 
   await member.update(result);
@@ -388,7 +399,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { name, password, picture, properties = {} },
+      body: { name, password, picture, locale, properties = {} },
     },
   } = ctx;
 
@@ -441,6 +452,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
           emailKey: key,
           picture: picture ? picture.contents : null,
           properties,
+          locale,
         },
         { transaction },
       );
@@ -460,15 +472,23 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
 
   const url = new URL(argv.host);
   url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-  const appUrl = String(url);
+  url.pathname = '/Verify';
+  url.searchParams.set('token', key);
 
   // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
   // will still be logged in, but will have to request a new verification email in order to verify
   // their account.
   mailer
-    .sendTemplateEmail({ email, name }, 'welcomeMember', {
-      url: `${appUrl}/Verify?token=${key}`,
-      name: app.definition.name,
+    .sendTranslatedEmail({
+      to: { email, name },
+      appId,
+      emailName: 'welcome',
+      locale,
+      values: {
+        link: (text) => `[${text}](${url})`,
+        appName: app.definition.name,
+        name: name || 'null',
+      },
     })
     .catch((error: Error) => {
       logger.error(error);
@@ -533,10 +553,21 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
     url.pathname = '/Verify';
     url.searchParams.set('token', app.AppMembers[0].emailKey);
 
-    await mailer.sendTemplateEmail(app.AppMembers[0], 'resend', {
-      url: String(url),
-      name: app.definition.name,
-    });
+    mailer
+      .sendTranslatedEmail({
+        appId,
+        emailName: 'resend',
+        locale: app.AppMembers[0].locale,
+        to: app.AppMembers[0],
+        values: {
+          link: (text) => `[${text}](${url})`,
+          name: app.AppMembers[0].name || 'null',
+          appName: app.definition.name,
+        },
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
   }
 
   ctx.status = 204;
@@ -564,12 +595,21 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
     url.searchParams.set('token', resetKey);
 
     await member.update({ resetKey });
-    await mailer.sendTemplateEmail(member, 'reset', {
-      url: String(url),
-      name: app.definition.name.endsWith('App')
-        ? app.definition.name
-        : `${app.definition.name} App`,
-    });
+    mailer
+      .sendTranslatedEmail({
+        to: member,
+        emailName: 'reset',
+        appId,
+        locale: member.locale,
+        values: {
+          link: (text) => `[${text}](${url})`,
+          appName: app.definition.name,
+          name: member.name || 'null',
+        },
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
   }
 
   ctx.status = 204;
