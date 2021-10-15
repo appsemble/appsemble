@@ -21,6 +21,7 @@ describe('user.register', () => {
         password: 'test',
         displayName: { prop: 'name' },
         email: 'test@example.com',
+        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
       passwordLogin,
       // eslint-disable-next-line unicorn/no-useless-undefined
@@ -29,7 +30,10 @@ describe('user.register', () => {
 
     const result = await action({ name: 'name' });
     expect(result).toStrictEqual({ name: 'name' });
-    expect(passwordLogin).toHaveBeenCalledWith({ username: 'test@example.com', password: 'test' });
+    expect(passwordLogin).toHaveBeenCalledWith({
+      username: 'test@example.com',
+      password: 'test',
+    });
   });
 
   it('should do nothing and return data if used is logged in', async () => {
@@ -120,6 +124,7 @@ describe('user.update', () => {
         emailVerified: false,
         name: 'name',
         picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       },
     ]);
     const action = createTestAction({
@@ -127,6 +132,7 @@ describe('user.update', () => {
         type: 'user.update',
         displayName: { prop: 'name' },
         email: 'test2@example.com',
+        properties: { static: { test: [1, 2, 3], property: 'Property', bool: true } },
       },
       getUserInfo: () => ({
         sub: 'some-user-id',
@@ -134,6 +140,7 @@ describe('user.update', () => {
         email: 'test@example.com',
         email_verified: true,
         picture: 'https://example.com/old-avatar.jpg',
+        properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
       }),
       setUserInfo,
     });
@@ -146,6 +153,7 @@ describe('user.update', () => {
       email_verified: false,
       name: 'name',
       picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
+      properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
     });
   });
 

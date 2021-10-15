@@ -42,7 +42,7 @@ export const register: ActionCreator<'user.register'> = ({
         'properties',
         JSON.stringify(
           Object.fromEntries(
-            Object.entries(properties).map(([key, value]) => [key, String(value)]),
+            Object.entries(properties).map(([key, value]) => [key, JSON.stringify(value)]),
           ),
         ),
       );
@@ -109,7 +109,7 @@ export const update: ActionCreator<'user.update'> = ({
         'properties',
         JSON.stringify(
           Object.fromEntries(
-            Object.entries(properties).map(([key, value]) => [key, String(value)]),
+            Object.entries(properties).map(([key, value]) => [key, JSON.stringify(value)]),
           ),
         ),
       );

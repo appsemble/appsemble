@@ -25,6 +25,7 @@ export const Member: OpenAPIV3.NonArraySchemaObject = {
     properties: {
       type: 'object',
       description: 'Additional custom properties that a user might have.',
+      additionalProperties: { type: 'string' },
     },
   },
 };

@@ -335,6 +335,7 @@ describe('setAppMember', () => {
     authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/members/${userB.id}`, {
       role: 'Admin',
+      properties: { test: 'Property' },
     });
     expect(response).toMatchObject({
       status: 200,
@@ -343,6 +344,7 @@ describe('setAppMember', () => {
         name: null,
         primaryEmail: null,
         role: 'Admin',
+        properties: { test: 'Property' },
       },
     });
   });
@@ -671,7 +673,12 @@ describe('getAppAccount', () => {
       vapidPrivateKey: '',
       definition: {},
     });
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      role: 'Member',
+      properties: { test: 'Property' },
+    });
 
     const response = await request.get(`/api/user/apps/${app.id}/account`);
 
@@ -699,6 +706,7 @@ describe('getAppAccount', () => {
           yaml: '{}\n',
         },
         role: 'Member',
+        properties: { test: 'Property' },
       },
     });
   });
@@ -755,7 +763,7 @@ describe('patchAppAccount', () => {
 
     const response = await request.patch(
       `/api/user/apps/${app.id}/account`,
-      createFormData({ email: 'user@example.com', name: 'Me' }),
+      createFormData({ email: 'user@example.com', name: 'Me', properties: { test: 'Property' } }),
     );
 
     expect(response).toMatchObject({
@@ -785,6 +793,7 @@ describe('patchAppAccount', () => {
         email: 'user@example.com',
         role: 'Member',
         picture: 'https://www.gravatar.com/avatar/b58996c504c5638798eb6b511e6f49af?s=128&d=mp',
+        properties: { test: 'Property' },
       },
     });
     await appMember.reload();
