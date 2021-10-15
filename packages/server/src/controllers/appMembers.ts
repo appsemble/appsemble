@@ -240,11 +240,11 @@ export async function setAppMember(ctx: Context): Promise<void> {
   let member = app.AppMembers?.[0];
 
   if (member) {
-    const result: any = { role };
+    member.role = role;
     if (properties) {
-      result.properties = properties;
+      member.properties = properties;
     }
-    await member.update(result);
+    await member.update();
   } else {
     member = await AppMember.create({
       UserId: user.id,
