@@ -105,6 +105,9 @@ export class App extends Model {
   @Column
   showAppsembleLogin: boolean;
 
+  @Column
+  googleAnalyticsID: string;
+
   @UpdatedAt
   updated: Date;
 

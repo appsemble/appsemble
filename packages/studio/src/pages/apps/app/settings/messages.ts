@@ -26,6 +26,10 @@ export const messages = defineMessages({
   domainDescription:
     'The domain name on which this app is available. For more information on how to set this up, please refer to the <link>documentation</link>.',
   domainError: 'This must be a valid domain name without a protocol',
+  googleAnalyticsIDLabel: 'Google Analytics ID',
+  googleAnalyticsIDDescription:
+    'If this is specified, Google analytics will be applied to your app.',
+  googleAnalyticsError: 'This needs to be a valid Google Analytics ID',
   saveChanges: 'Save changes',
   updateSuccess: 'Successfully updated settings.',
   updateError: 'Something went wrong when trying to update the settings.',

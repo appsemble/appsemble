@@ -10,11 +10,15 @@ import { render as renderTemplate } from 'mustache';
  * Render settings as an HTML script tag.
  *
  * @param settings - The settings to render. This must be a JSON serializable object.
+ * @param statements - Custom JavaScript statemets to append.
  * @returns A tuple of the digest and the HTML script tag. The digest should be added to the CSP
  * `script-src`.
  */
-export function createSettings(settings: unknown): [digest: string, script: string] {
-  const script = `window.settings=${JSON.stringify(settings)}`;
+export function createSettings(
+  settings: unknown,
+  statements: string[] = [],
+): [digest: string, script: string] {
+  const script = [`window.settings=${JSON.stringify(settings)}`, ...statements].join(';');
   const hash = createHash('sha256').update(script, 'utf8').digest('base64');
   return [`'sha256-${hash}'`, `<script>${script}</script>`];
 }
@@ -48,4 +52,19 @@ export async function render(
     : ctx.fs.promises.readFile(`/${filename}`, 'utf8'));
   ctx.body = renderTemplate(template, data);
   ctx.type = 'html';
+}
+
+/**
+ * Create a snippet of JavaScript code to initialize Google Analytics.
+ *
+ * @param id - The Google Analytics ID to generate the gtag code for.
+ * @returns The code to initialize Google Analytics.
+ */
+export function createGtagCode(id: string): string[] {
+  return [
+    'window.dataLayer=window.dataLayer||[]',
+    'function gtag(){dataLayer.push(arguments)}',
+    'gtag("js",new Date)',
+    `gtag("config",${JSON.stringify(id)})`,
+  ];
 }

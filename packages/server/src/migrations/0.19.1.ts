@@ -5,6 +5,7 @@ export const key = '0.19.1';
 
 /**
  * Summary:
+ * - Add column `googleAnalyticsID` to `App`
  * - Add columns `picture` to AppMember
  * - Add column `locale` to AppMember
  *
@@ -12,6 +13,11 @@ export const key = '0.19.1';
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.info('Adding column `googleAnalyticsID` to `App`');
+  await queryInterface.addColumn('App', 'googleAnalyticsID', {
+    type: DataTypes.STRING,
+  });
 
   logger.info('Adding column `picture` to `AppMember`');
   await queryInterface.addColumn('AppMember', 'picture', {
@@ -26,6 +32,7 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
+ * - Remove column `googleAnalyticsID` from `App`
  * - Remove column `picture` from AppMember
  * - Remove column `locale` from AppMember
  *
@@ -33,6 +40,9 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.warning('Removing column `googleAnalyticsID` from `App`');
+  await queryInterface.removeColumn('App', 'googleAnalyticsID');
 
   logger.info('Removing column `picture` from `AppMember`');
   await queryInterface.removeColumn('AppMember', 'picture');

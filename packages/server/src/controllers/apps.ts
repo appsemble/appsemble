@@ -108,6 +108,7 @@ export async function createApp(ctx: Context): Promise<void> {
         coreStyle,
         definition,
         domain,
+        googleAnalyticsID,
         icon,
         iconBackground,
         longDescription,
@@ -132,6 +133,7 @@ export async function createApp(ctx: Context): Promise<void> {
       definition,
       OrganizationId,
       coreStyle: validateStyle(coreStyle?.contents),
+      googleAnalyticsID,
       longDescription,
       iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle?.contents),
@@ -429,6 +431,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         coreStyle,
         definition,
         domain,
+        googleAnalyticsID,
         icon,
         iconBackground,
         longDescription,
@@ -494,6 +497,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (domain !== undefined) {
       result.domain = domain;
+    }
+
+    if (googleAnalyticsID !== undefined) {
+      result.googleAnalyticsID = googleAnalyticsID;
     }
 
     if (longDescription !== undefined) {

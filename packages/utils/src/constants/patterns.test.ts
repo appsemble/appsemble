@@ -1,4 +1,4 @@
-import { domainPattern, normalized, partialNormalized } from './patterns';
+import { domainPattern, googleAnalyticsIDPattern, normalized, partialNormalized } from './patterns';
 
 describe('partialNormalized', () => {
   it.each([
@@ -75,5 +75,15 @@ describe('domainPattern', () => {
     'This is a random string',
   ])('should not match %j', (string) => {
     expect(string).not.toMatch(domainPattern);
+  });
+});
+
+describe('googleAnalyticsIDPattern', () => {
+  it.each(['', 'UA-12345678-9', 'G-0123456789'])('should match %j', (string) => {
+    expect(string).toMatch(googleAnalyticsIDPattern);
+  });
+
+  it.each([' ', 'UA-123456789-0', 'G-012345678'])('should match %j', (string) => {
+    expect(string).not.toMatch(googleAnalyticsIDPattern);
   });
 });

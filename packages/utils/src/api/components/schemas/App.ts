@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { normalized } from '../../../constants';
+import { googleAnalyticsIDPattern, normalized } from '../../../constants';
 
 export const App: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -69,6 +69,11 @@ The long desciption will be rendered on the app details page. Markdown content i
       type: 'array',
       description: 'A list of URLs referencing app screenshots',
       items: { type: 'string' },
+    },
+    googleAnalyticsID: {
+      type: 'string',
+      description: 'If this is specified, Google analytics will be applied to the app',
+      pattern: googleAnalyticsIDPattern.source,
     },
   },
 };
