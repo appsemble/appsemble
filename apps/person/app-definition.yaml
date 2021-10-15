@@ -23,6 +23,9 @@ resources:
           format: email
         description:
           type: string
+        picture:
+          type: string
+          format: binary
 
 pages:
   - name: Person List
@@ -68,6 +71,7 @@ pages:
           onSubmit:
             type: resource.create
             resource: person
+            remap: { null.strip }
             onSuccess:
               type: link
               to: Person List
@@ -76,16 +80,22 @@ pages:
             - label: { translate: firstName }
               name: firstName
               type: string
+              requirements: [required: true]
             - label: { translate: lastName }
               name: lastName
               type: string
+              requirements: [required: true]
             - label: { translate: email }
               name: email
               type: string
+              requirements: [required: true]
             - label: { translate: description }
               multiline: true
               name: description
               type: string
+            - label: { translate: picture }
+              name: picture
+              type: file
 
   - name: Person Details
     parameters:
@@ -112,6 +122,9 @@ pages:
               label: { translate: email }
             - value: { prop: description }
               label: { translate: description }
+            - value: { prop: picture }
+              label: { translate: picture }
+              type: file
         events:
           listen:
             data: data

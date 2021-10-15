@@ -10,6 +10,7 @@
     "description": "Description",
     "email": "Email",
     "firstName": "First name",
-    "lastName": "Last name"
+    "lastName": "Last name",
+    "picture": "Picture"
   }
 }
