@@ -1,4 +1,5 @@
 export interface FormValues {
+  googleAnalyticsID: string;
   icon: File | string;
   maskableIcon?: File;
   iconBackground: string;

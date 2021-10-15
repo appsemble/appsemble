@@ -10,6 +10,7 @@
     "description": "Description",
     "email": "Courriel",
     "firstName": "Prénom",
-    "lastName": "Nom de famille"
+    "lastName": "Nom de famille",
+    "picture": ""
   }
 }

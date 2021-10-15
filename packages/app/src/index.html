@@ -59,7 +59,12 @@
     <link rel="stylesheet" href="/core.css" />
     {{/app.coreStyle}} {{#app.sharedStyle}}
     <link rel="stylesheet" href="/shared.css" />
-    {{/app.sharedStyle}}
+    {{/app.sharedStyle}} {{#app.googleAnalyticsID}}
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id={{{ app.googleAnalyticsID }}}"
+    ></script>
+    {{/app.googleAnalyticsID}}
     <script nonce="{{{ nonce }}}">
       window.addEventListener('load', function () {
         if (!window.appsembleHasLoaded) {

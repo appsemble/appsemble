@@ -33,11 +33,16 @@ bootstrap(
     errorNode.append(errorMessage);
     let player: Vimeo;
     let playerDiv: HTMLDivElement;
-    const onFinish = async (): Promise<void> =>
-      actions.onFinish(data, {
-        videoId: await player.getVideoId(),
-        videoUrl: await player.getVideoUrl(),
-      });
+    const onFinish = async (): Promise<void> => {
+      let metadata: Record<string, unknown>;
+      try {
+        const [videoId, videoUrl] = await Promise.all([player.getVideoId(), player.getVideoUrl()]);
+        metadata = { videoId, videoUrl };
+      } catch {
+        // The video ID may be unavailable due to privacy settings.
+      }
+      actions.onFinish(data, metadata);
+    };
     utils.addCleanup(() => player?.destroy());
 
     const setupError = (): void => {

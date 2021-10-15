@@ -15,7 +15,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { App, SSLStatus, SSLStatusMap } from '@appsemble/types';
-import { domainPattern, normalize } from '@appsemble/utils';
+import { domainPattern, googleAnalyticsIDPattern, normalize, toUpperCase } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useEffect, useMemo } from 'react';
 import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
@@ -79,6 +79,7 @@ export function SettingsPage(): ReactElement {
     () => ({
       maskableIcon: null,
       domain: app.domain || '',
+      googleAnalyticsID: '',
       icon: null,
       iconBackground: app.iconBackground,
       path: app.path,
@@ -92,6 +93,7 @@ export function SettingsPage(): ReactElement {
   const onSubmit = async (values: FormValues): Promise<void> => {
     const form = new FormData();
     form.set('domain', values.domain);
+    form.set('googleAnalyticsID', values.googleAnalyticsID);
     form.set('path', values.path);
     form.set('private', String(values.private));
     form.set('iconBackground', values.iconBackground);
@@ -257,6 +259,18 @@ export function SettingsPage(): ReactElement {
             preprocess={preprocessDomain}
             validityMessages={{
               patternMismatch: <FormattedMessage {...messages.domainError} />,
+            }}
+          />
+          <SimpleFormField
+            disabled={app.locked}
+            help={<FormattedMessage {...messages.googleAnalyticsIDDescription} />}
+            label={<FormattedMessage {...messages.googleAnalyticsIDLabel} />}
+            maxLength={13}
+            name="googleAnalyticsID"
+            pattern={googleAnalyticsIDPattern}
+            preprocess={toUpperCase}
+            validityMessages={{
+              patternMismatch: <FormattedMessage {...messages.googleAnalyticsError} />,
             }}
           />
           <FormButtons>
