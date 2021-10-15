@@ -244,7 +244,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
     if (properties) {
       member.properties = properties;
     }
-    await member.update();
+    await member.save();
   } else {
     member = await AppMember.create({
       UserId: user.id,
