@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.1](https://gitlab.com/appsemble/appsemble/-/releases/0.19.1)] - 2021-10-18
+
+### Added
+
+- App: Add `user.register`, `user.login`, and `user.update` actions.
+- App: Add account settings to app settings page if the user is logged in.
+- App: Add password login method for apps. This allows users to register accounts for apps without
+  having to go through the Appsemble Studio.
+- Studio: The graphical JSON schema editor now supports the `multiline` property.
+- Utils: Add the `app: locale` remapper.
+- Utils: Add the `null.strip` remapper.
+
+### Fixed
+
+- Cli: Keep block message overrides when extracting app messages.
+
 ## \[[0.19.0](https://gitlab.com/appsemble/appsemble/-/releases/0.19.0)] - 2021-10-04
 
 ### Added

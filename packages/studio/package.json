@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "private": true,
   "description": "The frontend for managing Appsemble apps and organizations",
   "keywords": [
@@ -24,11 +24,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.19.0",
-    "@appsemble/sdk": "0.19.0",
-    "@appsemble/types": "0.19.0",
-    "@appsemble/utils": "0.19.0",
-    "@appsemble/web-utils": "0.19.0",
+    "@appsemble/react-components": "0.19.1",
+    "@appsemble/sdk": "0.19.1",
+    "@appsemble/types": "0.19.1",
+    "@appsemble/utils": "0.19.1",
+    "@appsemble/web-utils": "0.19.1",
     "@browser-logos/chrome": "^1.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",

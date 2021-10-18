@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.0
-appVersion: 0.19.0
+version: 0.19.1
+appVersion: 0.19.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,17 +25,23 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: 'Block(control-buttons): Add control-buttons block.'
+      description: 'App: Add user.register, user.login, and user.update actions.'
     - kind: added
-      description: 'App: Add support for custom fonts.'
-    - kind: changed
+      description: 'App: Add account settings to app settings page if the user is logged in.'
+    - kind: added
       description: >-
-        App: The theme font now takes an object containing source and family instead
-        of just a font name.
-    - kind: changed
-      description: 'Server: Update the Docker base image to node:16-bullseye-slim.'
-    - kind: changed
-      description: 'Utils: Invalid remapper calls now show more useful information.'
+        App: Add password login method for apps. This allows users to register
+        accounts for apps without having to go through the Appsemble Studio.
+    - kind: added
+      description: >-
+        Studio: The graphical JSON schema editor now supports the multiline
+        property.
+    - kind: added
+      description: 'Utils: Add the app: locale remapper.'
+    - kind: added
+      description: 'Utils: Add the null.strip remapper.'
+    - kind: fixed
+      description: 'Cli: Keep block message overrides when extracting app messages.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

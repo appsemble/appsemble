@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.19.0"
+    "@appsemble/sdk": "0.19.1"
   }
 }
