@@ -93,6 +93,7 @@ function outputAppMember(app: App, language: string, baseLanguage: string): AppA
       : getGravatarUrl(member.email),
     name: member.name,
     role: member.role,
+    properties: member.properties ?? {},
     sso,
   };
 }
@@ -214,7 +215,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, memberId },
     request: {
-      body: { role },
+      body: { properties, role },
     },
   } = ctx;
 
@@ -239,12 +240,17 @@ export async function setAppMember(ctx: Context): Promise<void> {
   let member = app.AppMembers?.[0];
 
   if (member) {
-    await member.update({ role });
+    member.role = role;
+    if (properties) {
+      member.properties = properties;
+    }
+    await member.save();
   } else {
     member = await AppMember.create({
       UserId: user.id,
       AppId: app.id,
       role,
+      properties,
     });
   }
 
@@ -253,6 +259,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
     name: member.name,
     primaryEmail: member.email,
     role,
+    properties,
   };
 }
 
@@ -289,7 +296,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { email, locale, name, picture },
+      body: { email, locale, name, picture, properties },
     },
     user,
   } = ctx;
@@ -341,6 +348,10 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     result.picture = picture.contents;
   }
 
+  if (properties) {
+    result.properties = properties;
+  }
+
   if (locale) {
     result.locale = locale;
   }
@@ -388,7 +399,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { locale, name, password, picture },
+      body: { name, password, picture, locale, properties = {} },
     },
   } = ctx;
 
@@ -440,6 +451,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
           role: app.definition.security.default.role,
           emailKey: key,
           picture: picture ? picture.contents : null,
+          properties,
           locale,
         },
         { transaction },

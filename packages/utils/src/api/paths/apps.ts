@@ -501,6 +501,11 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'string',
                   description: 'The role to assign.',
                 },
+                properties: {
+                  type: 'object',
+                  additionalProperties: { type: 'string' },
+                  description: 'Any additional properties that are allowed to be set for members.',
+                },
               },
             },
           },

@@ -1,0 +1,15 @@
+.noWrap {
+  white-space: nowrap;
+}
+
+.propertyRow {
+  padding-right: 0 !important;
+  width: 100%;
+}
+
+.property {
+  max-width: 50vw;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

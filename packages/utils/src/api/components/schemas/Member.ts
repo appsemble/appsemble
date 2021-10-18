@@ -22,5 +22,10 @@ export const Member: OpenAPIV3.NonArraySchemaObject = {
     role: {
       enum: Object.keys(roles),
     },
+    properties: {
+      type: 'object',
+      description: 'Additional custom properties that a user might have.',
+      additionalProperties: { type: 'string' },
+    },
   },
 };

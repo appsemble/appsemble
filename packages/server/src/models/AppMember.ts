@@ -56,6 +56,9 @@ export class AppMember extends Model {
   @Column
   picture?: Buffer;
 
+  @Column(DataType.JSON)
+  properties?: Record<string, string>;
+
   @Column
   locale?: string;
 

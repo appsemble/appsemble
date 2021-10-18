@@ -717,6 +717,13 @@ export interface UserRegisterAction extends BaseActionDefinition<'user.register'
    * This must be a file, otherwise it’s discarded.
    */
   picture?: Remapper;
+
+  /**
+   * Custom properties that can be assigned freely.
+   *
+   * Every value will be converted to a string.
+   */
+  properties?: Remapper;
 }
 
 export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
@@ -741,6 +748,13 @@ export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
    * This must be a file, otherwise it’s ignored.
    */
   picture?: Remapper;
+
+  /**
+   * Custom properties that can be assigned freely.
+   *
+   * Every value will be converted to a string.
+   */
+  properties?: Remapper;
 }
 
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>

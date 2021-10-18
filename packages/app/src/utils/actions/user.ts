@@ -22,6 +22,7 @@ export const register: ActionCreator<'user.register'> = ({
     const password = remap(definition.password, data);
     const name = remap(definition.displayName, data);
     const picture = remap(definition.picture, data);
+    const properties = remap(definition.properties, data);
 
     const formData = new FormData();
     formData.append('email', email);
@@ -34,6 +35,17 @@ export const register: ActionCreator<'user.register'> = ({
 
     if (picture && picture instanceof File) {
       formData.append('picture', picture);
+    }
+
+    if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
+      formData.append(
+        'properties',
+        JSON.stringify(
+          Object.fromEntries(
+            Object.entries(properties).map(([key, value]) => [key, JSON.stringify(value)]),
+          ),
+        ),
+      );
     }
 
     await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, formData);
@@ -80,6 +92,7 @@ export const update: ActionCreator<'user.update'> = ({
     const email = remap(definition.email, data);
     const name = remap(definition.displayName, data);
     const picture = remap(definition.picture, data);
+    const properties = remap(definition.properties, data);
 
     const formData = new FormData();
     if (name) {
@@ -91,6 +104,17 @@ export const update: ActionCreator<'user.update'> = ({
     if (picture && picture instanceof File) {
       formData.append('picture', picture);
     }
+    if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
+      formData.append(
+        'properties',
+        JSON.stringify(
+          Object.fromEntries(
+            Object.entries(properties).map(([key, value]) => [key, JSON.stringify(value)]),
+          ),
+        ),
+      );
+    }
+
     formData.append('locale', route.params.lang);
 
     const { data: response } = await axios.patch<AppAccount>(
