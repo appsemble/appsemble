@@ -2284,6 +2284,7 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
             "description": "The format to use for validation.",
             "enum": [
               "email",
+              "password",
               "url",
             ],
             "type": "string",

@@ -512,7 +512,7 @@ export interface StringField extends AbstractField {
   /**
    * The format to use for validation.
    */
-  format?: 'email' | 'url';
+  format?: 'email' | 'password' | 'url';
 
   /**
    * Whether the string field should be multiline or not.
