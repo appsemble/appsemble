@@ -2,9 +2,12 @@
   max-width: 960px;
   position: relative;
 
-  & :global(.is-pulled-right) + * {
+  & :global(.is-pulled-right) {
     display: none;
-    float: right;
+
+    & + * {
+      float: right;
+    }
   }
 
   & h1,
