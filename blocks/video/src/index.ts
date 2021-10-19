@@ -54,8 +54,8 @@ bootstrap(
       shadowRoot.append(errorNode);
     };
 
-    const setupPlayer = (id: string): void => {
-      const valid = vimeoRegex.test(id);
+    const setupPlayer = (newURL: string): void => {
+      const valid = vimeoRegex.test(newURL);
       if (!valid) {
         setupError();
         return;
@@ -91,7 +91,7 @@ bootstrap(
         portrait: false,
         responsive: true,
         muted,
-        url: id,
+        url: newURL,
         title: false,
       });
 
@@ -99,7 +99,7 @@ bootstrap(
         player.setVolume(volume / 100);
       }
 
-      currentUrl = id;
+      currentUrl = newURL;
       player.on('ended', onFinish);
     };
 
