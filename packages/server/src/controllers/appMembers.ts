@@ -155,6 +155,7 @@ export async function getAppMembers(ctx: Context): Promise<void> {
     name: member.name,
     primaryEmail: member.email,
     role: member.role,
+    properties: member.properties,
   }));
 
   if (app.definition.security?.default?.policy !== 'invite') {
