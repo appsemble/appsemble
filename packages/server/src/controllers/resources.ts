@@ -34,6 +34,7 @@ import {
 const specialRoles = new Set([
   '$author',
   '$public',
+  '$none',
   ...Object.values(TeamRole).map((r) => `$team:${r}`),
 ]);
 
@@ -144,6 +145,7 @@ async function verifyPermission(
   const functionalRoles = roles.filter((r) => specialRoles.has(r));
   const appRoles = roles.filter((r) => !specialRoles.has(r));
   const isPublic = functionalRoles.includes('$public');
+  const isNone = functionalRoles.includes('$none');
 
   if ($team && !functionalRoles.includes(`$team:${$team}`)) {
     functionalRoles.push(`$team:${$team}`);
@@ -154,6 +156,10 @@ async function verifyPermission(
   }
 
   if (isPublic && action !== 'count') {
+    return;
+  }
+
+  if (isNone && !user) {
     return;
   }
 

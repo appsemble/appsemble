@@ -19,6 +19,14 @@ export function checkAppRole(
     return true;
   }
 
+  if (role === '$public' && userRole) {
+    return true;
+  }
+
+  if (role === '$none' && !userRole) {
+    return true;
+  }
+
   if (role === '$team:manager') {
     return teams.some((team) => team.role === 'manager');
   }
