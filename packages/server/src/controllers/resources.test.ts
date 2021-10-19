@@ -93,6 +93,14 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             },
           },
         },
+        testResourceNone: {
+          schema: {
+            type: 'object',
+            required: ['bar'],
+            properties: { bar: { type: 'string' } },
+          },
+          roles: ['$none'],
+        },
         testResourceAuthorOnly: {
           schema: {
             type: 'object',
@@ -605,6 +613,19 @@ describe('queryResources', () => {
 
     expect(response.status).toBe(200);
     expect(response.data).toStrictEqual([{}, {}]);
+  });
+
+  it('should be possible to query resources without credentials with the $none role', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      UserId: user.id,
+      type: 'testResourceNone',
+      data: { bar: 'bar' },
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceNone`);
+    expect(response.data).toMatchObject([{ id: resource.id }]);
   });
 
   it('should be possible to query resources as author', async () => {

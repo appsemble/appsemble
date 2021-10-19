@@ -162,7 +162,13 @@ export function validateSecurity(definition: AppDefinition): void {
   for (const page of pages) {
     if (page.roles?.length) {
       for (const role of page.roles) {
-        if (!has(security.roles, role) && role !== '$team:member' && role !== '$team:manager') {
+        if (
+          !has(security.roles, role) &&
+          role !== '$team:member' &&
+          role !== '$team:manager' &&
+          role !== '$public' &&
+          role !== '$none'
+        ) {
           throw new AppsembleValidationError(
             `Role ‘${role}’ in page ‘${page.name}’ roles does not exist.`,
           );
@@ -176,7 +182,7 @@ export function validateSecurity(definition: AppDefinition): void {
   for (const [key, block] of Object.entries(blocks)) {
     if (block.roles?.length) {
       for (const role of block.roles) {
-        if (!has(security.roles, role)) {
+        if (!has(security.roles, role) && role !== '$public' && role !== '$none') {
           throw new AppsembleValidationError(`Role ‘${role}’ in ${key} roles does not exist.`);
         }
       }

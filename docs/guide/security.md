@@ -196,6 +196,7 @@ require the user to be logged in.
 
 The following special options are currently supported:
 
+- **\$none**: Grants access specifically to users who aren’t logged in.
 - **\$public**: Grants access to everyone, even users who aren’t logged in.
 - **\$author**: Grants access if the user is the same as the one who created the resource.
 - **\$team:member**: Grants access if the user is in the same team as the user who created the
