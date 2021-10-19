@@ -33,6 +33,7 @@ bootstrap(
     errorNode.append(errorMessage);
     let player: Vimeo;
     let playerDiv: HTMLDivElement;
+    let currentUrl: string;
     const onFinish = async (): Promise<void> => {
       let metadata: Record<string, unknown>;
       try {
@@ -40,6 +41,8 @@ bootstrap(
         metadata = { videoId, videoUrl };
       } catch {
         // The video ID may be unavailable due to privacy settings.
+        const id = currentUrl.match(/\d+/);
+        metadata = { videoId: id?.[0], videoUrl: currentUrl };
       }
       actions.onFinish(data, metadata);
     };
@@ -96,6 +99,7 @@ bootstrap(
         player.setVolume(volume / 100);
       }
 
+      currentUrl = id;
       player.on('ended', onFinish);
     };
 
