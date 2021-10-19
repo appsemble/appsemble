@@ -14,3 +14,4 @@ continue on this basic app to add more advanced features.
 4. [Remappers](/docs/reference/remapper)
 5. [Theming](theming.md)
 6. [Custom domain name](dns.md)
+7. [Analytics](analytics.md)
