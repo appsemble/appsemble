@@ -6,7 +6,6 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { usePage } from '../MenuProvider';
 import { ProfileDropdown } from '../ProfileDropdown';
 import { useUser } from '../UserProvider';
-import styles from './index.module.css';
 
 interface TitleBarProps {
   children?: ReactChild;
@@ -26,7 +25,7 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
 
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
-      <div className={`is-flex ${styles.container}`}>
+      <div className="is-flex is-justify-content-space-between">
         {navigation === 'left-menu' && shouldShowMenu(definition, role, teams) && (
           <div className="navbar-brand">
             <span>
@@ -34,11 +33,11 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
             </span>
           </div>
         )}
-        <div className={`navbar-brand ${styles.title}`}>
+        <div className="navbar-brand is-flex-grow-1">
           <h2 className="navbar-item title is-4">{children || definition.name}</h2>
         </div>
         {(definition.layout?.login == null || definition.layout?.login === 'navbar') && (
-          <div className={`navbar-end ${styles.dropdownContainer}`}>
+          <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
             <div className="navbar-item is-paddingless px-1">
               <ProfileDropdown />
             </div>
