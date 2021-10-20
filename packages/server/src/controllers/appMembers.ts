@@ -410,7 +410,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
   let user: User;
 
   const app = await App.findByPk(appId, {
-    attributes: ['definition'],
+    attributes: ['definition', 'domain', 'OrganizationId', 'path'],
     include: {
       model: AppMember,
       where: { email },
