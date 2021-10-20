@@ -16,6 +16,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../..';
 import { Collapsible } from '../../../../../components/Collapsible';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface MessagesFormProps {
@@ -165,7 +166,7 @@ export function MessagesForm({
         </SimpleFormObject>
       </Collapsible>
       <FormButtons>
-        <SimpleSubmit className="mb-4" disabled={app.locked}>
+        <SimpleSubmit className={`${styles.submitButton} mb-4`} disabled={app.locked}>
           <FormattedMessage {...messages.submit} />
         </SimpleSubmit>
       </FormButtons>
