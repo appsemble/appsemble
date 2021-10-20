@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.2](https://gitlab.com/appsemble/appsemble/-/releases/0.19.2)] - 2021-10-20
+
+### Changed
+
+- Cli: Turn `webpack` into a regular dependency.
+
+### Fixed
+
+- App: Fix service workers.
+- Studio: Fix issue that caused a crash when viewing an organization.
+
 ## \[[0.19.1](https://gitlab.com/appsemble/appsemble/-/releases/0.19.1)] - 2021-10-18
 
 ### Added

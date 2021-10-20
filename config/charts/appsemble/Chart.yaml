@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.1
-appVersion: 0.19.1
+version: 0.19.2
+appVersion: 0.19.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,24 +24,12 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: |
-    - kind: added
-      description: 'App: Add user.register, user.login, and user.update actions.'
-    - kind: added
-      description: 'App: Add account settings to app settings page if the user is logged in.'
-    - kind: added
-      description: >-
-        App: Add password login method for apps. This allows users to register
-        accounts for apps without having to go through the Appsemble Studio.
-    - kind: added
-      description: >-
-        Studio: The graphical JSON schema editor now supports the multiline
-        property.
-    - kind: added
-      description: 'Utils: Add the app: locale remapper.'
-    - kind: added
-      description: 'Utils: Add the null.strip remapper.'
+    - kind: changed
+      description: 'Cli: Turn webpack into a regular dependency.'
     - kind: fixed
-      description: 'Cli: Keep block message overrides when extracting app messages.'
+      description: 'App: Fix service workers.'
+    - kind: fixed
+      description: 'Studio: Fix issue that caused a crash when viewing an organization.'
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
