@@ -30,7 +30,7 @@ export function OrganizationRoutes(): ReactElement {
     params: { organizationId },
   } = useRouteMatch<{ organizationId: string }>();
   const result = useData<Organization>(`/api/organizations/${organizationId}`);
-  const userOrganization = organizations.find((org) => org.id === organizationId);
+  const userOrganization = organizations?.find((org) => org.id === organizationId);
   const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
 
   useSideMenu(
