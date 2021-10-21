@@ -3201,6 +3201,10 @@ Note that this does not work on every platform due to platform restrictions.",
         "description": "Whether the player should default to being muted.",
         "type": "boolean",
       },
+      "subtitles": {
+        "description": "If defined, the subtitle track to enable by default.",
+        "format": "remapper",
+      },
       "url": {
         "description": "The URL of the video.
 
