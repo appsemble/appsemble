@@ -71,5 +71,10 @@ declare module '@appsemble/sdk' {
      * The max height of the player.
      */
     maxHeight?: string;
+
+    /**
+     * If defined, the subtitle track to enable by default.
+     */
+    subtitles?: Remapper;
   }
 }
