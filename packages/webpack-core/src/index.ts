@@ -138,7 +138,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           test: /\.mdx?$/,
           use: [
             {
-              loader: 'xdm/webpack.cjs',
+              loader: '@mdx-js/loader',
               options: {
                 providerImportSource: '@mdx-js/react',
                 remarkPlugins: [
