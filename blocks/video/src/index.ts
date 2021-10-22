@@ -35,16 +35,7 @@ bootstrap(
     let playerDiv: HTMLDivElement;
     let currentUrl: string;
     const onFinish = async (): Promise<void> => {
-      let metadata: Record<string, unknown>;
-      try {
-        const [videoId, videoUrl] = await Promise.all([player.getVideoId(), player.getVideoUrl()]);
-        metadata = { videoId, videoUrl };
-      } catch {
-        // The video ID may be unavailable due to privacy settings.
-        const id = currentUrl.match(/\d+/);
-        metadata = { videoId: id?.[0], videoUrl: currentUrl };
-      }
-      actions.onFinish(data, metadata);
+      await actions.onFinish(data, { videoId: currentUrl.match(/\d+/), videoUrl: currentUrl });
     };
     utils.addCleanup(() => player?.destroy());
 
