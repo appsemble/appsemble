@@ -41,7 +41,7 @@ export function ProfileDropdown(): ReactElement {
     <NavbarDropdown
       className={`is-right ${styles.dropdown}`}
       label={
-        <figure className="image is-32x32">
+        <figure className="image is-32x32 is-clipped">
           {userInfo?.picture ? (
             <img
               alt={formatMessage(messages.pfp)}
