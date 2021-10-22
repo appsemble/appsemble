@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.3](https://gitlab.com/appsemble/appsemble/-/releases/0.19.3)] - 2021-10-22
+
+### Added
+
+- Block(`video`): Add `subtitles` property.
+
+### Changed
+
+- Webpack-config: Make `webpack` a regular dependency.
+
+### Fixed
+
+- App: Prevent profile picture from overflowing.
+
 ## \[[0.19.2](https://gitlab.com/appsemble/appsemble/-/releases/0.19.2)] - 2021-10-20
 
 ### Changed

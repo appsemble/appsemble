@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.19.2",
+  "version": "0.19.3",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -25,7 +25,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/utils": "0.19.2",
+    "@appsemble/utils": "0.19.3",
     "@fortawesome/fontawesome-free": "^5.0.0",
     "@mdx-js/loader": "^2.0.0-rc.1",
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
