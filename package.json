@@ -1,7 +1,6 @@
 {
   "private": true,
   "workspaces": [
-    "../sounding-bodies/blocks/*",
     "blocks/*",
     "packages/*"
   ],
