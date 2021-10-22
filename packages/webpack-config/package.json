@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@appsemble/types": "0.19.2",
-    "@types/css-minimizer-webpack-plugin": "^3.0.0",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
     "css-minimizer-webpack-plugin": "^3.0.0",
@@ -40,15 +39,16 @@
     "postcss-loader": "^6.0.0",
     "svgo-loader": "^3.0.0",
     "ts-loader": "^9.0.0",
-    "tsconfig-paths-webpack-plugin": "^3.0.0"
+    "tsconfig-paths-webpack-plugin": "^3.0.0",
+    "webpack": "^5.0.0"
   },
   "devDependencies": {
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
+    "@types/css-minimizer-webpack-plugin": "^3.0.0",
     "@types/mini-css-extract-plugin": "^2.0.0"
   },
   "peerDependencies": {
-    "typescript": "^4",
-    "webpack": "^5"
+    "typescript": "^4"
   },
   "engines": {
     "node": ">=12.0.0"
