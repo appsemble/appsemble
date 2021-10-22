@@ -153,6 +153,7 @@ export function Page(): ReactElement {
           <TabsPage
             data={data}
             ee={ee.current}
+            key={prefix}
             page={page}
             prefix={prefix}
             remap={remapWithContext}
@@ -169,6 +170,7 @@ export function Page(): ReactElement {
                   data={data}
                   definition={definition}
                   ee={ee.current}
+                  key={prefix}
                   page={page}
                   prefix={prefix}
                   remap={remapWithContext}
