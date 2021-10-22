@@ -35,7 +35,7 @@ bootstrap(
     let playerDiv: HTMLDivElement;
     let currentUrl: string;
     const onFinish = async (): Promise<void> => {
-      await actions.onFinish(data, { videoId: currentUrl.match(/\d+/), videoUrl: currentUrl });
+      await actions.onFinish(data, { videoId: currentUrl.match(/\d+/)?.[0], videoUrl: currentUrl });
     };
     utils.addCleanup(() => player?.destroy());
 
