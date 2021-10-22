@@ -17,6 +17,7 @@ bootstrap(
       maxHeight,
       maxWidth,
       muted = false,
+      subtitles,
       url,
       volume,
       width,
@@ -82,6 +83,7 @@ bootstrap(
 
       playerDiv = newPlayerDiv;
       shadowRoot.append(playerDiv);
+      const track = utils.remap(subtitles, data);
 
       player = new Vimeo(newPlayerDiv, {
         autoplay,
@@ -97,6 +99,12 @@ bootstrap(
 
       if (volume != null) {
         player.setVolume(volume / 100);
+      }
+
+      if (track && typeof track === 'string') {
+        // This will return an exception in the logs if the language does not exist,
+        // but it is not blocking.
+        player.enableTextTrack(track);
       }
 
       currentUrl = newURL;
