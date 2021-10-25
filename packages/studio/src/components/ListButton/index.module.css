@@ -1,7 +1,7 @@
 .wrapper {
   align-items: center;
-  background-color: hsl(0, 0%, 100%);
-  border: 1px solid hsl(0, 0%, 96%);
+  background-color: hsl(0deg 0% 100%);
+  border: 1px solid hsl(0deg 0% 96%);
   border-radius: 4px;
   cursor: pointer;
   display: block;
@@ -10,7 +10,7 @@
 
   &:focus,
   &:hover {
-    background: hsl(217, 71%, 53%, 5%);
+    background: hsl(217deg 71% 53% / 5%);
   }
 }
 

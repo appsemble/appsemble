@@ -1,7 +1,7 @@
 .bottom-nav {
-  background-color: hsl(0, 0%, 100%);
+  background-color: hsl(0deg 0% 100%);
   bottom: 0;
-  box-shadow: 0 -0.25rem 0.25rem 0 hsla(0, 0%, 0%, 0.1);
+  box-shadow: 0 -0.25rem 0.25rem 0 hsl(0deg 0% 0% / 10%);
   height: 7rem;
   position: fixed;
   white-space: nowrap;
@@ -21,7 +21,7 @@
   width: 100%;
 
   &:hover {
-    color: hsl(0, 0%, 21%);
+    color: hsl(0deg 0% 21%);
   }
 }
 

@@ -1,14 +1,14 @@
 .root {
-  border: 1px solid hsl(0, 0%, 86%);
+  border: 1px solid hsl(0deg 0% 86%);
 }
 
 .wrapper {
   align-items: center;
   /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
-  background-image: linear-gradient(45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
-    linear-gradient(-45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, hsl(0, 0%, 86%) 75%),
-    linear-gradient(-45deg, transparent 75%, hsl(0, 0%, 86%) 75%);
+  background-image: linear-gradient(45deg, hsl(0deg 0% 86%) 25%, transparent 25%),
+    linear-gradient(-45deg, hsl(0deg 0% 86%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, hsl(0deg 0% 86%) 75%),
+    linear-gradient(-45deg, transparent 75%, hsl(0deg 0% 86%) 75%);
   background-position: 0 0, 0 10px, 10px -10px, -10px 0;
   background-size: 20px 20px;
   display: flex;
@@ -26,7 +26,7 @@
   height: 100%;
   justify-content: center;
   left: 0;
-  opacity: 0;
+  opacity: 0%;
   position: absolute;
   right: 0;
   top: 0;
@@ -34,7 +34,7 @@
   width: 100%;
 
   &:hover {
-    opacity: 0.3;
+    opacity: 30%;
   }
 }
 
@@ -49,7 +49,7 @@
 .input {
   bottom: 0;
   left: 0;
-  opacity: 0;
+  opacity: 0%;
   position: absolute;
   right: 0;
   top: 0;

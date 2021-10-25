@@ -14,7 +14,7 @@
 
 .figure {
   align-items: center;
-  background-color: hsl(0, 0%, 96%);
+  background-color: hsl(0deg 0% 96%);
   display: flex;
   justify-content: center;
   text-align: center;

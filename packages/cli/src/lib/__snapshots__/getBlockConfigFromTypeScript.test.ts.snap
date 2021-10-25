@@ -1967,19 +1967,19 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 This type can be useful to enforce some input to be JSON-compatible or as a super-type to be extended from. Don't use this as a direct return type as the user would have to double-cast it: \`jsonObject as unknown as CustomResponse\`. Instead, you could extend your CustomResponse type from it to ensure your type only uses JSON-compatible types: \`interface CustomResponse extends JsonObject { … }\`.",
         "type": "object",
       },
+      "JsonPrimitive": {
+        "description": "Matches any valid JSON primitive value.",
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null",
+        ],
+      },
       "JsonValue": {
         "anyOf": [
           {
-            "type": "string",
-          },
-          {
-            "type": "number",
-          },
-          {
-            "type": "boolean",
-          },
-          {
-            "type": "null",
+            "$ref": "#/definitions/JsonPrimitive",
           },
           {
             "$ref": "#/definitions/JsonObject",

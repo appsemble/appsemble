@@ -5,7 +5,7 @@
 }
 
 .input {
-  opacity: 0;
+  opacity: 0%;
 }
 
 .empty {
@@ -15,7 +15,7 @@
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: 60px !important;
-  color: hsl(0, 0%, 100%) !important;
+  color: hsl(0deg 0% 100%) !important;
   display: flex !important;
   height: 6.75em !important;
   width: 6.75em !important;

@@ -159,7 +159,7 @@ describe('request', () => {
     expect(request.url).toBe('https://example.com');
     expect(request.params).toBeUndefined();
     expect(request.data).toBeUndefined();
-    expect(result).toStrictEqual('Example content');
+    expect(result).toBe('Example content');
   });
 
   it('should allow for using context in url remappers', async () => {
@@ -189,7 +189,7 @@ describe('request', () => {
     expect(request.url).toBe('https://example.nl');
     expect(request.params).toBeUndefined();
     expect(request.data).toBeUndefined();
-    expect(result).toStrictEqual('Example content');
+    expect(result).toBe('Example content');
   });
 
   it('should allow for using context in query remappers', async () => {
@@ -217,7 +217,7 @@ describe('request', () => {
     expect(request.url).toBe('https://example.com');
     expect(request.params).toStrictEqual({ example: 'foo' });
     expect(request.data).toBeUndefined();
-    expect(result).toStrictEqual('Example content');
+    expect(result).toBe('Example content');
   });
 
   it('should allow for using context in body remappers', async () => {
@@ -242,7 +242,7 @@ describe('request', () => {
     expect(request.url).toBe('https://example.com');
     expect(request.params).toBeUndefined();
     expect(request.data).toBe('{"foo":"bar","baz":1234}');
-    expect(result).toStrictEqual('Example content');
+    expect(result).toBe('Example content');
   });
 
   it('should support deserializing an XML response', async () => {

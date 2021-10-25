@@ -16,13 +16,13 @@
 
 .maskableIconWapper {
   /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
-  background-image: linear-gradient(45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
-    linear-gradient(-45deg, hsl(0, 0%, 86%) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, hsl(0, 0%, 86%) 75%),
-    linear-gradient(-45deg, transparent 75%, hsl(0, 0%, 86%) 75%);
+  background-image: linear-gradient(45deg, hsl(0deg 0% 86%) 25%, transparent 25%),
+    linear-gradient(-45deg, hsl(0deg 0% 86%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, hsl(0deg 0% 86%) 75%),
+    linear-gradient(-45deg, transparent 75%, hsl(0deg 0% 86%) 75%);
   background-position: 0 0, 0 10px, 10px -10px, -10px 0;
   background-size: 20px 20px;
-  border: 0.1rem solid hsl(0, 0%, 86%);
+  border: 0.1rem solid hsl(0deg 0% 86%);
 }
 
 .maskableIcon {
@@ -40,7 +40,7 @@
    * This means the allowed width and height is sine(π / 4) * 80%.
    * The square surrounding the safe area is
    */
-  height: 56.5685424949238% !important;
+  height: 56.5685% !important;
   object-fit: contain;
-  width: 56.5685424949238% !important;
+  width: 56.5685% !important;
 }

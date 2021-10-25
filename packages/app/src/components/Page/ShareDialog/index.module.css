@@ -4,30 +4,31 @@
 
 .light {
   border-color: transparent;
-  color: hsl(0, 0%, 100%);
+  color: hsl(0deg 0% 100%);
+
   &:hover,
   &:active {
     border-color: transparent;
-    color: hsl(0, 0%, 100%);
+    color: hsl(0deg 0% 100%);
   }
 }
 
 .telegram {
-  background-color: hsl(200, 100%, 40%);
+  background-color: hsl(200deg 100% 40%);
 }
 
 .twitter {
-  background-color: hsl(203, 89%, 53%);
+  background-color: hsl(203deg 89% 53%);
 }
 
 .facebook {
-  background-color: hsl(220, 46%, 48%);
+  background-color: hsl(220deg 46% 48%);
 }
 
 .whatsapp {
-  background-color: hsl(142, 70%, 49%);
+  background-color: hsl(142deg 70% 49%);
 }
 
 .linkedin {
-  background-color: hsl(199, 85%, 36%);
+  background-color: hsl(199deg 85% 36%);
 }

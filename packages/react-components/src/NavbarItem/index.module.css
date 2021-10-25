@@ -5,6 +5,6 @@
 
   &:focus,
   &:hover {
-    background-color: hsl(0, 0%, 96%) !important;
+    background-color: hsl(0deg 0% 96%) !important;
   }
 }

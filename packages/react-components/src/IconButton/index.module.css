@@ -17,7 +17,7 @@
       /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
       background-image: radial-gradient(
         circle closest-side,
-        hsla(218, 100%, 66%, 0.43),
+        hsl(218deg 100% 66% / 43%),
         transparent
       );
     }

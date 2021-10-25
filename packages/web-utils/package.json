@@ -32,6 +32,6 @@
     "@types/mdast": "^3.0.0",
     "@types/webpack-env": "^1.0.0",
     "axios": "^0.23.0",
-    "type-fest": "^1.0.0"
+    "type-fest": "^2.0.0"
   }
 }

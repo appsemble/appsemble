@@ -1423,8 +1423,8 @@ pages:
     );
 
     const appCount = await App.count();
-    expect(createdResponse.status).toStrictEqual(204);
-    expect(appCount).toStrictEqual(0);
+    expect(createdResponse.status).toBe(204);
+    expect(appCount).toBe(0);
   });
 
   it('should still return errors during dry runs', async () => {
@@ -1453,7 +1453,7 @@ pages:
     );
 
     const appCount = await App.count();
-    expect(createdResponse.status).toStrictEqual(400);
+    expect(createdResponse.status).toBe(400);
     expect(createdResponse.data).toStrictEqual({
       errors: [
         {
@@ -1597,7 +1597,7 @@ overridden by defining them for a specific page or block. Note that these roles 
       ],
       message: 'Invalid content types found',
     });
-    expect(appCount).toStrictEqual(0);
+    expect(appCount).toBe(0);
   });
 });
 
@@ -2220,8 +2220,8 @@ describe('setAppLock', () => {
 
     const response = await request.post(`/api/apps/${app.id}/lock`, { locked: true });
     await app.reload();
-    expect(response.status).toStrictEqual(204);
-    expect(app.locked).toStrictEqual(true);
+    expect(response.status).toBe(204);
+    expect(app.locked).toBe(true);
   });
 
   it('should set the locked property to false', async () => {
@@ -2237,8 +2237,8 @@ describe('setAppLock', () => {
 
     const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
     await app.reload();
-    expect(response.status).toStrictEqual(204);
-    expect(app.locked).toStrictEqual(false);
+    expect(response.status).toBe(204);
+    expect(app.locked).toBe(false);
   });
 
   it('should not be possible to set the lock status as an app editor', async () => {
@@ -2530,7 +2530,7 @@ describe('deleteAppIcon', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/icon`);
     await app.reload();
-    expect(response.status).toStrictEqual(204);
+    expect(response.status).toBe(204);
     expect(app.maskableIcon).toBeNull();
   });
 
@@ -2567,7 +2567,7 @@ describe('deleteAppMaskableIcon', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/maskableIcon`);
     await app.reload();
-    expect(response.status).toStrictEqual(204);
+    expect(response.status).toBe(204);
     expect(app.maskableIcon).toBeNull();
   });
 
@@ -2734,7 +2734,7 @@ describe('deleteAppScreenshot', () => {
     const screenshots = await AppScreenshot.count();
 
     expect(response.status).toBe(200);
-    expect(screenshots).toStrictEqual(0);
+    expect(screenshots).toBe(0);
   });
 
   it('should return 404 when trying to delete screenshots with IDs that don’t exist', async () => {

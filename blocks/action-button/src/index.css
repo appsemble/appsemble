@@ -1,5 +1,5 @@
 .button {
-  box-shadow: 0 1px 5px 0 hsl(0, 0%, 0%) !important;
+  box-shadow: 0 1px 5px 0 hsl(0deg 0% 0%) !important;
   display: flex;
   height: 56px !important;
   margin: 0 auto;

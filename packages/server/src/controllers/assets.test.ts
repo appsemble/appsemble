@@ -410,7 +410,7 @@ describe('deleteAsset', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`);
 
-    expect(response.status).toStrictEqual(204);
+    expect(response.status).toBe(204);
   });
 
   it('should not delete assets if the user has insufficient permissions', async () => {

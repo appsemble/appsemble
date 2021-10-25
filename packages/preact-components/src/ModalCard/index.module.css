@@ -5,13 +5,13 @@
 }
 
 .opening {
-  opacity: 0;
+  opacity: 0%;
 }
 
 .open {
-  opacity: 1;
+  opacity: 100%;
 }
 
 .closing {
-  opacity: 0;
+  opacity: 0%;
 }

@@ -17,6 +17,8 @@ module.exports = {
     },
   },
   rules: {
+    'jest/require-hook': 'off',
+
     'jsdoc/require-jsdoc': 'off',
     'jsdoc/check-tag-names': [
       'error',

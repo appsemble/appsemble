@@ -24,7 +24,7 @@ describe('getStudioMessages', () => {
     expect(result).toMatchObject({ status: 200, data: { language: 'nl' } });
     expect(
       keys.every((key) => key.startsWith('studio') || key.startsWith('react-components')),
-    ).toStrictEqual(true);
+    ).toBe(true);
   });
 
   it('should filter based on the context given', async () => {
@@ -33,7 +33,7 @@ describe('getStudioMessages', () => {
       Object.keys(resultStudio.data.messages).every(
         (key) => key.startsWith('studio') || key.startsWith('react-components'),
       ),
-    ).toStrictEqual(true);
+    ).toBe(true);
   });
 
   it('should return empty messages if requesting the default language', async () => {

@@ -7,20 +7,20 @@
 }
 
 .messageEnter {
-  opacity: 0;
+  opacity: 0%;
 }
 
 .messageEnterActive {
-  opacity: 1;
+  opacity: 100%;
   transition: opacity 300ms ease-in;
 }
 
 .messageExit {
-  opacity: 1;
+  opacity: 100%;
 }
 
 .messageExitActive {
-  opacity: 0;
+  opacity: 0%;
   transition: opacity 300ms ease-in;
 }
 

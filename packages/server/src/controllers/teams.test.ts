@@ -276,7 +276,7 @@ describe('patchTeam', () => {
     const responseB = await request.get<Team>(`/api/apps/${app.id}/teams/${team.id}`);
 
     expect(response).toMatchObject({ status: 200, data: { id: team.id, name: 'B' } });
-    expect(responseB.data.name).toStrictEqual('B');
+    expect(responseB.data.name).toBe('B');
   });
 
   it('should update annotations', async () => {
@@ -363,7 +363,7 @@ describe('deleteTeam', () => {
     const response = await request.delete(`/api/apps/${app.id}/teams/${team.id}`);
     const responseB = await request.get(`/api/apps/${app.id}/teams`);
 
-    expect(response.status).toStrictEqual(204);
+    expect(response.status).toBe(204);
     expect(responseB.data).toStrictEqual([]);
   });
 
@@ -620,7 +620,7 @@ describe('removeTeamMember', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
     );
-    expect(response.status).toStrictEqual(204);
+    expect(response.status).toBe(204);
   });
 
   it('should remove a team member from a team by their primary email', async () => {
@@ -637,7 +637,7 @@ describe('removeTeamMember', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/teams/${team.id}/members/${userB.primaryEmail}`,
     );
-    expect(response.status).toStrictEqual(204);
+    expect(response.status).toBe(204);
   });
 
   it('should remove a team member from a team if the user has the manager role', async () => {
@@ -656,7 +656,7 @@ describe('removeTeamMember', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/teams/${team.id}/members/${userB.id}`,
     );
-    expect(response.status).toStrictEqual(204);
+    expect(response.status).toBe(204);
   });
 
   it('should not remove a team member from a team if the user has insufficient permissions', async () => {

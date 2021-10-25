@@ -31,7 +31,7 @@
   "dependencies": {
     "@appsemble/types": "0.19.3",
     "axios": "^0.23.0",
-    "cron-parser": "^3.0.0",
+    "cron-parser": "^4.0.0",
     "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",
     "intl-messageformat": "^9.0.0",
@@ -42,7 +42,7 @@
     "openapi-types": "^9.0.0",
     "parse-duration": "^1.0.0",
     "postcss": "^7.0.0",
-    "type-fest": "^1.0.0"
+    "type-fest": "^2.0.0"
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^7.0.0",
