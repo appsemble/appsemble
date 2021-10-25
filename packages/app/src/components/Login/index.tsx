@@ -75,15 +75,17 @@ export function Login(): ReactElement {
   }
 
   return (
-    <Main className={styles.root}>
+    <Main className={`is-flex ${styles.root}`}>
       <TitleBar />
-      <Content className={`is-flex appsemble-login ${styles.wrapper}`} padding>
-        <figure className="my-4">
+      <Content
+        className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center is-flex-grow-1 appsemble-login"
+        padding
+      >
+        <figure className="py-4">
           <img
             alt={definition.name}
-            height="256"
+            className={styles.logo}
             src={`/icon-256.png?updated=${appUpdated}`}
-            width="256"
           />
         </figure>
         {showAppsembleLogin && (
