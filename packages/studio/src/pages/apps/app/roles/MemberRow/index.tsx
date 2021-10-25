@@ -90,7 +90,7 @@ export function MemberRow({ member, onChange }: MemberRowProperties): ReactEleme
           </div>
         </td>
         <td className={styles.propertyRow}>
-          <div className="is-flex is-justify-content-space-between">
+          <div className="is-flex is-justify-content-space-between is-flex-grow-1">
             {member.properties && Object.keys(member.properties).length ? (
               <span className={styles.property}>{JSON.stringify(member.properties)}</span>
             ) : (

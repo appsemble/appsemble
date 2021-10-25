@@ -25,7 +25,7 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
 
   return (
     <Portal element={document.getElementsByClassName('navbar')[0]}>
-      <div className="is-flex is-justify-content-space-between">
+      <div className="is-flex is-justify-content-space-between is-flex-grow-1">
         {navigation === 'left-menu' && shouldShowMenu(definition, role, teams) && (
           <div className="navbar-brand">
             <span>
