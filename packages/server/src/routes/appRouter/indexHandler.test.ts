@@ -178,7 +178,7 @@ it('should render the index page', async () => {
         },
         {
           type: 'flow',
-          subPages: [
+          steps: [
             {
               blocks: [
                 { type: 'a', version: '0.1.0' },
@@ -259,7 +259,7 @@ it('should render the index page', async () => {
         },
         {
           type: 'flow',
-          subPages: [
+          steps: [
             {
               blocks: [
                 { type: 'a', version: '0.1.0' },

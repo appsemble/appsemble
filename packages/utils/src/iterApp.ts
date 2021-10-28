@@ -133,9 +133,13 @@ export function iterPage(
 
     return (
       result ||
-      page.subPages.some((subPage, index) =>
-        iterBlockList(subPage.blocks, callbacks, [...prefix, 'subPages', index, 'blocks']),
-      )
+      (page.type === 'flow'
+        ? page.steps.some((step, index) =>
+            iterBlockList(step.blocks, callbacks, [...prefix, 'steps', index, 'blocks']),
+          )
+        : page.tabs.some((tab, index) =>
+            iterBlockList(tab.blocks, callbacks, [...prefix, 'tabs', index, 'blocks']),
+          ))
     );
   }
   return iterBlockList(page.blocks, callbacks, [...prefix, 'blocks']);

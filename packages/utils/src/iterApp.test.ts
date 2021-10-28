@@ -320,7 +320,7 @@ describe('iterPage', () => {
     const page: PageDefinition = {
       name: 'Page',
       type: 'flow',
-      subPages: [
+      steps: [
         {
           name: 'Flow page 1',
           blocks: [],
@@ -330,7 +330,7 @@ describe('iterPage', () => {
 
     const result = iterPage(page, { onBlockList, onPage });
 
-    expect(onBlockList).toHaveBeenCalledWith(page.subPages[0].blocks, ['subPages', 0, 'blocks']);
+    expect(onBlockList).toHaveBeenCalledWith(page.steps[0].blocks, ['steps', 0, 'blocks']);
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(result).toBe(false);
   });
@@ -342,7 +342,7 @@ describe('iterPage', () => {
     const page: PageDefinition = {
       name: 'Page',
       type: 'tabs',
-      subPages: [
+      tabs: [
         {
           name: 'Tabs page 1',
           blocks: [],
@@ -352,7 +352,7 @@ describe('iterPage', () => {
 
     const result = iterPage(page, { onBlockList, onPage });
 
-    expect(onBlockList).toHaveBeenCalledWith(page.subPages[0].blocks, ['subPages', 0, 'blocks']);
+    expect(onBlockList).toHaveBeenCalledWith(page.tabs[0].blocks, ['tabs', 0, 'blocks']);
     expect(onPage).toHaveBeenCalledWith(page, []);
     expect(result).toBe(false);
   });
@@ -369,7 +369,7 @@ describe('iterPage', () => {
           type: 'log',
         },
       },
-      subPages: [],
+      steps: [],
     };
 
     const result = iterPage(page, { onAction, onPage });
@@ -392,7 +392,7 @@ describe('iterPage', () => {
           type: 'log',
         },
       },
-      subPages: [
+      steps: [
         {
           name: 'Test Subpage 1',
           blocks: [
@@ -414,7 +414,7 @@ describe('iterPage', () => {
 
     expect(onAction).toHaveBeenCalledWith(page.actions.onFlowFinish, ['actions', 'onFlowFinish']);
     expect(onPage).toHaveBeenCalledWith(page, []);
-    expect(onBlockList).toHaveBeenCalledWith(page.subPages[0].blocks, ['subPages', 0, 'blocks']);
+    expect(onBlockList).toHaveBeenCalledWith(page.steps[0].blocks, ['steps', 0, 'blocks']);
     expect(result).toBe(false);
   });
 });

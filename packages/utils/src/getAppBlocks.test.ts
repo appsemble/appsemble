@@ -34,7 +34,7 @@ describe('getAppBlocks', () => {
         {
           name: '',
           type: 'flow',
-          subPages: [
+          steps: [
             {
               name: '',
               blocks: [
@@ -48,8 +48,8 @@ describe('getAppBlocks', () => {
     };
     const result = getAppBlocks(definition as AppDefinition);
     expect(result).toStrictEqual({
-      'pages.0.subPages.0.blocks.0': definition.pages[0].subPages[0].blocks[0],
-      'pages.0.subPages.0.blocks.1': definition.pages[0].subPages[0].blocks[1],
+      'pages.0.steps.0.blocks.0': definition.pages[0].steps[0].blocks[0],
+      'pages.0.steps.0.blocks.1': definition.pages[0].steps[0].blocks[1],
     });
   });
 
@@ -96,7 +96,7 @@ describe('getAppBlocks', () => {
         {
           name: '',
           type: 'flow',
-          subPages: [
+          steps: [
             {
               name: '',
               blocks: [
@@ -121,11 +121,11 @@ describe('getAppBlocks', () => {
     };
     const result = getAppBlocks(definition as AppDefinition);
     expect(result).toStrictEqual({
-      'pages.0.subPages.0.blocks.0': definition.pages[0].subPages[0].blocks[0],
-      'pages.0.subPages.0.blocks.0.actions.onSomeAction.blocks.0':
-        definition.pages[0].subPages[0].blocks[0].actions.onSomeAction.blocks[0],
-      'pages.0.subPages.0.blocks.0.actions.onSomeAction.blocks.1':
-        definition.pages[0].subPages[0].blocks[0].actions.onSomeAction.blocks[1],
+      'pages.0.steps.0.blocks.0': definition.pages[0].steps[0].blocks[0],
+      'pages.0.steps.0.blocks.0.actions.onSomeAction.blocks.0':
+        definition.pages[0].steps[0].blocks[0].actions.onSomeAction.blocks[0],
+      'pages.0.steps.0.blocks.0.actions.onSomeAction.blocks.1':
+        definition.pages[0].steps[0].blocks[0].actions.onSomeAction.blocks[1],
     });
   });
 });

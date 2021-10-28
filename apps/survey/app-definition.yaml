@@ -102,8 +102,7 @@ pages:
         onSuccess:
           type: link
           to: Finished
-
-    subPages:
+    steps:
       - name: Introduction
         blocks:
           - type: markdown

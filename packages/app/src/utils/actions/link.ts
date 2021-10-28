@@ -1,3 +1,4 @@
+import { SubPage } from '@appsemble/types';
 import { normalize, partialNormalized } from '@appsemble/utils';
 
 import { ActionCreator } from '.';
@@ -18,8 +19,16 @@ export const link: ActionCreator<'link'> = ({
     const [toBase, toSub] = [].concat(to);
 
     const toPage = pages.find(({ name }) => name === toBase);
-    const subPage =
-      toPage.type !== 'page' && toSub ? toPage.subPages.find(({ name }) => name === toSub) : null;
+    let subPage: SubPage;
+
+    if (toPage.type !== 'page') {
+      if (toPage.type === 'flow') {
+        subPage = toPage.steps.find(({ name }) => name === toSub);
+      }
+      if (toPage.type === 'tabs') {
+        subPage = toPage.tabs.find(({ name }) => name === toSub);
+      }
+    }
 
     if (toPage == null || (toSub && subPage == null)) {
       throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);

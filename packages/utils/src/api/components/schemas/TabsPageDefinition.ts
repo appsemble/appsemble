@@ -4,16 +4,16 @@ import { extendJSONSchema } from './utils';
 export const TabsPageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',
   description: 'This describes what a page will look like in the app.',
-  required: ['type', 'subPages'],
+  required: ['type', 'tabs'],
   additionalProperties: true,
   properties: {
     type: {
       enum: ['tabs'],
     },
-    subPages: {
+    tabs: {
       type: 'array',
       minItems: 1,
-      description: "Sub pages belonging to this page's flow.",
+      description: 'Each of the available tabs for the tabs page.',
       items: {
         $ref: '#/components/schemas/SubPage',
       },
