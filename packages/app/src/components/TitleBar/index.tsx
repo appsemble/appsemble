@@ -38,9 +38,7 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
         </div>
         {(definition.layout?.login == null || definition.layout?.login === 'navbar') && (
           <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">
-            <div className="navbar-item is-paddingless px-1">
-              <ProfileDropdown />
-            </div>
+            <ProfileDropdown />
           </div>
         )}
       </div>

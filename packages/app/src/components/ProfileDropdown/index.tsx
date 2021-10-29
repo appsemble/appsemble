@@ -31,9 +31,15 @@ export function ProfileDropdown(): ReactElement {
 
   if (!isLoggedIn) {
     return (
-      <Link className={`navbar-item ${styles.login}`} to={`/${lang}/Login`}>
-        <FormattedMessage {...messages.login} />
-      </Link>
+      <div className="navbar-item is-paddingless">
+        <Link className={styles.login} to={`/${lang}/Login`}>
+          <div
+            className={`is-flex is-justify-content-center is-align-items-center px-4 ${styles.loginText}`}
+          >
+            <FormattedMessage {...messages.login} />
+          </div>
+        </Link>
+      </div>
     );
   }
 
