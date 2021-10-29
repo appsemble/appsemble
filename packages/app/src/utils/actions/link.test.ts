@@ -28,7 +28,7 @@ describe('link', () => {
       definition: { type: 'link', to: 'https://example.com' },
     });
     const link = action.href();
-    expect(link).toStrictEqual('https://example.com');
+    expect(link).toBe('https://example.com');
     const result = await action();
     expect(result).toBeUndefined();
     expect(window.open).toHaveBeenCalledWith(
@@ -44,7 +44,7 @@ describe('link', () => {
       definition: { type: 'link', to: 'Page A' },
     });
     const link = action.href('https://example.com');
-    expect(link).toStrictEqual('https://example.com');
+    expect(link).toBe('https://example.com');
     const result = await action('https://example.com');
     expect(result).toBeUndefined();
     expect(window.open).toHaveBeenCalledWith(
@@ -62,7 +62,7 @@ describe('link', () => {
       history,
     });
     const link = action.href();
-    expect(link).toStrictEqual('/da/page-a');
+    expect(link).toBe('/da/page-a');
     const result = await action();
     expect(result).toBeUndefined();
     expect(history.push).toHaveBeenCalledWith('/da/page-a', {});
@@ -79,7 +79,7 @@ describe('link', () => {
       history,
     });
     const link = action.href();
-    expect(link).toStrictEqual('/da/page-a/subpage-b');
+    expect(link).toBe('/da/page-a/subpage-b');
     const result = await action();
     expect(result).toBeUndefined();
     expect(history.push).toHaveBeenCalledWith('/da/page-a/subpage-b', {});
@@ -96,7 +96,7 @@ describe('link', () => {
       history,
     });
     const link = action.href({ id: 3 });
-    expect(link).toStrictEqual('/da/page-a/3');
+    expect(link).toBe('/da/page-a/3');
     const result = await action({ id: 3 });
     expect(result).toBeUndefined();
     expect(history.push).toHaveBeenCalledWith('/da/page-a/3', { id: 3 });

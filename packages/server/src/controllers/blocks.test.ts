@@ -586,7 +586,7 @@ describe('getBlockVersion', () => {
     );
 
     expect(retrieved).toStrictEqual(created);
-    expect(retrieved.iconUrl).toStrictEqual('/api/blocks/@xkcd/standing/versions/1.32.9/icon');
+    expect(retrieved.iconUrl).toBe('/api/blocks/@xkcd/standing/versions/1.32.9/icon');
     expect(status).toBe(200);
   });
 
@@ -614,7 +614,7 @@ describe('getBlockVersion', () => {
     );
 
     expect(retrieved).toStrictEqual(created);
-    expect(retrieved.iconUrl).toStrictEqual(
+    expect(retrieved.iconUrl).toBe(
       '/api/organizations/xkcd/icon?updated=1970-01-01T00%3A00%3A00.000Z',
     );
     expect(status).toBe(200);
@@ -749,7 +749,7 @@ describe('getBlockAsset', () => {
       params: { filename: 'hello.js' },
     });
     expect(response.headers['content-type']).toBe('application/javascript; charset=utf-8');
-    expect(response.data).toStrictEqual('console.log("Hello world!")');
+    expect(response.data).toBe('console.log("Hello world!")');
   });
 
   it('should respond with 404 the version mismatches', async () => {

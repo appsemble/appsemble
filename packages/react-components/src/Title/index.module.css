@@ -1,10 +1,10 @@
 .root {
   & .anchor {
-    opacity: 0;
+    opacity: 0%;
     transition: 300ms;
   }
 
   &:hover .anchor {
-    opacity: 1;
+    opacity: 100%;
   }
 }

@@ -51,7 +51,7 @@
     "js-yaml": "^4.0.0",
     "jsonschema": "^1.0.0",
     "jwt-decode": "^3.0.0",
-    "monaco-editor": "^0.27.0",
+    "monaco-editor": "^0.29.0",
     "monaco-yaml": "^3.0.0",
     "openapi-types": "^9.0.0",
     "react": "^17.0.0",

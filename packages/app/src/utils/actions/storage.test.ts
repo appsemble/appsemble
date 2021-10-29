@@ -17,7 +17,7 @@ describe('storage.read', () => {
       definition: { type: 'storage.read', key: { prop: 'test' } },
     });
     const result = await action({ test: 'data' });
-    expect(result).toStrictEqual('This is default test data!');
+    expect(result).toBe('This is default test data!');
   });
 
   it('should return undefined for unknown keys in the store', async () => {

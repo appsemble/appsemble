@@ -34,5 +34,5 @@
 }
 
 .starIcon {
-  color: hsl(48, 99%, 47%) !important;
+  color: hsl(48deg 99% 47%) !important;
 }

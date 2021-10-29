@@ -16,6 +16,6 @@
 }
 
 .button:hover {
-  background-color: hsl(0, 0%, 96%);
-  color: hsl(0, 0%, 21%);
+  background-color: hsl(0deg 0% 96%);
+  color: hsl(0deg 0% 21%);
 }

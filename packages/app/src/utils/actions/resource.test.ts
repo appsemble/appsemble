@@ -95,7 +95,7 @@ describe('resource.create', () => {
     expect(request.method).toBe('post');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
     expect(request.params).toBeUndefined();
-    expect(request.data).toStrictEqual('{"type":"fish"}');
+    expect(request.data).toBe('{"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
 });
@@ -114,7 +114,7 @@ describe('resource.update', () => {
     expect(request.method).toBe('put');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
     expect(request.params).toBeUndefined();
-    expect(request.data).toStrictEqual('{"id":84,"type":"fish"}');
+    expect(request.data).toBe('{"id":84,"type":"fish"}');
     expect(result).toStrictEqual({ id: 84, type: 'fish' });
   });
 });

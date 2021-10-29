@@ -1,4 +1,4 @@
 .nested {
-  background-color: hsla(0, 0%, 0%, 0.01);
-  border-left: 2px solid hsl(0, 0%, 86%);
+  background-color: hsl(0deg 0% 0% / 1%);
+  border-left: 2px solid hsl(0deg 0% 86%);
 }

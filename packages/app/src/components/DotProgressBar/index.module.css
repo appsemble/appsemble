@@ -9,14 +9,14 @@
   border: none;
   border-radius: 50%;
   height: 10px;
-  opacity: 0.2;
+  opacity: 20%;
   width: 10px;
 }
 
 .dot.previous {
-  opacity: 0.5;
+  opacity: 50%;
 }
 
 .dot.active {
-  opacity: 1;
+  opacity: 100%;
 }

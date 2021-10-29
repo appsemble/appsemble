@@ -196,7 +196,7 @@ describe('createTemplateApp', () => {
     const { id } = response.data;
     const { data: messages } = await request.get<AppMessagesType>(`/api/apps/${id}/messages/nl-nl`);
 
-    expect(messages.language).toStrictEqual('nl-nl');
+    expect(messages.language).toBe('nl-nl');
     expect(messages.messages.messageIds).toStrictEqual({ test: 'Dit is een testbericht' });
   });
 
