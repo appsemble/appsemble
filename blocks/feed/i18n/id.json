@@ -1,6 +1,6 @@
 {
   "anonymousLabel": "Anonim",
-  "emptyLabel": "",
-  "replyErrorMessage": "",
-  "replyLabel": ""
+  "emptyLabel": "Tidak ada data untuk ditampilkan",
+  "replyErrorMessage": "Ada yang tidak beres saat mencoba mengirim pesan ini.",
+  "replyLabel": "Tinggalkan pesan…"
 }
