@@ -35,4 +35,4 @@ export const domainPattern = new RegExp(`^(${partialNormalized.source}+\\.)+[a-z
 /**
  * A pattern to match a Google Analytics ID or an empty string.
  */
-export const googleAnalyticsIDPattern = /^(|UA-\d{8}-\d|G-[\dA-Z]{10})$/;
+export const googleAnalyticsIDPattern = /^(|UA-\d{4,10}-\d{1,4}|G-[\dA-Z]{4,})$/;
