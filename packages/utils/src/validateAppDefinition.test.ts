@@ -496,7 +496,7 @@ describe('validateSecurity', () => {
         {
           name: 'Test Page A',
           type: 'flow',
-          subPages: [
+          steps: [
             { name: 'SubPage A1', blocks: [{ type: 'test', version: '0.0.0', roles: [] }] },
             {
               name: 'SubPage A2',
@@ -509,7 +509,7 @@ describe('validateSecurity', () => {
 
     expect(() => validateSecurity(definition)).toThrow(
       new AppsembleValidationError(
-        'Role ‘Admins’ in pages.0.subPages.1.blocks.0 roles does not exist.',
+        'Role ‘Admins’ in pages.0.steps.1.blocks.0 roles does not exist.',
       ),
     );
   });

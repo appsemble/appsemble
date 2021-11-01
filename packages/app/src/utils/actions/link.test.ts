@@ -72,7 +72,7 @@ describe('link', () => {
     const action = createTestAction({
       app: {
         defaultPage: '',
-        pages: [{ name: 'Page A', type: 'tabs', subPages: [{ name: 'Subpage B', blocks: [] }] }],
+        pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
       },
       definition: { type: 'link', to: ['Page A', 'Subpage B'] },
       route: { isExact: false, params: { lang: 'da' }, path: '', url: '' },

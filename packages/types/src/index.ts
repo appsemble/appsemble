@@ -1059,7 +1059,10 @@ export interface BasePageDefinition {
   hideFromMenu?: boolean;
 }
 
-interface SubPage {
+/**
+ * A subset of page for use within flow pages and tab pages.
+ */
+export interface SubPage {
   name: string;
   blocks: BlockDefinition[];
 }
@@ -1071,7 +1074,7 @@ export interface BasicPageDefinition extends BasePageDefinition {
 
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
-  subPages: SubPage[];
+  steps: SubPage[];
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -1091,7 +1094,7 @@ export interface FlowPageDefinition extends BasePageDefinition {
 
 export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
-  subPages: SubPage[];
+  tabs: SubPage[];
 }
 
 export type PageDefinition = BasicPageDefinition | FlowPageDefinition | TabsPageDefinition;

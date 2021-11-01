@@ -408,11 +408,11 @@ describe('extractAppMessages', () => {
         {
           name: 'Tabs',
           type: 'tabs',
-          subPages: [{ name: 'Tab', blocks: [] }],
+          tabs: [{ name: 'Tab', blocks: [] }],
         },
       ],
     });
-    expect(result).toMatchObject({ app: { 'pages.0': 'Tabs', 'pages.0.subPages.0': 'Tab' } });
+    expect(result).toMatchObject({ app: { 'pages.0': 'Tabs', 'pages.0.tabs.0': 'Tab' } });
   });
 
   it('should append any messages returned by onBlock', () => {

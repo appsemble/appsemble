@@ -3,13 +3,13 @@
     "description": "Jednostavan program za dohvaćanje podataka o praznicima za razne zemlje.",
     "name": "Praznici",
     "pages.0": "Praznici u Europi",
-    "pages.0.subPages.0": "Nizozemska",
-    "pages.0.subPages.1": "Njemačka",
-    "pages.0.subPages.2": "Španjolska",
+    "pages.0.tabs.0": "Nizozemska",
+    "pages.0.tabs.1": "Njemačka",
+    "pages.0.tabs.2": "Španjolska",
     "pages.1": "Praznici u Americi",
-    "pages.1.subPages.0": "SAD",
-    "pages.1.subPages.1": "Kanada",
-    "pages.1.subPages.2": "Meksiko"
+    "pages.1.tabs.0": "SAD",
+    "pages.1.tabs.1": "Kanada",
+    "pages.1.tabs.2": "Meksiko"
   },
   "messageIds": {
     "date": "Datum",

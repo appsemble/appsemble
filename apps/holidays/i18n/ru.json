@@ -3,13 +3,13 @@
     "description": "Простое приложение, которое собирает информацию о праздниках для разных стран.",
     "name": "Holidays",
     "pages.0": "Праздники Европы",
-    "pages.0.subPages.0": "Нидерланды",
-    "pages.0.subPages.1": "Германия",
-    "pages.0.subPages.2": "Испания",
+    "pages.0.tabs.0": "Нидерланды",
+    "pages.0.tabs.1": "Германия",
+    "pages.0.tabs.2": "Испания",
     "pages.1": "Праздники в америке",
-    "pages.1.subPages.0": "США",
-    "pages.1.subPages.1": "Канада",
-    "pages.1.subPages.2": "Мексика"
+    "pages.1.tabs.0": "США",
+    "pages.1.tabs.1": "Канада",
+    "pages.1.tabs.2": "Мексика"
   },
   "messageIds": {
     "date": "Дата",

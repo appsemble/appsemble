@@ -159,7 +159,7 @@ export function Page(): ReactElement {
             remap={remapWithContext}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
-            subPages={page.subPages}
+            tabs={page.tabs}
           />
         ) : (
           // The switch is used to enforce an exact path.

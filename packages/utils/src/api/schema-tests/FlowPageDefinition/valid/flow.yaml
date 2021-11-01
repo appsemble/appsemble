@@ -6,7 +6,7 @@ actions:
     type: noop
   onFlowFinish:
     type: noop
-subPages:
+steps:
   - blocks:
       - type: block
         version: 1.2.3

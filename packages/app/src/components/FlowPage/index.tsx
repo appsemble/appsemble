@@ -38,7 +38,7 @@ export function FlowPage({
 }: FlowPageProps): ReactElement {
   const history = useHistory();
   const route = useRouteMatch<{ lang: string }>();
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentStep, setCurrentPage] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
@@ -59,34 +59,34 @@ export function FlowPage({
   const next = useCallback(
     // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
-      const { subPages } = page;
+      const { steps } = page;
 
-      if (currentPage + 1 === subPages.length) {
+      if (currentStep + 1 === steps.length) {
         return finish(d);
       }
 
       setData(d);
-      setCurrentPage(currentPage + 1);
+      setCurrentPage(currentStep + 1);
 
       return d;
     },
-    [currentPage, finish, page, setData],
+    [currentStep, finish, page, setData],
   );
 
   const back = useCallback(
     // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
-      if (currentPage <= 0) {
+      if (currentStep <= 0) {
         // Don't do anything if a previous page does not exist
         return d;
       }
 
       setData(d);
-      setCurrentPage(currentPage - 1);
+      setCurrentPage(currentStep - 1);
 
       return d;
     },
-    [currentPage, setData],
+    [currentStep, setData],
   );
 
   const cancel = useCallback(
@@ -102,7 +102,7 @@ export function FlowPage({
       if (typeof step !== 'string') {
         throw new TypeError(`Expected page to be a string, got: ${JSON.stringify(step)}`);
       }
-      const found = page.subPages.findIndex((p) => p.name === step);
+      const found = page.steps.findIndex((p) => p.name === step);
       if (found === -1) {
         throw new Error(`No matching page was found for ${step}`);
       }
@@ -112,7 +112,7 @@ export function FlowPage({
 
       return d;
     },
-    [page.subPages, setData],
+    [page.steps, setData],
   );
 
   const flowActions = useMemo(
@@ -176,16 +176,16 @@ export function FlowPage({
   return (
     <>
       {progress === 'corner-dots' && (
-        <DotProgressBar active={currentPage} amount={page.subPages.length} />
+        <DotProgressBar active={currentStep} amount={page.steps.length} />
       )}
       <BlockList
-        blocks={page.subPages[currentPage].blocks}
+        blocks={page.steps[currentStep].blocks}
         data={data}
         ee={ee}
         flowActions={flowActions}
-        key={currentPage}
+        key={currentStep}
         page={page}
-        prefix={`${prefix}.subPages.${currentPage}.blocks`}
+        prefix={`${prefix}.steps.${currentStep}.blocks`}
         remap={remap}
         showDialog={showDialog}
         showShareDialog={showShareDialog}

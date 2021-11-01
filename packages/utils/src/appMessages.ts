@@ -123,8 +123,8 @@ export function extractAppMessages(
       messages.app[prefix.join('.')] = page.name;
 
       if (page.type === 'tabs') {
-        for (const [index, subPage] of page.subPages.entries()) {
-          messages.app[`${prefix.join('.')}.subPages.${index}`] = subPage.name ?? '';
+        for (const [index, tab] of page.tabs.entries()) {
+          messages.app[`${prefix.join('.')}.tabs.${index}`] = tab.name ?? '';
         }
       }
     },

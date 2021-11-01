@@ -3,15 +3,15 @@ describe('Holidays', () => {
 
   beforeEach(() => {
     cy.intercept(
-      { method: 'GET', url: '/api/apps/*/action/pages.0.subPages.0.blocks.0.actions.onLoad*' },
+      { method: 'GET', url: '/api/apps/*/action/pages.0.tabs.0.blocks.0.actions.onLoad*' },
       { fixture: 'holidays-nl.json' },
     );
     cy.intercept(
-      { method: 'GET', url: '/api/apps/*/action/pages.0.subPages.1.blocks.0.actions.onLoad*' },
+      { method: 'GET', url: '/api/apps/*/action/pages.0.tabs.1.blocks.0.actions.onLoad*' },
       { fixture: 'holidays-de.json' },
     );
     cy.intercept(
-      { method: 'GET', url: '/api/apps/*/action/pages.1.subPages.0.blocks.0.actions.onLoad*' },
+      { method: 'GET', url: '/api/apps/*/action/pages.1.tabs.0.blocks.0.actions.onLoad*' },
       { fixture: 'holidays-us.json' },
     );
 

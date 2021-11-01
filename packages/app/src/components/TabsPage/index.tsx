@@ -8,9 +8,9 @@ import { useAppMessages } from '../AppMessagesProvider';
 import { BlockList } from '../BlockList';
 
 type TabsPageProps = Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> &
-  Pick<TabsPageDefinition, 'subPages'>;
+  Pick<TabsPageDefinition, 'tabs'>;
 
-export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps): ReactElement {
+export function TabsPage({ prefix, tabs, ...blockListProps }: TabsPageProps): ReactElement {
   const { path, url } = useRouteMatch();
   const { getAppMessage } = useAppMessages();
   const { pathname } = useLocation();
@@ -24,9 +24,9 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
   return (
     <>
       <Tabs centered onChange={onChange} size="medium" value={pathname}>
-        {subPages.map(({ name }, index) => {
+        {tabs.map(({ name }, index) => {
           const translatedName = getAppMessage({
-            id: `${prefix}.subPages.${index}`,
+            id: `${prefix}.tabs.${index}`,
             defaultMessage: name,
           }).format() as string;
           const value = `${url}/${normalize(translatedName)}`;
@@ -39,9 +39,9 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
         })}
       </Tabs>
       <Switch>
-        {subPages.map(({ blocks, name }, index) => {
+        {tabs.map(({ blocks, name }, index) => {
           const translatedName = getAppMessage({
-            id: `${prefix}.subPages.${index}`,
+            id: `${prefix}.tabs.${index}`,
             defaultMessage: name,
           }).format() as string;
 
@@ -51,15 +51,15 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
                 key={prefix}
                 {...blockListProps}
                 blocks={blocks}
-                prefix={`${prefix}.subPages.${index}.blocks`}
+                prefix={`${prefix}.tabs.${index}.blocks`}
               />
             </Route>
           );
         })}
         {/* Redirect from a matching sub URL to the actual URL */}
-        {subPages.map(({ name }, index) => {
+        {tabs.map(({ name }, index) => {
           const translatedName = getAppMessage({
-            id: `${prefix}.subPages.${index}`,
+            id: `${prefix}.tabs.${index}`,
             defaultMessage: name,
           }).format() as string;
 
@@ -71,8 +71,8 @@ export function TabsPage({ prefix, subPages, ...blockListProps }: TabsPageProps)
         <Redirect
           to={`${url}/${normalize(
             getAppMessage({
-              id: `${prefix}.subPages.0`,
-              defaultMessage: subPages[0].name,
+              id: `${prefix}.tabs.0`,
+              defaultMessage: tabs[0].name,
             }).format() as string,
           )}`}
         />
