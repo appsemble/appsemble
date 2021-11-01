@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.4](https://gitlab.com/appsemble/appsemble/-/releases/0.19.4)] - 2021-11-01
+
+### Changed
+
+- App: Rename `subPages` for `flow` and `tabs` pages to `steps` and `tabs` respectively.
+
 ## \[[0.19.3](https://gitlab.com/appsemble/appsemble/-/releases/0.19.3)] - 2021-10-22
 
 ### Added
