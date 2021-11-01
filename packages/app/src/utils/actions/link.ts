@@ -21,13 +21,8 @@ export const link: ActionCreator<'link'> = ({
     const toPage = pages.find(({ name }) => name === toBase);
     let subPage: SubPage;
 
-    if (toPage.type !== 'page') {
-      if (toPage.type === 'flow') {
-        subPage = toPage.steps.find(({ name }) => name === toSub);
-      }
-      if (toPage.type === 'tabs') {
-        subPage = toPage.tabs.find(({ name }) => name === toSub);
-      }
+    if (toPage.type === 'tabs') {
+      subPage = toPage.tabs.find(({ name }) => name === toSub);
     }
 
     if (toPage == null || (toSub && subPage == null)) {

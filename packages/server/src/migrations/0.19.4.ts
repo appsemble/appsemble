@@ -13,7 +13,7 @@ export const key = '0.19.4';
  */
 export async function up(db: Sequelize): Promise<void> {
   const apps = await db.query<App>(
-    'SELECT * FROM "App" WHERE definition->>\'pages\' LIKE \'%"subPages":%\'',
+    'SELECT definition, id FROM "App" WHERE definition->>\'pages\' LIKE \'%"subPages":%\'',
     { type: QueryTypes.SELECT },
   );
 
