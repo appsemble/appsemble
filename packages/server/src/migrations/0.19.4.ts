@@ -1,8 +1,6 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import { QueryTypes, Sequelize } from 'sequelize';
 
-import { App, AppMessages } from '../models';
-
 export const key = '0.19.4';
 
 /**
@@ -12,21 +10,25 @@ export const key = '0.19.4';
  * @param db - The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
-  const apps = await db.query<App>(
-    'SELECT definition, id FROM "App" WHERE definition->>\'pages\' LIKE \'%"subPages":%\'',
-    { type: QueryTypes.SELECT },
-  );
+  const apps = await db.query<{
+    id: string;
+    definition: {
+      pages: { type: 'flow' | 'page' | 'tabs'; subPages: any; steps: any; tabs: any }[];
+    };
+  }>('SELECT definition, id FROM "App" WHERE definition->>\'pages\' LIKE \'%"subPages":%\'', {
+    type: QueryTypes.SELECT,
+  });
 
   for (const app of apps) {
     const subPageIds: number[] = [];
     for (const [index, page] of app.definition.pages.entries()) {
       subPageIds.push(index);
       if (page.type === 'flow') {
-        page.steps = (page as any).subPages;
-        delete (page as any).subPages;
+        page.steps = page.subPages;
+        delete page.subPages;
       } else if (page.type === 'tabs') {
-        page.tabs = (page as any).subPages;
-        delete (page as any).subPages;
+        page.tabs = page.subPages;
+        delete page.subPages;
       }
     }
 
@@ -35,8 +37,12 @@ export async function up(db: Sequelize): Promise<void> {
       replacements: [JSON.stringify(app.definition), app.id],
     });
 
-    const messages = await db.query<AppMessages>(
-      'SELECT * FROM "AppMessages" WHERE "AppId" = ? AND messages->>\'app\' LIKE \'%.subPages.%\'',
+    const messages = await db.query<{
+      AppId: string;
+      language: string;
+      messages: Record<'app', Record<string, string>>;
+    }>(
+      'SELECT "AppId", language, messages FROM "AppMessages" WHERE "AppId" = ? AND messages->>\'app\' LIKE \'%.subPages.%\'',
       {
         replacements: [app.id],
         type: QueryTypes.SELECT,
