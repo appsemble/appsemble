@@ -79,11 +79,17 @@ describe('domainPattern', () => {
 });
 
 describe('googleAnalyticsIDPattern', () => {
-  it.each(['', 'UA-12345678-9', 'G-0123456789'])('should match %j', (string) => {
-    expect(string).toMatch(googleAnalyticsIDPattern);
-  });
+  it.each(['', 'UA-12345678-9', 'G-0123456789ABC', 'UA-211654446-1'])(
+    'should match %j',
+    (string) => {
+      expect(string).toMatch(googleAnalyticsIDPattern);
+    },
+  );
 
-  it.each([' ', 'UA-123456789-0', 'G-012345678'])('should match %j', (string) => {
-    expect(string).not.toMatch(googleAnalyticsIDPattern);
-  });
+  it.each([' ', 'AU-123456789-0', 'UA-123-123', 'UA-1234-12345', 'G-012345678abc'])(
+    'should match %j',
+    (string) => {
+      expect(string).not.toMatch(googleAnalyticsIDPattern);
+    },
+  );
 });

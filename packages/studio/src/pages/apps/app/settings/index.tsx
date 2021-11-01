@@ -265,7 +265,7 @@ export function SettingsPage(): ReactElement {
             disabled={app.locked}
             help={<FormattedMessage {...messages.googleAnalyticsIDDescription} />}
             label={<FormattedMessage {...messages.googleAnalyticsIDLabel} />}
-            maxLength={13}
+            maxLength={15}
             name="googleAnalyticsID"
             pattern={googleAnalyticsIDPattern}
             preprocess={toUpperCase}
