@@ -6,7 +6,6 @@ import {
   normalizeBlockName,
   Permission,
   Prefix,
-  validateLanguage,
 } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import { Context } from 'koa';
@@ -25,9 +24,7 @@ export async function getMessages(ctx: Context): Promise<void> {
     query: { merge, override = 'true' },
   } = ctx;
 
-  try {
-    validateLanguage(language);
-  } catch {
+  if (!tags.check(language)) {
     throw badRequest(`Language “${language}” is invalid`);
   }
 
@@ -164,9 +161,7 @@ export async function createMessages(ctx: Context): Promise<void> {
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
 
-  try {
-    validateLanguage(language);
-  } catch {
+  if (!tags.check(language)) {
     throw badRequest(`Language “${language}” is invalid`);
   }
 
