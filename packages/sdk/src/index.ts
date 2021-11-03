@@ -165,7 +165,7 @@ export interface Events {
    * @returns Boolean indicating whether a listener is implemented or not.
    */
   off: {
-    [K in keyof EventListeners]: (callback: (data: unknown, error?: string) => void) => boolean;
+    [K in keyof EventListeners]: <T>(callback: (data: T, error?: string) => void) => boolean;
   };
 
   /**
@@ -176,7 +176,7 @@ export interface Events {
    * @returns Boolean indicating whether a listener is implemented or not.
    */
   on: {
-    [K in keyof EventListeners]: (callback: (data: unknown, error?: string) => void) => boolean;
+    [K in keyof EventListeners]: <T>(callback: (data: T, error?: string) => void) => boolean;
   };
 }
 
