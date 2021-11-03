@@ -42,7 +42,6 @@ import { blockVersionToJson, syncBlock } from '../utils/block';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
-import { getAppFromRecord } from '../utils/model';
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
   const uniqueBlocks = uniqWith(
@@ -237,7 +236,7 @@ export async function createApp(ctx: Context): Promise<void> {
         include: ['id', 'name', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
       },
     });
-    ctx.body = getAppFromRecord(record);
+    ctx.body = record.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
     handleAppValidationError(error as Error, result);
@@ -299,7 +298,7 @@ export async function getAppById(ctx: Context): Promise<void> {
 
   applyAppMessages(app, language, baseLanguage);
 
-  ctx.body = getAppFromRecord(app);
+  ctx.body = app.toJSON();
 }
 
 export async function queryApps(ctx: Context): Promise<void> {
@@ -356,7 +355,7 @@ export async function queryApps(ctx: Context): Promise<void> {
       return app;
     })
     .sort(compareApps)
-    .map((app) => getAppFromRecord(app, ['yaml']));
+    .map((app) => app.toJSON(['yaml']));
 }
 
 export async function queryMyApps(ctx: Context): Promise<void> {
@@ -420,7 +419,7 @@ export async function queryMyApps(ctx: Context): Promise<void> {
       return app;
     })
     .sort(compareApps)
-    .map((app) => getAppFromRecord(app, ['yaml']));
+    .map((app) => app.toJSON(['yaml']));
 }
 
 export async function patchApp(ctx: Context): Promise<void> {
@@ -610,7 +609,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       }
     });
 
-    ctx.body = getAppFromRecord(dbApp);
+    ctx.body = dbApp.toJSON();
   } catch (error: unknown) {
     handleAppValidationError(error as Error, result);
   }

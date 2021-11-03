@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { AppDefinition, AppsembleMessages } from '@appsemble/types';
+import type { AppDefinition, AppsembleMessages, App as AppType } from '@appsemble/types';
+import yaml from 'js-yaml';
+import { omit } from 'lodash';
 import {
   AllowNull,
   AutoIncrement,
@@ -33,6 +35,7 @@ import {
   Resource,
   Team,
 } from '.';
+import { resolveIconUrl } from '../utils/model';
 
 @Table({ tableName: 'App', paranoid: true })
 export class App extends Model {
@@ -167,4 +170,48 @@ export class App extends Model {
   hasIcon?: boolean;
   hasMaskableIcon?: boolean;
   messages?: AppsembleMessages;
+
+  /**
+   * Normalizes an app record for consistent return values.
+   *
+   * @param omittedValues - A list of fields to omit from the result.
+   * @returns An app resource that can be safely returned from the API.
+   */
+  toJSON(omittedValues: (keyof AppType)[] = []): AppType {
+    const { anchors, ...definition } = this.definition;
+
+    const result: AppType = {
+      id: this.id,
+      $created: this.created.toISOString(),
+      $updated: this.updated.toISOString(),
+      domain: this.domain || null,
+      path: this.path,
+      private: Boolean(this.private),
+      locked: Boolean(this.locked),
+      hasIcon: this.get('hasIcon') ?? Boolean(this.icon),
+      hasMaskableIcon: this.get('hasMaskableIcon') ?? Boolean(this.maskableIcon),
+      iconBackground: this.iconBackground || '#ffffff',
+      iconUrl: resolveIconUrl(this),
+      longDescription: this.longDescription,
+      definition,
+      yaml:
+        this.AppSnapshots?.[0]?.yaml ??
+        (!omittedValues.includes('yaml') && yaml.dump(this.definition)),
+      showAppsembleLogin: this.showAppsembleLogin ?? false,
+      showAppsembleOAuth2Login: this.showAppsembleOAuth2Login ?? true,
+      rating:
+        this.RatingAverage == null
+          ? undefined
+          : { count: this.RatingCount, average: this.RatingAverage },
+      resources: this.template && this.Resources?.length ? true : undefined,
+      OrganizationId: this.OrganizationId,
+      OrganizationName: this?.Organization?.name,
+      screenshotUrls: this.AppScreenshots?.map(
+        ({ id }) => `/api/apps/${this.id}/screenshots/${id}`,
+      ),
+      messages: this.messages,
+    };
+
+    return omit(result, omittedValues) as AppType;
+  }
 }

@@ -4,8 +4,6 @@ import { URL, URLSearchParams } from 'url';
 import * as types from '@appsemble/types';
 import { forbidden } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
-import yaml from 'js-yaml';
-import { omit } from 'lodash';
 
 import * as models from '../models';
 import { argv } from './argv';
@@ -36,54 +34,6 @@ export function resolveIconUrl(app: models.App): string {
   }
 
   return null;
-}
-
-/**
- * Normalizes an app record for consistant return values.
- *
- * @param record - The sequelize App model to normalize.
- * @param omittedValues - A list of fields to omit from the result.
- * @returns An app resource that can be safely returned from the API.
- */
-export function getAppFromRecord(
-  record: models.App,
-  omittedValues: (keyof types.App)[] = [],
-): Partial<types.App> {
-  const { anchors, ...definition } = record.definition;
-
-  const result: types.App = {
-    id: record.id,
-    $created: record.created.toISOString(),
-    $updated: record.updated.toISOString(),
-    domain: record.domain || null,
-    path: record.path,
-    private: Boolean(record.private),
-    locked: Boolean(record.locked),
-    hasIcon: record.get('hasIcon') ?? Boolean(record.icon),
-    hasMaskableIcon: record.get('hasMaskableIcon') ?? Boolean(record.maskableIcon),
-    iconBackground: record.iconBackground || '#ffffff',
-    iconUrl: resolveIconUrl(record),
-    longDescription: record.longDescription,
-    definition,
-    yaml:
-      record.AppSnapshots?.[0]?.yaml ??
-      (!omittedValues.includes('yaml') && yaml.dump(record.definition)),
-    showAppsembleLogin: record.showAppsembleLogin ?? false,
-    showAppsembleOAuth2Login: record.showAppsembleOAuth2Login ?? true,
-    rating:
-      record.RatingAverage == null
-        ? undefined
-        : { count: record.RatingCount, average: record.RatingAverage },
-    resources: record.template && record.Resources?.length ? true : undefined,
-    OrganizationId: record.OrganizationId,
-    OrganizationName: record?.Organization?.name,
-    screenshotUrls: record.AppScreenshots?.map(
-      ({ id }) => `/api/apps/${record.id}/screenshots/${id}`,
-    ),
-    messages: record.messages,
-  };
-
-  return omit(result, omittedValues);
 }
 
 export async function createOAuth2AuthorizationCode(
