@@ -1,0 +1,1 @@
+Enable strict subcommand parsing.

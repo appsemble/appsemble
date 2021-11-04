@@ -94,6 +94,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'The secret key to be used for GitLab OAuth2.',
       implies: 'gitlab-client-id',
     })
+    .option('secret', {
+      desc: 'Secret key used to sign JWTs and cookies',
+      required: true,
+    })
     .option('oauth-secret', {
       desc: 'Secret key used to sign JWTs and cookies',
       default: 'appsemble',
