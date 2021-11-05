@@ -1,5 +1,5 @@
 import { createReadStream, existsSync, promises as fs, ReadStream } from 'fs';
-import { join, parse, resolve } from 'path';
+import { join, parse, relative, resolve } from 'path';
 import { URL } from 'url';
 import { inspect } from 'util';
 
@@ -14,6 +14,7 @@ import { AppsembleContext, AppsembleRC } from '../types';
 import { authenticate } from './authentication';
 import { traverseBlockThemes } from './block';
 import { coerceRemote } from './coercers';
+import { printAxiosError } from './output';
 import { processCss } from './processCss';
 import { createResource } from './resource';
 
@@ -153,12 +154,12 @@ export async function traverseAppDirectory(
   path: string,
   context: string,
   formData: FormData,
-): Promise<[AppsembleContext, AppsembleRC]> {
-  let appFound: string;
+): Promise<[AppsembleContext, AppsembleRC, string]> {
   let discoveredContext: AppsembleContext;
   let rc: AppsembleRC;
   let iconPath: string;
   let maskableIconPath: string;
+  let yaml: string;
 
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, stat) => {
@@ -178,12 +179,12 @@ export async function traverseAppDirectory(
 
       case 'app-definition.yaml': {
         logger.info(`Using app definition from ${filepath}`);
-        if (appFound) {
+        if (yaml !== undefined) {
           throw new AppsembleError('Found duplicate app definition');
         }
-        appFound = filepath;
 
         const [app, data] = await readData(filepath);
+        yaml = data;
         formData.append('yaml', data);
         formData.append('definition', JSON.stringify(app));
         return;
@@ -233,7 +234,7 @@ export async function traverseAppDirectory(
         logger.warn(`Found unused file ${filepath}`);
     }
   });
-  if (!appFound) {
+  if (yaml === undefined) {
     throw new AppsembleError('No app definition found');
   }
   discoveredContext ||= {};
@@ -241,7 +242,7 @@ export async function traverseAppDirectory(
     ? resolve(path, discoveredContext.icon)
     : iconPath;
   discoveredContext.maskableIcon ||= maskableIconPath;
-  return [discoveredContext, rc];
+  return [discoveredContext, rc, yaml];
 }
 
 /**
@@ -566,14 +567,18 @@ export async function createApp({
   const formData = new FormData();
   let appsembleContext: AppsembleContext;
   let rc: AppsembleRC;
+  let yaml: string;
+  let filename = relative(process.cwd(), path);
 
   if (file.isFile()) {
     // Assuming file is App YAML
     const [app, data] = await readData(path);
+    yaml = data;
     formData.append('yaml', data);
     formData.append('definition', JSON.stringify(app));
   } else {
-    [appsembleContext, rc] = await traverseAppDirectory(path, context, formData);
+    [appsembleContext, rc, yaml] = await traverseAppDirectory(path, context, formData);
+    filename = join(filename, 'app-definition.yaml');
   }
 
   const remote = appsembleContext.remote ?? options.remote;
@@ -614,10 +619,23 @@ export async function createApp({
     resources ? 'apps:write resources:write' : 'apps:write',
     clientCredentials,
   );
-  const { data } = await axios.post<App>('/api/apps', formData, {
-    baseURL: remote,
-    params: { dryRun },
-  });
+  let data: App;
+  try {
+    ({ data } = await axios.post<App>('/api/apps', formData, {
+      baseURL: remote,
+      params: { dryRun },
+    }));
+  } catch (error) {
+    if (!axios.isAxiosError(error)) {
+      throw error;
+    }
+    if ((error.response.data as { message: string }).message !== 'App validation failed') {
+      throw error;
+    }
+    throw new AppsembleError(
+      printAxiosError(filename, yaml, (error.response.data as any).data.errors),
+    );
+  }
 
   if (dryRun) {
     logger.info('Skipped uploading block themes and app messages.');
