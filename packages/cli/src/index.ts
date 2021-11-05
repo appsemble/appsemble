@@ -37,6 +37,8 @@ export async function main(argv: string[]): Promise<void> {
       extensions: [extname(__filename).slice(1)],
     })
     .demandCommand(1)
+    // .strict() isn’t used because of https://github.com/yargs/yargs/issues/2058
+    .strictCommands()
     .fail(handleError)
     .help()
     .completion();
