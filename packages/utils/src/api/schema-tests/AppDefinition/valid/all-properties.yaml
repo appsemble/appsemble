@@ -79,6 +79,9 @@ resources:
         delete:
           trigger:
             - delete
+    schema:
+      type: object
+      additionalProperties: false
 
 security:
   default:

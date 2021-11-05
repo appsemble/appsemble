@@ -504,7 +504,7 @@ export interface ResourceDefinition {
   /**
    * The JSON schema to validate resources against before sending it to the backend.
    */
-  schema?: OpenAPIV3.SchemaObject;
+  schema: OpenAPIV3.SchemaObject;
 
   /**
    * The URL to post the resource to.
