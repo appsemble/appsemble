@@ -640,6 +640,28 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should allow the $author role for resource actions', async () => {
+    const app = createTestApp();
+    app.resources.person.roles = ['$author'];
+    app.resources.person.count = { roles: ['$author'] };
+    app.resources.person.create = { roles: ['$author'] };
+    app.resources.person.delete = { roles: ['$author'] };
+    app.resources.person.get = { roles: ['$author'] };
+    app.resources.person.query = { roles: ['$author'] };
+    app.resources.person.update = { roles: ['$author'] };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not exist in this app’s roles', '$author', undefined, [
+        'resources',
+        'person',
+        'create',
+        'roles',
+        0,
+      ]),
+    ]);
+  });
+
   it('should validate page roles', async () => {
     const app = createTestApp();
     app.pages[0].roles = ['Unknown'];

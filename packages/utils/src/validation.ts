@@ -130,30 +130,25 @@ function checkCyclicRoleInheritance(
  */
 function validateSecurity(definition: AppDefinition, report: Report): void {
   const { security } = definition;
+  const defaultAllow = ['$none', '$public', '$team:member', '$team:manager'];
   if (!security) {
     return;
   }
 
-  const checkRoleExists = (name: string, path: Prefix): boolean => {
-    if (
-      !has(security.roles, name) &&
-      name !== '$none' &&
-      name !== '$public' &&
-      name !== '$team:member' &&
-      name !== '$team:manager'
-    ) {
+  const checkRoleExists = (name: string, path: Prefix, allow = defaultAllow): boolean => {
+    if (!has(security.roles, name) && !allow.includes(name)) {
       report(name, 'does not exist in this app’s roles', path);
       return false;
     }
     return true;
   };
 
-  const checkRoles = (object: { roles?: string[] }, path: Prefix): void => {
+  const checkRoles = (object: { roles?: string[] }, path: Prefix, allow = defaultAllow): void => {
     if (!object?.roles) {
       return;
     }
     for (const [index, role] of object.roles.entries()) {
-      checkRoleExists(role, [...path, 'roles', index]);
+      checkRoleExists(role, [...path, 'roles', index], allow);
     }
   };
 
@@ -161,13 +156,29 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
   checkRoles(definition, []);
   if (definition.resources) {
     for (const [resourceName, resource] of Object.entries(definition.resources)) {
-      checkRoles(resource, ['resources', resourceName]);
-      checkRoles(resource.count, ['resources', resourceName, 'count']);
+      checkRoles(resource, ['resources', resourceName], [...defaultAllow, '$author']);
+      checkRoles(
+        resource.count,
+        ['resources', resourceName, 'count'],
+        [...defaultAllow, '$author'],
+      );
       checkRoles(resource.create, ['resources', resourceName, 'create']);
-      checkRoles(resource.delete, ['resources', resourceName, 'delete']);
-      checkRoles(resource.get, ['resources', resourceName, 'get']);
-      checkRoles(resource.query, ['resources', resourceName, 'query']);
-      checkRoles(resource.update, ['resources', resourceName, 'update']);
+      checkRoles(
+        resource.delete,
+        ['resources', resourceName, 'delete'],
+        [...defaultAllow, '$author'],
+      );
+      checkRoles(resource.get, ['resources', resourceName, 'get'], [...defaultAllow, '$author']);
+      checkRoles(
+        resource.query,
+        ['resources', resourceName, 'query'],
+        [...defaultAllow, '$author'],
+      );
+      checkRoles(
+        resource.update,
+        ['resources', resourceName, 'update'],
+        [...defaultAllow, '$author'],
+      );
     }
   }
   iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
