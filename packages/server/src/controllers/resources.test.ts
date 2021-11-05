@@ -1561,24 +1561,29 @@ describe('createResource', () => {
         statusCode: 400,
         error: 'Bad Request',
         message: 'Validation failed for resource type testResource',
-        data: [
-          {
-            argument: 'foo',
-            message: 'requires property "foo"',
-            name: 'required',
-            path: [],
-            schema: {
-              type: 'object',
-              required: ['foo'],
-              properties: {
-                bar: { type: 'string' },
-                baz: { type: 'string' },
-                foo: { type: 'string' },
-                fooz: { type: 'string' },
+        data: {
+          errors: [
+            {
+              argument: 'foo',
+              instance: {},
+              message: 'requires property "foo"',
+              name: 'required',
+              path: [],
+              property: 'instance',
+              schema: {
+                type: 'object',
+                required: ['foo'],
+                properties: {
+                  bar: { type: 'string' },
+                  baz: { type: 'string' },
+                  foo: { type: 'string' },
+                  fooz: { type: 'string' },
+                },
               },
+              stack: 'instance requires property "foo"',
             },
-          },
-        ],
+          ],
+        },
       },
     });
   });
@@ -1712,14 +1717,19 @@ describe('createResource', () => {
       error: 'Bad Request',
       message: 'Validation failed for resource type testAssets',
       statusCode: 400,
-      data: [
-        {
-          argument: 'format',
-          message: 'is not referenced from the resource',
-          name: 'binary',
-          path: ['assets', 0],
-        },
-      ],
+      data: {
+        errors: [
+          {
+            argument: 'format',
+            instance: 0,
+            message: 'is not referenced from the resource',
+            name: 'binary',
+            path: ['assets', 0],
+            property: 'instance.assets[0]',
+            stack: 'instance.assets[0] is not referenced from the resource',
+          },
+        ],
+      },
     });
   });
 
@@ -1737,15 +1747,20 @@ describe('createResource', () => {
       error: 'Bad Request',
       message: 'Validation failed for resource type testAssets',
       statusCode: 400,
-      data: [
-        {
-          argument: 'binary',
-          message: 'does not conform to the "binary" format',
-          name: 'format',
-          path: ['file'],
-          schema: { format: 'binary', type: 'string' },
-        },
-      ],
+      data: {
+        errors: [
+          {
+            argument: 'binary',
+            instance: '1',
+            message: 'does not conform to the "binary" format',
+            name: 'format',
+            path: ['file'],
+            property: 'instance.file',
+            schema: { format: 'binary', type: 'string' },
+            stack: 'instance.file does not conform to the "binary" format',
+          },
+        ],
+      },
     });
   });
 
@@ -2136,14 +2151,19 @@ describe('updateResource', () => {
       error: 'Bad Request',
       message: 'Validation failed for resource type testAssets',
       statusCode: 400,
-      data: [
-        {
-          argument: 'format',
-          message: 'is not referenced from the resource',
-          name: 'binary',
-          path: ['assets', 0],
-        },
-      ],
+      data: {
+        errors: [
+          {
+            argument: 'format',
+            instance: 0,
+            message: 'is not referenced from the resource',
+            name: 'binary',
+            path: ['assets', 0],
+            property: 'instance.assets[0]',
+            stack: 'instance.assets[0] is not referenced from the resource',
+          },
+        ],
+      },
     });
   });
 
@@ -2162,15 +2182,20 @@ describe('updateResource', () => {
       error: 'Bad Request',
       message: 'Validation failed for resource type testAssets',
       statusCode: 400,
-      data: [
-        {
-          argument: 'binary',
-          message: 'does not conform to the "binary" format',
-          name: 'format',
-          path: ['file'],
-          schema: { format: 'binary', type: 'string' },
-        },
-      ],
+      data: {
+        errors: [
+          {
+            argument: 'binary',
+            instance: '1',
+            message: 'does not conform to the "binary" format',
+            name: 'format',
+            path: ['file'],
+            property: 'instance.file',
+            schema: { format: 'binary', type: 'string' },
+            stack: 'instance.file does not conform to the "binary" format',
+          },
+        ],
+      },
     });
   });
 

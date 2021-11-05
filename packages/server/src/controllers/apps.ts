@@ -3,7 +3,6 @@ import { randomBytes } from 'crypto';
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockManifest } from '@appsemble/types';
 import {
-  AppsembleValidationError,
   BlockMap,
   normalize,
   parseBlockName,
@@ -42,6 +41,7 @@ import { blockVersionToJson, syncBlock } from '../utils/block';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
+import { handleValidatorResult } from '../utils/jsonschema';
 import { getAppFromRecord } from '../utils/model';
 
 async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
@@ -79,10 +79,6 @@ async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
 function handleAppValidationError(error: Error, app: Partial<App>): never {
   if (error instanceof UniqueConstraintError) {
     throw conflict(`Another app with path “@${app.OrganizationId}/${app.path}” already exists`);
-  }
-
-  if (error instanceof AppsembleValidationError) {
-    throw badRequest('Appsemble definition is invalid.', error.data || error.message);
   }
 
   if (error instanceof StyleValidationError) {
@@ -164,7 +160,10 @@ export async function createApp(ctx: Context): Promise<void> {
     }
 
     await checkRole(ctx, OrganizationId, Permission.CreateApps);
-    await validateAppDefinition(definition, getBlockVersions);
+    handleValidatorResult(
+      await validateAppDefinition(definition, getBlockVersions),
+      'App validation failed',
+    );
 
     for (let i = 1; i < 11; i += 1) {
       const p = i === 1 ? path : `${path}-${i}`;
@@ -480,7 +479,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (definition) {
       result.definition = definition;
-      await validateAppDefinition(definition, getBlockVersions);
+      handleValidatorResult(
+        await validateAppDefinition(definition, getBlockVersions),
+        'App validation failed',
+      );
     }
 
     if (path) {

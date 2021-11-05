@@ -36,7 +36,8 @@ export const ResourceDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   additionalProperties: false,
   description: 'A definition of how this resource works.',
-  minProperties: 1,
+  minProperties: 2,
+  required: ['schema'],
   properties: {
     expires: {
       type: 'string',

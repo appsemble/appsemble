@@ -955,10 +955,18 @@ pages:
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0': 'Unknown block type “@non/existent”',
+          errors: [
+            {
+              instance: '@non/existent',
+              message: 'is not a known block type',
+              path: ['pages', 0, 'blocks', 0, 'type'],
+              property: 'instance.pages[0].blocks[0].type',
+              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+            },
+          ],
         },
         error: 'Bad Request',
-        message: 'Appsemble definition is invalid.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });
@@ -992,10 +1000,18 @@ pages:
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
+          errors: [
+            {
+              instance: 'test',
+              message: 'is not a known block type',
+              path: ['pages', 0, 'blocks', 0, 'type'],
+              property: 'instance.pages[0].blocks[0].type',
+              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+            },
+          ],
         },
         error: 'Bad Request',
-        message: 'Appsemble definition is invalid.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });
@@ -1032,10 +1048,18 @@ pages:
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0.parameters.foo': 'is not of a type(s) number',
+          errors: [
+            {
+              instance: 'invalid',
+              message: 'is not of a type(s) number',
+              path: ['pages', 0, 'blocks', 0, 'parameters', 'foo'],
+              property: 'instance.pages[0].blocks[0].parameters.foo',
+              stack: 'instance.pages[0].blocks[0].parameters.foo is not of a type(s) number',
+            },
+          ],
         },
         error: 'Bad Request',
-        message: 'Appsemble definition is invalid.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });
@@ -1259,10 +1283,18 @@ pages:
         status: 400,
         data: {
           data: {
-            'pages.0.blocks.0': 'Unknown block type “@appsemble/upstream”',
+            errors: [
+              {
+                instance: 'upstream',
+                message: 'is not a known block type',
+                path: ['pages', 0, 'blocks', 0, 'type'],
+                property: 'instance.pages[0].blocks[0].type',
+                stack: 'instance.pages[0].blocks[0].type is not a known block type',
+              },
+            ],
           },
           error: 'Bad Request',
-          message: 'Appsemble definition is invalid.',
+          message: 'App validation failed',
           statusCode: 400,
         },
       });
@@ -1298,10 +1330,18 @@ pages:
         status: 400,
         data: {
           data: {
-            'pages.0.blocks.0': 'Unknown block type “@appsemble/upstream”',
+            errors: [
+              {
+                instance: 'upstream',
+                message: 'is not a known block type',
+                path: ['pages', 0, 'blocks', 0, 'type'],
+                property: 'instance.pages[0].blocks[0].type',
+                stack: 'instance.pages[0].blocks[0].type is not a known block type',
+              },
+            ],
           },
           error: 'Bad Request',
-          message: 'Appsemble definition is invalid.',
+          message: 'App validation failed',
           statusCode: 400,
         },
       });
@@ -3051,10 +3091,18 @@ describe('setAppBlockStyle', () => {
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
+          errors: [
+            {
+              instance: 'test',
+              message: 'is not a known block type',
+              path: ['pages', 0, 'blocks', 0, 'type'],
+              property: 'instance.pages[0].blocks[0].type',
+              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+            },
+          ],
         },
         error: 'Bad Request',
-        message: 'Appsemble definition is invalid.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });
