@@ -1,8 +1,8 @@
 import { MarkdownContent, Title, useMeta } from '@appsemble/react-components';
-import jsYaml from 'js-yaml';
 import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
+import { stringify } from 'yaml';
 
 import { useApp } from '../../..';
 import { CodeBlock } from '../../../../../../components/CodeBlock';
@@ -23,7 +23,7 @@ export function ResourceDefinitionDetailsPage(): ReactElement {
   useMeta(formatMessage(messages.pageTitle));
 
   const resource = app.definition.resources?.[resourceName];
-  const yaml = useMemo(() => jsYaml.dump(resource), [resource]);
+  const yaml = useMemo(() => stringify(resource), [resource]);
 
   return (
     <>

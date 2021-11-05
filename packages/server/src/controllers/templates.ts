@@ -2,10 +2,10 @@ import { randomBytes } from 'crypto';
 
 import { normalize, Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
-import { dump } from 'js-yaml';
 import { Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
+import { stringify } from 'yaml';
 
 import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
 import { checkRole } from '../utils/checkRole';
@@ -103,7 +103,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       /**
        * XXX: Replace this with the template’s YAML but with the edited name and description
        */
-      yaml: dump(result.definition),
+      yaml: stringify(result.definition),
     });
     record.AppSnapshots = [snapshot];
     if (template.AppBlockStyles.length) {

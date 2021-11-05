@@ -4,8 +4,8 @@ import { URL, URLSearchParams } from 'url';
 import * as types from '@appsemble/types';
 import { forbidden } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
-import yaml from 'js-yaml';
 import { omit } from 'lodash';
+import { stringify } from 'yaml';
 
 import * as models from '../models';
 import { argv } from './argv';
@@ -67,7 +67,7 @@ export function getAppFromRecord(
     definition,
     yaml:
       record.AppSnapshots?.[0]?.yaml ??
-      (!omittedValues.includes('yaml') && yaml.dump(record.definition)),
+      (!omittedValues.includes('yaml') && stringify(record.definition)),
     showAppsembleLogin: record.showAppsembleLogin ?? false,
     showAppsembleOAuth2Login: record.showAppsembleOAuth2Login ?? true,
     rating:

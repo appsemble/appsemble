@@ -1,5 +1,4 @@
 import { has } from '@appsemble/utils';
-import yaml from 'js-yaml';
 import { InlineCode, Link, Parent } from 'mdast';
 import rehypeDocument from 'rehype-document';
 import rehypeStringify from 'rehype-stringify';
@@ -9,6 +8,7 @@ import remarkRehype from 'remark-rehype';
 import remarkStringify from 'remark-stringify';
 import unified from 'unified';
 import visit from 'unist-util-visit';
+import { parse } from 'yaml';
 
 const remark = unified()
   .use(remarkParse)
@@ -61,7 +61,7 @@ export async function renderEmail(
 
   if (!sub) {
     visit<YamlNode>(mdast, 'yaml', (node, index, parent: Parent) => {
-      ({ subject } = yaml.load(node.value) as Email);
+      ({ subject } = parse(node.value) as Email);
       parent.children.splice(index, 1);
     });
   }

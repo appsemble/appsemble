@@ -36,7 +36,6 @@
     "cli-highlight": "^2.0.0",
     "fast-glob": "^3.0.0",
     "form-data": "^4.0.0",
-    "js-yaml": "^4.0.0",
     "koa": "^2.0.0",
     "koa-compose": "^4.0.0",
     "logform": "^2.0.0",
@@ -45,11 +44,11 @@
     "sort-keys": "^4.0.0",
     "type-fest": "^2.0.0",
     "winston": "^3.0.0",
+    "yaml": "^2.0.0-8",
     "yargs": "^17.0.0"
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^7.0.0",
-    "@types/js-yaml": "^4.0.0",
     "@types/normalize-path": "^3.0.0",
     "@types/parse-json": "^4.0.0",
     "axios-mock-adapter": "^1.0.0",

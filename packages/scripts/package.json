@@ -30,7 +30,6 @@
     "@appsemble/webpack-core": "0.19.4",
     "@babel/core": "^7.0.0",
     "@types/fs-extra": "^9.0.0",
-    "@types/js-yaml": "^4.0.0",
     "@types/mdast": "^3.0.0",
     "@types/normalize-path": "^3.0.0",
     "@types/semver": "^7.0.0",
@@ -40,7 +39,6 @@
     "date-fns": "^2.0.0",
     "fs-extra": "^10.0.0",
     "globby": "^11.0.0",
-    "js-yaml": "^4.0.0",
     "lodash": "^4.0.0",
     "mdast-util-from-markdown": "^0.8.0",
     "mdast-util-to-markdown": "^0.6.0",
@@ -51,6 +49,7 @@
     "type-fest": "^2.0.0",
     "unist-util-visit": "^2.0.0",
     "webpack": "^5.0.0",
+    "yaml": "^2.0.0-8",
     "yargs": "^17.0.0"
   },
   "engines": {
