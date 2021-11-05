@@ -5,7 +5,7 @@ import { conflict, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
-import { stringify } from 'yaml';
+import { parseDocument } from 'yaml';
 
 import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
 import { checkRole } from '../utils/checkRole';
@@ -47,6 +47,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       { model: Resource, where: { clonable: true }, required: false },
       { model: AppMessages, required: false },
       { model: AppBlockStyle, required: false },
+      { model: AppSnapshot, limit: 1, order: [['created', 'desc']] },
     ],
   });
 
@@ -68,7 +69,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       definition: {
         ...template.definition,
         description,
-        name: name || template,
+        name: name || template.definition.name,
       },
       private: Boolean(isPrivate),
       vapidPublicKey: keys.publicKey,
@@ -97,13 +98,13 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     }
 
     const record = await App.create(result, { include: [Resource, AppMessages] });
+    const doc = parseDocument(template.AppSnapshots[0].yaml);
+    doc.setIn(['description'], result.definition.description);
+    doc.setIn(['name'], result.definition.name);
     const snapshot = await AppSnapshot.create({
       AppId: record.id,
       UserId: user.id,
-      /**
-       * XXX: Replace this with the template’s YAML but with the edited name and description
-       */
-      yaml: stringify(result.definition),
+      yaml: String(doc),
     });
     record.AppSnapshots = [snapshot];
     if (template.AppBlockStyles.length) {
