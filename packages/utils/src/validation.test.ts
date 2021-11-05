@@ -1,5 +1,3 @@
-// Import { AppDefinition } from '@appsemble/types';
-
 import { AppDefinition, BasicPageDefinition } from '@appsemble/types';
 import { ValidationError } from 'jsonschema';
 
