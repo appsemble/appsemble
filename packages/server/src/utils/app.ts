@@ -7,7 +7,6 @@ import {
   has,
   objectCache,
   RemapperContext,
-  validateLanguage,
 } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
 import memoizeIntlConstructor from 'intl-format-cache';
@@ -163,20 +162,18 @@ export function parseLanguage(input: string[] | string): {
   baseLanguage: string;
   query: IncludeOptions[];
 } {
-  const language = input && Array.isArray(input) ? input[0] : input;
+  const language = Array.isArray(input) ? input[0] : input;
   if (!language) {
     return { language: undefined, baseLanguage: undefined, query: [] };
   }
 
-  try {
-    validateLanguage(language as string);
-  } catch {
+  if (!tags.check(language)) {
     throw badRequest(`Language “${language}” is invalid`);
   }
 
-  const lang = (language as string)?.toLowerCase();
+  const lang = language?.toLowerCase();
   const baseLanguage = String(
-    tags(language as string)
+    tags(language)
       .subtags()
       .find((sub) => sub.type() === 'language'),
   ).toLowerCase();
