@@ -50,8 +50,8 @@
     "@types/language-tags": "^1.0.0",
     "@types/lcm": "^0.0.0",
     "bulma": "0.9.3",
-    "js-yaml": "^4.0.0",
-    "koas-core": "^0.5.0"
+    "koas-core": "^0.5.0",
+    "yaml": "^2.0.0-8"
   },
   "engines": {
     "node": ">=12.0.0"

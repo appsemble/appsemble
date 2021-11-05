@@ -14,7 +14,6 @@ import {
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
-import jsYaml from 'js-yaml';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
 import { isEqual, uniqWith } from 'lodash';
@@ -22,6 +21,7 @@ import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
+import { parse, stringify } from 'yaml';
 
 import {
   App,
@@ -157,7 +157,7 @@ export async function createApp(ctx: Context): Promise<void> {
     if (yaml) {
       try {
         // The YAML should be valid YAML.
-        jsYaml.load(yaml);
+        parse(yaml);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -184,7 +184,7 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await transactional(async (transaction) => {
         record = await App.create(result, { transaction });
-        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.dump(definition);
+        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : stringify(definition);
         record.AppSnapshots = [
           await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
         ];
@@ -539,7 +539,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        appFromYaml = jsYaml.load(yaml.contents || yaml);
+        appFromYaml = parse(String(yaml.contents) || yaml);
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -573,7 +573,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
       if (definition) {
-        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.dump(definition);
+        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : stringify(definition);
         const snapshot = await AppSnapshot.create(
           { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
           { transaction },

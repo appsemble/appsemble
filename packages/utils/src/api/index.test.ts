@@ -1,8 +1,8 @@
 import { promises as fs, readdirSync } from 'fs';
 import { join } from 'path';
 
-import { load } from 'js-yaml';
 import { createValidator } from 'koas-core/lib/validation';
+import { parse } from 'yaml';
 
 import { api, schemas } from '.';
 
@@ -175,7 +175,7 @@ describe('schemas', () => {
               `^# yaml-language-server: \\$schema=https://appsemble.app/api.json#/components/schemas/${name}\n`,
             ),
           );
-          const instance = load(buffer);
+          const instance = parse(buffer);
           const result = validator.validate(instance, schema, { base: '#' });
           expect(result.valid).toBe(true);
         });
@@ -186,7 +186,7 @@ describe('schemas', () => {
 
         it.each(readdirSync(invalid))('%s', async (filename) => {
           const buffer = await fs.readFile(join(invalid, filename), 'utf-8');
-          const instance = load(buffer);
+          const instance = parse(buffer);
           const result = validator.validate(instance, schema, { base: '#' });
           expect(result.valid).toBe(false);
         });

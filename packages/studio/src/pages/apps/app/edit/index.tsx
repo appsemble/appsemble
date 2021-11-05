@@ -10,12 +10,12 @@ import { App, AppDefinition, BlockManifest, SSLStatusMap } from '@appsemble/type
 import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
-import { dump, load } from 'js-yaml';
 import { Validator } from 'jsonschema';
 import { editor } from 'monaco-editor';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { parse, stringify } from 'yaml';
 
 import { useApp } from '..';
 import { MonacoEditor } from '../../../../components/MonacoEditor';
@@ -97,7 +97,7 @@ export default function EditPage(): ReactElement {
     let { yaml: yamlDefinition } = app;
 
     if (!yamlDefinition) {
-      yamlDefinition = dump(definition);
+      yamlDefinition = stringify(definition);
       push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
     }
 
@@ -109,7 +109,7 @@ export default function EditPage(): ReactElement {
     let definition: AppDefinition;
     // Attempt to parse the YAML into a JSON object
     try {
-      definition = load(appDefinition) as AppDefinition;
+      definition = parse(appDefinition) as AppDefinition;
     } catch {
       push(formatMessage(messages.invalidYaml));
       setValid(false);
@@ -196,7 +196,7 @@ export default function EditPage(): ReactElement {
     }
 
     const { id } = params;
-    const definition = load(appDefinition) as AppDefinition;
+    const definition = parse(appDefinition) as AppDefinition;
 
     try {
       const formData = new FormData();
@@ -237,8 +237,8 @@ export default function EditPage(): ReactElement {
 
   const onUpload = useCallback(async () => {
     if (valid) {
-      const newApp = load(appDefinition) as AppDefinition;
-      const originalApp = load(initialDefinition) as AppDefinition;
+      const newApp = parse(appDefinition) as AppDefinition;
+      const originalApp = parse(initialDefinition) as AppDefinition;
 
       if (!equal(newApp.resources, originalApp.resources)) {
         promptUpdateApp();

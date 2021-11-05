@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
-import { dump } from 'js-yaml';
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
+import { stringify } from 'yaml';
 
 export const key = '0.18.1';
 
@@ -48,7 +48,7 @@ export async function up(db: Sequelize): Promise<void> {
   logger.info('Migrating yaml definitions to AppSnapshots');
   await Promise.all(
     apps.map((app) => {
-      const yaml = app.yaml ?? dump(app.definition);
+      const yaml = app.yaml ?? stringify(app.definition);
       return db.query(
         'INSERT INTO "AppSnapshot" (id, yaml, "AppId", created) VALUES (DEFAULT, ?, ?, NOW())',
         {

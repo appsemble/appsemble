@@ -6,13 +6,13 @@ import { AppsembleMessages } from '@appsemble/types';
 import { formatISO } from 'date-fns';
 import { ensureFile, remove } from 'fs-extra';
 import globby from 'globby';
-import { dump } from 'js-yaml';
 import { capitalize, mapValues } from 'lodash';
 import { BlockContent, ListItem } from 'mdast';
 import fromMarkdown from 'mdast-util-from-markdown';
 import toString from 'mdast-util-to-string';
 import * as semver from 'semver';
 import { PackageJson } from 'type-fest';
+import { stringify } from 'yaml';
 import { Argv } from 'yargs';
 
 import {
@@ -200,7 +200,7 @@ async function updateChangelog(changesByCategory: Changes, version: string): Pro
 
 async function updateHelmChart(changes: Changes, version: string): Promise<void> {
   const [chart] = await readData<any>('config/charts/appsemble/Chart.yaml');
-  const changelog = dump(
+  const changelog = stringify(
     Object.entries(changes).flatMap(([kind, entries]) =>
       entries.map((entry: ListItem) => ({
         kind,
