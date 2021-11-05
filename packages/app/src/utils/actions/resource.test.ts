@@ -8,7 +8,7 @@ import { apiUrl } from '../settings';
 const app: AppDefinition = {
   defaultPage: '',
   resources: {
-    pet: {},
+    pet: { schema: { type: 'object' } },
   },
   pages: [],
 };
