@@ -11,7 +11,7 @@ security:
       description: A user who keeps their own notes.
 
 roles:
-  - Foo
+  - User
 
 resources:
   note:
