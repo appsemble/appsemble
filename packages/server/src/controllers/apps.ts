@@ -128,11 +128,11 @@ export async function createApp(ctx: Context): Promise<void> {
     result = {
       definition,
       OrganizationId,
-      coreStyle: validateStyle(coreStyle?.contents),
+      coreStyle: validateStyle(coreStyle),
       googleAnalyticsID,
       longDescription,
       iconBackground: iconBackground || '#ffffff',
-      sharedStyle: validateStyle(sharedStyle?.contents),
+      sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
       private: Boolean(isPrivate),
       template: Boolean(template),
@@ -183,7 +183,7 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await transactional(async (transaction) => {
         record = await App.create(result, { transaction });
-        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : stringify(definition);
+        const newYaml = yaml || stringify(definition);
         record.AppSnapshots = [
           await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
         ];
@@ -518,11 +518,11 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (coreStyle) {
-      result.coreStyle = validateStyle(coreStyle.contents);
+      result.coreStyle = validateStyle(coreStyle);
     }
 
     if (sharedStyle) {
-      result.sharedStyle = validateStyle(sharedStyle.contents);
+      result.sharedStyle = validateStyle(sharedStyle);
     }
 
     if (icon) {
@@ -541,7 +541,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        appFromYaml = parse(String(yaml.contents) || yaml, { maxAliasCount: 10_000 });
+        appFromYaml = parse(yaml, { maxAliasCount: 10_000 });
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -575,7 +575,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
       if (definition) {
-        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : stringify(definition);
+        const newYaml = yaml || stringify(definition);
         const snapshot = await AppSnapshot.create(
           { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
           { transaction },
@@ -950,7 +950,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
       body: { style },
     },
   } = ctx;
-  const css = String(style.contents).trim();
+  const css = String(style).trim();
 
   try {
     const app = await App.findByPk(appId);

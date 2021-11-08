@@ -201,11 +201,9 @@ export default function EditPage(): ReactElement {
     try {
       const formData = new FormData();
       formData.append('definition', JSON.stringify(definition));
-      // The MIME type for YAML is not officially registered in IANA.
-      // For the time being, x-yaml is used. See also: http://www.iana.org/assignments/media-types/media-types.xhtml
-      formData.append('yaml', new Blob([appDefinition], { type: 'text/x-yaml' }));
-      formData.append('coreStyle', new Blob([coreStyle], { type: 'text/css' }));
-      formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
+      formData.append('yaml', appDefinition);
+      formData.append('coreStyle', coreStyle);
+      formData.append('sharedStyle', sharedStyle);
 
       const { data } = await axios.patch<App>(`/api/apps/${id}`, formData);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });

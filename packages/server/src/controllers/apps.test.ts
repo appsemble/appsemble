@@ -4,7 +4,6 @@ import { Clock, install } from '@sinonjs/fake-timers';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
-import FormData from 'form-data';
 
 import {
   App,
@@ -601,12 +600,10 @@ pages:
 
   it('should not allow an upload without an app when creating an app', async () => {
     authorizeStudio();
-    const form = new FormData();
-    form.append('coreStyle', Buffer.from('body { color: red; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-    const response = await request.post('/api/apps', form);
+    const response = await request.post(
+      '/api/apps',
+      createFormData({ coreStyle: 'body { color: red; }' }),
+    );
 
     expect(response).toMatchObject({
       status: 400,
@@ -615,7 +612,7 @@ pages:
           {
             argument: 'OrganizationId',
             instance: {
-              coreStyle: '',
+              coreStyle: 'body { color: red; }',
             },
             message: 'requires property "OrganizationId"',
             name: 'required',
@@ -628,7 +625,6 @@ pages:
                 },
                 coreStyle: {
                   description: 'The custom style to apply to the core app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 definition: {
@@ -671,7 +667,6 @@ pages:
                 },
                 sharedStyle: {
                   description: 'The custom style to apply to all parts of app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 template: {
@@ -679,7 +674,6 @@ pages:
                 },
                 yaml: {
                   description: 'The original YAML definition used to define the app.',
-                  format: 'binary',
                   type: 'string',
                 },
               },
@@ -691,7 +685,7 @@ pages:
           {
             argument: 'definition',
             instance: {
-              coreStyle: '',
+              coreStyle: 'body { color: red; }',
             },
             message: 'requires property "definition"',
             name: 'required',
@@ -704,7 +698,6 @@ pages:
                 },
                 coreStyle: {
                   description: 'The custom style to apply to the core app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 definition: {
@@ -747,7 +740,6 @@ pages:
                 },
                 sharedStyle: {
                   description: 'The custom style to apply to all parts of app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 template: {
@@ -755,7 +747,6 @@ pages:
                 },
                 yaml: {
                   description: 'The original YAML definition used to define the app.',
-                  format: 'binary',
                   type: 'string',
                 },
               },
@@ -827,7 +818,6 @@ pages:
                 },
                 coreStyle: {
                   description: 'The custom style to apply to the core app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 definition: {
@@ -870,7 +860,6 @@ pages:
                 },
                 sharedStyle: {
                   description: 'The custom style to apply to all parts of app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 template: {
@@ -878,7 +867,6 @@ pages:
                 },
                 yaml: {
                   description: 'The original YAML definition used to define the app.',
-                  format: 'binary',
                   type: 'string',
                 },
               },
@@ -1168,14 +1156,8 @@ pages:
           },
         ],
       },
-    });
-    form.append('coreStyle', Buffer.from('body { color: blue; }'), {
-      contentType: 'text/css',
-      filename: 'test.css',
-    });
-    form.append('sharedStyle', Buffer.from(':root { --primary-color: purple; }'), {
-      contentType: 'text/css',
-      filename: 'test.css',
+      coreStyle: 'body { color: blue; }',
+      sharedStyle: ':root { --primary-color: purple; }',
     });
     authorizeStudio();
     const response = await request.post<AppType>('/api/apps', form);
@@ -1201,10 +1183,7 @@ pages:
           },
         ],
       },
-    });
-    form.append('coreStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'test.css',
+      coreStyle: 'this is invalid css',
     });
     authorizeStudio();
     const response = await request.post('/api/apps', form);
@@ -1226,10 +1205,7 @@ pages:
           },
         ],
       },
-    });
-    form.append('sharedStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'test.css',
+      sharedStyle: 'this is invalid css',
     });
     authorizeStudio();
     const response = await request.post('/api/apps', form);
@@ -1370,13 +1346,9 @@ pages:
         .reply(({ params: { filename } }) => {
           switch (filename) {
             case 'a.js':
-              return [
-                200,
-                Buffer.from('console.log("a");\n'),
-                { 'content-type': 'application/javascript' },
-              ];
+              return [200, 'console.log("a");\n', { 'content-type': 'application/javascript' }];
             case 'b.css':
-              return [200, Buffer.from('b{background:blue;}\n'), { 'content-type': 'text/css' }];
+              return [200, 'b{background:blue;}\n', { 'content-type': 'text/css' }];
             default:
               return [404];
           }
@@ -1816,7 +1788,7 @@ pages:
             },
           ],
         },
-        yaml: Buffer.from('name: foo\nname: bar'),
+        yaml: 'name: foo\nname: bar',
       }),
     );
 
@@ -1853,14 +1825,14 @@ pages:
             },
           ],
         },
-        yaml: Buffer.from(`name: Barfoo
+        yaml: `name: Barfoo
 defaultPage: Test Page
 pages:
 - name: Test page
   blocks:
     - type: test
       version: 0.0.0
-`),
+`,
       }),
     );
 
@@ -1897,7 +1869,7 @@ pages:
     const response = await request.patch(
       `/api/apps/${app.id}`,
       createFormData({
-        yaml: Buffer.from(yaml),
+        yaml,
         definition: {
           name: 'Foobar',
           defaultPage: app.definition.defaultPage,
@@ -2005,7 +1977,7 @@ pages:
       - type: test
         version: 0.0.0
     name: *titlePage`;
-    const buffer = Buffer.from(yaml);
+    const buffer = yaml;
 
     authorizeStudio();
     const response = await request.patch<AppType>(
@@ -2025,7 +1997,7 @@ pages:
       }),
     );
 
-    const responseBuffer = Buffer.from(response.data.yaml);
+    const responseBuffer = response.data.yaml;
     expect(responseBuffer).toStrictEqual(buffer);
   });
 
@@ -2117,14 +2089,8 @@ pages:
           },
         ],
       },
-    });
-    form.append('coreStyle', Buffer.from('body { color: yellow; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-    form.append('sharedStyle', Buffer.from('body { color: blue; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
+      coreStyle: 'body { color: yellow; }',
+      sharedStyle: 'body { color: blue; }',
     });
     authorizeStudio();
     const response = await request.patch<AppType>(`/api/apps/${app.id}`, form);
@@ -2161,10 +2127,7 @@ pages:
           },
         ],
       },
-    });
-    formA.append('coreStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'style.css',
+      coreStyle: 'this is invalid css',
     });
     authorizeStudio();
     const responseA = await request.patch(`/api/apps/${app.id}`, formA);
@@ -2182,7 +2145,7 @@ pages:
         ],
       },
     });
-    formB.append('coreStyle', Buffer.from('.foo { margin: 0 auto; }'), {
+    formB.append('coreStyle', '.foo { margin: 0 auto; }', {
       contentType: 'application/json',
       filename: 'style.json',
     });
@@ -2214,10 +2177,7 @@ pages:
           },
         ],
       },
-    });
-    formA.append('sharedStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'style.css',
+      sharedStyle: 'this is invalid css',
     });
     authorizeStudio();
     const responseA = await request.patch(`/api/apps/${app.id}`, formA);
@@ -2234,10 +2194,7 @@ pages:
           },
         ],
       },
-    });
-    formB.append('sharedStyle', Buffer.from('.foo { margin: 0 auto; }'), {
-      contentType: 'application/json',
-      filename: 'style.json',
+      sharedStyle: '.foo { margin: 0 auto; }',
     });
     authorizeStudio();
     const responseB = await request.patch(`/api/apps/${app.id}`, formB);
@@ -2815,13 +2772,10 @@ describe('setAppBlockStyle', () => {
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append('style', Buffer.from('body { color: yellow; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form);
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
+      style: 'body { color: yellow; }',
+    });
 
     const style = await request.get(`/api/apps/${id}/style/block/@appsemble/testblock`);
 
@@ -2848,25 +2802,19 @@ describe('setAppBlockStyle', () => {
       { raw: true },
     );
 
-    const formA = new FormData();
-    formA.append('style', Buffer.from('body { color: blue; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const responseA = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, formA);
+    const responseA = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
+      style: 'body { color: blue; }',
+    });
     expect(responseA).toMatchObject({
       status: 204,
       data: '',
     });
 
-    const formB = new FormData();
-    formB.append('style', Buffer.from(' '), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const responseB = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, formB);
+    const responseB = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
+      style: ' ',
+    });
 
     expect(responseB).toMatchObject({
       status: 204,
@@ -2903,14 +2851,10 @@ describe('setAppBlockStyle', () => {
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append('style', Buffer.from('body { color: yellow; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-
     authorizeStudio();
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form);
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
+      style: 'body { color: yellow; }',
+    });
 
     expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
   });
@@ -2932,10 +2876,10 @@ describe('setAppBlockStyle', () => {
       OrganizationId: organization.id,
     });
 
-    const form = new FormData();
-    form.append('style', Buffer.from('invalidCss'));
     authorizeStudio();
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/styledblock`, form);
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/styledblock`, {
+      style: 'invalidCss',
+    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -2955,13 +2899,10 @@ describe('setAppBlockStyle', () => {
       version: '0.0.0',
     });
 
-    const form = new FormData();
-    form.append('style', Buffer.from('body { color: red; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const response = await request.post('/api/apps/0/style/block/@appsemble/block', form);
+    const response = await request.post('/api/apps/0/style/block/@appsemble/block', {
+      style: 'body { color: red; }',
+    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -2982,13 +2923,10 @@ describe('setAppBlockStyle', () => {
       OrganizationId: organization.id,
     });
 
-    const form = new FormData();
-    form.append('style', Buffer.from('body { color: red; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/doesntexist`, form);
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/doesntexist`, {
+      style: 'body { color: red; }',
+    });
 
     expect(response).toMatchObject({
       status: 404,
