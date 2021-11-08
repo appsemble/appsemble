@@ -227,7 +227,7 @@ export async function traverseAppDirectory(
             throw new AppsembleError(`Expected ${themeDir} to be a directory`);
           }
           const css = await processCss(join(themeDir, 'index.css'));
-          formData.append(`${name}Style`, Buffer.from(css), `${name}.css`);
+          formData.append(`${name}Style`, css);
         });
 
       default:

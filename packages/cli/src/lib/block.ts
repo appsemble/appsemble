@@ -261,14 +261,13 @@ export async function uploadAppBlockTheme(
 ): Promise<void> {
   logger.info(`Upload ${organization}/${block} stylesheet for app ${appId}`);
 
-  const css = await processCss(filePath);
-  const formData = new FormData();
-  formData.append('force', String(force));
-  formData.append('style', Buffer.from(css), 'style.css');
+  const style = await processCss(filePath);
 
-  await axios.post(`/api/apps/${appId}/style/block/${organization}/${block}`, formData, {
-    baseURL: remote,
-  });
+  await axios.post(
+    `/api/apps/${appId}/style/block/${organization}/${block}`,
+    { force, style },
+    { baseURL: remote },
+  );
 
   logger.info(`Upload of ${organization}/${block} stylesheet successful! 🎉`);
 }
