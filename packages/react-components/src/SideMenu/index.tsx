@@ -10,12 +10,14 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import { useToggle } from '..';
+import { useClickOutside } from '../useClickOutside';
 import { useEventListener } from '../useEventListener';
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -52,6 +54,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
   const { disable, enabled, toggle } = useToggle();
   const [menu, setMenu] = useState<ReactElement>(null);
   const history = useHistory();
+  const ref = useRef<HTMLDivElement>();
 
   useEffect(() => history.listen(disable), [disable, history]);
 
@@ -68,6 +71,8 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
     ),
   );
 
+  useClickOutside(ref, disable);
+
   return (
     <Context.Provider value={useMemo(() => [enabled, toggle, setMenu], [enabled, toggle])}>
       <div className={styles.sideMenuWrapper}>
@@ -76,7 +81,10 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
           onClick={disable}
           role="presentation"
         />
-        <aside className={classNames(`menu ${styles.sideMenu}`, { [styles.open]: enabled })}>
+        <aside
+          className={classNames(`menu ${styles.sideMenu}`, { [styles.open]: enabled })}
+          ref={ref}
+        >
           {base}
           {menu}
           {bottom}
