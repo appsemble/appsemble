@@ -1,1 +1,1 @@
-Fix side menu not closing when clicking on profile dropdown
+The side menu is now closed if the user clicks anywhere outside the menu.
