@@ -153,7 +153,7 @@ export async function createApp(ctx: Context): Promise<void> {
     if (yaml) {
       try {
         // The YAML should be valid YAML.
-        parse(yaml);
+        parse(yaml, { maxAliasCount: 10_000 });
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }
@@ -541,7 +541,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        appFromYaml = parse(String(yaml.contents) || yaml);
+        appFromYaml = parse(String(yaml.contents) || yaml, { maxAliasCount: 10_000 });
       } catch {
         throw badRequest('Provided YAML was invalid.');
       }

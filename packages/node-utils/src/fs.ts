@@ -45,7 +45,10 @@ export async function readData<R>(path: string): Promise<[R, string]> {
     throw new AppsembleError(`Unknown file extension: ${path}`);
   }
   try {
-    return [ext === '.json' ? parseJson(content) : (parse(content) as R), content];
+    return [
+      ext === '.json' ? parseJson(content) : (parse(content, { maxAliasCount: 10_000 }) as R),
+      content,
+    ];
   } catch (error: unknown) {
     throw new AppsembleError(`Error parsing ${path}\n${(error as Error).message}`);
   }
