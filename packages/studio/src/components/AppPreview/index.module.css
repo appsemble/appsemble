@@ -1,0 +1,22 @@
+.root {
+  background-color: hsl(0deg 0% 7%);
+  border-radius: 22px;
+  box-sizing: border-box;
+  flex: 0 0 40vw;
+}
+
+.appFrame {
+  background-color: hsl(0deg 0% 100%);
+  border: none;
+  flex: 1;
+}
+
+.sslLoader {
+  height: initial;
+  text-align: center;
+
+  &::after {
+    height: 6em;
+    width: 6em;
+  }
+}
