@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.4
-appVersion: 0.19.4
+version: 0.19.5
+appVersion: 0.19.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,9 +23,18 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    - kind: changed
-      description: 'App: Rename subPages for flow and tabs pages to steps and tabs respectively.'
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Cli: Enable strict subcommand parsing."
+    - kind: added
+      description: "Cli: Pretty print app validation errors."
+    - kind: added
+      description: "Sdk: Use generics to configure the event listener data type."
+    - kind: added
+      description: "Server: Preserve formatting when cloning apps."
+    - kind: fixed
+      description: "React-components: The side menu is now closed if the user clicks
+        anywhere outside the menu."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
