@@ -1,5 +1,8 @@
 .gravatar {
+  height: 100% !important;
   max-height: unset !important;
+  object-fit: contain;
+  overflow: hidden;
 }
 
 .gravatarFallback {
