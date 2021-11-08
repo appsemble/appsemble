@@ -558,13 +558,16 @@ describe('getBlockVersion', () => {
     await authorizeClientCredentials('blocks:write');
     const { data: created } = await request.post<BlockManifest>('/api/blocks', formData);
 
-    const { data: retrieved, status } = await request.get<BlockManifest>(
-      '/api/blocks/@xkcd/standing/versions/1.32.9',
-    );
+    const {
+      data: retrieved,
+      headers,
+      status,
+    } = await request.get<BlockManifest>('/api/blocks/@xkcd/standing/versions/1.32.9');
 
     expect(retrieved.iconUrl).toBeNull();
     expect(retrieved).toStrictEqual(created);
     expect(status).toBe(200);
+    expect(headers['cache-control']).toBe('max-age=31536000,immutable');
   });
 
   it('should use the block’s icon in the iconUrl if the block has one', async () => {
