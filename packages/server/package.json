@@ -142,7 +142,8 @@
     "axios-test-instance": "^5.0.0",
     "express-to-koa": "^2.0.0",
     "jest-image-snapshot": "^4.0.0",
-    "memfs": "^3.0.0"
+    "memfs": "^3.0.0",
+    "strip-indent": "^3.0.0"
   },
   "peerDependencies": {
     "webpack": "^5"
