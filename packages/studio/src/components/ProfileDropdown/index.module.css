@@ -1,7 +1,7 @@
 .gravatar {
   height: 100% !important;
   max-height: unset !important;
-  object-fit: contain;
+  object-fit: cover;
   overflow: hidden;
 }
 
