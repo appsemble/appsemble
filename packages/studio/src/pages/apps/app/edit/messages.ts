@@ -22,9 +22,5 @@ export const messages = defineMessages({
   viewLive: 'View live',
   coreStyle: 'Core style',
   sharedStyle: 'Shared style',
-  iframeTitle: 'App preview',
   cancel: 'Cancel',
-  sslGenerating: 'An SSL certificate is being generated to secure your users.',
-  sslInfo:
-    'This can take up to 24 hours, but it’s usually faster. If it takes longer, please contact support.',
 });
