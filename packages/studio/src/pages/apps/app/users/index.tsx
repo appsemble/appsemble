@@ -16,7 +16,7 @@ export interface Member {
   properties?: Record<string, string>;
 }
 
-export function RolesPage(): ReactElement {
+export function UsersPage(): ReactElement {
   useMeta(messages.title);
   const { lang } = useParams<{ lang: string }>();
   const { app } = useApp();
@@ -29,7 +29,7 @@ export function RolesPage(): ReactElement {
   return (
     <>
       <Title>
-        <FormattedMessage {...messages.members} />
+        <FormattedMessage {...messages.users} />
       </Title>
       {app.definition.security.default.policy === 'organization' && (
         <span>
@@ -54,7 +54,7 @@ export function RolesPage(): ReactElement {
             <thead>
               <tr>
                 <th>
-                  <FormattedMessage {...messages.member} />
+                  <FormattedMessage {...messages.user} />
                 </th>
                 <th>
                   <FormattedMessage {...messages.properties} />
