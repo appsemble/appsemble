@@ -20,7 +20,7 @@ import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
-import { parse, stringify } from 'yaml';
+import { parse } from 'yaml';
 
 import {
   App,
@@ -98,11 +98,11 @@ function handleAppValidationError(error: Error, app: Partial<App>): never {
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
+    openApi,
     request: {
       body: {
         OrganizationId,
         coreStyle,
-        definition,
         domain,
         googleAnalyticsID,
         icon,
@@ -120,8 +120,22 @@ export async function createApp(ctx: Context): Promise<void> {
   } = ctx;
 
   let result: Partial<App>;
+  await checkRole(ctx, OrganizationId, Permission.CreateApps);
 
   try {
+    const definition = parse(yaml, { maxAliasCount: 10_000 });
+
+    handleValidatorResult(
+      openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+        throw: false,
+      }),
+      'App validation failed',
+    );
+    handleValidatorResult(
+      await validateAppDefinition(definition, getBlockVersions),
+      'App validation failed',
+    );
+
     const path = normalize(definition.name);
     const keys = generateVAPIDKeys();
 
@@ -150,21 +164,6 @@ export async function createApp(ctx: Context): Promise<void> {
       result.maskableIcon = maskableIcon.contents;
     }
 
-    if (yaml) {
-      try {
-        // The YAML should be valid YAML.
-        parse(yaml, { maxAliasCount: 10_000 });
-      } catch {
-        throw badRequest('Provided YAML was invalid.');
-      }
-    }
-
-    await checkRole(ctx, OrganizationId, Permission.CreateApps);
-    handleValidatorResult(
-      await validateAppDefinition(definition, getBlockVersions),
-      'App validation failed',
-    );
-
     for (let i = 1; i < 11; i += 1) {
       const p = i === 1 ? path : `${path}-${i}`;
       const count = await App.count({ where: { path: p } });
@@ -183,9 +182,8 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await transactional(async (transaction) => {
         record = await App.create(result, { transaction });
-        const newYaml = yaml || stringify(definition);
         record.AppSnapshots = [
-          await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
+          await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
         ];
         logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
         record.AppScreenshots = screenshots?.length
@@ -424,11 +422,11 @@ export async function queryMyApps(ctx: Context): Promise<void> {
 
 export async function patchApp(ctx: Context): Promise<void> {
   const {
+    openApi,
     pathParams: { appId },
     request: {
       body: {
         coreStyle,
-        definition,
         domain,
         googleAnalyticsID,
         icon,
@@ -474,15 +472,25 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, dbApp);
 
+  const checkPermissions: Permission[] = [];
+
   try {
     result = {};
 
-    if (definition) {
-      result.definition = definition;
+    if (yaml) {
+      checkPermissions.push(Permission.EditApps);
+      const definition = parse(yaml, { maxAliasCount: 10_000 });
+      handleValidatorResult(
+        openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+          throw: false,
+        }),
+        'App validation failed',
+      );
       handleValidatorResult(
         await validateAppDefinition(definition, getBlockVersions),
         'App validation failed',
       );
+      result.definition = definition;
     }
 
     if (path) {
@@ -537,23 +545,6 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.iconBackground = iconBackground;
     }
 
-    if (yaml) {
-      let appFromYaml;
-      try {
-        // The YAML should be valid YAML.
-        appFromYaml = parse(yaml, { maxAliasCount: 10_000 });
-      } catch {
-        throw badRequest('Provided YAML was invalid.');
-      }
-
-      // The YAML should be the same when converted to JSON.
-      if (!isEqual(appFromYaml, definition)) {
-        throw badRequest('Provided YAML was not equal to definition when converted.');
-      }
-    }
-
-    const checkPermissions: Permission[] = [];
-
     if (
       domain !== undefined ||
       path !== undefined ||
@@ -566,18 +557,13 @@ export async function patchApp(ctx: Context): Promise<void> {
       checkPermissions.push(Permission.EditAppSettings);
     }
 
-    if (yaml || definition) {
-      checkPermissions.push(Permission.EditApps);
-    }
-
     await checkRole(ctx, dbApp.OrganizationId, checkPermissions);
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
-      if (definition) {
-        const newYaml = yaml || stringify(definition);
+      if (yaml) {
         const snapshot = await AppSnapshot.create(
-          { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
+          { AppId: dbApp.id, UserId: user.id, yaml },
           { transaction },
         );
         dbApp.AppSnapshots = [snapshot];

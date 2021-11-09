@@ -183,10 +183,9 @@ export async function traverseAppDirectory(
           throw new AppsembleError('Found duplicate app definition');
         }
 
-        const [app, data] = await readData(filepath);
+        const [, data] = await readData(filepath);
         yaml = data;
         formData.append('yaml', data);
-        formData.append('definition', JSON.stringify(app));
         return;
       }
 
@@ -495,9 +494,8 @@ export async function updateApp({
   let appsembleContext: AppsembleContext;
 
   if (file.isFile()) {
-    const [app, data] = await readData(path);
+    const [, data] = await readData(path);
     formData.append('yaml', data);
-    formData.append('definition', JSON.stringify(app));
   } else {
     [appsembleContext] = await traverseAppDirectory(path, context, formData);
   }
@@ -572,10 +570,9 @@ export async function createApp({
 
   if (file.isFile()) {
     // Assuming file is App YAML
-    const [app, data] = await readData(path);
+    const [, data] = await readData(path);
     yaml = data;
     formData.append('yaml', data);
-    formData.append('definition', JSON.stringify(app));
   } else {
     [appsembleContext, rc, yaml] = await traverseAppDirectory(path, context, formData);
     filename = join(filename, 'app-definition.yaml');

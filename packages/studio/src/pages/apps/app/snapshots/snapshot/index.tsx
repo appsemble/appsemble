@@ -45,7 +45,6 @@ export function SnapshotPage(): ReactElement {
     const definition = parse(result.data.yaml) as AppDefinition;
     const data = new FormData();
     data.set('yaml', result.data.yaml);
-    data.set('definition', JSON.stringify(definition));
 
     try {
       await axios.patch(`/api/apps/${app.id}`, data);

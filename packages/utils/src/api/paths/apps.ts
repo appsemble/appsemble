@@ -22,11 +22,8 @@ export const paths: OpenAPIV3.PathsObject = {
           'multipart/form-data': {
             schema: {
               type: 'object',
-              required: ['OrganizationId', 'definition'],
+              required: ['OrganizationId', 'yaml'],
               properties: {
-                definition: {
-                  $ref: '#/components/schemas/AppDefinition',
-                },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
                 },
@@ -165,9 +162,6 @@ export const paths: OpenAPIV3.PathsObject = {
             schema: {
               type: 'object',
               properties: {
-                definition: {
-                  $ref: '#/components/schemas/AppDefinition',
-                },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
                 },

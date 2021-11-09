@@ -196,11 +196,9 @@ export default function EditPage(): ReactElement {
     }
 
     const { id } = params;
-    const definition = parse(appDefinition) as AppDefinition;
 
     try {
       const formData = new FormData();
-      formData.append('definition', JSON.stringify(definition));
       formData.append('yaml', appDefinition);
       formData.append('coreStyle', coreStyle);
       formData.append('sharedStyle', sharedStyle);
