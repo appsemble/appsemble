@@ -56,9 +56,9 @@
     <link rel="stylesheet" href="{{{ bulmaURL }}}" id="bulma-style-app" />
     <link rel="stylesheet" href="{{{ faURL }}}" />
     {{#app.coreStyle}}
-    <link rel="stylesheet" href="/core.css" />
+    <link rel="stylesheet" href="/core.css?updated={{{ appUpdated }}}" />
     {{/app.coreStyle}} {{#app.sharedStyle}}
-    <link rel="stylesheet" href="/shared.css" />
+    <link rel="stylesheet" href="/shared.css?updated={{{ appUpdated }}}" />
     {{/app.sharedStyle}} {{#app.googleAnalyticsID}}
     <script
       async
