@@ -17,6 +17,26 @@ of the app.
 This however does not affect anything if the user has a link to the app itself. Further security
 definitions are required to restrict access to the app itself.
 
+## App account management
+
+There are several methods available to secure access to apps. By going to the “Secrets” page from
+within the Appsemble Studio you can determine which login methods are available. By default
+Appsemble Studio’s OAuth2 login option is enabled, allowing users to login using their Appsemble
+Studio account. This method can be useful for apps where it’s expected the users already have
+Appsemble accounts since the same account can be reused.
+
+The second login option allows for users to login using a password and email address. When enabled,
+a login form appears on the login page from which a user can login, register a new account, or reset
+their password. This method also allows for the usage of the
+[`user.login` and `user.register` actions](/docs/reference/actions#user.login).
+
+The third login option allows for setting up your own login methods using [OAuth2](oauth2.md) or
+[SAML2.0](saml.md) which are described in more detail in their own pages.
+
+Users who have logged into your app can be viewed from the “Users” page. From here the roles of
+users can be adjusted as well as view and edit any custom properties associated with the user as set
+by the app.
+
 ## Security Definition
 
 The security definition, as defined [here](/docs/reference/app#security-definition), can be used to
