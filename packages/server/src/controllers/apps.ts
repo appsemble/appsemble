@@ -3,7 +3,7 @@ import { randomBytes } from 'crypto';
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockManifest } from '@appsemble/types';
 import {
-  BlockMap,
+  IdentifiableBlock,
   normalize,
   parseBlockName,
   Permission,
@@ -15,7 +15,7 @@ import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
-import { isEqual, uniqWith } from 'lodash';
+import { isEqual } from 'lodash';
 import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -44,18 +44,15 @@ import { serveIcon } from '../utils/icon';
 import { handleValidatorResult } from '../utils/jsonschema';
 import { getAppFromRecord } from '../utils/model';
 
-async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
-  const uniqueBlocks = uniqWith(
-    Object.values(blocks).map(({ type, version }) => {
-      const [OrganizationId, name] = parseBlockName(type);
-      return {
-        name,
-        OrganizationId,
-        version,
-      };
-    }),
-    isEqual,
-  );
+async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
+  const uniqueBlocks = blocks.map(({ type, version }) => {
+    const [OrganizationId, name] = parseBlockName(type);
+    return {
+      name,
+      OrganizationId,
+      version,
+    };
+  });
   const blockVersions = await BlockVersion.findAll({
     attributes: { exclude: ['id'] },
     where: { [Op.or]: uniqueBlocks },

@@ -6,7 +6,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { App, AppDefinition, BlockManifest } from '@appsemble/types';
-import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
+import { getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
 import { Validator } from 'jsonschema';
@@ -124,7 +124,7 @@ export default function EditPage(): ReactElement {
     }
     try {
       const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
-        filterBlocks(Object.values(getAppBlocks(definition))).map(async (block) => {
+        getAppBlocks(definition).map(async (block) => {
           const { data } = await axios.get<BlockManifest>(
             `/api/blocks/${block.type}/versions/${block.version}`,
           );

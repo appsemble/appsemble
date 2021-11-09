@@ -3,9 +3,9 @@ import { randomBytes } from 'crypto';
 import {
   createThemeURL,
   defaultLocale,
-  filterBlocks,
   getAppBlocks,
   mergeThemes,
+  parseBlockName,
 } from '@appsemble/utils';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
@@ -78,7 +78,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
     });
   }
 
-  const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
+  const blocks = getAppBlocks(app.definition);
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
     include: [
@@ -92,8 +92,8 @@ export async function indexHandler(ctx: Context): Promise<void> {
     ],
     where: {
       [Op.or]: blocks.map(({ type, version }) => {
-        const [org, name] = type.split('/');
-        return { name, OrganizationId: org.slice(1), version };
+        const [OrganizationId, name] = parseBlockName(type);
+        return { name, OrganizationId, version };
       }),
     },
   });
