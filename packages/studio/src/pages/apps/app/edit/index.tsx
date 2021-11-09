@@ -2,22 +2,21 @@ import {
   Loader,
   useBeforeUnload,
   useConfirmation,
-  useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { App, AppDefinition, BlockManifest, SSLStatusMap } from '@appsemble/types';
+import { App, AppDefinition, BlockManifest } from '@appsemble/types';
 import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
 import { Validator } from 'jsonschema';
-import { editor } from 'monaco-editor';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { parse, stringify } from 'yaml';
 
 import { useApp } from '..';
+import { AppPreview } from '../../../../components/AppPreview';
 import { MonacoEditor } from '../../../../components/MonacoEditor';
 import { getAppUrl } from '../../../../utils/getAppUrl';
 import { EditorNavBar } from './EditorNavBar';
@@ -30,22 +29,6 @@ for (const [name, schema] of Object.entries(schemas)) {
   // This is only safe, because our schema names don’t contain special characters.
   validator.addSchema(schema, `#/components/schemas/${name}`);
 }
-
-/**
- * These properties are passed to the allow attribute of the app preview. For a full list, see
- * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
- */
-const allow = [
-  'autoplay',
-  'camera',
-  'geolocation',
-  'microphone',
-  'midi',
-  'payment',
-  'picture-in-picture',
-  'sync-xhr',
-  'usb',
-];
 
 export default function EditPage(): ReactElement {
   useMeta(messages.title);
@@ -173,23 +156,6 @@ export default function EditPage(): ReactElement {
 
   useBeforeUnload(appDefinition !== initialDefinition);
 
-  const appDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
-  const { data: sslStatus, refresh: refreshSSLStatus } = useData<SSLStatusMap>(
-    `/api/ssl?${new URLSearchParams({ domains: appDomain })}`,
-  );
-
-  useEffect(() => {
-    if (sslStatus) {
-      for (const status of Object.values(sslStatus)) {
-        if (status !== 'ready') {
-          const timeout = setTimeout(refreshSSLStatus, 30_000);
-
-          return () => clearTimeout(timeout);
-        }
-      }
-    }
-  }, [refreshSSLStatus, sslStatus]);
-
   const uploadApp = useCallback(async () => {
     if (!valid) {
       return;
@@ -246,7 +212,7 @@ export default function EditPage(): ReactElement {
   }, [initialDefinition, promptUpdateApp, appDefinition, uploadApp, valid]);
 
   const onMonacoChange = useCallback(
-    (event: editor.IModelContentChangedEvent, value: string) => {
+    (event, value: string) => {
       switch (location.hash) {
         case '#editor': {
           setAppDefinition(value);
@@ -271,7 +237,6 @@ export default function EditPage(): ReactElement {
     return <Loader />;
   }
 
-  const src = getAppUrl(app.OrganizationId, app.path);
   let value;
   let language;
 
@@ -307,27 +272,7 @@ export default function EditPage(): ReactElement {
         </div>
       </div>
 
-      <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
-        {window.location.protocol === 'http:' || sslStatus?.[appDomain] === 'ready' ? (
-          <iframe
-            allow={allow.map((feature) => `${feature} ${src}`).join('; ')}
-            className={styles.appFrame}
-            ref={frame}
-            src={src}
-            title={formatMessage(messages.iframeTitle)}
-          />
-        ) : (
-          <div className="has-background-white is-flex is-flex-direction-column is-flex-grow-1 is-flex-shrink-1 is-align-items-center is-justify-content-center">
-            <Loader className={styles.sslLoader} />
-            <p className="pt-6">
-              <FormattedMessage {...messages.sslGenerating} />
-            </p>
-            <p>
-              <FormattedMessage {...messages.sslInfo} />
-            </p>
-          </div>
-        )}
-      </div>
+      <AppPreview app={app} iframeRef={frame} />
     </div>
   );
 }

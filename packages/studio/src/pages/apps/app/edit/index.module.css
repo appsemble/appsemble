@@ -6,33 +6,10 @@
   flex: 1 1 auto;
 }
 
-.rightPanel {
-  background-color: hsl(0deg 0% 7%);
-  border-radius: 22px;
-  box-sizing: border-box;
-  flex: 0 0 40vw;
-}
-
 .editorForm {
   flex: 1 1 auto;
 }
 
-.appFrame {
-  background-color: hsl(0deg 0% 100%);
-  border: none;
-  flex: 1;
-}
-
 .editor {
   height: 100%;
-}
-
-.sslLoader {
-  height: initial;
-  text-align: center;
-
-  &::after {
-    height: 6em;
-    width: 6em;
-  }
 }
