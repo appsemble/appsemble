@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.5
-appVersion: 0.19.5
+version: 0.19.6
+appVersion: 0.19.6
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,17 +24,19 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Cli: Enable strict subcommand parsing."
-    - kind: added
-      description: "Cli: Pretty print app validation errors."
-    - kind: added
-      description: "Sdk: Use generics to configure the event listener data type."
-    - kind: added
-      description: "Server: Preserve formatting when cloning apps."
+    - kind: changed
+      description: "Server: The Block styles API now use application/json instead of
+        multipart/form-data."
+    - kind: changed
+      description: "Server: The fields yaml, coreStyle, and sharedStyle are now
+        accepted as strings instead of binary strings."
+    - kind: changed
+      description: "Studio: The API no longer accepts the definition field for
+        updating apps. Instead use the yaml field."
     - kind: fixed
-      description: "React-components: The side menu is now closed if the user clicks
-        anywhere outside the menu."
+      description: "App: Fix navigation bar close button reopening the side menu."
+    - kind: fixed
+      description: "App: Fix profile picture scaling in the navigation bar dropdown."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

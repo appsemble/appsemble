@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.6](https://gitlab.com/appsemble/appsemble/-/releases/0.19.6)] - 2021-11-09
+
+### Changed
+
+- Server: The Block styles API now use `application/json` instead of `multipart/form-data`.
+- Server: The fields `yaml`, `coreStyle`, and `sharedStyle` are now accepted as strings instead of
+  binary strings.
+- Studio: The API no longer accepts the `definition` field for updating apps. Instead use the `yaml`
+  field.
+
+### Fixed
+
+- App: Fix navigation bar close button reopening the side menu.
+- App: Fix profile picture scaling in the navigation bar dropdown.
+
 ## \[[0.19.5](https://gitlab.com/appsemble/appsemble/-/releases/0.19.5)] - 2021-11-08
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/e2e",
-  "version": "0.19.5",
+  "version": "0.19.6",
   "private": true,
   "description": "End-to-end tests used for testing Appsemble apps in an existing environment.",
   "keywords": [
