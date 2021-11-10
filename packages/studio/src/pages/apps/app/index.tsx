@@ -33,12 +33,12 @@ import { IndexPage } from './IndexPage';
 import { messages } from './messages';
 import { NotificationsPage } from './notifications';
 import { ResourcesRoutes } from './resources';
-import { RolesPage } from './roles';
 import { SecretsPage } from './secrets';
 import { SettingsPage } from './settings';
 import { SnapshotsRoutes } from './snapshots';
 import { TeamsRoutes } from './teams';
 import { TranslationsPage } from './translations';
+import { UsersPage } from './users';
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
@@ -138,8 +138,8 @@ export function AppRoutes(): ReactElement {
           </MenuItem>
         )}
         {editPermission && app.definition.security && (
-          <MenuItem icon="users" to={`${url}/roles`}>
-            <FormattedMessage {...messages.roles} />
+          <MenuItem icon="users" to={`${url}/users`}>
+            <FormattedMessage {...messages.users} />
           </MenuItem>
         )}
         {editPermission && app.definition.security && (
@@ -229,10 +229,10 @@ export function AppRoutes(): ReactElement {
         <ProtectedRoute
           exact
           organization={organization}
-          path={`${path}/roles`}
+          path={`${path}/users`}
           permission={Permission.ManageRoles}
         >
-          <RolesPage />
+          <UsersPage />
         </ProtectedRoute>
         <ProtectedRoute
           organization={organization}
