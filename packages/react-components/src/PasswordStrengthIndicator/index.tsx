@@ -1,24 +1,27 @@
 import { useSimpleForm } from '@appsemble/react-components';
 import { zxcvbn } from '@zxcvbn-ts/core';
+import { ZxcvbnResult } from '@zxcvbn-ts/core/dist/types';
 import classNames from 'classnames';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages';
+
+type PartialResult = Pick<ZxcvbnResult, 'feedback' | 'score'>;
 
 interface PasswordStrengthIndicatorProps {
   name: string;
   minLength: number;
 }
 
-const emptyResult = {
+const emptyResult: PartialResult = {
   score: -1,
   feedback: {
     suggestions: ['required'],
     warning: 'required',
   },
-} as const;
+};
 
 /**
  * A password strength indicator using simple form.
@@ -28,10 +31,24 @@ export function PasswordStrengthIndicator({
   name,
 }: PasswordStrengthIndicatorProps): ReactElement {
   const { pristine, values } = useSimpleForm();
+  const [result, setResult] = useState(emptyResult);
 
   const value = values[name];
+  useEffect(() => {
+    if (value) {
+      let isCurrent = true;
+      Promise.resolve(zxcvbn(value)).then((r) => {
+        if (isCurrent) {
+          setResult(r);
+        }
+      });
+      return () => {
+        isCurrent = false;
+      };
+    }
+    setResult(emptyResult);
+  }, [value]);
 
-  const result = value ? zxcvbn(value) : emptyResult;
   const {
     feedback: {
       warning,

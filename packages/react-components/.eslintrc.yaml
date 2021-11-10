@@ -7,3 +7,4 @@ overrides:
     rules:
       node/no-unpublished-import: off
       react/prop-types: off
+      react/require-default-props: off

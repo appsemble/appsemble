@@ -6,3 +6,4 @@ overrides:
       - remcohaszing/web
     rules:
       react/prop-types: off
+      react/require-default-props: off

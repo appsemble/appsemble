@@ -84,7 +84,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
 
       const model = editor.createModel('', 'yaml');
       const ed = editor.create(node, { ...defaultOptions, readOnly, model });
-      ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
+      ed.addCommand(KeyMod.CtrlCmd | KeyCode.KeyS, () => saveRef.current?.());
 
       const observer = new ResizeObserver(() => ed.layout());
       observer.observe(node);
