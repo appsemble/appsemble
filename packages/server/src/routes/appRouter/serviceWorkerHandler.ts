@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { resolve } from 'path';
 
-import { filterBlocks, getAppBlocks, prefixBlockURL } from '@appsemble/utils';
+import { getAppBlocks, parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -27,7 +27,7 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
   });
   ctx.assert(app, 404, 'App does not exist.');
 
-  const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
+  const blocks = getAppBlocks(app.definition);
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
     include: [
@@ -41,8 +41,8 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
     ],
     where: {
       [Op.or]: blocks.map(({ type, version }) => {
-        const [org, name] = type.split('/');
-        return { name, OrganizationId: org.slice(1), version };
+        const [OrganizationId, name] = parseBlockName(type);
+        return { name, OrganizationId, version };
       }),
     },
   });

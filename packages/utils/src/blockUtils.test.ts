@@ -1,5 +1,5 @@
 import {
-  filterBlocks,
+  getAppBlocks,
   normalizeBlockName,
   parseBlockName,
   prefixBlockURL,
@@ -61,14 +61,23 @@ describe('parseBlockName', () => {
   });
 });
 
-describe('filterBlocks', () => {
-  it('should filter duplicates', () => {
-    const result = filterBlocks([
-      { type: 'foo', version: '0.0.0' },
-      { type: '@appsemble/foo', version: '0.0.0' },
-      { type: 'foo', version: '0.0.1' },
-      { type: 'bar', version: '0.0.1' },
-    ]);
+describe('getAppBlocks', () => {
+  it('should find unique block types inside an app', () => {
+    const result = getAppBlocks({
+      name: '',
+      defaultPage: '',
+      pages: [
+        {
+          name: '',
+          blocks: [
+            { type: 'foo', version: '0.0.0' },
+            { type: '@appsemble/foo', version: '0.0.0' },
+            { type: 'foo', version: '0.0.1' },
+            { type: 'bar', version: '0.0.1' },
+          ],
+        },
+      ],
+    });
     expect(result).toStrictEqual([
       { type: '@appsemble/foo', version: '0.0.0' },
       { type: '@appsemble/foo', version: '0.0.1' },

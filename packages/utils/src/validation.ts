@@ -4,8 +4,7 @@ import { ValidationError, Validator, ValidatorResult } from 'jsonschema';
 import languageTags from 'language-tags';
 import { Promisable } from 'type-fest';
 
-import { normalizeBlockName } from './blockUtils';
-import { BlockMap, getAppBlocks } from './getAppBlocks';
+import { getAppBlocks, IdentifiableBlock, normalizeBlockName } from './blockUtils';
 import { has } from './has';
 import { iterApp, Prefix } from './iterApp';
 
@@ -310,7 +309,7 @@ function validateCronJobs({ cron }: AppDefinition, report: Report): void {
  */
 export async function validateAppDefinition(
   definition: AppDefinition,
-  getBlockVersions: (blockMap: BlockMap) => Promisable<BlockManifest[]>,
+  getBlockVersions: (blockMap: IdentifiableBlock[]) => Promisable<BlockManifest[]>,
   validatorResult?: ValidatorResult,
 ): Promise<ValidatorResult> {
   const blocks = getAppBlocks(definition);
