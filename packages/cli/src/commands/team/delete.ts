@@ -50,5 +50,6 @@ export async function handler({
   await deleteTeam({
     id,
     appId: resolvedAppId,
+    remote: resolvedRemote,
   });
 }

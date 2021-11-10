@@ -66,5 +66,6 @@ export async function handler({
     appId: resolvedAppId,
     user,
     role,
+    remote: resolvedRemote,
   });
 }

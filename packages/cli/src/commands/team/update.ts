@@ -55,5 +55,6 @@ export async function handler({
     appId: resolvedAppId,
     name,
     annotations: annotation,
+    remote: resolvedRemote,
   });
 }
