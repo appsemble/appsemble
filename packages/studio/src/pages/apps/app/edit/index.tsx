@@ -2,6 +2,7 @@ import {
   Loader,
   useBeforeUnload,
   useConfirmation,
+  useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
@@ -13,7 +14,7 @@ import { Validator } from 'jsonschema';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
-import { parse, stringify } from 'yaml';
+import { parse } from 'yaml';
 
 import { useApp } from '..';
 import { AppPreview } from '../../../../components/AppPreview';
@@ -35,10 +36,14 @@ export default function EditPage(): ReactElement {
 
   const { app, setApp } = useApp();
 
-  const [appDefinition, setAppDefinition] = useState<string>(null);
-  const [coreStyle, setCoreStyle] = useState('');
-  const [sharedStyle, setSharedStyle] = useState('');
-  const [initialDefinition, setInitialDefinition] = useState('');
+  const [appDefinition, setAppDefinition] = useState<string>(app.yaml);
+  const { data: coreStyle, setData: setCoreStyle } = useData<string>(
+    `/api/apps/${app.id}/style/core`,
+  );
+  const { data: sharedStyle, setData: setSharedStyle } = useData<string>(
+    `/api/apps/${app.id}/style/shared`,
+  );
+
   const [valid, setValid] = useState(false);
   const [dirty, setDirty] = useState(true);
 
@@ -50,43 +55,10 @@ export default function EditPage(): ReactElement {
   const push = useMessages();
 
   useEffect(() => {
-    const { id } = params;
-
     if (!location.hash) {
       history.push('#editor');
     }
-
-    const getStyles = async (): Promise<void> => {
-      try {
-        const { data: coreStyleData } = await axios.get<string>(`/api/apps/${id}/style/core`);
-        const { data: sharedStyleData } = await axios.get<string>(`/api/apps/${id}/style/shared`);
-
-        setCoreStyle(coreStyleData);
-        setSharedStyle(sharedStyleData);
-      } catch (error: unknown) {
-        const { response } = error as AxiosError;
-        if (response?.status === 404 || response?.status === 401) {
-          push(formatMessage(messages.appNotFound));
-        } else {
-          push(formatMessage(messages.error));
-        }
-      }
-    };
-
-    getStyles();
-
-    // Destructuring path, and organizationId also hides these technical details for the user
-    const { definition } = app;
-    let { yaml: yamlDefinition } = app;
-
-    if (!yamlDefinition) {
-      yamlDefinition = stringify(definition);
-      push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
-    }
-
-    setAppDefinition(yamlDefinition);
-    setInitialDefinition(yamlDefinition);
-  }, [app, history, formatMessage, location.hash, params, push]);
+  }, [history, location]);
 
   const onSave = useCallback(async () => {
     let definition: AppDefinition;
@@ -154,7 +126,7 @@ export default function EditPage(): ReactElement {
     setDirty(false);
   }, [app, formatMessage, push, appDefinition, sharedStyle, coreStyle]);
 
-  useBeforeUnload(appDefinition !== initialDefinition);
+  useBeforeUnload(appDefinition !== app.yaml);
 
   const uploadApp = useCallback(async () => {
     if (!valid) {
@@ -185,7 +157,6 @@ export default function EditPage(): ReactElement {
     }
 
     setDirty(true);
-    setInitialDefinition(appDefinition);
   }, [formatMessage, params, push, appDefinition, sharedStyle, coreStyle, setApp, valid]);
 
   const promptUpdateApp = useConfirmation({
@@ -200,16 +171,15 @@ export default function EditPage(): ReactElement {
   const onUpload = useCallback(async () => {
     if (valid) {
       const newApp = parse(appDefinition) as AppDefinition;
-      const originalApp = parse(initialDefinition) as AppDefinition;
 
-      if (!equal(newApp.resources, originalApp.resources)) {
+      if (!equal(newApp.resources, app.definition.resources)) {
         promptUpdateApp();
         return;
       }
 
       await uploadApp();
     }
-  }, [initialDefinition, promptUpdateApp, appDefinition, uploadApp, valid]);
+  }, [valid, appDefinition, app, uploadApp, promptUpdateApp]);
 
   const onMonacoChange = useCallback(
     (event, value: string) => {
@@ -230,7 +200,7 @@ export default function EditPage(): ReactElement {
 
       setDirty(true);
     },
-    [location.hash],
+    [location, setCoreStyle, setSharedStyle],
   );
 
   if (appDefinition == null) {
