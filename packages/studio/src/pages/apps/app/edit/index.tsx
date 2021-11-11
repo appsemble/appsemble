@@ -1,5 +1,4 @@
 import {
-  Loader,
   useBeforeUnload,
   useConfirmation,
   useData,
@@ -202,10 +201,6 @@ export default function EditPage(): ReactElement {
     },
     [location, setCoreStyle, setSharedStyle],
   );
-
-  if (appDefinition == null) {
-    return <Loader />;
-  }
 
   let value;
   let language;
