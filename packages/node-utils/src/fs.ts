@@ -59,6 +59,13 @@ interface WriteDataOptions {
    * If false, don’t sort the object keys.
    */
   readonly sort?: boolean;
+
+  /**
+   * A comparison function to use for sorting keys.
+   *
+   * By default natural sorting will be used.
+   */
+  readonly compare?: ((a: string, b: string) => number) | null;
 }
 
 /**
@@ -74,9 +81,9 @@ interface WriteDataOptions {
 export async function writeData(
   path: string,
   data: unknown,
-  { sort = true }: WriteDataOptions = {},
+  { compare = compareStrings, sort = true }: WriteDataOptions = {},
 ): Promise<string> {
-  const sorted = sort ? sortKeys(data, { deep: true, compare: compareStrings }) : data;
+  const sorted = sort ? sortKeys(data, { deep: true, compare: compare || undefined }) : data;
   let buffer: string;
   try {
     const { format, getFileInfo, resolveConfig } = await import('prettier');
