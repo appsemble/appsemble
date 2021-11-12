@@ -271,7 +271,7 @@ function validateLanguage({ defaultLanguage }: AppDefinition, report: Report): v
 }
 
 function validateDefaultPage({ defaultPage, pages }: AppDefinition, report: Report): void {
-  const page = pages.find((p) => p.name === defaultPage);
+  const page = pages?.find((p) => p.name === defaultPage);
 
   if (!page) {
     report(defaultPage, 'does not refer to an existing page', ['defaultPage']);
@@ -288,6 +288,9 @@ function validateCronJobs({ cron }: AppDefinition, report: Report): void {
     return;
   }
   for (const [id, job] of Object.entries(cron)) {
+    if (typeof job?.schedule !== 'string') {
+      continue;
+    }
     try {
       parseExpression(job.schedule);
     } catch {
@@ -312,26 +315,33 @@ export async function validateAppDefinition(
   getBlockVersions: (blockMap: IdentifiableBlock[]) => Promisable<BlockManifest[]>,
   validatorResult?: ValidatorResult,
 ): Promise<ValidatorResult> {
-  const blocks = getAppBlocks(definition);
-  const blockVersions = await getBlockVersions(blocks);
-
   let result = validatorResult;
   if (!result) {
     const validator = new Validator();
     result = validator.validate(definition, {});
   }
 
+  if (!definition) {
+    return result;
+  }
+
+  const blocks = getAppBlocks(definition);
+  const blockVersions = await getBlockVersions(blocks);
   const report: Report = (instance, message, path) => {
     result.errors.push(new ValidationError(message, instance, undefined, path));
   };
 
-  validateCronJobs(definition, report);
-  validateDefaultPage(definition, report);
-  validateHooks(definition, report);
-  validateLanguage(definition, report);
-  validateResourceReferences(definition, report);
-  validateSecurity(definition, report);
-  validateBlocks(definition, blockVersions, report);
+  try {
+    validateCronJobs(definition, report);
+    validateDefaultPage(definition, report);
+    validateHooks(definition, report);
+    validateLanguage(definition, report);
+    validateResourceReferences(definition, report);
+    validateSecurity(definition, report);
+    validateBlocks(definition, blockVersions, report);
+  } catch (error) {
+    report(null, `Unexpected error: ${error.message}`, []);
+  }
 
   return result;
 }

@@ -907,4 +907,48 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(true);
     expect(result.errors).toStrictEqual([]);
   });
+
+  it('should not crash if cron is not a valid object', async () => {
+    const result = await validateAppDefinition(
+      // @ts-expect-error This tests invalid user input.
+      { ...createTestApp(), cron: { foo: null, bar: { schedule: 12 } } },
+      () => [],
+    );
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should ignore if an app is null', async () => {
+    const result = await validateAppDefinition(null, () => []);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should if app pages are not an array', async () => {
+    const result = await validateAppDefinition(null, () => []);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should report an error if app validation fails for an unexpected reason', async () => {
+    const result = await validateAppDefinition(null, () => []);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should handle if an unexpected error occurs', async () => {
+    const result = await validateAppDefinition(
+      {
+        get defaultPage(): string {
+          throw new Error('Boom!');
+        },
+        pages: [],
+      },
+      () => [],
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('Unexpected error: Boom!', null, undefined, []),
+    ]);
+  });
 });
