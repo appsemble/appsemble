@@ -12,7 +12,7 @@ import equal from 'fast-deep-equal';
 import { Validator } from 'jsonschema';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { parse } from 'yaml';
 
 import { useApp } from '..';
@@ -34,13 +34,12 @@ export default function EditPage(): ReactElement {
   useMeta(messages.title);
 
   const { app, setApp } = useApp();
+  const { id } = app;
 
   const [appDefinition, setAppDefinition] = useState<string>(app.yaml);
-  const { data: coreStyle, setData: setCoreStyle } = useData<string>(
-    `/api/apps/${app.id}/style/core`,
-  );
+  const { data: coreStyle, setData: setCoreStyle } = useData<string>(`/api/apps/${id}/style/core`);
   const { data: sharedStyle, setData: setSharedStyle } = useData<string>(
-    `/api/apps/${app.id}/style/shared`,
+    `/api/apps/${id}/style/shared`,
   );
 
   const [valid, setValid] = useState(false);
@@ -50,7 +49,6 @@ export default function EditPage(): ReactElement {
   const history = useHistory();
   const { formatMessage } = useIntl();
   const location = useLocation();
-  const params = useParams<{ id: string }>();
   const push = useMessages();
 
   useEffect(() => {
@@ -132,8 +130,6 @@ export default function EditPage(): ReactElement {
       return;
     }
 
-    const { id } = params;
-
     try {
       const formData = new FormData();
       formData.append('yaml', appDefinition);
@@ -156,7 +152,7 @@ export default function EditPage(): ReactElement {
     }
 
     setDirty(true);
-  }, [formatMessage, params, push, appDefinition, sharedStyle, coreStyle, setApp, valid]);
+  }, [appDefinition, coreStyle, formatMessage, id, push, setApp, sharedStyle, valid]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
