@@ -177,24 +177,17 @@ export default function EditPage(): ReactElement {
     [location, setCoreStyle, setSharedStyle],
   );
 
-  let value;
-  let language;
+  const monacoProps =
+    location.hash === '#editor'
+      ? { language: 'yaml', uri: 'app.yaml', value: appDefinition }
+      : location.hash === '#core-shared'
+      ? { language: 'css', uri: 'core.css', value: coreStyle }
+      : location.hash === '#style-shared'
+      ? { language: 'css', uri: 'shared.css', value: sharedStyle }
+      : undefined;
 
-  switch (location.hash) {
-    case '#style-core':
-      value = coreStyle;
-      language = 'css';
-      break;
-    case '#style-shared':
-      value = sharedStyle;
-      language = 'css';
-      break;
-    case '#editor':
-      value = appDefinition;
-      language = 'yaml';
-      break;
-    default:
-      return <Redirect to={{ ...location, hash: '#editor' }} />;
+  if (!monacoProps) {
+    return <Redirect to={{ ...location, hash: '#editor' }} />;
   }
 
   return (
@@ -204,12 +197,11 @@ export default function EditPage(): ReactElement {
         <div className={styles.editorForm}>
           <MonacoEditor
             className={styles.editor}
-            language={language}
             onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
             showDiagnostics
-            value={value}
+            {...monacoProps}
           />
         </div>
       </div>

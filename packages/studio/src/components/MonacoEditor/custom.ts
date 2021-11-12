@@ -42,7 +42,7 @@ setDiagnosticsOptions({
   enableSchemaRequest: true,
   schemas: [
     {
-      fileMatch: ['*'],
+      fileMatch: ['app.yaml'],
       // Not sure why this is needed, but it’s required and its value may not match the ref.
       uri: String(new URL('/api.json#/components/schemas/AppDefinition', window.location.origin)),
     },
