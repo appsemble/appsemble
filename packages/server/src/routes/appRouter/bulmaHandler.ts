@@ -3,6 +3,7 @@ import { baseTheme } from '@appsemble/utils';
 import bulma from 'bulma/package.json';
 import { Context } from 'koa';
 import sass from 'sass';
+import stripBom from 'strip-bom';
 
 import { Theme } from '../../models';
 
@@ -128,11 +129,13 @@ export async function bulmaHandler(ctx: Context): Promise<void> {
   const result = await Theme.findOne({ where: theme });
   let css = result?.css;
   if (!css) {
-    css = String(
-      sass.renderSync({
-        data: processStyle(theme),
-        outputStyle: 'compressed',
-      }).css,
+    css = stripBom(
+      String(
+        sass.renderSync({
+          data: processStyle(theme),
+          outputStyle: 'compressed',
+        }).css,
+      ),
     );
   }
 
