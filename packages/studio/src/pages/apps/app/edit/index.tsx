@@ -180,7 +180,7 @@ export default function EditPage(): ReactElement {
   const monacoProps =
     location.hash === '#editor'
       ? { language: 'yaml', uri: 'app.yaml', value: appDefinition }
-      : location.hash === '#core-shared'
+      : location.hash === '#style-core'
       ? { language: 'css', uri: 'core.css', value: coreStyle }
       : location.hash === '#style-shared'
       ? { language: 'css', uri: 'shared.css', value: sharedStyle }
