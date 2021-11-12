@@ -5,7 +5,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { App, AppDefinition, BlockManifest } from '@appsemble/types';
+import { App, AppDefinition } from '@appsemble/types';
 import { getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
@@ -13,6 +13,7 @@ import { Validator } from 'jsonschema';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useLocation } from 'react-router-dom';
+import { getCachedBlockVersions } from 'studio/src/utils/blockRegistry';
 import { parse } from 'yaml';
 
 import { useApp } from '..';
@@ -85,22 +86,7 @@ export default function EditPage(): ReactElement {
       return;
     }
     try {
-      const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
-        getAppBlocks(definition).map(async (block) => {
-          const { data } = await axios.get<BlockManifest>(
-            `/api/blocks/${block.type}/versions/${block.version}`,
-          );
-          return {
-            name: data.name,
-            version: data.version,
-            layout: data.layout,
-            files: data.files,
-            actions: data.actions,
-            events: data.events,
-            languages: data.languages,
-          };
-        }),
-      );
+      const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
       setValid(true);
 
       // YAML and schema appear to be valid, send it to the app preview iframe
