@@ -10,9 +10,9 @@ import { getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
 import { Validator } from 'jsonschema';
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import { parse } from 'yaml';
 
 import { useApp } from '..';
@@ -46,16 +46,9 @@ export default function EditPage(): ReactElement {
   const [dirty, setDirty] = useState(true);
 
   const frame = useRef<HTMLIFrameElement>();
-  const history = useHistory();
   const { formatMessage } = useIntl();
   const location = useLocation();
   const push = useMessages();
-
-  useEffect(() => {
-    if (!location.hash) {
-      history.push('#editor');
-    }
-  }, [history, location]);
 
   const onSave = useCallback(async () => {
     let definition: AppDefinition;
@@ -211,9 +204,11 @@ export default function EditPage(): ReactElement {
       language = 'css';
       break;
     case '#editor':
-    default:
       value = appDefinition;
       language = 'yaml';
+      break;
+    default:
+      return <Redirect to={{ ...location, hash: '#editor' }} />;
   }
 
   return (
