@@ -1,19 +1,19 @@
 import {
-  Loader,
   useBeforeUnload,
   useConfirmation,
   useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { App, AppDefinition, BlockManifest } from '@appsemble/types';
+import { App, AppDefinition } from '@appsemble/types';
 import { getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import equal from 'fast-deep-equal';
 import { Validator } from 'jsonschema';
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
+import { getCachedBlockVersions } from 'studio/src/utils/blockRegistry';
 import { parse } from 'yaml';
 
 import { useApp } from '..';
@@ -35,30 +35,21 @@ export default function EditPage(): ReactElement {
   useMeta(messages.title);
 
   const { app, setApp } = useApp();
+  const { id } = app;
 
   const [appDefinition, setAppDefinition] = useState<string>(app.yaml);
-  const { data: coreStyle, setData: setCoreStyle } = useData<string>(
-    `/api/apps/${app.id}/style/core`,
-  );
+  const { data: coreStyle, setData: setCoreStyle } = useData<string>(`/api/apps/${id}/style/core`);
   const { data: sharedStyle, setData: setSharedStyle } = useData<string>(
-    `/api/apps/${app.id}/style/shared`,
+    `/api/apps/${id}/style/shared`,
   );
 
   const [valid, setValid] = useState(false);
   const [dirty, setDirty] = useState(true);
 
   const frame = useRef<HTMLIFrameElement>();
-  const history = useHistory();
   const { formatMessage } = useIntl();
   const location = useLocation();
-  const params = useParams<{ id: string }>();
   const push = useMessages();
-
-  useEffect(() => {
-    if (!location.hash) {
-      history.push('#editor');
-    }
-  }, [history, location]);
 
   const onSave = useCallback(async () => {
     let definition: AppDefinition;
@@ -95,22 +86,7 @@ export default function EditPage(): ReactElement {
       return;
     }
     try {
-      const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
-        getAppBlocks(definition).map(async (block) => {
-          const { data } = await axios.get<BlockManifest>(
-            `/api/blocks/${block.type}/versions/${block.version}`,
-          );
-          return {
-            name: data.name,
-            version: data.version,
-            layout: data.layout,
-            files: data.files,
-            actions: data.actions,
-            events: data.events,
-            languages: data.languages,
-          };
-        }),
-      );
+      const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
       setValid(true);
 
       // YAML and schema appear to be valid, send it to the app preview iframe
@@ -132,8 +108,6 @@ export default function EditPage(): ReactElement {
     if (!valid) {
       return;
     }
-
-    const { id } = params;
 
     try {
       const formData = new FormData();
@@ -157,7 +131,7 @@ export default function EditPage(): ReactElement {
     }
 
     setDirty(true);
-  }, [formatMessage, params, push, appDefinition, sharedStyle, coreStyle, setApp, valid]);
+  }, [appDefinition, coreStyle, formatMessage, id, push, setApp, sharedStyle, valid]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -203,26 +177,17 @@ export default function EditPage(): ReactElement {
     [location, setCoreStyle, setSharedStyle],
   );
 
-  if (appDefinition == null) {
-    return <Loader />;
-  }
+  const monacoProps =
+    location.hash === '#editor'
+      ? { language: 'yaml', uri: 'app.yaml', value: appDefinition }
+      : location.hash === '#style-core'
+      ? { language: 'css', uri: 'core.css', value: coreStyle }
+      : location.hash === '#style-shared'
+      ? { language: 'css', uri: 'shared.css', value: sharedStyle }
+      : undefined;
 
-  let value;
-  let language;
-
-  switch (location.hash) {
-    case '#style-core':
-      value = coreStyle;
-      language = 'css';
-      break;
-    case '#style-shared':
-      value = sharedStyle;
-      language = 'css';
-      break;
-    case '#editor':
-    default:
-      value = appDefinition;
-      language = 'yaml';
+  if (!monacoProps) {
+    return <Redirect to={{ ...location, hash: '#editor' }} />;
   }
 
   return (
@@ -232,12 +197,11 @@ export default function EditPage(): ReactElement {
         <div className={styles.editorForm}>
           <MonacoEditor
             className={styles.editor}
-            language={language}
             onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
             showDiagnostics
-            value={value}
+            {...monacoProps}
           />
         </div>
       </div>

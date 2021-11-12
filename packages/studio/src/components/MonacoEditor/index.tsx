@@ -1,15 +1,13 @@
 import { applyRefs } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { editor, KeyCode, KeyMod } from 'monaco-editor/esm/vs/editor/editor.api';
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import { editor, IDisposable, KeyCode, KeyMod, Uri } from 'monaco-editor/esm/vs/editor/editor.api';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 
 import './custom';
 import { Diagnostic } from './Diagnostic';
 import styles from './index.module.css';
 
 editor.setTheme('vs');
-
-type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
 
 interface MonacoEditorProps {
   /**
@@ -49,14 +47,12 @@ interface MonacoEditorProps {
    * If true, render editor diagnostics in a pane below the editor.
    */
   showDiagnostics?: boolean;
-}
 
-const defaultOptions: Options = {
-  insertSpaces: true,
-  tabSize: 2,
-  minimap: { enabled: false },
-  readOnly: false,
-};
+  /**
+   * The filename of the resource.
+   */
+  uri: string;
+}
 
 /**
  * Render a Monaco standalone editor instance.
@@ -66,77 +62,124 @@ const defaultOptions: Options = {
  */
 export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
   (
-    { className, language, onChange, onSave, readOnly = false, showDiagnostics, value = '' },
+    { className, language, onChange, onSave, readOnly = false, showDiagnostics, uri, value = '' },
     ref,
   ) => {
-    const [monaco, setMonaco] = useState<editor.IStandaloneCodeEditor>();
+    const editorRef = useRef<editor.IStandaloneCodeEditor>();
+
     const [markers, setMarkers] = useState<editor.IMarker[]>([]);
 
-    const saveRef = useRef(onSave);
-    saveRef.current = onSave;
+    /**
+     * Cleanup the editor itself.
+     */
+    useEffect(() => () => editorRef.current.dispose(), []);
 
-    const nodeRef = useCallback((node: HTMLDivElement) => {
-      if (!node) {
-        return () => {
-          applyRefs(null, ref);
-        };
+    /**
+     * Update options if they change.
+     */
+    useEffect(() => {
+      editorRef.current?.updateOptions({ readOnly });
+    }, [readOnly]);
+
+    /**
+     * Set a new model if either the language or the uri changes.
+     */
+    useEffect(() => {
+      const ed = editorRef.current;
+      if (!ed) {
+        return;
       }
 
-      const model = editor.createModel('', 'yaml');
-      const ed = editor.create(node, { ...defaultOptions, readOnly, model });
-      ed.addCommand(KeyMod.CtrlCmd | KeyCode.KeyS, () => saveRef.current?.());
+      // Running the cleanup of the old model in the useEffect cleanup causes errors when
+      // dismounting the editor, because it’s also disposed by the editor.
+      const oldModel = ed.getModel();
+      const newModel = editor.createModel('', language, Uri.parse(uri));
+      ed.setModel(newModel);
+      oldModel.dispose();
+    }, [language, uri]);
 
-      const observer = new ResizeObserver(() => ed.layout());
-      observer.observe(node);
+    /**
+     * Update the model value if it changes.
+     */
+    useEffect(() => {
+      const model = editorRef.current?.getModel();
 
-      applyRefs(ed, setMonaco, ref);
+      // Without this check undo and redo don’t work.
+      if (model && model.getValue() !== value) {
+        model.setValue(value);
+      }
+    }, [value]);
+
+    /**
+     * Handle the change handler.
+     */
+    useEffect(() => {
+      const ed = editorRef.current;
+      if (!ed || !onChange) {
+        return;
+      }
+
+      // Keep track of the latest content change handler disposable.
+      let contentDisposable: IDisposable;
+
+      // Dispose the old handler if it exists, and register a new one if the model could be
+      // resolved.
+      const registerHandler = (model: editor.ITextModel | null): void => {
+        contentDisposable?.dispose();
+        contentDisposable = model
+          ? model.onDidChangeContent((event) => onChange(event, model.getValue()))
+          : undefined;
+      };
+
+      // Register a handler for the current model.
+      registerHandler(ed.getModel());
+      const modelDisposable = ed.onDidChangeModel(({ newModelUrl }) => {
+        // And update it when the model changes.
+        registerHandler(editor.getModel(newModelUrl));
+      });
 
       return () => {
-        ed.dispose();
-        observer.unobserve(node);
-        applyRefs(null, ref);
+        // Cleanup all disposables.
+        contentDisposable?.dispose();
+        modelDisposable.dispose();
       };
-      // This is triggered by the lack of options in the dependency array. This is left out on
-      // purpose. Instead, this is handled using monaco.updateOptions() below.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [onChange]);
 
+    /**
+     * Manage the CTRL+S key binding for saving
+     */
     useEffect(() => {
-      if (monaco) {
-        monaco.updateOptions({ readOnly });
-      }
-    }, [monaco, readOnly]);
-
-    useEffect(() => {
-      if (monaco) {
-        editor.setModelLanguage(monaco.getModel(), language);
-      }
-    }, [language, monaco]);
-
-    useEffect(() => {
-      if (monaco && monaco.getModel().getValue() !== value) {
-        monaco.getModel().setValue(value);
-      }
-    }, [monaco, value]);
-
-    useEffect(() => {
-      if (!monaco || !onChange) {
+      const ed = editorRef.current;
+      if (!ed) {
         return;
       }
-      const model = monaco.getModel();
-      const subscription = model.onDidChangeContent((event) => onChange(event, model.getValue()));
 
-      return () => subscription.dispose();
-    }, [monaco, onChange]);
+      const disposable = ed.addAction({
+        // The same values are used as in VS Code
+        id: 'workbench.action.files.save',
+        label: 'File: Save',
+        keybindings: [KeyMod.CtrlCmd | KeyCode.KeyS],
+        run() {
+          onSave();
+        },
+      });
 
+      return () => disposable.dispose();
+    }, [onSave]);
+
+    /**
+     * Update the markers when they change.
+     */
     useEffect(() => {
-      if (!monaco) {
+      const ed = editorRef.current;
+      if (!ed) {
         return;
       }
-      const uri = String(monaco.getModel().uri);
+
       const disposable = editor.onDidChangeMarkers((resources) => {
+        const modelUri = String(ed.getModel().uri);
         for (const resource of resources) {
-          if (String(resource) === uri) {
+          if (String(resource) === modelUri) {
             setMarkers(editor.getModelMarkers({ resource }));
             break;
           }
@@ -144,18 +187,35 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
       });
 
       return () => disposable.dispose();
-    }, [monaco]);
+    }, []);
 
     return (
       <div className={classNames('is-flex is-flex-direction-column', className)}>
-        <div className="is-flex-grow-1 is-flex-shrink-1" ref={nodeRef} />
+        <div
+          className="is-flex-grow-1 is-flex-shrink-1"
+          ref={(node) => {
+            if (!editorRef.current) {
+              applyRefs(
+                editor.create(node, {
+                  automaticLayout: true,
+                  insertSpaces: true,
+                  minimap: { enabled: false },
+                  readOnly,
+                  tabSize: 2,
+                }),
+                editorRef,
+                ref,
+              );
+            }
+          }}
+        />
         {showDiagnostics ? (
           <div className={`is-flex-grow-1 is-flex-shrink-1 ${styles.diagnostics}`}>
             {markers.map((marker) => (
               <Diagnostic
                 key={`${marker.code}-${marker.startLineNumber}-${marker.startColumn}-${marker.endLineNumber}-${marker.endColumn}`}
                 marker={marker}
-                monaco={monaco}
+                monaco={editorRef.current}
               />
             ))}
           </div>
