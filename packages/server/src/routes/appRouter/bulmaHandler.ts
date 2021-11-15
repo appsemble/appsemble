@@ -17,7 +17,7 @@ interface QueryParamTheme extends Omit<Partial<ThemeType>, 'font'> {
   fontSource?: string;
 }
 
-function getOneQueryParameter<T>(value: T | T[]): T {
+function getQueryParameter<T>(value: T | T[]): T {
   return Array.isArray(value) ? value[0] : value;
 }
 
@@ -92,28 +92,16 @@ export async function bulmaHandler(ctx: Context): Promise<void> {
     fontSource: string;
   } = {
     bulmaVersion: bulma.version,
-    primaryColor: (
-      getOneQueryParameter(query.primaryColor) || baseTheme.primaryColor
-    ).toLocaleLowerCase(),
-    linkColor: (getOneQueryParameter(query.linkColor) || baseTheme.linkColor).toLocaleLowerCase(),
-    successColor: (
-      getOneQueryParameter(query.successColor) || baseTheme.successColor
-    ).toLocaleLowerCase(),
-    infoColor: (getOneQueryParameter(query.infoColor) || baseTheme.infoColor).toLocaleLowerCase(),
-    warningColor: (
-      getOneQueryParameter(query.warningColor) || baseTheme.warningColor
-    ).toLocaleLowerCase(),
-    dangerColor: (
-      getOneQueryParameter(query.dangerColor) || baseTheme.dangerColor
-    ).toLocaleLowerCase(),
-    themeColor: (
-      getOneQueryParameter(query.themeColor) || baseTheme.themeColor
-    ).toLocaleLowerCase(),
-    splashColor: (
-      getOneQueryParameter(query.splashColor) || baseTheme.splashColor
-    ).toLocaleLowerCase(),
-    fontFamily: getOneQueryParameter(query.fontFamily) || baseTheme.font.family,
-    fontSource: getOneQueryParameter(query.fontSource) || baseTheme.font.source,
+    primaryColor: (getQueryParameter(query.primaryColor) || baseTheme.primaryColor).toLowerCase(),
+    linkColor: (getQueryParameter(query.linkColor) || baseTheme.linkColor).toLowerCase(),
+    successColor: (getQueryParameter(query.successColor) || baseTheme.successColor).toLowerCase(),
+    infoColor: (getQueryParameter(query.infoColor) || baseTheme.infoColor).toLowerCase(),
+    warningColor: (getQueryParameter(query.warningColor) || baseTheme.warningColor).toLowerCase(),
+    dangerColor: (getQueryParameter(query.dangerColor) || baseTheme.dangerColor).toLowerCase(),
+    themeColor: (getQueryParameter(query.themeColor) || baseTheme.themeColor).toLowerCase(),
+    splashColor: (getQueryParameter(query.splashColor) || baseTheme.splashColor).toLowerCase(),
+    fontFamily: getQueryParameter(query.fontFamily) || baseTheme.font.family,
+    fontSource: getQueryParameter(query.fontSource) || baseTheme.font.source,
   };
 
   const result = await Theme.findOne({ where: theme });
