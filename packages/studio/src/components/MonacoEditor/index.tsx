@@ -30,8 +30,13 @@ interface MonacoEditorProps {
    *
    * @param event - The monaco change event.
    * @param value - The new value.
+   * @param model - The monaco model which changed.
    */
-  onChange?: (event: editor.IModelContentChangedEvent, value: string) => void;
+  onChange?: (
+    event: editor.IModelContentChangedEvent,
+    value: string,
+    model: editor.ITextModel,
+  ) => void;
 
   /**
    * Called when Ctrl-S is pressed.
@@ -127,7 +132,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
       const registerHandler = (model: editor.ITextModel | null): void => {
         contentDisposable?.dispose();
         contentDisposable = model
-          ? model.onDidChangeContent((event) => onChange(event, model.getValue()))
+          ? model.onDidChangeContent((event) => onChange(event, model.getValue(), model))
           : undefined;
       };
 

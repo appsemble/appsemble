@@ -1,7 +1,5 @@
 import {
   Button,
-  Icon,
-  Tab,
   Tabs,
   useBeforeUnload,
   useConfirmation,
@@ -10,11 +8,11 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { App, AppDefinition } from '@appsemble/types';
-import { getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
-import axios, { AxiosError } from 'axios';
+import { getAppBlocks } from '@appsemble/utils';
+import axios from 'axios';
 import equal from 'fast-deep-equal';
-import { Validator } from 'jsonschema';
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { parse } from 'yaml';
@@ -24,16 +22,10 @@ import { AppPreview } from '../../../../components/AppPreview';
 import { MonacoEditor } from '../../../../components/MonacoEditor';
 import { getCachedBlockVersions } from '../../../../utils/blockRegistry';
 import { getAppUrl } from '../../../../utils/getAppUrl';
+import { EditorTab } from './EditorTab';
 import styles from './index.module.css';
 import { messages } from './messages';
 import './appValidation';
-
-const validator = new Validator();
-
-for (const [name, schema] of Object.entries(schemas)) {
-  // This is only safe, because our schema names don’t contain special characters.
-  validator.addSchema(schema, `#/components/schemas/${name}`);
-}
 
 export default function EditPage(): ReactElement {
   useMeta(messages.title);
@@ -47,8 +39,11 @@ export default function EditPage(): ReactElement {
     `/api/apps/${id}/style/shared`,
   );
 
-  const [valid, setValid] = useState(false);
-  const [dirty, setDirty] = useState(true);
+  const [appDefinitionErrorCount, setAppDefinitionErrorCount] = useState(0);
+  const [coreStyleErrorCount, setCoreStyleErrorCount] = useState(0);
+  const [sharedStyleErrorCount, setSharedStyleErrorCount] = useState(0);
+
+  const [pristine, setPristine] = useState(true);
 
   const frame = useRef<HTMLIFrameElement>();
   const { formatMessage } = useIntl();
@@ -59,63 +54,21 @@ export default function EditPage(): ReactElement {
   const changeTab = useCallback((event, hash: string) => history.push({ hash }), [history]);
 
   const onSave = useCallback(async () => {
-    let definition: AppDefinition;
-    // Attempt to parse the YAML into a JSON object
-    try {
-      definition = parse(appDefinition) as AppDefinition;
-    } catch {
-      push(formatMessage(messages.invalidYaml));
-      setValid(false);
-      setDirty(false);
-      return;
-    }
+    const definition = parse(appDefinition) as AppDefinition;
 
-    try {
-      validateStyle(coreStyle);
-      validateStyle(sharedStyle);
-    } catch {
-      push(formatMessage(messages.invalidStyle));
-      setValid(false);
-      setDirty(false);
-      return;
-    }
+    const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
 
-    const validatorResult = validator.validate(definition, schemas.AppDefinition, { base: '#' });
-    if (!validatorResult.valid) {
-      push({
-        body: formatMessage(messages.schemaValidationFailed, {
-          properties: validatorResult.errors
-            .map((err) => err.property.replace(/^instance\./, ''))
-            .join(', '),
-        }),
-      });
-      setValid(false);
-      return;
-    }
-    try {
-      const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
-      setValid(true);
-
-      // YAML and schema appear to be valid, send it to the app preview iframe
-      delete definition.anchors;
-      frame.current?.contentWindow.postMessage(
-        { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
-        getAppUrl(app.OrganizationId, app.path),
-      );
-    } catch {
-      push(formatMessage(messages.unexpected));
-      setValid(false);
-    }
-    setDirty(false);
-  }, [app, formatMessage, push, appDefinition, sharedStyle, coreStyle]);
+    // YAML and schema appear to be valid, send it to the app preview iframe
+    delete definition.anchors;
+    frame.current?.contentWindow.postMessage(
+      { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
+      getAppUrl(app.OrganizationId, app.path),
+    );
+  }, [app, appDefinition, coreStyle, sharedStyle]);
 
   useBeforeUnload(appDefinition !== app.yaml);
 
   const uploadApp = useCallback(async () => {
-    if (!valid) {
-      return;
-    }
-
     try {
       const formData = new FormData();
       formData.append('yaml', appDefinition);
@@ -127,18 +80,10 @@ export default function EditPage(): ReactElement {
 
       // Update App State
       setApp(data);
-    } catch (error: unknown) {
-      if ((error as AxiosError).response?.status === 403) {
-        push(formatMessage(messages.forbidden));
-      } else {
-        push(formatMessage(messages.errorUpdate));
-      }
-
-      return;
+    } catch {
+      push(formatMessage(messages.errorUpdate));
     }
-
-    setDirty(true);
-  }, [appDefinition, coreStyle, formatMessage, id, push, setApp, sharedStyle, valid]);
+  }, [appDefinition, coreStyle, formatMessage, id, push, setApp, sharedStyle]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -150,39 +95,60 @@ export default function EditPage(): ReactElement {
   });
 
   const onUpload = useCallback(async () => {
-    if (valid) {
-      const newApp = parse(appDefinition) as AppDefinition;
+    const newApp = parse(appDefinition) as AppDefinition;
 
-      if (!equal(newApp.resources, app.definition.resources)) {
-        promptUpdateApp();
-        return;
-      }
-
-      await uploadApp();
+    if (!equal(newApp.resources, app.definition.resources)) {
+      promptUpdateApp();
+      return;
     }
-  }, [valid, appDefinition, app, uploadApp, promptUpdateApp]);
+
+    await uploadApp();
+  }, [appDefinition, app, uploadApp, promptUpdateApp]);
 
   const onMonacoChange = useCallback(
-    (event, value: string) => {
-      switch (location.hash) {
-        case '#editor': {
+    (event, value: string, model: editor.ITextModel) => {
+      switch (String(model.uri)) {
+        case 'file:///app.yaml': {
           setAppDefinition(value);
           break;
         }
-        case '#style-core':
+        case 'file:///core.css':
           setCoreStyle(value);
           break;
-        case '#style-shared':
+        case 'file:///shared.css':
           setSharedStyle(value);
           break;
         default:
           break;
       }
 
-      setDirty(true);
+      setPristine(false);
     },
-    [location, setCoreStyle, setSharedStyle],
+    [setCoreStyle, setSharedStyle],
   );
+
+  useEffect(() => {
+    const disposable = editor.onDidChangeMarkers((resources) => {
+      for (const resource of resources) {
+        const { length } = editor.getModelMarkers({ resource });
+        switch (String(resource)) {
+          case 'file:///app.yaml':
+            setAppDefinitionErrorCount(length);
+            break;
+          case 'file:///core.css':
+            setCoreStyleErrorCount(length);
+            break;
+          case 'file:///shared.css':
+            setSharedStyleErrorCount(length);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+
+    return () => disposable.dispose();
+  }, []);
 
   const monacoProps =
     location.hash === '#editor'
@@ -197,14 +163,22 @@ export default function EditPage(): ReactElement {
     return <Redirect to={{ ...location, hash: '#editor' }} />;
   }
 
+  const disabled = Boolean(
+    pristine ||
+      app.locked ||
+      appDefinitionErrorCount ||
+      coreStyleErrorCount ||
+      sharedStyleErrorCount,
+  );
+
   return (
     <div className={`${styles.root} is-flex`}>
       <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
         <div className="buttons">
-          <Button disabled={!dirty || app.locked} icon="vial" onClick={onSave}>
+          <Button disabled={disabled} icon="vial" onClick={onSave}>
             <FormattedMessage {...messages.preview} />
           </Button>
-          <Button disabled={!valid || dirty || app.locked} icon="save" onClick={onUpload}>
+          <Button disabled={disabled} icon="save" onClick={onUpload}>
             <FormattedMessage {...messages.publish} />
           </Button>
           <Button
@@ -218,18 +192,15 @@ export default function EditPage(): ReactElement {
           </Button>
         </div>
         <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
-          <Tab href="#editor" value="#editor">
-            <Icon icon="file-code" />
+          <EditorTab errorCount={appDefinitionErrorCount} icon="file-code" value="#editor">
             <FormattedMessage {...messages.app} />
-          </Tab>
-          <Tab href="#style-core" value="#style-core">
-            <Icon icon="brush" />
+          </EditorTab>
+          <EditorTab errorCount={coreStyleErrorCount} icon="brush" value="#style-core">
             <FormattedMessage {...messages.coreStyle} />
-          </Tab>
-          <Tab href="#style-shared" value="#style-shared">
-            <Icon icon="brush" />
+          </EditorTab>
+          <EditorTab errorCount={sharedStyleErrorCount} icon="brush" value="#style-shared">
             <FormattedMessage {...messages.sharedStyle} />
-          </Tab>
+          </EditorTab>
         </Tabs>
         <div className={styles.editorForm}>
           <MonacoEditor
