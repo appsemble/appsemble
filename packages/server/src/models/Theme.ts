@@ -51,7 +51,6 @@ export class Theme extends Model implements Omit<ThemeType, 'font' | 'tileLayer'
   @Column(DataType.TEXT)
   css: string;
 
-  @AllowNull(false)
   @CreatedAt
   created: Date;
 }
