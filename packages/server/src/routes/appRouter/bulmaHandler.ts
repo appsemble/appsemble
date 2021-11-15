@@ -17,6 +17,10 @@ interface QueryParamTheme extends Omit<Partial<ThemeType>, 'font'> {
   fontSource?: string;
 }
 
+function getOneQueryParameter<T>(value: T | T[]): T {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 /**
  * Process SASS styles based on given parameters.
  *
@@ -89,41 +93,27 @@ export async function bulmaHandler(ctx: Context): Promise<void> {
   } = {
     bulmaVersion: bulma.version,
     primaryColor: (
-      (Array.isArray(query.primaryColor) ? query.primaryColor[0] : query.primaryColor) ||
-      baseTheme.primaryColor
+      getOneQueryParameter(query.primaryColor) || baseTheme.primaryColor
     ).toLocaleLowerCase(),
-    linkColor: (
-      (Array.isArray(query.linkColor) ? query.linkColor[0] : query.linkColor) || baseTheme.linkColor
-    ).toLocaleLowerCase(),
+    linkColor: (getOneQueryParameter(query.linkColor) || baseTheme.linkColor).toLocaleLowerCase(),
     successColor: (
-      (Array.isArray(query.successColor) ? query.successColor[0] : query.successColor) ||
-      baseTheme.successColor
+      getOneQueryParameter(query.successColor) || baseTheme.successColor
     ).toLocaleLowerCase(),
-    infoColor: (
-      (Array.isArray(query.infoColor) ? query.infoColor[0] : query.infoColor) || baseTheme.infoColor
-    ).toLocaleLowerCase(),
+    infoColor: (getOneQueryParameter(query.infoColor) || baseTheme.infoColor).toLocaleLowerCase(),
     warningColor: (
-      (Array.isArray(query.warningColor) ? query.warningColor[0] : query.warningColor) ||
-      baseTheme.warningColor
+      getOneQueryParameter(query.warningColor) || baseTheme.warningColor
     ).toLocaleLowerCase(),
     dangerColor: (
-      (Array.isArray(query.dangerColor) ? query.dangerColor[0] : query.dangerColor) ||
-      baseTheme.dangerColor
+      getOneQueryParameter(query.dangerColor) || baseTheme.dangerColor
     ).toLocaleLowerCase(),
     themeColor: (
-      (Array.isArray(query.themeColor) ? query.themeColor[0] : query.themeColor) ||
-      baseTheme.themeColor
+      getOneQueryParameter(query.themeColor) || baseTheme.themeColor
     ).toLocaleLowerCase(),
     splashColor: (
-      (Array.isArray(query.splashColor) ? query.splashColor[0] : query.splashColor) ||
-      baseTheme.splashColor
+      getOneQueryParameter(query.splashColor) || baseTheme.splashColor
     ).toLocaleLowerCase(),
-    fontFamily:
-      (Array.isArray(query.fontFamily) ? query.fontFamily[0] : query.fontFamily) ||
-      baseTheme.font.family,
-    fontSource:
-      (Array.isArray(query.fontSource) ? query.fontSource[0] : query.fontSource) ||
-      baseTheme.font.source,
+    fontFamily: getOneQueryParameter(query.fontFamily) || baseTheme.font.family,
+    fontSource: getOneQueryParameter(query.fontSource) || baseTheme.font.source,
   };
 
   const result = await Theme.findOne({ where: theme });
