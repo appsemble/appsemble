@@ -1,4 +1,8 @@
 import {
+  Button,
+  Icon,
+  Tab,
+  Tabs,
   useBeforeUnload,
   useConfirmation,
   useData,
@@ -12,7 +16,7 @@ import equal from 'fast-deep-equal';
 import { Validator } from 'jsonschema';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { parse } from 'yaml';
 
 import { useApp } from '..';
@@ -20,7 +24,6 @@ import { AppPreview } from '../../../../components/AppPreview';
 import { MonacoEditor } from '../../../../components/MonacoEditor';
 import { getCachedBlockVersions } from '../../../../utils/blockRegistry';
 import { getAppUrl } from '../../../../utils/getAppUrl';
-import { EditorNavBar } from './EditorNavBar';
 import styles from './index.module.css';
 import { messages } from './messages';
 import './appValidation';
@@ -50,7 +53,10 @@ export default function EditPage(): ReactElement {
   const frame = useRef<HTMLIFrameElement>();
   const { formatMessage } = useIntl();
   const location = useLocation();
+  const history = useHistory();
   const push = useMessages();
+
+  const changeTab = useCallback((event, hash: string) => history.push({ hash }), [history]);
 
   const onSave = useCallback(async () => {
     let definition: AppDefinition;
@@ -194,7 +200,37 @@ export default function EditPage(): ReactElement {
   return (
     <div className={`${styles.root} is-flex`}>
       <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
-        <EditorNavBar dirty={dirty} onPreview={onSave} onUpload={onUpload} valid={valid} />
+        <div className="buttons">
+          <Button disabled={!dirty || app.locked} icon="vial" onClick={onSave}>
+            <FormattedMessage {...messages.preview} />
+          </Button>
+          <Button disabled={!valid || dirty || app.locked} icon="save" onClick={onUpload}>
+            <FormattedMessage {...messages.publish} />
+          </Button>
+          <Button
+            component="a"
+            href={getAppUrl(app.OrganizationId, app.path, app.domain)}
+            icon="share-square"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <FormattedMessage {...messages.viewLive} />
+          </Button>
+        </div>
+        <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
+          <Tab href="#editor" value="#editor">
+            <Icon icon="file-code" />
+            <FormattedMessage {...messages.app} />
+          </Tab>
+          <Tab href="#style-core" value="#style-core">
+            <Icon icon="brush" />
+            <FormattedMessage {...messages.coreStyle} />
+          </Tab>
+          <Tab href="#style-shared" value="#style-shared">
+            <Icon icon="brush" />
+            <FormattedMessage {...messages.sharedStyle} />
+          </Tab>
+        </Tabs>
         <div className={styles.editorForm}>
           <MonacoEditor
             className={styles.editor}
