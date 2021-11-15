@@ -13,16 +13,17 @@ import { Validator } from 'jsonschema';
 import { ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useLocation } from 'react-router-dom';
-import { getCachedBlockVersions } from 'studio/src/utils/blockRegistry';
 import { parse } from 'yaml';
 
 import { useApp } from '..';
 import { AppPreview } from '../../../../components/AppPreview';
 import { MonacoEditor } from '../../../../components/MonacoEditor';
+import { getCachedBlockVersions } from '../../../../utils/blockRegistry';
 import { getAppUrl } from '../../../../utils/getAppUrl';
 import { EditorNavBar } from './EditorNavBar';
 import styles from './index.module.css';
 import { messages } from './messages';
+import './appValidation';
 
 const validator = new Validator();
 
