@@ -56,6 +56,7 @@ export function getAppFromRecord(
     $created: record.created.toISOString(),
     $updated: record.updated.toISOString(),
     domain: record.domain || null,
+    googleAnalyticsID: record.googleAnalyticsID,
     path: record.path,
     private: Boolean(record.private),
     locked: Boolean(record.locked),
