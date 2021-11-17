@@ -6,15 +6,6 @@ export function handleValidatorResult(
   msg = 'JSON schema validation failed',
 ): void {
   if (!result.valid) {
-    throw badRequest(
-      msg,
-      result.errors.map(({ argument, message, name, path, schema }) => ({
-        argument,
-        message,
-        name,
-        path,
-        schema,
-      })),
-    );
+    throw badRequest(msg, { errors: result.errors });
   }
 }

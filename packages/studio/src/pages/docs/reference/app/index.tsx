@@ -1,9 +1,9 @@
 import { Checkbox, Title, useMeta, useToggle } from '@appsemble/react-components';
 import { camelToHyphen, defaultLocale, iterJSONSchema, schemas } from '@appsemble/utils';
-import { dump } from 'js-yaml';
 import { Schema as JSONSchema } from 'jsonschema';
 import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { stringify } from 'yaml';
 
 import { CodeBlock } from '../../../../components/CodeBlock';
 import { HeaderControl } from '../../../../components/HeaderControl';
@@ -66,7 +66,7 @@ export function AppPage(): ReactElement {
             <div className="pl-6">
               {showYaml.enabled ? (
                 <CodeBlock className="mb-5" language="yaml">
-                  {dump(schema)}
+                  {stringify(schema)}
                 </CodeBlock>
               ) : (
                 <Schema anchors idPrefix={id} renderRef={Ref} schema={schema} />

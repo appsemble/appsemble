@@ -153,5 +153,18 @@ export function iterPage(
  * @returns True if any callback returns true, false otherwise.
  */
 export function iterApp(app: AppDefinition, callbacks: IterCallbacks): boolean {
-  return app.pages.some((page, index) => iterPage(page, callbacks, ['pages', index]));
+  if (
+    Array.isArray(app.pages) &&
+    app.pages.some((page, index) => iterPage(page, callbacks, ['pages', index]))
+  ) {
+    return true;
+  }
+  if (app.cron) {
+    for (const [name, job] of Object.entries(app.cron)) {
+      if (job?.action && iterAction(job.action, callbacks, ['cron', name, 'action'])) {
+        return true;
+      }
+    }
+  }
+  return false;
 }

@@ -190,6 +190,7 @@ export function ResourceDetailsPage(): ReactElement {
                   language="json"
                   onChange={onEditJsonChange}
                   onSave={onEditSubmit}
+                  uri={`resources/${resourceName}/${resourceId}.json`}
                   value={editingResourceJson}
                 />
               </Suspense>

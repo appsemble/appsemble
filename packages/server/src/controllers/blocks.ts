@@ -252,6 +252,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
   }
 
   ctx.body = blockVersionToJson(version);
+  ctx.set('Cache-Control', 'max-age=31536000,immutable');
 }
 
 export async function getBlockVersions(ctx: Context): Promise<void> {

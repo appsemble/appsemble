@@ -4,7 +4,7 @@ import { Clock, install } from '@sinonjs/fake-timers';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
-import FormData from 'form-data';
+import stripIndent from 'strip-indent';
 
 import {
   App,
@@ -471,21 +471,15 @@ describe('createApp', () => {
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.0',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       }),
     );
 
@@ -516,14 +510,15 @@ describe('createApp', () => {
         },
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
-        yaml: `name: Test App
-defaultPage: Test Page
-pages:
-  - name: Test Page
-    blocks:
-      - type: test
-        version: 0.0.0
-`,
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
         screenshotUrls: [],
       },
     });
@@ -537,11 +532,15 @@ pages:
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [{ name: 'Test Page', blocks: [{ type: 'test', version: '0.0.0' }] }],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
         icon: createFixtureStream('nodejs-logo.png'),
         screenshots: createFixtureStream('standing.png'),
       }),
@@ -574,14 +573,15 @@ pages:
         },
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
-        yaml: `name: Test App
-defaultPage: Test Page
-pages:
-  - name: Test Page
-    blocks:
-      - type: test
-        version: 0.0.0
-`,
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
         screenshotUrls: ['/api/apps/1/screenshots/1'],
       },
     });
@@ -601,12 +601,10 @@ pages:
 
   it('should not allow an upload without an app when creating an app', async () => {
     authorizeStudio();
-    const form = new FormData();
-    form.append('coreStyle', Buffer.from('body { color: red; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-    const response = await request.post('/api/apps', form);
+    const response = await request.post(
+      '/api/apps',
+      createFormData({ coreStyle: 'body { color: red; }' }),
+    );
 
     expect(response).toMatchObject({
       status: 400,
@@ -615,7 +613,7 @@ pages:
           {
             argument: 'OrganizationId',
             instance: {
-              coreStyle: '',
+              coreStyle: 'body { color: red; }',
             },
             message: 'requires property "OrganizationId"',
             name: 'required',
@@ -628,11 +626,7 @@ pages:
                 },
                 coreStyle: {
                   description: 'The custom style to apply to the core app.',
-                  format: 'binary',
                   type: 'string',
-                },
-                definition: {
-                  $ref: '#/components/schemas/AppDefinition',
                 },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
@@ -671,7 +665,6 @@ pages:
                 },
                 sharedStyle: {
                   description: 'The custom style to apply to all parts of app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 template: {
@@ -679,21 +672,20 @@ pages:
                 },
                 yaml: {
                   description: 'The original YAML definition used to define the app.',
-                  format: 'binary',
                   type: 'string',
                 },
               },
-              required: ['OrganizationId', 'definition'],
+              required: ['OrganizationId', 'yaml'],
               type: 'object',
             },
             stack: 'instance requires property "OrganizationId"',
           },
           {
-            argument: 'definition',
+            argument: 'yaml',
             instance: {
-              coreStyle: '',
+              coreStyle: 'body { color: red; }',
             },
-            message: 'requires property "definition"',
+            message: 'requires property "yaml"',
             name: 'required',
             path: [],
             property: 'instance',
@@ -704,11 +696,7 @@ pages:
                 },
                 coreStyle: {
                   description: 'The custom style to apply to the core app.',
-                  format: 'binary',
                   type: 'string',
-                },
-                definition: {
-                  $ref: '#/components/schemas/AppDefinition',
                 },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
@@ -747,7 +735,6 @@ pages:
                 },
                 sharedStyle: {
                   description: 'The custom style to apply to all parts of app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 template: {
@@ -755,14 +742,13 @@ pages:
                 },
                 yaml: {
                   description: 'The original YAML definition used to define the app.',
-                  format: 'binary',
                   type: 'string',
                 },
               },
-              required: ['OrganizationId', 'definition'],
+              required: ['OrganizationId', 'yaml'],
               type: 'object',
             },
-            stack: 'instance requires property "definition"',
+            stack: 'instance requires property "yaml"',
           },
         ],
         message: 'Invalid content types found',
@@ -775,21 +761,15 @@ pages:
     const response = await request.post(
       '/api/apps',
       createFormData({
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.1',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.1
+        `).trim(),
       }),
     );
 
@@ -800,21 +780,15 @@ pages:
           {
             argument: 'OrganizationId',
             instance: {
-              definition: {
-                defaultPage: 'Test Page',
-                name: 'Test App',
-                pages: [
-                  {
-                    blocks: [
-                      {
-                        type: 'test',
-                        version: '0.0.1',
-                      },
-                    ],
-                    name: 'Test Page',
-                  },
-                ],
-              },
+              yaml: stripIndent(`
+                name: Test App
+                defaultPage: Test Page
+                pages:
+                  - name: Test Page
+                    blocks:
+                      - type: test
+                        version: 0.0.1
+              `).trim(),
             },
             message: 'requires property "OrganizationId"',
             name: 'required',
@@ -827,11 +801,7 @@ pages:
                 },
                 coreStyle: {
                   description: 'The custom style to apply to the core app.',
-                  format: 'binary',
                   type: 'string',
-                },
-                definition: {
-                  $ref: '#/components/schemas/AppDefinition',
                 },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
@@ -870,7 +840,6 @@ pages:
                 },
                 sharedStyle: {
                   description: 'The custom style to apply to all parts of app.',
-                  format: 'binary',
                   type: 'string',
                 },
                 template: {
@@ -878,11 +847,10 @@ pages:
                 },
                 yaml: {
                   description: 'The original YAML definition used to define the app.',
-                  format: 'binary',
                   type: 'string',
                 },
               },
-              required: ['OrganizationId', 'definition'],
+              required: ['OrganizationId', 'yaml'],
               type: 'object',
             },
             stack: 'instance requires property "OrganizationId"',
@@ -899,21 +867,15 @@ pages:
       '/api/apps',
       createFormData({
         OrganizationId: 'a',
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.1',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.1
+        `),
       }),
     );
 
@@ -933,21 +895,15 @@ pages:
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: '@non/existent',
-                  version: '0.0.0',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: '@non/existent'
+                  version: 0.0.0
+        `),
       }),
     );
 
@@ -955,10 +911,18 @@ pages:
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0': 'Unknown block type “@non/existent”',
+          errors: [
+            {
+              instance: '@non/existent',
+              message: 'is not a known block type',
+              path: ['pages', 0, 'blocks', 0, 'type'],
+              property: 'instance.pages[0].blocks[0].type',
+              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+            },
+          ],
         },
         error: 'Bad Request',
-        message: 'Appsemble definition is invalid.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });
@@ -970,21 +934,15 @@ pages:
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.1',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.1
+        `),
       }),
     );
 
@@ -992,10 +950,18 @@ pages:
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
+          errors: [
+            {
+              instance: 'test',
+              message: 'is not a known block type',
+              path: ['pages', 0, 'blocks', 0, 'type'],
+              property: 'instance.pages[0].blocks[0].type',
+              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+            },
+          ],
         },
         error: 'Bad Request',
-        message: 'Appsemble definition is invalid.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });
@@ -1007,24 +973,17 @@ pages:
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.0',
-                  parameters: {
-                    foo: 'invalid',
-                  },
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+                  parameters:
+                    foo: invalid
+        `),
       }),
     );
 
@@ -1032,10 +991,18 @@ pages:
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0.parameters.foo': 'is not of a type(s) number',
+          errors: [
+            {
+              instance: 'invalid',
+              message: 'is not of a type(s) number',
+              path: ['pages', 0, 'blocks', 0, 'parameters', 'foo'],
+              property: 'instance.pages[0].blocks[0].parameters.foo',
+              stack: 'instance.pages[0].blocks[0].parameters.foo is not of a type(s) number',
+            },
+          ],
         },
         error: 'Bad Request',
-        message: 'Appsemble definition is invalid.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });
@@ -1047,16 +1014,15 @@ pages:
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       }),
     );
 
@@ -1064,16 +1030,15 @@ pages:
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       }),
     );
 
@@ -1110,16 +1075,15 @@ pages:
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       }),
     );
 
@@ -1134,24 +1098,17 @@ pages:
   it('should allow stylesheets to be included when creating an app', async () => {
     const form = createFormData({
       OrganizationId: organization.id,
-      definition: {
-        name: 'Foobar',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'test', version: '0.0.0' }],
-          },
-        ],
-      },
-    });
-    form.append('coreStyle', Buffer.from('body { color: blue; }'), {
-      contentType: 'text/css',
-      filename: 'test.css',
-    });
-    form.append('sharedStyle', Buffer.from(':root { --primary-color: purple; }'), {
-      contentType: 'text/css',
-      filename: 'test.css',
+      yaml: stripIndent(`
+        name: Foobar
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: test
+                version: 0.0.0
+      `),
+      coreStyle: 'body { color: blue; }',
+      sharedStyle: ':root { --primary-color: purple; }',
     });
     authorizeStudio();
     const response = await request.post<AppType>('/api/apps', form);
@@ -1177,10 +1134,7 @@ pages:
           },
         ],
       },
-    });
-    form.append('coreStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'test.css',
+      coreStyle: 'this is invalid css',
     });
     authorizeStudio();
     const response = await request.post('/api/apps', form);
@@ -1202,10 +1156,7 @@ pages:
           },
         ],
       },
-    });
-    form.append('sharedStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'test.css',
+      sharedStyle: 'this is invalid css',
     });
     authorizeStudio();
     const response = await request.post('/api/apps', form);
@@ -1243,26 +1194,33 @@ pages:
         createFormData({
           OrganizationId: organization.id,
           path: 'a',
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'upstream', version: '1.2.3' }],
-              },
-            ],
-          },
+          yaml: stripIndent(`
+            name: Test App
+            defaultPage: Test Page
+            pages:
+              - name: Test Page
+                blocks:
+                  - type: upstream
+                    version: 1.2.3
+          `),
         }),
       );
       expect(response).toMatchObject({
         status: 400,
         data: {
           data: {
-            'pages.0.blocks.0': 'Unknown block type “@appsemble/upstream”',
+            errors: [
+              {
+                instance: 'upstream',
+                message: 'is not a known block type',
+                path: ['pages', 0, 'blocks', 0, 'type'],
+                property: 'instance.pages[0].blocks[0].type',
+                stack: 'instance.pages[0].blocks[0].type is not a known block type',
+              },
+            ],
           },
           error: 'Bad Request',
-          message: 'Appsemble definition is invalid.',
+          message: 'App validation failed',
           statusCode: 400,
         },
       });
@@ -1282,26 +1240,33 @@ pages:
         createFormData({
           OrganizationId: organization.id,
           path: 'a',
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'upstream', version: '1.2.3' }],
-              },
-            ],
-          },
+          yaml: stripIndent(`
+            name: Test App
+            defaultPage: Test Page
+            pages:
+              - name: Test Page
+                blocks:
+                  - type: upstream
+                    version: 1.2.3
+          `),
         }),
       );
       expect(response).toMatchObject({
         status: 400,
         data: {
           data: {
-            'pages.0.blocks.0': 'Unknown block type “@appsemble/upstream”',
+            errors: [
+              {
+                instance: 'upstream',
+                message: 'is not a known block type',
+                path: ['pages', 0, 'blocks', 0, 'type'],
+                property: 'instance.pages[0].blocks[0].type',
+                stack: 'instance.pages[0].blocks[0].type is not a known block type',
+              },
+            ],
           },
           error: 'Bad Request',
-          message: 'Appsemble definition is invalid.',
+          message: 'App validation failed',
           statusCode: 400,
         },
       });
@@ -1330,13 +1295,9 @@ pages:
         .reply(({ params: { filename } }) => {
           switch (filename) {
             case 'a.js':
-              return [
-                200,
-                Buffer.from('console.log("a");\n'),
-                { 'content-type': 'application/javascript' },
-              ];
+              return [200, 'console.log("a");\n', { 'content-type': 'application/javascript' }];
             case 'b.css':
-              return [200, Buffer.from('b{background:blue;}\n'), { 'content-type': 'text/css' }];
+              return [200, 'b{background:blue;}\n', { 'content-type': 'text/css' }];
             default:
               return [404];
           }
@@ -1351,16 +1312,15 @@ pages:
         createFormData({
           OrganizationId: organization.id,
           path: 'a',
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'upstream', version: '1.2.3' }],
-              },
-            ],
-          },
+          yaml: stripIndent(`
+            name: Test App
+            defaultPage: Test Page
+            pages:
+              - name: Test Page
+                blocks:
+                  - type: upstream
+                    version: 1.2.3
+          `),
         }),
       );
       expect(response).toMatchObject({ status: 201 });
@@ -1403,21 +1363,15 @@ pages:
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.0',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       }),
       { params: { dryRun: true } },
     );
@@ -1434,20 +1388,14 @@ pages:
       createFormData({
         OrganizationId: organization.id,
         icon: createFixtureStream('nodejs-logo.png'),
-        definition: {
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.0',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       }),
       { params: { dryRun: true } },
     );
@@ -1455,81 +1403,82 @@ pages:
     const appCount = await App.count();
     expect(createdResponse.status).toBe(400);
     expect(createdResponse.data).toStrictEqual({
-      errors: [
-        {
-          argument: 'name',
-          instance: {
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                blocks: [
-                  {
-                    type: 'test',
-                    version: '0.0.0',
-                  },
-                ],
-                name: 'Test Page',
-              },
-            ],
-          },
-          message: 'requires property "name"',
-          name: 'required',
-          path: ['definition'],
-          property: 'instance.definition',
-          schema: {
-            additionalProperties: false,
-            description: 'An app definition describes what an Appsemble app looks like.',
-            properties: {
-              anchors: {
-                description: 'Helper property that can be used to store YAML anchors.',
-                items: {},
-                minItems: 1,
-                type: 'array',
-              },
-              cron: {
-                additionalProperties: {
-                  $ref: '#/components/schemas/CronDefinition',
+      data: {
+        errors: [
+          {
+            argument: 'name',
+            instance: {
+              defaultPage: 'Test Page',
+              pages: [
+                {
+                  blocks: [
+                    {
+                      type: 'test',
+                      version: '0.0.0',
+                    },
+                  ],
+                  name: 'Test Page',
                 },
-                description: 'A list of cron jobs that are associated with this app.',
-                minProperties: 1,
-                type: 'object',
-              },
-              defaultLanguage: {
-                default: 'en',
-                description: 'The default language for the app.',
-                minLength: 2,
-                type: 'string',
-              },
-              defaultPage: {
-                description: `The name of the page that should be displayed when the app is initially loaded.
+              ],
+            },
+            message: 'requires property "name"',
+            name: 'required',
+            path: [],
+            property: 'instance',
+            schema: {
+              additionalProperties: false,
+              description: 'An app definition describes what an Appsemble app looks like.',
+              properties: {
+                anchors: {
+                  description: 'Helper property that can be used to store YAML anchors.',
+                  items: {},
+                  minItems: 1,
+                  type: 'array',
+                },
+                cron: {
+                  additionalProperties: {
+                    $ref: '#/components/schemas/CronDefinition',
+                  },
+                  description: 'A list of cron jobs that are associated with this app.',
+                  minProperties: 1,
+                  type: 'object',
+                },
+                defaultLanguage: {
+                  default: 'en',
+                  description: 'The default language for the app.',
+                  minLength: 2,
+                  type: 'string',
+                },
+                defaultPage: {
+                  description: `The name of the page that should be displayed when the app is initially loaded.
 
 This **must** match the name of a page defined for the app.
 `,
-                type: 'string',
-              },
-              description: {
-                description: `A short description describing the app.
+                  type: 'string',
+                },
+                description: {
+                  description: `A short description describing the app.
 
 This will be displayed on the app store.
 `,
-                maxLength: 80,
-                type: 'string',
-              },
-              layout: {
-                $ref: '#/components/schemas/AppLayoutDefinition',
-                description: 'Properties related to the layout of the app.',
-              },
-              name: {
-                description: `The human readable name of the app.
+                  maxLength: 80,
+                  type: 'string',
+                },
+                layout: {
+                  $ref: '#/components/schemas/AppLayoutDefinition',
+                  description: 'Properties related to the layout of the app.',
+                },
+                name: {
+                  description: `The human readable name of the app.
 
 This will be displayed for example on the home screen or in the browser tab.
 `,
-                maxLength: 30,
-                minLength: 1,
-                type: 'string',
-              },
-              notifications: {
-                description: `The strategy to use for apps to subscribe to push notifications.
+                  maxLength: 30,
+                  minLength: 1,
+                  type: 'string',
+                },
+                notifications: {
+                  description: `The strategy to use for apps to subscribe to push notifications.
 
 If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
 app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
@@ -1538,64 +1487,67 @@ to \`startup\` will cause Appsemble to immediately request for the permission up
 
 > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
 `,
-                enum: ['opt-in', 'startup'],
-              },
-              pages: {
-                description: 'The pages of the app.',
-                items: {
-                  anyOf: [
-                    {
-                      $ref: '#/components/schemas/PageDefinition',
-                    },
-                    {
-                      $ref: '#/components/schemas/TabsPageDefinition',
-                    },
-                    {
-                      $ref: '#/components/schemas/FlowPageDefinition',
-                    },
-                  ],
+                  enum: ['opt-in', 'startup'],
                 },
-                minItems: 1,
-                type: 'array',
-              },
-              resources: {
-                additionalProperties: {
-                  $ref: '#/components/schemas/ResourceDefinition',
-                  description: 'A single resource definition.',
+                pages: {
+                  description: 'The pages of the app.',
+                  items: {
+                    anyOf: [
+                      {
+                        $ref: '#/components/schemas/PageDefinition',
+                      },
+                      {
+                        $ref: '#/components/schemas/TabsPageDefinition',
+                      },
+                      {
+                        $ref: '#/components/schemas/FlowPageDefinition',
+                      },
+                    ],
+                  },
+                  minItems: 1,
+                  type: 'array',
                 },
-                description: `Resources define how Appsemble can store data for an app.
+                resources: {
+                  additionalProperties: {
+                    $ref: '#/components/schemas/ResourceDefinition',
+                    description: 'A single resource definition.',
+                  },
+                  description: `Resources define how Appsemble can store data for an app.
 
 The most basic resource has a \`schema\` property and defines the minimal security rules.
 `,
-                type: 'object',
-              },
-              roles: {
-                description: `The list of roles that are allowed to view this app.
+                  type: 'object',
+                },
+                roles: {
+                  description: `The list of roles that are allowed to view this app.
 
 This list is used as the default roles for the roles property on pages and blocks, which can be
 overridden by defining them for a specific page or block. Note that these roles must be defined in
 \`security.roles\`.
 `,
-                items: {
-                  type: 'string',
+                  items: {
+                    type: 'string',
+                  },
+                  type: 'array',
                 },
-                type: 'array',
+                security: {
+                  $ref: '#/components/schemas/SecurityDefinition',
+                  description: 'Role definitions that may be used by the app.',
+                },
+                theme: {
+                  $ref: '#/components/schemas/Theme',
+                },
               },
-              security: {
-                $ref: '#/components/schemas/SecurityDefinition',
-                description: 'Role definitions that may be used by the app.',
-              },
-              theme: {
-                $ref: '#/components/schemas/Theme',
-              },
+              required: ['name', 'defaultPage', 'pages'],
+              type: 'object',
             },
-            required: ['name', 'defaultPage', 'pages'],
-            type: 'object',
+            stack: 'instance requires property "name"',
           },
-          stack: 'instance.definition requires property "name"',
-        },
-      ],
-      message: 'Invalid content types found',
+        ],
+      },
+      error: 'Bad Request',
+      message: 'App validation failed',
+      statusCode: 400,
     });
     expect(appCount).toBe(0);
   });
@@ -1619,16 +1571,15 @@ describe('patchApp', () => {
       `/api/apps/${app.id}`,
       createFormData({
         private: 'true',
-        definition: {
-          name: 'Foobar',
-          defaultPage: app.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Foobar
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       }),
     );
 
@@ -1654,14 +1605,15 @@ describe('patchApp', () => {
             },
           ],
         },
-        yaml: `name: Foobar
-defaultPage: Test Page
-pages:
-  - name: Test Page
-    blocks:
-      - type: test
-        version: 0.0.0
-`,
+        yaml: stripIndent(`
+          name: Foobar
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       },
     });
   });
@@ -1750,154 +1702,6 @@ pages:
     expect(response).toMatchObject({ status: 200 });
   });
 
-  it('should verify the YAML on validity when updating an app', async () => {
-    const app = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
-
-    authorizeStudio();
-    const response = await request.patch(
-      `/api/apps/${app.id}`,
-      createFormData({
-        definition: {
-          name: 'Foobar',
-          defaultPage: app.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
-        yaml: Buffer.from('name: foo\nname: bar'),
-      }),
-    );
-
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Provided YAML was invalid.',
-      },
-    });
-  });
-
-  it('should verify if the supplied YAML is the same as the app definition when updating an app', async () => {
-    const app = await App.create({
-      path: 'test-app',
-      definition: { name: 'Test App', defaultPage: 'Test Page' },
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    authorizeStudio();
-    const response = await request.patch(
-      `/api/apps/${app.id}`,
-      createFormData({
-        definition: {
-          name: 'Foobar',
-          defaultPage: app.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
-        yaml: Buffer.from(`name: Barfoo
-defaultPage: Test Page
-pages:
-- name: Test page
-  blocks:
-    - type: test
-      version: 0.0.0
-`),
-      }),
-    );
-
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Provided YAML was not equal to definition when converted.',
-      },
-    });
-  });
-
-  it('should allow for formatted YAML when updating an app', async () => {
-    const app = await App.create({
-      path: 'test-app',
-      definition: { name: 'Test App', defaultPage: 'Test Page' },
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    const yaml = `# Hi I'm a comment
-name: Foobar
-defaultPage: &titlePage 'Test Page' # This page is used for testing!
-
-pages:
-  - blocks:
-      - type: test
-        version: 0.0.0
-    name: *titlePage`;
-
-    authorizeStudio();
-    const response = await request.patch(
-      `/api/apps/${app.id}`,
-      createFormData({
-        yaml: Buffer.from(yaml),
-        definition: {
-          name: 'Foobar',
-          defaultPage: app.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
-      }),
-    );
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: app.id,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        domain: null,
-        private: false,
-        path: 'test-app',
-        iconUrl: null,
-        OrganizationId: organization.id,
-        OrganizationName: 'Test Organization',
-        definition: {
-          name: 'Foobar',
-          defaultPage: app.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
-        yaml,
-      },
-    });
-  });
-
   it('should update the app domain', async () => {
     const app = await App.create({
       path: 'foo',
@@ -1942,51 +1746,6 @@ pages:
         domain: null,
       }),
     });
-  });
-
-  it('should save formatted YAML when updating an app', async () => {
-    const app = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
-
-    const yaml = `# Hi I'm a comment
-name: Foobar
-defaultPage: &titlePage 'Test Page' # This page is used for testing!
-
-pages:
-  - blocks:
-      - type: test
-        version: 0.0.0
-    name: *titlePage`;
-    const buffer = Buffer.from(yaml);
-
-    authorizeStudio();
-    const response = await request.patch<AppType>(
-      `/api/apps/${app.id}`,
-      createFormData({
-        definition: {
-          name: 'Foobar',
-          defaultPage: app.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        },
-        yaml: buffer,
-      }),
-    );
-
-    const responseBuffer = Buffer.from(response.data.yaml);
-    expect(responseBuffer).toStrictEqual(buffer);
   });
 
   it('should not update an app of another organization', async () => {
@@ -2048,7 +1807,11 @@ pages:
     authorizeStudio();
     const response = await request.patch(
       `/api/apps/${app.id}`,
-      createFormData({ definition: { name: 'Foobar' } }),
+      createFormData({
+        yaml: stripIndent(`
+          name: Foo
+        `),
+      }),
     );
 
     expect(response).toMatchObject({
@@ -2077,14 +1840,8 @@ pages:
           },
         ],
       },
-    });
-    form.append('coreStyle', Buffer.from('body { color: yellow; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-    form.append('sharedStyle', Buffer.from('body { color: blue; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
+      coreStyle: 'body { color: yellow; }',
+      sharedStyle: 'body { color: blue; }',
     });
     authorizeStudio();
     const response = await request.patch<AppType>(`/api/apps/${app.id}`, form);
@@ -2121,10 +1878,7 @@ pages:
           },
         ],
       },
-    });
-    formA.append('coreStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'style.css',
+      coreStyle: 'this is invalid css',
     });
     authorizeStudio();
     const responseA = await request.patch(`/api/apps/${app.id}`, formA);
@@ -2142,7 +1896,7 @@ pages:
         ],
       },
     });
-    formB.append('coreStyle', Buffer.from('.foo { margin: 0 auto; }'), {
+    formB.append('coreStyle', '.foo { margin: 0 auto; }', {
       contentType: 'application/json',
       filename: 'style.json',
     });
@@ -2163,41 +1917,29 @@ pages:
     });
 
     const formA = createFormData({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        path: 'a',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      },
-    });
-    formA.append('sharedStyle', Buffer.from('this is invalid css'), {
-      contentType: 'text/css',
-      filename: 'style.css',
+      yaml: stripIndent(`
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: testblock
+      `),
+      sharedStyle: 'this is invalid css',
     });
     authorizeStudio();
     const responseA = await request.patch(`/api/apps/${app.id}`, formA);
 
     const formB = createFormData({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        path: 'a',
-        pages: [
-          {
-            name: 'Test Page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      },
-    });
-    formB.append('sharedStyle', Buffer.from('.foo { margin: 0 auto; }'), {
-      contentType: 'application/json',
-      filename: 'style.json',
+      yaml: stripIndent(`
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: testblock
+      `),
+      sharedStyle: '.foo { margin: 0 auto; }',
     });
     authorizeStudio();
     const responseB = await request.patch(`/api/apps/${app.id}`, formB);
@@ -2271,21 +2013,15 @@ describe('deleteApp', () => {
       '/api/apps',
       createFormData({
         OrganizationId: organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.0',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
       }),
     );
 
@@ -2775,13 +2511,10 @@ describe('setAppBlockStyle', () => {
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append('style', Buffer.from('body { color: yellow; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form);
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
+      style: 'body { color: yellow; }',
+    });
 
     const style = await request.get(`/api/apps/${id}/style/block/@appsemble/testblock`);
 
@@ -2808,25 +2541,19 @@ describe('setAppBlockStyle', () => {
       { raw: true },
     );
 
-    const formA = new FormData();
-    formA.append('style', Buffer.from('body { color: blue; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const responseA = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, formA);
+    const responseA = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
+      style: 'body { color: blue; }',
+    });
     expect(responseA).toMatchObject({
       status: 204,
       data: '',
     });
 
-    const formB = new FormData();
-    formB.append('style', Buffer.from(' '), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const responseB = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, formB);
+    const responseB = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
+      style: ' ',
+    });
 
     expect(responseB).toMatchObject({
       status: 204,
@@ -2863,14 +2590,10 @@ describe('setAppBlockStyle', () => {
       { raw: true },
     );
 
-    const form = new FormData();
-    form.append('style', Buffer.from('body { color: yellow; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
-
     authorizeStudio();
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form);
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
+      style: 'body { color: yellow; }',
+    });
 
     expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
   });
@@ -2892,10 +2615,10 @@ describe('setAppBlockStyle', () => {
       OrganizationId: organization.id,
     });
 
-    const form = new FormData();
-    form.append('style', Buffer.from('invalidCss'));
     authorizeStudio();
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/styledblock`, form);
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/styledblock`, {
+      style: 'invalidCss',
+    });
 
     expect(response).toMatchObject({
       status: 400,
@@ -2915,13 +2638,10 @@ describe('setAppBlockStyle', () => {
       version: '0.0.0',
     });
 
-    const form = new FormData();
-    form.append('style', Buffer.from('body { color: red; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const response = await request.post('/api/apps/0/style/block/@appsemble/block', form);
+    const response = await request.post('/api/apps/0/style/block/@appsemble/block', {
+      style: 'body { color: red; }',
+    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -2942,13 +2662,10 @@ describe('setAppBlockStyle', () => {
       OrganizationId: organization.id,
     });
 
-    const form = new FormData();
-    form.append('style', Buffer.from('body { color: red; }'), {
-      contentType: 'text/css',
-      filename: 'style.css',
-    });
     authorizeStudio();
-    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/doesntexist`, form);
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/doesntexist`, {
+      style: 'body { color: red; }',
+    });
 
     expect(response).toMatchObject({
       status: 404,
@@ -2993,21 +2710,15 @@ describe('setAppBlockStyle', () => {
       `/api/apps/${id}`,
       createFormData({
         'organization.id': organization.id,
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: '@non/existent',
-                  version: '0.0.0',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: '@non/existent'
+                  version: 0.0.0'
+        `),
       }),
     );
 
@@ -3029,21 +2740,15 @@ describe('setAppBlockStyle', () => {
     const response = await request.patch(
       `/api/apps/${id}`,
       createFormData({
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [
-                {
-                  type: 'test',
-                  version: '0.0.1',
-                },
-              ],
-            },
-          ],
-        },
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.1
+        `),
       }),
     );
 
@@ -3051,10 +2756,18 @@ describe('setAppBlockStyle', () => {
       status: 400,
       data: {
         data: {
-          'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
+          errors: [
+            {
+              instance: 'test',
+              message: 'is not a known block type',
+              path: ['pages', 0, 'blocks', 0, 'type'],
+              property: 'instance.pages[0].blocks[0].type',
+              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+            },
+          ],
         },
         error: 'Bad Request',
-        message: 'Appsemble definition is invalid.',
+        message: 'App validation failed',
         statusCode: 400,
       },
     });

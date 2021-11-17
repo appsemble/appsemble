@@ -1,4 +1,4 @@
-import { defaultLocale, validateLanguage } from '@appsemble/utils';
+import { defaultLocale } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import tags from 'language-tags';
@@ -10,9 +10,7 @@ export async function getStudioMessages(ctx: Context): Promise<void> {
     pathParams: { language },
   } = ctx;
 
-  try {
-    validateLanguage(language);
-  } catch {
+  if (!tags.check(language)) {
     throw badRequest(`Language code “${language}” is invalid`);
   }
 

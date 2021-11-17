@@ -8,6 +8,11 @@ interface SharedTeamParams {
    * The ID of the app to create the team for.
    */
   appId: number;
+
+  /**
+   * The remote server to create the team on.
+   */
+  remote: string;
 }
 
 interface SharedExistingTeamParams extends SharedTeamParams {
@@ -75,21 +80,26 @@ export function resolveAnnotations(annotations: string[]): Record<string, string
 export async function createTeam({
   appId,
   name,
+  remote,
   annotations = [],
 }: CreateTeamParams): Promise<void> {
   logger.info(`Creating team ${name}`);
   const {
     data: { id },
-  } = await axios.post<Team>(`/api/apps/${appId}/teams`, {
-    name,
-    annotations: resolveAnnotations(annotations),
-  });
+  } = await axios.post<Team>(
+    `/api/apps/${appId}/teams`,
+    {
+      name,
+      annotations: resolveAnnotations(annotations),
+    },
+    { baseURL: remote },
+  );
   logger.info(`Successfully created team ${name} with ID ${id}`);
 }
 
-export async function deleteTeam({ appId, id }: SharedExistingTeamParams): Promise<void> {
+export async function deleteTeam({ appId, id, remote }: SharedExistingTeamParams): Promise<void> {
   logger.info(`Deleting team ${id}`);
-  await axios.delete(`/api/apps/${appId}/teams/${id}`);
+  await axios.delete(`/api/apps/${appId}/teams/${id}`, { baseURL: remote });
   logger.info(`Successfully deleted team ${id}`);
 }
 
@@ -97,30 +107,41 @@ export async function updateTeam({
   appId,
   id,
   name,
+  remote,
   annotations = [],
 }: UpdateTeamParams): Promise<void> {
   logger.info(`Updating team ${id}`);
-  await axios.put(`/api/apps/${appId}/teams/${id}`, {
-    name,
-    annotations: resolveAnnotations(annotations),
-  });
+  await axios.put(
+    `/api/apps/${appId}/teams/${id}`,
+    {
+      name,
+      annotations: resolveAnnotations(annotations),
+    },
+    { baseURL: remote },
+  );
   logger.info(`Successfully updated team ${id}`);
 }
 
-export async function inviteMember({ appId, id, user }: SharedTeamMemberParams): Promise<void> {
+export async function inviteMember({
+  appId,
+  id,
+  remote,
+  user,
+}: SharedTeamMemberParams): Promise<void> {
   logger.info(`Inviting ${user} to team ${id}`);
-  await axios.post(`/api/apps/${appId}/teams/${id}/members`, { id: user });
+  await axios.post(`/api/apps/${appId}/teams/${id}/members`, { id: user }, { baseURL: remote });
   logger.info(`Successfully invited ${user} to team ${id}`);
 }
 
 export async function updateMember({
   appId,
   id,
+  remote,
   role,
   user,
 }: UpdateTeamMemberParams): Promise<void> {
   logger.info(`Updating ${user}’s role in team ${id} to ${role}`);
-  await axios.put(`/api/apps/${appId}/teams/${id}/members/${user}`, { role });
+  await axios.put(`/api/apps/${appId}/teams/${id}/members/${user}`, { role }, { baseURL: remote });
   logger.info(`Successfully updated ${user} in team ${id}`);
 }
 

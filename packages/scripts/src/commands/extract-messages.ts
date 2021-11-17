@@ -12,7 +12,7 @@ export async function handler(): Promise<void> {
   await Promise.all(
     Object.entries(translations).map(([locale, messages]) => {
       logger.info(`Updating messages for ${locale}`);
-      return writeData(join('i18n', `${locale}.json`), messages);
+      return writeData(join('i18n', `${locale}.json`), messages, { compare: null });
     }),
   );
   logger.info('Updated messages');

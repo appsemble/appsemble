@@ -22,11 +22,8 @@ export const paths: OpenAPIV3.PathsObject = {
           'multipart/form-data': {
             schema: {
               type: 'object',
-              required: ['OrganizationId', 'definition'],
+              required: ['OrganizationId', 'yaml'],
               properties: {
-                definition: {
-                  $ref: '#/components/schemas/AppDefinition',
-                },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
                 },
@@ -44,7 +41,6 @@ export const paths: OpenAPIV3.PathsObject = {
                 },
                 yaml: {
                   type: 'string',
-                  format: 'binary',
                   description: 'The original YAML definition used to define the app.',
                 },
                 OrganizationId: {
@@ -67,12 +63,10 @@ export const paths: OpenAPIV3.PathsObject = {
                 },
                 coreStyle: {
                   type: 'string',
-                  format: 'binary',
                   description: 'The custom style to apply to the core app.',
                 },
                 sharedStyle: {
                   type: 'string',
-                  format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
                 },
                 screenshots: {
@@ -168,9 +162,6 @@ export const paths: OpenAPIV3.PathsObject = {
             schema: {
               type: 'object',
               properties: {
-                definition: {
-                  $ref: '#/components/schemas/AppDefinition',
-                },
                 domain: {
                   $ref: '#/components/schemas/App/properties/domain',
                 },
@@ -192,7 +183,6 @@ export const paths: OpenAPIV3.PathsObject = {
                 },
                 yaml: {
                   type: 'string',
-                  format: 'binary',
                   description: 'The original YAML definition used to define the app.',
                 },
                 icon: {
@@ -211,12 +201,10 @@ export const paths: OpenAPIV3.PathsObject = {
                 },
                 coreStyle: {
                   type: 'string',
-                  format: 'binary',
                   description: 'The custom style to apply to the core app.',
                 },
                 sharedStyle: {
                   type: 'string',
-                  format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
                 },
                 screenshots: {
@@ -880,14 +868,13 @@ This will return a 404 if the user has not uploaded one.`,
       requestBody: {
         description: 'The new app block stylesheet.',
         content: {
-          'multipart/form-data': {
+          'application/json': {
             schema: {
               type: 'object',
               required: ['style'],
               properties: {
                 style: {
                   type: 'string',
-                  format: 'binary',
                 },
                 force: {
                   type: 'boolean',

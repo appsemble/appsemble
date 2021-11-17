@@ -440,7 +440,7 @@ describe('iterApp', () => {
     expect(result).toBe(false);
   });
 
-  it('should abort iteration if a callback returns true', () => {
+  it('should abort page iteration if a callback returns true', () => {
     const onPage = jest.fn().mockReturnValue(true);
 
     const app: AppDefinition = {
@@ -462,6 +462,47 @@ describe('iterApp', () => {
 
     expect(onPage).toHaveBeenCalledTimes(1);
     expect(onPage).toHaveBeenCalledWith(app.pages[0], ['pages', 0]);
+    expect(result).toBe(true);
+  });
+
+  it('should iterate over cron jobs', () => {
+    const onAction = jest.fn();
+
+    const app: AppDefinition = {
+      name: 'App',
+      defaultPage: 'Page 1',
+      pages: [],
+      cron: {
+        foo: { schedule: '', action: { type: 'noop' } },
+        bar: { schedule: '', action: { type: 'noop' } },
+      },
+    };
+
+    const result = iterApp(app, { onAction });
+
+    expect(onAction).toHaveBeenCalledTimes(2);
+    expect(onAction).toHaveBeenCalledWith(app.cron.foo.action, ['cron', 'foo', 'action']);
+    expect(onAction).toHaveBeenCalledWith(app.cron.bar.action, ['cron', 'bar', 'action']);
+    expect(result).toBe(false);
+  });
+
+  it('should abort cron iteration if a callback returns true', () => {
+    const onAction = jest.fn().mockReturnValue(true);
+
+    const app: AppDefinition = {
+      name: 'App',
+      defaultPage: 'Page 1',
+      pages: [],
+      cron: {
+        foo: { schedule: '', action: { type: 'noop' } },
+        bar: { schedule: '', action: { type: 'noop' } },
+      },
+    };
+
+    const result = iterApp(app, { onAction });
+
+    expect(onAction).toHaveBeenCalledTimes(1);
+    expect(onAction).toHaveBeenCalledWith(app.cron.foo.action, ['cron', 'foo', 'action']);
     expect(result).toBe(true);
   });
 });

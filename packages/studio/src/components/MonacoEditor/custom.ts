@@ -8,6 +8,7 @@ import 'monaco-editor/esm/vs/editor/contrib/folding/folding';
 import 'monaco-editor/esm/vs/editor/contrib/format/formatActions';
 import 'monaco-editor/esm/vs/editor/contrib/hover/hover';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
+import 'monaco-editor/esm/vs/language/css/monaco.contribution';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 
 declare global {
@@ -42,7 +43,7 @@ setDiagnosticsOptions({
   enableSchemaRequest: true,
   schemas: [
     {
-      fileMatch: ['*'],
+      fileMatch: ['app.yaml'],
       // Not sure why this is needed, but it’s required and its value may not match the ref.
       uri: String(new URL('/api.json#/components/schemas/AppDefinition', window.location.origin)),
     },

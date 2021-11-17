@@ -2,10 +2,10 @@ import { Dirent, promises as fs, Stats } from 'fs';
 import { dirname, extname, join } from 'path';
 
 import { compareStrings } from '@appsemble/utils';
-import yaml from 'js-yaml';
 import parseJson from 'parse-json';
 import sortKeys from 'sort-keys';
 import { Promisable } from 'type-fest';
+import { parse, stringify } from 'yaml';
 
 import { AppsembleError } from '.';
 
@@ -45,7 +45,10 @@ export async function readData<R>(path: string): Promise<[R, string]> {
     throw new AppsembleError(`Unknown file extension: ${path}`);
   }
   try {
-    return [ext === '.json' ? parseJson(content) : (yaml.load(content) as unknown as R), content];
+    return [
+      ext === '.json' ? parseJson(content) : (parse(content, { maxAliasCount: 10_000 }) as R),
+      content,
+    ];
   } catch (error: unknown) {
     throw new AppsembleError(`Error parsing ${path}\n${(error as Error).message}`);
   }
@@ -56,6 +59,13 @@ interface WriteDataOptions {
    * If false, don’t sort the object keys.
    */
   readonly sort?: boolean;
+
+  /**
+   * A comparison function to use for sorting keys.
+   *
+   * By default natural sorting will be used.
+   */
+  readonly compare?: ((a: string, b: string) => number) | null;
 }
 
 /**
@@ -71,26 +81,21 @@ interface WriteDataOptions {
 export async function writeData(
   path: string,
   data: unknown,
-  { sort = true }: WriteDataOptions = {},
+  { compare = compareStrings, sort = true }: WriteDataOptions = {},
 ): Promise<string> {
-  const sorted = sort ? sortKeys(data, { deep: true, compare: compareStrings }) : data;
+  const sorted = sort ? sortKeys(data, { deep: true, compare: compare || undefined }) : data;
   let buffer: string;
   try {
     const { format, getFileInfo, resolveConfig } = await import('prettier');
     const { inferredParser } = await getFileInfo(path, { resolveConfig: true });
     const prettierOptions = await resolveConfig(path, { editorconfig: true });
     prettierOptions.parser = inferredParser;
-    buffer =
-      inferredParser === 'yaml'
-        ? yaml.dump(sorted, { lineWidth: -1 })
-        : JSON.stringify(sorted, undefined, 2);
+    buffer = inferredParser === 'yaml' ? stringify(sorted) : JSON.stringify(sorted, undefined, 2);
     buffer = format(buffer, prettierOptions);
   } catch {
     const ext = extname(path);
     buffer =
-      ext === '.yml' || ext === '.yaml'
-        ? yaml.dump(sorted, { lineWidth: -1 })
-        : JSON.stringify(sorted, undefined, 2);
+      ext === '.yml' || ext === '.yaml' ? stringify(sorted) : JSON.stringify(sorted, undefined, 2);
   }
   await fs.mkdir(dirname(path), { recursive: true });
   await fs.writeFile(path, buffer);

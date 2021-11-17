@@ -10,18 +10,18 @@ import {
   SimpleSubmit,
   TextAreaField,
   useConfirmation,
-  useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { App, SSLStatus, SSLStatusMap } from '@appsemble/types';
+import { App, SSLStatus } from '@appsemble/types';
 import { domainPattern, googleAnalyticsIDPattern, normalize, toUpperCase } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useEffect, useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { useApp } from '..';
+import { useSSLStatus } from '../../../../components/useSSLStatus';
 import { IconTool } from './IconTool';
 import styles from './index.module.css';
 import { messages } from './messages';
@@ -65,21 +65,19 @@ export function SettingsPage(): ReactElement {
   const { lang } = useParams<{ lang: string }>();
 
   const pathDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
-  const sslParams = new URLSearchParams({ domains: pathDomain });
+  const domains = [pathDomain];
   if (app.domain) {
-    sslParams.append('domains', app.domain);
+    domains.push(app.domain);
   }
 
-  const { data: sslStatus, refresh: refreshSSLStatus } = useData<SSLStatusMap>(
-    `/api/ssl?${sslParams}`,
-  );
+  const sslStatus = useSSLStatus(...domains);
 
   // This is needed, because the app domain may be null.
   const defaultValues = useMemo<FormValues>(
     () => ({
       maskableIcon: null,
       domain: app.domain || '',
-      googleAnalyticsID: '',
+      googleAnalyticsID: app.googleAnalyticsID || '',
       icon: null,
       iconBackground: app.iconBackground,
       path: app.path,
@@ -157,18 +155,6 @@ export function SettingsPage(): ReactElement {
       }
     },
   });
-
-  useEffect(() => {
-    if (sslStatus) {
-      for (const status of Object.values(sslStatus)) {
-        if (status !== 'ready') {
-          const timeout = setTimeout(refreshSSLStatus, 30_000);
-
-          return () => clearTimeout(timeout);
-        }
-      }
-    }
-  }, [refreshSSLStatus, sslStatus]);
 
   return (
     <>

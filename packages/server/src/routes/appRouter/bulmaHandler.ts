@@ -1,16 +1,24 @@
-import { Theme } from '@appsemble/types';
+import { Theme as ThemeType } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
+import bulma from 'bulma/package.json';
 import { Context } from 'koa';
 import sass from 'sass';
+import stripBom from 'strip-bom';
+
+import { Theme } from '../../models';
 
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');
 const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass').replace(/\\/g, '/');
 const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').replace(/\\/g, '/');
 
-interface QueryParamTheme extends Omit<Partial<Theme>, 'font'> {
+interface QueryParamTheme extends Omit<Partial<ThemeType>, 'font'> {
   fontFamily?: string;
   fontSource?: string;
+}
+
+function getQueryParameter<T>(value: T | T[]): T {
+  return Array.isArray(value) ? value[0] : value;
 }
 
 /**
@@ -76,13 +84,45 @@ function processStyle(theme: QueryParamTheme): string {
  *
  * @param ctx - The Koa context.
  */
-export function bulmaHandler(ctx: Context): void {
-  const { css } = sass.renderSync({
-    data: processStyle(ctx.query),
-    outputStyle: 'compressed',
-  });
+export async function bulmaHandler(ctx: Context): Promise<void> {
+  const { query } = ctx;
+  const theme: Omit<Partial<ThemeType>, 'font'> & {
+    bulmaVersion: string;
+    fontFamily: string;
+    fontSource: string;
+  } = {
+    bulmaVersion: bulma.version,
+    primaryColor: (getQueryParameter(query.primaryColor) || baseTheme.primaryColor).toLowerCase(),
+    linkColor: (getQueryParameter(query.linkColor) || baseTheme.linkColor).toLowerCase(),
+    successColor: (getQueryParameter(query.successColor) || baseTheme.successColor).toLowerCase(),
+    infoColor: (getQueryParameter(query.infoColor) || baseTheme.infoColor).toLowerCase(),
+    warningColor: (getQueryParameter(query.warningColor) || baseTheme.warningColor).toLowerCase(),
+    dangerColor: (getQueryParameter(query.dangerColor) || baseTheme.dangerColor).toLowerCase(),
+    themeColor: (getQueryParameter(query.themeColor) || baseTheme.themeColor).toLowerCase(),
+    splashColor: (getQueryParameter(query.splashColor) || baseTheme.splashColor).toLowerCase(),
+    fontFamily: getQueryParameter(query.fontFamily) || baseTheme.font.family,
+    fontSource: getQueryParameter(query.fontSource) || baseTheme.font.source,
+  };
+
+  const result = await Theme.findOne({ where: theme });
+  let css = result?.css;
+  if (!css) {
+    css = stripBom(
+      String(
+        sass.renderSync({
+          data: processStyle(theme),
+          outputStyle: 'compressed',
+        }).css,
+      ),
+    );
+  }
 
   ctx.body = css;
   ctx.type = 'text/css';
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
+
+  if (!result) {
+    // This is not awaited on purpose.
+    Theme.create({ ...theme, css });
+  }
 }

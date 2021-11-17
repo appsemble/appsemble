@@ -504,7 +504,7 @@ export interface ResourceDefinition {
   /**
    * The JSON schema to validate resources against before sending it to the backend.
    */
-  schema?: OpenAPIV3.SchemaObject;
+  schema: OpenAPIV3.SchemaObject;
 
   /**
    * The URL to post the resource to.
@@ -1255,6 +1255,11 @@ export interface App {
    * Whether the app should be visible for users outside of the app’s organization.
    */
   private: boolean;
+
+  /**
+   * The Google analytics ID of the app.
+   */
+  googleAnalyticsID?: string;
 
   /**
    * Whether the app is currently locked.

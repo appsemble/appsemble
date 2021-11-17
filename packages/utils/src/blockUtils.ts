@@ -1,6 +1,7 @@
-import { BlockDefinition } from '@appsemble/types';
+import { AppDefinition, BlockDefinition } from '@appsemble/types';
 
 import { blockNamePattern } from './constants';
+import { iterApp } from './iterApp';
 
 export type IdentifiableBlock = Pick<BlockDefinition, 'type' | 'version'>;
 
@@ -46,23 +47,26 @@ export function parseBlockName(name: string): [string, string] {
 }
 
 /**
- * Filter blocks unique by their type and version.
+ * Find unique block types in an app.
  *
- * @param blocks - Input blocks.
+ * @param definition - The app definition to find unique blocks for.
  * @returns Partial unique blocks. Only the type and version are returned.
  */
-export function filterBlocks(blocks: IdentifiableBlock[]): IdentifiableBlock[] {
+export function getAppBlocks(definition: AppDefinition): IdentifiableBlock[] {
   const visited = new Set();
   const result: IdentifiableBlock[] = [];
 
-  for (const { type, version } of blocks) {
-    const name = normalizeBlockName(type);
-    const asString = `${name}@${version}`;
-    if (!visited.has(asString)) {
-      result.push({ type: name, version });
-    }
-    visited.add(asString);
-  }
+  iterApp(definition, {
+    onBlock({ type, version }) {
+      const name = normalizeBlockName(type);
+      const asString = `${name}@${version}`;
+      if (!visited.has(asString)) {
+        result.push({ type: name, version });
+      }
+      visited.add(asString);
+    },
+  });
+
   return result;
 }
 

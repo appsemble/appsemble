@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { AppDefinition, AppsembleMessages, App as AppType } from '@appsemble/types';
-import yaml from 'js-yaml';
 import { omit } from 'lodash';
 import {
   AllowNull,
@@ -19,6 +18,7 @@ import {
   Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { stringify } from 'yaml';
 
 import {
   AppBlockStyle,
@@ -185,6 +185,7 @@ export class App extends Model {
       $created: this.created.toISOString(),
       $updated: this.updated.toISOString(),
       domain: this.domain || null,
+      googleAnalyticsID: this.googleAnalyticsID,
       path: this.path,
       private: Boolean(this.private),
       locked: Boolean(this.locked),
@@ -196,7 +197,7 @@ export class App extends Model {
       definition,
       yaml:
         this.AppSnapshots?.[0]?.yaml ??
-        (!omittedValues.includes('yaml') && yaml.dump(this.definition)),
+        (!omittedValues.includes('yaml') && stringify(this.definition)),
       showAppsembleLogin: this.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: this.showAppsembleOAuth2Login ?? true,
       rating:

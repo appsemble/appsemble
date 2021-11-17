@@ -3,8 +3,7 @@ import { randomBytes } from 'crypto';
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockManifest } from '@appsemble/types';
 import {
-  AppsembleValidationError,
-  BlockMap,
+  IdentifiableBlock,
   normalize,
   parseBlockName,
   Permission,
@@ -14,14 +13,14 @@ import {
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
-import jsYaml from 'js-yaml';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
-import { isEqual, uniqWith } from 'lodash';
+import { isEqual } from 'lodash';
 import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import { generateVAPIDKeys } from 'web-push';
+import { parse } from 'yaml';
 
 import {
   App,
@@ -42,19 +41,17 @@ import { blockVersionToJson, syncBlock } from '../utils/block';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
+import { handleValidatorResult } from '../utils/jsonschema';
 
-async function getBlockVersions(blocks: BlockMap): Promise<BlockManifest[]> {
-  const uniqueBlocks = uniqWith(
-    Object.values(blocks).map(({ type, version }) => {
-      const [OrganizationId, name] = parseBlockName(type);
-      return {
-        name,
-        OrganizationId,
-        version,
-      };
-    }),
-    isEqual,
-  );
+async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
+  const uniqueBlocks = blocks.map(({ type, version }) => {
+    const [OrganizationId, name] = parseBlockName(type);
+    return {
+      name,
+      OrganizationId,
+      version,
+    };
+  });
   const blockVersions = await BlockVersion.findAll({
     attributes: { exclude: ['id'] },
     where: { [Op.or]: uniqueBlocks },
@@ -80,10 +77,6 @@ function handleAppValidationError(error: Error, app: Partial<App>): never {
     throw conflict(`Another app with path “@${app.OrganizationId}/${app.path}” already exists`);
   }
 
-  if (error instanceof AppsembleValidationError) {
-    throw badRequest('Appsemble definition is invalid.', error.data || error.message);
-  }
-
   if (error instanceof StyleValidationError) {
     throw badRequest('Provided CSS was invalid.');
   }
@@ -101,11 +94,11 @@ function handleAppValidationError(error: Error, app: Partial<App>): never {
 
 export async function createApp(ctx: Context): Promise<void> {
   const {
+    openApi,
     request: {
       body: {
         OrganizationId,
         coreStyle,
-        definition,
         domain,
         googleAnalyticsID,
         icon,
@@ -123,19 +116,33 @@ export async function createApp(ctx: Context): Promise<void> {
   } = ctx;
 
   let result: Partial<App>;
+  await checkRole(ctx, OrganizationId, Permission.CreateApps);
 
   try {
+    const definition = parse(yaml, { maxAliasCount: 10_000 });
+
+    handleValidatorResult(
+      openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+        throw: false,
+      }),
+      'App validation failed',
+    );
+    handleValidatorResult(
+      await validateAppDefinition(definition, getBlockVersions),
+      'App validation failed',
+    );
+
     const path = normalize(definition.name);
     const keys = generateVAPIDKeys();
 
     result = {
       definition,
       OrganizationId,
-      coreStyle: validateStyle(coreStyle?.contents),
+      coreStyle: validateStyle(coreStyle),
       googleAnalyticsID,
       longDescription,
       iconBackground: iconBackground || '#ffffff',
-      sharedStyle: validateStyle(sharedStyle?.contents),
+      sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
       private: Boolean(isPrivate),
       template: Boolean(template),
@@ -152,18 +159,6 @@ export async function createApp(ctx: Context): Promise<void> {
     if (maskableIcon) {
       result.maskableIcon = maskableIcon.contents;
     }
-
-    if (yaml) {
-      try {
-        // The YAML should be valid YAML.
-        jsYaml.load(yaml);
-      } catch {
-        throw badRequest('Provided YAML was invalid.');
-      }
-    }
-
-    await checkRole(ctx, OrganizationId, Permission.CreateApps);
-    await validateAppDefinition(definition, getBlockVersions);
 
     for (let i = 1; i < 11; i += 1) {
       const p = i === 1 ? path : `${path}-${i}`;
@@ -183,9 +178,8 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await transactional(async (transaction) => {
         record = await App.create(result, { transaction });
-        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.dump(definition);
         record.AppSnapshots = [
-          await AppSnapshot.create({ AppId: record.id, yaml: newYaml }, { transaction }),
+          await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
         ];
         logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
         record.AppScreenshots = screenshots?.length
@@ -424,11 +418,11 @@ export async function queryMyApps(ctx: Context): Promise<void> {
 
 export async function patchApp(ctx: Context): Promise<void> {
   const {
+    openApi,
     pathParams: { appId },
     request: {
       body: {
         coreStyle,
-        definition,
         domain,
         googleAnalyticsID,
         icon,
@@ -474,12 +468,25 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   checkAppLock(ctx, dbApp);
 
+  const checkPermissions: Permission[] = [];
+
   try {
     result = {};
 
-    if (definition) {
+    if (yaml) {
+      checkPermissions.push(Permission.EditApps);
+      const definition = parse(yaml, { maxAliasCount: 10_000 });
+      handleValidatorResult(
+        openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+          throw: false,
+        }),
+        'App validation failed',
+      );
+      handleValidatorResult(
+        await validateAppDefinition(definition, getBlockVersions),
+        'App validation failed',
+      );
       result.definition = definition;
-      await validateAppDefinition(definition, getBlockVersions);
     }
 
     if (path) {
@@ -515,11 +522,11 @@ export async function patchApp(ctx: Context): Promise<void> {
     }
 
     if (coreStyle) {
-      result.coreStyle = validateStyle(coreStyle.contents);
+      result.coreStyle = validateStyle(coreStyle);
     }
 
     if (sharedStyle) {
-      result.sharedStyle = validateStyle(sharedStyle.contents);
+      result.sharedStyle = validateStyle(sharedStyle);
     }
 
     if (icon) {
@@ -534,23 +541,6 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.iconBackground = iconBackground;
     }
 
-    if (yaml) {
-      let appFromYaml;
-      try {
-        // The YAML should be valid YAML.
-        appFromYaml = jsYaml.load(yaml.contents || yaml);
-      } catch {
-        throw badRequest('Provided YAML was invalid.');
-      }
-
-      // The YAML should be the same when converted to JSON.
-      if (!isEqual(appFromYaml, definition)) {
-        throw badRequest('Provided YAML was not equal to definition when converted.');
-      }
-    }
-
-    const checkPermissions: Permission[] = [];
-
     if (
       domain !== undefined ||
       path !== undefined ||
@@ -563,18 +553,13 @@ export async function patchApp(ctx: Context): Promise<void> {
       checkPermissions.push(Permission.EditAppSettings);
     }
 
-    if (yaml || definition) {
-      checkPermissions.push(Permission.EditApps);
-    }
-
     await checkRole(ctx, dbApp.OrganizationId, checkPermissions);
 
     await transactional(async (transaction) => {
       await dbApp.update(result, { where: { id: appId }, transaction });
-      if (definition) {
-        const newYaml = yaml ? yaml.contents?.toString('utf8') || yaml : jsYaml.dump(definition);
+      if (yaml) {
         const snapshot = await AppSnapshot.create(
-          { AppId: dbApp.id, UserId: user.id, yaml: newYaml },
+          { AppId: dbApp.id, UserId: user.id, yaml },
           { transaction },
         );
         dbApp.AppSnapshots = [snapshot];
@@ -947,7 +932,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
       body: { style },
     },
   } = ctx;
-  const css = String(style.contents).trim();
+  const css = String(style).trim();
 
   try {
     const app = await App.findByPk(appId);

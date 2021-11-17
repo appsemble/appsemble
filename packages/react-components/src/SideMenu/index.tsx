@@ -20,13 +20,19 @@ import { useEventListener } from '../useEventListener';
 import styles from './index.module.css';
 import { messages } from './messages';
 
-type SideMenuContext = [
-  isOpen: boolean,
-  toggle: () => void,
-  setMenu: Dispatch<SetStateAction<ReactElement>>,
-];
+interface SideMenuContext {
+  isOpen: boolean;
+  toggle: () => void;
+  disable: () => void;
+  setMenu: Dispatch<SetStateAction<ReactElement>>;
+}
 
-const Context = createContext<SideMenuContext>([false, noop, noop]);
+const Context = createContext<SideMenuContext>({
+  isOpen: false,
+  toggle: noop,
+  disable: noop,
+  setMenu: noop,
+});
 
 interface SideMenuProviderProps {
   /**
@@ -69,7 +75,17 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
   );
 
   return (
-    <Context.Provider value={useMemo(() => [enabled, toggle, setMenu], [enabled, toggle])}>
+    <Context.Provider
+      value={useMemo(
+        () => ({
+          isOpen: enabled,
+          disable,
+          toggle,
+          setMenu,
+        }),
+        [enabled, disable, toggle],
+      )}
+    >
       <div className={styles.sideMenuWrapper}>
         <div
           className={classNames(styles.backdrop, { [styles.closed]: !enabled })}
@@ -91,7 +107,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
  * A Bulma styled menu toggle.
  */
 export function SideMenuButton(): ReactElement {
-  const [isOpen, toggle] = useContext(Context);
+  const { isOpen, toggle } = useContext(Context);
   const { formatMessage } = useIntl();
 
   return (
@@ -114,11 +130,21 @@ export function SideMenuButton(): ReactElement {
  * @param menu - The menu section to add to the side navigation.
  */
 export function useSideMenu(menu: ReactElement): void {
-  const [, , setMenu] = useContext(Context);
+  const { setMenu } = useContext(Context);
 
   useEffect(() => {
     setMenu(menu);
 
     return () => setMenu(null);
   }, [menu, setMenu]);
+}
+
+/**
+ * Access the current state of the side menu.
+ *
+ * @returns The state of the side menu.
+ */
+export function useSideMenuState(): Pick<SideMenuContext, 'disable' | 'isOpen' | 'toggle'> {
+  const { disable, isOpen, toggle } = useContext(Context);
+  return { isOpen, disable, toggle };
 }

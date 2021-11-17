@@ -1,230 +1,89 @@
 import {
-  Loader,
+  Button,
+  Tabs,
   useBeforeUnload,
   useConfirmation,
   useData,
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { App, AppDefinition, BlockManifest, SSLStatusMap } from '@appsemble/types';
-import { filterBlocks, getAppBlocks, schemas, validateStyle } from '@appsemble/utils';
-import axios, { AxiosError } from 'axios';
+import { App, AppDefinition } from '@appsemble/types';
+import { getAppBlocks } from '@appsemble/utils';
+import axios from 'axios';
 import equal from 'fast-deep-equal';
-import { dump, load } from 'js-yaml';
-import { Validator } from 'jsonschema';
-import { editor } from 'monaco-editor';
+import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { parse } from 'yaml';
 
 import { useApp } from '..';
+import { AppPreview } from '../../../../components/AppPreview';
 import { MonacoEditor } from '../../../../components/MonacoEditor';
+import { getCachedBlockVersions } from '../../../../utils/blockRegistry';
 import { getAppUrl } from '../../../../utils/getAppUrl';
-import { EditorNavBar } from './EditorNavBar';
+import { EditorTab } from './EditorTab';
 import styles from './index.module.css';
 import { messages } from './messages';
-
-const validator = new Validator();
-
-for (const [name, schema] of Object.entries(schemas)) {
-  // This is only safe, because our schema names don’t contain special characters.
-  validator.addSchema(schema, `#/components/schemas/${name}`);
-}
-
-/**
- * These properties are passed to the allow attribute of the app preview. For a full list, see
- * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy#directives
- */
-const allow = [
-  'autoplay',
-  'camera',
-  'geolocation',
-  'microphone',
-  'midi',
-  'payment',
-  'picture-in-picture',
-  'sync-xhr',
-  'usb',
-];
+import './appValidation';
 
 export default function EditPage(): ReactElement {
   useMeta(messages.title);
 
   const { app, setApp } = useApp();
+  const { id } = app;
 
-  const [appDefinition, setAppDefinition] = useState<string>(null);
-  const [coreStyle, setCoreStyle] = useState('');
-  const [sharedStyle, setSharedStyle] = useState('');
-  const [initialDefinition, setInitialDefinition] = useState('');
-  const [valid, setValid] = useState(false);
-  const [dirty, setDirty] = useState(true);
-
-  const frame = useRef<HTMLIFrameElement>();
-  const history = useHistory();
-  const { formatMessage } = useIntl();
-  const location = useLocation();
-  const params = useParams<{ id: string }>();
-  const push = useMessages();
-
-  useEffect(() => {
-    const { id } = params;
-
-    if (!location.hash) {
-      history.push('#editor');
-    }
-
-    const getStyles = async (): Promise<void> => {
-      try {
-        const { data: coreStyleData } = await axios.get<string>(`/api/apps/${id}/style/core`);
-        const { data: sharedStyleData } = await axios.get<string>(`/api/apps/${id}/style/shared`);
-
-        setCoreStyle(coreStyleData);
-        setSharedStyle(sharedStyleData);
-      } catch (error: unknown) {
-        const { response } = error as AxiosError;
-        if (response?.status === 404 || response?.status === 401) {
-          push(formatMessage(messages.appNotFound));
-        } else {
-          push(formatMessage(messages.error));
-        }
-      }
-    };
-
-    getStyles();
-
-    // Destructuring path, and organizationId also hides these technical details for the user
-    const { definition } = app;
-    let { yaml: yamlDefinition } = app;
-
-    if (!yamlDefinition) {
-      yamlDefinition = dump(definition);
-      push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
-    }
-
-    setAppDefinition(yamlDefinition);
-    setInitialDefinition(yamlDefinition);
-  }, [app, history, formatMessage, location.hash, params, push]);
-
-  const onSave = useCallback(async () => {
-    let definition: AppDefinition;
-    // Attempt to parse the YAML into a JSON object
-    try {
-      definition = load(appDefinition) as AppDefinition;
-    } catch {
-      push(formatMessage(messages.invalidYaml));
-      setValid(false);
-      setDirty(false);
-      return;
-    }
-
-    try {
-      validateStyle(coreStyle);
-      validateStyle(sharedStyle);
-    } catch {
-      push(formatMessage(messages.invalidStyle));
-      setValid(false);
-      setDirty(false);
-      return;
-    }
-
-    const validatorResult = validator.validate(definition, schemas.AppDefinition, { base: '#' });
-    if (!validatorResult.valid) {
-      push({
-        body: formatMessage(messages.schemaValidationFailed, {
-          properties: validatorResult.errors
-            .map((err) => err.property.replace(/^instance\./, ''))
-            .join(', '),
-        }),
-      });
-      setValid(false);
-      return;
-    }
-    try {
-      const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
-        filterBlocks(Object.values(getAppBlocks(definition))).map(async (block) => {
-          const { data } = await axios.get<BlockManifest>(
-            `/api/blocks/${block.type}/versions/${block.version}`,
-          );
-          return {
-            name: data.name,
-            version: data.version,
-            layout: data.layout,
-            files: data.files,
-            actions: data.actions,
-            events: data.events,
-            languages: data.languages,
-          };
-        }),
-      );
-      setValid(true);
-
-      // YAML and schema appear to be valid, send it to the app preview iframe
-      delete definition.anchors;
-      frame.current?.contentWindow.postMessage(
-        { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
-        getAppUrl(app.OrganizationId, app.path),
-      );
-    } catch {
-      push(formatMessage(messages.unexpected));
-      setValid(false);
-    }
-    setDirty(false);
-  }, [app, formatMessage, push, appDefinition, sharedStyle, coreStyle]);
-
-  useBeforeUnload(appDefinition !== initialDefinition);
-
-  const appDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
-  const { data: sslStatus, refresh: refreshSSLStatus } = useData<SSLStatusMap>(
-    `/api/ssl?${new URLSearchParams({ domains: appDomain })}`,
+  const [appDefinition, setAppDefinition] = useState<string>(app.yaml);
+  const { data: coreStyle, setData: setCoreStyle } = useData<string>(`/api/apps/${id}/style/core`);
+  const { data: sharedStyle, setData: setSharedStyle } = useData<string>(
+    `/api/apps/${id}/style/shared`,
   );
 
-  useEffect(() => {
-    if (sslStatus) {
-      for (const status of Object.values(sslStatus)) {
-        if (status !== 'ready') {
-          const timeout = setTimeout(refreshSSLStatus, 30_000);
+  const [appDefinitionErrorCount, setAppDefinitionErrorCount] = useState(0);
+  const [coreStyleErrorCount, setCoreStyleErrorCount] = useState(0);
+  const [sharedStyleErrorCount, setSharedStyleErrorCount] = useState(0);
 
-          return () => clearTimeout(timeout);
-        }
-      }
-    }
-  }, [refreshSSLStatus, sslStatus]);
+  const [pristine, setPristine] = useState(true);
+
+  const frame = useRef<HTMLIFrameElement>();
+  const { formatMessage } = useIntl();
+  const location = useLocation();
+  const history = useHistory();
+  const push = useMessages();
+
+  const changeTab = useCallback((event, hash: string) => history.push({ hash }), [history]);
+
+  const onSave = useCallback(async () => {
+    const definition = parse(appDefinition) as AppDefinition;
+
+    const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
+
+    // YAML and schema appear to be valid, send it to the app preview iframe
+    delete definition.anchors;
+    frame.current?.contentWindow.postMessage(
+      { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
+      getAppUrl(app.OrganizationId, app.path),
+    );
+  }, [app, appDefinition, coreStyle, sharedStyle]);
+
+  useBeforeUnload(appDefinition !== app.yaml);
 
   const uploadApp = useCallback(async () => {
-    if (!valid) {
-      return;
-    }
-
-    const { id } = params;
-    const definition = load(appDefinition) as AppDefinition;
-
     try {
       const formData = new FormData();
-      formData.append('definition', JSON.stringify(definition));
-      // The MIME type for YAML is not officially registered in IANA.
-      // For the time being, x-yaml is used. See also: http://www.iana.org/assignments/media-types/media-types.xhtml
-      formData.append('yaml', new Blob([appDefinition], { type: 'text/x-yaml' }));
-      formData.append('coreStyle', new Blob([coreStyle], { type: 'text/css' }));
-      formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
+      formData.append('yaml', appDefinition);
+      formData.append('coreStyle', coreStyle);
+      formData.append('sharedStyle', sharedStyle);
 
       const { data } = await axios.patch<App>(`/api/apps/${id}`, formData);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });
 
       // Update App State
       setApp(data);
-    } catch (error: unknown) {
-      if ((error as AxiosError).response?.status === 403) {
-        push(formatMessage(messages.forbidden));
-      } else {
-        push(formatMessage(messages.errorUpdate));
-      }
-
-      return;
+    } catch {
+      push(formatMessage(messages.errorUpdate));
     }
-
-    setDirty(true);
-    setInitialDefinition(appDefinition);
-  }, [formatMessage, params, push, appDefinition, sharedStyle, coreStyle, setApp, valid]);
+  }, [appDefinition, coreStyle, formatMessage, id, push, setApp, sharedStyle]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -236,102 +95,126 @@ export default function EditPage(): ReactElement {
   });
 
   const onUpload = useCallback(async () => {
-    if (valid) {
-      const newApp = load(appDefinition) as AppDefinition;
-      const originalApp = load(initialDefinition) as AppDefinition;
+    const newApp = parse(appDefinition) as AppDefinition;
 
-      if (!equal(newApp.resources, originalApp.resources)) {
-        promptUpdateApp();
-        return;
-      }
-
-      await uploadApp();
+    if (!equal(newApp.resources, app.definition.resources)) {
+      promptUpdateApp();
+      return;
     }
-  }, [initialDefinition, promptUpdateApp, appDefinition, uploadApp, valid]);
+
+    await uploadApp();
+  }, [appDefinition, app, uploadApp, promptUpdateApp]);
 
   const onMonacoChange = useCallback(
-    (event: editor.IModelContentChangedEvent, value: string) => {
-      switch (location.hash) {
-        case '#editor': {
+    (event, value: string, model: editor.ITextModel) => {
+      switch (String(model.uri)) {
+        case 'file:///app.yaml': {
           setAppDefinition(value);
           break;
         }
-        case '#style-core':
+        case 'file:///core.css':
           setCoreStyle(value);
           break;
-        case '#style-shared':
+        case 'file:///shared.css':
           setSharedStyle(value);
           break;
         default:
           break;
       }
 
-      setDirty(true);
+      setPristine(false);
     },
-    [location.hash],
+    [setCoreStyle, setSharedStyle],
   );
 
-  if (appDefinition == null) {
-    return <Loader />;
+  useEffect(() => {
+    const disposable = editor.onDidChangeMarkers((resources) => {
+      for (const resource of resources) {
+        const { length } = editor.getModelMarkers({ resource });
+        switch (String(resource)) {
+          case 'file:///app.yaml':
+            setAppDefinitionErrorCount(length);
+            break;
+          case 'file:///core.css':
+            setCoreStyleErrorCount(length);
+            break;
+          case 'file:///shared.css':
+            setSharedStyleErrorCount(length);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+
+    return () => disposable.dispose();
+  }, []);
+
+  const monacoProps =
+    location.hash === '#editor'
+      ? { language: 'yaml', uri: 'app.yaml', value: appDefinition }
+      : location.hash === '#style-core'
+      ? { language: 'css', uri: 'core.css', value: coreStyle }
+      : location.hash === '#style-shared'
+      ? { language: 'css', uri: 'shared.css', value: sharedStyle }
+      : undefined;
+
+  if (!monacoProps) {
+    return <Redirect to={{ ...location, hash: '#editor' }} />;
   }
 
-  const src = getAppUrl(app.OrganizationId, app.path);
-  let value;
-  let language;
-
-  switch (location.hash) {
-    case '#style-core':
-      value = coreStyle;
-      language = 'css';
-      break;
-    case '#style-shared':
-      value = sharedStyle;
-      language = 'css';
-      break;
-    case '#editor':
-    default:
-      value = appDefinition;
-      language = 'yaml';
-  }
+  const disabled = Boolean(
+    pristine ||
+      app.locked ||
+      appDefinitionErrorCount ||
+      coreStyleErrorCount ||
+      sharedStyleErrorCount,
+  );
 
   return (
     <div className={`${styles.root} is-flex`}>
       <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
-        <EditorNavBar dirty={dirty} onPreview={onSave} onUpload={onUpload} valid={valid} />
+        <div className="buttons">
+          <Button disabled={disabled} icon="vial" onClick={onSave}>
+            <FormattedMessage {...messages.preview} />
+          </Button>
+          <Button disabled={disabled} icon="save" onClick={onUpload}>
+            <FormattedMessage {...messages.publish} />
+          </Button>
+          <Button
+            component="a"
+            href={getAppUrl(app.OrganizationId, app.path, app.domain)}
+            icon="share-square"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <FormattedMessage {...messages.viewLive} />
+          </Button>
+        </div>
+        <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
+          <EditorTab errorCount={appDefinitionErrorCount} icon="file-code" value="#editor">
+            <FormattedMessage {...messages.app} />
+          </EditorTab>
+          <EditorTab errorCount={coreStyleErrorCount} icon="brush" value="#style-core">
+            <FormattedMessage {...messages.coreStyle} />
+          </EditorTab>
+          <EditorTab errorCount={sharedStyleErrorCount} icon="brush" value="#style-shared">
+            <FormattedMessage {...messages.sharedStyle} />
+          </EditorTab>
+        </Tabs>
         <div className={styles.editorForm}>
           <MonacoEditor
             className={styles.editor}
-            language={language}
             onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
             showDiagnostics
-            value={value}
+            {...monacoProps}
           />
         </div>
       </div>
 
-      <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
-        {window.location.protocol === 'http:' || sslStatus?.[appDomain] === 'ready' ? (
-          <iframe
-            allow={allow.map((feature) => `${feature} ${src}`).join('; ')}
-            className={styles.appFrame}
-            ref={frame}
-            src={src}
-            title={formatMessage(messages.iframeTitle)}
-          />
-        ) : (
-          <div className="has-background-white is-flex is-flex-direction-column is-flex-grow-1 is-flex-shrink-1 is-align-items-center is-justify-content-center">
-            <Loader className={styles.sslLoader} />
-            <p className="pt-6">
-              <FormattedMessage {...messages.sslGenerating} />
-            </p>
-            <p>
-              <FormattedMessage {...messages.sslInfo} />
-            </p>
-          </div>
-        )}
-      </div>
+      <AppPreview app={app} iframeRef={frame} />
     </div>
   );
 }

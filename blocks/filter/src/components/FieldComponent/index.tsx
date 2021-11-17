@@ -16,7 +16,8 @@ import { EnumFieldComponent } from '../EnumFieldComponent';
 import { StringFieldComponent } from '../StringFieldComponent';
 
 export function FieldComponent(props: FieldComponentProps<Field>): VNode {
-  switch (props.field.type) {
+  const { field } = props;
+  switch (field.type) {
     case 'buttons':
       return <ButtonsFieldComponent {...(props as FieldComponentProps<ButtonsField>)} />;
     case 'date':

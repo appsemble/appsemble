@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.19.4",
+  "version": "0.19.6",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -32,9 +32,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.19.4",
-    "@appsemble/types": "0.19.4",
-    "@appsemble/utils": "0.19.4",
+    "@appsemble/node-utils": "0.19.6",
+    "@appsemble/types": "0.19.6",
+    "@appsemble/utils": "0.19.6",
     "@fortawesome/fontawesome-common-types": "^0.2.0",
     "@fortawesome/fontawesome-free": "^5.0.0",
     "@hapi/boom": "^9.0.0",
@@ -56,7 +56,6 @@
     "intl-messageformat": "^9.0.0",
     "is-ip": "^3.0.0",
     "is-svg": "^4.0.0",
-    "js-yaml": "^4.0.0",
     "jsonschema": "^1.0.0",
     "jsonwebtoken": "^8.0.0",
     "koa": "^2.0.0",
@@ -100,6 +99,7 @@
     "sequelize": "^6.0.0",
     "sequelize-typescript": "^2.0.0",
     "sharp": "^0.29.0",
+    "strip-bom": "^4.0.0",
     "type-fest": "^2.0.0",
     "unified": "^9.0.0",
     "unist-util-visit": "^2.0.0",
@@ -109,6 +109,7 @@
     "xast-util-to-xml": "^2.0.0",
     "xastscript": "^2.0.0",
     "xml-crypto": "^2.0.0",
+    "yaml": "^2.0.0-8",
     "yargs": "^17.0.0"
   },
   "devDependencies": {
@@ -116,7 +117,6 @@
     "@types/bcrypt": "^5.0.0",
     "@types/express-to-koa": "^1.0.0",
     "@types/jest-image-snapshot": "^4.0.0",
-    "@types/js-yaml": "^4.0.0",
     "@types/jsonwebtoken": "^8.0.0",
     "@types/koa": "^2.0.0",
     "@types/koa-compress": "^4.0.0",
@@ -143,7 +143,8 @@
     "axios-test-instance": "^5.0.0",
     "express-to-koa": "^2.0.0",
     "jest-image-snapshot": "^4.0.0",
-    "memfs": "^3.0.0"
+    "memfs": "^3.0.0",
+    "strip-indent": "^3.0.0"
   },
   "peerDependencies": {
     "webpack": "^5"

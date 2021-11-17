@@ -32,6 +32,7 @@ import { ResourceSubscription } from './ResourceSubscription';
 import { SamlLoginRequest } from './SamlLoginRequest';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
+import { Theme } from './Theme';
 import { User } from './User';
 
 let db: Sequelize;
@@ -76,6 +77,7 @@ export {
   ResourceSubscription,
   Team,
   TeamMember,
+  Theme,
   SamlLoginRequest,
   User,
 };
@@ -126,6 +128,7 @@ export function initDB({
       ResourceSubscription,
       Team,
       TeamMember,
+      Theme,
       SamlLoginRequest,
       User,
     ],

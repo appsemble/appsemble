@@ -7,10 +7,10 @@ import {
 } from '@appsemble/react-components';
 import { AppDefinition, Snapshot } from '@appsemble/types';
 import axios from 'axios';
-import { load } from 'js-yaml';
 import { lazy, ReactElement, Suspense, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
+import { parse } from 'yaml';
 
 import { useApp } from '../..';
 import { AsyncDataView } from '../../../../../components/AsyncDataView';
@@ -42,10 +42,9 @@ export function SnapshotPage(): ReactElement {
   useMeta(title);
 
   const onRestore = useCallback(async () => {
-    const definition = load(result.data.yaml) as AppDefinition;
+    const definition = parse(result.data.yaml) as AppDefinition;
     const data = new FormData();
     data.set('yaml', result.data.yaml);
-    data.set('definition', JSON.stringify(definition));
 
     try {
       await axios.patch(`/api/apps/${app.id}`, data);

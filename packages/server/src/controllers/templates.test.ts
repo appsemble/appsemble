@@ -1,7 +1,7 @@
 import { AppMessages as AppMessagesType, App as AppType } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
-import { dump } from 'js-yaml';
+import { parse } from 'yaml';
 
 import {
   App,
@@ -37,24 +37,24 @@ beforeEach(async () => {
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
   clock = install();
 
+  // Ensure formatting is preserved.
+  const yaml1 = "'name': Test Template\n'description': Description\n\n# comment\n\npages: []\n\n\n";
+  const yaml2 = '"name": Test App 2\ndescription: Description\n\n# comment\n\npages: []\n\n\n';
+
   const template = {
     path: 'test-template',
     template: true,
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
     OrganizationId: 'testorganization',
-    definition: {
-      name: 'Test Template',
-      description: 'Description',
-      pages: [],
-    },
+    definition: parse(yaml1),
   } as const;
 
   const t1 = await App.create(template);
   const t2 = await App.create({
     ...template,
     path: 'test-template-2',
-    definition: { ...template.definition, name: 'Test App 2' },
+    definition: parse(yaml2),
     coreStyle: '.foo { color: blue; }',
     sharedStyle: '.bar { color: yellow; }',
     resources: {
@@ -75,8 +75,28 @@ beforeEach(async () => {
       style: 'a { color: red; }',
     }),
   ];
+
+  // Make sure the latest snapshot is used.
+  const snapshot1 = await AppSnapshot.create({
+    AppId: t1.id,
+    UserId: user.id,
+    yaml: '',
+  });
+  clock.tick(1000);
   t1.AppSnapshots = [
-    await AppSnapshot.create({ AppId: t1.id, UserId: user.id, yaml: dump(t1.definition) }),
+    snapshot1,
+    await AppSnapshot.create({
+      AppId: t1.id,
+      UserId: user.id,
+      yaml: yaml1,
+    }),
+  ];
+  t2.AppSnapshots = [
+    await AppSnapshot.create({
+      AppId: t2.id,
+      UserId: user.id,
+      yaml: yaml2,
+    }),
   ];
 
   templates = [t1, t2];
@@ -128,8 +148,8 @@ describe('createTemplateApp', () => {
     expect(response).toMatchObject({
       status: 201,
       data: {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
+        $created: '1970-01-01T00:00:01.000Z',
+        $updated: '1970-01-01T00:00:01.000Z',
         OrganizationId: 'testorganization',
         definition: {
           description: 'This is a test app',
@@ -141,7 +161,7 @@ describe('createTemplateApp', () => {
         id: response.data.id,
         path: 'test-app',
         private: false,
-        yaml: 'name: Test app\ndescription: This is a test app\npages: []\n',
+        yaml: "'name': Test app\n'description': This is a test app\n\n# comment\n\npages: []\n",
       },
     });
   });
