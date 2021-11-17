@@ -4,7 +4,7 @@ export interface FormValues {
   maskableIcon?: File;
   iconBackground: string;
   path: string;
-  private: boolean;
+  listed: boolean;
   domain: string;
   locked: boolean;
   longDescription: string;

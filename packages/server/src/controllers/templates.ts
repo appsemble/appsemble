@@ -32,7 +32,7 @@ export async function getAppTemplates(ctx: Context): Promise<void> {
 export async function createTemplateApp(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { description, name, organizationId, private: isPrivate, resources, templateId },
+      body: { description, listed, name, organizationId, resources, templateId },
     },
     user,
   } = ctx;
@@ -57,8 +57,8 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     throw notFound(`Template with ID ${templateId} does not exist.`);
   }
 
-  if (!template.template && template.private) {
-    // Only allow cloning of private apps if the user is part of the template’s organization.
+  if (!template.template && !template.listed) {
+    // Only allow cloning of unlisted apps if the user is part of the template’s organization.
     await checkRole(ctx, template.OrganizationId, Permission.ViewApps);
   }
 
@@ -71,7 +71,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
         description,
         name: name || template.definition.name,
       },
-      private: Boolean(isPrivate),
+      listed,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       coreStyle: template.coreStyle,

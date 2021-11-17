@@ -20,9 +20,9 @@ export interface Template {
   organizationId: string;
 
   /**
-   * Whether or not the cloned app should be marked as private.
+   * Whether or not the cloned app may be listed in the app store.
    */
-  private: boolean;
+  listed: boolean;
 
   /**
    * Whether or not clonable resources should be cloned from the template app.

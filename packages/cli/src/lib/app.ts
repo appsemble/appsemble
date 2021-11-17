@@ -40,9 +40,9 @@ interface CreateAppParams {
   path: string;
 
   /**
-   * Whether the App should be marked as private.
+   * Whether the App should be listed in the public app store.
    */
-  private: boolean;
+  listed: boolean;
 
   /**
    * The remote server to create the app on.
@@ -107,9 +107,9 @@ interface UpdateAppParams {
   path: string;
 
   /**
-   * Whether the App should be marked as private.
+   * Whether the App should be listed in the public app store.
    */
-  private: boolean;
+  listed: boolean;
 
   /**
    * The remote server to create the app on.
@@ -503,14 +503,14 @@ export async function updateApp({
   const remote = appsembleContext.remote ?? options.remote;
   const id = appsembleContext.id ?? options.id;
   const template = appsembleContext.template ?? options.template ?? false;
-  const isPrivate = appsembleContext.private ?? options.private;
+  const listed = appsembleContext.listed ?? options.listed;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
   logger.info(`App id: ${id}`);
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
-  logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
+  logger.verbose(`App is listed: ${inspect(listed, { colors: true })}`);
   logger.verbose(`Icon background: ${iconBackground}`);
   logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
   if (!id) {
@@ -518,7 +518,7 @@ export async function updateApp({
   }
   formData.append('force', String(force));
   formData.append('template', String(template));
-  formData.append('private', String(isPrivate));
+  formData.append('listed', String(listed));
   formData.append('iconBackground', iconBackground);
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
@@ -581,14 +581,14 @@ export async function createApp({
   const remote = appsembleContext.remote ?? options.remote;
   const organizationId = appsembleContext.organization ?? options.organization;
   const template = appsembleContext.template ?? options.template ?? false;
-  const isPrivate = appsembleContext.private ?? options.private;
+  const listed = appsembleContext.listed ?? options.listed;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organzation: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
-  logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
+  logger.verbose(`App is listed: ${inspect(listed, { colors: true })}`);
   logger.verbose(`Icon background: ${iconBackground}`);
   if (!organizationId) {
     throw new AppsembleError(
@@ -597,7 +597,7 @@ export async function createApp({
   }
   formData.append('OrganizationId', organizationId);
   formData.append('template', String(template));
-  formData.append('private', String(isPrivate));
+  formData.append('listed', String(listed));
   formData.append('iconBackground', iconBackground);
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;

@@ -41,7 +41,7 @@ If this is unspecified, the app will be served from the path on the domain of th
 \`HOSTNAME\` variable.
 `,
     },
-    private: {
+    listed: {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching all apps.',
     },

@@ -17,7 +17,7 @@ interface UpdateAppArguments extends BaseArguments {
   iconBackground: string;
   maskableIcon: NodeJS.ReadStream | ReadStream;
   id: number;
-  private: boolean;
+  listed: boolean;
   template: boolean;
   force: boolean;
 }
@@ -51,19 +51,16 @@ export function builder(yargs: Argv): Argv {
         'The maskable icon to upload. By default "maskable-icon.png" in the app directory is used.',
       coerce: coerceFile,
     })
-    .option('private', {
-      describe: 'Whether the app should be marked as private.',
-      default: true,
+    .option('listed', {
+      describe: 'Whether the app should be listed in the public app store.',
       type: 'boolean',
     })
     .option('template', {
       describe: 'Whether the app should be marked as a template.',
-      default: false,
       type: 'boolean',
     })
     .option('force', {
       describe: 'Whether the lock property should be ignored.',
-      default: false,
       type: 'boolean',
     });
 }
@@ -75,9 +72,9 @@ export async function handler({
   icon,
   iconBackground,
   id,
+  listed,
   maskableIcon,
   paths,
-  private: isPrivate,
   remote,
   template,
 }: UpdateAppArguments): Promise<void> {
@@ -96,9 +93,9 @@ export async function handler({
       clientCredentials,
       context,
       id,
+      listed,
       path: dir,
       maskableIcon,
-      private: isPrivate,
       remote,
       icon,
       iconBackground,

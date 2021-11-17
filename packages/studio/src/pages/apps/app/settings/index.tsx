@@ -81,7 +81,7 @@ export function SettingsPage(): ReactElement {
       icon: null,
       iconBackground: app.iconBackground,
       path: app.path,
-      private: app.private,
+      listed: app.listed,
       locked: app.locked,
       longDescription: app.longDescription || '',
     }),
@@ -93,7 +93,7 @@ export function SettingsPage(): ReactElement {
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
     form.set('path', values.path);
-    form.set('private', String(values.private));
+    form.set('listed', String(values.listed));
     form.set('iconBackground', values.iconBackground);
     form.set('longDescription', values.longDescription);
     if (values.icon !== app.iconUrl) {
@@ -172,10 +172,10 @@ export function SettingsPage(): ReactElement {
           <SimpleFormField
             component={CheckboxField}
             disabled={app.locked}
-            help={<FormattedMessage {...messages.privateDescription} />}
-            label={<FormattedMessage {...messages.privateLabel} />}
-            name="private"
-            title={<FormattedMessage {...messages.private} />}
+            help={<FormattedMessage {...messages.listedDescription} />}
+            label={<FormattedMessage {...messages.listedLabel} />}
+            name="listed"
+            title={<FormattedMessage {...messages.listed} />}
           />
           <SimpleFormField
             addonLeft={

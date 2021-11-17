@@ -113,7 +113,7 @@ describe('getOrganizationApps', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: 'testorganization',
-      private: true,
+      listed: false,
     });
     const app = await App.create({
       path: 'test-app-2',
@@ -135,13 +135,13 @@ describe('getOrganizationApps', () => {
           id: app.id,
           locked: false,
           path: 'test-app-2',
-          private: false,
+          listed: true,
         },
       ],
     });
   });
 
-  it('should include private organization apps if the user is part of the organization', async () => {
+  it('should include unlisted organization apps if the user is part of the organization', async () => {
     authorizeStudio(user);
     const appA = await App.create({
       path: 'test-app',
@@ -149,7 +149,7 @@ describe('getOrganizationApps', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: 'testorganization',
-      private: true,
+      listed: false,
     });
     const appB = await App.create({
       path: 'test-app-2',
@@ -171,7 +171,7 @@ describe('getOrganizationApps', () => {
           id: appA.id,
           locked: false,
           path: 'test-app',
-          private: true,
+          listed: false,
         },
         {
           OrganizationId: 'testorganization',
@@ -181,7 +181,7 @@ describe('getOrganizationApps', () => {
           id: appB.id,
           locked: false,
           path: 'test-app-2',
-          private: false,
+          listed: true,
         },
       ],
     });

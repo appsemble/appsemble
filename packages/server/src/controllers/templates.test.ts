@@ -160,7 +160,7 @@ describe('createTemplateApp', () => {
         iconUrl: null,
         id: response.data.id,
         path: 'test-app',
-        private: false,
+        listed: true,
         yaml: "'name': Test app\n'description': This is a test app\n\n# comment\n\npages: []\n",
       },
     });

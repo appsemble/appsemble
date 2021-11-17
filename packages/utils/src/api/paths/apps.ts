@@ -30,8 +30,8 @@ export const paths: OpenAPIV3.PathsObject = {
                 path: {
                   $ref: '#/components/schemas/App/properties/path',
                 },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
+                listed: {
+                  $ref: '#/components/schemas/App/properties/listed',
                 },
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
@@ -168,8 +168,8 @@ export const paths: OpenAPIV3.PathsObject = {
                 path: {
                   $ref: '#/components/schemas/App/properties/path',
                 },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
+                listed: {
+                  $ref: '#/components/schemas/App/properties/listed',
                 },
                 template: {
                   $ref: '#/components/schemas/App/properties/template',

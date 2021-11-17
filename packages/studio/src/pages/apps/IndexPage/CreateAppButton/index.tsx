@@ -39,7 +39,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
   const { organizations } = useUser();
 
   const onCreate = useCallback(
-    async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
+    async ({ description, includeResources, listed, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
 
       const { data } = await axios.post<App>('/api/templates', {
@@ -48,7 +48,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
         description,
         organizationId: organizations[selectedOrganization].id,
         resources: resources && includeResources,
-        private: isPrivate,
+        listed,
       });
       history.push(`${url}/${data.id}/edit`);
     },
@@ -74,7 +74,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
           name: '',
           description: '',
           resources: false,
-          isPrivate: true,
+          listed: false,
           includeResources: templates[selectedTemplate].resources,
           selectedOrganization: 0,
         }}
@@ -140,9 +140,9 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
         <Message>{templates[selectedTemplate].description}</Message>
         <SimpleFormField
           component={CheckboxField}
-          label={<FormattedMessage {...messages.private} />}
-          name="isPrivate"
-          title={<FormattedMessage {...messages.privateHelp} />}
+          label={<FormattedMessage {...messages.listed} />}
+          name="listed"
+          title={<FormattedMessage {...messages.listedHelp} />}
         />
         {templates[selectedTemplate].resources && (
           <SimpleFormField

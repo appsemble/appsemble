@@ -104,9 +104,9 @@ export async function createApp(ctx: Context): Promise<void> {
         googleAnalyticsID,
         icon,
         iconBackground,
+        listed,
         longDescription,
         maskableIcon,
-        private: isPrivate = true,
         screenshots,
         sharedStyle,
         template = false,
@@ -145,7 +145,7 @@ export async function createApp(ctx: Context): Promise<void> {
       iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
-      private: Boolean(isPrivate),
+      listed,
       template: Boolean(template),
       showAppsembleLogin: false,
       showAppsembleOAuth2Login: true,
@@ -307,7 +307,7 @@ export async function queryApps(ctx: Context): Promise<void> {
         [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
       ],
     },
-    where: { private: false },
+    where: { listed: true },
     include: [
       {
         model: Organization,
@@ -428,10 +428,10 @@ export async function patchApp(ctx: Context): Promise<void> {
         googleAnalyticsID,
         icon,
         iconBackground,
+        listed,
         longDescription,
         maskableIcon,
         path,
-        private: isPrivate,
         screenshots,
         sharedStyle,
         showAppsembleLogin,
@@ -494,8 +494,8 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.path = path;
     }
 
-    if (isPrivate !== undefined) {
-      result.private = isPrivate;
+    if (listed !== undefined) {
+      result.listed = listed;
     }
 
     if (template !== undefined) {
@@ -545,7 +545,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     if (
       domain !== undefined ||
       path !== undefined ||
-      isPrivate !== undefined ||
+      listed !== undefined ||
       template !== undefined ||
       icon !== undefined ||
       maskableIcon !== undefined ||

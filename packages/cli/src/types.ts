@@ -30,9 +30,9 @@ export interface UpdateAppArguments extends BaseArguments {
   path: string;
 
   /**
-   * Whether the app should be marked as private.
+   * Whether the app should be marked as listed in the public app store.
    */
-  private: boolean;
+  listed: boolean;
 
   /**
    * Whether the app should be marked as a template.
@@ -74,9 +74,9 @@ export interface AppsembleContext {
   id?: number;
 
   /**
-   * If `private` is specified, this will override `--private` passed on the command line.
+   * If `listed` is specified, this will override `--listed` passed on the command line.
    */
-  private?: boolean;
+  listed?: boolean;
 
   /**
    * If `template` is specified, this will override `--template` passed on the command line.

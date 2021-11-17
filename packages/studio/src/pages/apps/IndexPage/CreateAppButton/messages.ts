@@ -12,6 +12,6 @@ export const messages = defineMessages({
   organization: 'Organization',
   resources: 'Resources',
   includeResources: 'Include example resources',
-  private: 'Private',
-  privateHelp: 'Hide this app from the public app list',
+  listed: 'Listed',
+  listedHelp: 'Show this app in the public app store',
 });

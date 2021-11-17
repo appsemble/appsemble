@@ -69,7 +69,7 @@ export class App extends Model {
   @AllowNull(false)
   @Default(false)
   @Column
-  private: boolean;
+  listed: boolean;
 
   @AllowNull(false)
   @Default(false)

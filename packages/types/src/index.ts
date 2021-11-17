@@ -1254,7 +1254,7 @@ export interface App {
   /**
    * Whether the app should be visible for users outside of the app’s organization.
    */
-  private: boolean;
+  listed: boolean;
 
   /**
    * The Google analytics ID of the app.

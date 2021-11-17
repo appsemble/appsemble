@@ -16,7 +16,7 @@ interface CreateAppArguments extends BaseArguments {
   maskableIcon: NodeJS.ReadStream | ReadStream;
   paths: string[];
   organization: string;
-  private: boolean;
+  listed: boolean;
   template: boolean;
   dryRun: boolean;
   resources: boolean;
@@ -50,31 +50,26 @@ export function builder(yargs: Argv): Argv {
         'The maskable icon to upload. By default "maskable-icon.png" in the app directory is used.',
       coerce: coerceFile,
     })
-    .option('private', {
-      describe: 'Whether the app should be marked as private.',
-      default: true,
+    .option('listed', {
+      describe: 'Whether the app should be listed in the public app store.',
       type: 'boolean',
     })
     .option('template', {
       describe: 'Whether the app should be marked as a template.',
-      default: false,
       type: 'boolean',
     })
     .option('dry-run', {
       describe: 'Whether the API should be called to run without actually creating the app.',
-      default: false,
       type: 'boolean',
     })
     .option('resources', {
       describe:
         'Whether the resources from the `resources` directory should be created after creating the app. The names of subdirectories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
-      default: false,
       type: 'boolean',
     })
     .option('modify-context', {
       describe:
         'If the app context is specified, modify it for the current context to include the id of the created app.',
-      default: false,
       type: 'boolean',
     });
 }
@@ -85,11 +80,11 @@ export async function handler({
   dryRun,
   icon,
   iconBackground,
+  listed,
   maskableIcon,
   modifyContext,
   organization,
   paths,
-  private: isPrivate,
   remote,
   resources,
   template,
@@ -107,8 +102,8 @@ export async function handler({
       path: dir,
       icon,
       iconBackground,
+      listed,
       maskableIcon,
-      private: isPrivate,
       remote,
       template,
       dryRun,

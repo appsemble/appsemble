@@ -51,7 +51,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
       name: app.definition.name,
       description: app.definition.description,
       organizationId,
-      private: true,
+      listed: false,
       resources: false,
     }),
     [app, organizationId],
@@ -131,9 +131,9 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
             />
             <SimpleFormField
               component={CheckboxField}
-              label={<FormattedMessage {...messages.private} />}
-              name="private"
-              title={<FormattedMessage {...messages.privateDescription} />}
+              label={<FormattedMessage {...messages.listed} />}
+              name="listed"
+              title={<FormattedMessage {...messages.listedDescription} />}
             />
             {app.resources && (
               <SimpleFormField

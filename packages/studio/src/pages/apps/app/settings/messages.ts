@@ -6,10 +6,9 @@ export const messages = defineMessages({
   noFile: 'No file chosen',
   icon: 'Icon',
   iconDescription: 'The icon that will be shown to the user.',
-  privateLabel: 'App Visibility',
-  private: 'Private',
-  privateDescription:
-    'If checked, prevent this app from appearing on the app list if the user is not part of this app’s organization.',
+  listedLabel: 'Listed',
+  listed: 'Show in app store',
+  listedDescription: 'If enabled, this app appears in the public app store.',
   appLock: 'App lock',
   lockApp: 'Lock app',
   unlockApp: 'Unlock app',
