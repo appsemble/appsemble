@@ -77,7 +77,7 @@ export function SettingsPage(): ReactElement {
     () => ({
       maskableIcon: null,
       domain: app.domain || '',
-      googleAnalyticsID: '',
+      googleAnalyticsID: app.googleAnalyticsID || '',
       icon: null,
       iconBackground: app.iconBackground,
       path: app.path,

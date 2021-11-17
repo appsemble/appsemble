@@ -1257,6 +1257,11 @@ export interface App {
   private: boolean;
 
   /**
+   * The Google analytics ID of the app.
+   */
+  googleAnalyticsID?: string;
+
+  /**
    * Whether the app is currently locked.
    */
   locked: boolean;
