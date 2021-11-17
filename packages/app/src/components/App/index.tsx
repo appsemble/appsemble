@@ -7,6 +7,7 @@ import { AppMessagesProvider } from '../AppMessagesProvider';
 import { AppRoutes } from '../AppRoutes';
 import { ErrorFallback } from '../ErrorFallback';
 import { MenuProvider } from '../MenuProvider';
+import { PageTracker } from '../PageTracker';
 import { PermissionRequest } from '../PermissionRequest';
 import { ServiceWorkerRegistrationProvider } from '../ServiceWorkerRegistrationProvider';
 import { UserProvider } from '../UserProvider';
@@ -23,6 +24,7 @@ interface AppProps {
 export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElement {
   return (
     <BrowserRouter>
+      <PageTracker />
       <Route path="/:lang?">
         <AppDefinitionProvider>
           <AppMessagesProvider>
