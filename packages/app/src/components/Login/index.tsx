@@ -3,6 +3,7 @@ import {
   LoginFormValues,
   Message,
   Login as PasswordLogin,
+  useMeta,
   useQuery,
   useToggle,
 } from '@appsemble/react-components';
@@ -29,6 +30,8 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 export function Login(): ReactElement {
+  useMeta(messages.login);
+
   const { definition } = useAppDefinition();
   const { isLoggedIn, passwordLogin, role } = useUser();
   const qs = useQuery();

@@ -1,4 +1,9 @@
-import { Content, ResetPassword as ResetPasswordForm, Title } from '@appsemble/react-components';
+import {
+  Content,
+  ResetPassword as ResetPasswordForm,
+  Title,
+  useMeta,
+} from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -8,6 +13,8 @@ import { apiUrl, appId } from '../../utils/settings';
 import { messages } from './messages';
 
 export function ResetPassword(): ReactElement {
+  useMeta(messages.title);
+
   const [success, setSuccess] = useState(false);
   const onSubmit = useCallback(async (email: string): Promise<void> => {
     await axios.post(`${apiUrl}/api/user/apps/${appId}/account/reset/request`, { email });

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { useMessages } from '@appsemble/react-components';
+import { useMessages, useMeta } from '@appsemble/react-components';
 import { BootstrapParams } from '@appsemble/sdk';
 import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
 import { ReactElement, useCallback, useMemo, useState } from 'react';
@@ -42,6 +42,8 @@ export function FlowPage({
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
+  const step = page.steps[currentStep];
+  useMeta(step.name);
 
   // XXX Something weird is going on here.
   // eslint-disable-next-line prefer-const
@@ -98,13 +100,13 @@ export function FlowPage({
   );
 
   const to = useCallback(
-    (d: any, step: string) => {
-      if (typeof step !== 'string') {
-        throw new TypeError(`Expected page to be a string, got: ${JSON.stringify(step)}`);
+    (d: any, stepName: string) => {
+      if (typeof stepName !== 'string') {
+        throw new TypeError(`Expected page to be a string, got: ${JSON.stringify(stepName)}`);
       }
-      const found = page.steps.findIndex((p) => p.name === step);
+      const found = page.steps.findIndex((p) => p.name === stepName);
       if (found === -1) {
-        throw new Error(`No matching page was found for ${step}`);
+        throw new Error(`No matching page was found for ${stepName}`);
       }
 
       setData(d);
@@ -112,7 +114,7 @@ export function FlowPage({
 
       return d;
     },
-    [page.steps, setData],
+    [page, setData],
   );
 
   const flowActions = useMemo(
@@ -179,7 +181,7 @@ export function FlowPage({
         <DotProgressBar active={currentStep} amount={page.steps.length} />
       )}
       <BlockList
-        blocks={page.steps[currentStep].blocks}
+        blocks={step.blocks}
         data={data}
         ee={ee}
         flowActions={flowActions}

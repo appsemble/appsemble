@@ -1,4 +1,4 @@
-import { Content } from '@appsemble/react-components';
+import { Content, useMeta } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -14,6 +14,7 @@ import { messages } from './messages';
  * Page containing all the settings configurable for an app
  */
 export function AppSettings(): ReactElement {
+  useMeta(messages.settings);
   const { isLoggedIn } = useUser();
   return (
     <Content padding>
