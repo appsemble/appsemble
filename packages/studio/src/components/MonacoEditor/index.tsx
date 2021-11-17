@@ -95,12 +95,10 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
         return;
       }
 
-      // Running the cleanup of the old model in the useEffect cleanup causes errors when
-      // dismounting the editor, because it’s also disposed by the editor.
-      const oldModel = ed.getModel();
-      const newModel = editor.createModel('', language, Uri.parse(uri));
-      ed.setModel(newModel);
-      oldModel.dispose();
+      const model = editor.createModel('', language, Uri.parse(uri));
+      ed.setModel(model);
+
+      return () => model.dispose();
     }, [language, uri]);
 
     /**
@@ -138,9 +136,9 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
 
       // Register a handler for the current model.
       registerHandler(ed.getModel());
-      const modelDisposable = ed.onDidChangeModel(({ newModelUrl }) => {
+      const modelDisposable = ed.onDidChangeModel(() => {
         // And update it when the model changes.
-        registerHandler(editor.getModel(newModelUrl));
+        registerHandler(ed.getModel());
       });
 
       return () => {
