@@ -316,13 +316,16 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
         if (!toPage) {
           report(to, 'refers to a page that doesn’t exist', [...path, 'to']);
+          return;
         }
 
         if (toPage.type !== 'tabs' && toSub) {
-          report(to, 'refers to a sub page on a page that isn’t of type ‘tabs’ or ‘flow’', [
+          report(toSub, 'refers to a sub page on a page that isn’t of type ‘tabs’ or ‘flow’', [
             ...path,
             'to',
+            1,
           ]);
+          return;
         }
 
         if (toPage.type === 'tabs' && toSub) {
