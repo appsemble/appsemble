@@ -183,7 +183,7 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
   iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
 
   for (const [name, role] of Object.entries(security.roles)) {
-    if (!role.inherits) {
+    if (!role?.inherits) {
       continue;
     }
     let found = false;
