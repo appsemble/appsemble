@@ -2,6 +2,7 @@ import {
   Content,
   Register as RegisterForm,
   RegistrationFormValues,
+  useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
@@ -9,8 +10,11 @@ import { useParams } from 'react-router-dom';
 
 import { apiUrl, appId } from '../../utils/settings';
 import { useUser } from '../UserProvider';
+import { messages } from './messages';
 
 export function Register(): ReactElement {
+  useMeta(messages.register);
+
   const { passwordLogin } = useUser();
   const { lang } = useParams<{ lang: string }>();
 

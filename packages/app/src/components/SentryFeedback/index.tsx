@@ -1,4 +1,4 @@
-import { Content, SentryForm } from '@appsemble/react-components';
+import { Content, SentryForm, useMeta } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -8,6 +8,7 @@ import { useUser } from '../UserProvider';
 import { messages } from './messages';
 
 export function SentryFeedback(): ReactElement {
+  useMeta(messages.feedback);
   const { userInfo } = useUser();
 
   return (

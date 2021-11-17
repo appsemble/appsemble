@@ -1,3 +1,4 @@
+import { MetaProvider } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
@@ -5,6 +6,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
 import { sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
+import { useAppMessages } from '../AppMessagesProvider';
 import { AppSettings } from '../AppSettings';
 import { EditPassword } from '../EditPassword';
 import { Login } from '../Login';
@@ -22,6 +24,7 @@ import { Verify } from '../Verify';
  * This maps the page to a route and displays a page depending on URL.
  */
 export function AppRoutes(): ReactElement {
+  const { getAppMessage } = useAppMessages();
   const { definition } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
 
@@ -34,42 +37,47 @@ export function AppRoutes(): ReactElement {
   // The `lang` parameter for the parent route is optional. It should be required for subroutes to
   // prevent an infinite routing loop.
   return (
-    <Switch>
-      <Route exact path="/:lang/Settings" sensitive>
-        <AppSettings />
-      </Route>
+    <MetaProvider
+      description={getAppMessage({ id: 'description' }).format() as string}
+      title={getAppMessage({ id: 'name' }).format() as string}
+    >
+      <Switch>
+        <Route exact path="/:lang/Settings" sensitive>
+          <AppSettings />
+        </Route>
 
-      {!isLoggedIn && (
-        <Route exact path="/:lang/Login" sensitive>
-          <Login />
+        {!isLoggedIn && (
+          <Route exact path="/:lang/Login" sensitive>
+            <Login />
+          </Route>
+        )}
+        {!isLoggedIn && (
+          <Route exact path="/:lang/Register" sensitive>
+            <Register />
+          </Route>
+        )}
+        <Route exact path="/:lang/Reset-Password" sensitive>
+          <ResetPassword />
         </Route>
-      )}
-      {!isLoggedIn && (
-        <Route exact path="/:lang/Register" sensitive>
-          <Register />
+        <Route exact path="/:lang/Edit-Password" sensitive>
+          <EditPassword />
         </Route>
-      )}
-      <Route exact path="/:lang/Reset-Password" sensitive>
-        <ResetPassword />
-      </Route>
-      <Route exact path="/:lang/Edit-Password" sensitive>
-        <EditPassword />
-      </Route>
-      <Route exact path="/:lang/Verify" sensitive>
-        <Verify />
-      </Route>
-      <Route exact path="/:lang/Callback" sensitive>
-        <OpenIDCallback />
-      </Route>
-      {sentryDsn && (
-        <Route exact path="/:lang/Feedback" sensitive>
-          <SentryFeedback />
+        <Route exact path="/:lang/Verify" sensitive>
+          <Verify />
         </Route>
-      )}
-      <Route path="/:lang/:pageId">
-        <Page />
-      </Route>
-      <Redirect to={`/:lang/${normalize(defaultPageName)}`} />
-    </Switch>
+        <Route exact path="/:lang/Callback" sensitive>
+          <OpenIDCallback />
+        </Route>
+        {sentryDsn && (
+          <Route exact path="/:lang/Feedback" sensitive>
+            <SentryFeedback />
+          </Route>
+        )}
+        <Route path="/:lang/:pageId">
+          <Page />
+        </Route>
+        <Redirect to={`/:lang/${normalize(defaultPageName)}`} />
+      </Switch>
+    </MetaProvider>
   );
 }
