@@ -4,6 +4,7 @@ import { ValidationError, Validator, ValidatorResult } from 'jsonschema';
 import languageTags from 'language-tags';
 import { Promisable } from 'type-fest';
 
+import { partialNormalized } from '.';
 import { getAppBlocks, IdentifiableBlock, normalizeBlockName } from './blockUtils';
 import { has } from './has';
 import { iterApp, Prefix } from './iterApp';
@@ -183,7 +184,7 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
   iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
 
   for (const [name, role] of Object.entries(security.roles)) {
-    if (!role.inherits) {
+    if (!role?.inherits) {
       continue;
     }
     let found = false;
@@ -299,6 +300,45 @@ function validateCronJobs({ cron }: AppDefinition, report: Report): void {
   }
 }
 
+function validateActions(definition: AppDefinition, report: Report): void {
+  const urlRegex = new RegExp(`^${partialNormalized.source}:`);
+
+  iterApp(definition, {
+    onAction(action, path) {
+      if (action.type === 'link') {
+        const { to } = action;
+        if (typeof to === 'string' && urlRegex.test(to)) {
+          return;
+        }
+
+        const [toBase, toSub] = [].concat(to);
+        const toPage = definition.pages.find(({ name }) => name === toBase);
+
+        if (!toPage) {
+          report(to, 'refers to a page that doesn’t exist', [...path, 'to']);
+          return;
+        }
+
+        if (toPage.type !== 'tabs' && toSub) {
+          report(toSub, 'refers to a sub page on a page that isn’t of type ‘tabs’ or ‘flow’', [
+            ...path,
+            'to',
+            1,
+          ]);
+          return;
+        }
+
+        if (toPage.type === 'tabs' && toSub) {
+          const subPage = toPage.tabs.find(({ name }) => name === toSub);
+          if (!subPage) {
+            report(toSub, 'refers to a tab that doesn’t exist', [...path, 'to', 1]);
+          }
+        }
+      }
+    },
+  });
+}
+
 /**
  * Validate an app definition.
  *
@@ -339,6 +379,7 @@ export async function validateAppDefinition(
     validateResourceReferences(definition, report);
     validateSecurity(definition, report);
     validateBlocks(definition, blockVersions, report);
+    validateActions(definition, report);
   } catch (error) {
     report(null, `Unexpected error: ${error.message}`, []);
   }
