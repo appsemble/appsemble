@@ -1392,6 +1392,44 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report an error if a resource action refers to a non-existent resource', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'Nonexistent',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a resource that doesn’t exist', 'resource.get', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onWhatever',
+        'resource',
+      ]),
+    ]);
+  });
+
   it('should ignore if an app is null', async () => {
     const result = await validateAppDefinition(null, () => []);
     expect(result.valid).toBe(true);

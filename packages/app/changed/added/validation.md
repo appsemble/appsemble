@@ -1,1 +1,1 @@
-Add additional validation for `link`, `flow`, and `user` actions.
+Add additional validation for `link`, `flow`, `resource.`, and `user` actions.

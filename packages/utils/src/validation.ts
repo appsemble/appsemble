@@ -1,4 +1,9 @@
-import { AppDefinition, BlockManifest, RoleDefinition } from '@appsemble/types';
+import {
+  AppDefinition,
+  BlockManifest,
+  ResourceGetActionDefinition,
+  RoleDefinition,
+} from '@appsemble/types';
 import { parseExpression } from 'cron-parser';
 import { ValidationError, Validator, ValidatorResult } from 'jsonschema';
 import languageTags from 'language-tags';
@@ -312,6 +317,15 @@ function validateActions(definition: AppDefinition, report: Report): void {
           [...path, 'type'],
         );
         return;
+      }
+
+      if (action.type.startsWith('resource')) {
+        // All of the actions starting with `resource.` contain a property called `resource`.
+        const { resource } = action as ResourceGetActionDefinition;
+        if (!definition.resources[resource]) {
+          report(action.type, 'refers to a resource that doesn’t exist', [...path, 'resource']);
+          return;
+        }
       }
 
       if (action.type.startsWith('flow')) {
