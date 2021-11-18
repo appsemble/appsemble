@@ -384,7 +384,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (action.type === 'flow.to' && !page.steps[Number(action.step)]) {
+        if (action.type === 'flow.to' && !page.steps.some((step) => step.name === action.step)) {
           report(action.type, 'refers to a step that doesn’t exist', [...path, 'step']);
           return;
         }

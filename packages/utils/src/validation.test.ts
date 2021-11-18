@@ -1192,7 +1192,7 @@ describe('validateAppDefinition', () => {
       actions: {
         onWhatever: {
           type: 'flow.to',
-          step: 3,
+          step: 'Some Step',
         },
       },
     });
