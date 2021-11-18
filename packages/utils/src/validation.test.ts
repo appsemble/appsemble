@@ -1,9 +1,9 @@
-import { AppDefinition, BasicPageDefinition, TabsPageDefinition } from '@appsemble/types';
+import { AppDefinition, BasicPageDefinition } from '@appsemble/types';
 import { ValidationError } from 'jsonschema';
 
 import { validateAppDefinition } from './validation';
 
-function createTestApp(): AppDefinition & { pages: (BasicPageDefinition | TabsPageDefinition)[] } {
+function createTestApp(): AppDefinition {
   return {
     name: 'Test app',
     defaultPage: 'Test Page',
