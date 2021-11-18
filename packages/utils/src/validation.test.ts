@@ -1,4 +1,4 @@
-import { AppDefinition, BasicPageDefinition } from '@appsemble/types';
+import { AppDefinition, BasicPageDefinition, FlowPageDefinition } from '@appsemble/types';
 import { ValidationError } from 'jsonschema';
 
 import { validateAppDefinition } from './validation';
@@ -35,6 +35,14 @@ function createTestApp(): AppDefinition {
         name: 'Page with tabs',
         type: 'tabs',
         tabs: [{ name: 'Tab A', blocks: [] }],
+      },
+      {
+        name: 'Page with steps',
+        type: 'flow',
+        steps: [
+          { name: 'Step A', blocks: [] },
+          { name: 'Step B', blocks: [] },
+        ],
       },
     ],
   };
@@ -1099,6 +1107,287 @@ describe('validateAppDefinition', () => {
         'user.update',
         undefined,
         ['pages', 0, 'blocks', 2, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow actions are used on a non-flow page', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.next',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'flow actions can only be used on pages with the type ‘flow’',
+        'flow.next',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow.back is used on the first step', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[0].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.back',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is not allowed on the first step in the flow', 'flow.back', undefined, [
+        'pages',
+        3,
+        'steps',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onWhatever',
+        'type',
+      ]),
+    ]);
+  });
+
+  it('should report an error if flow.to refers to a step that doesn’t exist', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[0].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.to',
+          step: 3,
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a step that doesn’t exist', 'flow.to', undefined, [
+        'pages',
+        3,
+        'steps',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onWhatever',
+        'step',
+      ]),
+    ]);
+  });
+
+  it('should report an error if flow.next is called on the last step without onFlowFinish', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[1].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.next',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'was defined on the last step but ‘onFlowFinish’ page action wasn’t defined',
+        'flow.next',
+        undefined,
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow.next, flow.back, or flow.to is called when there is only one step', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[0].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.next',
+        },
+      },
+    });
+    (app.pages[3] as FlowPageDefinition).steps[0].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.back',
+        },
+      },
+    });
+    (app.pages[3] as FlowPageDefinition).steps[0].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.to',
+          step: 0,
+        },
+      },
+    });
+    (app.pages[3] as FlowPageDefinition).steps = [(app.pages[3] as FlowPageDefinition).steps[0]];
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'this page only has one step, use ‘flow.finish’ or ‘flow.cancel’ instead',
+        'flow.next',
+        undefined,
+        ['pages', 3, 'steps', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+      new ValidationError(
+        'this page only has one step, use ‘flow.finish’ or ‘flow.cancel’ instead',
+        'flow.back',
+        undefined,
+        ['pages', 3, 'steps', 0, 'blocks', 1, 'actions', 'onWhatever', 'type'],
+      ),
+      new ValidationError(
+        'this page only has one step, use ‘flow.finish’ or ‘flow.cancel’ instead',
+        'flow.to',
+        undefined,
+        ['pages', 3, 'steps', 0, 'blocks', 2, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow.finish is called without onFlowFinish', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[1].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.finish',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'was defined but ‘onFlowFinish’ page action wasn’t defined',
+        'flow.finish',
+        undefined,
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow.cancel is called without onFlowCancel', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[1].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.cancel',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'was defined but ‘onFlowCancel’ page action wasn’t defined',
+        'flow.cancel',
+        undefined,
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
       ),
     ]);
   });

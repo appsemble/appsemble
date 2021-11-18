@@ -314,6 +314,68 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
+      if (action.type.startsWith('flow')) {
+        const page = definition.pages?.[Number(path[1])];
+        if (page?.type !== 'flow') {
+          report(action.type, 'flow actions can only be used on pages with the type ‘flow’', [
+            ...path,
+            'type',
+          ]);
+          return;
+        }
+
+        if (
+          page.steps.length === 1 &&
+          (action.type === 'flow.back' || action.type === 'flow.next' || action.type === 'flow.to')
+        ) {
+          report(
+            action.type,
+            'this page only has one step, use ‘flow.finish’ or ‘flow.cancel’ instead',
+            [...path, 'type'],
+          );
+          return;
+        }
+
+        if (action.type === 'flow.cancel' && !page.actions?.onFlowCancel) {
+          report(action.type, 'was defined but ‘onFlowCancel’ page action wasn’t defined', [
+            ...path,
+            'type',
+          ]);
+          return;
+        }
+
+        if (action.type === 'flow.finish' && !page.actions?.onFlowFinish) {
+          report(action.type, 'was defined but ‘onFlowFinish’ page action wasn’t defined', [
+            ...path,
+            'type',
+          ]);
+          return;
+        }
+
+        if (action.type === 'flow.back' && path[3] === 0) {
+          report(action.type, 'is not allowed on the first step in the flow', [...path, 'type']);
+          return;
+        }
+
+        if (
+          action.type === 'flow.next' &&
+          Number(path[3]) === page.steps.length - 1 &&
+          !page.actions?.onFlowFinish
+        ) {
+          report(
+            action.type,
+            'was defined on the last step but ‘onFlowFinish’ page action wasn’t defined',
+            [...path, 'type'],
+          );
+          return;
+        }
+
+        if (action.type === 'flow.to' && !page.steps[Number(action.step)]) {
+          report(action.type, 'refers to a step that doesn’t exist', [...path, 'step']);
+          return;
+        }
+      }
+
       if (action.type === 'link') {
         const { to } = action;
         if (typeof to === 'string' && urlRegex.test(to)) {
