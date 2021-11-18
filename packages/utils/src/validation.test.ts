@@ -1032,6 +1032,77 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report an error if user actions are used without a security definition', async () => {
+    const { security, ...app } = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.login',
+          email: 'example@example.com',
+          password: 'password',
+        },
+      },
+    });
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.register',
+          email: 'example@example.com',
+          password: 'password',
+          displayName: 'Test User',
+        },
+      },
+    });
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.update',
+          email: 'example@example.com',
+          password: 'password',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to an user action but the app doesn’t have a security definition',
+        'user.login',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+      new ValidationError(
+        'refers to an user action but the app doesn’t have a security definition',
+        'user.register',
+        undefined,
+        ['pages', 0, 'blocks', 1, 'actions', 'onWhatever', 'type'],
+      ),
+      new ValidationError(
+        'refers to an user action but the app doesn’t have a security definition',
+        'user.update',
+        undefined,
+        ['pages', 0, 'blocks', 2, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
   it('should ignore if an app is null', async () => {
     const result = await validateAppDefinition(null, () => []);
     expect(result.valid).toBe(true);

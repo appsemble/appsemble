@@ -305,6 +305,15 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, {
     onAction(action, path) {
+      if (action.type.startsWith('user.') && !definition.security) {
+        report(
+          action.type,
+          'refers to an user action but the app doesn’t have a security definition',
+          [...path, 'type'],
+        );
+        return;
+      }
+
       if (action.type === 'link') {
         const { to } = action;
         if (typeof to === 'string' && urlRegex.test(to)) {
