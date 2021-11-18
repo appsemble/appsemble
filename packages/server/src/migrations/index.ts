@@ -39,7 +39,7 @@ import * as m40 from './0.19.0';
 import * as m41 from './0.19.1';
 import * as m42 from './0.19.4';
 import * as m43 from './0.19.6';
-import * as m44 from './0.19.7';
+import * as m44 from './0.19.8';
 import * as m1 from './0.9.0';
 import * as m2 from './0.9.3';
 import * as m3 from './0.9.4';

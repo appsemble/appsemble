@@ -3,7 +3,7 @@ import { ValidationError } from 'jsonschema';
 
 import { validateAppDefinition } from './validation';
 
-function createTestApp(): AppDefinition & { pages: BasicPageDefinition[] } {
+function createTestApp(): AppDefinition {
   return {
     name: 'Test app',
     defaultPage: 'Test Page',
@@ -31,6 +31,11 @@ function createTestApp(): AppDefinition & { pages: BasicPageDefinition[] } {
         parameters: [],
         blocks: [],
       },
+      {
+        name: 'Page with tabs',
+        type: 'tabs',
+        tabs: [{ name: 'Tab A', blocks: [] }],
+      },
     ],
   };
 }
@@ -38,7 +43,7 @@ function createTestApp(): AppDefinition & { pages: BasicPageDefinition[] } {
 describe('validateAppDefinition', () => {
   it('should report unknown block types', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
     });
@@ -57,7 +62,7 @@ describe('validateAppDefinition', () => {
 
   it('should report unknown block versions', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
     });
@@ -78,7 +83,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate block parameters', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
     });
@@ -109,7 +114,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate block parameters using the action format', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       parameters: {
@@ -153,7 +158,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate block parameters using the event-emitter format', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       parameters: {
@@ -197,7 +202,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate block parameters using the event-listener format', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       parameters: {
@@ -241,7 +246,7 @@ describe('validateAppDefinition', () => {
 
   it('should not allow block parameters if the block manifest doesn’t specify them', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       parameters: {},
@@ -268,7 +273,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate block actions', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       actions: {
@@ -302,7 +307,7 @@ describe('validateAppDefinition', () => {
 
   it('should report if a block doesn’t support actions', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       actions: {},
@@ -329,7 +334,7 @@ describe('validateAppDefinition', () => {
 
   it('should report unused block actions based on parameters', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       actions: {
@@ -375,7 +380,7 @@ describe('validateAppDefinition', () => {
 
   it('should allow wildcard actions on blocks', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       actions: {
@@ -412,7 +417,7 @@ describe('validateAppDefinition', () => {
 
   it('should report unknown event emitters', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       events: {
@@ -449,7 +454,7 @@ describe('validateAppDefinition', () => {
 
   it('should allow $any matching unknown event emitters', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       events: {
@@ -475,7 +480,7 @@ describe('validateAppDefinition', () => {
 
   it('should report unknown event listeners', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       events: {
@@ -512,7 +517,7 @@ describe('validateAppDefinition', () => {
 
   it('should allow $any matching unknown event listener', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       events: {
@@ -677,7 +682,7 @@ describe('validateAppDefinition', () => {
 
   it('should validate block roles', async () => {
     const app = createTestApp();
-    app.pages[0].blocks.push({
+    (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
       roles: ['Unknown'],
@@ -742,7 +747,7 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should report unknown roles in resource notifcation hooks', async () => {
+  it('should report unknown roles in resource notification hooks', async () => {
     const app = createTestApp();
     app.resources.person.update.hooks = {
       notification: {
@@ -916,6 +921,115 @@ describe('validateAppDefinition', () => {
     );
     expect(result.valid).toBe(true);
     expect(result.errors).toStrictEqual([]);
+  });
+
+  it('should report an error if a link action contains a link to a page that doesn’t exist', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'link',
+          to: 'Doesn’t exist',
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a page that doesn’t exist', 'Doesn’t exist', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onWhatever',
+        'to',
+      ]),
+    ]);
+  });
+
+  it('should report an error if a link action contains a link to a sub page for a page without sub pages', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'link',
+          to: ['Test Page', 'Bla'],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a sub page on a page that isn’t of type ‘tabs’ or ‘flow’',
+        'Bla',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'to', 1],
+      ),
+    ]);
+  });
+
+  it('should report an error if a link action contains a link to a tab that doesn’t exist', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'link',
+          to: ['Page with tabs', 'Bla'],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a tab that doesn’t exist', 'Bla', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onWhatever',
+        'to',
+        1,
+      ]),
+    ]);
   });
 
   it('should ignore if an app is null', async () => {
