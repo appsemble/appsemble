@@ -66,8 +66,8 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'boolean',
                   description: 'Include example resources.',
                 },
-                listed: {
-                  $ref: '#/components/schemas/App/properties/listed',
+                visibility: {
+                  $ref: '#/components/schemas/App/properties/visibility',
                 },
               },
             },

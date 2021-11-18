@@ -41,9 +41,18 @@ If this is unspecified, the app will be served from the path on the domain of th
 \`HOSTNAME\` variable.
 `,
     },
-    listed: {
-      type: 'boolean',
-      description: 'Determines whether this app should be included when fetching all apps.',
+    visibility: {
+      description: `Determine the app visibility of the app in the Appsemble app store.
+
+This doesn’t affect whether or not the app can be accessed on its own domain.
+
+- **public**: 'The app is publicly listed in the Appsemble app store.',
+- **unlisted**: 'The app store page can be accessed, but the app isn’t listed publicly in the
+  Appsemble app store.',
+- **private**: 'The app is only visible to people who are part of the organization.',
+`,
+      default: 'unlisted',
+      enum: ['public', 'unlisted', 'private'],
     },
     locked: {
       type: 'boolean',

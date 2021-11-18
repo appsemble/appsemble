@@ -1,3 +1,4 @@
+import { AppVisibility } from '@appsemble/types';
 import { PackageJson } from 'read-pkg-up';
 import { JsonObject } from 'type-fest';
 
@@ -30,9 +31,9 @@ export interface UpdateAppArguments extends BaseArguments {
   path: string;
 
   /**
-   * Whether the app should be marked as listed in the public app store.
+   * Visibility of the app in the public app store.
    */
-  listed: boolean;
+  visibility: AppVisibility;
 
   /**
    * Whether the app should be marked as a template.
@@ -74,9 +75,9 @@ export interface AppsembleContext {
   id?: number;
 
   /**
-   * If `listed` is specified, this will override `--listed` passed on the command line.
+   * If `visibility` is specified, this will override `--visibility` passed on the command line.
    */
-  listed?: boolean;
+  visibility: AppVisibility;
 
   /**
    * If `template` is specified, this will override `--template` passed on the command line.

@@ -104,12 +104,12 @@ export async function createApp(ctx: Context): Promise<void> {
         googleAnalyticsID,
         icon,
         iconBackground,
-        listed,
         longDescription,
         maskableIcon,
         screenshots,
         sharedStyle,
         template = false,
+        visibility,
         yaml,
       },
       query: { dryRun },
@@ -145,7 +145,7 @@ export async function createApp(ctx: Context): Promise<void> {
       iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
-      listed,
+      visibility,
       template: Boolean(template),
       showAppsembleLogin: false,
       showAppsembleOAuth2Login: true,
@@ -276,6 +276,10 @@ export async function getAppById(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
+  if (app.visibility === 'private') {
+    await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+  }
+
   const rating = await AppRating.findOne({
     attributes: [
       'AppId',
@@ -307,7 +311,7 @@ export async function queryApps(ctx: Context): Promise<void> {
         [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
       ],
     },
-    where: { listed: true },
+    where: { visibility: 'public' },
     include: [
       {
         model: Organization,
@@ -428,7 +432,6 @@ export async function patchApp(ctx: Context): Promise<void> {
         googleAnalyticsID,
         icon,
         iconBackground,
-        listed,
         longDescription,
         maskableIcon,
         path,
@@ -437,6 +440,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         showAppsembleLogin,
         showAppsembleOAuth2Login,
         template,
+        visibility,
         yaml,
       },
     },
@@ -494,8 +498,8 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.path = path;
     }
 
-    if (listed !== undefined) {
-      result.listed = listed;
+    if (visibility !== undefined) {
+      result.visibility = visibility;
     }
 
     if (template !== undefined) {
@@ -545,7 +549,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     if (
       domain !== undefined ||
       path !== undefined ||
-      listed !== undefined ||
+      visibility !== undefined ||
       template !== undefined ||
       icon !== undefined ||
       maskableIcon !== undefined ||

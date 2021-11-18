@@ -1,10 +1,12 @@
+import { AppVisibility } from 'types/src/app';
+
 export interface FormValues {
   googleAnalyticsID: string;
   icon: File | string;
   maskableIcon?: File;
   iconBackground: string;
   path: string;
-  listed: boolean;
+  visibility: AppVisibility;
   domain: string;
   locked: boolean;
   longDescription: string;

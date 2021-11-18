@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { AppDefinition, AppsembleMessages } from '@appsemble/types';
+import type { AppDefinition, AppsembleMessages, AppVisibility } from '@appsemble/types';
 import {
   AllowNull,
   AutoIncrement,
@@ -67,9 +67,9 @@ export class App extends Model {
   path: string;
 
   @AllowNull(false)
-  @Default(false)
-  @Column
-  listed: boolean;
+  @Default('unlisted')
+  @Column(DataType.STRING)
+  visibility: AppVisibility;
 
   @AllowNull(false)
   @Default(false)

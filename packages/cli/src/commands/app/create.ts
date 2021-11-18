@@ -1,6 +1,7 @@
 import { ReadStream } from 'fs';
 
 import { logger } from '@appsemble/node-utils';
+import { AppVisibility } from '@appsemble/types';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
@@ -16,11 +17,11 @@ interface CreateAppArguments extends BaseArguments {
   maskableIcon: NodeJS.ReadStream | ReadStream;
   paths: string[];
   organization: string;
-  listed: boolean;
   template: boolean;
   dryRun: boolean;
   resources: boolean;
   modifyContext: boolean;
+  visibility: AppVisibility;
 }
 
 export const command = 'create <paths...>';
@@ -50,9 +51,10 @@ export function builder(yargs: Argv): Argv {
         'The maskable icon to upload. By default "maskable-icon.png" in the app directory is used.',
       coerce: coerceFile,
     })
-    .option('listed', {
-      describe: 'Whether the app should be listed in the public app store.',
-      type: 'boolean',
+    .option('visibility', {
+      describe: 'Visibility of the app in the public app store.',
+      default: 'unlisted',
+      choices: ['public', 'unlisted', 'private'],
     })
     .option('template', {
       describe: 'Whether the app should be marked as a template.',
@@ -74,21 +76,7 @@ export function builder(yargs: Argv): Argv {
     });
 }
 
-export async function handler({
-  clientCredentials,
-  context,
-  dryRun,
-  icon,
-  iconBackground,
-  listed,
-  maskableIcon,
-  modifyContext,
-  organization,
-  paths,
-  remote,
-  resources,
-  template,
-}: CreateAppArguments): Promise<void> {
+export async function handler({ paths, ...args }: CreateAppArguments): Promise<void> {
   const normalizedPaths = paths.map((path) => normalizePath(path));
   const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
 
@@ -96,19 +84,8 @@ export async function handler({
   for (const dir of directories) {
     logger.info('');
     await createApp({
-      clientCredentials,
-      context,
-      organization,
+      ...args,
       path: dir,
-      icon,
-      iconBackground,
-      listed,
-      maskableIcon,
-      remote,
-      template,
-      dryRun,
-      resources,
-      modifyContext,
     });
   }
 }

@@ -12,6 +12,10 @@ export const messages = defineMessages({
   organization: 'Organization',
   resources: 'Resources',
   includeResources: 'Include example resources',
-  listed: 'Listed',
-  listedHelp: 'Show this app in the public app store',
+  visibilityLabel: 'Visibility',
+  visibilityDescription:
+    'Public apps are available in the app store. Unlisted apps aren’t listed publicly, but they are accessible using a direct link. Private apps are only visible to those organization members.',
+  public: 'Public',
+  unlisted: 'Unlisted',
+  private: 'Private',
 });

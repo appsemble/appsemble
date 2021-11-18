@@ -58,7 +58,7 @@ export function getAppFromRecord(
     domain: record.domain || null,
     googleAnalyticsID: record.googleAnalyticsID,
     path: record.path,
-    listed: record.listed,
+    visibility: record.visibility,
     locked: Boolean(record.locked),
     hasIcon: record.get('hasIcon') ?? Boolean(record.icon),
     hasMaskableIcon: record.get('hasMaskableIcon') ?? Boolean(record.maskableIcon),

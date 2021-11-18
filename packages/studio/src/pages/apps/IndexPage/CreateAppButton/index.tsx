@@ -15,7 +15,7 @@ import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { useUser } from '../../../../components/UserProvider';
@@ -35,11 +35,12 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
   const [selectedTemplate, setSelectedTemplate] = useState(0);
 
   const history = useHistory();
+  const { formatMessage } = useIntl();
   const { url } = useRouteMatch();
   const { organizations } = useUser();
 
   const onCreate = useCallback(
-    async ({ description, includeResources, listed, name, selectedOrganization }) => {
+    async ({ description, includeResources, name, selectedOrganization, visibility }) => {
       const { id, resources } = templates[selectedTemplate];
 
       const { data } = await axios.post<App>('/api/templates', {
@@ -48,7 +49,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
         description,
         organizationId: organizations[selectedOrganization].id,
         resources: resources && includeResources,
-        listed,
+        visibility,
       });
       history.push(`${url}/${data.id}/edit`);
     },
@@ -74,7 +75,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
           name: '',
           description: '',
           resources: false,
-          listed: false,
+          visibility: 'unlisted',
           includeResources: templates[selectedTemplate].resources,
           selectedOrganization: 0,
         }}
@@ -139,11 +140,15 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
         </SimpleFormField>
         <Message>{templates[selectedTemplate].description}</Message>
         <SimpleFormField
-          component={CheckboxField}
-          label={<FormattedMessage {...messages.listed} />}
-          name="listed"
-          title={<FormattedMessage {...messages.listedHelp} />}
-        />
+          component={SelectField}
+          help={<FormattedMessage {...messages.visibilityDescription} />}
+          label={<FormattedMessage {...messages.visibilityLabel} />}
+          name="visibility"
+        >
+          <option value="public">{formatMessage(messages.public)}</option>
+          <option value="unlisted">{formatMessage(messages.unlisted)}</option>
+          <option value="private">{formatMessage(messages.private)}</option>
+        </SimpleFormField>
         {templates[selectedTemplate].resources && (
           <SimpleFormField
             component={CheckboxField}

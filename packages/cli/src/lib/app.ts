@@ -4,7 +4,7 @@ import { URL } from 'url';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
-import { App, AppDefinition, AppsembleMessages, Messages } from '@appsemble/types';
+import { App, AppDefinition, AppsembleMessages, AppVisibility, Messages } from '@appsemble/types';
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -40,9 +40,9 @@ interface CreateAppParams {
   path: string;
 
   /**
-   * Whether the App should be listed in the public app store.
+   * Visibility of the app in the public app store.
    */
-  listed: boolean;
+  visibility: AppVisibility;
 
   /**
    * The remote server to create the app on.
@@ -107,9 +107,9 @@ interface UpdateAppParams {
   path: string;
 
   /**
-   * Whether the App should be listed in the public app store.
+   * Visibility of the app in the public app store.
    */
-  listed: boolean;
+  visibility: AppVisibility;
 
   /**
    * The remote server to create the app on.
@@ -503,14 +503,14 @@ export async function updateApp({
   const remote = appsembleContext.remote ?? options.remote;
   const id = appsembleContext.id ?? options.id;
   const template = appsembleContext.template ?? options.template ?? false;
-  const listed = appsembleContext.listed ?? options.listed;
+  const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
   logger.info(`App id: ${id}`);
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
-  logger.verbose(`App is listed: ${inspect(listed, { colors: true })}`);
+  logger.verbose(`App visibility: ${visibility}`);
   logger.verbose(`Icon background: ${iconBackground}`);
   logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
   if (!id) {
@@ -518,7 +518,7 @@ export async function updateApp({
   }
   formData.append('force', String(force));
   formData.append('template', String(template));
-  formData.append('listed', String(listed));
+  formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
@@ -581,14 +581,14 @@ export async function createApp({
   const remote = appsembleContext.remote ?? options.remote;
   const organizationId = appsembleContext.organization ?? options.organization;
   const template = appsembleContext.template ?? options.template ?? false;
-  const listed = appsembleContext.listed ?? options.listed;
+  const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organzation: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
-  logger.verbose(`App is listed: ${inspect(listed, { colors: true })}`);
+  logger.verbose(`App visibility: ${visibility}`);
   logger.verbose(`Icon background: ${iconBackground}`);
   if (!organizationId) {
     throw new AppsembleError(
@@ -597,7 +597,7 @@ export async function createApp({
   }
   formData.append('OrganizationId', organizationId);
   formData.append('template', String(template));
-  formData.append('listed', String(listed));
+  formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;

@@ -1,9 +1,9 @@
 import {
   Button,
-  CheckboxField,
   Content,
   FormButtons,
   Message,
+  SelectField,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
@@ -81,7 +81,7 @@ export function SettingsPage(): ReactElement {
       icon: null,
       iconBackground: app.iconBackground,
       path: app.path,
-      listed: app.listed,
+      visibility: app.visibility,
       locked: app.locked,
       longDescription: app.longDescription || '',
     }),
@@ -93,7 +93,7 @@ export function SettingsPage(): ReactElement {
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
     form.set('path', values.path);
-    form.set('listed', String(values.listed));
+    form.set('visibility', values.visibility);
     form.set('iconBackground', values.iconBackground);
     form.set('longDescription', values.longDescription);
     if (values.icon !== app.iconUrl) {
@@ -170,13 +170,16 @@ export function SettingsPage(): ReactElement {
             name="longDescription"
           />
           <SimpleFormField
-            component={CheckboxField}
+            component={SelectField}
             disabled={app.locked}
-            help={<FormattedMessage {...messages.listedDescription} />}
-            label={<FormattedMessage {...messages.listedLabel} />}
-            name="listed"
-            title={<FormattedMessage {...messages.listed} />}
-          />
+            help={<FormattedMessage {...messages.visibilityDescription} />}
+            label={<FormattedMessage {...messages.visibilityLabel} />}
+            name="visibility"
+          >
+            <option value="public">{formatMessage(messages.public)}</option>
+            <option value="unlisted">{formatMessage(messages.unlisted)}</option>
+            <option value="private">{formatMessage(messages.private)}</option>
+          </SimpleFormField>
           <SimpleFormField
             addonLeft={
               <Button

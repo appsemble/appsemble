@@ -15,7 +15,7 @@ import { App, Template } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { checkRole } from '../../utils/checkRole';
@@ -36,6 +36,7 @@ interface CloneButtonProps {
  */
 export function CloneButton({ app }: CloneButtonProps): ReactElement {
   const history = useHistory();
+  const { formatMessage } = useIntl();
   const { lang } = useParams<{ lang: string }>();
   const redirect = useLocationString();
   const { hash } = useLocation();
@@ -51,7 +52,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
       name: app.definition.name,
       description: app.definition.description,
       organizationId,
-      listed: false,
+      visibility: 'unlisted',
       resources: false,
     }),
     [app, organizationId],
@@ -130,11 +131,15 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
               name="description"
             />
             <SimpleFormField
-              component={CheckboxField}
-              label={<FormattedMessage {...messages.listed} />}
-              name="listed"
-              title={<FormattedMessage {...messages.listedDescription} />}
-            />
+              component={SelectField}
+              help={<FormattedMessage {...messages.visibilityDescription} />}
+              label={<FormattedMessage {...messages.visibilityLabel} />}
+              name="visibility"
+            >
+              <option value="public">{formatMessage(messages.public)}</option>
+              <option value="unlisted">{formatMessage(messages.unlisted)}</option>
+              <option value="private">{formatMessage(messages.private)}</option>
+            </SimpleFormField>
             {app.resources && (
               <SimpleFormField
                 component={CheckboxField}
