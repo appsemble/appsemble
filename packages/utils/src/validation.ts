@@ -321,10 +321,39 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
       if (action.type.startsWith('resource.')) {
         // All of the actions starting with `resource.` contain a property called `resource`.
-        const { resource } = action as ResourceGetActionDefinition;
-        if (!definition.resources[resource]) {
+        const { resource: resourceName } = action as ResourceGetActionDefinition;
+        const resource = definition.resources?.[resourceName];
+
+        if (!resource) {
           report(action.type, 'refers to a resource that doesn’t exist', [...path, 'resource']);
           return;
+        }
+
+        if (!action.type.startsWith('resource.subscription.')) {
+          const type = action.type.split('.')[1] as
+            | 'count'
+            | 'create'
+            | 'delete'
+            | 'get'
+            | 'query'
+            | 'update';
+          const roles = resource?.[type]?.roles ?? resource?.roles;
+          if (!roles) {
+            report(action.type, 'refers to a resource action that is currently set to private', [
+              ...path,
+              'resource',
+            ]);
+            return;
+          }
+
+          if (roles && !roles.length && !definition.security) {
+            report(
+              action.type,
+              'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+              [...path, 'resource'],
+            );
+            return;
+          }
         }
       }
 

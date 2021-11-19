@@ -1364,6 +1364,77 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report an error if a resource action refers to a private resource action', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'person',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a resource action that is currently set to private',
+        'resource.get',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
+      ),
+    ]);
+  });
+
+  it('should report an error if a resource action refers is private action without a security definition', async () => {
+    const { security, ...app } = createTestApp();
+    app.resources.person.roles = [];
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'person',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+        'resource.get',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
+      ),
+    ]);
+  });
+
   it('should ignore if an app is null', async () => {
     const result = await validateAppDefinition(null, () => []);
     expect(result.valid).toBe(true);
