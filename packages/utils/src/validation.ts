@@ -313,7 +313,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
       if (action.type.startsWith('user.') && !definition.security) {
         report(
           action.type,
-          'refers to an user action but the app doesn’t have a security definition',
+          'refers to a user action but the app doesn’t have a security definition',
           [...path, 'type'],
         );
         return;
@@ -328,7 +328,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
       }
 
-      if (action.type.startsWith('flow')) {
+      if (action.type.startsWith('flow.')) {
         const page = definition.pages?.[Number(path[1])];
         if (page?.type !== 'flow') {
           report(action.type, 'flow actions can only be used on pages with the type ‘flow’', [
